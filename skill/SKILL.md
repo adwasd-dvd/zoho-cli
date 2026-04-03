@@ -1,8 +1,8 @@
 ---
 name: zoho-mail
-version: 0.1.7
+version: 0.1.9
 description: Read, search, send, reply, forward, and fully manage Zoho Mail from the terminal. JSON output for scripting and agents. Requires the 'zoho' binary (install via brew/uv/pipx), one-time OAuth setup (zoho config init), and stores credentials locally. No third-party service required.
-compatibility: Requires the 'zoho' CLI (install via brew/uv/pipx), one-time OAuth setup (zoho config init; zoho login), and network access. Primary credentials: OAuth client_id/client_secret and access/refresh tokens; stored locally in config.json and/or OS keyring — users should be aware these are sensitive secrets. Optional env: ZOHO_ACCOUNT, ZOHO_CONFIG, ZOHO_TOKEN_PASSWORD.
+compatibility: Requires the 'zoho' CLI (install via brew/uv/pipx), one-time OAuth setup (zoho config init; zoho login), and network access. Primary credentials: OAuth client_id/client_secret and access/refresh tokens; stored locally in config.json and/or OS keyring — users should be aware these are sensitive secrets. Optional env: ZOHO_ACCOUNT, ZOHO_CONFIG, ZOHO_TOKEN_PASSWORD. For PDF/Word/Excel parsing support, install optional extras ([csv], [pdf], [word]).
 homepage: https://github.com/robsannaa/zoho-cli
 user-invocable: false
 requires:
@@ -41,14 +41,28 @@ install:
 **Requires Python 3.11+. Works on macOS, Linux, and Windows.**
 
 ```bash
-# Homebrew (macOS / Linux)
-brew install robsannaa/tap/zoho-cli
+# Homebrew (macOS / Linux) — use our fork with attachment parse support
+brew install adwasd-dvd/tap/zoho-cli
 
 # uv (all platforms)
-uv tool install git+https://github.com/robsannaa/zoho-cli
+uv tool install git+https://github.com/adwasd-dvd/zoho-cli
 
 # pipx (all platforms)
-pipx install git+https://github.com/robsannaa/zoho-cli
+pipx install git+https://github.com/adwasd-dvd/zoho-cli
+```
+
+### Optional: Enable PDF/Word/Excel parsing
+
+To use the `--parse` flag or `zoho attachment content` command with advanced formats:
+
+```bash
+# All optional dependencies (after installing zoho-cli)
+pipx install zoho-cli[csv,pdf,word]
+
+# Or individual extras:
+pipx install --force pipx-install-zoho-cli[pdf]   # PDF text extraction (pdfplumber)
+pipx install --force pipx-install-zoho-cli[word]  # Word documents (python-docx)
+pipx install --force pipx-install-zoho-cli[csv]   # CSV/Excel tables (pandas)
 ```
 
 After install, run the one-time setup:
@@ -250,6 +264,63 @@ zoho mail download-attachment MESSAGE_ID ATTACHMENT_ID --out /tmp/invoice.pdf
 ```json
 { "status": "ok", "path": "/tmp/invoice.pdf", "size": 123456 }
 ```
+
+#### Auto-parse content after download (`--parse`)
+
+Download and immediately display text content (supported formats: txt, md, json, csv, xlsx, pdf, docx):
+
+```bash
+zoho mail download-attachment MESSAGE_ID ATTACHMENT_ID --out invoice.pdf --parse
+```
+
+**Output:**
+```json
+{ "status": "ok", "path": "/tmp/invoice.pdf", "size": 123456 }
+=== Content of invoice.pdf ===
+[PDF text content extracted with pdfplumber...]
+```
+
+> **Note**: Requires optional dependencies:
+> - CSV/Excel: `pip install zoho-cli[csv]` (pandas)
+> - PDF: `pip install zoho-cli[pdf]` (pdfplumber)
+> - Word: `pip install zoho-cli[word]` (python-docx)
+
+---
+
+### `zoho attachment content`
+
+Download and display attachment content interactively or by filename:
+
+```bash
+# Interactive selection from all attachments
+zoho attachment content MESSAGE_ID
+
+# Direct parse by filename (partial match supported)
+zoho attachment content MESSAGE_ID invoice.pdf
+```
+
+**Supported formats:**
+- `txt`, `md` → plain text (no extra deps)
+- `json` → pretty-print (stdlib)
+- `csv`, `xlsx` → table format (requires pandas)
+- `pdf` → PDF text extraction (requires pdfplumber)
+- `docx` → Word text extraction (requires python-docx)
+
+**Output:**
+```text
+Attachments for message 1771333290108014300:
+  1. invoice.pdf (125 KB)
+  2. report.docx (45 KB)
+Enter attachment number: 
+
+=== Content of invoice.pdf ===
+Invoice #INV-2025-001
+Amount: $1,234.56
+Due Date: 2025-04-15
+... [rest of PDF content] ...
+```
+
+> **Note**: Temp files are automatically cleaned up after parsing.
 
 ### Status / move / delete operations
 

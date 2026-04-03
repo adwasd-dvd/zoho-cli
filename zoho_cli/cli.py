@@ -27,6 +27,10 @@ for _dep in _REQUIRED_DEPS:
 from importlib.metadata import version
 from pathlib import Path
 from typing import List, Optional
+import tempfile
+
+# Import parse module for content extraction
+from zoho_cli import parse as _parse
 
 import click
 import typer
@@ -51,13 +55,15 @@ app = typer.Typer(
     add_completion=False,
     help=f"Zoho Mail CLI (v{_get_version()}) — JSON by default, Markdown with --md.",
 )
-mail_app    = typer.Typer(no_args_is_help=True, help="Message operations.")
-folders_app = typer.Typer(no_args_is_help=True, help="Folder management.")
-labels_app  = typer.Typer(no_args_is_help=True, help="Label management.")
-config_app  = typer.Typer(no_args_is_help=True, help="Configuration helpers.")
+mail_app        = typer.Typer(no_args_is_help=True, help="Message operations.")
+attachment_subapp = typer.Typer(no_args_is_help=True, name="attachment", help="Attachment management (download & parse).")
+folders_app     = typer.Typer(no_args_is_help=True, help="Folder management.")
+labels_app      = typer.Typer(no_args_is_help=True, help="Label management.")
+config_app      = typer.Typer(no_args_is_help=True, help="Configuration helpers.")
 
-app.add_typer(mail_app,    name="mail")
-app.add_typer(folders_app, name="folders")
+app.add_typer(mail_app,         name="mail")
+app.add_typer(attachment_subapp, name="attachment")
+app.add_typer(folders_app,       name="folders")
 app.add_typer(labels_app,  name="labels")
 app.add_typer(config_app,  name="config")
 
@@ -453,6 +459,7 @@ def mail_download_attachment(
     attachment_id: str           = typer.Argument(..., help="Attachment ID."),
     out:           str           = typer.Option(..., "--out", "-o", help="Output file path."),
     folder_id:     Optional[str] = typer.Option(None, "--folder-id", help="Folder ID."),
+    parse:         bool          = typer.Option(False, "--parse", "-p", help="Auto-parse and display content after download (supported: txt, md, json, csv, xlsx, pdf, docx)."),
 ) -> None:
     """Download an attachment to a file."""
     cfg       = _cfg()
@@ -472,6 +479,16 @@ def mail_download_attachment(
         f"Saved {out_path.name} ({utils.format_size(len(data))})",
         extra={"path": str(out_path.resolve()), "size": len(data)},
     )
+    
+    if parse:
+        try:
+            content = _parse.parse_attachment(out_path)
+            if content is None:
+                utils.error_exit("unsupported_format", f"Unsupported file type: {out_path.suffix}")
+            print(f"\n=== Content of {out_path.name} ===")
+            print(content)
+        except RuntimeError as e:
+            utils.output_status(f"⚠️  Parse failed: {e}", level="warning")
 
 
 @mail_app.command("send")
@@ -993,3 +1010,78 @@ def config_init() -> None:
     if click.confirm("Log in now via browser OAuth?", default=True, err=True):
         _stderr("")
         login(account=cfg["default_account"], port=51821, no_browser=False)
+
+
+# ── attachment content subcommand (方案 C) ────────────────────────────────────────
+@attachment_subapp.command("content")
+def attachment_content(
+    message_id: str           = typer.Argument(..., help="Message ID."),
+    file_name:  Optional[str] = typer.Argument(None, help="Attachment filename (optional)."),
+    folder_id:  Optional[str] = typer.Option(None, "--folder-id", help="Folder ID."),
+) -> None:
+    """Download and display content of an attachment.
+    
+    Supported formats: txt, md, json, csv, xlsx, pdf, docx
+    """
+    cfg       = _cfg()
+    email     = _require_account(cfg)
+    client    = _get_client(cfg, email)
+    account_id = _require_account_id(cfg, email)
+
+    fid = folder_id or _mail.find_folder_for_message(client, account_id, message_id)
+    if not fid:
+        utils.error_exit("message_not_found", f"Message {message_id} not found in any folder.")
+
+    # List attachments first to help user identify the right one
+    resp = client.get_attachment_info(account_id, fid, message_id)
+    data = resp.get("data", {}) or {}
+    raw_atts = []
+
+    if isinstance(data, dict):
+        raw_atts.extend(data.get("attachments", []) or [])
+        raw_atts.extend(data.get("inline", []) or [])
+    elif isinstance(data, list):
+        raw_atts.extend(data)
+
+    atts = [_mail.format_attachment(a) for a in raw_atts if isinstance(a, dict)]
+    
+    if not atts:
+        utils.error_exit("no_attachments", f"No attachments found for message {message_id}")
+    
+    # If file_name provided, find matching attachment
+    target = None
+    if file_name:
+        matches = [a for a in atts if file_name.lower() in a.get("fileName", "").lower()]
+        if not matches:
+            utils.error_exit("not_found", f"No attachment found with name '{file_name}'")
+        target = matches[0]
+    else:
+        # Show list and ask user to choose
+        print(f"Attachments for message {message_id}:")
+        for i, att in enumerate(atts, 1):
+            print(f"  {i}. {att['fileName']} ({utils.format_size(att['size'])})")
+        choice = input("\nEnter attachment number: ")
+        try:
+            idx = int(choice) - 1
+            if not (0 <= idx < len(atts)):
+                utils.error_exit("invalid_choice", "Invalid selection")
+            target = atts[idx]
+        except ValueError:
+            utils.error_exit("invalid_input", "Please enter a number")
+    
+    # Download to temp file
+    import tempfile
+    with tempfile.NamedTemporaryFile(suffix=target.get("fileName"), delete=False) as tmp:
+        data = client.download_attachment(account_id, fid, message_id, target["attachmentId"])
+        tmp.write(data)
+        tmp_path = Path(tmp.name)
+    
+    try:
+        content = _parse.parse_attachment(tmp_path)
+        if content is None:
+            utils.error_exit("unsupported_format", f"Unsupported file type: {tmp_path.suffix}")
+        print(f"\n=== Content of {target['fileName']} ===")
+        print(content)
+    finally:
+        # Cleanup temp file
+        tmp_path.unlink(missing_ok=True)

@@ -103,8 +103,18 @@ def format_message_content(msg: dict) -> dict:
 
 
 def format_attachment(att: dict) -> dict:
+    # Defensive handling for unexpected attachment types (e.g., string IDs)
+    if isinstance(att, str):
+        return {
+            "attachmentId": att,
+            "fileName": "",
+            "size": 0,
+        }
+    if not isinstance(att, dict):
+        raise ValueError(f"Expected dict or str for attachment, got {type(att)}")
+
     return {
         "attachmentId": str(att.get("attachmentId", att.get("attachId", ""))),
         "fileName": att.get("attachmentName", att.get("fileName", "")),
-        "size": int(att.get("attachmentSize", att.get("size", 0))),
+        "size": int(att.get("attachmentSize", att.get("size", 0) or 0)),
     }

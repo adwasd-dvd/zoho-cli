@@ -433,7 +433,17 @@ def mail_attachments(
         utils.error_exit("message_not_found", f"Message {message_id} not found in any folder.")
 
     resp = client.get_attachment_info(account_id, fid, message_id)
-    atts = [_mail.format_attachment(a) for a in resp.get("data", [])]
+    data = resp.get("data", {}) or {}
+    raw_atts = []
+
+    if isinstance(data, dict):
+        raw_atts.extend(data.get("attachments", []) or [])
+        raw_atts.extend(data.get("inline", []) or [])
+    elif isinstance(data, list):
+        # Compatible with future variations or other return types
+        raw_atts.extend(data)
+
+    atts = [_mail.format_attachment(a) for a in raw_atts if isinstance(a, dict)]
     utils.output(atts, md_render=_md_attachments)
 
 

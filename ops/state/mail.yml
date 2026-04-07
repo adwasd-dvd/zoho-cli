@@ -1,0 +1,5 @@
+module: Mail
+updated_at: "2026-04-07T18:28:00Z"
+status: in_progress
+blockers: []
+next_small_step: normalize progress-file writing and verify mail-export path resolution

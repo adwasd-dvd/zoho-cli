@@ -488,7 +488,7 @@ def mail_download_attachment(
             print(f"\n=== Content of {out_path.name} ===")
             print(content)
         except RuntimeError as e:
-            utils.output_status(f"⚠️  Parse failed: {e}", level="warning")
+            utils.output_status("Attachment parsed with warning", extra={"warning": f"Parse failed: {e}"})
 
 
 @mail_app.command("send")

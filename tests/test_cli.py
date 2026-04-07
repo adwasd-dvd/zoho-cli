@@ -209,6 +209,89 @@ def test_mail_list_limit_option(mock_config: Path, mock_token_refresh: Any) -> N
 
 
 # ---------------------------------------------------------------------------
+# mail download-attachment
+# ---------------------------------------------------------------------------
+
+
+@respx.mock
+def test_mail_download_attachment_parse_failure_is_non_fatal(
+    tmp_path: Path, mock_config: Path, mock_token_refresh: Any
+) -> None:
+    """--parse parse failures should return a warning payload, not crash."""
+    attachment_route = respx.get(
+        f"{MAIL_BASE}/accounts/{ACCOUNT_ID}/folders/F1/messages/M1/attachments/A1"
+    ).mock(return_value=httpx.Response(200, content=b"hello"))
+
+    out_file = tmp_path / "exports" / "attachment.txt"
+
+    with patch("zoho_cli.parse.parse_attachment", side_effect=RuntimeError("forced parse error")):
+        result = runner.invoke(
+            app,
+            [
+                "mail",
+                "download-attachment",
+                "M1",
+                "A1",
+                "--folder-id",
+                "F1",
+                "--out",
+                str(out_file),
+                "--parse",
+            ],
+            env=_cfg_env(mock_config),
+        )
+
+    assert attachment_route.called
+    assert result.exit_code == 0, result.output
+    assert out_file.read_bytes() == b"hello"
+    assert '"warning": "Parse failed: forced parse error"' in result.output
+
+
+@respx.mock
+def test_mail_download_attachment_accepts_absolute_volumes_out_path(
+    mock_config: Path, mock_token_refresh: Any
+) -> None:
+    """Absolute /Volumes paths should be used directly for --out."""
+    attachment_route = respx.get(
+        f"{MAIL_BASE}/accounts/{ACCOUNT_ID}/folders/F1/messages/M1/attachments/A1"
+    ).mock(return_value=httpx.Response(200, content=b"hello"))
+
+    out_file = Path("/Volumes/Happy Work Drive/zoho/mail-exports/attachment.txt")
+
+    with (
+        patch("pathlib.Path.mkdir", autospec=True, return_value=None) as mkdir_mock,
+        patch("pathlib.Path.write_bytes", autospec=True, return_value=5) as write_mock,
+    ):
+        result = runner.invoke(
+            app,
+            [
+                "mail",
+                "download-attachment",
+                "M1",
+                "A1",
+                "--folder-id",
+                "F1",
+                "--out",
+                str(out_file),
+            ],
+            env=_cfg_env(mock_config),
+        )
+
+    assert attachment_route.called
+    assert result.exit_code == 0, result.output
+
+    mkdir_mock.assert_called_once_with(out_file.parent, parents=True, exist_ok=True)
+    write_path, write_data = write_mock.call_args.args
+    assert write_path == out_file
+    assert write_data == b"hello"
+
+    payload = json.loads(result.output)
+    assert payload["status"] == "ok"
+    assert payload["path"].startswith("/Volumes/")
+    assert payload["path"].endswith("/zoho/mail-exports/attachment.txt")
+
+
+# ---------------------------------------------------------------------------
 # folders list
 # ---------------------------------------------------------------------------
 

@@ -1,0 +1,19 @@
+last_run_at: "2026-04-07T23:25:27Z"
+last_result: pass
+current_focus: mail
+suites:
+  unit:
+    status: passing
+    notes:
+      - ./.venv/bin/pytest -q tests/test_cli.py::test_mail_download_attachment_accepts_absolute_volumes_out_path tests/test_cli.py::test_mail_download_attachment_parse_failure_is_non_fatal
+  cli_smoke:
+    status: passing
+    notes:
+      - mail download-attachment handles absolute /Volumes output paths and parse-failure warning regression in focused CLI tests
+  integration:
+    status: pending
+    notes:
+      - only run when credentials and target environment are available
+  packaging:
+    status: pending
+    notes: []

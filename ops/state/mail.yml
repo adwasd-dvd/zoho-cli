@@ -1,5 +1,5 @@
 module: Mail
-updated_at: "2026-04-07T18:28:00Z"
+updated_at: "2026-04-07T23:25:27Z"
 status: in_progress
 blockers: []
-next_small_step: normalize progress-file writing and verify mail-export path resolution
+next_small_step: start mail-001 by extracting the first shared helper used by mail command flows

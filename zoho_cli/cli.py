@@ -414,9 +414,7 @@ def mail_get(
     client    = _get_client(cfg, email)
     account_id = _require_account_id(cfg, email)
 
-    fid = folder_id or _mail.find_folder_for_message(client, account_id, message_id)
-    if not fid:
-        utils.error_exit("message_not_found", f"Message {message_id} not found in any folder.")
+    fid = _mail.resolve_message_folder_id(client, account_id, message_id, folder_id)
 
     resp = client.get_message_content(account_id, fid, message_id)
     msg  = resp.get("data", resp)
@@ -434,9 +432,7 @@ def mail_attachments(
     client    = _get_client(cfg, email)
     account_id = _require_account_id(cfg, email)
 
-    fid = folder_id or _mail.find_folder_for_message(client, account_id, message_id)
-    if not fid:
-        utils.error_exit("message_not_found", f"Message {message_id} not found in any folder.")
+    fid = _mail.resolve_message_folder_id(client, account_id, message_id, folder_id)
 
     resp = client.get_attachment_info(account_id, fid, message_id)
     data = resp.get("data", {}) or {}
@@ -467,9 +463,7 @@ def mail_download_attachment(
     client    = _get_client(cfg, email)
     account_id = _require_account_id(cfg, email)
 
-    fid = folder_id or _mail.find_folder_for_message(client, account_id, message_id)
-    if not fid:
-        utils.error_exit("message_not_found", f"Message {message_id} not found in any folder.")
+    fid = _mail.resolve_message_folder_id(client, account_id, message_id, folder_id)
 
     data     = client.download_attachment(account_id, fid, message_id, attachment_id)
     out_path = Path(out)
@@ -638,9 +632,7 @@ def mail_reply(
     client     = _get_client(cfg, email)
     account_id = _require_account_id(cfg, email)
 
-    fid = folder_id or _mail.find_folder_for_message(client, account_id, message_id)
-    if not fid:
-        utils.error_exit("message_not_found", f"Message {message_id} not found in any folder.")
+    fid = _mail.resolve_message_folder_id(client, account_id, message_id, folder_id)
 
     resp    = client.get_message_content(account_id, fid, message_id)
     msg     = _mail.format_message_content(resp.get("data", resp))
@@ -679,9 +671,7 @@ def mail_forward(
     client     = _get_client(cfg, email)
     account_id = _require_account_id(cfg, email)
 
-    fid = folder_id or _mail.find_folder_for_message(client, account_id, message_id)
-    if not fid:
-        utils.error_exit("message_not_found", f"Message {message_id} not found in any folder.")
+    fid = _mail.resolve_message_folder_id(client, account_id, message_id, folder_id)
 
     resp    = client.get_message_content(account_id, fid, message_id)
     msg     = _mail.format_message_content(resp.get("data", resp))
@@ -1028,9 +1018,7 @@ def attachment_content(
     client    = _get_client(cfg, email)
     account_id = _require_account_id(cfg, email)
 
-    fid = folder_id or _mail.find_folder_for_message(client, account_id, message_id)
-    if not fid:
-        utils.error_exit("message_not_found", f"Message {message_id} not found in any folder.")
+    fid = _mail.resolve_message_folder_id(client, account_id, message_id, folder_id)
 
     # List attachments first to help user identify the right one
     resp = client.get_attachment_info(account_id, fid, message_id)

@@ -58,6 +58,19 @@ def find_folder_for_message(
     return None
 
 
+def resolve_message_folder_id(
+    client: ZohoMailClient,
+    account_id: str,
+    message_id: str,
+    folder_id: Optional[str] = None,
+) -> str:
+    """Resolve folder_id or locate the message folder, exiting if not found."""
+    fid = folder_id or find_folder_for_message(client, account_id, message_id)
+    if not fid:
+        utils.error_exit("message_not_found", f"Message {message_id} not found in any folder.")
+    return fid
+
+
 # ── message formatters ────────────────────────────────────────────────────────
 
 def _to_list(val) -> list:

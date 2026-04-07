@@ -1,6 +1,6 @@
 # zoho — Zoho Mail in your terminal
 
-[![GitHub release](https://img.shields.io/github/v/release/robsannaa/zoho-cli)](https://github.com/robsannaa/zoho-cli/releases)
+[![GitHub release](https://img.shields.io/github/v/release/adwasd-dvd/zoho-cli)](https://github.com/adwasd-dvd/zoho-cli/releases)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 
 Fast, script-friendly CLI for Zoho Mail. JSON output by default, Markdown tables with `--md`. Pipe to `jq`, use in scripts, or feed directly to AI agents.
@@ -34,21 +34,23 @@ $ zoho --md mail list
 
 ```bash
 # Homebrew (macOS / Linux)
-brew install robsannaa/tap/zoho-cli
+brew install adwasd-dvd/tap/zoho-cli
 
 # uv (all platforms)
-uv tool install git+https://github.com/robsannaa/zoho-cli
+uv tool install git+https://github.com/adwasd-dvd/zoho-cli
 
 # pipx (all platforms)
-pipx install git+https://github.com/robsannaa/zoho-cli
+pipx install git+https://github.com/adwasd-dvd/zoho-cli
 ```
 
 Or from source:
 
 ```bash
-git clone https://github.com/robsannaa/zoho-cli
+git clone https://github.com/adwasd-dvd/zoho-cli
 cd zoho-cli
 uv tool install .
+
+This fork also includes OpenClaw integration helpers in `integrations/openclaw/` and sanitized debugging notes in `experiments/attachment-debug/`.
 ```
 
 ---
@@ -326,7 +328,7 @@ zoho mail list
 brew update && brew upgrade zoho-cli
 ```
 
-Check version with `zoho -v`; you should see 0.1.5 or newer. If the error persists, the tap formula may need its resources refreshed. In the [tap repo](https://github.com/robsannaa/homebrew-tap) run `brew update-python-resources robsannaa/tap/zoho-cli`, commit the updated `Formula/zoho-cli.rb`, push, then on your Mac run `brew update && brew upgrade zoho-cli` again.
+Check version with `zoho -v`; you should see 0.1.5 or newer. If the error persists, the tap formula may need its resources refreshed. In the [tap repo](https://github.com/adwasd-dvd/homebrew-tap) run `brew update-python-resources adwasd-dvd/tap/zoho-cli`, commit the updated `Formula/zoho-cli.rb`, push, then on your Mac run `brew update && brew upgrade zoho-cli` again.
 
 **`No stored token`** → run `zoho login --account you@example.com`.
 

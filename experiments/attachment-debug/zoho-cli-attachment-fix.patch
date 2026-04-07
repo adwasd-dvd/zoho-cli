@@ -1,0 +1,50 @@
+--- a/zoho_cli/cli.py
++++ b/zoho_cli/cli.py
+@@ -430,7 +430,16 @@ def mail_attachments(
+         utils.error_exit("message_not_found", f"Message {message_id} not found in any folder.")
+ 
+     resp = client.get_attachment_info(account_id, fid, message_id)
+-    atts = [_mail.format_attachment(a) for a in resp.get("data", [])]
++
++    # Zoho Mail attachment info returns data as an object containing
++    # attachments and inline arrays, not a flat list. The previous
++    # implementation iterated directly over resp["data"], which caused
++    # string keys like "attachments" and "inline" to be passed into
++    # format_attachment(), triggering AttributeError.
++    data = resp.get("data", {}) or {}
++    raw_atts = []
++    if isinstance(data, dict):
++        raw_atts.extend(data.get("attachments", []) or [])
++        raw_atts.extend(data.get("inline", []) or [])
++    elif isinstance(data, list):
++        raw_atts.extend(data)
++
++    atts = [_mail.format_attachment(a) for a in raw_atts if isinstance(a, dict)]
+     utils.output(atts, md_render=_md_attachments)
+ 
+ 
+--- a/zoho_cli/mail.py
++++ b/zoho_cli/mail.py
+@@ -103,9 +103,16 @@ def format_message_content(msg: dict) -> dict:
+ 
+ def format_attachment(att: dict) -> dict:
+-    return {
+-        "attachmentId": str(att.get("attachmentId", att.get("attachId", ""))),
+-        "fileName": att.get("attachmentName", att.get("fileName", "")),
+-        "size": int(att.get("attachmentSize", att.get("size", 0))),
++    # Defensive handling for unexpected attachment types (e.g., string IDs)
++    if isinstance(att, str):
++        return {
++            "attachmentId": att,
++            "fileName": "",
++            "size": 0,
++        }
++    if not isinstance(att, dict):
++        raise ValueError(f"Expected dict or str for attachment, got {type(att)}")
++    
++    return {
++        "attachmentId": str(att.get("attachmentId", att.get("attachId", ""))),
++        "fileName": att.get("attachmentName", att.get("fileName", "")),
++        "size": int(att.get("attachmentSize", att.get("size", 0) or 0)),
+     }
+ 

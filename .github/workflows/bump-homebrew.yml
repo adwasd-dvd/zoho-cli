@@ -1,4 +1,4 @@
-# On every release, update the formula in robsannaa/tap:
+# On every release, update the formula in adwasd-dvd/tap:
 #   1. Patch the URL and SHA256 to the new tarball
 #   2. Run `brew update-python-resources` to regenerate ALL resource stanzas
 #      (this ensures transitive deps like `idna` are never missing)
@@ -17,8 +17,8 @@ jobs:
       - name: Set up Homebrew
         uses: Homebrew/actions/setup-homebrew@master
 
-      - name: Tap robsannaa/tap
-        run: brew tap robsannaa/tap
+      - name: Tap adwasd-dvd/tap
+        run: brew tap adwasd-dvd/tap
 
       - name: Compute tarball SHA-256
         id: info
@@ -34,7 +34,7 @@ jobs:
 
       - name: Patch formula URL + SHA
         run: |
-          FORMULA="$(brew formula robsannaa/tap/zoho-cli)"
+          FORMULA="$(brew formula adwasd-dvd/tap/zoho-cli)"
           python3 - "$FORMULA" "${{ steps.info.outputs.url }}" "${{ steps.info.outputs.sha }}" <<'PY'
           import sys, re
           path, url, sha = sys.argv[1], sys.argv[2], sys.argv[3]
@@ -47,13 +47,13 @@ jobs:
           PY
 
       - name: Regenerate all Python resource stanzas
-        run: brew update-python-resources robsannaa/tap/zoho-cli
+        run: brew update-python-resources adwasd-dvd/tap/zoho-cli
 
       - name: Commit and push to tap
         env:
           HOMEBREW_TAP_TOKEN: ${{ secrets.HOMEBREW_TAP_TOKEN }}
         run: |
-          REPO_DIR="$(brew --repo robsannaa/tap)"
+          REPO_DIR="$(brew --repo adwasd-dvd/tap)"
           cd "$REPO_DIR"
           git config user.email "github-actions[bot]@users.noreply.github.com"
           git config user.name "github-actions[bot]"

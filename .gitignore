@@ -37,3 +37,18 @@ htmlcov/
 *.tar.gz
 
 # Others
+# Local workspace / OpenClaw
+.openclaw/
+.pdf-cache/
+workspace/
+*.log
+*.tmp
+*.bak
+
+# Archives / macOS zip noise
+__MACOSX/
+
+# Secrets / local configs
+config.json
+.env
+.env.*

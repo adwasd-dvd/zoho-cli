@@ -12,7 +12,8 @@ cliq:
   phase: phase_1_basic
   target_release: v0.3.0
   current_milestone: cliq-phase1-basic
-  blockers: []
+  blockers:
+    - live send/notify paths require refreshed Cliq OAuth scopes
 
 crm:
   priority: 3

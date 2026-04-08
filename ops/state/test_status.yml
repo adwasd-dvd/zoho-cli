@@ -1,6 +1,6 @@
-last_run_at: "2026-04-08T05:12:57Z"
+last_run_at: "2026-04-08T05:16:53Z"
 last_result: pass
-current_focus: mail
+current_focus: cliq
 suites:
   unit:
     status: passing
@@ -47,7 +47,9 @@ suites:
       - ./.venv/bin/python -m zoho_cli --config /tmp/zoho-test-config.json --account ai-dev@happy-distro.co.uk cliq channels --network happydistrouklimited --limit 3
       - ./.venv/bin/python -m zoho_cli --config /tmp/zoho-test-config.json --account ai-dev@happy-distro.co.uk cliq users --network happydistrouklimited --limit 2
       - network-scoped Cliq list endpoints return live data for happydistrouklimited (2026-04-08T04:58:29Z)
-      - live `cliq send` smoke currently fails with `invalid_oauthtscope` and needs re-auth using updated scope bundle
+      - ./.venv/bin/python -m zoho_cli --config /tmp/zoho-test-config.json --account ai-dev@happy-distro.co.uk cliq send --network happydistrouklimited --channel-id O6576524000097556005 --text "zoho-cli cliq send smoke"
+      - ./.venv/bin/python -m zoho_cli --config /tmp/zoho-test-config.json --account ai-dev@happy-distro.co.uk cliq notify-mail 1775620829752152900 --folder-id 2857786000000008014 --network happydistrouklimited --channel-id O6576524000097556005 --include-body
+      - both live send/notify calls fail with `oauthtoken_scope_invalid`; re-auth is required using latest `--with-cliq` scope bundle (2026-04-08T05:16:53Z)
       - ./.venv/bin/python -m zoho_cli --config /tmp/zoho-test-config.json --account ai-dev@happy-distro.co.uk mail attachments 1775620829752152900 --folder-id 2857786000000008014
       - ./.venv/bin/python -m zoho_cli --config /tmp/zoho-test-config.json --account ai-dev@happy-distro.co.uk mail download-attachment 1775620829752152900 <attachmentId> --folder-id 2857786000000008014 --out /tmp/zoho-attachment-test/<file>
       - validated subject `attachment test` with 4 attachments, all listed and downloaded with expected file sizes (2026-04-08T04:11:30Z)

@@ -9,7 +9,7 @@ mail:
 cliq:
   priority: 2
   status: in_progress
-  phase: expansion_write_plane
+  phase: expansion_admin_plane
   target_release: v0.4.0
   current_milestone: cliq-expansion-phase
   blockers: []

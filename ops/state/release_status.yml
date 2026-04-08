@@ -3,11 +3,10 @@ next_version: 0.2.1
 release_candidate: false
 last_release_tag: v0.1.9
 current_train: cliq-expansion
-assessed_at: "2026-04-08T18:06:20Z"
+assessed_at: "2026-04-08T18:21:53Z"
 current_milestone: cliq-expansion-phase
 current_milestone_complete: false
 missing_requirements:
-  - "cliq-120 write plane (reply/edit/delete/react) is not implemented"
   - "cliq-130/140/150/160 expansion phases are not complete"
   - "crm-002 live close-out is blocked by account-level CRM org access"
   - "ruff format --check currently fails for unrelated files in repo history"

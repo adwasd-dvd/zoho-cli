@@ -1,5 +1,5 @@
 module: Cliq
-updated_at: "2026-04-08T18:06:20Z"
+updated_at: "2026-04-08T18:21:53Z"
 status: in_progress
 blockers: []
-next_small_step: implement cliq write-plane commands (`reply`, `edit`, `delete`, `react`) and run live smoke checks
+next_small_step: start cliq-130 admin-plane commands (member listing + one channel lifecycle endpoint)

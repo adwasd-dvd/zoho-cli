@@ -139,6 +139,75 @@ class ZohoCliqClient:
         utils.error_exit("api_error", "No candidate endpoint available for request")
         return {}
 
+    def _request_with_candidates(
+        self,
+        candidates: list[tuple[str, str, dict[str, Any] | None]],
+        *,
+        scope_hint: str,
+        operation_label: str,
+    ) -> dict:
+        """Try multiple method/path/payload candidates for mutable message operations."""
+        last_error: tuple[int, str, str, str] | None = None
+        saw_scope_invalid = False
+
+        for method, path, payload in candidates:
+            resp = httpx.request(
+                method,
+                f"{self.base_url}{path}",
+                headers=self._headers,
+                json=payload,
+                timeout=httpx.Timeout(30.0),
+            )
+            if resp.is_success:
+                return self._decode_success_response(resp)
+
+            body = resp.text or ""
+            lowered = body.lower()
+            scope_invalid = "oauthtoken_scope_invalid" in lowered
+            error_code = ""
+            try:
+                parsed = resp.json()
+                if isinstance(parsed, dict):
+                    error_code = str(
+                        parsed.get("code") or parsed.get("error") or ""
+                    ).lower()
+            except ValueError:
+                pass
+            if scope_invalid:
+                saw_scope_invalid = True
+
+            last_error = (resp.status_code, method, path, body)
+            if (
+                resp.status_code in (404, 405)
+                or "request_url_invalid" in lowered
+                or scope_invalid
+                or error_code in {"param_missing", "invalid_data", "operation_failed"}
+            ):
+                continue
+
+            utils.error_exit(
+                "api_error",
+                f"HTTP {resp.status_code} {method} {path}: {resp.text}",
+            )
+
+        if saw_scope_invalid:
+            utils.error_exit(
+                "oauth_scope_invalid",
+                f"Cliq token is missing required scope for {operation_label}. Re-run `zoho login --with-cliq --scope {scope_hint}` and retry.",
+            )
+
+        if last_error is not None:
+            status, method, path, body = last_error
+            utils.error_exit(
+                "api_error",
+                f"HTTP {status} {method} {path}: {body}",
+            )
+
+        utils.error_exit(
+            "api_error", f"No candidate endpoint available for {operation_label}"
+        )
+        return {}
+
     def _get_channel_descriptor(self, channel_id: str) -> dict[str, Any] | None:
         """Fetch channel metadata used for endpoint resolution."""
         try:
@@ -284,6 +353,184 @@ class ZohoCliqClient:
             f"HTTP {resp.status_code} GET /chats/{resolved_chat}/messages/{mid}: {body}",
         )
         return {}
+
+    def _resolve_chat_destination(
+        self,
+        *,
+        chat_id: str | None = None,
+        channel_id: str | None = None,
+    ) -> str:
+        resolved_chat = (chat_id or "").strip()
+        if not resolved_chat and channel_id:
+            resolved_chat = self.resolve_chat_id(channel_id) or ""
+        if not resolved_chat:
+            utils.error_exit(
+                "invalid_destination", "Provide --chat-id or resolvable --channel-id"
+            )
+        return resolved_chat
+
+    def reply_message(
+        self,
+        text: str,
+        *,
+        message_id: str,
+        chat_id: str | None = None,
+        channel_id: str | None = None,
+    ) -> dict:
+        """Reply to a message in a chat/channel using endpoint/payload fallbacks."""
+        resolved_chat = self._resolve_chat_destination(
+            chat_id=chat_id, channel_id=channel_id
+        )
+        anchor = message_id.strip()
+        if not anchor:
+            utils.error_exit("invalid_message_id", "message_id cannot be empty")
+
+        payloads = [
+            {"text": text, "reply_to": anchor},
+            {"text": text, "reply_to_msg_id": anchor},
+            {"text": text, "replyTo": anchor},
+        ]
+        candidates: list[tuple[str, str, dict[str, Any] | None]] = []
+        for payload in payloads:
+            candidates.extend(
+                [
+                    (
+                        "POST",
+                        f"/chats/{resolved_chat}/messages/{anchor}/reply",
+                        payload,
+                    ),
+                    ("POST", f"/chats/{resolved_chat}/message", payload),
+                    ("POST", f"/chats/{resolved_chat}/messages", payload),
+                ]
+            )
+        return self._request_with_candidates(
+            candidates,
+            scope_hint="ZohoCliq.Messages.CREATE",
+            operation_label="reply",
+        )
+
+    def edit_message(
+        self,
+        message_id: str,
+        text: str,
+        *,
+        chat_id: str | None = None,
+        channel_id: str | None = None,
+    ) -> dict:
+        """Edit a message in a chat/channel using endpoint/method fallbacks."""
+        resolved_chat = self._resolve_chat_destination(
+            chat_id=chat_id, channel_id=channel_id
+        )
+        mid = message_id.strip()
+        if not mid:
+            utils.error_exit("invalid_message_id", "message_id cannot be empty")
+
+        payload = {"text": text}
+        candidates = [
+            ("PUT", f"/chats/{resolved_chat}/messages/{mid}", payload),
+            ("POST", f"/chats/{resolved_chat}/messages/{mid}", payload),
+            ("PUT", f"/chats/{resolved_chat}/message/{mid}", payload),
+            ("POST", f"/chats/{resolved_chat}/messages/{mid}/edit", payload),
+        ]
+        return self._request_with_candidates(
+            candidates,
+            scope_hint="ZohoCliq.Messages.UPDATE",
+            operation_label="edit",
+        )
+
+    def delete_message(
+        self,
+        message_id: str,
+        *,
+        chat_id: str | None = None,
+        channel_id: str | None = None,
+    ) -> dict:
+        """Delete a message in a chat/channel using endpoint/method fallbacks."""
+        resolved_chat = self._resolve_chat_destination(
+            chat_id=chat_id, channel_id=channel_id
+        )
+        mid = message_id.strip()
+        if not mid:
+            utils.error_exit("invalid_message_id", "message_id cannot be empty")
+
+        candidates = [
+            ("DELETE", f"/chats/{resolved_chat}/messages/{mid}", None),
+            ("DELETE", f"/chats/{resolved_chat}/message/{mid}", None),
+            ("POST", f"/chats/{resolved_chat}/messages/{mid}/delete", {}),
+        ]
+        return self._request_with_candidates(
+            candidates,
+            scope_hint="ZohoCliq.Messages.DELETE",
+            operation_label="delete",
+        )
+
+    def react_message(
+        self,
+        message_id: str,
+        emoji: str,
+        *,
+        remove: bool = False,
+        chat_id: str | None = None,
+        channel_id: str | None = None,
+    ) -> dict:
+        """Add or remove a reaction for a message."""
+        resolved_chat = self._resolve_chat_destination(
+            chat_id=chat_id, channel_id=channel_id
+        )
+        mid = message_id.strip()
+        if not mid:
+            utils.error_exit("invalid_message_id", "message_id cannot be empty")
+        icon = emoji.strip()
+        if not icon:
+            utils.error_exit("invalid_emoji", "emoji cannot be empty")
+
+        if remove:
+            candidates = [
+                (
+                    "DELETE",
+                    f"/chats/{resolved_chat}/messages/{mid}/reactions/{icon}",
+                    None,
+                ),
+                (
+                    "POST",
+                    f"/chats/{resolved_chat}/messages/{mid}/reactions/remove",
+                    {"emoji_code": icon},
+                ),
+                (
+                    "POST",
+                    f"/chats/{resolved_chat}/messageactions/delete",
+                    {"message_id": mid, "emoji_code": icon},
+                ),
+            ]
+        else:
+            candidates = [
+                (
+                    "POST",
+                    f"/chats/{resolved_chat}/messages/{mid}/reactions",
+                    {"emoji_code": icon},
+                ),
+                (
+                    "POST",
+                    f"/chats/{resolved_chat}/messages/{mid}/reactions",
+                    {"emoji": icon},
+                ),
+                (
+                    "POST",
+                    f"/chats/{resolved_chat}/messageactions",
+                    {"message_id": mid, "emoji_code": icon},
+                ),
+                (
+                    "POST",
+                    f"/chats/{resolved_chat}/messageactions/create",
+                    {"message_id": mid, "emoji_code": icon},
+                ),
+            ]
+
+        return self._request_with_candidates(
+            candidates,
+            scope_hint="ZohoCliq.messageactions.CREATE",
+            operation_label="reaction",
+        )
 
     def channels(self, *, limit: int = 50) -> dict:
         """List channels."""

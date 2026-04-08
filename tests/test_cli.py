@@ -980,6 +980,85 @@ def test_cliq_messages_requires_destination(
     assert "invalid_destination" in result.output
 
 
+@respx.mock
+def test_cliq_reply_from_channel(mock_config: Path, mock_token_refresh: Any) -> None:
+    respx.get("https://cliq.zoho.com/api/v2/channels/O1").mock(
+        return_value=httpx.Response(200, json={"data": {"chat_id": "CT_1"}})
+    )
+    respx.post("https://cliq.zoho.com/api/v2/chats/CT_1/messages/M1/reply").mock(
+        return_value=httpx.Response(200, json={"data": {"id": "M2"}})
+    )
+
+    result = runner.invoke(
+        app,
+        ["cliq", "reply", "M1", "--channel-id", "O1", "--text", "hello"],
+        env=_cfg_env(mock_config),
+    )
+    assert result.exit_code == 0, result.output
+    payload = json.loads(result.output)
+    assert payload["status"] == "ok"
+
+
+@respx.mock
+def test_cliq_edit_message(mock_config: Path, mock_token_refresh: Any) -> None:
+    respx.put("https://cliq.zoho.com/api/v2/chats/CT_1/messages/M1").mock(
+        return_value=httpx.Response(200, json={"data": {"id": "M1", "text": "new"}})
+    )
+
+    result = runner.invoke(
+        app,
+        ["cliq", "edit", "M1", "--chat-id", "CT_1", "--text", "new"],
+        env=_cfg_env(mock_config),
+    )
+    assert result.exit_code == 0, result.output
+    payload = json.loads(result.output)
+    assert payload["status"] == "ok"
+
+
+@respx.mock
+def test_cliq_delete_message(mock_config: Path, mock_token_refresh: Any) -> None:
+    respx.delete("https://cliq.zoho.com/api/v2/chats/CT_1/messages/M1").mock(
+        return_value=httpx.Response(204, text="")
+    )
+
+    result = runner.invoke(
+        app,
+        ["cliq", "delete", "M1", "--chat-id", "CT_1"],
+        env=_cfg_env(mock_config),
+    )
+    assert result.exit_code == 0, result.output
+    payload = json.loads(result.output)
+    assert payload["status"] == "ok"
+
+
+@respx.mock
+def test_cliq_react_add(mock_config: Path, mock_token_refresh: Any) -> None:
+    respx.post("https://cliq.zoho.com/api/v2/chats/CT_1/messages/M1/reactions").mock(
+        return_value=httpx.Response(200, json={"data": {"status": "ok"}})
+    )
+
+    result = runner.invoke(
+        app,
+        ["cliq", "react", "M1", "--chat-id", "CT_1", "--emoji", ":thumbsup:"],
+        env=_cfg_env(mock_config),
+    )
+    assert result.exit_code == 0, result.output
+    payload = json.loads(result.output)
+    assert payload["status"] == "ok"
+
+
+def test_cliq_reply_requires_destination(
+    mock_config: Path, mock_token_refresh: Any
+) -> None:
+    result = runner.invoke(
+        app,
+        ["cliq", "reply", "M1", "--text", "hello"],
+        env=_cfg_env(mock_config),
+    )
+    assert result.exit_code == 1
+    assert "invalid_destination" in result.output
+
+
 # ---------------------------------------------------------------------------
 # crm status
 # ---------------------------------------------------------------------------

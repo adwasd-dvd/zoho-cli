@@ -49,7 +49,7 @@
 - id: cliq-120
   title: implement cliq write plane (reply edit delete react)
   module: cliq
-  stage: in_progress
+  stage: completed
   priority: high
   depends_on:
     - cliq-110
@@ -57,7 +57,7 @@
 - id: cliq-130
   title: implement cliq admin plane (membership channel lifecycle)
   module: cliq
-  stage: queued
+  stage: in_progress
   priority: medium
   depends_on:
     - cliq-120

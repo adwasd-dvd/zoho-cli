@@ -1425,6 +1425,174 @@ def cliq_context(
     )
 
 
+@cliq_app.command("reply")
+def cliq_reply(
+    message_id: str = typer.Argument(..., help="Anchor message id to reply to."),
+    text: str = typer.Option(..., "--text", "-t", help="Reply message text."),
+    channel_id: Optional[str] = typer.Option(
+        None, "--channel-id", help="Destination channel id (resolved to chat_id)."
+    ),
+    chat_id: Optional[str] = typer.Option(
+        None, "--chat-id", help="Destination chat id."
+    ),
+    network: Optional[str] = typer.Option(
+        None, "--network", help="Cliq network slug (e.g. happydistrouklimited)."
+    ),
+) -> None:
+    """Reply to a Cliq message."""
+    if not chat_id and not channel_id:
+        utils.error_exit("invalid_destination", "Provide --chat-id or --channel-id")
+
+    cfg = _cfg()
+    email = _require_account(cfg)
+    client = _get_cliq_client(cfg, email, network=network)
+
+    resolved_chat = (chat_id or "").strip() or client.resolve_chat_id(channel_id or "")
+    resp = client.reply_message(
+        text,
+        message_id=message_id,
+        chat_id=resolved_chat,
+        channel_id=channel_id,
+    )
+    data = resp.get("data", resp)
+    utils.output_status(
+        "Cliq reply sent",
+        extra={
+            "chatId": resolved_chat or "",
+            "channelId": channel_id or "",
+            "replyTo": message_id,
+            "result": data,
+        },
+    )
+
+
+@cliq_app.command("edit")
+def cliq_edit(
+    message_id: str = typer.Argument(..., help="Target message id."),
+    text: str = typer.Option(..., "--text", "-t", help="Updated message text."),
+    channel_id: Optional[str] = typer.Option(
+        None, "--channel-id", help="Destination channel id (resolved to chat_id)."
+    ),
+    chat_id: Optional[str] = typer.Option(
+        None, "--chat-id", help="Destination chat id."
+    ),
+    network: Optional[str] = typer.Option(
+        None, "--network", help="Cliq network slug (e.g. happydistrouklimited)."
+    ),
+) -> None:
+    """Edit a Cliq message."""
+    if not chat_id and not channel_id:
+        utils.error_exit("invalid_destination", "Provide --chat-id or --channel-id")
+
+    cfg = _cfg()
+    email = _require_account(cfg)
+    client = _get_cliq_client(cfg, email, network=network)
+
+    resolved_chat = (chat_id or "").strip() or client.resolve_chat_id(channel_id or "")
+    resp = client.edit_message(
+        message_id,
+        text,
+        chat_id=resolved_chat,
+        channel_id=channel_id,
+    )
+    data = resp.get("data", resp)
+    utils.output_status(
+        "Cliq message edited",
+        extra={
+            "chatId": resolved_chat or "",
+            "channelId": channel_id or "",
+            "messageId": message_id,
+            "result": data,
+        },
+    )
+
+
+@cliq_app.command("delete")
+def cliq_delete(
+    message_id: str = typer.Argument(..., help="Target message id."),
+    channel_id: Optional[str] = typer.Option(
+        None, "--channel-id", help="Destination channel id (resolved to chat_id)."
+    ),
+    chat_id: Optional[str] = typer.Option(
+        None, "--chat-id", help="Destination chat id."
+    ),
+    network: Optional[str] = typer.Option(
+        None, "--network", help="Cliq network slug (e.g. happydistrouklimited)."
+    ),
+) -> None:
+    """Delete a Cliq message."""
+    if not chat_id and not channel_id:
+        utils.error_exit("invalid_destination", "Provide --chat-id or --channel-id")
+
+    cfg = _cfg()
+    email = _require_account(cfg)
+    client = _get_cliq_client(cfg, email, network=network)
+
+    resolved_chat = (chat_id or "").strip() or client.resolve_chat_id(channel_id or "")
+    resp = client.delete_message(
+        message_id,
+        chat_id=resolved_chat,
+        channel_id=channel_id,
+    )
+    data = resp.get("data", resp)
+    utils.output_status(
+        "Cliq message deleted",
+        extra={
+            "chatId": resolved_chat or "",
+            "channelId": channel_id or "",
+            "messageId": message_id,
+            "result": data,
+        },
+    )
+
+
+@cliq_app.command("react")
+def cliq_react(
+    message_id: str = typer.Argument(..., help="Target message id."),
+    emoji: str = typer.Option(..., "--emoji", help="Emoji to add/remove as reaction."),
+    remove: bool = typer.Option(
+        False, "--remove", help="Remove reaction instead of adding it."
+    ),
+    channel_id: Optional[str] = typer.Option(
+        None, "--channel-id", help="Destination channel id (resolved to chat_id)."
+    ),
+    chat_id: Optional[str] = typer.Option(
+        None, "--chat-id", help="Destination chat id."
+    ),
+    network: Optional[str] = typer.Option(
+        None, "--network", help="Cliq network slug (e.g. happydistrouklimited)."
+    ),
+) -> None:
+    """Add/remove a reaction to a Cliq message."""
+    if not chat_id and not channel_id:
+        utils.error_exit("invalid_destination", "Provide --chat-id or --channel-id")
+
+    cfg = _cfg()
+    email = _require_account(cfg)
+    client = _get_cliq_client(cfg, email, network=network)
+
+    resolved_chat = (chat_id or "").strip() or client.resolve_chat_id(channel_id or "")
+    resp = client.react_message(
+        message_id,
+        emoji,
+        remove=remove,
+        chat_id=resolved_chat,
+        channel_id=channel_id,
+    )
+    data = resp.get("data", resp)
+    utils.output_status(
+        "Cliq reaction removed" if remove else "Cliq reaction added",
+        extra={
+            "chatId": resolved_chat or "",
+            "channelId": channel_id or "",
+            "messageId": message_id,
+            "emoji": emoji,
+            "remove": remove,
+            "result": data,
+        },
+    )
+
+
 @cliq_app.command("send")
 def cliq_send(
     text: str = typer.Option(..., "--text", "-t", help="Message text."),

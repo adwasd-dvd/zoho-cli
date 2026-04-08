@@ -17,10 +17,13 @@
 - Added Cliq capability discovery command `zoho cliq capabilities` (`cliq-100`) with baseline read-endpoint probes (`channels/users` plus optional channel/user-context checks) and machine-readable status classification (`ok`, `forbidden_or_scope`, `not_supported`, `rate_limited`).
 - Added Cliq read-plane commands (`cliq-110`): `zoho cliq messages`, `zoho cliq message`, and `zoho cliq context` with channel-to-chat resolution and context-window output.
 - Expanded recommended Cliq scope bundle to include `ZohoCliq.Messages.READ` so message/context operations can be verified live.
+- Added Cliq write-plane commands (`cliq-120`): `zoho cliq reply`, `zoho cliq edit`, `zoho cliq delete`, and `zoho cliq react` with endpoint/payload fallback logic for network-scoped org APIs.
 - Added CRM fields read path: `zoho crm fields --module <api_name>` with pagination, backed by `ZohoCrmClient.fields` (`/settings/fields`).
 - Added CRM read-only record commands for `crm-002`: `zoho crm list`, `zoho crm get`, and `zoho crm search` (`--criteria` or `--word`) wired through `ZohoCrmClient` with pagination/field-selection support.
 
 ### Fixed
+- Cliq mutable-message fallback now retries on endpoint payload mismatches (`param_missing` / `invalid_data` / `operation_failed`) so write operations can probe alternate method/path payload variants before failing.
+- Cliq reaction fallback now supports `emoji_code` payloads (plus legacy `emoji` fallback) for org endpoints that reject plain `emoji` payloads.
 - OAuth scope reporting now prefers live scope data from token refresh responses during `cliq status --check-auth` / `crm status --check-auth`, instead of trusting stale requested-scope config only.
 - `zoho login` now persists granted scopes from Zoho OAuth response scope payload when available, avoiding false-positive scope readiness after limited-consent flows.
 - Cliq send/notify now tolerate successful empty-body responses (`HTTP 204`) from live endpoints and return stable JSON status payloads instead of raising JSON decode errors.

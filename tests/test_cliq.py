@@ -207,6 +207,69 @@ def test_cliq_client_list_messages_scope_invalid_reports_reauth_hint(
 
 
 @respx.mock
+def test_cliq_client_reply_message_success(client: cliq.ZohoCliqClient) -> None:
+    respx.get("https://cliq.zoho.com/api/v2/channels/O1").mock(
+        return_value=httpx.Response(200, json={"data": {"chat_id": "CT_1"}})
+    )
+    route = respx.post(
+        "https://cliq.zoho.com/api/v2/chats/CT_1/messages/M1/reply"
+    ).mock(return_value=httpx.Response(200, json={"data": {"id": "M2"}}))
+
+    result = client.reply_message("hello", message_id="M1", channel_id="O1")
+
+    assert route.called
+    assert result["data"]["id"] == "M2"
+
+
+@respx.mock
+def test_cliq_client_edit_message_success(client: cliq.ZohoCliqClient) -> None:
+    route = respx.put("https://cliq.zoho.com/api/v2/chats/CT_1/messages/M1").mock(
+        return_value=httpx.Response(200, json={"data": {"id": "M1", "text": "updated"}})
+    )
+
+    result = client.edit_message("M1", "updated", chat_id="CT_1")
+
+    assert route.called
+    assert result["data"]["text"] == "updated"
+
+
+@respx.mock
+def test_cliq_client_delete_message_success(client: cliq.ZohoCliqClient) -> None:
+    route = respx.delete("https://cliq.zoho.com/api/v2/chats/CT_1/messages/M1").mock(
+        return_value=httpx.Response(204, text="")
+    )
+
+    result = client.delete_message("M1", chat_id="CT_1")
+
+    assert route.called
+    assert result["status"] == "ok"
+
+
+@respx.mock
+def test_cliq_client_react_message_add_success(client: cliq.ZohoCliqClient) -> None:
+    route = respx.post(
+        "https://cliq.zoho.com/api/v2/chats/CT_1/messages/M1/reactions"
+    ).mock(return_value=httpx.Response(200, json={"data": {"status": "ok"}}))
+
+    result = client.react_message("M1", ":thumbsup:", chat_id="CT_1")
+
+    assert route.called
+    assert result["data"]["status"] == "ok"
+
+
+@respx.mock
+def test_cliq_client_react_message_remove_success(client: cliq.ZohoCliqClient) -> None:
+    route = respx.delete(
+        "https://cliq.zoho.com/api/v2/chats/CT_1/messages/M1/reactions/:thumbsup:"
+    ).mock(return_value=httpx.Response(204, text=""))
+
+    result = client.react_message("M1", ":thumbsup:", remove=True, chat_id="CT_1")
+
+    assert route.called
+    assert result["status"] == "ok"
+
+
+@respx.mock
 def test_cliq_client_probe_capabilities_baseline(client: cliq.ZohoCliqClient) -> None:
     respx.get("https://cliq.zoho.com/api/v2/channels").mock(
         return_value=httpx.Response(200, json={"data": []})

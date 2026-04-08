@@ -1,15 +1,15 @@
-id: cliq-130
-title: implement cliq admin plane (membership channel lifecycle)
+id: cliq-140
+title: implement cliq files and search plane
 module: cliq
 stage: in_progress
 status: in_progress
 owner: automation
-updated_at: "2026-04-08T23:03:50Z"
+updated_at: "2026-04-08T23:26:36Z"
 success_criteria:
-  - add channel lifecycle operations (create/archive/rename/topic where API permits)
-  - add member management operations (list/add/remove where API permits)
-  - include capability-aware fail-fast errors for unsupported/admin-restricted endpoints
-  - focused tests added for admin-plane command routing and validation
+  - add message search command with keyword/time-window filters
+  - add file/attachment retrieval command for Cliq messages where API permits
+  - include capability-aware fail-fast errors for unsupported file/search endpoints
+  - focused tests added for search and file command routing
   - changelog and state files updated with live verification notes
-next_if_done: cliq-140
-next_step: after refresh cooldown, rerun live cliq-130 admin sweep (member-add/member-remove + archive/unarchive/delete) with the updated fallback chain; close cliq-130 if green
+next_if_done: cliq-150
+next_step: implement `cliq search` baseline using capability-aware endpoint fallbacks, then add file retrieval command

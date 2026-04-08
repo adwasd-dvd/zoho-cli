@@ -1,6 +1,5 @@
 module: Cliq
-updated_at: "2026-04-08T23:03:50Z"
+updated_at: "2026-04-08T23:26:36Z"
 status: in_progress
-blockers:
-  - Zoho token refresh endpoint is intermittently throttling (`token_refresh_failed`), delaying final live close-out for member-add/member-remove verification
-next_small_step: rerun live member add/remove after cooldown to confirm updated chat-resolution + payload fallback chain, then close cliq-130
+blockers: []
+next_small_step: start cliq-140 by implementing search command baseline with capability-aware endpoint fallbacks

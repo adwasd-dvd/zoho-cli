@@ -22,6 +22,7 @@
 - Expanded Cliq admin-plane membership management with `zoho cliq member-add` and `zoho cliq member-remove`, including endpoint/payload fallbacks and destination validation.
 - Added explicit Cliq lifecycle command `zoho cliq channel-unarchive` as an alias for the existing unarchive flow to make admin sweep scripts clearer (`channel-create/archive/unarchive/delete`).
 - Added remaining Cliq admin lifecycle commands for `cliq-130`: `zoho cliq channel-rename` and `zoho cliq channel-topic`, with fallback endpoint/payload probing for org API variations.
+- Completed live cliq-130 admin sweep verification on `happydistrouklimited` (`member-add`, `member-remove`, `channel-create`, `channel-archive`, `channel-unarchive`, `channel-delete`) with corrected channel id handling.
 - Added CRM fields read path: `zoho crm fields --module <api_name>` with pagination, backed by `ZohoCrmClient.fields` (`/settings/fields`).
 - Added CRM read-only record commands for `crm-002`: `zoho crm list`, `zoho crm get`, and `zoho crm search` (`--criteria` or `--word`) wired through `ZohoCrmClient` with pagination/field-selection support.
 

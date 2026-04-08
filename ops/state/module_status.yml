@@ -9,11 +9,10 @@ mail:
 cliq:
   priority: 2
   status: in_progress
-  phase: expansion_admin_plane
+  phase: expansion_files_search
   target_release: v0.4.0
   current_milestone: cliq-expansion-phase
-  blockers:
-    - token refresh is intermittently throttled; final live member add/remove close-out for cliq-130 needs cooldown rerun
+  blockers: []
 
 crm:
   priority: 3

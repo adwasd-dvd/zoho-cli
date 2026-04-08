@@ -57,7 +57,7 @@
 - id: cliq-130
   title: implement cliq admin plane (membership channel lifecycle)
   module: cliq
-  stage: in_progress
+  stage: completed
   priority: medium
   depends_on:
     - cliq-120
@@ -65,7 +65,7 @@
 - id: cliq-140
   title: implement cliq files and search plane
   module: cliq
-  stage: queued
+  stage: in_progress
   priority: medium
   depends_on:
     - cliq-110

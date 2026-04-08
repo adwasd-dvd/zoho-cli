@@ -1,16 +1,16 @@
-last_run_at: "2026-04-08T02:56:51Z"
+last_run_at: "2026-04-08T03:12:45Z"
 last_result: pass
 current_focus: mail
 suites:
   unit:
     status: passing
     notes:
-      - ./.venv/bin/pytest -q tests/test_cli.py::test_mail_get_normalizes_nested_content_response tests/test_cli.py::test_mail_attachments_includes_string_attachment_ids tests/test_cli.py::test_mail_download_attachment_accepts_absolute_volumes_out_path
-      - 3 passed in 0.06s (2026-04-08T02:56:51Z)
+      - ./.venv/bin/pytest -q tests/test_cli.py::test_mail_get_normalizes_nested_content_response tests/test_cli.py::test_mail_attachments_includes_string_attachment_ids tests/test_cli.py::test_mail_download_attachment_accepts_absolute_volumes_out_path tests/test_cli.py::test_mail_reply_sends_prefixed_payload_and_status tests/test_cli.py::test_mail_forward_sends_forward_payload_and_status tests/test_cli.py::test_attachment_content_with_filename
+      - 6 passed in 0.12s (2026-04-08T03:12:45Z)
   cli_smoke:
     status: passing
     notes:
-      - mail get/attachments/download-attachment now share message-target context setup via zoho_cli.cli._mail_message_context
+      - mail get/attachments/download-attachment/reply/forward/attachment content now share message-target context setup via zoho_cli.cli._mail_message_context
   integration:
     status: pending
     notes:

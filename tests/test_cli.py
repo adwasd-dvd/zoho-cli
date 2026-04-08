@@ -521,6 +521,49 @@ def test_mail_download_attachment_accepts_absolute_volumes_out_path(
 
 
 # ---------------------------------------------------------------------------
+# attachment content
+# ---------------------------------------------------------------------------
+
+
+@respx.mock
+def test_attachment_content_with_filename(mock_config: Path, mock_token_refresh: Any) -> None:
+    """attachment content should download and parse the named attachment."""
+    respx.get(
+        f"{MAIL_BASE}/accounts/{ACCOUNT_ID}/folders/F1/messages/M1/attachmentinfo"
+    ).mock(
+        return_value=httpx.Response(
+            200,
+            json={
+                "data": {
+                    "attachments": [
+                        {
+                            "attachmentId": "A1",
+                            "attachmentName": "report.txt",
+                            "attachmentSize": 5,
+                        }
+                    ]
+                }
+            },
+        )
+    )
+    download_route = respx.get(
+        f"{MAIL_BASE}/accounts/{ACCOUNT_ID}/folders/F1/messages/M1/attachments/A1"
+    ).mock(return_value=httpx.Response(200, content=b"hello"))
+
+    with patch("zoho_cli.parse.parse_attachment", return_value="parsed attachment"):
+        result = runner.invoke(
+            app,
+            ["attachment", "content", "M1", "report.txt", "--folder-id", "F1"],
+            env=_cfg_env(mock_config),
+        )
+
+    assert download_route.called
+    assert result.exit_code == 0, result.output
+    assert "=== Content of report.txt ===" in result.output
+    assert "parsed attachment" in result.output
+
+
+# ---------------------------------------------------------------------------
 # folders list
 # ---------------------------------------------------------------------------
 

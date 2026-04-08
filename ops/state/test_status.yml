@@ -1,12 +1,12 @@
-last_run_at: "2026-04-08T03:44:53Z"
+last_run_at: "2026-04-08T03:48:31Z"
 last_result: pass
 current_focus: mail
 suites:
   unit:
     status: passing
     notes:
-      - ./.venv/bin/pytest -q tests/test_mail.py::test_fetch_message_content_normalizes_nested_data_response tests/test_mail.py::test_fetch_message_content_backfills_summary_when_content_response_is_sparse tests/test_cli.py::test_mail_get_normalizes_nested_content_response
-      - 3 passed in 0.04s (2026-04-08T03:44:53Z)
+      - ./.venv/bin/pytest -q tests/test_mail.py::test_fetch_message_content_normalizes_nested_data_response tests/test_mail.py::test_fetch_message_content_backfills_summary_when_content_response_is_sparse tests/test_cli.py::test_mail_get_hydrates_missing_metadata_from_folder_summary tests/test_cli.py::test_mail_reply_sends_prefixed_payload_and_status tests/test_cli.py::test_mail_forward_sends_forward_payload_and_status
+      - 5 passed in 0.07s (2026-04-08T03:48:31Z)
       - ./.venv/bin/pytest -q tests/test_cli.py::test_mail_reply_sends_prefixed_payload_and_status tests/test_cli.py::test_mail_forward_sends_forward_payload_and_status tests/test_cli.py::test_attachment_content_with_filename tests/test_cli.py::test_attachment_content_missing_filename_returns_not_found tests/test_cli.py::test_mail_download_attachment_accepts_absolute_volumes_out_path
       - 5 passed in 0.12s (2026-04-08T03:39:07Z)
   cli_smoke:
@@ -18,9 +18,10 @@ suites:
   integration:
     status: passing
     notes:
-      - ./.venv/bin/zoho mail list -n 1
-      - ./.venv/bin/zoho mail get 1775607720379162500 --folder-id 24954000000008014
-      - read-only smoke passed against configured account (2026-04-08T03:44:53Z)
+      - ./.venv/bin/python -m zoho_cli --config /tmp/zoho-test-config.json --account ai-dev@happy-distro.co.uk mail list --folder Inbox --limit 1
+      - ./.venv/bin/python -m zoho_cli --config /tmp/zoho-test-config.json --account ai-dev@happy-distro.co.uk mail search "Zoho" --limit 1
+      - ./.venv/bin/python -m zoho_cli --config /tmp/zoho-test-config.json --account ai-dev@happy-distro.co.uk mail get 1775618034273140900 --folder-id 2857786000000008014
+      - read-only smoke passed against configured account with hydrated metadata output (2026-04-08T03:48:31Z)
   packaging:
     status: pending
     notes: []

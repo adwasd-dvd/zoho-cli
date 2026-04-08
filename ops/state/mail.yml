@@ -1,5 +1,5 @@
 module: Mail
-updated_at: "2026-04-08T03:44:53Z"
+updated_at: "2026-04-08T03:48:31Z"
 status: in_progress
 blockers: []
 next_small_step: start mail-002 by normalizing output mode/formatter entry points after the integration smoke pass

@@ -18,7 +18,6 @@
 - Corrected `zoho config init` wizard guidance to use `http://localhost:51821/callback` (instead of `/`) for OAuth redirect URI.
 - Extracted shared attachment target selection helper `zoho_cli.cli._select_attachment_target` so `attachment content` filename filtering and interactive picking now use one path.
 - Added metadata hydration fallback for `mail get` / `mail reply` / `mail forward` when Zoho content endpoint returns body-only payloads (fills subject/from/date/folder from folder summary).
-- Fixed `mail get` for sparse Zoho content responses by backfilling missing summary fields (subject/from/date/attachment flags) from folder message metadata.
 
 ### Release readiness
 - Assessed at 2026-04-08T02:00:05Z: release is **not ready**.

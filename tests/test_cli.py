@@ -213,6 +213,23 @@ def test_mail_get_normalizes_nested_content_response(
     mock_config: Path, mock_token_refresh: Any
 ) -> None:
     """mail get should return normalized message content fields via shared helper."""
+    respx.get(f"{MAIL_BASE}/accounts/{ACCOUNT_ID}/messages/view").mock(
+        return_value=httpx.Response(
+            200,
+            json={
+                "data": [
+                    {
+                        "messageId": "M1",
+                        "folderId": "F1",
+                        "subject": "Status",
+                        "sender": "alice@example.com",
+                        "toAddress": "bob@example.com",
+                        "receivedTime": "1700000000000",
+                    }
+                ]
+            },
+        )
+    )
     route = respx.get(
         f"{MAIL_BASE}/accounts/{ACCOUNT_ID}/folders/F1/messages/M1/content"
     ).mock(
@@ -244,6 +261,55 @@ def test_mail_get_normalizes_nested_content_response(
     assert msg["from"] == "alice@example.com"
     assert msg["to"] == ["bob@example.com"]
     assert msg["textBody"] == "Original body"
+
+
+@respx.mock
+def test_mail_get_hydrates_missing_metadata_from_folder_summary(
+    mock_config: Path, mock_token_refresh: Any
+) -> None:
+    """mail get should hydrate missing subject/from fields from folder message summary."""
+    respx.get(f"{MAIL_BASE}/accounts/{ACCOUNT_ID}/messages/view").mock(
+        return_value=httpx.Response(
+            200,
+            json={
+                "data": [
+                    {
+                        "messageId": "M1",
+                        "folderId": "F1",
+                        "subject": "Security notice",
+                        "sender": "Zoho Team",
+                        "toAddress": "ai-dev@happy-distro.co.uk",
+                        "receivedTime": "1700000000000",
+                        "hasAttachment": True,
+                    }
+                ]
+            },
+        )
+    )
+    respx.get(f"{MAIL_BASE}/accounts/{ACCOUNT_ID}/folders/F1/messages/M1/content").mock(
+        return_value=httpx.Response(
+            200,
+            json={
+                "data": {
+                    "messageId": "M1",
+                    "content": "body only",
+                }
+            },
+        )
+    )
+
+    result = runner.invoke(
+        app,
+        ["mail", "get", "M1", "--folder-id", "F1"],
+        env=_cfg_env(mock_config),
+    )
+
+    assert result.exit_code == 0, result.output
+    msg = json.loads(result.output)
+    assert msg["subject"] == "Security notice"
+    assert msg["from"] == "Zoho Team"
+    assert msg["folderId"] == "F1"
+    assert msg["hasAttachments"] is True
 
 
 # ---------------------------------------------------------------------------
@@ -292,6 +358,21 @@ def test_mail_reply_sends_prefixed_payload_and_status(
     mock_config: Path, mock_token_refresh: Any
 ) -> None:
     """mail reply should fetch original message, send reply payload, and return send status."""
+    respx.get(f"{MAIL_BASE}/accounts/{ACCOUNT_ID}/messages/view").mock(
+        return_value=httpx.Response(
+            200,
+            json={
+                "data": [
+                    {
+                        "messageId": "M1",
+                        "folderId": "F1",
+                        "subject": "Status",
+                        "sender": "alice@example.com",
+                    }
+                ]
+            },
+        )
+    )
     respx.get(
         f"{MAIL_BASE}/accounts/{ACCOUNT_ID}/folders/F1/messages/M1/content"
     ).mock(
@@ -345,6 +426,21 @@ def test_mail_forward_sends_forward_payload_and_status(
     mock_config: Path, mock_token_refresh: Any
 ) -> None:
     """mail forward should include forwarded block and return send status."""
+    respx.get(f"{MAIL_BASE}/accounts/{ACCOUNT_ID}/messages/view").mock(
+        return_value=httpx.Response(
+            200,
+            json={
+                "data": [
+                    {
+                        "messageId": "M1",
+                        "folderId": "F1",
+                        "subject": "Status",
+                        "sender": "alice@example.com",
+                    }
+                ]
+            },
+        )
+    )
     respx.get(
         f"{MAIL_BASE}/accounts/{ACCOUNT_ID}/folders/F1/messages/M1/content"
     ).mock(

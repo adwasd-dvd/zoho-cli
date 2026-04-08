@@ -1,5 +1,5 @@
 project: zoho-cli
-updated_at: "2026-04-08T08:35:28Z"
+updated_at: "2026-04-08T13:20:08Z"
 status: cliq-phase1
 canonical_workspace: "/Users/adwasd/.openclaw/workspace-coder"
 project_root: "/Users/adwasd/.openclaw/workspace-coder/job/zoho-cli"
@@ -10,5 +10,6 @@ module_order:
 current_focus: finish cliq-003 live verification (`cliq send` + `cliq notify-mail`)
 primary_blockers:
   - active OAuth token is missing `ZohoCliq.Webhooks.CREATE`, so live `cliq send` / `cliq notify-mail` return `oauth_scope_invalid`
+  - default `--with-cliq` scope guidance has been aligned to required scopes only; waiting on one post-auth live verification pass
   - cliq-003 cannot close until one post-auth live send/notify pass succeeds
 next_step: run `zoho login --with-cliq` to grant `ZohoCliq.Webhooks.CREATE`, then execute live `cliq send` and `cliq notify-mail` smoke checks using a channel ID from `cliq channels`

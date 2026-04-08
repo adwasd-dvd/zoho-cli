@@ -6,7 +6,6 @@
 - Initialized repo control files, anchors, and memory scaffolding for the zoho coder loop.
 - Scaffolded Cliq phase-1 shell with `zoho cliq status`, regional Cliq base URL inference, and a minimal `ZohoCliqClient` skeleton.
 - Added Cliq OAuth preparation: `zoho login --with-cliq` scope bundling, generic `--scope` extension, and `zoho cliq status` scope readiness (`oauthReady` / `missingScopes`).
-- Expanded default Cliq scope bundle to include both `ZohoCliq.Messages.CREATE` and `ZohoCliq.Webhooks.CREATE` for channel message APIs.
 - Updated default Cliq OAuth scope bundle to endpoint-specific scopes (`ZohoCliq.Channels.READ`, `ZohoCliq.Users.READ`, `ZohoCliq.Webhooks.CREATE`) to match live send/notify API requirements.
 - Added cliq-002 baseline command surface: `zoho cliq channels`, `zoho cliq users`, and `zoho cliq send` wired through `ZohoCliqClient` with destination validation and JSON output.
 - Added cliq-003 workflow command `zoho cliq notify-mail` to send compact Mail summaries into Cliq channels/users.
@@ -15,6 +14,7 @@
 
 ### Fixed
 - Cliq send/notify now surface a dedicated `oauth_scope_invalid` error with an explicit re-auth hint (`zoho login --with-cliq` + `ZohoCliq.Webhooks.CREATE`) when all candidate message endpoints fail due to missing scope.
+- Removed legacy `ZohoCliq.Messages.CREATE` from the recommended `--with-cliq` scope bundle so `zoho cliq status` and login guidance align with the actual send/notify requirement (`ZohoCliq.Webhooks.CREATE`).
 - Hardened Cliq send/notify endpoint resolution: channel targets now retry by resolving `/channels/{id}` into `chat_id`/`unique_name` before posting, and user-target sends now prefer the documented `/buddies/{id_or_email}/message` endpoint (with legacy fallback retained).
 - Bumped package/runtime version metadata to `0.2.0` (`pyproject.toml` and `zoho_cli.__version__`) and made CLI `--version` prefer local package `__version__` first so source-checkout runs do not report stale installed metadata.
 - Updated Mail module status to in_progress and cleared blockers.

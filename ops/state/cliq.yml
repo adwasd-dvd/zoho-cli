@@ -1,6 +1,7 @@
 module: Cliq
-updated_at: "2026-04-08T08:35:28Z"
+updated_at: "2026-04-08T13:20:08Z"
 status: in_progress
 blockers:
-  - live cliq send/notify still unverified; active token is missing `ZohoCliq.Webhooks.CREATE` and both commands now fail fast with `oauth_scope_invalid`
+  - live cliq send/notify still unverified; active token is missing `ZohoCliq.Webhooks.CREATE` and both commands fail fast with `oauth_scope_invalid`
+  - code now only recommends required Cliq scopes (`Channels.READ`, `Users.READ`, `Webhooks.CREATE`), but one post-auth live send/notify pass is still pending
 next_small_step: run `zoho login --with-cliq` to grant `ZohoCliq.Webhooks.CREATE`, then re-run live `cliq send` + `cliq notify-mail` on `happydistrouklimited`

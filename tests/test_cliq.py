@@ -31,7 +31,6 @@ def test_missing_cliq_scopes_reports_missing_values() -> None:
     missing = cliq.missing_cliq_scopes(["ZohoCliq.Channels.READ"])
     assert missing == [
         "ZohoCliq.Users.READ",
-        "ZohoCliq.Messages.CREATE",
         "ZohoCliq.Webhooks.CREATE",
     ]
 

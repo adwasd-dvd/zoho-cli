@@ -904,6 +904,88 @@ def test_crm_fields(mock_config: Path, mock_token_refresh: Any) -> None:
 
 
 @respx.mock
+def test_crm_list(mock_config: Path, mock_token_refresh: Any) -> None:
+    route = respx.get("https://www.zohoapis.com/crm/v2/Leads").mock(
+        return_value=httpx.Response(200, json={"data": [{"id": "1001"}]})
+    )
+
+    result = runner.invoke(
+        app,
+        ["crm", "list", "--module", "Leads", "--limit", "2", "--page", "3", "--field", "Last_Name", "--field", "Email"],
+        env=_cfg_env(mock_config),
+    )
+    assert result.exit_code == 0, result.output
+    payload = json.loads(result.output)
+    assert payload[0]["id"] == "1001"
+    assert dict(route.calls.last.request.url.params) == {
+        "per_page": "2",
+        "page": "3",
+        "fields": "Last_Name,Email",
+    }
+
+
+@respx.mock
+def test_crm_get(mock_config: Path, mock_token_refresh: Any) -> None:
+    route = respx.get("https://www.zohoapis.com/crm/v2/Leads/1001").mock(
+        return_value=httpx.Response(200, json={"data": [{"id": "1001", "Company": "Acme"}]})
+    )
+
+    result = runner.invoke(
+        app,
+        ["crm", "get", "1001", "--module", "Leads", "--field", "Company"],
+        env=_cfg_env(mock_config),
+    )
+    assert result.exit_code == 0, result.output
+    payload = json.loads(result.output)
+    assert payload["id"] == "1001"
+    assert payload["Company"] == "Acme"
+    assert dict(route.calls.last.request.url.params) == {"fields": "Company"}
+
+
+@respx.mock
+def test_crm_search_with_criteria(mock_config: Path, mock_token_refresh: Any) -> None:
+    route = respx.get("https://www.zohoapis.com/crm/v2/Leads/search").mock(
+        return_value=httpx.Response(200, json={"data": [{"id": "1002"}]})
+    )
+
+    result = runner.invoke(
+        app,
+        [
+            "crm",
+            "search",
+            "--module",
+            "Leads",
+            "--criteria",
+            "(Last_Name:equals:Wang)",
+            "--limit",
+            "2",
+            "--page",
+            "4",
+        ],
+        env=_cfg_env(mock_config),
+    )
+    assert result.exit_code == 0, result.output
+    payload = json.loads(result.output)
+    assert payload[0]["id"] == "1002"
+    assert dict(route.calls.last.request.url.params) == {
+        "per_page": "2",
+        "page": "4",
+        "criteria": "(Last_Name:equals:Wang)",
+    }
+
+
+def test_crm_search_requires_exactly_one_query_mode(mock_config: Path, mock_token_refresh: Any) -> None:
+    result = runner.invoke(
+        app,
+        ["crm", "search", "--module", "Leads", "--word", "acme", "--criteria", "(Last_Name:equals:Wang)"],
+        env=_cfg_env(mock_config),
+    )
+
+    assert result.exit_code == 1
+    assert "invalid_query" in result.output
+
+
+@respx.mock
 def test_cliq_channels(mock_config: Path, mock_token_refresh: Any) -> None:
     respx.get("https://cliq.zoho.com/api/v2/channels").mock(
         return_value=httpx.Response(200, json={"data": [{"id": "C1", "name": "General"}]})

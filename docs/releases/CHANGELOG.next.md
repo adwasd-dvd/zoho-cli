@@ -13,6 +13,7 @@
 - Live Cliq list validation now passes on network-scoped endpoints for `happydistrouklimited` (`cliq channels` and `cliq users`).
 - Added CRM phase-1 scaffold: `zoho crm status`, `zoho crm modules`, regional CRM base URL inference, and a minimal `ZohoCrmClient` read-only shell.
 - Added CRM fields read path: `zoho crm fields --module <api_name>` with pagination, backed by `ZohoCrmClient.fields` (`/settings/fields`).
+- Added CRM read-only record commands for `crm-002`: `zoho crm list`, `zoho crm get`, and `zoho crm search` (`--criteria` or `--word`) wired through `ZohoCrmClient` with pagination/field-selection support.
 
 ### Fixed
 - Cliq send/notify now tolerate successful empty-body responses (`HTTP 204`) from live endpoints and return stable JSON status payloads instead of raising JSON decode errors.
@@ -37,6 +38,7 @@
 - Validated live attachment flow against test mail `attachment test` (4 attachments): list + download all attachments succeeded with size checks.
 - Added transient API retry handling in `ZohoMailClient` (429/5xx + transport errors with backoff and Retry-After support) and covered it with focused API tests.
 - Normalized parsed-attachment output to keep default stdout machine-readable: `mail download-attachment --parse` now emits one JSON payload (including `parsed` or `warning`), and `attachment content` now returns structured JSON by default.
+- Removed duplicate CRM `fields` command/client definitions so the CRM read-only surface now has one canonical `fields` implementation.
 
 ### Release readiness
 - Assessed at 2026-04-08T02:00:05Z: release is **not ready**.

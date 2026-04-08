@@ -3,11 +3,11 @@ next_version: 0.2.1
 release_candidate: false
 last_release_tag: v0.1.9
 current_train: crm-phase1
-assessed_at: "2026-04-08T14:38:36Z"
+assessed_at: "2026-04-08T15:32:22Z"
 current_milestone: crm-phase1-read-only
 current_milestone_complete: false
 missing_requirements:
-  - "crm phase-1 read-only implementation (crm-002) is not complete"
+  - "crm-002 close-out is pending one read-only smoke run for list/get/search"
   - "broader CI check (make ci) is failing fmt-check because ruff format --check reports 19 files would be reformatted"
 release_gate:
   blocker_bugs_cleared: true

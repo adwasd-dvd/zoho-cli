@@ -49,3 +49,67 @@ def test_crm_client_fields() -> None:
         "per_page": "10",
         "page": "3",
     }
+
+
+@respx.mock
+def test_crm_client_list_records() -> None:
+    client = crm.ZohoCrmClient("fake-token", base_url="https://www.zohoapis.com/crm/v2")
+    route = respx.get("https://www.zohoapis.com/crm/v2/Leads").mock(
+        return_value=httpx.Response(200, json={"data": [{"id": "1001"}]})
+    )
+
+    result = client.list_records("Leads", limit=2, page=4, fields=["Last_Name", "Email"])
+
+    assert result["data"][0]["id"] == "1001"
+    assert dict(route.calls.last.request.url.params) == {
+        "per_page": "2",
+        "page": "4",
+        "fields": "Last_Name,Email",
+    }
+
+
+@respx.mock
+def test_crm_client_get_record() -> None:
+    client = crm.ZohoCrmClient("fake-token", base_url="https://www.zohoapis.com/crm/v2")
+    route = respx.get("https://www.zohoapis.com/crm/v2/Leads/1001").mock(
+        return_value=httpx.Response(200, json={"data": [{"id": "1001", "Last_Name": "Wang"}]})
+    )
+
+    result = client.get_record("Leads", "1001", fields=["Last_Name"])
+
+    assert result["data"][0]["Last_Name"] == "Wang"
+    assert dict(route.calls.last.request.url.params) == {"fields": "Last_Name"}
+
+
+@respx.mock
+def test_crm_client_search_records_by_criteria() -> None:
+    client = crm.ZohoCrmClient("fake-token", base_url="https://www.zohoapis.com/crm/v2")
+    route = respx.get("https://www.zohoapis.com/crm/v2/Leads/search").mock(
+        return_value=httpx.Response(200, json={"data": [{"id": "1002"}]})
+    )
+
+    result = client.search_records("Leads", criteria="(Last_Name:equals:Wang)", limit=3, page=2)
+
+    assert result["data"][0]["id"] == "1002"
+    assert dict(route.calls.last.request.url.params) == {
+        "per_page": "3",
+        "page": "2",
+        "criteria": "(Last_Name:equals:Wang)",
+    }
+
+
+@respx.mock
+def test_crm_client_search_records_by_word() -> None:
+    client = crm.ZohoCrmClient("fake-token", base_url="https://www.zohoapis.com/crm/v2")
+    route = respx.get("https://www.zohoapis.com/crm/v2/Leads/search").mock(
+        return_value=httpx.Response(200, json={"data": [{"id": "1003"}]})
+    )
+
+    result = client.search_records("Leads", word="acme", limit=5, page=1)
+
+    assert result["data"][0]["id"] == "1003"
+    assert dict(route.calls.last.request.url.params) == {
+        "per_page": "5",
+        "page": "1",
+        "word": "acme",
+    }

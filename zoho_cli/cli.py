@@ -1169,16 +1169,79 @@ def crm_modules(
 
 @crm_app.command("fields")
 def crm_fields(
-    module: str = typer.Option(..., "--module", "-m", help="CRM module API name (e.g. Leads)."),
-    limit: int = typer.Option(50, "--limit", "-n", help="Max fields to return."),
+    module: str = typer.Option(..., "--module", "-m", help="CRM module API name (for example Leads)."),
+    limit: int = typer.Option(200, "--limit", "-n", help="Max fields to return."),
     page: int = typer.Option(1, "--page", help="Result page number."),
 ) -> None:
-    """List fields for a CRM module (read-only scaffold endpoint)."""
+    """List fields for a CRM module."""
     cfg = _cfg()
     email = _require_account(cfg)
     client = _get_crm_client(cfg, email)
 
-    resp = client.fields(module=module, limit=limit, page=page)
+    resp = client.fields(module, limit=limit, page=page)
+    data = resp.get("data", resp)
+    utils.output(data)
+
+
+@crm_app.command("list")
+def crm_list(
+    module: str = typer.Option(..., "--module", "-m", help="CRM module API name (for example Leads)."),
+    limit: int = typer.Option(50, "--limit", "-n", help="Max records to return."),
+    page: int = typer.Option(1, "--page", help="Result page number."),
+    fields: List[str] = typer.Option([], "--field", help="Field API name to include (repeatable)."),
+) -> None:
+    """List records from a CRM module."""
+    cfg = _cfg()
+    email = _require_account(cfg)
+    client = _get_crm_client(cfg, email)
+
+    resp = client.list_records(module, limit=limit, page=page, fields=list(fields))
+    data = resp.get("data", resp)
+    utils.output(data)
+
+
+@crm_app.command("get")
+def crm_get(
+    record_id: str = typer.Argument(..., help="CRM record ID."),
+    module: str = typer.Option(..., "--module", "-m", help="CRM module API name (for example Leads)."),
+    fields: List[str] = typer.Option([], "--field", help="Field API name to include (repeatable)."),
+) -> None:
+    """Get a single CRM record by id."""
+    cfg = _cfg()
+    email = _require_account(cfg)
+    client = _get_crm_client(cfg, email)
+
+    resp = client.get_record(module, record_id, fields=list(fields))
+    data = resp.get("data", resp)
+    if isinstance(data, list) and data:
+        utils.output(data[0])
+        return
+    utils.output(data)
+
+
+@crm_app.command("search")
+def crm_search(
+    module: str = typer.Option(..., "--module", "-m", help="CRM module API name (for example Leads)."),
+    criteria: Optional[str] = typer.Option(None, "--criteria", help="CRM criteria expression."),
+    word: Optional[str] = typer.Option(None, "--word", help="CRM free-text search term."),
+    limit: int = typer.Option(50, "--limit", "-n", help="Max records to return."),
+    page: int = typer.Option(1, "--page", help="Result page number."),
+) -> None:
+    """Search records in a CRM module."""
+    if bool(criteria) == bool(word):
+        utils.error_exit("invalid_query", "Provide exactly one of --criteria or --word")
+
+    cfg = _cfg()
+    email = _require_account(cfg)
+    client = _get_crm_client(cfg, email)
+
+    resp = client.search_records(
+        module,
+        criteria=criteria,
+        word=word,
+        limit=limit,
+        page=page,
+    )
     data = resp.get("data", resp)
     utils.output(data)
 

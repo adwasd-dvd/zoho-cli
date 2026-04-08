@@ -64,9 +64,53 @@ class ZohoCrmClient:
         """List CRM modules (read-only scaffold endpoint)."""
         return self._get("/settings/modules", {"per_page": limit, "page": page})
 
-    def fields(self, module: str, *, limit: int = 50, page: int = 1) -> dict:
-        """List fields for a specific CRM module."""
+    def fields(self, module_api_name: str, *, limit: int = 200, page: int = 1) -> dict:
+        """List fields for a CRM module."""
         return self._get(
             "/settings/fields",
-            {"module": module, "per_page": limit, "page": page},
+            {"module": module_api_name, "per_page": limit, "page": page},
         )
+
+    def list_records(
+        self,
+        module_api_name: str,
+        *,
+        limit: int = 50,
+        page: int = 1,
+        fields: list[str] | None = None,
+    ) -> dict:
+        """List records from a CRM module."""
+        params: dict[str, str | int] = {"per_page": limit, "page": page}
+        if fields:
+            params["fields"] = ",".join(fields)
+        return self._get(f"/{module_api_name}", params)
+
+    def get_record(
+        self,
+        module_api_name: str,
+        record_id: str,
+        *,
+        fields: list[str] | None = None,
+    ) -> dict:
+        """Fetch a single record by id from a CRM module."""
+        params: dict[str, str] = {}
+        if fields:
+            params["fields"] = ",".join(fields)
+        return self._get(f"/{module_api_name}/{record_id}", params)
+
+    def search_records(
+        self,
+        module_api_name: str,
+        *,
+        criteria: str | None = None,
+        word: str | None = None,
+        limit: int = 50,
+        page: int = 1,
+    ) -> dict:
+        """Search records in a CRM module by criteria or word."""
+        params: dict[str, str | int] = {"per_page": limit, "page": page}
+        if criteria:
+            params["criteria"] = criteria
+        if word:
+            params["word"] = word
+        return self._get(f"/{module_api_name}/search", params)

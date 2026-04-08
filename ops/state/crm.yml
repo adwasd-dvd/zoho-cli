@@ -1,5 +1,5 @@
 module: CRM
-updated_at: "2026-04-08T14:38:36Z"
+updated_at: "2026-04-08T15:32:22Z"
 status: in_progress
 blockers: []
-next_small_step: implement remaining crm-002 read-only commands (`get`, `list`, `search`) on the new scaffold
+next_small_step: run one crm read-only smoke pass (`list`, `get`, `search`) and close crm-002 if green

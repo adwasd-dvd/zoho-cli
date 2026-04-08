@@ -148,6 +148,7 @@ class ZohoCliqClient:
     ) -> dict:
         """Try multiple method/path/payload candidates for mutable message operations."""
         last_error: tuple[int, str, str, str] | None = None
+        preferred_error: tuple[int, str, str, str] | None = None
         saw_scope_invalid = False
         retryable_error_codes = {
             "param_missing",
@@ -190,6 +191,19 @@ class ZohoCliqClient:
                 or scope_invalid
                 or error_code in retryable_error_codes
             ):
+                if error_code in {
+                    "operation_failed",
+                    "operation_not_allowed",
+                    "param_missing",
+                    "invalid_data",
+                    "extra_key_found",
+                }:
+                    preferred_error = preferred_error or (
+                        resp.status_code,
+                        method,
+                        path,
+                        body,
+                    )
                 continue
 
             utils.error_exit(
@@ -203,8 +217,9 @@ class ZohoCliqClient:
                 f"Cliq token is missing required scope for {operation_label}. Re-run `zoho login --with-cliq --scope {scope_hint}` and retry.",
             )
 
-        if last_error is not None:
-            status, method, path, body = last_error
+        chosen_error = preferred_error or last_error
+        if chosen_error is not None:
+            status, method, path, body = chosen_error
             utils.error_exit(
                 "api_error",
                 f"HTTP {status} {method} {path}: {body}",
@@ -293,6 +308,8 @@ class ZohoCliqClient:
         resolved_chat = (chat_id or "").strip()
         if not resolved_chat and channel_id:
             resolved_chat = self.resolve_chat_id(channel_id) or ""
+        if not resolved_chat and channel_id:
+            resolved_chat = self.resolve_chat_id(channel_id) or ""
         if not resolved_chat:
             utils.error_exit(
                 "invalid_destination", "Provide --chat-id or resolvable --channel-id"
@@ -329,6 +346,8 @@ class ZohoCliqClient:
     ) -> dict:
         """Fetch one message by id for a chat (or a resolvable channel id)."""
         resolved_chat = (chat_id or "").strip()
+        if not resolved_chat and channel_id:
+            resolved_chat = self.resolve_chat_id(channel_id) or ""
         if not resolved_chat and channel_id:
             resolved_chat = self.resolve_chat_id(channel_id) or ""
         if not resolved_chat:
@@ -609,11 +628,17 @@ class ZohoCliqClient:
             utils.error_exit("invalid_member_id", "member_id cannot be empty")
 
         resolved_chat = (chat_id or "").strip()
+        if not resolved_chat and channel_id:
+            resolved_chat = self.resolve_chat_id(channel_id) or ""
 
         payloads = [
             {"user_id": target_member},
             {"member_id": target_member},
             {"user": target_member},
+            {"users": [target_member]},
+            {"members": [target_member]},
+            {"user_ids": [target_member]},
+            {"member_ids": [target_member]},
         ]
 
         candidates: list[tuple[str, str, dict[str, Any] | None]] = []
@@ -623,16 +648,40 @@ class ZohoCliqClient:
                     [
                         ("POST", f"/channels/{channel_id}/members", payload),
                         ("POST", f"/channels/{channel_id}/members/add", payload),
+                        ("POST", f"/channels/{channel_id}/participants/add", payload),
+                        ("PUT", f"/channels/{channel_id}/members", payload),
                     ]
                 )
+            candidates.extend(
+                [
+                    ("PUT", f"/channels/{channel_id}/members/{target_member}", None),
+                    (
+                        "POST",
+                        f"/channels/{channel_id}/members/{target_member}",
+                        None,
+                    ),
+                ]
+            )
         if resolved_chat:
             for payload in payloads:
                 candidates.extend(
                     [
                         ("POST", f"/chats/{resolved_chat}/members", payload),
                         ("POST", f"/chats/{resolved_chat}/members/add", payload),
+                        ("POST", f"/chats/{resolved_chat}/participants/add", payload),
+                        ("PUT", f"/chats/{resolved_chat}/members", payload),
                     ]
                 )
+            candidates.extend(
+                [
+                    ("PUT", f"/chats/{resolved_chat}/members/{target_member}", None),
+                    (
+                        "POST",
+                        f"/chats/{resolved_chat}/members/{target_member}",
+                        None,
+                    ),
+                ]
+            )
 
         if not candidates:
             utils.error_exit(
@@ -658,11 +707,17 @@ class ZohoCliqClient:
             utils.error_exit("invalid_member_id", "member_id cannot be empty")
 
         resolved_chat = (chat_id or "").strip()
+        if not resolved_chat and channel_id:
+            resolved_chat = self.resolve_chat_id(channel_id) or ""
 
         payloads = [
             {"user_id": target_member},
             {"member_id": target_member},
             {"user": target_member},
+            {"users": [target_member]},
+            {"members": [target_member]},
+            {"user_ids": [target_member]},
+            {"member_ids": [target_member]},
         ]
 
         candidates: list[tuple[str, str, dict[str, Any] | None]] = []
@@ -670,17 +725,37 @@ class ZohoCliqClient:
             candidates.append(
                 ("DELETE", f"/channels/{channel_id}/members/{target_member}", None)
             )
+            candidates.append(
+                ("DELETE", f"/channels/{channel_id}/participants/{target_member}", None)
+            )
             for payload in payloads:
-                candidates.append(
-                    ("POST", f"/channels/{channel_id}/members/remove", payload)
+                candidates.extend(
+                    [
+                        ("POST", f"/channels/{channel_id}/members/remove", payload),
+                        (
+                            "POST",
+                            f"/channels/{channel_id}/participants/remove",
+                            payload,
+                        ),
+                    ]
                 )
         if resolved_chat:
             candidates.append(
                 ("DELETE", f"/chats/{resolved_chat}/members/{target_member}", None)
             )
+            candidates.append(
+                ("DELETE", f"/chats/{resolved_chat}/participants/{target_member}", None)
+            )
             for payload in payloads:
-                candidates.append(
-                    ("POST", f"/chats/{resolved_chat}/members/remove", payload)
+                candidates.extend(
+                    [
+                        ("POST", f"/chats/{resolved_chat}/members/remove", payload),
+                        (
+                            "POST",
+                            f"/chats/{resolved_chat}/participants/remove",
+                            payload,
+                        ),
+                    ]
                 )
 
         if not candidates:
@@ -709,6 +784,74 @@ class ZohoCliqClient:
             [("POST", "/channels", payload)],
             scope_hint="ZohoCliq.Channels.ALL",
             operation_label="channel-create",
+        )
+
+    def rename_channel(self, channel_id: str, name: str) -> dict:
+        """Rename a channel."""
+        cid = channel_id.strip()
+        if not cid:
+            utils.error_exit("invalid_channel_id", "channel_id cannot be empty")
+
+        target_name = name.strip()
+        if not target_name:
+            utils.error_exit("invalid_name", "channel name cannot be empty")
+
+        payloads = [
+            {"name": target_name},
+            {"new_name": target_name},
+            {"channel_name": target_name},
+        ]
+
+        candidates: list[tuple[str, str, dict[str, Any] | None]] = []
+        for payload in payloads:
+            candidates.extend(
+                [
+                    ("POST", f"/channels/{cid}/rename", payload),
+                    ("PUT", f"/channels/{cid}", payload),
+                    ("PATCH", f"/channels/{cid}", payload),
+                    ("POST", f"/channels/{cid}", payload),
+                    ("POST", f"/channels/{cid}/update", payload),
+                ]
+            )
+
+        return self._request_with_candidates(
+            candidates,
+            scope_hint="ZohoCliq.Channels.ALL",
+            operation_label="channel-rename",
+        )
+
+    def update_channel_topic(self, channel_id: str, topic: str) -> dict:
+        """Update a channel topic."""
+        cid = channel_id.strip()
+        if not cid:
+            utils.error_exit("invalid_channel_id", "channel_id cannot be empty")
+
+        target_topic = topic.strip()
+        if not target_topic:
+            utils.error_exit("invalid_topic", "channel topic cannot be empty")
+
+        payloads = [
+            {"topic": target_topic},
+            {"description": target_topic},
+            {"channel_topic": target_topic},
+        ]
+
+        candidates: list[tuple[str, str, dict[str, Any] | None]] = []
+        for payload in payloads:
+            candidates.extend(
+                [
+                    ("POST", f"/channels/{cid}/topic", payload),
+                    ("PUT", f"/channels/{cid}", payload),
+                    ("PATCH", f"/channels/{cid}", payload),
+                    ("POST", f"/channels/{cid}", payload),
+                    ("POST", f"/channels/{cid}/update", payload),
+                ]
+            )
+
+        return self._request_with_candidates(
+            candidates,
+            scope_hint="ZohoCliq.Channels.ALL",
+            operation_label="channel-topic",
         )
 
     def archive_channel(self, channel_id: str, *, unarchive: bool = False) -> dict:

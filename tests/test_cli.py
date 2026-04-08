@@ -1090,6 +1090,9 @@ def test_cliq_member_add_requires_destination(
 
 @respx.mock
 def test_cliq_member_add(mock_config: Path, mock_token_refresh: Any) -> None:
+    respx.get("https://cliq.zoho.com/api/v2/channels/O2").mock(
+        return_value=httpx.Response(200, json={"data": {"chat_id": "CT_2"}})
+    )
     respx.post("https://cliq.zoho.com/api/v2/channels/O2/members").mock(
         return_value=httpx.Response(200, json={"data": {"status": "ok"}})
     )
@@ -1106,6 +1109,9 @@ def test_cliq_member_add(mock_config: Path, mock_token_refresh: Any) -> None:
 
 @respx.mock
 def test_cliq_member_remove(mock_config: Path, mock_token_refresh: Any) -> None:
+    respx.get("https://cliq.zoho.com/api/v2/channels/O2").mock(
+        return_value=httpx.Response(200, json={"data": {"chat_id": "CT_2"}})
+    )
     respx.delete("https://cliq.zoho.com/api/v2/channels/O2/members/U1").mock(
         return_value=httpx.Response(204, text="")
     )
@@ -1134,6 +1140,40 @@ def test_cliq_channel_create(mock_config: Path, mock_token_refresh: Any) -> None
     assert result.exit_code == 0, result.output
     payload = json.loads(result.output)
     assert payload["status"] == "ok"
+
+
+@respx.mock
+def test_cliq_channel_rename(mock_config: Path, mock_token_refresh: Any) -> None:
+    respx.post("https://cliq.zoho.com/api/v2/channels/O2/rename").mock(
+        return_value=httpx.Response(200, json={"channel_id": "O2", "name": "ops-2"})
+    )
+
+    result = runner.invoke(
+        app,
+        ["cliq", "channel-rename", "O2", "--name", "ops-2"],
+        env=_cfg_env(mock_config),
+    )
+    assert result.exit_code == 0, result.output
+    payload = json.loads(result.output)
+    assert payload["status"] == "ok"
+    assert payload["name"] == "ops-2"
+
+
+@respx.mock
+def test_cliq_channel_topic(mock_config: Path, mock_token_refresh: Any) -> None:
+    respx.post("https://cliq.zoho.com/api/v2/channels/O2/topic").mock(
+        return_value=httpx.Response(204, text="")
+    )
+
+    result = runner.invoke(
+        app,
+        ["cliq", "channel-topic", "O2", "--topic", "deploy updates"],
+        env=_cfg_env(mock_config),
+    )
+    assert result.exit_code == 0, result.output
+    payload = json.loads(result.output)
+    assert payload["status"] == "ok"
+    assert payload["topic"] == "deploy updates"
 
 
 @respx.mock

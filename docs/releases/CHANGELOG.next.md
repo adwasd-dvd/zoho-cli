@@ -21,12 +21,15 @@
 - Added first Cliq admin-plane commands (`cliq-130`): `zoho cliq members`, `zoho cliq channel-create`, `zoho cliq channel-archive`, and `zoho cliq channel-delete`.
 - Expanded Cliq admin-plane membership management with `zoho cliq member-add` and `zoho cliq member-remove`, including endpoint/payload fallbacks and destination validation.
 - Added explicit Cliq lifecycle command `zoho cliq channel-unarchive` as an alias for the existing unarchive flow to make admin sweep scripts clearer (`channel-create/archive/unarchive/delete`).
+- Added remaining Cliq admin lifecycle commands for `cliq-130`: `zoho cliq channel-rename` and `zoho cliq channel-topic`, with fallback endpoint/payload probing for org API variations.
 - Added CRM fields read path: `zoho crm fields --module <api_name>` with pagination, backed by `ZohoCrmClient.fields` (`/settings/fields`).
 - Added CRM read-only record commands for `crm-002`: `zoho crm list`, `zoho crm get`, and `zoho crm search` (`--criteria` or `--word`) wired through `ZohoCrmClient` with pagination/field-selection support.
 
 ### Fixed
 - Cliq mutable-message fallback now retries on endpoint payload mismatches (`param_missing` / `invalid_data` / `operation_failed`) so write operations can probe alternate method/path payload variants before failing.
 - Cliq mutable/admin fallback now also retries on `extra_key_found` and `request_method_invalid`, allowing command probes to continue across API payload/method variants instead of failing on the first unsupported candidate.
+- Cliq member add/remove now resolves `channel_id` into `chat_id` for fallback routing and probes expanded membership payload shapes (`user_id`, `member_id`, `users`, `members`, `user_ids`, `member_ids`) to improve compatibility across org endpoint variants.
+- Fallback error reporting now prefers meaningful retryable API errors (`operation_failed`, `operation_not_allowed`, `param_missing`, `invalid_data`, `extra_key_found`) over terminal URL-miss noise when all candidates fail.
 - Cliq reaction fallback now supports `emoji_code` payloads (plus legacy `emoji` fallback) for org endpoints that reject plain `emoji` payloads.
 - OAuth scope reporting now prefers live scope data from token refresh responses during `cliq status --check-auth` / `crm status --check-auth`, instead of trusting stale requested-scope config only.
 - `zoho login` now persists granted scopes from Zoho OAuth response scope payload when available, avoiding false-positive scope readiness after limited-consent flows.

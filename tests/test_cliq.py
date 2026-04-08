@@ -336,6 +336,9 @@ def test_cliq_client_list_members_from_channel(client: cliq.ZohoCliqClient) -> N
 
 @respx.mock
 def test_cliq_client_add_member_success(client: cliq.ZohoCliqClient) -> None:
+    respx.get("https://cliq.zoho.com/api/v2/channels/O2").mock(
+        return_value=httpx.Response(200, json={"data": {"chat_id": "CT_2"}})
+    )
     route = respx.post("https://cliq.zoho.com/api/v2/channels/O2/members").mock(
         return_value=httpx.Response(200, json={"data": {"status": "ok"}})
     )
@@ -348,6 +351,9 @@ def test_cliq_client_add_member_success(client: cliq.ZohoCliqClient) -> None:
 
 @respx.mock
 def test_cliq_client_remove_member_success(client: cliq.ZohoCliqClient) -> None:
+    respx.get("https://cliq.zoho.com/api/v2/channels/O2").mock(
+        return_value=httpx.Response(200, json={"data": {"chat_id": "CT_2"}})
+    )
     route = respx.delete("https://cliq.zoho.com/api/v2/channels/O2/members/U1").mock(
         return_value=httpx.Response(204, text="")
     )
@@ -368,6 +374,30 @@ def test_cliq_client_create_channel_success(client: cliq.ZohoCliqClient) -> None
 
     assert route.called
     assert result["channel_id"] == "O2"
+
+
+@respx.mock
+def test_cliq_client_rename_channel_success(client: cliq.ZohoCliqClient) -> None:
+    route = respx.post("https://cliq.zoho.com/api/v2/channels/O2/rename").mock(
+        return_value=httpx.Response(200, json={"channel_id": "O2", "name": "ops-2"})
+    )
+
+    result = client.rename_channel("O2", "ops-2")
+
+    assert route.called
+    assert result["name"] == "ops-2"
+
+
+@respx.mock
+def test_cliq_client_update_channel_topic_success(client: cliq.ZohoCliqClient) -> None:
+    route = respx.post("https://cliq.zoho.com/api/v2/channels/O2/topic").mock(
+        return_value=httpx.Response(204, text="")
+    )
+
+    result = client.update_channel_topic("O2", "deploy updates")
+
+    assert route.called
+    assert result["status"] == "ok"
 
 
 @respx.mock

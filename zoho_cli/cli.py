@@ -1343,6 +1343,56 @@ def cliq_channel_create(
     )
 
 
+@cliq_app.command("channel-rename")
+def cliq_channel_rename(
+    channel_id: str = typer.Argument(..., help="Target channel id."),
+    name: str = typer.Option(..., "--name", help="New channel display name."),
+    network: Optional[str] = typer.Option(
+        None, "--network", help="Cliq network slug (e.g. happydistrouklimited)."
+    ),
+) -> None:
+    """Rename a Cliq channel."""
+    cfg = _cfg()
+    email = _require_account(cfg)
+    client = _get_cliq_client(cfg, email, network=network)
+
+    resp = client.rename_channel(channel_id, name)
+    data = resp.get("data", resp)
+    utils.output_status(
+        "Cliq channel renamed",
+        extra={
+            "channelId": channel_id,
+            "name": name,
+            "result": data,
+        },
+    )
+
+
+@cliq_app.command("channel-topic")
+def cliq_channel_topic(
+    channel_id: str = typer.Argument(..., help="Target channel id."),
+    topic: str = typer.Option(..., "--topic", help="Channel topic/description."),
+    network: Optional[str] = typer.Option(
+        None, "--network", help="Cliq network slug (e.g. happydistrouklimited)."
+    ),
+) -> None:
+    """Update a Cliq channel topic."""
+    cfg = _cfg()
+    email = _require_account(cfg)
+    client = _get_cliq_client(cfg, email, network=network)
+
+    resp = client.update_channel_topic(channel_id, topic)
+    data = resp.get("data", resp)
+    utils.output_status(
+        "Cliq channel topic updated",
+        extra={
+            "channelId": channel_id,
+            "topic": topic,
+            "result": data,
+        },
+    )
+
+
 @cliq_app.command("member-add")
 def cliq_member_add(
     member_id: str = typer.Argument(..., help="Member/user id to add."),
@@ -1362,7 +1412,7 @@ def cliq_member_add(
     email = _require_account(cfg)
     client = _get_cliq_client(cfg, email, network=network)
 
-    resolved_chat = (chat_id or "").strip()
+    resolved_chat = (chat_id or "").strip() or client.resolve_chat_id(channel_id or "")
     resp = client.add_member(
         member_id,
         chat_id=resolved_chat,
@@ -1399,7 +1449,7 @@ def cliq_member_remove(
     email = _require_account(cfg)
     client = _get_cliq_client(cfg, email, network=network)
 
-    resolved_chat = (chat_id or "").strip()
+    resolved_chat = (chat_id or "").strip() or client.resolve_chat_id(channel_id or "")
     resp = client.remove_member(
         member_id,
         chat_id=resolved_chat,

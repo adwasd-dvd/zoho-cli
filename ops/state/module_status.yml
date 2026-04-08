@@ -13,7 +13,7 @@ cliq:
   target_release: v0.4.0
   current_milestone: cliq-expansion-phase
   blockers:
-    - token refresh is intermittently throttled during cliq-130 live admin sweep; remaining member add/remove + lifecycle verification must be rerun after cooldown
+    - token refresh is currently throttled; final live verification for updated cliq-130 member add/remove chat-resolution + payload fallback chain must be rerun after cooldown
 
 crm:
   priority: 3

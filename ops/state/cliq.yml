@@ -1,6 +1,6 @@
 module: Cliq
-updated_at: "2026-04-08T16:57:32Z"
+updated_at: "2026-04-08T17:01:06Z"
 status: in_progress
 blockers:
   - active token is currently Mail-only after crm-only re-auth; deep live cliq probes need `login --with-cliq`
-next_small_step: expand `cliq capabilities` probes and begin read-plane commands (`messages/context`)
+next_small_step: expand `cliq capabilities` into write/admin probe rows, then start cliq-110 read-plane commands (`messages/context`)

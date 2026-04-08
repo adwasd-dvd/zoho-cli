@@ -4,11 +4,11 @@ module: cliq
 stage: in_progress
 status: in_progress
 owner: automation
-updated_at: "2026-04-08T16:57:32Z"
+updated_at: "2026-04-08T17:01:06Z"
 success_criteria:
   - discover and report token/org-available Cliq endpoint capabilities in machine-readable output
   - classify read/write/admin capabilities with clear blocked reasons (scope, endpoint, org role)
   - add focused tests for capability probing logic and CLI output
   - update changelog and state files with the new Cliq expansion scope
 next_if_done: cliq-110
-next_step: expand capability probes and start read-plane commands for message/context retrieval
+next_step: add write/admin probe rows to `cliq capabilities` and start cliq-110 message/context read commands

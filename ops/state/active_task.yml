@@ -4,7 +4,7 @@ module: crm
 stage: in_progress
 status: in_progress
 owner: automation
-updated_at: "2026-04-08T15:38:24Z"
+updated_at: "2026-04-08T15:49:49Z"
 success_criteria:
   - crm modules list command supports stable JSON output and pagination flags
   - crm fields list command supports module targeting
@@ -12,4 +12,4 @@ success_criteria:
   - focused CRM command tests added or updated
   - changelog updated when behavior changes
 next_if_done: release-hardening
-next_step: run `zoho login --with-crm`, then re-run crm read-only smoke (`list/get/search`) and close crm-002
+next_step: use a CRM-enabled org account, then run `zoho login --with-crm` and rerun crm read-only smoke (`list/get/search`) to close crm-002

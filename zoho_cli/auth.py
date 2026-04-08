@@ -32,6 +32,21 @@ def merge_scopes(*scope_lists: list[str]) -> list[str]:
                 merged.append(scope)
     return merged
 
+
+def parse_scope_value(scope_value: object) -> list[str]:
+    """Normalize a scope payload into a deduplicated ordered scope list."""
+    if not scope_value:
+        return []
+
+    if isinstance(scope_value, str):
+        raw = scope_value.replace(",", " ").split()
+    elif isinstance(scope_value, list):
+        raw = [str(v).strip() for v in scope_value if str(v).strip()]
+    else:
+        return []
+
+    return merge_scopes(raw)
+
 # ── success page served to the browser after OAuth ───────────────────────────
 
 _SUCCESS_HTML = """\
@@ -290,6 +305,20 @@ def refresh_access_token(
     client_secret: str,
     accounts_base_url: Optional[str] = None,
 ) -> str:
+    return refresh_access_token_info(
+        email,
+        client_id,
+        client_secret,
+        accounts_base_url=accounts_base_url,
+    )["access_token"]
+
+
+def refresh_access_token_info(
+    email: str,
+    client_id: str,
+    client_secret: str,
+    accounts_base_url: Optional[str] = None,
+) -> dict:
     token_data = storage.load_token(email)
     if not token_data:
         utils.error_exit(
@@ -319,7 +348,12 @@ def refresh_access_token(
     data = resp.json()
     if "access_token" not in data:
         utils.error_exit("token_refresh_failed", f"No access_token in response: {data}")
-    return data["access_token"]
+    return {
+        "access_token": data["access_token"],
+        "scopes": parse_scope_value(data.get("scope")),
+        "api_domain": data.get("api_domain"),
+        "token_type": data.get("token_type"),
+    }
 
 
 def discover_accounts_server(client_id: str) -> str:

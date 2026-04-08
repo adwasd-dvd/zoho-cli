@@ -436,6 +436,7 @@ def login(
         accounts_base_url=accounts_server,
     )
     access_token  = token_resp["access_token"]
+    granted_scopes = auth.parse_scope_value(token_resp.get("scope")) or scopes
     refresh_token = token_resp.get("refresh_token")
 
     if not refresh_token:
@@ -457,7 +458,7 @@ def login(
             )
         _stderr("Note: Zoho did not issue a new refresh_token; keeping the existing stored one.")
 
-    storage.store_token(email, refresh_token, scopes, accounts_server=accounts_server)
+    storage.store_token(email, refresh_token, granted_scopes, accounts_server=accounts_server)
 
     # Derive regional Mail API URL from the accounts server
     mail_base: Optional[str] = None
@@ -468,7 +469,7 @@ def login(
 
     cfg.setdefault("accounts", {})[email] = {
         "accountId": account_id,
-        "scopes": scopes,
+        "scopes": granted_scopes,
         **({"accounts_server": accounts_server} if accounts_server else {}),
         **({"mail_base_url": mail_base} if mail_base else {}),
     }
@@ -490,7 +491,7 @@ def login(
     else:
         utils.output_status(
             f"Logged in as {email}",
-            extra={"account": email, "scopes": scopes, "accountId": account_id},
+            extra={"account": email, "scopes": granted_scopes, "accountId": account_id},
         )
 
 
@@ -1028,8 +1029,19 @@ def cliq_status(
     payload["oauthReady"] = len(payload["missingScopes"]) == 0
 
     if check_auth and email:
-        _get_cliq_client(cfg, email, network=network)
+        cid, csec = _require_credentials(cfg)
+        token_info = auth.refresh_access_token_info(
+            email,
+            cid,
+            csec,
+            accounts_base_url=account_cfg.get("accounts_server"),
+        )
         payload["auth"] = "ok"
+        live_scopes = token_info.get("scopes", [])
+        if live_scopes:
+            payload["grantedScopes"] = live_scopes
+            payload["missingScopes"] = _cliq.missing_cliq_scopes(live_scopes)
+            payload["oauthReady"] = len(payload["missingScopes"]) == 0
 
     utils.output(payload)
 
@@ -1155,8 +1167,19 @@ def crm_status(
     payload["oauthReady"] = len(payload["missingScopes"]) == 0
 
     if check_auth and email:
-        _get_crm_client(cfg, email)
+        cid, csec = _require_credentials(cfg)
+        token_info = auth.refresh_access_token_info(
+            email,
+            cid,
+            csec,
+            accounts_base_url=account_cfg.get("accounts_server"),
+        )
         payload["auth"] = "ok"
+        live_scopes = token_info.get("scopes", [])
+        if live_scopes:
+            payload["grantedScopes"] = live_scopes
+            payload["missingScopes"] = _crm.missing_crm_scopes(live_scopes)
+            payload["oauthReady"] = len(payload["missingScopes"]) == 0
 
     utils.output(payload)
 

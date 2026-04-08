@@ -1,6 +1,6 @@
 module: CRM
-updated_at: "2026-04-08T15:38:24Z"
+updated_at: "2026-04-08T15:49:49Z"
 status: in_progress
 blockers:
-  - live crm read-only smoke currently fails with `OAUTH_SCOPE_MISMATCH`; active token is missing CRM scopes (`ZohoCRM.modules.ALL`, `ZohoCRM.settings.ALL`)
-next_small_step: run `zoho login --with-crm` for the test account, then rerun `crm list/get/search` smoke
+  - test account is not in a CRM org; Zoho consent screen confirms CRM permissions are not granted, and live CRM APIs return `OAUTH_SCOPE_MISMATCH`
+next_small_step: switch to a CRM-enabled org account (or add this account to a CRM org), then rerun `zoho login --with-crm` + `crm list/get/search` smoke

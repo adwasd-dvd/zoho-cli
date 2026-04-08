@@ -1,5 +1,5 @@
 project: zoho-cli
-updated_at: "2026-04-08T15:38:24Z"
+updated_at: "2026-04-08T15:49:49Z"
 status: crm-phase1
 canonical_workspace: "/Users/adwasd/.openclaw/workspace-coder"
 project_root: "/Users/adwasd/.openclaw/workspace-coder/job/zoho-cli"
@@ -9,6 +9,6 @@ module_order:
   - CRM
 current_focus: advance crm-002 read-only command implementation
 primary_blockers:
-  - crm live read-only smoke (`crm list --module Leads`) fails with `OAUTH_SCOPE_MISMATCH`; account needs CRM scopes via `zoho login --with-crm`
+  - crm live read-only smoke (`crm list --module Leads`) fails with `OAUTH_SCOPE_MISMATCH`; consent confirms this account has no CRM org access, so CRM scopes are not actually granted
   - `make ci` still fails at `ruff format --check` (format drift remains)
-next_step: complete `login --with-crm`, then rerun crm read-only smoke (`crm list/get/search`) and close crm-002
+next_step: switch to a CRM-enabled org account (or grant CRM org access), then rerun `login --with-crm` + crm read-only smoke (`list/get/search`)

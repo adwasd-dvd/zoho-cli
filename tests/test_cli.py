@@ -73,6 +73,20 @@ def mock_keyring(monkeypatch: pytest.MonkeyPatch) -> None:
 def mock_token_refresh(monkeypatch: pytest.MonkeyPatch) -> None:
     """Patch auth.refresh_access_token to return a fake access token directly."""
     monkeypatch.setattr(auth, "refresh_access_token", lambda *a, **kw: "fake-access-token")
+    monkeypatch.setattr(
+        auth,
+        "refresh_access_token_info",
+        lambda *a, **kw: {
+            "access_token": "fake-access-token",
+            "scopes": [
+                "ZohoMail.messages.ALL",
+                "ZohoMail.folders.ALL",
+                "ZohoMail.accounts.READ",
+            ],
+            "api_domain": "https://www.zohoapis.com",
+            "token_type": "Bearer",
+        },
+    )
 
 
 def _cfg_env(cfg_path: Path) -> dict[str, str]:

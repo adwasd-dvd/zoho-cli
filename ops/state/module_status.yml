@@ -21,4 +21,4 @@ crm:
   target_release: v0.5.0
   current_milestone: crm-phase1-read-only
   blockers:
-    - live CRM read-only smoke returns `OAUTH_SCOPE_MISMATCH`; re-auth needed with `--with-crm`
+    - test account is not in a CRM org; CRM scopes are not granted and live CRM APIs return `OAUTH_SCOPE_MISMATCH`

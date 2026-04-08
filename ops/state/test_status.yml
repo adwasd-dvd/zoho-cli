@@ -1,10 +1,12 @@
-last_run_at: "2026-04-08T15:38:24Z"
+last_run_at: "2026-04-08T15:49:49Z"
 last_result: warning
 current_focus: crm
 suites:
   unit:
     status: passing
     notes:
+      - ./.venv/bin/pytest -q tests/test_auth.py tests/test_crm.py tests/test_cli.py::test_cliq_status_check_auth tests/test_cli.py::test_cliq_status_oauth_ready_when_scopes_present tests/test_cli.py::test_crm_status_scaffold_info tests/test_cli.py::test_crm_status_oauth_ready_when_scopes_present tests/test_cli.py::test_crm_status_check_auth tests/test_cli.py::test_crm_modules tests/test_cli.py::test_crm_fields tests/test_cli.py::test_crm_list tests/test_cli.py::test_crm_get tests/test_cli.py::test_crm_search_with_criteria tests/test_cli.py::test_crm_search_requires_exactly_one_query_mode
+      - 36 passed in 0.26s (2026-04-08T15:45:57Z)
       - ./.venv/bin/pytest -q tests/test_crm.py tests/test_cli.py::test_crm_status_scaffold_info tests/test_cli.py::test_crm_status_oauth_ready_when_scopes_present tests/test_cli.py::test_crm_status_check_auth tests/test_cli.py::test_crm_modules tests/test_cli.py::test_crm_fields tests/test_cli.py::test_crm_list tests/test_cli.py::test_crm_get tests/test_cli.py::test_crm_search_with_criteria tests/test_cli.py::test_crm_search_requires_exactly_one_query_mode tests/test_auth.py::test_merge_scopes_deduplicates_preserving_order
       - 20 passed in 0.18s (2026-04-08T15:36:38Z)
       - ./.venv/bin/pytest -q tests/test_crm.py tests/test_cli.py::test_crm_status_scaffold_info tests/test_cli.py::test_crm_status_check_auth tests/test_cli.py::test_crm_modules tests/test_cli.py::test_crm_fields tests/test_cli.py::test_crm_list tests/test_cli.py::test_crm_get tests/test_cli.py::test_crm_search_with_criteria tests/test_cli.py::test_crm_search_requires_exactly_one_query_mode
@@ -67,6 +69,12 @@ suites:
   integration:
     status: warning
     notes:
+      - ./.venv/bin/python -m zoho_cli --config /tmp/zoho-test-config.json --account ai-dev@happy-distro.co.uk crm status --check-auth
+      - live refresh scopes show only Mail scopes; CRM scopes are missing (`oauthReady: false`) even after `login --with-crm` because account lacks CRM org access (2026-04-08T15:46:57Z)
+      - ./.venv/bin/python -m zoho_cli --config /tmp/zoho-test-config.json --account ai-dev@happy-distro.co.uk crm list --module Leads --limit 1
+      - live crm list still fails with `HTTP 401 ... OAUTH_SCOPE_MISMATCH` (2026-04-08T15:47:19Z)
+      - ./.venv/bin/python -m zoho_cli --config /tmp/zoho-test-config.json --account ai-dev@happy-distro.co.uk cliq status --network happydistrouklimited --check-auth
+      - live refresh scopes now show Mail-only after CRM re-auth; cliq scope readiness also reports missing scopes until a combined re-auth is done (2026-04-08T15:47:48Z)
       - ./.venv/bin/python -m zoho_cli --config /tmp/zoho-test-config.json --account ai-dev@happy-distro.co.uk crm status --check-auth
       - auth refresh succeeds, but CRM status reports `missingScopes: ["ZohoCRM.modules.ALL", "ZohoCRM.settings.ALL"]` and `oauthReady: false` (2026-04-08T15:37:04Z)
       - ./.venv/bin/python -m zoho_cli --config /tmp/zoho-test-config.json --account ai-dev@happy-distro.co.uk crm list --module Leads --limit 1

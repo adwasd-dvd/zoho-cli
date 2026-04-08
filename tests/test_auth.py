@@ -102,6 +102,16 @@ def test_merge_scopes_deduplicates_preserving_order() -> None:
     ]
 
 
+def test_parse_scope_value_supports_space_delimited_strings() -> None:
+    parsed = auth.parse_scope_value("ZohoMail.messages.ALL ZohoMail.folders.ALL ZohoMail.messages.ALL")
+    assert parsed == ["ZohoMail.messages.ALL", "ZohoMail.folders.ALL"]
+
+
+def test_parse_scope_value_supports_comma_delimited_strings() -> None:
+    parsed = auth.parse_scope_value("ZohoCRM.modules.ALL,ZohoCRM.settings.ALL")
+    assert parsed == ["ZohoCRM.modules.ALL", "ZohoCRM.settings.ALL"]
+
+
 # ---------------------------------------------------------------------------
 # discover_accounts_server
 # ---------------------------------------------------------------------------

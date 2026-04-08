@@ -21,6 +21,11 @@ def test_infer_crm_base_url_defaults_to_com() -> None:
     assert url == "https://www.zohoapis.com/crm/v2"
 
 
+def test_missing_crm_scopes_reports_missing_values() -> None:
+    missing = crm.missing_crm_scopes(["ZohoCRM.modules.ALL"])
+    assert missing == ["ZohoCRM.settings.ALL"]
+
+
 @respx.mock
 def test_crm_client_modules() -> None:
     client = crm.ZohoCrmClient("fake-token", base_url="https://www.zohoapis.com/crm/v2")

@@ -9,6 +9,17 @@ import httpx
 from zoho_cli import utils
 
 
+DEFAULT_CRM_SCOPES = [
+    "ZohoCRM.modules.ALL",
+    "ZohoCRM.settings.ALL",
+]
+
+
+def missing_crm_scopes(granted_scopes: list[str] | None) -> list[str]:
+    granted = set(granted_scopes or [])
+    return [s for s in DEFAULT_CRM_SCOPES if s not in granted]
+
+
 def infer_crm_base_url(
     *,
     mail_base_url: str | None = None,

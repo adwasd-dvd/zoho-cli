@@ -360,6 +360,9 @@ def login(
     with_cliq: bool = typer.Option(
         False, "--with-cliq", help="Include recommended Cliq OAuth scopes in this login flow.",
     ),
+    with_crm: bool = typer.Option(
+        False, "--with-crm", help="Include recommended CRM OAuth scopes in this login flow.",
+    ),
     scope: List[str] = typer.Option(
         [], "--scope", help="Additional OAuth scope(s) to include (repeatable).",
     ),
@@ -384,6 +387,7 @@ def login(
     scopes = auth.merge_scopes(
         auth.DEFAULT_SCOPES,
         _cliq.DEFAULT_CLIQ_SCOPES if with_cliq else [],
+        _crm.DEFAULT_CRM_SCOPES if with_crm else [],
         list(scope),
     )
 
@@ -1138,12 +1142,17 @@ def crm_status(
             mail_base_url=account_cfg.get("mail_base_url"),
             accounts_server=account_cfg.get("accounts_server"),
         ),
+        "requiredScopes": _crm.DEFAULT_CRM_SCOPES,
+        "grantedScopes": account_cfg.get("scopes", []),
         "next": [
             "implement modules list",
             "implement fields list",
             "implement record get/list/search",
         ],
     }
+
+    payload["missingScopes"] = _crm.missing_crm_scopes(payload.get("grantedScopes", []))
+    payload["oauthReady"] = len(payload["missingScopes"]) == 0
 
     if check_auth and email:
         _get_crm_client(cfg, email)

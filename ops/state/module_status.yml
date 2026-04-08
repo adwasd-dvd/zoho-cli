@@ -20,4 +20,5 @@ crm:
   phase: phase_1_read_only_commands_implemented
   target_release: v0.5.0
   current_milestone: crm-phase1-read-only
-  blockers: []
+  blockers:
+    - live CRM read-only smoke returns `OAUTH_SCOPE_MISMATCH`; re-auth needed with `--with-crm`

@@ -1,10 +1,12 @@
-last_run_at: "2026-04-08T15:32:22Z"
-last_result: pass
+last_run_at: "2026-04-08T15:38:24Z"
+last_result: warning
 current_focus: crm
 suites:
   unit:
     status: passing
     notes:
+      - ./.venv/bin/pytest -q tests/test_crm.py tests/test_cli.py::test_crm_status_scaffold_info tests/test_cli.py::test_crm_status_oauth_ready_when_scopes_present tests/test_cli.py::test_crm_status_check_auth tests/test_cli.py::test_crm_modules tests/test_cli.py::test_crm_fields tests/test_cli.py::test_crm_list tests/test_cli.py::test_crm_get tests/test_cli.py::test_crm_search_with_criteria tests/test_cli.py::test_crm_search_requires_exactly_one_query_mode tests/test_auth.py::test_merge_scopes_deduplicates_preserving_order
+      - 20 passed in 0.18s (2026-04-08T15:36:38Z)
       - ./.venv/bin/pytest -q tests/test_crm.py tests/test_cli.py::test_crm_status_scaffold_info tests/test_cli.py::test_crm_status_check_auth tests/test_cli.py::test_crm_modules tests/test_cli.py::test_crm_fields tests/test_cli.py::test_crm_list tests/test_cli.py::test_crm_get tests/test_cli.py::test_crm_search_with_criteria tests/test_cli.py::test_crm_search_requires_exactly_one_query_mode
       - 17 passed in 0.19s (2026-04-08T15:32:22Z)
       - ./.venv/bin/pytest -q tests/test_crm.py::test_crm_client_fields tests/test_cli.py::test_crm_modules tests/test_cli.py::test_crm_fields
@@ -63,8 +65,12 @@ suites:
       - mail download-attachment and attachment content now share attachment download + parse helpers via zoho_cli.cli._download_attachment_to_path and zoho_cli.cli._parse_attachment_content
       - mail get/attachments/download-attachment/reply/forward/attachment content now share message-target context setup via zoho_cli.cli._mail_message_context
   integration:
-    status: passing
+    status: warning
     notes:
+      - ./.venv/bin/python -m zoho_cli --config /tmp/zoho-test-config.json --account ai-dev@happy-distro.co.uk crm status --check-auth
+      - auth refresh succeeds, but CRM status reports `missingScopes: ["ZohoCRM.modules.ALL", "ZohoCRM.settings.ALL"]` and `oauthReady: false` (2026-04-08T15:37:04Z)
+      - ./.venv/bin/python -m zoho_cli --config /tmp/zoho-test-config.json --account ai-dev@happy-distro.co.uk crm list --module Leads --limit 1
+      - live crm list currently fails with `HTTP 401 ... OAUTH_SCOPE_MISMATCH`; rerun after `zoho login --with-crm` (2026-04-08T15:37:14Z)
       - ./.venv/bin/python -m zoho_cli --config /tmp/zoho-test-config.json --account ai-dev@happy-distro.co.uk cliq status --check-auth --network happydistrouklimited
       - auth check now succeeds with `oauthReady: true` and `missingScopes: []` after re-auth (2026-04-08T13:41:33Z)
       - ./.venv/bin/python -m zoho_cli --config /tmp/zoho-test-config.json --account ai-dev@happy-distro.co.uk cliq send --network happydistrouklimited --channel-id O6576524000097556005 --text "zoho-cli cliq send smoke <utc-time>"

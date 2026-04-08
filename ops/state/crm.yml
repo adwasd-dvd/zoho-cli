@@ -1,5 +1,6 @@
 module: CRM
-updated_at: "2026-04-08T15:32:22Z"
+updated_at: "2026-04-08T15:38:24Z"
 status: in_progress
-blockers: []
-next_small_step: run one crm read-only smoke pass (`list`, `get`, `search`) and close crm-002 if green
+blockers:
+  - live crm read-only smoke currently fails with `OAUTH_SCOPE_MISMATCH`; active token is missing CRM scopes (`ZohoCRM.modules.ALL`, `ZohoCRM.settings.ALL`)
+next_small_step: run `zoho login --with-crm` for the test account, then rerun `crm list/get/search` smoke

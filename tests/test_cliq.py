@@ -158,6 +158,49 @@ def test_cliq_client_send_requires_exactly_one_destination(
         client.send_message("hello")
 
 
+@respx.mock
+def test_cliq_client_probe_capabilities_baseline(client: cliq.ZohoCliqClient) -> None:
+    respx.get("https://cliq.zoho.com/api/v2/channels").mock(
+        return_value=httpx.Response(200, json={"data": []})
+    )
+    respx.get("https://cliq.zoho.com/api/v2/users").mock(
+        return_value=httpx.Response(200, json={"data": []})
+    )
+
+    result = client.probe_capabilities()
+
+    assert result["summary"]["total"] == 2
+    assert result["summary"]["ok"] == 2
+
+
+@respx.mock
+def test_cliq_client_probe_capabilities_with_channel_context(
+    client: cliq.ZohoCliqClient,
+) -> None:
+    respx.get("https://cliq.zoho.com/api/v2/channels").mock(
+        return_value=httpx.Response(200, json={"data": []})
+    )
+    respx.get("https://cliq.zoho.com/api/v2/users").mock(
+        return_value=httpx.Response(200, json={"data": []})
+    )
+    respx.get("https://cliq.zoho.com/api/v2/channels/O1").mock(
+        return_value=httpx.Response(200, json={"data": {"id": "O1"}})
+    )
+    respx.get("https://cliq.zoho.com/api/v2/chats/O1/messages").mock(
+        return_value=httpx.Response(404, text="request_url_invalid")
+    )
+    respx.get("https://cliq.zoho.com/api/v2/channels/O1/messages").mock(
+        return_value=httpx.Response(401, json={"code": "oauthtoken_scope_invalid"})
+    )
+
+    result = client.probe_capabilities(channel_id="O1")
+
+    checks = {item["name"]: item for item in result["checks"]}
+    assert checks["channels.get"]["ok"] is True
+    assert checks["chats.messages.list"]["status"] == "not_supported"
+    assert checks["channels.messages.list"]["status"] == "forbidden_or_scope"
+
+
 def test_build_mail_notification_text() -> None:
     text = cliq.build_mail_notification_text(
         {

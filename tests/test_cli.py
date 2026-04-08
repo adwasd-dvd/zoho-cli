@@ -872,6 +872,24 @@ def test_cliq_status_oauth_ready_when_scopes_present(tmp_path: Path) -> None:
     assert payload["missingScopes"] == []
 
 
+@respx.mock
+def test_cliq_capabilities(mock_config: Path, mock_token_refresh: Any) -> None:
+    respx.get("https://cliq.zoho.com/api/v2/channels").mock(
+        return_value=httpx.Response(200, json={"data": []})
+    )
+    respx.get("https://cliq.zoho.com/api/v2/users").mock(
+        return_value=httpx.Response(200, json={"data": []})
+    )
+
+    result = runner.invoke(app, ["cliq", "capabilities"], env=_cfg_env(mock_config))
+    assert result.exit_code == 0, result.output
+
+    payload = json.loads(result.output)
+    assert payload["module"] == "cliq"
+    assert payload["capabilityStage"] == "cliq-100"
+    assert payload["summary"]["total"] == 2
+
+
 # ---------------------------------------------------------------------------
 # crm status
 # ---------------------------------------------------------------------------

@@ -14,6 +14,7 @@
 - Added CRM phase-1 scaffold: `zoho crm status`, `zoho crm modules`, regional CRM base URL inference, and a minimal `ZohoCrmClient` read-only shell.
 - Added CRM read-only command scaffold surface: `zoho crm fields`, `zoho crm list`, `zoho crm get`, and `zoho crm search`.
 - Added CRM OAuth readiness support: `zoho login --with-crm` scope bundling plus `zoho crm status` scope diagnostics (`requiredScopes` / `missingScopes` / `oauthReady`).
+- Added Cliq capability discovery command `zoho cliq capabilities` (`cliq-100`) to probe token/org-available read endpoints and return a machine-readable operation matrix.
 - Added CRM fields read path: `zoho crm fields --module <api_name>` with pagination, backed by `ZohoCrmClient.fields` (`/settings/fields`).
 - Added CRM read-only record commands for `crm-002`: `zoho crm list`, `zoho crm get`, and `zoho crm search` (`--criteria` or `--word`) wired through `ZohoCrmClient` with pagination/field-selection support.
 

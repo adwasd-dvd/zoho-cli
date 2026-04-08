@@ -184,6 +184,165 @@ class ZohoCliqClient:
         """List users."""
         return self._get("/users", {"limit": limit})
 
+    def _probe_request(
+        self,
+        method: str,
+        path: str,
+        *,
+        params: dict | None = None,
+        payload: dict[str, Any] | None = None,
+    ) -> dict[str, Any]:
+        try:
+            resp = httpx.request(
+                method,
+                f"{self.base_url}{path}",
+                headers=self._headers,
+                params=params or {},
+                json=payload,
+                timeout=httpx.Timeout(30.0),
+            )
+        except httpx.HTTPError as exc:
+            return {
+                "ok": False,
+                "status": "transport_error",
+                "error": str(exc),
+            }
+
+        body = resp.text or ""
+        code = ""
+        message = ""
+        try:
+            parsed = resp.json()
+            if isinstance(parsed, dict):
+                code = str(parsed.get("code") or parsed.get("error") or "")
+                message = str(
+                    parsed.get("message") or parsed.get("error_description") or ""
+                )
+        except ValueError:
+            pass
+
+        if resp.is_success:
+            return {
+                "ok": True,
+                "httpStatus": resp.status_code,
+                "code": code or "ok",
+            }
+
+        lowered = body.lower()
+        status = "error"
+        if resp.status_code in (401, 403):
+            status = "forbidden_or_scope"
+        elif resp.status_code == 429:
+            status = "rate_limited"
+        elif resp.status_code in (404, 405) or "request_url_invalid" in lowered:
+            status = "not_supported"
+
+        return {
+            "ok": False,
+            "httpStatus": resp.status_code,
+            "status": status,
+            "code": code,
+            "message": message or body[:200],
+        }
+
+    def probe_capabilities(
+        self,
+        *,
+        channel_id: str | None = None,
+        user_id: str | None = None,
+    ) -> dict[str, Any]:
+        """Probe currently-available Cliq read endpoints for this token/org."""
+        checks: list[dict[str, Any]] = [
+            {
+                "name": "channels.list",
+                "kind": "read",
+                "method": "GET",
+                "path": "/channels",
+                "params": {"limit": 1},
+            },
+            {
+                "name": "users.list",
+                "kind": "read",
+                "method": "GET",
+                "path": "/users",
+                "params": {"limit": 1},
+            },
+        ]
+
+        if channel_id:
+            checks.extend(
+                [
+                    {
+                        "name": "channels.get",
+                        "kind": "read",
+                        "method": "GET",
+                        "path": f"/channels/{channel_id}",
+                        "params": {},
+                    },
+                    {
+                        "name": "chats.messages.list",
+                        "kind": "read",
+                        "method": "GET",
+                        "path": f"/chats/{channel_id}/messages",
+                        "params": {"limit": 1},
+                    },
+                    {
+                        "name": "channels.messages.list",
+                        "kind": "read",
+                        "method": "GET",
+                        "path": f"/channels/{channel_id}/messages",
+                        "params": {"limit": 1},
+                    },
+                ]
+            )
+
+        if user_id:
+            checks.extend(
+                [
+                    {
+                        "name": "users.get",
+                        "kind": "read",
+                        "method": "GET",
+                        "path": f"/users/{user_id}",
+                        "params": {},
+                    },
+                    {
+                        "name": "buddies.get",
+                        "kind": "read",
+                        "method": "GET",
+                        "path": f"/buddies/{user_id}",
+                        "params": {},
+                    },
+                ]
+            )
+
+        results: list[dict[str, Any]] = []
+        for check in checks:
+            probe = self._probe_request(
+                check["method"],
+                check["path"],
+                params=check.get("params"),
+            )
+            results.append(
+                {
+                    "name": check["name"],
+                    "kind": check["kind"],
+                    "method": check["method"],
+                    "path": check["path"],
+                    **probe,
+                }
+            )
+
+        ok_count = sum(1 for item in results if item.get("ok"))
+        return {
+            "checks": results,
+            "summary": {
+                "total": len(results),
+                "ok": ok_count,
+                "blocked": len(results) - ok_count,
+            },
+        }
+
     def send_message(
         self,
         text: str,

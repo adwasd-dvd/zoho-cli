@@ -30,30 +30,64 @@
     - mail-002
     - mail-003
 
-- id: cliq-001
-  title: scaffold cliq product module and client shell
+- id: cliq-100
+  title: capability discovery and operation matrix for Cliq
   module: cliq
-  stage: completed
+  stage: in_progress
   priority: high
   depends_on:
-    - mail-001
     - mail-004
 
-- id: cliq-002
-  title: implement cliq channels list users list and send baseline
+- id: cliq-110
+  title: implement cliq read plane (messages list/get/context)
   module: cliq
-  stage: completed
+  stage: queued
   priority: high
   depends_on:
-    - cliq-001
+    - cliq-100
 
-- id: cliq-003
-  title: implement mail to cliq notification workflows
+- id: cliq-120
+  title: implement cliq write plane (reply edit delete react)
   module: cliq
-  stage: completed
+  stage: queued
+  priority: high
+  depends_on:
+    - cliq-110
+
+- id: cliq-130
+  title: implement cliq admin plane (membership channel lifecycle)
+  module: cliq
+  stage: queued
   priority: medium
   depends_on:
-    - cliq-002
+    - cliq-120
+
+- id: cliq-140
+  title: implement cliq files and search plane
+  module: cliq
+  stage: queued
+  priority: medium
+  depends_on:
+    - cliq-110
+
+- id: cliq-150
+  title: implement openclaw integration primitives for cliq watch context and act
+  module: cliq
+  stage: queued
+  priority: high
+  depends_on:
+    - cliq-110
+    - cliq-120
+
+- id: cliq-160
+  title: cliq hardening live matrix and release gate
+  module: cliq
+  stage: queued
+  priority: medium
+  depends_on:
+    - cliq-120
+    - cliq-140
+    - cliq-150
 
 - id: crm-001
   title: scaffold crm product module and client shell
@@ -61,12 +95,12 @@
   stage: completed
   priority: high
   depends_on:
-    - cliq-003
+    - cliq-160
 
 - id: crm-002
   title: implement crm modules list fields list get list and search
   module: crm
-  stage: in_progress
+  stage: blocked
   priority: high
   depends_on:
     - crm-001

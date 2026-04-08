@@ -1182,9 +1182,9 @@ def cliq_status(
         "requiredScopes": _cliq.DEFAULT_CLIQ_SCOPES,
         "grantedScopes": account_cfg.get("scopes", []),
         "next": [
-            "implement channels list",
-            "implement users list",
-            "implement send baseline",
+            "discover capability matrix",
+            "implement messages/context read plane",
+            "implement watch/reply/edit/delete operations",
         ],
     }
 
@@ -1208,6 +1208,41 @@ def cliq_status(
             payload["missingScopes"] = _cliq.missing_cliq_scopes(live_scopes)
             payload["oauthReady"] = len(payload["missingScopes"]) == 0
 
+    utils.output(payload)
+
+
+@cliq_app.command("capabilities")
+def cliq_capabilities(
+    network: Optional[str] = typer.Option(
+        None, "--network", help="Cliq network slug (e.g. happydistrouklimited)."
+    ),
+    channel_id: Optional[str] = typer.Option(
+        None,
+        "--channel-id",
+        help="Optional channel/chat id for deeper endpoint probes.",
+    ),
+    user_id: Optional[str] = typer.Option(
+        None, "--user-id", help="Optional user id for deeper endpoint probes."
+    ),
+) -> None:
+    """Probe currently-available Cliq read capabilities for this token and org."""
+    cfg = _cfg()
+    email = _require_account(cfg)
+    client = _get_cliq_client(cfg, email, network=network)
+
+    probe = client.probe_capabilities(channel_id=channel_id, user_id=user_id)
+    payload = {
+        "module": "cliq",
+        "capabilityStage": "cliq-100",
+        "account": email,
+        "baseUrl": client.base_url,
+        "inputs": {
+            "network": network or "",
+            "channelId": channel_id or "",
+            "userId": user_id or "",
+        },
+        **probe,
+    }
     utils.output(payload)
 
 

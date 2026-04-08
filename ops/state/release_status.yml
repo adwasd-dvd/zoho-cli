@@ -2,12 +2,15 @@ current_version: 0.2.0
 next_version: 0.2.1
 release_candidate: false
 last_release_tag: v0.1.9
-current_train: crm-phase1
-assessed_at: "2026-04-08T16:15:56Z"
-current_milestone: crm-phase1-read-only
+current_train: cliq-expansion
+assessed_at: "2026-04-08T16:57:32Z"
+current_milestone: cliq-expansion-phase
 current_milestone_complete: false
 missing_requirements:
-  - "crm-002 close-out is blocked by account-level CRM org access (current test account cannot receive CRM scopes)"
+  - "cliq-100 capability discovery must define a reliable operation matrix for token/org-supported endpoints"
+  - "cliq-110 read plane (message/context retrieval) is not implemented"
+  - "crm-002 live close-out is blocked by account-level CRM org access"
+  - "ruff format --check currently fails for recently edited files"
 release_gate:
   blocker_bugs_cleared: true
   unit_tests_passed: true

@@ -1,5 +1,6 @@
 module: Cliq
-updated_at: "2026-04-08T14:09:24Z"
-status: completed
-blockers: []
-next_small_step: monitor regression risk while CRM phase continues
+updated_at: "2026-04-08T16:57:32Z"
+status: in_progress
+blockers:
+  - active token is currently Mail-only after crm-only re-auth; deep live cliq probes need `login --with-cliq`
+next_small_step: expand `cliq capabilities` probes and begin read-plane commands (`messages/context`)

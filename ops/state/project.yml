@@ -1,13 +1,15 @@
 project: zoho-cli
-updated_at: "2026-04-08T16:15:56Z"
-status: crm-phase1
+updated_at: "2026-04-08T16:57:32Z"
+status: cliq-expansion
 canonical_workspace: "/Users/adwasd/.openclaw/workspace-coder"
 project_root: "/Users/adwasd/.openclaw/workspace-coder/job/zoho-cli"
 module_order:
   - Mail
   - Cliq
   - CRM
-current_focus: advance crm-002 read-only command implementation
+current_focus: cliq-100 capability discovery and operation matrix
 primary_blockers:
-  - crm live read-only smoke (`crm list --module Leads`) fails with `OAUTH_SCOPE_MISMATCH`; consent confirms this account has no CRM org access, so CRM scopes are not actually granted
-next_step: switch to a CRM-enabled org account (or grant CRM org access), then rerun `login --with-crm` + crm read-only smoke (`list/get/search`)
+  - active token is currently Mail-only after crm-only re-auth; cliq deep probes need `zoho login --with-cliq`
+  - crm live read-only verification remains blocked by account-level CRM org access
+  - `ruff format --check` currently fails for newly edited files
+next_step: finish cliq-100 discovery coverage and start cliq-110 message/context read plane

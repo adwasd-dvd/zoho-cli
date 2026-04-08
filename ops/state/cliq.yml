@@ -1,6 +1,6 @@
 module: Cliq
-updated_at: "2026-04-08T18:41:05Z"
+updated_at: "2026-04-08T18:48:41Z"
 status: in_progress
 blockers:
   - Zoho token refresh endpoint is temporarily throttling after rapid live admin-plane checks; rerun remaining lifecycle verification after cooldown
-next_small_step: rerun full cliq-130 live lifecycle checks (`channel-create/archive/unarchive/delete`) after cooldown, then add member add/remove commands
+next_small_step: rerun full cliq-130 live lifecycle checks (`channel-create/archive/unarchive/delete` plus `member-add/member-remove`) after cooldown, then decide whether rename/topic admin commands are required for close-out

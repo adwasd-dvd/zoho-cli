@@ -1076,6 +1076,50 @@ def test_cliq_members_from_channel(mock_config: Path, mock_token_refresh: Any) -
     assert payload["members"][0]["id"] == "U1"
 
 
+def test_cliq_member_add_requires_destination(
+    mock_config: Path, mock_token_refresh: Any
+) -> None:
+    result = runner.invoke(
+        app,
+        ["cliq", "member-add", "U1"],
+        env=_cfg_env(mock_config),
+    )
+    assert result.exit_code == 1
+    assert "invalid_destination" in result.output
+
+
+@respx.mock
+def test_cliq_member_add(mock_config: Path, mock_token_refresh: Any) -> None:
+    respx.post("https://cliq.zoho.com/api/v2/channels/O2/members").mock(
+        return_value=httpx.Response(200, json={"data": {"status": "ok"}})
+    )
+
+    result = runner.invoke(
+        app,
+        ["cliq", "member-add", "U1", "--channel-id", "O2"],
+        env=_cfg_env(mock_config),
+    )
+    assert result.exit_code == 0, result.output
+    payload = json.loads(result.output)
+    assert payload["status"] == "ok"
+
+
+@respx.mock
+def test_cliq_member_remove(mock_config: Path, mock_token_refresh: Any) -> None:
+    respx.delete("https://cliq.zoho.com/api/v2/channels/O2/members/U1").mock(
+        return_value=httpx.Response(204, text="")
+    )
+
+    result = runner.invoke(
+        app,
+        ["cliq", "member-remove", "U1", "--channel-id", "O2"],
+        env=_cfg_env(mock_config),
+    )
+    assert result.exit_code == 0, result.output
+    payload = json.loads(result.output)
+    assert payload["status"] == "ok"
+
+
 @respx.mock
 def test_cliq_channel_create(mock_config: Path, mock_token_refresh: Any) -> None:
     respx.post("https://cliq.zoho.com/api/v2/channels").mock(

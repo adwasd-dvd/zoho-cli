@@ -19,6 +19,7 @@
 - Expanded recommended Cliq scope bundle to include `ZohoCliq.Messages.READ` so message/context operations can be verified live.
 - Added Cliq write-plane commands (`cliq-120`): `zoho cliq reply`, `zoho cliq edit`, `zoho cliq delete`, and `zoho cliq react` with endpoint/payload fallback logic for network-scoped org APIs.
 - Added first Cliq admin-plane commands (`cliq-130`): `zoho cliq members`, `zoho cliq channel-create`, `zoho cliq channel-archive`, and `zoho cliq channel-delete`.
+- Expanded Cliq admin-plane membership management with `zoho cliq member-add` and `zoho cliq member-remove`, including endpoint/payload fallbacks and destination validation.
 - Added CRM fields read path: `zoho crm fields --module <api_name>` with pagination, backed by `ZohoCrmClient.fields` (`/settings/fields`).
 - Added CRM read-only record commands for `crm-002`: `zoho crm list`, `zoho crm get`, and `zoho crm search` (`--criteria` or `--word`) wired through `ZohoCrmClient` with pagination/field-selection support.
 

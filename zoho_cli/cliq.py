@@ -589,6 +589,104 @@ class ZohoCliqClient:
         )
         return {}
 
+    def add_member(
+        self,
+        member_id: str,
+        *,
+        channel_id: str | None = None,
+        chat_id: str | None = None,
+    ) -> dict:
+        """Add a member to a channel/chat with endpoint/payload fallbacks."""
+        target_member = member_id.strip()
+        if not target_member:
+            utils.error_exit("invalid_member_id", "member_id cannot be empty")
+
+        resolved_chat = (chat_id or "").strip()
+
+        payloads = [
+            {"user_id": target_member},
+            {"member_id": target_member},
+            {"user": target_member},
+        ]
+
+        candidates: list[tuple[str, str, dict[str, Any] | None]] = []
+        if channel_id:
+            for payload in payloads:
+                candidates.extend(
+                    [
+                        ("POST", f"/channels/{channel_id}/members", payload),
+                        ("POST", f"/channels/{channel_id}/members/add", payload),
+                    ]
+                )
+        if resolved_chat:
+            for payload in payloads:
+                candidates.extend(
+                    [
+                        ("POST", f"/chats/{resolved_chat}/members", payload),
+                        ("POST", f"/chats/{resolved_chat}/members/add", payload),
+                    ]
+                )
+
+        if not candidates:
+            utils.error_exit(
+                "invalid_destination", "Provide --chat-id or resolvable --channel-id"
+            )
+
+        return self._request_with_candidates(
+            candidates,
+            scope_hint="ZohoCliq.Channels.ALL",
+            operation_label="member-add",
+        )
+
+    def remove_member(
+        self,
+        member_id: str,
+        *,
+        channel_id: str | None = None,
+        chat_id: str | None = None,
+    ) -> dict:
+        """Remove a member from a channel/chat with endpoint/payload fallbacks."""
+        target_member = member_id.strip()
+        if not target_member:
+            utils.error_exit("invalid_member_id", "member_id cannot be empty")
+
+        resolved_chat = (chat_id or "").strip()
+
+        payloads = [
+            {"user_id": target_member},
+            {"member_id": target_member},
+            {"user": target_member},
+        ]
+
+        candidates: list[tuple[str, str, dict[str, Any] | None]] = []
+        if channel_id:
+            candidates.append(
+                ("DELETE", f"/channels/{channel_id}/members/{target_member}", None)
+            )
+            for payload in payloads:
+                candidates.append(
+                    ("POST", f"/channels/{channel_id}/members/remove", payload)
+                )
+        if resolved_chat:
+            candidates.append(
+                ("DELETE", f"/chats/{resolved_chat}/members/{target_member}", None)
+            )
+            for payload in payloads:
+                candidates.append(
+                    ("POST", f"/chats/{resolved_chat}/members/remove", payload)
+                )
+
+        if not candidates:
+            utils.error_exit(
+                "invalid_destination", "Provide --chat-id or resolvable --channel-id"
+            )
+
+        return self._request_with_candidates(
+            candidates,
+            scope_hint="ZohoCliq.Channels.ALL",
+            operation_label="member-remove",
+        )
+
     def create_channel(
         self,
         name: str,

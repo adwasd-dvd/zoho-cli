@@ -1343,6 +1343,80 @@ def cliq_channel_create(
     )
 
 
+@cliq_app.command("member-add")
+def cliq_member_add(
+    member_id: str = typer.Argument(..., help="Member/user id to add."),
+    channel_id: Optional[str] = typer.Option(
+        None, "--channel-id", help="Target channel id."
+    ),
+    chat_id: Optional[str] = typer.Option(None, "--chat-id", help="Target chat id."),
+    network: Optional[str] = typer.Option(
+        None, "--network", help="Cliq network slug (e.g. happydistrouklimited)."
+    ),
+) -> None:
+    """Add a member to a channel/chat."""
+    if not chat_id and not channel_id:
+        utils.error_exit("invalid_destination", "Provide --chat-id or --channel-id")
+
+    cfg = _cfg()
+    email = _require_account(cfg)
+    client = _get_cliq_client(cfg, email, network=network)
+
+    resolved_chat = (chat_id or "").strip()
+    resp = client.add_member(
+        member_id,
+        chat_id=resolved_chat,
+        channel_id=channel_id,
+    )
+    data = resp.get("data", resp)
+    utils.output_status(
+        "Cliq member added",
+        extra={
+            "memberId": member_id,
+            "chatId": resolved_chat,
+            "channelId": channel_id or "",
+            "result": data,
+        },
+    )
+
+
+@cliq_app.command("member-remove")
+def cliq_member_remove(
+    member_id: str = typer.Argument(..., help="Member/user id to remove."),
+    channel_id: Optional[str] = typer.Option(
+        None, "--channel-id", help="Target channel id."
+    ),
+    chat_id: Optional[str] = typer.Option(None, "--chat-id", help="Target chat id."),
+    network: Optional[str] = typer.Option(
+        None, "--network", help="Cliq network slug (e.g. happydistrouklimited)."
+    ),
+) -> None:
+    """Remove a member from a channel/chat."""
+    if not chat_id and not channel_id:
+        utils.error_exit("invalid_destination", "Provide --chat-id or --channel-id")
+
+    cfg = _cfg()
+    email = _require_account(cfg)
+    client = _get_cliq_client(cfg, email, network=network)
+
+    resolved_chat = (chat_id or "").strip()
+    resp = client.remove_member(
+        member_id,
+        chat_id=resolved_chat,
+        channel_id=channel_id,
+    )
+    data = resp.get("data", resp)
+    utils.output_status(
+        "Cliq member removed",
+        extra={
+            "memberId": member_id,
+            "chatId": resolved_chat,
+            "channelId": channel_id or "",
+            "result": data,
+        },
+    )
+
+
 @cliq_app.command("channel-archive")
 def cliq_channel_archive(
     channel_id: str = typer.Argument(..., help="Target channel id."),

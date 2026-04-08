@@ -1,5 +1,5 @@
 module: Mail
-updated_at: "2026-04-08T02:42:58Z"
+updated_at: "2026-04-08T02:56:51Z"
 status: in_progress
 blockers: []
-next_small_step: extract shared message-target context setup (account/client/folder resolution) used by `mail get`, `mail attachments`, and `mail download-attachment`
+next_small_step: reuse shared message-target context setup in remaining message-scoped Mail commands (`mail reply`, `mail forward`, and `attachment content`)

@@ -165,6 +165,19 @@ def _send_and_report(
     utils.output_status(success_message, extra=_mail.build_send_status_extra(send_resp))
 
 
+def _mail_message_context(
+    cfg: dict,
+    message_id: str,
+    folder_id: Optional[str] = None,
+) -> tuple[ZohoMailClient, str, str]:
+    """Build shared mail command context for message-scoped operations."""
+    email = _require_account(cfg)
+    client = _get_client(cfg, email)
+    account_id = _require_account_id(cfg, email)
+    resolved_folder_id = _mail.resolve_message_folder_id(client, account_id, message_id, folder_id)
+    return client, account_id, resolved_folder_id
+
+
 def _resolve_label_id(client: "ZohoMailClient", account_id: str, name_or_id: str) -> str:
     """Resolve a label name or numeric ID to a labelId string."""
     if name_or_id.isdigit():
@@ -421,12 +434,8 @@ def mail_get(
     folder_id:  Optional[str] = typer.Option(None, "--folder-id", help="Folder ID (skips auto-scan)."),
 ) -> None:
     """Get full message content."""
-    cfg       = _cfg()
-    email     = _require_account(cfg)
-    client    = _get_client(cfg, email)
-    account_id = _require_account_id(cfg, email)
-
-    fid = _mail.resolve_message_folder_id(client, account_id, message_id, folder_id)
+    cfg = _cfg()
+    client, account_id, fid = _mail_message_context(cfg, message_id, folder_id)
 
     msg = _mail.fetch_message_content(client, account_id, fid, message_id)
     utils.output(msg, md_render=_md_message)
@@ -438,12 +447,8 @@ def mail_attachments(
     folder_id:  Optional[str] = typer.Option(None, "--folder-id", help="Folder ID."),
 ) -> None:
     """List attachments for a message."""
-    cfg       = _cfg()
-    email     = _require_account(cfg)
-    client    = _get_client(cfg, email)
-    account_id = _require_account_id(cfg, email)
-
-    fid = _mail.resolve_message_folder_id(client, account_id, message_id, folder_id)
+    cfg = _cfg()
+    client, account_id, fid = _mail_message_context(cfg, message_id, folder_id)
 
     atts = _mail.list_attachments(client, account_id, fid, message_id)
     utils.output(atts, md_render=_md_attachments)
@@ -458,12 +463,8 @@ def mail_download_attachment(
     parse:         bool          = typer.Option(False, "--parse", "-p", help="Auto-parse and display content after download (supported: txt, md, json, csv, xlsx, pdf, docx)."),
 ) -> None:
     """Download an attachment to a file."""
-    cfg       = _cfg()
-    email     = _require_account(cfg)
-    client    = _get_client(cfg, email)
-    account_id = _require_account_id(cfg, email)
-
-    fid = _mail.resolve_message_folder_id(client, account_id, message_id, folder_id)
+    cfg = _cfg()
+    client, account_id, fid = _mail_message_context(cfg, message_id, folder_id)
 
     data     = client.download_attachment(account_id, fid, message_id, attachment_id)
     out_path = Path(out)

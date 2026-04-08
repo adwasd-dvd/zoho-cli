@@ -1,5 +1,5 @@
 project: zoho-cli
-updated_at: "2026-04-08T04:58:29Z"
+updated_at: "2026-04-08T05:11:21Z"
 status: cliq-phase1
 canonical_workspace: "/Users/adwasd/.openclaw/workspace-coder"
 project_root: "/Users/adwasd/.openclaw/workspace-coder/job/zoho-cli"
@@ -7,8 +7,8 @@ module_order:
   - Mail
   - Cliq
   - CRM
-current_focus: finish cliq-002 live validation and move to cliq-003
+current_focus: verify cliq-003 mail-to-cliq notification workflow live
 primary_blockers:
   - cliq send live call returns `invalid_oauthtscope` until Cliq re-auth with updated scopes
   - mail release train still not version-bumped for v0.2.0
-next_step: re-auth test account with `login --with-cliq`, re-run live cliq send smoke, then advance to cliq-003 workflow wiring
+next_step: re-auth test account with `login --with-cliq`, then live-test `cliq send` and `cliq notify-mail`

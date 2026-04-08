@@ -1063,6 +1063,40 @@ def cliq_send(
     utils.output_status("Cliq message sent", extra={"result": data})
 
 
+@cliq_app.command("notify-mail")
+def cliq_notify_mail(
+    message_id: str = typer.Argument(..., help="Mail message ID to notify."),
+    channel_id: Optional[str] = typer.Option(None, "--channel-id", help="Destination Cliq channel id."),
+    user_id: Optional[str] = typer.Option(None, "--user-id", help="Destination Cliq user id."),
+    folder_id: Optional[str] = typer.Option(None, "--folder-id", help="Mail folder id (skip folder scan)."),
+    network: Optional[str] = typer.Option(None, "--network", help="Cliq network slug (e.g. happydistrouklimited)."),
+    include_body: bool = typer.Option(False, "--include-body", help="Include a short message body snippet."),
+) -> None:
+    """Send a compact Mail summary into Cliq as a notification message."""
+    if bool(channel_id) == bool(user_id):
+        utils.error_exit("invalid_destination", "Provide exactly one of channel_id or user_id")
+
+    cfg = _cfg()
+    email = _require_account(cfg)
+
+    mail_client, account_id, fid = _mail_message_context(cfg, message_id, folder_id)[1:]
+    message = _mail.fetch_message_content(mail_client, account_id, fid, message_id)
+    text = _cliq.build_mail_notification_text(message, include_body=include_body)
+
+    cliq_client = _get_cliq_client(cfg, email, network=network)
+    resp = cliq_client.send_message(text, channel_id=channel_id, user_id=user_id)
+
+    data = resp.get("data", resp)
+    utils.output_status(
+        "Cliq mail notification sent",
+        extra={
+            "messageId": message_id,
+            "subject": message.get("subject", ""),
+            "result": data,
+        },
+    )
+
+
 # ══════════════════════════════════════════════════════════════════════════════
 # zoho config …
 # ══════════════════════════════════════════════════════════════════════════════

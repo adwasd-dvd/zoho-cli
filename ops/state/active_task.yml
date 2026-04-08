@@ -1,13 +1,12 @@
-id: cliq-002
-title: implement cliq channels list users list and send baseline
+id: cliq-003
+title: implement mail to cliq notification workflows
 module: cliq
 stage: verification
 status: in_progress
 owner: automation
 success_criteria:
-  - cliq channels list works with stable JSON output
-  - cliq users list works with stable JSON output
-  - cliq send baseline exists with clear destination validation
+  - a mail-to-cliq notification command exists with stable JSON output
+  - destination validation is explicit and fail-fast
   - narrow tests added or updated
   - changelog updated when behavior changes
-next_if_done: cliq-003
+next_if_done: crm-001

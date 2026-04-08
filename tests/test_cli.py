@@ -901,6 +901,60 @@ def test_cliq_send_requires_destination(mock_config: Path, mock_token_refresh: A
     assert "invalid_destination" in result.output
 
 
+@respx.mock
+def test_cliq_notify_mail_to_channel(mock_config: Path, mock_token_refresh: Any) -> None:
+    respx.get(f"{MAIL_BASE}/accounts/{ACCOUNT_ID}/folders/F1/messages/M1/content").mock(
+        return_value=httpx.Response(
+            200,
+            json={
+                "data": {
+                    "messageId": "M1",
+                    "subject": "Status",
+                    "sender": "alice@example.com",
+                    "textBody": "Original body",
+                }
+            },
+        )
+    )
+    send_route = respx.post("https://cliq.zoho.com/api/v2/channels/C1/message").mock(
+        return_value=httpx.Response(200, json={"data": {"message_id": "CM1"}})
+    )
+
+    result = runner.invoke(
+        app,
+        [
+            "cliq",
+            "notify-mail",
+            "M1",
+            "--folder-id",
+            "F1",
+            "--channel-id",
+            "C1",
+            "--include-body",
+        ],
+        env=_cfg_env(mock_config),
+    )
+    assert result.exit_code == 0, result.output
+
+    payload = json.loads(send_route.calls.last.request.content.decode("utf-8"))
+    assert "📧 New Mail" in payload["text"]
+    assert "Subject: Status" in payload["text"]
+
+    out = json.loads(result.output)
+    assert out["status"] == "ok"
+    assert out["subject"] == "Status"
+
+
+def test_cliq_notify_mail_requires_destination(mock_config: Path, mock_token_refresh: Any) -> None:
+    result = runner.invoke(
+        app,
+        ["cliq", "notify-mail", "M1", "--folder-id", "F1"],
+        env=_cfg_env(mock_config),
+    )
+    assert result.exit_code == 1
+    assert "invalid_destination" in result.output
+
+
 # ---------------------------------------------------------------------------
 # config show
 # ---------------------------------------------------------------------------

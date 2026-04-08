@@ -60,3 +60,20 @@ def test_cliq_client_send_to_channel(client: cliq.ZohoCliqClient) -> None:
 def test_cliq_client_send_requires_exactly_one_destination(client: cliq.ZohoCliqClient) -> None:
     with pytest.raises(ValueError, match="exactly one"):
         client.send_message("hello")
+
+
+def test_build_mail_notification_text() -> None:
+    text = cliq.build_mail_notification_text(
+        {
+            "messageId": "M1",
+            "from": "alice@example.com",
+            "subject": "Status",
+            "textBody": "Body line",
+        },
+        include_body=True,
+    )
+    assert "New Mail" in text
+    assert "From: alice@example.com" in text
+    assert "Subject: Status" in text
+    assert "Message ID: M1" in text
+    assert "Snippet: Body line" in text

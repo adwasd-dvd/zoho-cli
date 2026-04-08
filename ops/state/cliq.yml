@@ -1,6 +1,6 @@
 module: Cliq
-updated_at: "2026-04-08T04:58:29Z"
+updated_at: "2026-04-08T05:11:21Z"
 status: in_progress
 blockers:
   - cliq send currently returns `invalid_oauthtscope` until test account re-auths with updated Cliq scope bundle
-next_small_step: re-run `login --with-cliq` to pick up new endpoint-specific Cliq scopes, then re-test live `cliq send`
+next_small_step: validate new `cliq notify-mail` live path after re-auth, then close cliq-003 verification

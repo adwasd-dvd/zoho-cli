@@ -99,3 +99,34 @@ class ZohoCliqClient:
         if channel_id:
             return self._post_json(f"/channels/{channel_id}/message", payload)
         return self._post_json(f"/users/{user_id}/message", payload)
+
+
+def build_mail_notification_text(
+    message: dict,
+    *,
+    include_body: bool = False,
+    max_body_chars: int = 240,
+) -> str:
+    """Build a compact mail notification body for Cliq messages."""
+    subject = (message.get("subject") or "(no subject)").strip()
+    sender = (message.get("from") or "unknown").strip()
+    message_id = str(message.get("messageId") or "")
+
+    lines = [
+        "📧 New Mail",
+        f"From: {sender}",
+        f"Subject: {subject}",
+    ]
+
+    if message_id:
+        lines.append(f"Message ID: {message_id}")
+
+    if include_body:
+        body = (message.get("textBody") or "").replace("\n", " ").strip()
+        if body:
+            snippet = body[:max_body_chars]
+            if len(body) > max_body_chars:
+                snippet += "..."
+            lines.append(f"Snippet: {snippet}")
+
+    return "\n".join(lines)

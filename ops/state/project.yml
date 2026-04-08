@@ -1,5 +1,5 @@
 project: zoho-cli
-updated_at: "2026-04-08T03:57:44Z"
+updated_at: "2026-04-08T04:11:30Z"
 status: mail-stabilizing
 canonical_workspace: "/Users/adwasd/.openclaw/workspace-coder"
 project_root: "/Users/adwasd/.openclaw/workspace-coder/job/zoho-cli"
@@ -9,6 +9,6 @@ module_order:
   - CRM
 current_focus: finish Mail stabilization gates to unblock Cliq
 primary_blockers:
-  - integration verification pending for Mail train
-  - packaging/release gate checks (mail-004) not started
+  - mail-002 output normalization still in progress
+  - mail-003 retry/rate-limit handling still queued
 next_step: continue mail-002 by normalizing remaining parse/content output paths to keep JSON mode consistently machine-readable

@@ -24,7 +24,7 @@
 - id: mail-004
   title: add packaging smoke tests and release gate checks
   module: mail
-  stage: queued
+  stage: verification
   priority: medium
   depends_on:
     - mail-002

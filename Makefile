@@ -3,7 +3,7 @@ PYTHON := .venv/bin/python
 PYTEST := .venv/bin/pytest
 RUFF   := .venv/bin/ruff
 
-.PHONY: help install test lint fmt fmt-check ci
+.PHONY: help install test lint fmt fmt-check package-smoke release-gate ci
 
 help:
 	@echo "Usage: make <target>"
@@ -13,6 +13,8 @@ help:
 	@echo "  lint        Run ruff linter"
 	@echo "  fmt         Auto-format code with ruff"
 	@echo "  fmt-check   Check formatting (no changes)"
+	@echo "  package-smoke Build wheel and smoke-install in isolated venv"
+	@echo "  release-gate Full release gate: tests + package smoke"
 	@echo "  ci          fmt-check + lint + test"
 
 install:
@@ -30,5 +32,11 @@ fmt:
 
 fmt-check:
 	$(RUFF) format --check zoho_cli/ tests/
+
+package-smoke:
+	./ops/scripts/release_gate.sh package-only
+
+release-gate:
+	./ops/scripts/release_gate.sh full
 
 ci: fmt-check lint test

@@ -3,12 +3,13 @@ next_version: 0.2.0
 release_candidate: false
 last_release_tag: v0.1.9
 current_train: mail-stabilization
-assessed_at: "2026-04-08T03:44:53Z"
+assessed_at: "2026-04-08T04:11:30Z"
 current_milestone: mail-core-extraction
 current_milestone_complete: false
 missing_requirements:
   - current focus milestone mail-core-extraction is still in active coding
-  - packaging smoke tests/release gate checks are still pending (mail-004 queued)
+  - output normalization milestone (mail-002) remains in progress
+  - retry/rate-limit handling milestone (mail-003) remains queued
 release_gate:
   blocker_bugs_cleared: true
   unit_tests_passed: true

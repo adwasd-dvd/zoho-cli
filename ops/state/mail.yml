@@ -1,5 +1,5 @@
 module: Mail
-updated_at: "2026-04-08T03:57:44Z"
+updated_at: "2026-04-08T04:11:30Z"
 status: in_progress
 blockers: []
 next_small_step: normalize attachment parse/content stdout paths so JSON mode stays machine-readable end-to-end

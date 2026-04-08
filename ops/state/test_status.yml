@@ -1,4 +1,4 @@
-last_run_at: "2026-04-08T03:57:44Z"
+last_run_at: "2026-04-08T04:11:30Z"
 last_result: pass
 current_focus: mail
 suites:
@@ -20,10 +20,15 @@ suites:
   integration:
     status: passing
     notes:
+      - ./.venv/bin/python -m zoho_cli --config /tmp/zoho-test-config.json --account ai-dev@happy-distro.co.uk mail attachments 1775620829752152900 --folder-id 2857786000000008014
+      - ./.venv/bin/python -m zoho_cli --config /tmp/zoho-test-config.json --account ai-dev@happy-distro.co.uk mail download-attachment 1775620829752152900 <attachmentId> --folder-id 2857786000000008014 --out /tmp/zoho-attachment-test/<file>
+      - validated subject `attachment test` with 4 attachments, all listed and downloaded with expected file sizes (2026-04-08T04:11:30Z)
       - ./.venv/bin/python -m zoho_cli --config /tmp/zoho-test-config.json --account ai-dev@happy-distro.co.uk mail list --folder Inbox --limit 1
       - ./.venv/bin/python -m zoho_cli --config /tmp/zoho-test-config.json --account ai-dev@happy-distro.co.uk mail search "Zoho" --limit 1
       - ./.venv/bin/python -m zoho_cli --config /tmp/zoho-test-config.json --account ai-dev@happy-distro.co.uk mail get 1775618034273140900 --folder-id 2857786000000008014
       - read-only smoke passed against configured account with hydrated metadata output (2026-04-08T03:48:31Z)
   packaging:
-    status: pending
-    notes: []
+    status: passing
+    notes:
+      - make package-smoke (wheel build + isolated install smoke) passed (2026-04-08T04:11:30Z)
+      - make release-gate (101 tests + wheel smoke) passed (2026-04-08T04:11:30Z)

@@ -563,6 +563,40 @@ def test_attachment_content_with_filename(mock_config: Path, mock_token_refresh:
     assert "parsed attachment" in result.output
 
 
+@respx.mock
+def test_attachment_content_missing_filename_returns_not_found(
+    mock_config: Path, mock_token_refresh: Any
+) -> None:
+    """attachment content should error when the requested filename is missing."""
+    respx.get(
+        f"{MAIL_BASE}/accounts/{ACCOUNT_ID}/folders/F1/messages/M1/attachmentinfo"
+    ).mock(
+        return_value=httpx.Response(
+            200,
+            json={
+                "data": {
+                    "attachments": [
+                        {
+                            "attachmentId": "A1",
+                            "attachmentName": "report.txt",
+                            "attachmentSize": 5,
+                        }
+                    ]
+                }
+            },
+        )
+    )
+
+    result = runner.invoke(
+        app,
+        ["attachment", "content", "M1", "missing.txt", "--folder-id", "F1"],
+        env=_cfg_env(mock_config),
+    )
+
+    assert result.exit_code == 1
+    assert "not_found" in result.output
+
+
 # ---------------------------------------------------------------------------
 # folders list
 # ---------------------------------------------------------------------------

@@ -201,6 +201,32 @@ def _parse_attachment_content(path: Path) -> str:
     return content
 
 
+def _select_attachment_target(
+    attachments: list[dict],
+    message_id: str,
+    file_name: Optional[str] = None,
+) -> dict:
+    """Select an attachment either by filename filter or interactive choice."""
+    if file_name:
+        matches = [a for a in attachments if file_name.lower() in a.get("fileName", "").lower()]
+        if not matches:
+            utils.error_exit("not_found", f"No attachment found with name '{file_name}'")
+        return matches[0]
+
+    print(f"Attachments for message {message_id}:")
+    for i, att in enumerate(attachments, 1):
+        print(f"  {i}. {att['fileName']} ({utils.format_size(att['size'])})")
+    choice = input("\nEnter attachment number: ")
+    try:
+        idx = int(choice) - 1
+        if not (0 <= idx < len(attachments)):
+            utils.error_exit("invalid_choice", "Invalid selection")
+        return attachments[idx]
+    except ValueError:
+        utils.error_exit("invalid_input", "Please enter a number")
+    return {}  # unreachable
+
+
 def _resolve_label_id(client: "ZohoMailClient", account_id: str, name_or_id: str) -> str:
     """Resolve a label name or numeric ID to a labelId string."""
     if name_or_id.isdigit():
@@ -1010,27 +1036,7 @@ def attachment_content(
     
     if not atts:
         utils.error_exit("no_attachments", f"No attachments found for message {message_id}")
-    
-    # If file_name provided, find matching attachment
-    target = None
-    if file_name:
-        matches = [a for a in atts if file_name.lower() in a.get("fileName", "").lower()]
-        if not matches:
-            utils.error_exit("not_found", f"No attachment found with name '{file_name}'")
-        target = matches[0]
-    else:
-        # Show list and ask user to choose
-        print(f"Attachments for message {message_id}:")
-        for i, att in enumerate(atts, 1):
-            print(f"  {i}. {att['fileName']} ({utils.format_size(att['size'])})")
-        choice = input("\nEnter attachment number: ")
-        try:
-            idx = int(choice) - 1
-            if not (0 <= idx < len(atts)):
-                utils.error_exit("invalid_choice", "Invalid selection")
-            target = atts[idx]
-        except ValueError:
-            utils.error_exit("invalid_input", "Please enter a number")
+    target = _select_attachment_target(atts, message_id, file_name)
     
     # Download to temp file
     suffix = Path(target.get("fileName") or "").suffix

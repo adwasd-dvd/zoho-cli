@@ -1,0 +1,5 @@
+module: CRM
+updated_at: "2026-04-08T14:09:24Z"
+status: in_progress
+blockers: []
+next_small_step: implement crm-002 read-only commands (`fields`, `get`, `list`, `search`) on the new scaffold

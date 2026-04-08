@@ -1,12 +1,13 @@
-id: crm-001
-title: scaffold crm product module and client shell
+id: crm-002
+title: implement crm modules list fields list get list and search
 module: crm
 stage: queued
 status: queued
 owner: automation
 success_criteria:
-  - crm command group scaffolded with status and read-only shell commands
-  - shared config/auth wiring reused from mail/cliq modules
-  - focused CRM scaffold tests added
+  - crm modules list command supports stable JSON output and pagination flags
+  - crm fields list command supports module targeting
+  - crm record get/list/search commands share client wiring and error formatting
+  - focused CRM command tests added or updated
   - changelog updated when behavior changes
-next_if_done: crm-002
+next_if_done: release-hardening

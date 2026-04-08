@@ -839,6 +839,49 @@ def test_cliq_status_oauth_ready_when_scopes_present(tmp_path: Path) -> None:
     assert payload["missingScopes"] == []
 
 
+# ---------------------------------------------------------------------------
+# crm status
+# ---------------------------------------------------------------------------
+
+
+def test_crm_status_scaffold_info(mock_config: Path) -> None:
+    """crm status returns scaffold readiness and inferred base URL."""
+    result = runner.invoke(app, ["crm", "status"], env=_cfg_env(mock_config))
+    assert result.exit_code == 0, result.output
+
+    payload = json.loads(result.output)
+    assert payload["module"] == "crm"
+    assert payload["scaffold"] == "ready"
+    assert payload["hasAccount"] is True
+    assert payload["hasAccountId"] is True
+    assert payload["baseUrl"] == "https://www.zohoapis.com/crm/v2"
+
+
+def test_crm_status_check_auth(mock_config: Path, mock_token_refresh: Any) -> None:
+    """--check-auth verifies OAuth refresh via shared account wiring."""
+    result = runner.invoke(
+        app,
+        ["crm", "status", "--check-auth"],
+        env=_cfg_env(mock_config),
+    )
+    assert result.exit_code == 0, result.output
+
+    payload = json.loads(result.output)
+    assert payload["auth"] == "ok"
+
+
+@respx.mock
+def test_crm_modules(mock_config: Path, mock_token_refresh: Any) -> None:
+    respx.get("https://www.zohoapis.com/crm/v2/settings/modules").mock(
+        return_value=httpx.Response(200, json={"data": [{"api_name": "Leads", "module_name": "Leads"}]})
+    )
+
+    result = runner.invoke(app, ["crm", "modules", "--limit", "2"], env=_cfg_env(mock_config))
+    assert result.exit_code == 0, result.output
+    payload = json.loads(result.output)
+    assert payload[0]["api_name"] == "Leads"
+
+
 @respx.mock
 def test_cliq_channels(mock_config: Path, mock_token_refresh: Any) -> None:
     respx.get("https://cliq.zoho.com/api/v2/channels").mock(

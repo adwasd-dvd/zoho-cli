@@ -35,9 +35,10 @@ from zoho_cli import parse as _parse
 import click
 import typer
 
-from zoho_cli import auth, cliq as _cliq, config as _config, folders as _folders, mail as _mail, storage, utils
+from zoho_cli import auth, cliq as _cliq, config as _config, crm as _crm, folders as _folders, mail as _mail, storage, utils
 from zoho_cli.api import ZohoMailClient
 from zoho_cli.cliq import ZohoCliqClient
+from zoho_cli.crm import ZohoCrmClient
 
 
 def _get_version() -> str:
@@ -62,6 +63,7 @@ attachment_subapp = typer.Typer(no_args_is_help=True, name="attachment", help="A
 folders_app     = typer.Typer(no_args_is_help=True, help="Folder management.")
 labels_app      = typer.Typer(no_args_is_help=True, help="Label management.")
 cliq_app        = typer.Typer(no_args_is_help=True, help="Cliq operations (scaffold).")
+crm_app         = typer.Typer(no_args_is_help=True, help="CRM operations (scaffold).")
 config_app      = typer.Typer(no_args_is_help=True, help="Configuration helpers.")
 
 app.add_typer(mail_app,         name="mail")
@@ -69,6 +71,7 @@ app.add_typer(attachment_subapp, name="attachment")
 app.add_typer(folders_app,       name="folders")
 app.add_typer(labels_app,  name="labels")
 app.add_typer(cliq_app,    name="cliq")
+app.add_typer(crm_app,     name="crm")
 app.add_typer(config_app,  name="config")
 
 # ── global state ──────────────────────────────────────────────────────────────
@@ -159,6 +162,22 @@ def _get_cliq_client(cfg: dict, email: str, network: Optional[str] = None) -> Zo
             mail_base_url=account_cfg.get("mail_base_url"),
             accounts_server=account_cfg.get("accounts_server"),
             network=network or account_cfg.get("cliq_network"),
+        ),
+    )
+
+
+def _get_crm_client(cfg: dict, email: str) -> ZohoCrmClient:
+    cid, csec = _require_credentials(cfg)
+    account_cfg = cfg.get("accounts", {}).get(email, {})
+    access_token = auth.refresh_access_token(
+        email, cid, csec,
+        accounts_base_url=account_cfg.get("accounts_server"),
+    )
+    return ZohoCrmClient(
+        access_token,
+        base_url=_crm.infer_crm_base_url(
+            mail_base_url=account_cfg.get("mail_base_url"),
+            accounts_server=account_cfg.get("accounts_server"),
         ),
     )
 
@@ -1094,6 +1113,58 @@ def cliq_notify_mail(
             "result": data,
         },
     )
+
+
+# ══════════════════════════════════════════════════════════════════════════════
+# zoho crm …
+# ══════════════════════════════════════════════════════════════════════════════
+
+@crm_app.command("status")
+def crm_status(
+    check_auth: bool = typer.Option(False, "--check-auth", help="Verify OAuth refresh for the selected account."),
+) -> None:
+    """Show CRM scaffold readiness and inferred API endpoint."""
+    cfg = _cfg()
+    email = _S.account or _config.default_account(cfg)
+    account_cfg = cfg.get("accounts", {}).get(email, {}) if email else {}
+
+    payload: dict = {
+        "module": "crm",
+        "scaffold": "ready",
+        "account": email or "",
+        "hasAccount": bool(email),
+        "hasAccountId": bool(account_cfg.get("accountId")),
+        "baseUrl": _crm.infer_crm_base_url(
+            mail_base_url=account_cfg.get("mail_base_url"),
+            accounts_server=account_cfg.get("accounts_server"),
+        ),
+        "next": [
+            "implement modules list",
+            "implement fields list",
+            "implement record get/list/search",
+        ],
+    }
+
+    if check_auth and email:
+        _get_crm_client(cfg, email)
+        payload["auth"] = "ok"
+
+    utils.output(payload)
+
+
+@crm_app.command("modules")
+def crm_modules(
+    limit: int = typer.Option(50, "--limit", "-n", help="Max modules to return."),
+    page: int = typer.Option(1, "--page", help="Result page number."),
+) -> None:
+    """List CRM modules (read-only scaffold endpoint)."""
+    cfg = _cfg()
+    email = _require_account(cfg)
+    client = _get_crm_client(cfg, email)
+
+    resp = client.modules(limit=limit, page=page)
+    data = resp.get("data", resp)
+    utils.output(data)
 
 
 # ══════════════════════════════════════════════════════════════════════════════

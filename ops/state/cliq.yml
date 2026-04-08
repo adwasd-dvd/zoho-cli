@@ -1,5 +1,5 @@
 module: Cliq
-updated_at: "2026-04-08T13:41:33Z"
-status: in_progress
+updated_at: "2026-04-08T14:09:24Z"
+status: completed
 blockers: []
-next_small_step: close cliq-003 and start crm-001 scaffold
+next_small_step: monitor regression risk while CRM phase continues

@@ -1,5 +1,5 @@
 project: zoho-cli
-updated_at: "2026-04-08T13:41:33Z"
+updated_at: "2026-04-08T14:09:24Z"
 status: crm-phase1
 canonical_workspace: "/Users/adwasd/.openclaw/workspace-coder"
 project_root: "/Users/adwasd/.openclaw/workspace-coder/job/zoho-cli"
@@ -7,7 +7,7 @@ module_order:
   - Mail
   - Cliq
   - CRM
-current_focus: begin crm-001 scaffold
+current_focus: advance crm-002 read-only command implementation
 primary_blockers:
   - `make ci` still fails at `ruff format --check` (format drift remains)
-next_step: start crm-001 scaffold and keep CI formatting cleanup queued for next hygiene pass
+next_step: implement CRM read-only commands (`fields`, `get`, `list`, `search`) on top of the new scaffold

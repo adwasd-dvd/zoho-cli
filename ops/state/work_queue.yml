@@ -58,7 +58,7 @@
 - id: crm-001
   title: scaffold crm product module and client shell
   module: crm
-  stage: queued
+  stage: completed
   priority: high
   depends_on:
     - cliq-003

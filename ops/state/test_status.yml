@@ -1,10 +1,12 @@
-last_run_at: "2026-04-08T13:41:33Z"
+last_run_at: "2026-04-08T14:09:24Z"
 last_result: pass
-current_focus: cliq
+current_focus: crm
 suites:
   unit:
     status: passing
     notes:
+      - ./.venv/bin/pytest -q tests/test_crm.py tests/test_cli.py::test_crm_status_scaffold_info tests/test_cli.py::test_crm_status_check_auth tests/test_cli.py::test_crm_modules tests/test_cli.py::test_cliq_status_scaffold_info
+      - 8 passed in 0.10s (2026-04-08T14:06:05Z)
       - ./.venv/bin/pytest -q tests/test_cliq.py tests/test_cli.py::test_cliq_send_channel tests/test_cli.py::test_cliq_send_channel_accepts_204_empty_body tests/test_cli.py::test_cliq_notify_mail_to_channel tests/test_cli.py::test_cliq_send_requires_destination
       - 17 passed in 0.21s (2026-04-08T13:38:41Z)
       - make release-gate
@@ -49,6 +51,7 @@ suites:
   cli_smoke:
     status: passing
     notes:
+      - `./.venv/bin/python -m zoho_cli --config /tmp/zoho-test-config.json --account ai-dev@happy-distro.co.uk crm status` returns scaffold-ready payload with inferred base URL (`https://www.zohoapis.com/crm/v2`) (2026-04-08T14:07:20Z)
       - cliq OAuth readiness surfaced in `zoho cliq status` (`requiredScopes`, `missingScopes`, `oauthReady`) and login now supports `--with-cliq` + repeatable `--scope`
       - cliq scaffold command `zoho cliq status` now reports readiness + inferred regional base URL and optional OAuth check
       - ZohoMailClient now retries retryable HTTP failures (429/5xx) and transport errors with bounded backoff

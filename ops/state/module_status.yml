@@ -16,8 +16,8 @@ cliq:
 
 crm:
   priority: 3
-  status: queued
-  phase: phase_1_read_only
+  status: in_progress
+  phase: phase_1_read_only_scaffolded
   target_release: v0.5.0
   current_milestone: crm-phase1-read-only
   blockers: []

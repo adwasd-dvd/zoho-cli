@@ -12,3 +12,7 @@ Known recurring failure modes:
 2. absolute `/Volumes/...` paths accidentally treated as relative
 3. brittle exact-match markdown edits
 4. overlong prompt / run leading to timeout before real work starts
+
+Test account status:
+- `ai-dev@happy-distro.co.uk` token missing or invalid; refresh returns `invalid_code`
+- Re-auth via OAuth flow required before live Cliq admin-plane verification (cliq-130)

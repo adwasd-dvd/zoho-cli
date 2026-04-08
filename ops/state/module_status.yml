@@ -8,12 +8,12 @@ mail:
 
 cliq:
   priority: 2
-  status: in_progress
+  status: blocked
   phase: expansion_admin_plane
   target_release: v0.4.0
   current_milestone: cliq-expansion-phase
   blockers:
-    - Zoho token refresh endpoint is temporarily throttling after rapid live admin-plane checks; rerun remaining cliq-130 lifecycle verification after cooldown
+    - ai-dev@happy-distro.co.uk token invalid/missing; OAuth re-auth required before live verification
 
 crm:
   priority: 3

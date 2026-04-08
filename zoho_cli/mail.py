@@ -115,6 +115,17 @@ def format_message_content(msg: dict) -> dict:
     }
 
 
+def fetch_message_content(
+    client: ZohoMailClient,
+    account_id: str,
+    folder_id: str,
+    message_id: str,
+) -> dict:
+    """Fetch and normalize full message content."""
+    resp = client.get_message_content(account_id, folder_id, message_id)
+    return format_message_content(resp.get("data", resp))
+
+
 def format_attachment(att: dict) -> dict:
     # Defensive handling for unexpected attachment types (e.g., string IDs)
     if isinstance(att, str):

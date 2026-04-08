@@ -25,6 +25,14 @@ class _AttachmentClient:
         return {"data": self._payload}
 
 
+class _ContentClient:
+    def __init__(self, payload):
+        self._payload = payload
+
+    def get_message_content(self, account_id: str, folder_id: str, message_id: str) -> dict:
+        return self._payload
+
+
 def test_resolve_message_folder_id_uses_explicit_folder_id() -> None:
     class _NoopClient:
         pass
@@ -82,6 +90,27 @@ def test_list_attachments_handles_list_payload() -> None:
     atts = mail.list_attachments(client, "ACC", "F1", "M1")
 
     assert [a["attachmentId"] for a in atts] == ["A1", "A2"]
+
+
+def test_fetch_message_content_normalizes_nested_data_response() -> None:
+    client = _ContentClient(
+        {
+            "data": {
+                "messageId": "M1",
+                "folderId": "F1",
+                "subject": "Status",
+                "sender": "alice@example.com",
+                "textBody": "Original body",
+            }
+        }
+    )
+
+    msg = mail.fetch_message_content(client, "ACC", "F1", "M1")
+
+    assert msg["messageId"] == "M1"
+    assert msg["subject"] == "Status"
+    assert msg["from"] == "alice@example.com"
+    assert msg["textBody"] == "Original body"
 
 
 def test_build_reply_payload_with_quote() -> None:

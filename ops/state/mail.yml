@@ -1,5 +1,5 @@
 module: Mail
-updated_at: "2026-04-08T02:12:13Z"
+updated_at: "2026-04-08T02:26:58Z"
 status: in_progress
 blockers: []
-next_small_step: extract shared original-message fetch/format wiring used by mail reply/forward before payload construction
+next_small_step: switch `mail get` to use shared `fetch_message_content` helper so message-content wiring stays in one place

@@ -636,8 +636,7 @@ def mail_reply(
 
     fid = _mail.resolve_message_folder_id(client, account_id, message_id, folder_id)
 
-    resp    = client.get_message_content(account_id, fid, message_id)
-    msg     = _mail.format_message_content(resp.get("data", resp))
+    msg = _mail.fetch_message_content(client, account_id, fid, message_id)
     to_addr = msg["from"]
     payload = _mail.build_reply_payload(
         from_address=email,
@@ -665,8 +664,7 @@ def mail_forward(
 
     fid = _mail.resolve_message_folder_id(client, account_id, message_id, folder_id)
 
-    resp    = client.get_message_content(account_id, fid, message_id)
-    msg     = _mail.format_message_content(resp.get("data", resp))
+    msg = _mail.fetch_message_content(client, account_id, fid, message_id)
     payload = _mail.build_forward_payload(
         from_address=email,
         to_addresses=to,

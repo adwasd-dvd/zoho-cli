@@ -12,3 +12,12 @@
 - Refactored Mail `reply`/`forward` payload construction into shared helpers to reduce duplicate command wiring.
 - Refactored Mail `send` payload construction into a shared helper and added focused CLI coverage for plaintext send payloads.
 - Normalized Mail send-result status extraction into `zoho_cli.mail.build_send_status_extra`, and switched `mail send`, `mail reply`, and `mail forward` to share it.
+- Extracted `zoho_cli.mail.fetch_message_content` and switched `mail reply`/`mail forward` to share original-message fetch and normalization wiring before payload construction.
+
+### Release readiness
+- Assessed at 2026-04-08T02:00:05Z: release is **not ready**.
+- Blocker bugs are clear and targeted Mail unit tests pass (`13 passed`).
+- Remaining release blockers:
+  - current focus milestone `mail-core-extraction` is still active (not complete)
+  - integration tests are pending and not explicitly skipped for this train
+  - packaging/release gate task (`mail-004`) is still queued

@@ -1280,6 +1280,151 @@ def cliq_users(
     utils.output(data)
 
 
+@cliq_app.command("messages")
+def cliq_messages(
+    channel_id: Optional[str] = typer.Option(
+        None, "--channel-id", help="Source channel id (resolved to chat_id)."
+    ),
+    chat_id: Optional[str] = typer.Option(None, "--chat-id", help="Source chat id."),
+    limit: int = typer.Option(50, "--limit", "-n", help="Max messages to return."),
+    network: Optional[str] = typer.Option(
+        None, "--network", help="Cliq network slug (e.g. happydistrouklimited)."
+    ),
+) -> None:
+    """List messages for a channel/chat."""
+    if not chat_id and not channel_id:
+        utils.error_exit("invalid_destination", "Provide --chat-id or --channel-id")
+
+    cfg = _cfg()
+    email = _require_account(cfg)
+    client = _get_cliq_client(cfg, email, network=network)
+
+    resolved_chat = (chat_id or "").strip() or client.resolve_chat_id(channel_id or "")
+    resp = client.list_messages(
+        chat_id=resolved_chat, channel_id=channel_id, limit=limit
+    )
+    messages = resp.get("data", resp)
+    if not isinstance(messages, list):
+        messages = []
+
+    utils.output(
+        {
+            "chatId": resolved_chat or "",
+            "channelId": channel_id or "",
+            "count": len(messages),
+            "messages": messages,
+        }
+    )
+
+
+@cliq_app.command("message")
+def cliq_message(
+    message_id: str = typer.Argument(..., help="Cliq message id."),
+    channel_id: Optional[str] = typer.Option(
+        None, "--channel-id", help="Source channel id (resolved to chat_id)."
+    ),
+    chat_id: Optional[str] = typer.Option(None, "--chat-id", help="Source chat id."),
+    network: Optional[str] = typer.Option(
+        None, "--network", help="Cliq network slug (e.g. happydistrouklimited)."
+    ),
+) -> None:
+    """Get one message by id from a channel/chat."""
+    if not chat_id and not channel_id:
+        utils.error_exit("invalid_destination", "Provide --chat-id or --channel-id")
+
+    cfg = _cfg()
+    email = _require_account(cfg)
+    client = _get_cliq_client(cfg, email, network=network)
+
+    resolved_chat = (chat_id or "").strip() or client.resolve_chat_id(channel_id or "")
+    resp = client.get_message(message_id, chat_id=resolved_chat, channel_id=channel_id)
+    message = resp.get("data", resp)
+    if isinstance(message, list):
+        message = message[0] if message else {}
+    utils.output(
+        {
+            "chatId": resolved_chat or "",
+            "channelId": channel_id or "",
+            "message": message,
+        }
+    )
+
+
+@cliq_app.command("context")
+def cliq_context(
+    channel_id: Optional[str] = typer.Option(
+        None, "--channel-id", help="Source channel id (resolved to chat_id)."
+    ),
+    chat_id: Optional[str] = typer.Option(None, "--chat-id", help="Source chat id."),
+    message_id: Optional[str] = typer.Option(
+        None, "--message-id", help="Anchor message id (optional)."
+    ),
+    before: int = typer.Option(3, "--before", help="Messages before anchor."),
+    after: int = typer.Option(3, "--after", help="Messages after anchor."),
+    limit: int = typer.Option(40, "--limit", "-n", help="Max messages to fetch."),
+    network: Optional[str] = typer.Option(
+        None, "--network", help="Cliq network slug (e.g. happydistrouklimited)."
+    ),
+) -> None:
+    """Build a local context window for a channel/chat (optionally around one message)."""
+    if not chat_id and not channel_id:
+        utils.error_exit("invalid_destination", "Provide --chat-id or --channel-id")
+    if before < 0 or after < 0:
+        utils.error_exit("invalid_window", "--before/--after must be >= 0")
+
+    cfg = _cfg()
+    email = _require_account(cfg)
+    client = _get_cliq_client(cfg, email, network=network)
+
+    resolved_chat = (chat_id or "").strip() or client.resolve_chat_id(channel_id or "")
+    resp = client.list_messages(
+        chat_id=resolved_chat, channel_id=channel_id, limit=limit
+    )
+    messages = resp.get("data", resp)
+    if not isinstance(messages, list):
+        messages = []
+
+    anchor: dict | None = None
+    anchor_idx: int | None = None
+    if message_id:
+        msg_resp = client.get_message(
+            message_id, chat_id=resolved_chat, channel_id=channel_id
+        )
+        anchor_data = msg_resp.get("data", msg_resp)
+        if isinstance(anchor_data, list):
+            anchor = anchor_data[0] if anchor_data else None
+        elif isinstance(anchor_data, dict):
+            anchor = anchor_data
+
+        for idx, item in enumerate(messages):
+            if not isinstance(item, dict):
+                continue
+            if _cliq.ZohoCliqClient._extract_message_id(item) == message_id:
+                anchor_idx = idx
+                break
+
+    if anchor_idx is None:
+        slice_size = before + after + 1
+        context_messages = messages[:slice_size]
+    else:
+        start = max(0, anchor_idx - before)
+        end = anchor_idx + after + 1
+        context_messages = messages[start:end]
+
+    utils.output(
+        {
+            "chatId": resolved_chat or "",
+            "channelId": channel_id or "",
+            "anchorMessageId": message_id or "",
+            "anchorInWindow": anchor_idx is not None,
+            "window": {"before": before, "after": after},
+            "totalFetched": len(messages),
+            "anchor": anchor or {},
+            "messages": context_messages,
+        }
+    )
+
+
 @cliq_app.command("send")
 def cliq_send(
     text: str = typer.Option(..., "--text", "-t", help="Message text."),

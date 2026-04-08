@@ -1,14 +1,15 @@
-id: cliq-100
-title: capability discovery and operation matrix for Cliq
+id: cliq-120
+title: implement cliq write plane (reply edit delete react)
 module: cliq
 stage: in_progress
 status: in_progress
 owner: automation
-updated_at: "2026-04-08T17:01:06Z"
+updated_at: "2026-04-08T18:06:20Z"
 success_criteria:
-  - discover and report token/org-available Cliq endpoint capabilities in machine-readable output
-  - classify read/write/admin capabilities with clear blocked reasons (scope, endpoint, org role)
-  - add focused tests for capability probing logic and CLI output
-  - update changelog and state files with the new Cliq expansion scope
-next_if_done: cliq-110
-next_step: add write/admin probe rows to `cliq capabilities` and start cliq-110 message/context read commands
+  - reply command supports channel/chat destination and anchor message id
+  - edit/delete command supports explicit message id target with fail-fast validation
+  - reaction add/remove command supports common emoji payloads
+  - focused CLI/client tests cover success and scope failure paths
+  - changelog and state files updated with live verification notes
+next_if_done: cliq-130
+next_step: implement reply/edit/delete/react command surface on top of resolved chat/message ids

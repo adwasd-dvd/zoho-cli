@@ -1,5 +1,5 @@
 project: zoho-cli
-updated_at: "2026-04-08T17:01:06Z"
+updated_at: "2026-04-08T18:06:20Z"
 status: cliq-expansion
 canonical_workspace: "/Users/adwasd/.openclaw/workspace-coder"
 project_root: "/Users/adwasd/.openclaw/workspace-coder/job/zoho-cli"
@@ -7,8 +7,8 @@ module_order:
   - Mail
   - Cliq
   - CRM
-current_focus: cliq-100 capability discovery and operation matrix
+current_focus: cliq-120 write-plane implementation (reply/edit/delete/react)
 primary_blockers:
-  - active token is currently Mail-only after crm-only re-auth; cliq deep probes need `zoho login --with-cliq`
   - crm live read-only verification remains blocked by account-level CRM org access
-next_step: add write/admin capability probes and begin cliq-110 message/context read-plane commands
+  - `ruff format --check` currently fails for unrelated files in repo history
+next_step: implement cliq write-plane commands and verify live against happydistrouklimited

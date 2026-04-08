@@ -9,11 +9,10 @@ mail:
 cliq:
   priority: 2
   status: in_progress
-  phase: expansion_capability_discovery
+  phase: expansion_write_plane
   target_release: v0.4.0
   current_milestone: cliq-expansion-phase
-  blockers:
-    - active token is currently Mail-only after crm-only re-auth; deep live cliq probes require re-auth with `--with-cliq`
+  blockers: []
 
 crm:
   priority: 3

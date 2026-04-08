@@ -1,10 +1,12 @@
-last_run_at: "2026-04-08T17:01:06Z"
+last_run_at: "2026-04-08T18:06:20Z"
 last_result: pass
 current_focus: cliq
 suites:
   unit:
     status: passing
     notes:
+      - ./.venv/bin/pytest -q tests/test_cliq.py tests/test_cli.py::test_cliq_status_scaffold_info tests/test_cli.py::test_cliq_status_check_auth tests/test_cli.py::test_cliq_status_oauth_ready_when_scopes_present tests/test_cli.py::test_cliq_capabilities tests/test_cli.py::test_cliq_messages_from_channel tests/test_cli.py::test_cliq_message_get_from_channel tests/test_cli.py::test_cliq_context_with_anchor tests/test_cli.py::test_cliq_messages_requires_destination tests/test_cli.py::test_cliq_channels tests/test_cli.py::test_cliq_users tests/test_cli.py::test_cliq_send_channel tests/test_cli.py::test_cliq_notify_mail_to_channel tests/test_cli.py::test_cliq_send_requires_destination tests/test_auth.py::test_merge_scopes_deduplicates_preserving_order
+      - focused cliq read-plane and capability tests passed (2026-04-08T18:06:20Z)
       - ./.venv/bin/pytest -q tests/test_cliq.py::test_cliq_client_probe_capabilities_baseline tests/test_cliq.py::test_cliq_client_probe_capabilities_with_channel_context tests/test_cli.py::test_cliq_capabilities
       - 3 passed in 0.08s (2026-04-08T17:00:24Z)
       - ./.venv/bin/pytest -q tests/test_cliq.py tests/test_cli.py::test_cliq_status_scaffold_info tests/test_cli.py::test_cliq_status_check_auth tests/test_cli.py::test_cliq_status_oauth_ready_when_scopes_present tests/test_cli.py::test_cliq_capabilities tests/test_cli.py::test_cliq_channels tests/test_cli.py::test_cliq_users tests/test_cli.py::test_cliq_send_channel tests/test_cli.py::test_cliq_notify_mail_to_channel tests/test_cli.py::test_cliq_send_requires_destination
@@ -73,12 +75,18 @@ suites:
   integration:
     status: warning
     notes:
+      - ./.venv/bin/python -m zoho_cli --config /tmp/zoho-test-config.json --account ai-dev@happy-distro.co.uk cliq status --network happydistrouklimited --check-auth
+      - cliq auth now passes with expanded scope grant; read-plane checks no longer fail with missing message-read scope (2026-04-08T18:06:20Z)
+      - ./.venv/bin/python -m zoho_cli --config /tmp/zoho-test-config.json --account ai-dev@happy-distro.co.uk cliq capabilities --network happydistrouklimited --channel-id O6576524000097556005
+      - capability matrix now reports read-plane probes with real endpoint/scope classification for current token+network (2026-04-08T18:06:20Z)
+      - ./.venv/bin/python -m zoho_cli --config /tmp/zoho-test-config.json --account ai-dev@happy-distro.co.uk cliq messages --network happydistrouklimited --channel-id O6576524000097556005 --limit 3
+      - live message list returns chat context payload (2026-04-08T18:06:20Z)
+      - ./.venv/bin/python -m zoho_cli --config /tmp/zoho-test-config.json --account ai-dev@happy-distro.co.uk cliq context --network happydistrouklimited --channel-id O6576524000097556005 --before 1 --after 1 --limit 5
+      - live context window returns surrounding chat messages (2026-04-08T18:06:20Z)
       - ./.venv/bin/python -m zoho_cli --config /tmp/zoho-test-config.json --account ai-dev@happy-distro.co.uk crm status --check-auth
       - live refresh scopes show only Mail scopes; CRM scopes are missing (`oauthReady: false`) even after `login --with-crm` because account lacks CRM org access (2026-04-08T15:46:57Z)
       - ./.venv/bin/python -m zoho_cli --config /tmp/zoho-test-config.json --account ai-dev@happy-distro.co.uk crm list --module Leads --limit 1
       - live crm list still fails with `HTTP 401 ... OAUTH_SCOPE_MISMATCH` (2026-04-08T15:47:19Z)
-      - ./.venv/bin/python -m zoho_cli --config /tmp/zoho-test-config.json --account ai-dev@happy-distro.co.uk cliq status --network happydistrouklimited --check-auth
-      - live refresh scopes now show Mail-only after CRM re-auth; cliq scope readiness also reports missing scopes until a combined re-auth is done (2026-04-08T15:47:48Z)
       - ./.venv/bin/python -m zoho_cli --config /tmp/zoho-test-config.json --account ai-dev@happy-distro.co.uk crm status --check-auth
       - auth refresh succeeds, but CRM status reports `missingScopes: ["ZohoCRM.modules.ALL", "ZohoCRM.settings.ALL"]` and `oauthReady: false` (2026-04-08T15:37:04Z)
       - ./.venv/bin/python -m zoho_cli --config /tmp/zoho-test-config.json --account ai-dev@happy-distro.co.uk crm list --module Leads --limit 1

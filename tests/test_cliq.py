@@ -31,6 +31,7 @@ def test_missing_cliq_scopes_reports_missing_values() -> None:
     missing = cliq.missing_cliq_scopes(["ZohoCliq.Channels.READ"])
     assert missing == [
         "ZohoCliq.Users.READ",
+        "ZohoCliq.Messages.READ",
         "ZohoCliq.Webhooks.CREATE",
     ]
 
@@ -156,6 +157,53 @@ def test_cliq_client_send_requires_exactly_one_destination(
 ) -> None:
     with pytest.raises(ValueError, match="exactly one"):
         client.send_message("hello")
+
+
+@respx.mock
+def test_cliq_client_list_messages_from_channel_id(client: cliq.ZohoCliqClient) -> None:
+    respx.get("https://cliq.zoho.com/api/v2/channels/O1").mock(
+        return_value=httpx.Response(200, json={"data": {"chat_id": "CT_1"}})
+    )
+    route = respx.get("https://cliq.zoho.com/api/v2/chats/CT_1/messages").mock(
+        return_value=httpx.Response(200, json={"data": [{"id": "M1"}]})
+    )
+
+    result = client.list_messages(channel_id="O1", limit=7)
+
+    assert result["data"][0]["id"] == "M1"
+    assert dict(route.calls.last.request.url.params) == {"limit": "7"}
+
+
+@respx.mock
+def test_cliq_client_get_message_from_chat_id(client: cliq.ZohoCliqClient) -> None:
+    route = respx.get("https://cliq.zoho.com/api/v2/chats/CT_1/messages/M1").mock(
+        return_value=httpx.Response(200, json={"data": {"id": "M1", "text": "hello"}})
+    )
+
+    result = client.get_message("M1", chat_id="CT_1")
+
+    assert route.called
+    assert result["data"]["id"] == "M1"
+
+
+@respx.mock
+def test_cliq_client_list_messages_scope_invalid_reports_reauth_hint(
+    client: cliq.ZohoCliqClient,
+    capsys: pytest.CaptureFixture[str],
+) -> None:
+    respx.get("https://cliq.zoho.com/api/v2/channels/O1").mock(
+        return_value=httpx.Response(200, json={"data": {"chat_id": "CT_1"}})
+    )
+    respx.get("https://cliq.zoho.com/api/v2/chats/CT_1/messages").mock(
+        return_value=httpx.Response(401, json={"code": "oauthtoken_scope_invalid"})
+    )
+
+    with pytest.raises(SystemExit):
+        client.list_messages(channel_id="O1")
+
+    err = capsys.readouterr().err
+    assert "oauth_scope_invalid" in err
+    assert "ZohoCliq.Messages.READ" in err
 
 
 @respx.mock

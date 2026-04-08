@@ -33,7 +33,7 @@
 - id: cliq-100
   title: capability discovery and operation matrix for Cliq
   module: cliq
-  stage: in_progress
+  stage: completed
   priority: high
   depends_on:
     - mail-004
@@ -41,7 +41,7 @@
 - id: cliq-110
   title: implement cliq read plane (messages list/get/context)
   module: cliq
-  stage: queued
+  stage: completed
   priority: high
   depends_on:
     - cliq-100
@@ -49,7 +49,7 @@
 - id: cliq-120
   title: implement cliq write plane (reply edit delete react)
   module: cliq
-  stage: queued
+  stage: in_progress
   priority: high
   depends_on:
     - cliq-110

@@ -13,6 +13,7 @@ from zoho_cli import utils
 DEFAULT_CLIQ_SCOPES = [
     "ZohoCliq.Channels.READ",
     "ZohoCliq.Users.READ",
+    "ZohoCliq.Messages.READ",
     "ZohoCliq.Webhooks.CREATE",
 ]
 
@@ -138,8 +139,8 @@ class ZohoCliqClient:
         utils.error_exit("api_error", "No candidate endpoint available for request")
         return {}
 
-    def _resolve_channel_message_paths(self, channel_id: str) -> list[str]:
-        """Resolve channel-id to sendable chat/unique-name message endpoints."""
+    def _get_channel_descriptor(self, channel_id: str) -> dict[str, Any] | None:
+        """Fetch channel metadata used for endpoint resolution."""
         try:
             resp = httpx.get(
                 f"{self.base_url}/channels/{channel_id}",
@@ -147,24 +148,43 @@ class ZohoCliqClient:
                 timeout=httpx.Timeout(30.0),
             )
         except httpx.HTTPError:
-            return []
+            return None
 
         if not resp.is_success:
-            return []
+            return None
 
         try:
             payload = resp.json()
         except ValueError:
-            return []
+            return None
 
         data = payload.get("data", payload)
+        if not isinstance(data, dict):
+            return None
+
+        return data
+
+    def resolve_chat_id(self, channel_id: str) -> str | None:
+        """Resolve a Cliq channel id into its backing chat_id when available."""
+        data = self._get_channel_descriptor(channel_id)
+        if not isinstance(data, dict):
+            return None
+
+        chat_id = data.get("chat_id") or data.get("chatId")
+        if isinstance(chat_id, str) and chat_id.strip():
+            return chat_id.strip()
+        return None
+
+    def _resolve_channel_message_paths(self, channel_id: str) -> list[str]:
+        """Resolve channel-id to sendable chat/unique-name message endpoints."""
+        data = self._get_channel_descriptor(channel_id)
         if not isinstance(data, dict):
             return []
 
         paths: list[str] = []
-        chat_id = data.get("chat_id") or data.get("chatId")
-        if isinstance(chat_id, str) and chat_id.strip():
-            paths.append(f"/chats/{chat_id.strip()}/message")
+        chat_id = self.resolve_chat_id(channel_id)
+        if isinstance(chat_id, str) and chat_id:
+            paths.append(f"/chats/{chat_id}/message")
 
         unique_name = (
             data.get("unique_name")
@@ -175,6 +195,95 @@ class ZohoCliqClient:
             paths.append(f"/channelsbyname/{unique_name.strip()}/message")
 
         return paths
+
+    @staticmethod
+    def _extract_message_id(message: dict[str, Any]) -> str:
+        for key in ("id", "message_id", "messageId"):
+            value = message.get(key)
+            if value is not None:
+                text = str(value).strip()
+                if text:
+                    return text
+        return ""
+
+    def list_messages(
+        self,
+        *,
+        chat_id: str | None = None,
+        channel_id: str | None = None,
+        limit: int = 50,
+    ) -> dict:
+        """List messages for a chat (or a resolvable channel id)."""
+        resolved_chat = (chat_id or "").strip()
+        if not resolved_chat and channel_id:
+            resolved_chat = self.resolve_chat_id(channel_id) or ""
+        if not resolved_chat:
+            utils.error_exit(
+                "invalid_destination", "Provide --chat-id or resolvable --channel-id"
+            )
+
+        resp = httpx.get(
+            f"{self.base_url}/chats/{resolved_chat}/messages",
+            headers=self._headers,
+            params={"limit": limit},
+            timeout=httpx.Timeout(30.0),
+        )
+        if resp.is_success:
+            return resp.json()
+
+        body = resp.text or ""
+        lowered = body.lower()
+        if "oauthtoken_scope_invalid" in lowered:
+            utils.error_exit(
+                "oauth_scope_invalid",
+                "Cliq token is missing message-read scope. Re-run `zoho login --with-cliq --scope ZohoCliq.Messages.READ` and retry.",
+            )
+        utils.error_exit(
+            "api_error",
+            f"HTTP {resp.status_code} GET /chats/{resolved_chat}/messages: {body}",
+        )
+        return {}
+
+    def get_message(
+        self,
+        message_id: str,
+        *,
+        chat_id: str | None = None,
+        channel_id: str | None = None,
+    ) -> dict:
+        """Fetch one message by id for a chat (or a resolvable channel id)."""
+        resolved_chat = (chat_id or "").strip()
+        if not resolved_chat and channel_id:
+            resolved_chat = self.resolve_chat_id(channel_id) or ""
+        if not resolved_chat:
+            utils.error_exit(
+                "invalid_destination", "Provide --chat-id or resolvable --channel-id"
+            )
+
+        mid = message_id.strip()
+        if not mid:
+            utils.error_exit("invalid_message_id", "message_id cannot be empty")
+
+        resp = httpx.get(
+            f"{self.base_url}/chats/{resolved_chat}/messages/{mid}",
+            headers=self._headers,
+            timeout=httpx.Timeout(30.0),
+        )
+        if resp.is_success:
+            return resp.json()
+
+        body = resp.text or ""
+        lowered = body.lower()
+        if "oauthtoken_scope_invalid" in lowered:
+            utils.error_exit(
+                "oauth_scope_invalid",
+                "Cliq token is missing message-read scope. Re-run `zoho login --with-cliq --scope ZohoCliq.Messages.READ` and retry.",
+            )
+        utils.error_exit(
+            "api_error",
+            f"HTTP {resp.status_code} GET /chats/{resolved_chat}/messages/{mid}: {body}",
+        )
+        return {}
 
     def channels(self, *, limit: int = 50) -> dict:
         """List channels."""
@@ -269,6 +378,8 @@ class ZohoCliqClient:
             },
         ]
 
+        resolved_chat_id = self.resolve_chat_id(channel_id) if channel_id else None
+
         if channel_id:
             checks.extend(
                 [
@@ -283,7 +394,7 @@ class ZohoCliqClient:
                         "name": "chats.messages.list",
                         "kind": "read",
                         "method": "GET",
-                        "path": f"/chats/{channel_id}/messages",
+                        "path": f"/chats/{resolved_chat_id or channel_id}/messages",
                         "params": {"limit": 1},
                     },
                     {

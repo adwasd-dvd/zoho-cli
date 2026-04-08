@@ -857,6 +857,7 @@ def test_cliq_status_oauth_ready_when_scopes_present(tmp_path: Path) -> None:
                     "ZohoMail.messages.ALL",
                     "ZohoCliq.Channels.READ",
                     "ZohoCliq.Users.READ",
+                    "ZohoCliq.Messages.READ",
                     "ZohoCliq.Webhooks.CREATE",
                 ],
             }
@@ -888,6 +889,95 @@ def test_cliq_capabilities(mock_config: Path, mock_token_refresh: Any) -> None:
     assert payload["module"] == "cliq"
     assert payload["capabilityStage"] == "cliq-100"
     assert payload["summary"]["total"] == 2
+
+
+@respx.mock
+def test_cliq_messages_from_channel(mock_config: Path, mock_token_refresh: Any) -> None:
+    respx.get("https://cliq.zoho.com/api/v2/channels/O1").mock(
+        return_value=httpx.Response(200, json={"data": {"chat_id": "CT_1"}})
+    )
+    route = respx.get("https://cliq.zoho.com/api/v2/chats/CT_1/messages").mock(
+        return_value=httpx.Response(200, json={"data": [{"id": "M1", "text": "hello"}]})
+    )
+
+    result = runner.invoke(
+        app,
+        ["cliq", "messages", "--channel-id", "O1", "--limit", "2"],
+        env=_cfg_env(mock_config),
+    )
+    assert result.exit_code == 0, result.output
+    payload = json.loads(result.output)
+    assert payload["chatId"] == "CT_1"
+    assert payload["count"] == 1
+    assert dict(route.calls.last.request.url.params) == {"limit": "2"}
+
+
+@respx.mock
+def test_cliq_message_get_from_channel(
+    mock_config: Path, mock_token_refresh: Any
+) -> None:
+    respx.get("https://cliq.zoho.com/api/v2/channels/O1").mock(
+        return_value=httpx.Response(200, json={"data": {"chat_id": "CT_1"}})
+    )
+    respx.get("https://cliq.zoho.com/api/v2/chats/CT_1/messages/M1").mock(
+        return_value=httpx.Response(200, json={"data": {"id": "M1", "text": "hello"}})
+    )
+
+    result = runner.invoke(
+        app,
+        ["cliq", "message", "M1", "--channel-id", "O1"],
+        env=_cfg_env(mock_config),
+    )
+    assert result.exit_code == 0, result.output
+    payload = json.loads(result.output)
+    assert payload["chatId"] == "CT_1"
+    assert payload["message"]["id"] == "M1"
+
+
+@respx.mock
+def test_cliq_context_with_anchor(mock_config: Path, mock_token_refresh: Any) -> None:
+    respx.get("https://cliq.zoho.com/api/v2/channels/O1").mock(
+        return_value=httpx.Response(200, json={"data": {"chat_id": "CT_1"}})
+    )
+    respx.get("https://cliq.zoho.com/api/v2/chats/CT_1/messages").mock(
+        return_value=httpx.Response(
+            200, json={"data": [{"id": "M3"}, {"id": "M2"}, {"id": "M1"}]}
+        )
+    )
+    respx.get("https://cliq.zoho.com/api/v2/chats/CT_1/messages/M2").mock(
+        return_value=httpx.Response(200, json={"data": {"id": "M2", "text": "middle"}})
+    )
+
+    result = runner.invoke(
+        app,
+        [
+            "cliq",
+            "context",
+            "--channel-id",
+            "O1",
+            "--message-id",
+            "M2",
+            "--before",
+            "1",
+            "--after",
+            "1",
+            "--limit",
+            "10",
+        ],
+        env=_cfg_env(mock_config),
+    )
+    assert result.exit_code == 0, result.output
+    payload = json.loads(result.output)
+    assert payload["anchorInWindow"] is True
+    assert len(payload["messages"]) == 3
+
+
+def test_cliq_messages_requires_destination(
+    mock_config: Path, mock_token_refresh: Any
+) -> None:
+    result = runner.invoke(app, ["cliq", "messages"], env=_cfg_env(mock_config))
+    assert result.exit_code == 1
+    assert "invalid_destination" in result.output
 
 
 # ---------------------------------------------------------------------------

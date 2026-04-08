@@ -8,7 +8,7 @@
 - id: mail-002
   title: normalize mail output modes and formatter entry points
   module: mail
-  stage: coding
+  stage: verification
   priority: high
   depends_on:
     - mail-001

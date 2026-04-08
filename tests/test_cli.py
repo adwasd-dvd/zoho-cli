@@ -569,7 +569,44 @@ def test_mail_download_attachment_parse_failure_is_non_fatal(
     assert attachment_route.called
     assert result.exit_code == 0, result.output
     assert out_file.read_bytes() == b"hello"
-    assert '"warning": "Parse failed: forced parse error"' in result.output
+    payload = json.loads(result.output)
+    assert payload["status"] == "ok"
+    assert payload["warning"] == "Parse failed: forced parse error"
+
+
+@respx.mock
+def test_mail_download_attachment_parse_success_returns_structured_json(
+    tmp_path: Path, mock_config: Path, mock_token_refresh: Any
+) -> None:
+    """--parse success should keep stdout as one machine-readable JSON payload."""
+    respx.get(
+        f"{MAIL_BASE}/accounts/{ACCOUNT_ID}/folders/F1/messages/M1/attachments/A1"
+    ).mock(return_value=httpx.Response(200, content=b"hello"))
+
+    out_file = tmp_path / "exports" / "attachment.txt"
+
+    with patch("zoho_cli.parse.parse_attachment", return_value="parsed attachment"):
+        result = runner.invoke(
+            app,
+            [
+                "mail",
+                "download-attachment",
+                "M1",
+                "A1",
+                "--folder-id",
+                "F1",
+                "--out",
+                str(out_file),
+                "--parse",
+            ],
+            env=_cfg_env(mock_config),
+        )
+
+    assert result.exit_code == 0, result.output
+    payload = json.loads(result.output)
+    assert payload["status"] == "ok"
+    assert payload["parsed"]["fileName"] == "attachment.txt"
+    assert payload["parsed"]["content"] == "parsed attachment"
 
 
 @respx.mock
@@ -655,8 +692,11 @@ def test_attachment_content_with_filename(mock_config: Path, mock_token_refresh:
 
     assert download_route.called
     assert result.exit_code == 0, result.output
-    assert "=== Content of report.txt ===" in result.output
-    assert "parsed attachment" in result.output
+    payload = json.loads(result.output)
+    assert payload["messageId"] == "M1"
+    assert payload["attachmentId"] == "A1"
+    assert payload["fileName"] == "report.txt"
+    assert payload["content"] == "parsed attachment"
 
 
 @respx.mock

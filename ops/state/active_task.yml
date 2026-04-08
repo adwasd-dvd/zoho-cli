@@ -1,7 +1,7 @@
 id: mail-002
 title: normalize mail output modes and formatter entry points
 module: mail
-stage: coding
+stage: verification
 status: in_progress
 owner: automation
 success_criteria:

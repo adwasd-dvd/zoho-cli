@@ -201,6 +201,12 @@ def _parse_attachment_content(path: Path) -> str:
     return content
 
 
+def _md_parsed_attachment_content(payload: dict) -> None:
+    """Render parsed attachment content in markdown mode."""
+    print(f"=== Content of {payload.get('fileName', 'attachment')} ===")
+    print(payload.get("content", ""))
+
+
 def _select_attachment_target(
     attachments: list[dict],
     message_id: str,
@@ -517,18 +523,35 @@ def mail_download_attachment(
 
     out_path = Path(out)
     size = _download_attachment_to_path(client, account_id, fid, message_id, attachment_id, out_path)
-    utils.output_status(
-        f"Saved {out_path.name} ({utils.format_size(size)})",
-        extra={"path": str(out_path.resolve()), "size": size},
-    )
-    
-    if parse:
-        try:
-            content = _parse_attachment_content(out_path)
-            print(f"\n=== Content of {out_path.name} ===")
-            print(content)
-        except RuntimeError as e:
-            utils.output_status("Attachment parsed with warning", extra={"warning": f"Parse failed: {e}"})
+    saved_message = f"Saved {out_path.name} ({utils.format_size(size)})"
+    saved_payload = {"path": str(out_path.resolve()), "size": size}
+
+    if not parse:
+        utils.output_status(saved_message, extra=saved_payload)
+        return
+
+    try:
+        content = _parse_attachment_content(out_path)
+    except RuntimeError as e:
+        warning = f"Parse failed: {e}"
+        if utils.is_md_mode():
+            utils.output_status(saved_message, extra=saved_payload)
+            utils.output_status("Attachment parsed with warning", extra={"warning": warning})
+        else:
+            utils.output_json({"status": "ok", **saved_payload, "warning": warning})
+        return
+
+    if utils.is_md_mode():
+        utils.output_status(saved_message, extra=saved_payload)
+        _md_parsed_attachment_content({"fileName": out_path.name, "content": content})
+    else:
+        utils.output_json(
+            {
+                "status": "ok",
+                **saved_payload,
+                "parsed": {"fileName": out_path.name, "content": content},
+            }
+        )
 
 
 @mail_app.command("send")
@@ -1046,8 +1069,15 @@ def attachment_content(
     
     try:
         content = _parse_attachment_content(tmp_path)
-        print(f"\n=== Content of {target['fileName']} ===")
-        print(content)
+        utils.output(
+            {
+                "messageId": message_id,
+                "attachmentId": target["attachmentId"],
+                "fileName": target["fileName"],
+                "content": content,
+            },
+            md_render=_md_parsed_attachment_content,
+        )
     finally:
         # Cleanup temp file
         tmp_path.unlink(missing_ok=True)

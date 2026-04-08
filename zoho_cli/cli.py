@@ -1167,6 +1167,22 @@ def crm_modules(
     utils.output(data)
 
 
+@crm_app.command("fields")
+def crm_fields(
+    module: str = typer.Option(..., "--module", "-m", help="CRM module API name (e.g. Leads)."),
+    limit: int = typer.Option(50, "--limit", "-n", help="Max fields to return."),
+    page: int = typer.Option(1, "--page", help="Result page number."),
+) -> None:
+    """List fields for a CRM module (read-only scaffold endpoint)."""
+    cfg = _cfg()
+    email = _require_account(cfg)
+    client = _get_crm_client(cfg, email)
+
+    resp = client.fields(module=module, limit=limit, page=page)
+    data = resp.get("data", resp)
+    utils.output(data)
+
+
 # ══════════════════════════════════════════════════════════════════════════════
 # zoho config …
 # ══════════════════════════════════════════════════════════════════════════════

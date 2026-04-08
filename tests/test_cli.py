@@ -883,6 +883,27 @@ def test_crm_modules(mock_config: Path, mock_token_refresh: Any) -> None:
 
 
 @respx.mock
+def test_crm_fields(mock_config: Path, mock_token_refresh: Any) -> None:
+    route = respx.get("https://www.zohoapis.com/crm/v2/settings/fields").mock(
+        return_value=httpx.Response(200, json={"data": [{"api_name": "Company"}]})
+    )
+
+    result = runner.invoke(
+        app,
+        ["crm", "fields", "--module", "Leads", "--limit", "5", "--page", "2"],
+        env=_cfg_env(mock_config),
+    )
+    assert result.exit_code == 0, result.output
+    payload = json.loads(result.output)
+    assert payload[0]["api_name"] == "Company"
+    assert dict(route.calls.last.request.url.params) == {
+        "module": "Leads",
+        "per_page": "5",
+        "page": "2",
+    }
+
+
+@respx.mock
 def test_cliq_channels(mock_config: Path, mock_token_refresh: Any) -> None:
     respx.get("https://cliq.zoho.com/api/v2/channels").mock(
         return_value=httpx.Response(200, json={"data": [{"id": "C1", "name": "General"}]})

@@ -63,3 +63,10 @@ class ZohoCrmClient:
     def modules(self, *, limit: int = 50, page: int = 1) -> dict:
         """List CRM modules (read-only scaffold endpoint)."""
         return self._get("/settings/modules", {"per_page": limit, "page": page})
+
+    def fields(self, module: str, *, limit: int = 50, page: int = 1) -> dict:
+        """List fields for a specific CRM module."""
+        return self._get(
+            "/settings/fields",
+            {"module": module, "per_page": limit, "page": page},
+        )

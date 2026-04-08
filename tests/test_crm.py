@@ -32,3 +32,20 @@ def test_crm_client_modules() -> None:
 
     assert result["data"][0]["api_name"] == "Leads"
     assert dict(route.calls.last.request.url.params) == {"per_page": "7", "page": "2"}
+
+
+@respx.mock
+def test_crm_client_fields() -> None:
+    client = crm.ZohoCrmClient("fake-token", base_url="https://www.zohoapis.com/crm/v2")
+    route = respx.get("https://www.zohoapis.com/crm/v2/settings/fields").mock(
+        return_value=httpx.Response(200, json={"data": [{"api_name": "Company"}]})
+    )
+
+    result = client.fields("Leads", limit=10, page=3)
+
+    assert result["data"][0]["api_name"] == "Company"
+    assert dict(route.calls.last.request.url.params) == {
+        "module": "Leads",
+        "per_page": "10",
+        "page": "3",
+    }

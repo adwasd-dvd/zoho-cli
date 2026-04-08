@@ -1,8 +1,8 @@
 id: crm-002
 title: implement crm modules list fields list get list and search
 module: crm
-stage: queued
-status: queued
+stage: in_progress
+status: in_progress
 owner: automation
 success_criteria:
   - crm modules list command supports stable JSON output and pagination flags

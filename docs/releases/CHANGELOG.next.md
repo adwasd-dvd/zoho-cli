@@ -12,6 +12,7 @@
 - Added Cliq network targeting support (`--network`) so commands can use `https://cliq.zoho.com/network/<slug>/api/v2/...` when org-scoped endpoints are required.
 - Live Cliq list validation now passes on network-scoped endpoints for `happydistrouklimited` (`cliq channels` and `cliq users`).
 - Added CRM phase-1 scaffold: `zoho crm status`, `zoho crm modules`, regional CRM base URL inference, and a minimal `ZohoCrmClient` read-only shell.
+- Added CRM fields read path: `zoho crm fields --module <api_name>` with pagination, backed by `ZohoCrmClient.fields` (`/settings/fields`).
 
 ### Fixed
 - Cliq send/notify now tolerate successful empty-body responses (`HTTP 204`) from live endpoints and return stable JSON status payloads instead of raising JSON decode errors.

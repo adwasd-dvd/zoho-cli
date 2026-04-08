@@ -1,0 +1,6 @@
+blockers:
+  - "cliq-phase1 live send/notify remains blocked: token is still missing `ZohoCliq.Webhooks.CREATE`, and both live commands return `oauth_scope_invalid` (verified 2026-04-08T13:25:55Z)"
+high:
+  - "`make ci` fails in `fmt-check`: `ruff format --check` reports 19 files would be reformatted (verified 2026-04-08T13:25:55Z)"
+normal: []
+low: []

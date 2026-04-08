@@ -1,10 +1,12 @@
-last_run_at: "2026-04-08T13:20:08Z"
+last_run_at: "2026-04-08T13:25:55Z"
 last_result: warning
 current_focus: cliq
 suites:
   unit:
     status: passing
     notes:
+      - make release-gate
+      - 128 passed in 2.39s + wheel smoke passed (0.2.0) (2026-04-08T13:25:55Z)
       - ./.venv/bin/pytest -q tests/test_cliq.py::test_missing_cliq_scopes_reports_missing_values tests/test_cli.py::test_cliq_status_scaffold_info tests/test_cli.py::test_cliq_status_oauth_ready_when_scopes_present
       - 3 passed in 0.08s (2026-04-08T13:20:08Z)
       - ./.venv/bin/pytest -q tests/test_cliq.py tests/test_cli.py::test_cliq_send_channel tests/test_cli.py::test_cliq_notify_mail_to_channel
@@ -54,6 +56,11 @@ suites:
   integration:
     status: warning
     notes:
+      - ./.venv/bin/python -m zoho_cli --config /tmp/zoho-test-config.json --account ai-dev@happy-distro.co.uk cliq status --check-auth --network happydistrouklimited
+      - auth check succeeds, but `missingScopes` still reports `ZohoCliq.Webhooks.CREATE` (`oauthReady: false`) (2026-04-08T13:25:55Z)
+      - ./.venv/bin/python -m zoho_cli --config /tmp/zoho-test-config.json --account ai-dev@happy-distro.co.uk cliq send --network happydistrouklimited --channel-id O6576524000097556005 --text "zoho-cli nightly verify <utc-time>"
+      - ./.venv/bin/python -m zoho_cli --config /tmp/zoho-test-config.json --account ai-dev@happy-distro.co.uk cliq notify-mail 1775620829752152900 --folder-id 2857786000000008014 --network happydistrouklimited --channel-id O6576524000097556005 --include-body
+      - both live send/notify checks still fail with `oauth_scope_invalid`; rerun after `zoho login --with-cliq` grants `ZohoCliq.Webhooks.CREATE` (2026-04-08T13:25:55Z)
       - cliq send/notify now fail fast with `oauth_scope_invalid` and an explicit re-auth hint when token lacks message scope (`ZohoCliq.Webhooks.CREATE`) (2026-04-08T08:35:28Z)
       - ./.venv/bin/python -m zoho_cli --config /tmp/zoho-test-config.json --account ai-dev@happy-distro.co.uk cliq status --check-auth --network happydistrouklimited
       - auth refresh now succeeds, but `missingScopes` still reports `ZohoCliq.Webhooks.CREATE` (`oauthReady: false`) (2026-04-08T08:31:52Z)
@@ -77,9 +84,15 @@ suites:
       - ./.venv/bin/python -m zoho_cli --config /tmp/zoho-test-config.json --account ai-dev@happy-distro.co.uk mail search "Zoho" --limit 1
       - ./.venv/bin/python -m zoho_cli --config /tmp/zoho-test-config.json --account ai-dev@happy-distro.co.uk mail get 1775618034273140900 --folder-id 2857786000000008014
       - read-only smoke passed against configured account with hydrated metadata output (2026-04-08T03:48:31Z)
+  ci:
+    status: warning
+    notes:
+      - make ci
+      - fails at `ruff format --check`; 19 files would be reformatted (2026-04-08T13:25:55Z)
   packaging:
     status: passing
     notes:
+      - make release-gate passed (128 tests + wheel smoke) (2026-04-08T13:25:55Z)
       - make release-gate passed (125 tests + wheel smoke) (2026-04-08T05:28:47Z)
       - make release-gate rerun passed after retry hardening (105 tests + wheel smoke) (2026-04-08T04:22:56Z)
       - make package-smoke (wheel build + isolated install smoke) passed (2026-04-08T04:11:30Z)

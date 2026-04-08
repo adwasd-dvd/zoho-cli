@@ -30,8 +30,18 @@ def test_get_folders(client: ZohoMailClient) -> None:
     """get_folders returns the full parsed response dict from the API."""
     payload = {
         "data": [
-            {"folderId": "1", "folderName": "Inbox", "folderType": "Inbox", "unreadCount": 3},
-            {"folderId": "2", "folderName": "Sent", "folderType": "Sent", "unreadCount": 0},
+            {
+                "folderId": "1",
+                "folderName": "Inbox",
+                "folderType": "Inbox",
+                "unreadCount": 3,
+            },
+            {
+                "folderId": "2",
+                "folderName": "Sent",
+                "folderType": "Sent",
+                "unreadCount": 0,
+            },
         ]
     }
     respx.get(f"{BASE}/accounts/{ACCOUNT_ID}/folders").mock(
@@ -141,7 +151,9 @@ def test_api_retries_on_429_then_succeeds(client: ZohoMailClient) -> None:
     route = respx.get(f"{BASE}/accounts/{ACCOUNT_ID}/folders").mock(
         side_effect=[
             httpx.Response(429, headers={"Retry-After": "0"}, text="rate limited"),
-            httpx.Response(200, json={"data": [{"folderId": "1", "folderName": "Inbox"}]}),
+            httpx.Response(
+                200, json={"data": [{"folderId": "1", "folderName": "Inbox"}]}
+            ),
         ]
     )
 

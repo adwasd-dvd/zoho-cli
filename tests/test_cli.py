@@ -66,13 +66,17 @@ def mock_keyring(monkeypatch: pytest.MonkeyPatch) -> None:
         }
     )
     monkeypatch.setattr("keyring.get_password", lambda service, username: token_data)
-    monkeypatch.setattr("keyring.set_password", lambda service, username, password: None)
+    monkeypatch.setattr(
+        "keyring.set_password", lambda service, username, password: None
+    )
 
 
 @pytest.fixture
 def mock_token_refresh(monkeypatch: pytest.MonkeyPatch) -> None:
     """Patch auth.refresh_access_token to return a fake access token directly."""
-    monkeypatch.setattr(auth, "refresh_access_token", lambda *a, **kw: "fake-access-token")
+    monkeypatch.setattr(
+        auth, "refresh_access_token", lambda *a, **kw: "fake-access-token"
+    )
     monkeypatch.setattr(
         auth,
         "refresh_access_token_info",
@@ -137,12 +141,16 @@ def test_mail_search_valid(mock_config: Path, mock_token_refresh: Any) -> None:
 
 
 @respx.mock
-def test_mail_search_returns_empty_list(mock_config: Path, mock_token_refresh: Any) -> None:
+def test_mail_search_returns_empty_list(
+    mock_config: Path, mock_token_refresh: Any
+) -> None:
     """A search that finds no messages returns an empty JSON list."""
     respx.get(f"{MAIL_BASE}/accounts/{ACCOUNT_ID}/messages/search").mock(
         return_value=httpx.Response(200, json={"data": []})
     )
-    result = runner.invoke(app, ["mail", "search", "nomatches"], env=_cfg_env(mock_config))
+    result = runner.invoke(
+        app, ["mail", "search", "nomatches"], env=_cfg_env(mock_config)
+    )
     assert result.exit_code == 0, result.output
     assert json.loads(result.output) == []
 
@@ -387,9 +395,7 @@ def test_mail_reply_sends_prefixed_payload_and_status(
             },
         )
     )
-    respx.get(
-        f"{MAIL_BASE}/accounts/{ACCOUNT_ID}/folders/F1/messages/M1/content"
-    ).mock(
+    respx.get(f"{MAIL_BASE}/accounts/{ACCOUNT_ID}/folders/F1/messages/M1/content").mock(
         return_value=httpx.Response(
             200,
             json={
@@ -403,7 +409,9 @@ def test_mail_reply_sends_prefixed_payload_and_status(
         )
     )
     send_route = respx.post(f"{MAIL_BASE}/accounts/{ACCOUNT_ID}/messages").mock(
-        return_value=httpx.Response(200, json={"data": {"messageId": "R1", "status": "queued"}})
+        return_value=httpx.Response(
+            200, json={"data": {"messageId": "R1", "status": "queued"}}
+        )
     )
 
     result = runner.invoke(
@@ -455,9 +463,7 @@ def test_mail_forward_sends_forward_payload_and_status(
             },
         )
     )
-    respx.get(
-        f"{MAIL_BASE}/accounts/{ACCOUNT_ID}/folders/F1/messages/M1/content"
-    ).mock(
+    respx.get(f"{MAIL_BASE}/accounts/{ACCOUNT_ID}/folders/F1/messages/M1/content").mock(
         return_value=httpx.Response(
             200,
             json={
@@ -471,7 +477,9 @@ def test_mail_forward_sends_forward_payload_and_status(
         )
     )
     send_route = respx.post(f"{MAIL_BASE}/accounts/{ACCOUNT_ID}/messages").mock(
-        return_value=httpx.Response(200, json={"data": {"messageId": "F1", "status": "accepted"}})
+        return_value=httpx.Response(
+            200, json={"data": {"messageId": "F1", "status": "accepted"}}
+        )
     )
 
     result = runner.invoke(
@@ -527,7 +535,11 @@ def test_mail_attachments_includes_string_attachment_ids(
             json={
                 "data": {
                     "attachments": [
-                        {"attachmentId": "A1", "attachmentName": "report.csv", "attachmentSize": 42},
+                        {
+                            "attachmentId": "A1",
+                            "attachmentName": "report.csv",
+                            "attachmentSize": 42,
+                        },
                         "A2",
                     ]
                 }
@@ -536,7 +548,9 @@ def test_mail_attachments_includes_string_attachment_ids(
     )
 
     result = runner.invoke(
-        app, ["mail", "attachments", "M1", "--folder-id", "F1"], env=_cfg_env(mock_config)
+        app,
+        ["mail", "attachments", "M1", "--folder-id", "F1"],
+        env=_cfg_env(mock_config),
     )
     assert result.exit_code == 0, result.output
 
@@ -563,7 +577,10 @@ def test_mail_download_attachment_parse_failure_is_non_fatal(
 
     out_file = tmp_path / "exports" / "attachment.txt"
 
-    with patch("zoho_cli.parse.parse_attachment", side_effect=RuntimeError("forced parse error")):
+    with patch(
+        "zoho_cli.parse.parse_attachment",
+        side_effect=RuntimeError("forced parse error"),
+    ):
         result = runner.invoke(
             app,
             [
@@ -673,7 +690,9 @@ def test_mail_download_attachment_accepts_absolute_volumes_out_path(
 
 
 @respx.mock
-def test_attachment_content_with_filename(mock_config: Path, mock_token_refresh: Any) -> None:
+def test_attachment_content_with_filename(
+    mock_config: Path, mock_token_refresh: Any
+) -> None:
     """attachment content should download and parse the named attachment."""
     respx.get(
         f"{MAIL_BASE}/accounts/{ACCOUNT_ID}/folders/F1/messages/M1/attachmentinfo"
@@ -915,10 +934,14 @@ def test_crm_status_check_auth(mock_config: Path, mock_token_refresh: Any) -> No
 @respx.mock
 def test_crm_modules(mock_config: Path, mock_token_refresh: Any) -> None:
     respx.get("https://www.zohoapis.com/crm/v2/settings/modules").mock(
-        return_value=httpx.Response(200, json={"data": [{"api_name": "Leads", "module_name": "Leads"}]})
+        return_value=httpx.Response(
+            200, json={"data": [{"api_name": "Leads", "module_name": "Leads"}]}
+        )
     )
 
-    result = runner.invoke(app, ["crm", "modules", "--limit", "2"], env=_cfg_env(mock_config))
+    result = runner.invoke(
+        app, ["crm", "modules", "--limit", "2"], env=_cfg_env(mock_config)
+    )
     assert result.exit_code == 0, result.output
     payload = json.loads(result.output)
     assert payload[0]["api_name"] == "Leads"
@@ -953,7 +976,20 @@ def test_crm_list(mock_config: Path, mock_token_refresh: Any) -> None:
 
     result = runner.invoke(
         app,
-        ["crm", "list", "--module", "Leads", "--limit", "2", "--page", "3", "--field", "Last_Name", "--field", "Email"],
+        [
+            "crm",
+            "list",
+            "--module",
+            "Leads",
+            "--limit",
+            "2",
+            "--page",
+            "3",
+            "--field",
+            "Last_Name",
+            "--field",
+            "Email",
+        ],
         env=_cfg_env(mock_config),
     )
     assert result.exit_code == 0, result.output
@@ -969,7 +1005,9 @@ def test_crm_list(mock_config: Path, mock_token_refresh: Any) -> None:
 @respx.mock
 def test_crm_get(mock_config: Path, mock_token_refresh: Any) -> None:
     route = respx.get("https://www.zohoapis.com/crm/v2/Leads/1001").mock(
-        return_value=httpx.Response(200, json={"data": [{"id": "1001", "Company": "Acme"}]})
+        return_value=httpx.Response(
+            200, json={"data": [{"id": "1001", "Company": "Acme"}]}
+        )
     )
 
     result = runner.invoke(
@@ -1016,10 +1054,21 @@ def test_crm_search_with_criteria(mock_config: Path, mock_token_refresh: Any) ->
     }
 
 
-def test_crm_search_requires_exactly_one_query_mode(mock_config: Path, mock_token_refresh: Any) -> None:
+def test_crm_search_requires_exactly_one_query_mode(
+    mock_config: Path, mock_token_refresh: Any
+) -> None:
     result = runner.invoke(
         app,
-        ["crm", "search", "--module", "Leads", "--word", "acme", "--criteria", "(Last_Name:equals:Wang)"],
+        [
+            "crm",
+            "search",
+            "--module",
+            "Leads",
+            "--word",
+            "acme",
+            "--criteria",
+            "(Last_Name:equals:Wang)",
+        ],
         env=_cfg_env(mock_config),
     )
 
@@ -1030,10 +1079,14 @@ def test_crm_search_requires_exactly_one_query_mode(mock_config: Path, mock_toke
 @respx.mock
 def test_cliq_channels(mock_config: Path, mock_token_refresh: Any) -> None:
     respx.get("https://cliq.zoho.com/api/v2/channels").mock(
-        return_value=httpx.Response(200, json={"data": [{"id": "C1", "name": "General"}]})
+        return_value=httpx.Response(
+            200, json={"data": [{"id": "C1", "name": "General"}]}
+        )
     )
 
-    result = runner.invoke(app, ["cliq", "channels", "--limit", "3"], env=_cfg_env(mock_config))
+    result = runner.invoke(
+        app, ["cliq", "channels", "--limit", "3"], env=_cfg_env(mock_config)
+    )
     assert result.exit_code == 0, result.output
     payload = json.loads(result.output)
     assert payload[0]["id"] == "C1"
@@ -1041,7 +1094,9 @@ def test_cliq_channels(mock_config: Path, mock_token_refresh: Any) -> None:
 
 @respx.mock
 def test_cliq_channels_with_network(mock_config: Path, mock_token_refresh: Any) -> None:
-    respx.get("https://cliq.zoho.com/network/happydistrouklimited/api/v2/channels").mock(
+    respx.get(
+        "https://cliq.zoho.com/network/happydistrouklimited/api/v2/channels"
+    ).mock(
         return_value=httpx.Response(200, json={"data": [{"id": "C2", "name": "Ops"}]})
     )
 
@@ -1061,7 +1116,9 @@ def test_cliq_users(mock_config: Path, mock_token_refresh: Any) -> None:
         return_value=httpx.Response(200, json={"data": [{"id": "U1", "name": "Alice"}]})
     )
 
-    result = runner.invoke(app, ["cliq", "users", "--limit", "2"], env=_cfg_env(mock_config))
+    result = runner.invoke(
+        app, ["cliq", "users", "--limit", "2"], env=_cfg_env(mock_config)
+    )
     assert result.exit_code == 0, result.output
     payload = json.loads(result.output)
     assert payload[0]["id"] == "U1"
@@ -1090,7 +1147,9 @@ def test_cliq_send_channel(mock_config: Path, mock_token_refresh: Any) -> None:
 
 
 @respx.mock
-def test_cliq_send_channel_accepts_204_empty_body(mock_config: Path, mock_token_refresh: Any) -> None:
+def test_cliq_send_channel_accepts_204_empty_body(
+    mock_config: Path, mock_token_refresh: Any
+) -> None:
     respx.post("https://cliq.zoho.com/api/v2/channelsbyname/C1/message").mock(
         return_value=httpx.Response(404, text="request_url_invalid")
     )
@@ -1111,14 +1170,20 @@ def test_cliq_send_channel_accepts_204_empty_body(mock_config: Path, mock_token_
     assert payload["status"] == "ok"
 
 
-def test_cliq_send_requires_destination(mock_config: Path, mock_token_refresh: Any) -> None:
-    result = runner.invoke(app, ["cliq", "send", "--text", "hello"], env=_cfg_env(mock_config))
+def test_cliq_send_requires_destination(
+    mock_config: Path, mock_token_refresh: Any
+) -> None:
+    result = runner.invoke(
+        app, ["cliq", "send", "--text", "hello"], env=_cfg_env(mock_config)
+    )
     assert result.exit_code == 1
     assert "invalid_destination" in result.output
 
 
 @respx.mock
-def test_cliq_notify_mail_to_channel(mock_config: Path, mock_token_refresh: Any) -> None:
+def test_cliq_notify_mail_to_channel(
+    mock_config: Path, mock_token_refresh: Any
+) -> None:
     respx.get(f"{MAIL_BASE}/accounts/{ACCOUNT_ID}/folders/F1/messages/M1/content").mock(
         return_value=httpx.Response(
             200,
@@ -1167,7 +1232,9 @@ def test_cliq_notify_mail_to_channel(mock_config: Path, mock_token_refresh: Any)
     assert out["subject"] == "Status"
 
 
-def test_cliq_notify_mail_requires_destination(mock_config: Path, mock_token_refresh: Any) -> None:
+def test_cliq_notify_mail_requires_destination(
+    mock_config: Path, mock_token_refresh: Any
+) -> None:
     result = runner.invoke(
         app,
         ["cliq", "notify-mail", "M1", "--folder-id", "F1"],

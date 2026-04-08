@@ -21,7 +21,9 @@ class _AttachmentClient:
     def __init__(self, payload):
         self._payload = payload
 
-    def get_attachment_info(self, account_id: str, folder_id: str, message_id: str) -> dict:
+    def get_attachment_info(
+        self, account_id: str, folder_id: str, message_id: str
+    ) -> dict:
         return {"data": self._payload}
 
 
@@ -29,7 +31,9 @@ class _ContentClient:
     def __init__(self, payload):
         self._payload = payload
 
-    def get_message_content(self, account_id: str, folder_id: str, message_id: str) -> dict:
+    def get_message_content(
+        self, account_id: str, folder_id: str, message_id: str
+    ) -> dict:
         return self._payload
 
 
@@ -45,7 +49,9 @@ def test_resolve_message_folder_id_finds_message_folder() -> None:
     assert mail.resolve_message_folder_id(client, "A1", "M1") == "F2"
 
 
-def test_resolve_message_folder_id_errors_when_not_found(capsys: pytest.CaptureFixture) -> None:
+def test_resolve_message_folder_id_errors_when_not_found(
+    capsys: pytest.CaptureFixture,
+) -> None:
     class _EmptyClient:
         def get_folders(self, account_id: str) -> dict:
             return {"data": []}
@@ -62,7 +68,11 @@ def test_list_attachments_handles_dict_payload_and_string_entries() -> None:
     client = _AttachmentClient(
         {
             "attachments": [
-                {"attachmentId": "A1", "attachmentName": "a.txt", "attachmentSize": "2"},
+                {
+                    "attachmentId": "A1",
+                    "attachmentName": "a.txt",
+                    "attachmentSize": "2",
+                },
                 "A2",
                 99,
             ],
@@ -113,12 +123,18 @@ def test_fetch_message_content_normalizes_nested_data_response() -> None:
     assert msg["textBody"] == "Original body"
 
 
-def test_fetch_message_content_backfills_summary_when_content_response_is_sparse() -> None:
+def test_fetch_message_content_backfills_summary_when_content_response_is_sparse() -> (
+    None
+):
     class _SparseContentClient:
-        def get_message_content(self, account_id: str, folder_id: str, message_id: str) -> dict:
+        def get_message_content(
+            self, account_id: str, folder_id: str, message_id: str
+        ) -> dict:
             return {"data": {"messageId": "M1", "content": "Original body"}}
 
-        def get_messages(self, account_id: str, folder_id: str, limit: int = 200) -> dict:
+        def get_messages(
+            self, account_id: str, folder_id: str, limit: int = 200
+        ) -> dict:
             return {
                 "data": [
                     {
@@ -243,7 +259,9 @@ def test_build_forward_payload_with_note() -> None:
 
 
 def test_build_send_status_extra_prefers_nested_data() -> None:
-    extra = mail.build_send_status_extra({"data": {"messageId": "M1", "status": "queued"}})
+    extra = mail.build_send_status_extra(
+        {"data": {"messageId": "M1", "status": "queued"}}
+    )
 
     assert extra == {"messageId": "M1", "sendStatus": "queued"}
 

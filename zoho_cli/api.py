@@ -58,11 +58,20 @@ class ZohoMailClient:
                     timeout=timeout or _TIMEOUT,
                 )
                 logger.debug("→ %s", resp.status_code)
-            except (httpx.TimeoutException, httpx.NetworkError, httpx.TransportError) as e:
+            except (
+                httpx.TimeoutException,
+                httpx.NetworkError,
+                httpx.TransportError,
+            ) as e:
                 if attempt >= max_attempts:
-                    utils.error_exit("api_error", f"{method} {path} failed after {attempt} attempts: {e}")
+                    utils.error_exit(
+                        "api_error",
+                        f"{method} {path} failed after {attempt} attempts: {e}",
+                    )
                 backoff = min(0.5 * (2 ** (attempt - 1)), 5.0)
-                logger.debug("retrying %s %s after transport error: %s", method, path, e)
+                logger.debug(
+                    "retrying %s %s after transport error: %s", method, path, e
+                )
                 time.sleep(backoff)
                 continue
 
@@ -77,7 +86,11 @@ class ZohoMailClient:
                         retry_after = max(0.0, float(retry_after_header))
                     except ValueError:
                         retry_after = None
-                backoff = retry_after if retry_after is not None else min(0.5 * (2 ** (attempt - 1)), 5.0)
+                backoff = (
+                    retry_after
+                    if retry_after is not None
+                    else min(0.5 * (2 ** (attempt - 1)), 5.0)
+                )
                 logger.debug(
                     "retrying %s %s after HTTP %s, sleep=%ss",
                     method,
@@ -88,7 +101,9 @@ class ZohoMailClient:
                 time.sleep(backoff)
                 continue
 
-            utils.error_exit("api_error", f"HTTP {resp.status_code} {method} {path}: {resp.text}")
+            utils.error_exit(
+                "api_error", f"HTTP {resp.status_code} {method} {path}: {resp.text}"
+            )
 
         # unreachable
         raise RuntimeError("unreachable")
@@ -135,19 +150,25 @@ class ZohoMailClient:
     def get_folders(self, account_id: str) -> dict:
         return self._get(f"/accounts/{account_id}/folders")
 
-    def create_folder(self, account_id: str, folder_name: str, parent_id: Optional[str] = None) -> dict:
+    def create_folder(
+        self, account_id: str, folder_name: str, parent_id: Optional[str] = None
+    ) -> dict:
         payload: dict[str, Any] = {"folderName": folder_name}
         if parent_id:
             payload["parentId"] = parent_id
         return self._post_json(f"/accounts/{account_id}/folders", payload)
 
     def update_folder(self, account_id: str, folder_id: str, folder_name: str) -> dict:
-        return self._put(f"/accounts/{account_id}/folders/{folder_id}", {"folderName": folder_name})
+        return self._put(
+            f"/accounts/{account_id}/folders/{folder_id}", {"folderName": folder_name}
+        )
 
     def delete_folder(self, account_id: str, folder_id: str) -> dict:
         return self._delete(f"/accounts/{account_id}/folders/{folder_id}")
 
-    def folder_operation(self, account_id: str, folder_id: str, mode: str, **extra) -> dict:
+    def folder_operation(
+        self, account_id: str, folder_id: str, mode: str, **extra
+    ) -> dict:
         """Generic folder mode operation (emptyFolder, markAsRead, move, etc.)."""
         payload: dict[str, Any] = {"mode": mode}
         payload.update(extra)
@@ -158,7 +179,9 @@ class ZohoMailClient:
     def get_labels(self, account_id: str) -> dict:
         return self._get(f"/accounts/{account_id}/labels")
 
-    def create_label(self, account_id: str, name: str, color: Optional[str] = None) -> dict:
+    def create_label(
+        self, account_id: str, name: str, color: Optional[str] = None
+    ) -> dict:
         payload: dict[str, Any] = {"labelName": name}
         if color:
             payload["color"] = color
@@ -194,7 +217,9 @@ class ZohoMailClient:
             f"/accounts/{account_id}/folders/{folder_id}/messages/{message_id}/content"
         )
 
-    def update_message(self, account_id: str, mode: str, message_ids: list[str], **extra) -> dict:
+    def update_message(
+        self, account_id: str, mode: str, message_ids: list[str], **extra
+    ) -> dict:
         payload: dict[str, Any] = {"mode": mode, "messageId": message_ids}
         payload.update(extra)
         return self._put(f"/accounts/{account_id}/updatemessage", payload)

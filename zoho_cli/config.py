@@ -46,12 +46,12 @@ def accounts_base_url() -> str:
 
 # Region → (accounts_base_url, mail_base_url)
 REGIONS: dict[str, tuple[str, str]] = {
-    "com":  ("https://accounts.zoho.com",    "https://mail.zoho.com/api"),
-    "eu":   ("https://accounts.zoho.eu",     "https://mail.zoho.eu/api"),
-    "in":   ("https://accounts.zoho.in",     "https://mail.zoho.in/api"),
-    "au":   ("https://accounts.zoho.com.au", "https://mail.zoho.com.au/api"),
-    "jp":   ("https://accounts.zoho.jp",     "https://mail.zoho.jp/api"),
-    "ca":   ("https://accounts.zohocloud.ca","https://mail.zohocloud.ca/api"),
+    "com": ("https://accounts.zoho.com", "https://mail.zoho.com/api"),
+    "eu": ("https://accounts.zoho.eu", "https://mail.zoho.eu/api"),
+    "in": ("https://accounts.zoho.in", "https://mail.zoho.in/api"),
+    "au": ("https://accounts.zoho.com.au", "https://mail.zoho.com.au/api"),
+    "jp": ("https://accounts.zoho.jp", "https://mail.zoho.jp/api"),
+    "ca": ("https://accounts.zohocloud.ca", "https://mail.zohocloud.ca/api"),
 }
 
 

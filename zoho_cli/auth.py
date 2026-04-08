@@ -47,6 +47,7 @@ def parse_scope_value(scope_value: object) -> list[str]:
 
     return merge_scopes(raw)
 
+
 # ── success page served to the browser after OAuth ───────────────────────────
 
 _SUCCESS_HTML = """\
@@ -127,6 +128,7 @@ footer{color:#334155;font-size:.8rem;margin-top:.25rem}
 
 
 # ── local callback server ─────────────────────────────────────────────────────
+
 
 def _make_callback_handler(result: dict) -> type:
     """Return a request handler class that captures the OAuth code."""
@@ -212,7 +214,10 @@ def browser_login_flow(
     print("\nOpening browser for authentication…", file=sys.stderr)
     opened = webbrowser.open(auth_url)
     if not opened:
-        print(f"\nCould not open browser automatically. Visit:\n\n  {auth_url}\n", file=sys.stderr)
+        print(
+            f"\nCould not open browser automatically. Visit:\n\n  {auth_url}\n",
+            file=sys.stderr,
+        )
     else:
         print(f"Waiting for callback on {redirect_uri} …\n", file=sys.stderr)
 
@@ -220,7 +225,7 @@ def browser_login_flow(
     # enough: browsers fire extra requests (favicon, preflight) before the
     # real /callback?code=... arrives.
     deadline = time.monotonic() + 300  # 5-minute wall-clock limit
-    server.timeout = 2               # short poll so we can re-check deadline
+    server.timeout = 2  # short poll so we can re-check deadline
     while not result.get("code"):
         if time.monotonic() > deadline:
             break
@@ -231,12 +236,16 @@ def browser_login_flow(
     accounts_server = result.get("accounts_server")
 
     if not code:
-        utils.error_exit("oauth_timeout", "No authorisation code received. Did you approve access in the browser?")
+        utils.error_exit(
+            "oauth_timeout",
+            "No authorisation code received. Did you approve access in the browser?",
+        )
 
     return redirect_uri, code, accounts_server
 
 
 # ── core OAuth helpers ────────────────────────────────────────────────────────
+
 
 def build_auth_url(client_id: str, redirect_uri: str, scopes: list[str]) -> str:
     base = _config.accounts_base_url()
@@ -261,7 +270,9 @@ def parse_redirect(raw_url: str) -> tuple[str, Optional[str]]:
         params = parse_qs(parsed.query)
         codes = params.get("code", [])
         if not codes:
-            utils.error_exit("invalid_redirect_url", "Could not find 'code' in the pasted URL.")
+            utils.error_exit(
+                "invalid_redirect_url", "Could not find 'code' in the pasted URL."
+            )
         accounts_server = params.get("accounts-server", [None])[0]
         return codes[0], accounts_server
     except SystemExit:
@@ -292,7 +303,9 @@ def exchange_code(
         timeout=30,
     )
     if resp.status_code != 200:
-        utils.error_exit("oauth_exchange_failed", f"HTTP {resp.status_code}: {resp.text}")
+        utils.error_exit(
+            "oauth_exchange_failed", f"HTTP {resp.status_code}: {resp.text}"
+        )
     data = resp.json()
     if "access_token" not in data:
         utils.error_exit("oauth_exchange_failed", f"Unexpected response: {data}")
@@ -344,7 +357,9 @@ def refresh_access_token_info(
         timeout=30,
     )
     if resp.status_code != 200:
-        utils.error_exit("token_refresh_failed", f"HTTP {resp.status_code}: {resp.text}")
+        utils.error_exit(
+            "token_refresh_failed", f"HTTP {resp.status_code}: {resp.text}"
+        )
     data = resp.json()
     if "access_token" not in data:
         utils.error_exit("token_refresh_failed", f"No access_token in response: {data}")
@@ -399,11 +414,15 @@ def discover_accounts_server(client_id: str) -> str:
             if result:
                 return result
 
-    logger.debug("Region auto-detection found no match; defaulting to accounts.zoho.com")
+    logger.debug(
+        "Region auto-detection found no match; defaulting to accounts.zoho.com"
+    )
     return "https://accounts.zoho.com"
 
 
-def discover_account_id(access_token: str, mail_base_url: Optional[str] = None) -> Optional[str]:
+def discover_account_id(
+    access_token: str, mail_base_url: Optional[str] = None
+) -> Optional[str]:
     base = (mail_base_url or _config.mail_base_url()).rstrip("/")
     logger.debug("Discovering accountId via %s", base)
     try:

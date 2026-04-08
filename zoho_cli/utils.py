@@ -32,6 +32,7 @@ _err = Console(stderr=True, highlight=False)
 
 # ── errors ────────────────────────────────────────────────────────────────────
 
+
 def error_exit(code: str, details: str, exit_code: int = 1) -> NoReturn:
     """Print error to stderr and exit."""
     if is_md_mode():
@@ -45,6 +46,7 @@ def error_exit(code: str, details: str, exit_code: int = 1) -> NoReturn:
 
 
 # ── debug ─────────────────────────────────────────────────────────────────────
+
 
 def setup_debug() -> None:
     logging.basicConfig(

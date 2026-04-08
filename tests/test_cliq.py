@@ -67,7 +67,9 @@ def test_cliq_client_send_to_channel(client: cliq.ZohoCliqClient) -> None:
 
 
 @respx.mock
-def test_cliq_client_send_to_channel_accepts_204_empty_body(client: cliq.ZohoCliqClient) -> None:
+def test_cliq_client_send_to_channel_accepts_204_empty_body(
+    client: cliq.ZohoCliqClient,
+) -> None:
     respx.post("https://cliq.zoho.com/api/v2/channelsbyname/C1/message").mock(
         return_value=httpx.Response(404, text="request_url_invalid")
     )
@@ -86,7 +88,9 @@ def test_cliq_client_send_to_channel_accepts_204_empty_body(client: cliq.ZohoCli
 
 
 @respx.mock
-def test_cliq_client_send_to_channel_id_resolves_channel_lookup(client: cliq.ZohoCliqClient) -> None:
+def test_cliq_client_send_to_channel_id_resolves_channel_lookup(
+    client: cliq.ZohoCliqClient,
+) -> None:
     respx.post("https://cliq.zoho.com/api/v2/channelsbyname/O1/message").mock(
         return_value=httpx.Response(404, text="request_url_invalid")
     )
@@ -110,7 +114,9 @@ def test_cliq_client_send_to_channel_id_resolves_channel_lookup(client: cliq.Zoh
 
 
 @respx.mock
-def test_cliq_client_send_to_user_uses_buddies_endpoint(client: cliq.ZohoCliqClient) -> None:
+def test_cliq_client_send_to_user_uses_buddies_endpoint(
+    client: cliq.ZohoCliqClient,
+) -> None:
     route = respx.post("https://cliq.zoho.com/api/v2/buddies/U1/message").mock(
         return_value=httpx.Response(200, json={"data": {"status": "ok"}})
     )
@@ -145,7 +151,9 @@ def test_cliq_client_send_scope_invalid_reports_reauth_hint(
     assert "ZohoCliq.Webhooks.CREATE" in err
 
 
-def test_cliq_client_send_requires_exactly_one_destination(client: cliq.ZohoCliqClient) -> None:
+def test_cliq_client_send_requires_exactly_one_destination(
+    client: cliq.ZohoCliqClient,
+) -> None:
     with pytest.raises(ValueError, match="exactly one"):
         client.send_message("hello")
 

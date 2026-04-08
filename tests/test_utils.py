@@ -98,7 +98,7 @@ def test_format_size_mb() -> None:
 
 def test_format_size_gb() -> None:
     """1 GiB becomes '1 GB'."""
-    assert utils.format_size(1024 ** 3) == "1 GB"
+    assert utils.format_size(1024**3) == "1 GB"
 
 
 # ---------------------------------------------------------------------------

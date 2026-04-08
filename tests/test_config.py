@@ -24,7 +24,9 @@ def test_config_path_default(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) ->
     assert isinstance(result, Path)
 
 
-def test_config_path_env_override(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+def test_config_path_env_override(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
     """ZOHO_CONFIG env var is honoured by config_path()."""
     override = str(tmp_path / "env_config.json")
     monkeypatch.setenv("ZOHO_CONFIG", override)
@@ -154,5 +156,7 @@ def test_infer_accounts_server_per_account(monkeypatch: pytest.MonkeyPatch) -> N
 def test_infer_accounts_server_none(monkeypatch: pytest.MonkeyPatch) -> None:
     """None is returned when no server hint is found anywhere."""
     monkeypatch.delenv("ZOHO_ACCOUNTS_BASE_URL", raising=False)
-    result = cfg_mod.infer_accounts_server({"accounts": {"a@b.com": {"accountId": "1"}}})
+    result = cfg_mod.infer_accounts_server(
+        {"accounts": {"a@b.com": {"accountId": "1"}}}
+    )
     assert result is None

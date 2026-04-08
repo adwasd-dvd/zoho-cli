@@ -11,6 +11,7 @@ logger = logging.getLogger(__name__)
 
 # ── folder resolution ─────────────────────────────────────────────────────────
 
+
 def resolve_folder_id(client: ZohoMailClient, account_id: str, folder_name: str) -> str:
     """Resolve a folder name or ID to its folderId string."""
     resp = client.get_folders(account_id)
@@ -67,11 +68,14 @@ def resolve_message_folder_id(
     """Resolve folder_id or locate the message folder, exiting if not found."""
     fid = folder_id or find_folder_for_message(client, account_id, message_id)
     if not fid:
-        utils.error_exit("message_not_found", f"Message {message_id} not found in any folder.")
+        utils.error_exit(
+            "message_not_found", f"Message {message_id} not found in any folder."
+        )
     return fid
 
 
 # ── message formatters ────────────────────────────────────────────────────────
+
 
 def _to_list(val) -> list:
     if not val:
@@ -144,7 +148,9 @@ def fetch_message_content(
         return formatted
 
     try:
-        summaries = client.get_messages(account_id, folder_id, limit=200).get("data", [])
+        summaries = client.get_messages(account_id, folder_id, limit=200).get(
+            "data", []
+        )
     except SystemExit:
         return formatted
 
@@ -165,7 +171,9 @@ def fetch_message_content(
     if "isRead" not in data:
         formatted["unread"] = summary.get("unread", formatted["unread"])
     if "hasAttachment" not in data:
-        formatted["hasAttachments"] = summary.get("hasAttachments", formatted["hasAttachments"])
+        formatted["hasAttachments"] = summary.get(
+            "hasAttachments", formatted["hasAttachments"]
+        )
 
     return formatted
 
@@ -188,15 +196,16 @@ def format_attachment(att: dict) -> dict:
     }
 
 
-def list_attachments(client: ZohoMailClient, account_id: str, folder_id: str,
-                     message_id: str) -> list[dict]:
+def list_attachments(
+    client: ZohoMailClient, account_id: str, folder_id: str, message_id: str
+) -> list[dict]:
     """List attachments for a message.
-    
+
     Returns a normalized list of attachment dicts with keys:
     - attachmentId
-    - fileName  
+    - fileName
     - size
-    
+
     Handles various API response shapes (dict/list, nested structures).
     """
     resp = client.get_attachment_info(account_id, folder_id, message_id)
@@ -215,13 +224,16 @@ def list_attachments(client: ZohoMailClient, account_id: str, folder_id: str,
 
 # ── message composition helpers ──────────────────────────────────────────────
 
+
 def _prefixed_subject(subject: str, prefix: str) -> str:
     if subject.lower().startswith(prefix.lower()):
         return subject
     return f"{prefix} {subject}"
 
 
-def _plaintext_payload(from_address: str, to_address: str, subject: str, body: str) -> dict:
+def _plaintext_payload(
+    from_address: str, to_address: str, subject: str, body: str
+) -> dict:
     return {
         "fromAddress": from_address,
         "toAddress": to_address,

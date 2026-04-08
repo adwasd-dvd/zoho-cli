@@ -31,7 +31,9 @@ def infer_crm_base_url(
         if host.startswith("mail.zoho."):
             return f"{scheme}://www.zohoapis.{host.removeprefix('mail.zoho.')}/crm/v2"
         if host.startswith("accounts.zoho."):
-            return f"{scheme}://www.zohoapis.{host.removeprefix('accounts.zoho.')}/crm/v2"
+            return (
+                f"{scheme}://www.zohoapis.{host.removeprefix('accounts.zoho.')}/crm/v2"
+            )
         if host.startswith("mail.zohocloud."):
             return f"{scheme}://www.{host.removeprefix('mail.')}/crm/v2"
         if host.startswith("accounts.zohocloud."):
@@ -68,7 +70,9 @@ class ZohoCrmClient:
             timeout=httpx.Timeout(30.0),
         )
         if not resp.is_success:
-            utils.error_exit("api_error", f"HTTP {resp.status_code} GET {path}: {resp.text}")
+            utils.error_exit(
+                "api_error", f"HTTP {resp.status_code} GET {path}: {resp.text}"
+            )
         return resp.json()
 
     def modules(self, *, limit: int = 50, page: int = 1) -> dict:

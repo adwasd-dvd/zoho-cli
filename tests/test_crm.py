@@ -63,7 +63,9 @@ def test_crm_client_list_records() -> None:
         return_value=httpx.Response(200, json={"data": [{"id": "1001"}]})
     )
 
-    result = client.list_records("Leads", limit=2, page=4, fields=["Last_Name", "Email"])
+    result = client.list_records(
+        "Leads", limit=2, page=4, fields=["Last_Name", "Email"]
+    )
 
     assert result["data"][0]["id"] == "1001"
     assert dict(route.calls.last.request.url.params) == {
@@ -77,7 +79,9 @@ def test_crm_client_list_records() -> None:
 def test_crm_client_get_record() -> None:
     client = crm.ZohoCrmClient("fake-token", base_url="https://www.zohoapis.com/crm/v2")
     route = respx.get("https://www.zohoapis.com/crm/v2/Leads/1001").mock(
-        return_value=httpx.Response(200, json={"data": [{"id": "1001", "Last_Name": "Wang"}]})
+        return_value=httpx.Response(
+            200, json={"data": [{"id": "1001", "Last_Name": "Wang"}]}
+        )
     )
 
     result = client.get_record("Leads", "1001", fields=["Last_Name"])
@@ -93,7 +97,9 @@ def test_crm_client_search_records_by_criteria() -> None:
         return_value=httpx.Response(200, json={"data": [{"id": "1002"}]})
     )
 
-    result = client.search_records("Leads", criteria="(Last_Name:equals:Wang)", limit=3, page=2)
+    result = client.search_records(
+        "Leads", criteria="(Last_Name:equals:Wang)", limit=3, page=2
+    )
 
     assert result["data"][0]["id"] == "1002"
     assert dict(route.calls.last.request.url.params) == {

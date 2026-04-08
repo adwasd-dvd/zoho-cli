@@ -35,7 +35,16 @@ from zoho_cli import parse as _parse
 import click
 import typer
 
-from zoho_cli import auth, cliq as _cliq, config as _config, crm as _crm, folders as _folders, mail as _mail, storage, utils
+from zoho_cli import (
+    auth,
+    cliq as _cliq,
+    config as _config,
+    crm as _crm,
+    folders as _folders,
+    mail as _mail,
+    storage,
+    utils,
+)
 from zoho_cli.api import ZohoMailClient
 from zoho_cli.cliq import ZohoCliqClient
 from zoho_cli.crm import ZohoCrmClient
@@ -58,29 +67,34 @@ app = typer.Typer(
     add_completion=False,
     help=f"Zoho Mail CLI (v{_get_version()}) — JSON by default, Markdown with --md.",
 )
-mail_app        = typer.Typer(no_args_is_help=True, help="Message operations.")
-attachment_subapp = typer.Typer(no_args_is_help=True, name="attachment", help="Attachment management (download & parse).")
-folders_app     = typer.Typer(no_args_is_help=True, help="Folder management.")
-labels_app      = typer.Typer(no_args_is_help=True, help="Label management.")
-cliq_app        = typer.Typer(no_args_is_help=True, help="Cliq operations (scaffold).")
-crm_app         = typer.Typer(no_args_is_help=True, help="CRM operations (scaffold).")
-config_app      = typer.Typer(no_args_is_help=True, help="Configuration helpers.")
+mail_app = typer.Typer(no_args_is_help=True, help="Message operations.")
+attachment_subapp = typer.Typer(
+    no_args_is_help=True,
+    name="attachment",
+    help="Attachment management (download & parse).",
+)
+folders_app = typer.Typer(no_args_is_help=True, help="Folder management.")
+labels_app = typer.Typer(no_args_is_help=True, help="Label management.")
+cliq_app = typer.Typer(no_args_is_help=True, help="Cliq operations (scaffold).")
+crm_app = typer.Typer(no_args_is_help=True, help="CRM operations (scaffold).")
+config_app = typer.Typer(no_args_is_help=True, help="Configuration helpers.")
 
-app.add_typer(mail_app,         name="mail")
+app.add_typer(mail_app, name="mail")
 app.add_typer(attachment_subapp, name="attachment")
-app.add_typer(folders_app,       name="folders")
-app.add_typer(labels_app,  name="labels")
-app.add_typer(cliq_app,    name="cliq")
-app.add_typer(crm_app,     name="crm")
-app.add_typer(config_app,  name="config")
+app.add_typer(folders_app, name="folders")
+app.add_typer(labels_app, name="labels")
+app.add_typer(cliq_app, name="cliq")
+app.add_typer(crm_app, name="crm")
+app.add_typer(config_app, name="config")
 
 # ── global state ──────────────────────────────────────────────────────────────
 
+
 class _State:
-    account:     Optional[str] = None
+    account: Optional[str] = None
     config_path: Optional[str] = None
-    debug: bool  = False
-    md:   bool   = False
+    debug: bool = False
+    md: bool = False
 
 
 _S = _State()
@@ -95,30 +109,41 @@ if len(sys.argv) > 1 and set(sys.argv[1:]) <= {"-v", "--version"}:
 @app.callback()
 def _global(
     account: Optional[str] = typer.Option(
-        None, "--account", "-a", envvar="ZOHO_ACCOUNT", help="Account e-mail to use.",
+        None,
+        "--account",
+        "-a",
+        envvar="ZOHO_ACCOUNT",
+        help="Account e-mail to use.",
     ),
     config_path: Optional[str] = typer.Option(
-        None, "--config", envvar="ZOHO_CONFIG", help="Path to config.json.",
+        None,
+        "--config",
+        envvar="ZOHO_CONFIG",
+        help="Path to config.json.",
     ),
     debug: bool = typer.Option(False, "--debug", help="Log HTTP/debug to stderr."),
-    md: bool    = typer.Option(False, "--md", help="Markdown output instead of JSON."),
+    md: bool = typer.Option(False, "--md", help="Markdown output instead of JSON."),
     version_flag: bool = typer.Option(
-        False, "--version", "-v", help="Show version and exit.",
+        False,
+        "--version",
+        "-v",
+        help="Show version and exit.",
     ),
 ) -> None:
     if version_flag:
         print(_get_version())
         raise typer.Exit(0)
-    _S.account     = account
+    _S.account = account
     _S.config_path = config_path
-    _S.debug       = debug
-    _S.md          = md
+    _S.debug = debug
+    _S.md = md
     utils.configure(md=md)
     if debug:
         utils.setup_debug()
 
 
 # ── shared helpers ────────────────────────────────────────────────────────────
+
 
 def _cfg() -> dict:
     return _config.load(_S.config_path)
@@ -127,7 +152,10 @@ def _cfg() -> dict:
 def _require_account(cfg: dict) -> str:
     email = _S.account or _config.default_account(cfg)
     if not email:
-        utils.error_exit("no_account", "No account specified. Use --account or set default_account in config.")
+        utils.error_exit(
+            "no_account",
+            "No account specified. Use --account or set default_account in config.",
+        )
     return email  # type: ignore[return-value]
 
 
@@ -135,7 +163,10 @@ def _require_credentials(cfg: dict) -> tuple[str, str]:
     cid = (cfg.get("client_id") or "").strip()
     csec = (cfg.get("client_secret") or "").strip()
     if not cid or not csec:
-        utils.error_exit("missing_credentials", "client_id and client_secret must be set. Run: zoho config init")
+        utils.error_exit(
+            "missing_credentials",
+            "client_id and client_secret must be set. Run: zoho config init",
+        )
     return cid, csec  # type: ignore[return-value]
 
 
@@ -143,17 +174,23 @@ def _get_client(cfg: dict, email: str) -> ZohoMailClient:
     cid, csec = _require_credentials(cfg)
     account_cfg = cfg.get("accounts", {}).get(email, {})
     access_token = auth.refresh_access_token(
-        email, cid, csec,
+        email,
+        cid,
+        csec,
         accounts_base_url=account_cfg.get("accounts_server"),
     )
     return ZohoMailClient(access_token, mail_base_url=account_cfg.get("mail_base_url"))
 
 
-def _get_cliq_client(cfg: dict, email: str, network: Optional[str] = None) -> ZohoCliqClient:
+def _get_cliq_client(
+    cfg: dict, email: str, network: Optional[str] = None
+) -> ZohoCliqClient:
     cid, csec = _require_credentials(cfg)
     account_cfg = cfg.get("accounts", {}).get(email, {})
     access_token = auth.refresh_access_token(
-        email, cid, csec,
+        email,
+        cid,
+        csec,
         accounts_base_url=account_cfg.get("accounts_server"),
     )
     return ZohoCliqClient(
@@ -170,7 +207,9 @@ def _get_crm_client(cfg: dict, email: str) -> ZohoCrmClient:
     cid, csec = _require_credentials(cfg)
     account_cfg = cfg.get("accounts", {}).get(email, {})
     access_token = auth.refresh_access_token(
-        email, cid, csec,
+        email,
+        cid,
+        csec,
         accounts_base_url=account_cfg.get("accounts_server"),
     )
     return ZohoCrmClient(
@@ -185,7 +224,10 @@ def _get_crm_client(cfg: dict, email: str) -> ZohoCrmClient:
 def _require_account_id(cfg: dict, email: str) -> str:
     aid = cfg.get("accounts", {}).get(email, {}).get("accountId")
     if not aid:
-        utils.error_exit("no_account_id", f"No accountId for {email}. Run: zoho login --account {email}")
+        utils.error_exit(
+            "no_account_id",
+            f"No accountId for {email}. Run: zoho login --account {email}",
+        )
     return str(aid)  # type: ignore[return-value]
 
 
@@ -201,7 +243,9 @@ def _send_and_report(
     *,
     attachment_paths: Optional[list[str]] = None,
 ) -> None:
-    send_resp = client.send_message(account_id, payload, attachment_paths=attachment_paths)
+    send_resp = client.send_message(
+        account_id, payload, attachment_paths=attachment_paths
+    )
     utils.output_status(success_message, extra=_mail.build_send_status_extra(send_resp))
 
 
@@ -214,7 +258,9 @@ def _mail_message_context(
     email = _require_account(cfg)
     client = _get_client(cfg, email)
     account_id = _require_account_id(cfg, email)
-    resolved_folder_id = _mail.resolve_message_folder_id(client, account_id, message_id, folder_id)
+    resolved_folder_id = _mail.resolve_message_folder_id(
+        client, account_id, message_id, folder_id
+    )
     return email, client, account_id, resolved_folder_id
 
 
@@ -254,9 +300,13 @@ def _select_attachment_target(
 ) -> dict:
     """Select an attachment either by filename filter or interactive choice."""
     if file_name:
-        matches = [a for a in attachments if file_name.lower() in a.get("fileName", "").lower()]
+        matches = [
+            a for a in attachments if file_name.lower() in a.get("fileName", "").lower()
+        ]
         if not matches:
-            utils.error_exit("not_found", f"No attachment found with name '{file_name}'")
+            utils.error_exit(
+                "not_found", f"No attachment found with name '{file_name}'"
+            )
         return matches[0]
 
     print(f"Attachments for message {message_id}:")
@@ -273,7 +323,9 @@ def _select_attachment_target(
     return {}  # unreachable
 
 
-def _resolve_label_id(client: "ZohoMailClient", account_id: str, name_or_id: str) -> str:
+def _resolve_label_id(
+    client: "ZohoMailClient", account_id: str, name_or_id: str
+) -> str:
     """Resolve a label name or numeric ID to a labelId string."""
     if name_or_id.isdigit():
         return name_or_id
@@ -281,11 +333,14 @@ def _resolve_label_id(client: "ZohoMailClient", account_id: str, name_or_id: str
     for lbl in resp.get("data", []):
         if lbl.get("labelName", "").lower() == name_or_id.lower():
             return str(lbl["labelId"])
-    utils.error_exit("label_not_found", f"Label '{name_or_id}' not found. Run: zoho labels list")
+    utils.error_exit(
+        "label_not_found", f"Label '{name_or_id}' not found. Run: zoho labels list"
+    )
     return ""  # unreachable
 
 
 # ── markdown renderers ────────────────────────────────────────────────────────
+
 
 def _md_mail_list(messages: list) -> None:
     rows = [
@@ -316,7 +371,11 @@ def _md_folders(folders: list) -> None:
 
 def _md_attachments(atts: list) -> None:
     rows = [
-        [a.get("attachmentId", ""), a.get("fileName", ""), utils.format_size(a.get("size", 0))]
+        [
+            a.get("attachmentId", ""),
+            a.get("fileName", ""),
+            utils.format_size(a.get("size", 0)),
+        ]
         for a in atts
     ]
     print(utils.md_table(["ID", "FILE NAME", "SIZE"], rows))
@@ -345,45 +404,62 @@ def _md_message(msg: dict) -> None:
 # zoho login
 # ══════════════════════════════════════════════════════════════════════════════
 
+
 @app.command("login")
 def login(
     account: Optional[str] = typer.Option(
-        None, "--account", "-a", envvar="ZOHO_ACCOUNT", help="Account e-mail.",
+        None,
+        "--account",
+        "-a",
+        envvar="ZOHO_ACCOUNT",
+        help="Account e-mail.",
     ),
     port: int = typer.Option(
-        51821, "--port", help="Local port for the OAuth callback server.",
+        51821,
+        "--port",
+        help="Local port for the OAuth callback server.",
     ),
     no_browser: bool = typer.Option(
-        False, "--no-browser",
+        False,
+        "--no-browser",
         help="Print the URL instead of opening a browser (headless/remote use).",
     ),
     with_cliq: bool = typer.Option(
-        False, "--with-cliq", help="Include recommended Cliq OAuth scopes in this login flow.",
+        False,
+        "--with-cliq",
+        help="Include recommended Cliq OAuth scopes in this login flow.",
     ),
     with_crm: bool = typer.Option(
-        False, "--with-crm", help="Include recommended CRM OAuth scopes in this login flow.",
+        False,
+        "--with-crm",
+        help="Include recommended CRM OAuth scopes in this login flow.",
     ),
     scope: List[str] = typer.Option(
-        [], "--scope", help="Additional OAuth scope(s) to include (repeatable).",
+        [],
+        "--scope",
+        help="Additional OAuth scope(s) to include (repeatable).",
     ),
 ) -> None:
     """Authenticate via Zoho OAuth 2.0."""
-    cfg   = _cfg()
+    cfg = _cfg()
     email = account or _S.account or _config.default_account(cfg)
     if not email:
         email = click.prompt("Account e-mail", err=True)
 
-    client_id     = (cfg.get("client_id") or "").strip() or None
+    client_id = (cfg.get("client_id") or "").strip() or None
     client_secret = (cfg.get("client_secret") or "").strip() or None
 
     if not client_id:
         client_id = click.prompt("Zoho OAuth Client ID", err=True).strip()
         cfg["client_id"] = client_id
     if not client_secret:
-        client_secret = click.prompt("Zoho OAuth Client Secret", hide_input=True, err=True).strip()
+        client_secret = click.prompt(
+            "Zoho OAuth Client Secret", hide_input=True, err=True
+        ).strip()
         cfg["client_secret"] = client_secret
 
     import os
+
     scopes = auth.merge_scopes(
         auth.DEFAULT_SCOPES,
         _cliq.DEFAULT_CLIQ_SCOPES if with_cliq else [],
@@ -401,7 +477,9 @@ def login(
             _stderr(f"Detected: {forced_accounts_url}")
         os.environ["ZOHO_ACCOUNTS_BASE_URL"] = forced_accounts_url
 
-        redirect_uri = cfg.get("redirect_uri", "https://example.com/zoho/oauth/callback")
+        redirect_uri = cfg.get(
+            "redirect_uri", "https://example.com/zoho/oauth/callback"
+        )
         auth_url = auth.build_auth_url(client_id, redirect_uri, scopes)
         _stderr("\n── Zoho OAuth Login (manual) ──────────────────────────────")
         _stderr("1. Open this URL in your browser:\n")
@@ -427,15 +505,22 @@ def login(
         os.environ["ZOHO_ACCOUNTS_BASE_URL"] = forced_accounts_url
 
         redirect_uri, code, accounts_server = auth.browser_login_flow(
-            client_id, scopes, preferred_port=port,
-            _server=cb_server, _redirect_uri=redirect_uri, _result=_cb_result,
+            client_id,
+            scopes,
+            preferred_port=port,
+            _server=cb_server,
+            _redirect_uri=redirect_uri,
+            _result=_cb_result,
         )
 
     token_resp = auth.exchange_code(
-        code, client_id, client_secret, redirect_uri,
+        code,
+        client_id,
+        client_secret,
+        redirect_uri,
         accounts_base_url=accounts_server,
     )
-    access_token  = token_resp["access_token"]
+    access_token = token_resp["access_token"]
     granted_scopes = auth.parse_scope_value(token_resp.get("scope")) or scopes
     refresh_token = token_resp.get("refresh_token")
 
@@ -456,9 +541,13 @@ def login(
                 "  3. Run `zoho login` again\n\n"
                 "If the problem persists, check that your API Console client has 'Access Type: Offline'.",
             )
-        _stderr("Note: Zoho did not issue a new refresh_token; keeping the existing stored one.")
+        _stderr(
+            "Note: Zoho did not issue a new refresh_token; keeping the existing stored one."
+        )
 
-    storage.store_token(email, refresh_token, granted_scopes, accounts_server=accounts_server)
+    storage.store_token(
+        email, refresh_token, granted_scopes, accounts_server=accounts_server
+    )
 
     # Derive regional Mail API URL from the accounts server
     mail_base: Optional[str] = None
@@ -499,32 +588,33 @@ def login(
 # zoho mail …
 # ══════════════════════════════════════════════════════════════════════════════
 
+
 @mail_app.command("list")
 def mail_list(
     folder: str = typer.Option("Inbox", "--folder", "-f", help="Folder name or ID."),
-    limit:  int  = typer.Option(50,      "--limit",  "-n", help="Max messages."),
+    limit: int = typer.Option(50, "--limit", "-n", help="Max messages."),
 ) -> None:
     """List messages in a folder."""
-    cfg       = _cfg()
-    email     = _require_account(cfg)
-    client    = _get_client(cfg, email)
+    cfg = _cfg()
+    email = _require_account(cfg)
+    client = _get_client(cfg, email)
     account_id = _require_account_id(cfg, email)
 
     folder_id = _mail.resolve_folder_id(client, account_id, folder)
-    resp      = client.get_messages(account_id, folder_id, limit=limit)
-    messages  = [_mail.format_message_summary(m) for m in resp.get("data", [])]
+    resp = client.get_messages(account_id, folder_id, limit=limit)
+    messages = [_mail.format_message_summary(m) for m in resp.get("data", [])]
     utils.output(messages, md_render=_md_mail_list)
 
 
 @mail_app.command("search")
 def mail_search(
     query: str = typer.Argument(..., help="Search query."),
-    limit: int  = typer.Option(50, "--limit", "-n", help="Max results."),
+    limit: int = typer.Option(50, "--limit", "-n", help="Max results."),
 ) -> None:
     """Search messages."""
-    cfg       = _cfg()
-    email     = _require_account(cfg)
-    client    = _get_client(cfg, email)
+    cfg = _cfg()
+    email = _require_account(cfg)
+    client = _get_client(cfg, email)
     account_id = _require_account_id(cfg, email)
 
     if len(query.strip()) < 2:
@@ -533,15 +623,17 @@ def mail_search(
     # Auto-wrap bare words so users can just type plain text naturally.
     if ":" not in query:
         query = f"entire:{query}"
-    resp     = client.search_messages(account_id, query, limit=limit)
+    resp = client.search_messages(account_id, query, limit=limit)
     messages = [_mail.format_message_summary(m) for m in resp.get("data", [])]
     utils.output(messages, md_render=_md_mail_list)
 
 
 @mail_app.command("get")
 def mail_get(
-    message_id: str           = typer.Argument(..., help="Message ID."),
-    folder_id:  Optional[str] = typer.Option(None, "--folder-id", help="Folder ID (skips auto-scan)."),
+    message_id: str = typer.Argument(..., help="Message ID."),
+    folder_id: Optional[str] = typer.Option(
+        None, "--folder-id", help="Folder ID (skips auto-scan)."
+    ),
 ) -> None:
     """Get full message content."""
     cfg = _cfg()
@@ -553,8 +645,8 @@ def mail_get(
 
 @mail_app.command("attachments")
 def mail_attachments(
-    message_id: str           = typer.Argument(..., help="Message ID."),
-    folder_id:  Optional[str] = typer.Option(None, "--folder-id", help="Folder ID."),
+    message_id: str = typer.Argument(..., help="Message ID."),
+    folder_id: Optional[str] = typer.Option(None, "--folder-id", help="Folder ID."),
 ) -> None:
     """List attachments for a message."""
     cfg = _cfg()
@@ -566,18 +658,25 @@ def mail_attachments(
 
 @mail_app.command("download-attachment")
 def mail_download_attachment(
-    message_id:    str           = typer.Argument(..., help="Message ID."),
-    attachment_id: str           = typer.Argument(..., help="Attachment ID."),
-    out:           str           = typer.Option(..., "--out", "-o", help="Output file path."),
-    folder_id:     Optional[str] = typer.Option(None, "--folder-id", help="Folder ID."),
-    parse:         bool          = typer.Option(False, "--parse", "-p", help="Auto-parse and display content after download (supported: txt, md, json, csv, xlsx, pdf, docx)."),
+    message_id: str = typer.Argument(..., help="Message ID."),
+    attachment_id: str = typer.Argument(..., help="Attachment ID."),
+    out: str = typer.Option(..., "--out", "-o", help="Output file path."),
+    folder_id: Optional[str] = typer.Option(None, "--folder-id", help="Folder ID."),
+    parse: bool = typer.Option(
+        False,
+        "--parse",
+        "-p",
+        help="Auto-parse and display content after download (supported: txt, md, json, csv, xlsx, pdf, docx).",
+    ),
 ) -> None:
     """Download an attachment to a file."""
     cfg = _cfg()
     _, client, account_id, fid = _mail_message_context(cfg, message_id, folder_id)
 
     out_path = Path(out)
-    size = _download_attachment_to_path(client, account_id, fid, message_id, attachment_id, out_path)
+    size = _download_attachment_to_path(
+        client, account_id, fid, message_id, attachment_id, out_path
+    )
     saved_message = f"Saved {out_path.name} ({utils.format_size(size)})"
     saved_payload = {"path": str(out_path.resolve()), "size": size}
 
@@ -591,7 +690,9 @@ def mail_download_attachment(
         warning = f"Parse failed: {e}"
         if utils.is_md_mode():
             utils.output_status(saved_message, extra=saved_payload)
-            utils.output_status("Attachment parsed with warning", extra={"warning": warning})
+            utils.output_status(
+                "Attachment parsed with warning", extra={"warning": warning}
+            )
         else:
             utils.output_json({"status": "ok", **saved_payload, "warning": warning})
         return
@@ -611,19 +712,25 @@ def mail_download_attachment(
 
 @mail_app.command("send")
 def mail_send(
-    to:        List[str]      = typer.Option(...,  "--to",        help="Recipient (repeatable)."),
-    subject:   str            = typer.Option(...,  "--subject", "-s", help="Subject line."),
-    text:      Optional[str]  = typer.Option(None, "--text",       help="Plain-text body."),
-    html_file: Optional[str]  = typer.Option(None, "--html-file",  help="Path to HTML body file."),
-    cc:        List[str]      = typer.Option([],   "--cc",         help="CC address (repeatable)."),
-    bcc:       List[str]      = typer.Option([],   "--bcc",        help="BCC address (repeatable)."),
-    attach:    List[str]      = typer.Option([],   "--attach",     help="Attachment path (repeatable)."),
-    from_addr: Optional[str]  = typer.Option(None, "--from",       help="Sender address override."),
+    to: List[str] = typer.Option(..., "--to", help="Recipient (repeatable)."),
+    subject: str = typer.Option(..., "--subject", "-s", help="Subject line."),
+    text: Optional[str] = typer.Option(None, "--text", help="Plain-text body."),
+    html_file: Optional[str] = typer.Option(
+        None, "--html-file", help="Path to HTML body file."
+    ),
+    cc: List[str] = typer.Option([], "--cc", help="CC address (repeatable)."),
+    bcc: List[str] = typer.Option([], "--bcc", help="BCC address (repeatable)."),
+    attach: List[str] = typer.Option(
+        [], "--attach", help="Attachment path (repeatable)."
+    ),
+    from_addr: Optional[str] = typer.Option(
+        None, "--from", help="Sender address override."
+    ),
 ) -> None:
     """Send an email."""
-    cfg       = _cfg()
-    email     = _require_account(cfg)
-    client    = _get_client(cfg, email)
+    cfg = _cfg()
+    email = _require_account(cfg)
+    client = _get_client(cfg, email)
     account_id = _require_account_id(cfg, email)
 
     html_body: Optional[str] = None
@@ -657,17 +764,18 @@ def mail_send(
 
 # ── bulk helpers ──────────────────────────────────────────────────────────────
 
+
 def _bulk(mode: str, ids: list[str], label: str, **extra) -> None:
-    cfg       = _cfg()
-    email     = _require_account(cfg)
-    client    = _get_client(cfg, email)
+    cfg = _cfg()
+    email = _require_account(cfg)
+    client = _get_client(cfg, email)
     account_id = _require_account_id(cfg, email)
 
-    resp    = client.update_message(account_id, mode, ids, **extra)
-    status  = resp.get("data", {})
+    resp = client.update_message(account_id, mode, ids, **extra)
+    status = resp.get("data", {})
     updated = status.get("updatedMessages", ids)
-    failed  = status.get("failedMessages", [])
-    n       = len(updated)
+    failed = status.get("failedMessages", [])
+    n = len(updated)
     utils.output_status(
         f"{label}: {n} message{'s' if n != 1 else ''}",
         extra={"updated": updated, "failed": failed},
@@ -689,22 +797,24 @@ def mail_mark_unread(ids: List[str] = typer.Argument(...)) -> None:
 @mail_app.command("move")
 def mail_move(
     ids: List[str] = typer.Argument(...),
-    to:  str       = typer.Option(..., "--to", help="Destination folder name or ID."),
+    to: str = typer.Option(..., "--to", help="Destination folder name or ID."),
 ) -> None:
     """Move messages to a folder."""
-    cfg       = _cfg()
-    email     = _require_account(cfg)
-    client    = _get_client(cfg, email)
+    cfg = _cfg()
+    email = _require_account(cfg)
+    client = _get_client(cfg, email)
     account_id = _require_account_id(cfg, email)
 
     folder_id = _mail.resolve_folder_id(client, account_id, to)
-    resp   = client.update_message(account_id, "moveMessage", list(ids), destfolderId=folder_id)
+    resp = client.update_message(
+        account_id, "moveMessage", list(ids), destfolderId=folder_id
+    )
     status = resp.get("data", {})
     utils.output_status(
         f"Moved {len(ids)} message(s) to {to}",
         extra={
             "updated": status.get("updatedMessages", list(ids)),
-            "failed":  status.get("failedMessages", []),
+            "failed": status.get("failedMessages", []),
         },
     )
 
@@ -735,21 +845,23 @@ def mail_unarchive(ids: List[str] = typer.Argument(...)) -> None:
 
 @mail_app.command("delete")
 def mail_delete(
-    ids:       List[str] = typer.Argument(...),
-    permanent: bool      = typer.Option(False, "--permanent", help="Hard delete."),
+    ids: List[str] = typer.Argument(...),
+    permanent: bool = typer.Option(False, "--permanent", help="Hard delete."),
 ) -> None:
     """Delete messages (Trash by default; --permanent for hard delete)."""
-    mode  = "hardDelete" if permanent else "moveToTrash"
+    mode = "hardDelete" if permanent else "moveToTrash"
     label = "Permanently deleted" if permanent else "Moved to Trash"
     _bulk(mode, list(ids), label)
 
 
 @mail_app.command("reply")
 def mail_reply(
-    message_id: str           = typer.Argument(..., help="Message ID to reply to."),
-    text:       str           = typer.Option(...,  "--text", "-t", help="Reply body."),
-    folder_id:  Optional[str] = typer.Option(None, "--folder-id",  help="Folder ID (skips auto-scan)."),
-    quote:      bool          = typer.Option(False, "--quote",      help="Append quoted original."),
+    message_id: str = typer.Argument(..., help="Message ID to reply to."),
+    text: str = typer.Option(..., "--text", "-t", help="Reply body."),
+    folder_id: Optional[str] = typer.Option(
+        None, "--folder-id", help="Folder ID (skips auto-scan)."
+    ),
+    quote: bool = typer.Option(False, "--quote", help="Append quoted original."),
 ) -> None:
     """Reply to a message."""
     cfg = _cfg()
@@ -770,10 +882,14 @@ def mail_reply(
 
 @mail_app.command("forward")
 def mail_forward(
-    message_id: str           = typer.Argument(..., help="Message ID to forward."),
-    to:         List[str]     = typer.Option(...,  "--to",  help="Recipient (repeatable)."),
-    text:       Optional[str] = typer.Option(None, "--text", "-t", help="Optional note before the forwarded message."),
-    folder_id:  Optional[str] = typer.Option(None, "--folder-id", help="Folder ID (skips auto-scan)."),
+    message_id: str = typer.Argument(..., help="Message ID to forward."),
+    to: List[str] = typer.Option(..., "--to", help="Recipient (repeatable)."),
+    text: Optional[str] = typer.Option(
+        None, "--text", "-t", help="Optional note before the forwarded message."
+    ),
+    folder_id: Optional[str] = typer.Option(
+        None, "--folder-id", help="Folder ID (skips auto-scan)."
+    ),
 ) -> None:
     """Forward a message to one or more recipients."""
     cfg = _cfg()
@@ -794,50 +910,60 @@ def mail_forward(
 
 @mail_app.command("flag")
 def mail_flag(
-    ids:  List[str] = typer.Argument(...),
-    type: str       = typer.Option("important", "--type", help="Flag type: important, followup, info, clear."),
+    ids: List[str] = typer.Argument(...),
+    type: str = typer.Option(
+        "important", "--type", help="Flag type: important, followup, info, clear."
+    ),
 ) -> None:
     """Flag messages (important / follow-up / info) or clear flags."""
     valid = {"important", "followup", "info", "clear"}
     if type not in valid:
-        utils.error_exit("invalid_flag", f"--type must be one of: {', '.join(sorted(valid))}")
-    flagid  = "flag_not_set" if type == "clear" else type
-    label   = "Cleared flag" if type == "clear" else f"Flagged as {type}"
+        utils.error_exit(
+            "invalid_flag", f"--type must be one of: {', '.join(sorted(valid))}"
+        )
+    flagid = "flag_not_set" if type == "clear" else type
+    label = "Cleared flag" if type == "clear" else f"Flagged as {type}"
     _bulk("setFlag", list(ids), label, flagid=flagid)
 
 
 @mail_app.command("tag")
 def mail_tag(
-    ids:   List[str] = typer.Argument(...),
-    label: str       = typer.Option(..., "--label", "-l", help="Label name or ID."),
+    ids: List[str] = typer.Argument(...),
+    label: str = typer.Option(..., "--label", "-l", help="Label name or ID."),
 ) -> None:
     """Apply a label to messages."""
-    cfg        = _cfg()
-    email      = _require_account(cfg)
-    client     = _get_client(cfg, email)
+    cfg = _cfg()
+    email = _require_account(cfg)
+    client = _get_client(cfg, email)
     account_id = _require_account_id(cfg, email)
-    label_id   = _resolve_label_id(client, account_id, label)
-    resp       = client.update_message(account_id, "applyLabel", list(ids), labelId=label_id)
-    status     = resp.get("data", {})
-    updated    = status.get("updatedMessages", list(ids))
-    utils.output_status(f"Applied label '{label}' to {len(updated)} message(s)", extra={"updated": updated})
+    label_id = _resolve_label_id(client, account_id, label)
+    resp = client.update_message(account_id, "applyLabel", list(ids), labelId=label_id)
+    status = resp.get("data", {})
+    updated = status.get("updatedMessages", list(ids))
+    utils.output_status(
+        f"Applied label '{label}' to {len(updated)} message(s)",
+        extra={"updated": updated},
+    )
 
 
 @mail_app.command("untag")
 def mail_untag(
-    ids:   List[str] = typer.Argument(...),
-    label: str       = typer.Option(..., "--label", "-l", help="Label name or ID."),
+    ids: List[str] = typer.Argument(...),
+    label: str = typer.Option(..., "--label", "-l", help="Label name or ID."),
 ) -> None:
     """Remove a label from messages."""
-    cfg        = _cfg()
-    email      = _require_account(cfg)
-    client     = _get_client(cfg, email)
+    cfg = _cfg()
+    email = _require_account(cfg)
+    client = _get_client(cfg, email)
     account_id = _require_account_id(cfg, email)
-    label_id   = _resolve_label_id(client, account_id, label)
-    resp       = client.update_message(account_id, "removeLabel", list(ids), labelId=label_id)
-    status     = resp.get("data", {})
-    updated    = status.get("updatedMessages", list(ids))
-    utils.output_status(f"Removed label '{label}' from {len(updated)} message(s)", extra={"updated": updated})
+    label_id = _resolve_label_id(client, account_id, label)
+    resp = client.update_message(account_id, "removeLabel", list(ids), labelId=label_id)
+    status = resp.get("data", {})
+    updated = status.get("updatedMessages", list(ids))
+    utils.output_status(
+        f"Removed label '{label}' from {len(updated)} message(s)",
+        extra={"updated": updated},
+    )
 
 
 @mail_app.command("untag-all")
@@ -850,55 +976,64 @@ def mail_untag_all(ids: List[str] = typer.Argument(...)) -> None:
 # zoho folders …
 # ══════════════════════════════════════════════════════════════════════════════
 
+
 @folders_app.command("list")
 def folders_list() -> None:
     """List all folders."""
-    cfg       = _cfg()
-    email     = _require_account(cfg)
-    client    = _get_client(cfg, email)
+    cfg = _cfg()
+    email = _require_account(cfg)
+    client = _get_client(cfg, email)
     account_id = _require_account_id(cfg, email)
 
-    resp   = client.get_folders(account_id)
+    resp = client.get_folders(account_id)
     result = [_folders.format_folder(f) for f in resp.get("data", [])]
     utils.output(result, md_render=_md_folders)
 
 
 @folders_app.command("create")
 def folders_create(
-    name:      str           = typer.Argument(..., help="New folder name."),
-    parent_id: Optional[str] = typer.Option(None, "--parent-id", help="Parent folder ID."),
+    name: str = typer.Argument(..., help="New folder name."),
+    parent_id: Optional[str] = typer.Option(
+        None, "--parent-id", help="Parent folder ID."
+    ),
 ) -> None:
     """Create a custom folder."""
-    cfg       = _cfg()
-    email     = _require_account(cfg)
-    client    = _get_client(cfg, email)
+    cfg = _cfg()
+    email = _require_account(cfg)
+    client = _get_client(cfg, email)
     account_id = _require_account_id(cfg, email)
 
     resp = client.create_folder(account_id, name, parent_id=parent_id)
-    utils.output_status(f"Created folder '{name}'", extra={"folder": _folders.format_folder(resp.get("data", {}))})
+    utils.output_status(
+        f"Created folder '{name}'",
+        extra={"folder": _folders.format_folder(resp.get("data", {}))},
+    )
 
 
 @folders_app.command("rename")
 def folders_rename(
     folder_id: str = typer.Argument(..., help="Folder ID."),
-    name:      str = typer.Argument(..., help="New name."),
+    name: str = typer.Argument(..., help="New name."),
 ) -> None:
     """Rename a folder."""
-    cfg       = _cfg()
-    email     = _require_account(cfg)
-    client    = _get_client(cfg, email)
+    cfg = _cfg()
+    email = _require_account(cfg)
+    client = _get_client(cfg, email)
     account_id = _require_account_id(cfg, email)
 
     resp = client.update_folder(account_id, folder_id, name)
-    utils.output_status(f"Renamed to '{name}'", extra={"folder": _folders.format_folder(resp.get("data", {}))})
+    utils.output_status(
+        f"Renamed to '{name}'",
+        extra={"folder": _folders.format_folder(resp.get("data", {}))},
+    )
 
 
 @folders_app.command("delete")
 def folders_delete(folder_id: str = typer.Argument(..., help="Folder ID.")) -> None:
     """Delete a custom folder."""
-    cfg       = _cfg()
-    email     = _require_account(cfg)
-    client    = _get_client(cfg, email)
+    cfg = _cfg()
+    email = _require_account(cfg)
+    client = _get_client(cfg, email)
     account_id = _require_account_id(cfg, email)
 
     client.delete_folder(account_id, folder_id)
@@ -906,11 +1041,13 @@ def folders_delete(folder_id: str = typer.Argument(..., help="Folder ID.")) -> N
 
 
 @folders_app.command("empty")
-def folders_empty(folder_id: str = typer.Argument(..., help="Folder ID to empty.")) -> None:
+def folders_empty(
+    folder_id: str = typer.Argument(..., help="Folder ID to empty."),
+) -> None:
     """Delete all messages in a folder (e.g. empty Trash)."""
-    cfg        = _cfg()
-    email      = _require_account(cfg)
-    client     = _get_client(cfg, email)
+    cfg = _cfg()
+    email = _require_account(cfg)
+    client = _get_client(cfg, email)
     account_id = _require_account_id(cfg, email)
     client.folder_operation(account_id, folder_id, "emptyFolder")
     utils.output_status(f"Emptied folder {folder_id}", extra={"folderId": folder_id})
@@ -919,47 +1056,64 @@ def folders_empty(folder_id: str = typer.Argument(..., help="Folder ID to empty.
 @folders_app.command("mark-read")
 def folders_mark_read(folder_id: str = typer.Argument(..., help="Folder ID.")) -> None:
     """Mark all messages in a folder as read."""
-    cfg        = _cfg()
-    email      = _require_account(cfg)
-    client     = _get_client(cfg, email)
+    cfg = _cfg()
+    email = _require_account(cfg)
+    client = _get_client(cfg, email)
     account_id = _require_account_id(cfg, email)
     client.folder_operation(account_id, folder_id, "markAsRead")
-    utils.output_status(f"Marked all messages as read in folder {folder_id}", extra={"folderId": folder_id})
+    utils.output_status(
+        f"Marked all messages as read in folder {folder_id}",
+        extra={"folderId": folder_id},
+    )
 
 
 @folders_app.command("move")
 def folders_move(
-    folder_id:        str = typer.Argument(..., help="Folder ID to move."),
-    parent_folder_id: str = typer.Option(..., "--parent-id", help="New parent folder ID."),
+    folder_id: str = typer.Argument(..., help="Folder ID to move."),
+    parent_folder_id: str = typer.Option(
+        ..., "--parent-id", help="New parent folder ID."
+    ),
 ) -> None:
     """Move a folder under a new parent."""
-    cfg        = _cfg()
-    email      = _require_account(cfg)
-    client     = _get_client(cfg, email)
+    cfg = _cfg()
+    email = _require_account(cfg)
+    client = _get_client(cfg, email)
     account_id = _require_account_id(cfg, email)
-    client.folder_operation(account_id, folder_id, "move", parentFolderId=parent_folder_id)
-    utils.output_status(f"Moved folder {folder_id}", extra={"folderId": folder_id, "parentFolderId": parent_folder_id})
+    client.folder_operation(
+        account_id, folder_id, "move", parentFolderId=parent_folder_id
+    )
+    utils.output_status(
+        f"Moved folder {folder_id}",
+        extra={"folderId": folder_id, "parentFolderId": parent_folder_id},
+    )
 
 
 # ══════════════════════════════════════════════════════════════════════════════
 # zoho labels …
 # ══════════════════════════════════════════════════════════════════════════════
 
+
 def _md_labels(lbls: list) -> None:
-    rows = [[l.get("labelId", ""), l.get("labelName", ""), l.get("color", "")] for l in lbls]
+    rows = [
+        [l.get("labelId", ""), l.get("labelName", ""), l.get("color", "")] for l in lbls
+    ]
     print(utils.md_table(["ID", "NAME", "COLOR"], rows))
 
 
 @labels_app.command("list")
 def labels_list() -> None:
     """List all labels."""
-    cfg        = _cfg()
-    email      = _require_account(cfg)
-    client     = _get_client(cfg, email)
+    cfg = _cfg()
+    email = _require_account(cfg)
+    client = _get_client(cfg, email)
     account_id = _require_account_id(cfg, email)
-    resp       = client.get_labels(account_id)
-    result     = [
-        {"labelId": str(l.get("labelId", "")), "labelName": l.get("labelName", ""), "color": l.get("color", "")}
+    resp = client.get_labels(account_id)
+    result = [
+        {
+            "labelId": str(l.get("labelId", "")),
+            "labelName": l.get("labelName", ""),
+            "color": l.get("color", ""),
+        }
         for l in resp.get("data", [])
     ]
     utils.output(result, md_render=_md_labels)
@@ -967,25 +1121,29 @@ def labels_list() -> None:
 
 @labels_app.command("create")
 def labels_create(
-    name:  str           = typer.Argument(..., help="Label name."),
-    color: Optional[str] = typer.Option(None, "--color", help="Hex color, e.g. #FF0000."),
+    name: str = typer.Argument(..., help="Label name."),
+    color: Optional[str] = typer.Option(
+        None, "--color", help="Hex color, e.g. #FF0000."
+    ),
 ) -> None:
     """Create a new label."""
-    cfg        = _cfg()
-    email      = _require_account(cfg)
-    client     = _get_client(cfg, email)
+    cfg = _cfg()
+    email = _require_account(cfg)
+    client = _get_client(cfg, email)
     account_id = _require_account_id(cfg, email)
-    resp       = client.create_label(account_id, name, color=color)
-    lbl        = resp.get("data", resp)
-    utils.output_status(f"Created label '{name}'", extra={"labelId": str(lbl.get("labelId", ""))})
+    resp = client.create_label(account_id, name, color=color)
+    lbl = resp.get("data", resp)
+    utils.output_status(
+        f"Created label '{name}'", extra={"labelId": str(lbl.get("labelId", ""))}
+    )
 
 
 @labels_app.command("delete")
 def labels_delete(label_id: str = typer.Argument(..., help="Label ID.")) -> None:
     """Delete a label."""
-    cfg        = _cfg()
-    email      = _require_account(cfg)
-    client     = _get_client(cfg, email)
+    cfg = _cfg()
+    email = _require_account(cfg)
+    client = _get_client(cfg, email)
     account_id = _require_account_id(cfg, email)
     client.delete_label(account_id, label_id)
     utils.output_status(f"Deleted label {label_id}", extra={"labelId": label_id})
@@ -995,10 +1153,15 @@ def labels_delete(label_id: str = typer.Argument(..., help="Label ID.")) -> None
 # zoho cliq …
 # ══════════════════════════════════════════════════════════════════════════════
 
+
 @cliq_app.command("status")
 def cliq_status(
-    check_auth: bool = typer.Option(False, "--check-auth", help="Verify OAuth refresh for the selected account."),
-    network: Optional[str] = typer.Option(None, "--network", help="Cliq network slug (e.g. happydistrouklimited)."),
+    check_auth: bool = typer.Option(
+        False, "--check-auth", help="Verify OAuth refresh for the selected account."
+    ),
+    network: Optional[str] = typer.Option(
+        None, "--network", help="Cliq network slug (e.g. happydistrouklimited)."
+    ),
 ) -> None:
     """Show Cliq scaffold readiness and inferred API endpoint."""
     cfg = _cfg()
@@ -1025,7 +1188,9 @@ def cliq_status(
         ],
     }
 
-    payload["missingScopes"] = _cliq.missing_cliq_scopes(payload.get("grantedScopes", []))
+    payload["missingScopes"] = _cliq.missing_cliq_scopes(
+        payload.get("grantedScopes", [])
+    )
     payload["oauthReady"] = len(payload["missingScopes"]) == 0
 
     if check_auth and email:
@@ -1049,7 +1214,9 @@ def cliq_status(
 @cliq_app.command("channels")
 def cliq_channels(
     limit: int = typer.Option(50, "--limit", "-n", help="Max channels to return."),
-    network: Optional[str] = typer.Option(None, "--network", help="Cliq network slug (e.g. happydistrouklimited)."),
+    network: Optional[str] = typer.Option(
+        None, "--network", help="Cliq network slug (e.g. happydistrouklimited)."
+    ),
 ) -> None:
     """List Cliq channels."""
     cfg = _cfg()
@@ -1064,7 +1231,9 @@ def cliq_channels(
 @cliq_app.command("users")
 def cliq_users(
     limit: int = typer.Option(50, "--limit", "-n", help="Max users to return."),
-    network: Optional[str] = typer.Option(None, "--network", help="Cliq network slug (e.g. happydistrouklimited)."),
+    network: Optional[str] = typer.Option(
+        None, "--network", help="Cliq network slug (e.g. happydistrouklimited)."
+    ),
 ) -> None:
     """List Cliq users."""
     cfg = _cfg()
@@ -1079,13 +1248,21 @@ def cliq_users(
 @cliq_app.command("send")
 def cliq_send(
     text: str = typer.Option(..., "--text", "-t", help="Message text."),
-    channel_id: Optional[str] = typer.Option(None, "--channel-id", help="Destination channel id."),
-    user_id: Optional[str] = typer.Option(None, "--user-id", help="Destination user id."),
-    network: Optional[str] = typer.Option(None, "--network", help="Cliq network slug (e.g. happydistrouklimited)."),
+    channel_id: Optional[str] = typer.Option(
+        None, "--channel-id", help="Destination channel id."
+    ),
+    user_id: Optional[str] = typer.Option(
+        None, "--user-id", help="Destination user id."
+    ),
+    network: Optional[str] = typer.Option(
+        None, "--network", help="Cliq network slug (e.g. happydistrouklimited)."
+    ),
 ) -> None:
     """Send a Cliq message to a channel or user."""
     if bool(channel_id) == bool(user_id):
-        utils.error_exit("invalid_destination", "Provide exactly one of channel_id or user_id")
+        utils.error_exit(
+            "invalid_destination", "Provide exactly one of channel_id or user_id"
+        )
 
     cfg = _cfg()
     email = _require_account(cfg)
@@ -1100,15 +1277,27 @@ def cliq_send(
 @cliq_app.command("notify-mail")
 def cliq_notify_mail(
     message_id: str = typer.Argument(..., help="Mail message ID to notify."),
-    channel_id: Optional[str] = typer.Option(None, "--channel-id", help="Destination Cliq channel id."),
-    user_id: Optional[str] = typer.Option(None, "--user-id", help="Destination Cliq user id."),
-    folder_id: Optional[str] = typer.Option(None, "--folder-id", help="Mail folder id (skip folder scan)."),
-    network: Optional[str] = typer.Option(None, "--network", help="Cliq network slug (e.g. happydistrouklimited)."),
-    include_body: bool = typer.Option(False, "--include-body", help="Include a short message body snippet."),
+    channel_id: Optional[str] = typer.Option(
+        None, "--channel-id", help="Destination Cliq channel id."
+    ),
+    user_id: Optional[str] = typer.Option(
+        None, "--user-id", help="Destination Cliq user id."
+    ),
+    folder_id: Optional[str] = typer.Option(
+        None, "--folder-id", help="Mail folder id (skip folder scan)."
+    ),
+    network: Optional[str] = typer.Option(
+        None, "--network", help="Cliq network slug (e.g. happydistrouklimited)."
+    ),
+    include_body: bool = typer.Option(
+        False, "--include-body", help="Include a short message body snippet."
+    ),
 ) -> None:
     """Send a compact Mail summary into Cliq as a notification message."""
     if bool(channel_id) == bool(user_id):
-        utils.error_exit("invalid_destination", "Provide exactly one of channel_id or user_id")
+        utils.error_exit(
+            "invalid_destination", "Provide exactly one of channel_id or user_id"
+        )
 
     cfg = _cfg()
     email = _require_account(cfg)
@@ -1135,9 +1324,12 @@ def cliq_notify_mail(
 # zoho crm …
 # ══════════════════════════════════════════════════════════════════════════════
 
+
 @crm_app.command("status")
 def crm_status(
-    check_auth: bool = typer.Option(False, "--check-auth", help="Verify OAuth refresh for the selected account."),
+    check_auth: bool = typer.Option(
+        False, "--check-auth", help="Verify OAuth refresh for the selected account."
+    ),
 ) -> None:
     """Show CRM scaffold readiness and inferred API endpoint."""
     cfg = _cfg()
@@ -1201,7 +1393,9 @@ def crm_modules(
 
 @crm_app.command("fields")
 def crm_fields(
-    module: str = typer.Option(..., "--module", "-m", help="CRM module API name (for example Leads)."),
+    module: str = typer.Option(
+        ..., "--module", "-m", help="CRM module API name (for example Leads)."
+    ),
     limit: int = typer.Option(200, "--limit", "-n", help="Max fields to return."),
     page: int = typer.Option(1, "--page", help="Result page number."),
 ) -> None:
@@ -1217,10 +1411,14 @@ def crm_fields(
 
 @crm_app.command("list")
 def crm_list(
-    module: str = typer.Option(..., "--module", "-m", help="CRM module API name (for example Leads)."),
+    module: str = typer.Option(
+        ..., "--module", "-m", help="CRM module API name (for example Leads)."
+    ),
     limit: int = typer.Option(50, "--limit", "-n", help="Max records to return."),
     page: int = typer.Option(1, "--page", help="Result page number."),
-    fields: List[str] = typer.Option([], "--field", help="Field API name to include (repeatable)."),
+    fields: List[str] = typer.Option(
+        [], "--field", help="Field API name to include (repeatable)."
+    ),
 ) -> None:
     """List records from a CRM module."""
     cfg = _cfg()
@@ -1235,8 +1433,12 @@ def crm_list(
 @crm_app.command("get")
 def crm_get(
     record_id: str = typer.Argument(..., help="CRM record ID."),
-    module: str = typer.Option(..., "--module", "-m", help="CRM module API name (for example Leads)."),
-    fields: List[str] = typer.Option([], "--field", help="Field API name to include (repeatable)."),
+    module: str = typer.Option(
+        ..., "--module", "-m", help="CRM module API name (for example Leads)."
+    ),
+    fields: List[str] = typer.Option(
+        [], "--field", help="Field API name to include (repeatable)."
+    ),
 ) -> None:
     """Get a single CRM record by id."""
     cfg = _cfg()
@@ -1253,9 +1455,15 @@ def crm_get(
 
 @crm_app.command("search")
 def crm_search(
-    module: str = typer.Option(..., "--module", "-m", help="CRM module API name (for example Leads)."),
-    criteria: Optional[str] = typer.Option(None, "--criteria", help="CRM criteria expression."),
-    word: Optional[str] = typer.Option(None, "--word", help="CRM free-text search term."),
+    module: str = typer.Option(
+        ..., "--module", "-m", help="CRM module API name (for example Leads)."
+    ),
+    criteria: Optional[str] = typer.Option(
+        None, "--criteria", help="CRM criteria expression."
+    ),
+    word: Optional[str] = typer.Option(
+        None, "--word", help="CRM free-text search term."
+    ),
     limit: int = typer.Option(50, "--limit", "-n", help="Max records to return."),
     page: int = typer.Option(1, "--page", help="Result page number."),
 ) -> None:
@@ -1282,6 +1490,7 @@ def crm_search(
 # zoho config …
 # ══════════════════════════════════════════════════════════════════════════════
 
+
 @config_app.command("show")
 def config_show() -> None:
     """Dump the current config as JSON (client_secret redacted)."""
@@ -1301,14 +1510,17 @@ def config_path_cmd() -> None:
 @config_app.command("init")
 def config_init() -> None:
     """First-time setup wizard — configure credentials and optionally log in."""
-    cfg          = _cfg()
-    p            = _config.config_path(_S.config_path)
+    cfg = _cfg()
+    p = _config.config_path(_S.config_path)
     is_first_run = not p.exists()
 
     # ── header ────────────────────────────────────────────────────────────────
     _stderr("")
     _stderr("══════════════════════════════════════════════════")
-    _stderr("  zoho-cli — " + ("First-Time Setup" if is_first_run else "Update Configuration"))
+    _stderr(
+        "  zoho-cli — "
+        + ("First-Time Setup" if is_first_run else "Update Configuration")
+    )
     _stderr("══════════════════════════════════════════════════")
     _stderr("")
 
@@ -1337,7 +1549,7 @@ def config_init() -> None:
         return click.prompt(label, default=current, err=True, **kw).strip()
 
     # ── credentials ───────────────────────────────────────────────────────────
-    existing_id  = cfg.get("client_id", "")
+    existing_id = cfg.get("client_id", "")
     existing_sec = cfg.get("client_secret", "")
 
     if existing_id:
@@ -1347,13 +1559,16 @@ def config_init() -> None:
 
     if existing_sec:
         cfg["client_secret"] = _optional(
-            "Zoho OAuth Client Secret", existing_sec,
-            hide_input=True, confirmation_prompt=False,
+            "Zoho OAuth Client Secret",
+            existing_sec,
+            hide_input=True,
+            confirmation_prompt=False,
         )
     else:
         cfg["client_secret"] = _required(
             "Zoho OAuth Client Secret",
-            hide_input=True, confirmation_prompt=False,
+            hide_input=True,
+            confirmation_prompt=False,
         )
 
     # ── account e-mail ────────────────────────────────────────────────────────
@@ -1385,12 +1600,14 @@ def config_init() -> None:
 # ── attachment content subcommand (方案 C) ────────────────────────────────────────
 @attachment_subapp.command("content")
 def attachment_content(
-    message_id: str           = typer.Argument(..., help="Message ID."),
-    file_name:  Optional[str] = typer.Argument(None, help="Attachment filename (optional)."),
-    folder_id:  Optional[str] = typer.Option(None, "--folder-id", help="Folder ID."),
+    message_id: str = typer.Argument(..., help="Message ID."),
+    file_name: Optional[str] = typer.Argument(
+        None, help="Attachment filename (optional)."
+    ),
+    folder_id: Optional[str] = typer.Option(None, "--folder-id", help="Folder ID."),
 ) -> None:
     """Download and display content of an attachment.
-    
+
     Supported formats: txt, md, json, csv, xlsx, pdf, docx
     """
     cfg = _cfg()
@@ -1398,17 +1615,21 @@ def attachment_content(
 
     # List attachments first to help user identify the right one
     atts = _mail.list_attachments(client, account_id, fid, message_id)
-    
+
     if not atts:
-        utils.error_exit("no_attachments", f"No attachments found for message {message_id}")
+        utils.error_exit(
+            "no_attachments", f"No attachments found for message {message_id}"
+        )
     target = _select_attachment_target(atts, message_id, file_name)
-    
+
     # Download to temp file
     suffix = Path(target.get("fileName") or "").suffix
     with tempfile.NamedTemporaryFile(suffix=suffix, delete=False) as tmp:
         tmp_path = Path(tmp.name)
-    _download_attachment_to_path(client, account_id, fid, message_id, target["attachmentId"], tmp_path)
-    
+    _download_attachment_to_path(
+        client, account_id, fid, message_id, target["attachmentId"], tmp_path
+    )
+
     try:
         content = _parse_attachment_content(tmp_path)
         utils.output(

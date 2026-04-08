@@ -103,7 +103,9 @@ def test_merge_scopes_deduplicates_preserving_order() -> None:
 
 
 def test_parse_scope_value_supports_space_delimited_strings() -> None:
-    parsed = auth.parse_scope_value("ZohoMail.messages.ALL ZohoMail.folders.ALL ZohoMail.messages.ALL")
+    parsed = auth.parse_scope_value(
+        "ZohoMail.messages.ALL ZohoMail.folders.ALL ZohoMail.messages.ALL"
+    )
     assert parsed == ["ZohoMail.messages.ALL", "ZohoMail.folders.ALL"]
 
 
@@ -164,7 +166,9 @@ def test_discover_accounts_server_ignores_network_errors() -> None:
     com_url = "https://accounts.zoho.com/oauth/v2/token"
     for url in _all_servers():
         if url == com_url:
-            respx.post(url).mock(return_value=httpx.Response(200, json={"error": "invalid_code"}))
+            respx.post(url).mock(
+                return_value=httpx.Response(200, json={"error": "invalid_code"})
+            )
         else:
             respx.post(url).mock(side_effect=httpx.ConnectError("unreachable"))
 

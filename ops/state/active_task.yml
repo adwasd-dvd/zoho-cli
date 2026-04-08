@@ -4,7 +4,7 @@ module: crm
 stage: in_progress
 status: in_progress
 owner: automation
-updated_at: "2026-04-08T15:49:49Z"
+updated_at: "2026-04-08T16:15:56Z"
 success_criteria:
   - crm modules list command supports stable JSON output and pagination flags
   - crm fields list command supports module targeting

@@ -54,6 +54,7 @@ def delete_token(email: str) -> None:
 
 # ── internal helpers ──────────────────────────────────────────────────────────
 
+
 def _fallback_path(email: str) -> Path:
     safe = email.replace("@", "_at_").replace(".", "_")
     return Path(_config.config_path().parent) / f"token_{safe}.json"
@@ -90,6 +91,7 @@ def _file_store(email: str, value: str, password: str) -> None:
     # Simple XOR obfuscation when a password is provided (not crypto-grade)
     if password:
         import base64
+
         key = (password * (len(value) // len(password) + 1))[: len(value)]
         obfuscated = bytes(a ^ b for a, b in zip(value.encode(), key.encode()))
         path.write_bytes(base64.b64encode(obfuscated))
@@ -104,6 +106,7 @@ def _file_load(email: str, password: str) -> Optional[str]:
         return None
     if password:
         import base64
+
         raw = base64.b64decode(path.read_bytes())
         key = (password * (len(raw) // len(password) + 1))[: len(raw)]
         return bytes(a ^ b for a, b in zip(raw, key.encode())).decode()

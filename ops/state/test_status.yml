@@ -1,4 +1,4 @@
-last_run_at: "2026-04-08T15:49:49Z"
+last_run_at: "2026-04-08T16:15:56Z"
 last_result: warning
 current_focus: crm
 suites:
@@ -116,8 +116,11 @@ suites:
   ci:
     status: warning
     notes:
-      - make ci
-      - fails at `ruff format --check`; 19 files would be reformatted (2026-04-08T13:25:55Z)
+      - ./.venv/bin/ruff format
+      - 22 files reformatted (2026-04-08T16:15:56Z)
+      - ./.venv/bin/ruff format --check
+      - 33 files already formatted (2026-04-08T16:15:56Z)
+      - full `make ci` rerun pending; previous failure was fmt-check drift (2026-04-08T13:25:55Z)
   packaging:
     status: passing
     notes:

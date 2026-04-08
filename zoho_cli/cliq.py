@@ -73,7 +73,9 @@ class ZohoCliqClient:
             timeout=httpx.Timeout(30.0),
         )
         if not resp.is_success:
-            utils.error_exit("api_error", f"HTTP {resp.status_code} GET {path}: {resp.text}")
+            utils.error_exit(
+                "api_error", f"HTTP {resp.status_code} GET {path}: {resp.text}"
+            )
         return resp.json()
 
     def _post_json(self, path: str, payload: dict[str, Any]) -> dict:
@@ -84,10 +86,14 @@ class ZohoCliqClient:
             timeout=httpx.Timeout(30.0),
         )
         if not resp.is_success:
-            utils.error_exit("api_error", f"HTTP {resp.status_code} POST {path}: {resp.text}")
+            utils.error_exit(
+                "api_error", f"HTTP {resp.status_code} POST {path}: {resp.text}"
+            )
         return self._decode_success_response(resp)
 
-    def _post_json_with_fallback(self, paths: list[str], payload: dict[str, Any]) -> dict:
+    def _post_json_with_fallback(
+        self, paths: list[str], payload: dict[str, Any]
+    ) -> dict:
         """Try multiple POST paths, falling back on request_url_invalid/404 style misses."""
         last_error: tuple[int, str, str] | None = None
         saw_scope_invalid = False
@@ -108,10 +114,16 @@ class ZohoCliqClient:
             if scope_invalid:
                 saw_scope_invalid = True
 
-            if resp.status_code in (404, 405) or "request_url_invalid" in lowered or scope_invalid:
+            if (
+                resp.status_code in (404, 405)
+                or "request_url_invalid" in lowered
+                or scope_invalid
+            ):
                 continue
 
-            utils.error_exit("api_error", f"HTTP {resp.status_code} POST {path}: {resp.text}")
+            utils.error_exit(
+                "api_error", f"HTTP {resp.status_code} POST {path}: {resp.text}"
+            )
 
         if saw_scope_invalid:
             utils.error_exit(

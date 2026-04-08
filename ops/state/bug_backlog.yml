@@ -1,6 +1,5 @@
 blockers:
-  - "cliq-phase1 live send/notify remains blocked: token is still missing `ZohoCliq.Webhooks.CREATE`, and both live commands return `oauth_scope_invalid` (verified 2026-04-08T13:25:55Z)"
-high:
-  - "`make ci` fails in `fmt-check`: `ruff format --check` reports 19 files would be reformatted (verified 2026-04-08T13:25:55Z)"
+  - "crm-002 live smoke remains blocked: current test account is not in a CRM org, so CRM scopes are not granted and live calls return `OAUTH_SCOPE_MISMATCH` (verified 2026-04-08T15:49:49Z)"
+high: []
 normal: []
 low: []

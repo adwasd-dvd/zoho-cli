@@ -209,6 +209,47 @@ def test_mail_list_limit_option(mock_config: Path, mock_token_refresh: Any) -> N
 
 
 # ---------------------------------------------------------------------------
+# mail send
+# ---------------------------------------------------------------------------
+
+
+@respx.mock
+def test_mail_send_plaintext(mock_config: Path, mock_token_refresh: Any) -> None:
+    """mail send should post a plaintext payload and return success status JSON."""
+    route = respx.post(f"{MAIL_BASE}/accounts/{ACCOUNT_ID}/messages").mock(
+        return_value=httpx.Response(200, json={"data": {"messageId": "S1"}})
+    )
+
+    result = runner.invoke(
+        app,
+        [
+            "mail",
+            "send",
+            "--to",
+            "to@example.com",
+            "--subject",
+            "Status",
+            "--text",
+            "Body",
+        ],
+        env=_cfg_env(mock_config),
+    )
+
+    assert result.exit_code == 0, result.output
+    payload = json.loads(route.calls.last.request.content.decode("utf-8"))
+    assert payload == {
+        "fromAddress": ACCOUNT_EMAIL,
+        "toAddress": "to@example.com",
+        "subject": "Status",
+        "mailFormat": "plaintext",
+        "content": "Body",
+    }
+    status = json.loads(result.output)
+    assert status["status"] == "ok"
+    assert status["messageId"] == "S1"
+
+
+# ---------------------------------------------------------------------------
 # mail attachments
 # ---------------------------------------------------------------------------
 

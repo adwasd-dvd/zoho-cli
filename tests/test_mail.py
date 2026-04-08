@@ -103,6 +103,55 @@ def test_build_reply_payload_with_quote() -> None:
     }
 
 
+def test_build_send_payload_plaintext_with_cc_bcc() -> None:
+    payload = mail.build_send_payload(
+        from_address="me@example.com",
+        to_addresses=["to@example.com"],
+        subject="Hello",
+        text="Body",
+        cc_addresses=["cc@example.com"],
+        bcc_addresses=["bcc@example.com"],
+    )
+
+    assert payload == {
+        "fromAddress": "me@example.com",
+        "toAddress": "to@example.com",
+        "subject": "Hello",
+        "mailFormat": "plaintext",
+        "content": "Body",
+        "ccAddress": "cc@example.com",
+        "bccAddress": "bcc@example.com",
+    }
+
+
+def test_build_send_payload_html_uses_alt_text() -> None:
+    payload = mail.build_send_payload(
+        from_address="me@example.com",
+        to_addresses=["to@example.com", "to2@example.com"],
+        subject="Hello",
+        text="Fallback",
+        html_body="<p>Hello</p>",
+    )
+
+    assert payload == {
+        "fromAddress": "me@example.com",
+        "toAddress": "to@example.com,to2@example.com",
+        "subject": "Hello",
+        "mailFormat": "html",
+        "content": "<p>Hello</p>",
+        "altText": "Fallback",
+    }
+
+
+def test_build_send_payload_requires_body() -> None:
+    with pytest.raises(ValueError, match="text or html_body is required"):
+        mail.build_send_payload(
+            from_address="me@example.com",
+            to_addresses=["to@example.com"],
+            subject="Hello",
+        )
+
+
 def test_build_forward_payload_with_note() -> None:
     payload = mail.build_forward_payload(
         from_address="me@example.com",

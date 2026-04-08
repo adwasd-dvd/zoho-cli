@@ -176,6 +176,35 @@ def _plaintext_payload(from_address: str, to_address: str, subject: str, body: s
     }
 
 
+def build_send_payload(
+    from_address: str,
+    to_addresses: list[str],
+    subject: str,
+    *,
+    text: str | None = None,
+    html_body: str | None = None,
+    cc_addresses: list[str] | None = None,
+    bcc_addresses: list[str] | None = None,
+) -> dict:
+    if not text and not html_body:
+        raise ValueError("text or html_body is required")
+
+    payload: dict = {
+        "fromAddress": from_address,
+        "toAddress": ",".join(to_addresses),
+        "subject": subject,
+        "mailFormat": "html" if html_body else "plaintext",
+        "content": html_body or text or "",
+    }
+    if cc_addresses:
+        payload["ccAddress"] = ",".join(cc_addresses)
+    if bcc_addresses:
+        payload["bccAddress"] = ",".join(bcc_addresses)
+    if text and html_body:
+        payload["altText"] = text
+    return payload
+
+
 def build_reply_payload(
     from_address: str,
     to_address: str,

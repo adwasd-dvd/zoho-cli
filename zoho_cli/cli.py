@@ -501,17 +501,15 @@ def mail_send(
     if not text and not html_body:
         utils.error_exit("missing_body", "Provide --text and/or --html-file.")
 
-    payload: dict = {
-        "fromAddress": from_addr or email,
-        "toAddress":   ",".join(to),
-        "subject":     subject,
-        "mailFormat":  "html" if html_body else "plaintext",
-        "content":     html_body or text or "",
-    }
-    if cc:  payload["ccAddress"]  = ",".join(cc)
-    if bcc: payload["bccAddress"] = ",".join(bcc)
-    if text and html_body:
-        payload["altText"] = text
+    payload = _mail.build_send_payload(
+        from_address=from_addr or email,
+        to_addresses=to,
+        subject=subject,
+        text=text,
+        html_body=html_body,
+        cc_addresses=cc,
+        bcc_addresses=bcc,
+    )
 
     resp   = client.send_message(account_id, payload, attachment_paths=attach or None)
     sent   = resp.get("data", resp)

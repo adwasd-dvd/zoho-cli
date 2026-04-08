@@ -1,10 +1,12 @@
-last_run_at: "2026-04-08T19:36:27Z"
+last_run_at: "2026-04-08T20:30:54Z"
 last_result: warning
 current_focus: cliq
 suites:
   unit:
     status: passing
     notes:
+      - ./.venv/bin/pytest -q tests/test_cliq.py::test_cliq_client_rename_channel_success tests/test_cliq.py::test_cliq_client_update_channel_topic_success tests/test_cli.py::test_cliq_channel_rename tests/test_cli.py::test_cliq_channel_topic
+      - 4 passed in 0.13s (focused cliq admin rename/topic command coverage, 2026-04-08T20:30:54Z)
       - ./.venv/bin/pytest -q tests/test_cliq.py::test_cliq_client_unarchive_channel_success tests/test_cli.py::test_cliq_channel_archive tests/test_cli.py::test_cliq_channel_unarchive
       - 3 passed in 0.12s (focused cliq admin lifecycle unarchive command coverage, 2026-04-08T19:36:27Z)
       - ./.venv/bin/pytest -q tests/test_cliq.py tests/test_cli.py::test_cliq_members_from_channel tests/test_cli.py::test_cliq_member_add_requires_destination tests/test_cli.py::test_cliq_member_add tests/test_cli.py::test_cliq_member_remove tests/test_cli.py::test_cliq_channel_create tests/test_cli.py::test_cliq_channel_archive tests/test_cli.py::test_cliq_channel_delete_requires_force tests/test_cli.py::test_cliq_channel_delete
@@ -146,6 +148,8 @@ suites:
   ci:
     status: warning
     notes:
+      - ./.venv/bin/ruff format --check zoho_cli/cliq.py zoho_cli/cli.py tests/test_cliq.py tests/test_cli.py
+      - 4 files already formatted (2026-04-08T20:30:54Z)
       - ./.venv/bin/ruff format --check zoho_cli/cli.py tests/test_cliq.py tests/test_cli.py
       - 3 files already formatted (2026-04-08T19:37:15Z)
       - ./.venv/bin/ruff format --check

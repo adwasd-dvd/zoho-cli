@@ -13,7 +13,7 @@ cliq:
   target_release: v0.4.0
   current_milestone: cliq-expansion-phase
   blockers:
-    - ai-dev@happy-distro.co.uk token invalid/missing; OAuth re-auth required before live verification
+    - david@happy-distro.com token lacks Cliq scopes; OAuth re-auth required before live verification
 
 crm:
   priority: 3

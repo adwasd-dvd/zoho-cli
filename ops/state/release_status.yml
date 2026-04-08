@@ -3,11 +3,11 @@ next_version: 0.2.1
 release_candidate: false
 last_release_tag: v0.1.9
 current_train: cliq-expansion
-assessed_at: "2026-04-08T19:36:27Z"
+assessed_at: "2026-04-08T20:30:54Z"
 current_milestone: cliq-expansion-phase
 current_milestone_complete: false
 missing_requirements:
-  - "cliq-130 now includes member add/remove plus explicit `channel-unarchive` command coverage, but live admin lifecycle verification still needs one cooldown rerun before close-out; cliq-140/150/160 remain pending"
+  - "cliq-130 now includes member add/remove plus full channel lifecycle command coverage (`channel-create/rename/topic/archive/unarchive/delete`), but live admin verification still needs one cooldown rerun before close-out; cliq-140/150/160 remain pending"
   - "crm-002 live close-out is blocked by account-level CRM org access"
 release_gate:
   blocker_bugs_cleared: true

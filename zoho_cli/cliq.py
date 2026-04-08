@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+from typing import Any, Optional
 from urllib.parse import urlparse
 
 import httpx
@@ -60,10 +61,37 @@ class ZohoCliqClient:
             utils.error_exit("api_error", f"HTTP {resp.status_code} GET {path}: {resp.text}")
         return resp.json()
 
-    def channels(self) -> dict:
-        """List channels (placeholder endpoint wiring)."""
-        return self._get("/channels")
+    def _post_json(self, path: str, payload: dict[str, Any]) -> dict:
+        resp = httpx.post(
+            f"{self.base_url}{path}",
+            headers=self._headers,
+            json=payload,
+            timeout=httpx.Timeout(30.0),
+        )
+        if not resp.is_success:
+            utils.error_exit("api_error", f"HTTP {resp.status_code} POST {path}: {resp.text}")
+        return resp.json()
 
-    def users(self) -> dict:
-        """List users (placeholder endpoint wiring)."""
-        return self._get("/users")
+    def channels(self, *, limit: int = 50) -> dict:
+        """List channels."""
+        return self._get("/channels", {"limit": limit})
+
+    def users(self, *, limit: int = 50) -> dict:
+        """List users."""
+        return self._get("/users", {"limit": limit})
+
+    def send_message(
+        self,
+        text: str,
+        *,
+        channel_id: Optional[str] = None,
+        user_id: Optional[str] = None,
+    ) -> dict:
+        """Send a message to either a channel or a user."""
+        if bool(channel_id) == bool(user_id):
+            raise ValueError("Provide exactly one of channel_id or user_id")
+
+        payload = {"text": text}
+        if channel_id:
+            return self._post_json(f"/channels/{channel_id}/message", payload)
+        return self._post_json(f"/users/{user_id}/message", payload)

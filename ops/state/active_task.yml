@@ -1,13 +1,13 @@
-id: cliq-001
-title: scaffold cliq product module and client shell
+id: cliq-002
+title: implement cliq channels list users list and send baseline
 module: cliq
 stage: coding
 status: in_progress
 owner: automation
 success_criteria:
-  - cliq command group exists in the CLI
-  - cliq client shell exists with basic endpoint wiring
-  - scaffold status command reports readiness and inferred endpoint
+  - cliq channels list works with stable JSON output
+  - cliq users list works with stable JSON output
+  - cliq send baseline exists with clear destination validation
   - narrow tests added or updated
   - changelog updated when behavior changes
-next_if_done: cliq-002
+next_if_done: cliq-003

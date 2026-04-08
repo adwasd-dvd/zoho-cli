@@ -1,0 +1,6 @@
+module: Cliq
+updated_at: "2026-04-08T04:45:42Z"
+status: in_progress
+blockers:
+  - live Cliq API returns `inactive_appaccount_user` for test account when calling channels endpoint
+next_small_step: confirm Cliq app/account activation for the test user, then validate live `cliq channels` and `cliq users`

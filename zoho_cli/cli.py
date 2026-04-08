@@ -37,6 +37,7 @@ import typer
 
 from zoho_cli import auth, cliq as _cliq, config as _config, folders as _folders, mail as _mail, storage, utils
 from zoho_cli.api import ZohoMailClient
+from zoho_cli.cliq import ZohoCliqClient
 
 
 def _get_version() -> str:
@@ -143,6 +144,22 @@ def _get_client(cfg: dict, email: str) -> ZohoMailClient:
         accounts_base_url=account_cfg.get("accounts_server"),
     )
     return ZohoMailClient(access_token, mail_base_url=account_cfg.get("mail_base_url"))
+
+
+def _get_cliq_client(cfg: dict, email: str) -> ZohoCliqClient:
+    cid, csec = _require_credentials(cfg)
+    account_cfg = cfg.get("accounts", {}).get(email, {})
+    access_token = auth.refresh_access_token(
+        email, cid, csec,
+        accounts_base_url=account_cfg.get("accounts_server"),
+    )
+    return ZohoCliqClient(
+        access_token,
+        base_url=_cliq.infer_cliq_base_url(
+            mail_base_url=account_cfg.get("mail_base_url"),
+            accounts_server=account_cfg.get("accounts_server"),
+        ),
+    )
 
 
 def _require_account_id(cfg: dict, email: str) -> str:
@@ -989,6 +1006,55 @@ def cliq_status(
         payload["auth"] = "ok"
 
     utils.output(payload)
+
+
+@cliq_app.command("channels")
+def cliq_channels(
+    limit: int = typer.Option(50, "--limit", "-n", help="Max channels to return."),
+) -> None:
+    """List Cliq channels."""
+    cfg = _cfg()
+    email = _require_account(cfg)
+    client = _get_cliq_client(cfg, email)
+
+    resp = client.channels(limit=limit)
+    data = resp.get("data", resp)
+    utils.output(data)
+
+
+@cliq_app.command("users")
+def cliq_users(
+    limit: int = typer.Option(50, "--limit", "-n", help="Max users to return."),
+) -> None:
+    """List Cliq users."""
+    cfg = _cfg()
+    email = _require_account(cfg)
+    client = _get_cliq_client(cfg, email)
+
+    resp = client.users(limit=limit)
+    data = resp.get("data", resp)
+    utils.output(data)
+
+
+@cliq_app.command("send")
+def cliq_send(
+    text: str = typer.Option(..., "--text", "-t", help="Message text."),
+    channel_id: Optional[str] = typer.Option(None, "--channel-id", help="Destination channel id."),
+    user_id: Optional[str] = typer.Option(None, "--user-id", help="Destination user id."),
+) -> None:
+    """Send a Cliq message to a channel or user."""
+    cfg = _cfg()
+    email = _require_account(cfg)
+    client = _get_cliq_client(cfg, email)
+
+    try:
+        resp = client.send_message(text, channel_id=channel_id, user_id=user_id)
+    except ValueError as e:
+        utils.error_exit("invalid_destination", str(e))
+        return
+
+    data = resp.get("data", resp)
+    utils.output_status("Cliq message sent", extra={"result": data})
 
 
 # ══════════════════════════════════════════════════════════════════════════════

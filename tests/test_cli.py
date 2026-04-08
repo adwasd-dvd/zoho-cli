@@ -839,6 +839,52 @@ def test_cliq_status_oauth_ready_when_scopes_present(tmp_path: Path) -> None:
     assert payload["missingScopes"] == []
 
 
+@respx.mock
+def test_cliq_channels(mock_config: Path, mock_token_refresh: Any) -> None:
+    respx.get("https://cliq.zoho.com/api/v2/channels").mock(
+        return_value=httpx.Response(200, json={"data": [{"id": "C1", "name": "General"}]})
+    )
+
+    result = runner.invoke(app, ["cliq", "channels", "--limit", "3"], env=_cfg_env(mock_config))
+    assert result.exit_code == 0, result.output
+    payload = json.loads(result.output)
+    assert payload[0]["id"] == "C1"
+
+
+@respx.mock
+def test_cliq_users(mock_config: Path, mock_token_refresh: Any) -> None:
+    respx.get("https://cliq.zoho.com/api/v2/users").mock(
+        return_value=httpx.Response(200, json={"data": [{"id": "U1", "name": "Alice"}]})
+    )
+
+    result = runner.invoke(app, ["cliq", "users", "--limit", "2"], env=_cfg_env(mock_config))
+    assert result.exit_code == 0, result.output
+    payload = json.loads(result.output)
+    assert payload[0]["id"] == "U1"
+
+
+@respx.mock
+def test_cliq_send_channel(mock_config: Path, mock_token_refresh: Any) -> None:
+    respx.post("https://cliq.zoho.com/api/v2/channels/C1/message").mock(
+        return_value=httpx.Response(200, json={"data": {"message_id": "M1"}})
+    )
+
+    result = runner.invoke(
+        app,
+        ["cliq", "send", "--channel-id", "C1", "--text", "hello"],
+        env=_cfg_env(mock_config),
+    )
+    assert result.exit_code == 0, result.output
+    payload = json.loads(result.output)
+    assert payload["status"] == "ok"
+
+
+def test_cliq_send_requires_destination(mock_config: Path, mock_token_refresh: Any) -> None:
+    result = runner.invoke(app, ["cliq", "send", "--text", "hello"], env=_cfg_env(mock_config))
+    assert result.exit_code == 1
+    assert "invalid_destination" in result.output
+
+
 # ---------------------------------------------------------------------------
 # config show
 # ---------------------------------------------------------------------------

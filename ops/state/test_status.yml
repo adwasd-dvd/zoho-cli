@@ -1,12 +1,14 @@
-last_run_at: "2026-04-08T04:43:15Z"
+last_run_at: "2026-04-08T04:45:42Z"
 last_result: pass
-current_focus: mail
+current_focus: cliq
 suites:
   unit:
     status: passing
     notes:
-      - ./.venv/bin/python -m zoho_cli --version && ./.venv/bin/pytest -q tests/test_cli.py::test_config_show
-      - `zoho_cli --version` now reports 0.2.0 from source checkout and 1 passed in 0.02s (2026-04-08T04:43:15Z)
+      - ./.venv/bin/pytest -q tests/test_cliq.py tests/test_cli.py::test_cliq_status_scaffold_info tests/test_cli.py::test_cliq_status_check_auth tests/test_cli.py::test_cliq_status_oauth_ready_when_scopes_present tests/test_cli.py::test_cliq_channels tests/test_cli.py::test_cliq_users tests/test_cli.py::test_cliq_send_channel tests/test_cli.py::test_cliq_send_requires_destination tests/test_auth.py::test_merge_scopes_deduplicates_preserving_order
+      - 15 passed in 0.17s (2026-04-08T04:45:42Z)
+      - make release-gate
+      - 117 passed in 2.06s (2026-04-08T04:45:42Z)
       - ./.venv/bin/pytest -q tests/test_cliq.py tests/test_cli.py::test_cliq_status_scaffold_info tests/test_cli.py::test_cliq_status_check_auth tests/test_cli.py::test_cliq_status_oauth_ready_when_scopes_present tests/test_auth.py::test_merge_scopes_deduplicates_preserving_order
       - 8 passed in 0.08s (2026-04-08T04:38:18Z)
       - make release-gate
@@ -34,8 +36,10 @@ suites:
       - mail download-attachment and attachment content now share attachment download + parse helpers via zoho_cli.cli._download_attachment_to_path and zoho_cli.cli._parse_attachment_content
       - mail get/attachments/download-attachment/reply/forward/attachment content now share message-target context setup via zoho_cli.cli._mail_message_context
   integration:
-    status: passing
+    status: warning
     notes:
+      - ./.venv/bin/python -m zoho_cli --config /tmp/zoho-test-config.json --account ai-dev@happy-distro.co.uk cliq channels --limit 3
+      - live Cliq call returned 403 `inactive_appaccount_user`; OAuth scopes are present but Cliq app/account activation is still required
       - ./.venv/bin/python -m zoho_cli --config /tmp/zoho-test-config.json --account ai-dev@happy-distro.co.uk mail attachments 1775620829752152900 --folder-id 2857786000000008014
       - ./.venv/bin/python -m zoho_cli --config /tmp/zoho-test-config.json --account ai-dev@happy-distro.co.uk mail download-attachment 1775620829752152900 <attachmentId> --folder-id 2857786000000008014 --out /tmp/zoho-attachment-test/<file>
       - validated subject `attachment test` with 4 attachments, all listed and downloaded with expected file sizes (2026-04-08T04:11:30Z)

@@ -1,14 +1,14 @@
 project: zoho-cli
-updated_at: "2026-04-08T04:43:15Z"
-status: cliq-kickoff
+updated_at: "2026-04-08T04:45:42Z"
+status: cliq-phase1
 canonical_workspace: "/Users/adwasd/.openclaw/workspace-coder"
 project_root: "/Users/adwasd/.openclaw/workspace-coder/job/zoho-cli"
 module_order:
   - Mail
   - Cliq
   - CRM
-current_focus: close remaining mail-core-extraction verification blockers, then continue cliq OAuth readiness and cliq-002 endpoint wiring
+current_focus: execute cliq-002 baseline command work (channels/users/send)
 primary_blockers:
-  - cliq test account has not completed Cliq-scope OAuth grant yet
-  - mail-core-extraction milestone verification is still open
-next_step: finish mail verification close-out for v0.2.0, then run `zoho login --with-cliq` and implement `cliq channels`/`cliq users`
+  - live Cliq API currently returns `inactive_appaccount_user` for the test account
+  - mail release train still not version-bumped for v0.2.0
+next_step: verify Cliq app/account activation, then run live validation for `cliq channels` and `cliq users`

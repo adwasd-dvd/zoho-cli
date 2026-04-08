@@ -1,5 +1,9 @@
 """Tests for zoho_cli.cliq helpers."""
 
+import httpx
+import pytest
+import respx
+
 from zoho_cli import cliq
 
 
@@ -21,3 +25,33 @@ def test_infer_cliq_base_url_defaults_to_com() -> None:
 def test_missing_cliq_scopes_reports_missing_values() -> None:
     missing = cliq.missing_cliq_scopes(["ZohoCliq.Channels.ALL"])
     assert missing == ["ZohoCliq.Users.ALL", "ZohoCliq.Messages.ALL"]
+
+
+@pytest.fixture
+def client() -> cliq.ZohoCliqClient:
+    return cliq.ZohoCliqClient("fake-token", base_url="https://cliq.zoho.com/api/v2")
+
+
+@respx.mock
+def test_cliq_client_channels(client: cliq.ZohoCliqClient) -> None:
+    route = respx.get("https://cliq.zoho.com/api/v2/channels").mock(
+        return_value=httpx.Response(200, json={"data": [{"id": "C1"}]})
+    )
+    result = client.channels(limit=7)
+    assert result["data"][0]["id"] == "C1"
+    assert dict(route.calls.last.request.url.params)["limit"] == "7"
+
+
+@respx.mock
+def test_cliq_client_send_to_channel(client: cliq.ZohoCliqClient) -> None:
+    route = respx.post("https://cliq.zoho.com/api/v2/channels/C1/message").mock(
+        return_value=httpx.Response(200, json={"data": {"status": "ok"}})
+    )
+    result = client.send_message("hello", channel_id="C1")
+    assert route.called
+    assert result["data"]["status"] == "ok"
+
+
+def test_cliq_client_send_requires_exactly_one_destination(client: cliq.ZohoCliqClient) -> None:
+    with pytest.raises(ValueError, match="exactly one"):
+        client.send_message("hello")

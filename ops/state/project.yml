@@ -1,5 +1,5 @@
 project: zoho-cli
-updated_at: "2026-04-08T20:30:54Z"
+updated_at: "2026-04-08T21:19:33Z"
 status: cliq-expansion
 canonical_workspace: "/Users/adwasd/.openclaw/workspace-coder"
 project_root: "/Users/adwasd/.openclaw/workspace-coder/job/zoho-cli"
@@ -9,6 +9,6 @@ module_order:
   - CRM
 current_focus: cliq-130 admin-plane implementation (membership + full channel lifecycle)
 primary_blockers:
-  - Zoho token refresh endpoint is temporarily throttling after rapid cliq-130 live checks; final lifecycle verification needs cooldown
+  - Zoho token refresh endpoint re-throttled during cliq-130 live admin sweep; member add/remove and final lifecycle close-out need a cooldown rerun
   - crm live read-only verification remains blocked by account-level CRM org access
-next_step: after cooldown, rerun cliq-130 live admin sweep including `channel-rename` + `channel-topic` with existing create/archive/unarchive/delete/member add/remove checks, then close cliq-130 if all commands succeed
+next_step: after cooldown, rerun remaining cliq-130 live admin checks (`member-add`, `member-remove`, `channel-archive`, `channel-unarchive`, `channel-delete --force`) and close cliq-130 if all commands succeed

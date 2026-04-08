@@ -1,5 +1,6 @@
 blockers:
   - "crm-002 live smoke remains blocked: current test account is not in a CRM org, so CRM scopes are not granted and live calls return `OAUTH_SCOPE_MISMATCH` (verified 2026-04-08T15:49:49Z)"
 high: []
-normal: []
+normal:
+  - "cliq-130 live sweep: `member-add` still fails against org channel endpoint with `request_method_invalid` on `/channels/{id}/members/add`; verify accepted member-add payload/path after cooldown rerun (observed 2026-04-08T21:19:33Z)"
 low: []

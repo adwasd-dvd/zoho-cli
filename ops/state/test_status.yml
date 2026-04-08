@@ -1,10 +1,12 @@
-last_run_at: "2026-04-08T20:30:54Z"
+last_run_at: "2026-04-08T21:19:33Z"
 last_result: warning
 current_focus: cliq
 suites:
   unit:
     status: passing
     notes:
+      - ./.venv/bin/pytest -q tests/test_cliq.py::test_request_with_candidates_retries_on_extra_key_found tests/test_cliq.py::test_request_with_candidates_retries_on_request_method_invalid tests/test_cliq.py::test_cliq_client_update_channel_topic_success tests/test_cliq.py::test_cliq_client_add_member_success tests/test_cli.py::test_cliq_channel_topic tests/test_cli.py::test_cliq_member_add tests/test_cli.py::test_cliq_member_remove
+      - 7 passed in 0.11s (cliq fallback regression for `extra_key_found` + `request_method_invalid`, 2026-04-08T21:19:33Z)
       - ./.venv/bin/pytest -q tests/test_cliq.py::test_cliq_client_rename_channel_success tests/test_cliq.py::test_cliq_client_update_channel_topic_success tests/test_cli.py::test_cliq_channel_rename tests/test_cli.py::test_cliq_channel_topic
       - 4 passed in 0.13s (focused cliq admin rename/topic command coverage, 2026-04-08T20:30:54Z)
       - ./.venv/bin/pytest -q tests/test_cliq.py::test_cliq_client_unarchive_channel_success tests/test_cli.py::test_cliq_channel_archive tests/test_cli.py::test_cliq_channel_unarchive
@@ -84,6 +86,12 @@ suites:
     status: warning
     notes:
       - ./.venv/bin/python -m zoho_cli --config /tmp/zoho-test-config.json --account ai-dev@happy-distro.co.uk cliq status --network happydistrouklimited --check-auth
+      - cliq auth is currently healthy (`oauthReady: true`, no missing scopes) for live cliq-130 checks (2026-04-08T21:19:33Z)
+      - ./.venv/bin/python -m zoho_cli --config /tmp/zoho-test-config.json --account ai-dev@happy-distro.co.uk cliq channel-create --network happydistrouklimited --name oc-admin-20260408211524 --level organization; cliq channel-rename O6576524000097774005 --network happydistrouklimited --name oc-admin-renamed-20260408; cliq channel-topic O6576524000097774005 --network happydistrouklimited --topic "cliq-130 live sweep 2026-04-08"
+      - live create+rename succeeded; channel-topic initially failed with `extra_key_found` then succeeded after fallback retry hardening (2026-04-08T21:19:33Z)
+      - ./.venv/bin/python -m zoho_cli --config /tmp/zoho-test-config.json --account ai-dev@happy-distro.co.uk cliq member-add o-CT-911174541-755016255 --channel-id O6576524000097774005 --network happydistrouklimited
+      - member-add still fails on org endpoint variant (`request_method_invalid` on `/members/add`), and immediate follow-up remove check hit refresh throttle again (`token_refresh_failed`) (2026-04-08T21:19:33Z)
+      - ./.venv/bin/python -m zoho_cli --config /tmp/zoho-test-config.json --account ai-dev@happy-distro.co.uk cliq status --network happydistrouklimited --check-auth
       - cliq auth now passes with expanded scope grant; read-plane checks no longer fail with missing message-read scope (2026-04-08T18:06:20Z)
       - ./.venv/bin/python -m zoho_cli --config /tmp/zoho-test-config.json --account ai-dev@happy-distro.co.uk cliq capabilities --network happydistrouklimited --channel-id O6576524000097556005
       - capability matrix now reports read-plane probes with real endpoint/scope classification for current token+network (2026-04-08T18:06:20Z)
@@ -148,6 +156,8 @@ suites:
   ci:
     status: warning
     notes:
+      - ./.venv/bin/ruff format --check zoho_cli/cliq.py tests/test_cliq.py
+      - 2 files already formatted (2026-04-08T21:19:33Z)
       - ./.venv/bin/ruff format --check zoho_cli/cliq.py zoho_cli/cli.py tests/test_cliq.py tests/test_cli.py
       - 4 files already formatted (2026-04-08T20:30:54Z)
       - ./.venv/bin/ruff format --check zoho_cli/cli.py tests/test_cliq.py tests/test_cli.py

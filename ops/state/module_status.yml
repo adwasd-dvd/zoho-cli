@@ -8,12 +8,12 @@ mail:
 
 cliq:
   priority: 2
-  status: blocked
+  status: in_progress
   phase: expansion_admin_plane
   target_release: v0.4.0
   current_milestone: cliq-expansion-phase
   blockers:
-    - david@happy-distro.com token lacks Cliq scopes; OAuth re-auth required before live verification
+    - token refresh is intermittently throttled during cliq-130 live admin sweep; remaining member add/remove + lifecycle verification must be rerun after cooldown
 
 crm:
   priority: 3

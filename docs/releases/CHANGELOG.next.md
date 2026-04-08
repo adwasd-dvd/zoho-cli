@@ -26,6 +26,7 @@
 
 ### Fixed
 - Cliq mutable-message fallback now retries on endpoint payload mismatches (`param_missing` / `invalid_data` / `operation_failed`) so write operations can probe alternate method/path payload variants before failing.
+- Cliq mutable/admin fallback now also retries on `extra_key_found` and `request_method_invalid`, allowing command probes to continue across API payload/method variants instead of failing on the first unsupported candidate.
 - Cliq reaction fallback now supports `emoji_code` payloads (plus legacy `emoji` fallback) for org endpoints that reject plain `emoji` payloads.
 - OAuth scope reporting now prefers live scope data from token refresh responses during `cliq status --check-auth` / `crm status --check-auth`, instead of trusting stale requested-scope config only.
 - `zoho login` now persists granted scopes from Zoho OAuth response scope payload when available, avoiding false-positive scope readiness after limited-consent flows.

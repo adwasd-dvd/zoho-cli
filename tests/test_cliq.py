@@ -270,6 +270,59 @@ def test_cliq_client_react_message_remove_success(client: cliq.ZohoCliqClient) -
 
 
 @respx.mock
+def test_request_with_candidates_retries_on_extra_key_found(
+    client: cliq.ZohoCliqClient,
+) -> None:
+    respx.post("https://cliq.zoho.com/api/v2/channels/O2/topic").mock(
+        return_value=httpx.Response(
+            400,
+            json={
+                "code": "extra_key_found",
+                "message": "'topic' is an extra key in the JSON Object.",
+            },
+        )
+    )
+    fallback = respx.put("https://cliq.zoho.com/api/v2/channels/O2").mock(
+        return_value=httpx.Response(204, text="")
+    )
+
+    result = client.update_channel_topic("O2", "deploy updates")
+
+    assert fallback.called
+    assert result["status"] == "ok"
+
+
+@respx.mock
+def test_request_with_candidates_retries_on_request_method_invalid(
+    client: cliq.ZohoCliqClient,
+) -> None:
+    respx.post("https://cliq.zoho.com/api/v2/channels/O2/members/add").mock(
+        return_value=httpx.Response(
+            400,
+            json={
+                "code": "request_method_invalid",
+                "message": "The HTTP Method you are trying is invalid.",
+            },
+        )
+    )
+    fallback = respx.post("https://cliq.zoho.com/api/v2/channels/O2/members").mock(
+        return_value=httpx.Response(200, json={"data": {"status": "ok"}})
+    )
+
+    result = client._request_with_candidates(
+        [
+            ("POST", "/channels/O2/members/add", {"member_id": "U1"}),
+            ("POST", "/channels/O2/members", {"member_id": "U1"}),
+        ],
+        scope_hint="ZohoCliq.Channels.ALL",
+        operation_label="member-add",
+    )
+
+    assert fallback.called
+    assert result["data"]["status"] == "ok"
+
+
+@respx.mock
 def test_cliq_client_list_members_from_channel(client: cliq.ZohoCliqClient) -> None:
     route = respx.get("https://cliq.zoho.com/api/v2/channels/O1/members").mock(
         return_value=httpx.Response(200, json={"members": [{"id": "U1"}]})

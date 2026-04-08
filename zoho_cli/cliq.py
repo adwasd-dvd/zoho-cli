@@ -149,6 +149,13 @@ class ZohoCliqClient:
         """Try multiple method/path/payload candidates for mutable message operations."""
         last_error: tuple[int, str, str, str] | None = None
         saw_scope_invalid = False
+        retryable_error_codes = {
+            "param_missing",
+            "invalid_data",
+            "operation_failed",
+            "extra_key_found",
+            "request_method_invalid",
+        }
 
         for method, path, payload in candidates:
             resp = httpx.request(
@@ -181,7 +188,7 @@ class ZohoCliqClient:
                 resp.status_code in (404, 405)
                 or "request_url_invalid" in lowered
                 or scope_invalid
-                or error_code in {"param_missing", "invalid_data", "operation_failed"}
+                or error_code in retryable_error_codes
             ):
                 continue
 

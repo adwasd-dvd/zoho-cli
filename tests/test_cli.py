@@ -1059,6 +1059,83 @@ def test_cliq_reply_requires_destination(
     assert "invalid_destination" in result.output
 
 
+@respx.mock
+def test_cliq_members_from_channel(mock_config: Path, mock_token_refresh: Any) -> None:
+    respx.get("https://cliq.zoho.com/api/v2/channels/O1/members").mock(
+        return_value=httpx.Response(200, json={"members": [{"id": "U1"}]})
+    )
+
+    result = runner.invoke(
+        app,
+        ["cliq", "members", "--channel-id", "O1"],
+        env=_cfg_env(mock_config),
+    )
+    assert result.exit_code == 0, result.output
+    payload = json.loads(result.output)
+    assert payload["count"] == 1
+    assert payload["members"][0]["id"] == "U1"
+
+
+@respx.mock
+def test_cliq_channel_create(mock_config: Path, mock_token_refresh: Any) -> None:
+    respx.post("https://cliq.zoho.com/api/v2/channels").mock(
+        return_value=httpx.Response(200, json={"channel_id": "O2", "name": "ops"})
+    )
+
+    result = runner.invoke(
+        app,
+        ["cliq", "channel-create", "--name", "ops", "--level", "organization"],
+        env=_cfg_env(mock_config),
+    )
+    assert result.exit_code == 0, result.output
+    payload = json.loads(result.output)
+    assert payload["status"] == "ok"
+
+
+@respx.mock
+def test_cliq_channel_archive(mock_config: Path, mock_token_refresh: Any) -> None:
+    respx.post("https://cliq.zoho.com/api/v2/channels/O2/archive").mock(
+        return_value=httpx.Response(204, text="")
+    )
+
+    result = runner.invoke(
+        app,
+        ["cliq", "channel-archive", "O2"],
+        env=_cfg_env(mock_config),
+    )
+    assert result.exit_code == 0, result.output
+    payload = json.loads(result.output)
+    assert payload["status"] == "ok"
+
+
+def test_cliq_channel_delete_requires_force(
+    mock_config: Path, mock_token_refresh: Any
+) -> None:
+    result = runner.invoke(
+        app,
+        ["cliq", "channel-delete", "O2"],
+        env=_cfg_env(mock_config),
+    )
+    assert result.exit_code == 1
+    assert "confirm_required" in result.output
+
+
+@respx.mock
+def test_cliq_channel_delete(mock_config: Path, mock_token_refresh: Any) -> None:
+    respx.delete("https://cliq.zoho.com/api/v2/channels/O2").mock(
+        return_value=httpx.Response(204, text="")
+    )
+
+    result = runner.invoke(
+        app,
+        ["cliq", "channel-delete", "O2", "--force"],
+        env=_cfg_env(mock_config),
+    )
+    assert result.exit_code == 0, result.output
+    payload = json.loads(result.output)
+    assert payload["status"] == "ok"
+
+
 # ---------------------------------------------------------------------------
 # crm status
 # ---------------------------------------------------------------------------

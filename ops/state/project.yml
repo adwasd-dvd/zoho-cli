@@ -1,5 +1,5 @@
 project: zoho-cli
-updated_at: "2026-04-08T18:21:53Z"
+updated_at: "2026-04-08T18:41:05Z"
 status: cliq-expansion
 canonical_workspace: "/Users/adwasd/.openclaw/workspace-coder"
 project_root: "/Users/adwasd/.openclaw/workspace-coder/job/zoho-cli"
@@ -9,6 +9,7 @@ module_order:
   - CRM
 current_focus: cliq-130 admin-plane implementation (membership + channel lifecycle)
 primary_blockers:
+  - Zoho token refresh endpoint is temporarily throttling after rapid cliq-130 live checks; final lifecycle verification needs cooldown
   - crm live read-only verification remains blocked by account-level CRM org access
   - `ruff format --check` currently fails for unrelated files in repo history
-next_step: implement first admin-plane slice with capability-aware endpoint fallbacks and focused tests
+next_step: after cooldown, rerun cliq-130 live lifecycle checks and then extend admin plane with member add/remove

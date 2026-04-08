@@ -1,12 +1,12 @@
-last_run_at: "2026-04-08T18:21:53Z"
-last_result: pass
+last_run_at: "2026-04-08T18:39:15Z"
+last_result: warning
 current_focus: cliq
 suites:
   unit:
     status: passing
     notes:
-      - ./.venv/bin/pytest -q tests/test_cliq.py tests/test_cli.py::test_cliq_status_scaffold_info tests/test_cli.py::test_cliq_status_check_auth tests/test_cli.py::test_cliq_status_oauth_ready_when_scopes_present tests/test_cli.py::test_cliq_capabilities tests/test_cli.py::test_cliq_messages_from_channel tests/test_cli.py::test_cliq_message_get_from_channel tests/test_cli.py::test_cliq_context_with_anchor tests/test_cli.py::test_cliq_messages_requires_destination tests/test_cli.py::test_cliq_reply_from_channel tests/test_cli.py::test_cliq_edit_message tests/test_cli.py::test_cliq_delete_message tests/test_cli.py::test_cliq_react_add tests/test_cli.py::test_cliq_reply_requires_destination tests/test_cli.py::test_cliq_channels tests/test_cli.py::test_cliq_users tests/test_cli.py::test_cliq_send_channel tests/test_cli.py::test_cliq_notify_mail_to_channel tests/test_cli.py::test_cliq_send_requires_destination
-      - 35 passed in 0.33s (focused cliq write-plane + read-plane tests, 2026-04-08T18:21:53Z)
+      - ./.venv/bin/pytest -q tests/test_cliq.py tests/test_cli.py::test_cliq_members_from_channel tests/test_cli.py::test_cliq_channel_create tests/test_cli.py::test_cliq_channel_archive tests/test_cli.py::test_cliq_channel_delete_requires_force tests/test_cli.py::test_cliq_channel_delete tests/test_cli.py::test_cliq_reply_from_channel tests/test_cli.py::test_cliq_edit_message tests/test_cli.py::test_cliq_delete_message tests/test_cli.py::test_cliq_react_add tests/test_cli.py::test_cliq_messages_from_channel tests/test_cli.py::test_cliq_message_get_from_channel tests/test_cli.py::test_cliq_context_with_anchor tests/test_cli.py::test_cliq_capabilities tests/test_cli.py::test_cliq_send_channel tests/test_cli.py::test_cliq_notify_mail_to_channel tests/test_cli.py::test_cliq_status_check_auth
+      - 43 passed in 0.42s (focused cliq admin+write+read tests, 2026-04-08T18:39:15Z)
       - ./.venv/bin/pytest -q tests/test_cliq.py tests/test_cli.py::test_cliq_status_scaffold_info tests/test_cli.py::test_cliq_status_check_auth tests/test_cli.py::test_cliq_status_oauth_ready_when_scopes_present tests/test_cli.py::test_cliq_capabilities tests/test_cli.py::test_cliq_messages_from_channel tests/test_cli.py::test_cliq_message_get_from_channel tests/test_cli.py::test_cliq_context_with_anchor tests/test_cli.py::test_cliq_messages_requires_destination tests/test_cli.py::test_cliq_channels tests/test_cli.py::test_cliq_users tests/test_cli.py::test_cliq_send_channel tests/test_cli.py::test_cliq_notify_mail_to_channel tests/test_cli.py::test_cliq_send_requires_destination tests/test_auth.py::test_merge_scopes_deduplicates_preserving_order
       - focused cliq read-plane and capability tests passed (2026-04-08T18:06:20Z)
       - ./.venv/bin/pytest -q tests/test_cliq.py::test_cliq_client_probe_capabilities_baseline tests/test_cliq.py::test_cliq_client_probe_capabilities_with_channel_context tests/test_cli.py::test_cliq_capabilities
@@ -85,6 +85,10 @@ suites:
       - live message list returns chat context payload (2026-04-08T18:06:20Z)
       - ./.venv/bin/python -m zoho_cli --config /tmp/zoho-test-config.json --account ai-dev@happy-distro.co.uk cliq context --network happydistrouklimited --channel-id O6576524000097556005 --before 1 --after 1 --limit 5
       - live context window returns surrounding chat messages (2026-04-08T18:06:20Z)
+      - ./.venv/bin/python -m zoho_cli --config /tmp/zoho-test-config.json --account ai-dev@happy-distro.co.uk cliq members --network happydistrouklimited --channel-id O6576524000097556005
+      - live members list returns channel membership payload (2026-04-08T18:21:53Z)
+      - ./.venv/bin/python -m zoho_cli --config /tmp/zoho-test-config.json --account ai-dev@happy-distro.co.uk cliq channel-create --network happydistrouklimited --name "oc-admin-<ts>" --level organization
+      - live channel create + archive succeeded; additional lifecycle verifies are currently rate-limited by Zoho token refresh throttle (2026-04-08T18:21:53Z)
       - ./.venv/bin/python -m zoho_cli --config /tmp/zoho-test-config.json --account ai-dev@happy-distro.co.uk cliq reply 1775672331710_74865282494 --network happydistrouklimited --channel-id O6576524000097556005 --text "cliq-120 reply smoke"
       - live reply command succeeded against channel chat context (2026-04-08T18:21:53Z)
       - ./.venv/bin/python -m zoho_cli --config /tmp/zoho-test-config.json --account ai-dev@happy-distro.co.uk cliq react 1775672331710_74865282494 --network happydistrouklimited --channel-id O6576524000097556005 --emoji :thumbsup:

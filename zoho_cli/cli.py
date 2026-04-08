@@ -1280,6 +1280,116 @@ def cliq_users(
     utils.output(data)
 
 
+@cliq_app.command("members")
+def cliq_members(
+    channel_id: Optional[str] = typer.Option(
+        None, "--channel-id", help="Channel id (preferred for member listing)."
+    ),
+    chat_id: Optional[str] = typer.Option(None, "--chat-id", help="Chat id."),
+    network: Optional[str] = typer.Option(
+        None, "--network", help="Cliq network slug (e.g. happydistrouklimited)."
+    ),
+) -> None:
+    """List members for a channel/chat."""
+    if not chat_id and not channel_id:
+        utils.error_exit("invalid_destination", "Provide --chat-id or --channel-id")
+
+    cfg = _cfg()
+    email = _require_account(cfg)
+    client = _get_cliq_client(cfg, email, network=network)
+
+    resolved_chat = (chat_id or "").strip()
+    resp = client.list_members(chat_id=resolved_chat, channel_id=channel_id)
+    members = resp.get("members", resp.get("data", resp))
+    if not isinstance(members, list):
+        members = []
+
+    utils.output(
+        {
+            "chatId": resolved_chat or "",
+            "channelId": channel_id or "",
+            "count": len(members),
+            "members": members,
+        }
+    )
+
+
+@cliq_app.command("channel-create")
+def cliq_channel_create(
+    name: str = typer.Option(..., "--name", help="Channel display name."),
+    level: str = typer.Option(
+        "organization",
+        "--level",
+        help="Channel level (for example: organization/team).",
+    ),
+    network: Optional[str] = typer.Option(
+        None, "--network", help="Cliq network slug (e.g. happydistrouklimited)."
+    ),
+) -> None:
+    """Create a Cliq channel."""
+    cfg = _cfg()
+    email = _require_account(cfg)
+    client = _get_cliq_client(cfg, email, network=network)
+
+    resp = client.create_channel(name, level=level)
+    data = resp.get("data", resp)
+    utils.output_status(
+        "Cliq channel created",
+        extra={
+            "name": name,
+            "level": level,
+            "result": data,
+        },
+    )
+
+
+@cliq_app.command("channel-archive")
+def cliq_channel_archive(
+    channel_id: str = typer.Argument(..., help="Target channel id."),
+    unarchive: bool = typer.Option(
+        False, "--unarchive", help="Unarchive instead of archiving."
+    ),
+    network: Optional[str] = typer.Option(
+        None, "--network", help="Cliq network slug (e.g. happydistrouklimited)."
+    ),
+) -> None:
+    """Archive or unarchive a Cliq channel."""
+    cfg = _cfg()
+    email = _require_account(cfg)
+    client = _get_cliq_client(cfg, email, network=network)
+
+    resp = client.archive_channel(channel_id, unarchive=unarchive)
+    data = resp.get("data", resp)
+    utils.output_status(
+        "Cliq channel unarchived" if unarchive else "Cliq channel archived",
+        extra={"channelId": channel_id, "unarchive": unarchive, "result": data},
+    )
+
+
+@cliq_app.command("channel-delete")
+def cliq_channel_delete(
+    channel_id: str = typer.Argument(..., help="Target channel id."),
+    force: bool = typer.Option(False, "--force", help="Confirm channel deletion."),
+    network: Optional[str] = typer.Option(
+        None, "--network", help="Cliq network slug (e.g. happydistrouklimited)."
+    ),
+) -> None:
+    """Delete a Cliq channel."""
+    if not force:
+        utils.error_exit("confirm_required", "Add --force to delete a channel")
+
+    cfg = _cfg()
+    email = _require_account(cfg)
+    client = _get_cliq_client(cfg, email, network=network)
+
+    resp = client.delete_channel(channel_id)
+    data = resp.get("data", resp)
+    utils.output_status(
+        "Cliq channel deleted",
+        extra={"channelId": channel_id, "result": data},
+    )
+
+
 @cliq_app.command("messages")
 def cliq_messages(
     channel_id: Optional[str] = typer.Option(

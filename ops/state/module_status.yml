@@ -12,7 +12,8 @@ cliq:
   phase: expansion_admin_plane
   target_release: v0.4.0
   current_milestone: cliq-expansion-phase
-  blockers: []
+  blockers:
+    - Zoho token refresh endpoint is temporarily throttling after rapid live admin-plane checks; rerun remaining cliq-130 lifecycle verification after cooldown
 
 crm:
   priority: 3

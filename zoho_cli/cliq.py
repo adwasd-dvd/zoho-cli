@@ -540,6 +540,100 @@ class ZohoCliqClient:
         """List users."""
         return self._get("/users", {"limit": limit})
 
+    def list_members(
+        self,
+        *,
+        channel_id: str | None = None,
+        chat_id: str | None = None,
+    ) -> dict:
+        """List members for a channel/chat with endpoint fallbacks."""
+        resolved_chat = (chat_id or "").strip()
+
+        candidates: list[str] = []
+        if channel_id:
+            candidates.append(f"/channels/{channel_id}/members")
+        if resolved_chat:
+            candidates.append(f"/chats/{resolved_chat}/members")
+
+        if not candidates:
+            utils.error_exit(
+                "invalid_destination", "Provide --chat-id or resolvable --channel-id"
+            )
+
+        last_error: tuple[int, str, str] | None = None
+        for path in candidates:
+            resp = httpx.get(
+                f"{self.base_url}{path}",
+                headers=self._headers,
+                timeout=httpx.Timeout(30.0),
+            )
+            if resp.is_success:
+                return resp.json()
+            body = resp.text or ""
+            last_error = (resp.status_code, path, body)
+            lowered = body.lower()
+            if resp.status_code in (404, 405) or "request_url_invalid" in lowered:
+                continue
+            if "oauthtoken_scope_invalid" in lowered:
+                utils.error_exit(
+                    "oauth_scope_invalid",
+                    "Cliq token is missing required member-read scope. Re-run `zoho login --with-cliq --scope ZohoCliq.Channels.READ` and retry.",
+                )
+            utils.error_exit("api_error", f"HTTP {resp.status_code} GET {path}: {body}")
+
+        if last_error is not None:
+            status, path, body = last_error
+            utils.error_exit("api_error", f"HTTP {status} GET {path}: {body}")
+        utils.error_exit(
+            "api_error", "No candidate endpoint available for members list"
+        )
+        return {}
+
+    def create_channel(
+        self,
+        name: str,
+        *,
+        level: str = "organization",
+    ) -> dict:
+        """Create a channel."""
+        payload = {"name": name.strip(), "level": level.strip()}
+        if not payload["name"]:
+            utils.error_exit("invalid_name", "channel name cannot be empty")
+
+        return self._request_with_candidates(
+            [("POST", "/channels", payload)],
+            scope_hint="ZohoCliq.Channels.ALL",
+            operation_label="channel-create",
+        )
+
+    def archive_channel(self, channel_id: str, *, unarchive: bool = False) -> dict:
+        """Archive/unarchive a channel."""
+        cid = channel_id.strip()
+        if not cid:
+            utils.error_exit("invalid_channel_id", "channel_id cannot be empty")
+
+        path = f"/channels/{cid}/unarchive" if unarchive else f"/channels/{cid}/archive"
+        return self._request_with_candidates(
+            [("POST", path, {})],
+            scope_hint="ZohoCliq.Channels.ALL",
+            operation_label="channel-unarchive" if unarchive else "channel-archive",
+        )
+
+    def delete_channel(self, channel_id: str) -> dict:
+        """Delete a channel."""
+        cid = channel_id.strip()
+        if not cid:
+            utils.error_exit("invalid_channel_id", "channel_id cannot be empty")
+
+        return self._request_with_candidates(
+            [
+                ("DELETE", f"/channels/{cid}", None),
+                ("POST", f"/channels/{cid}/delete", {}),
+            ],
+            scope_hint="ZohoCliq.Channels.ALL",
+            operation_label="channel-delete",
+        )
+
     def _probe_request(
         self,
         method: str,

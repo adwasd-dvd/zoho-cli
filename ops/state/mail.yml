@@ -1,5 +1,5 @@
 module: Mail
-updated_at: "2026-04-08T03:12:45Z"
+updated_at: "2026-04-08T03:27:32Z"
 status: in_progress
 blockers: []
-next_small_step: extract shared attachment download + parse flow used by `mail download-attachment` and `attachment content`
+next_small_step: extract shared attachment target selection logic in `attachment content` (filename filtering + interactive pick) to keep mail-001 reductions incremental

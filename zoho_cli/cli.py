@@ -178,6 +178,29 @@ def _mail_message_context(
     return email, client, account_id, resolved_folder_id
 
 
+def _download_attachment_to_path(
+    client: ZohoMailClient,
+    account_id: str,
+    folder_id: str,
+    message_id: str,
+    attachment_id: str,
+    out_path: Path,
+) -> int:
+    """Download an attachment and persist it to out_path, returning byte size."""
+    data = client.download_attachment(account_id, folder_id, message_id, attachment_id)
+    out_path.parent.mkdir(parents=True, exist_ok=True)
+    out_path.write_bytes(data)
+    return len(data)
+
+
+def _parse_attachment_content(path: Path) -> str:
+    """Parse attachment content or exit for unsupported file types."""
+    content = _parse.parse_attachment(path)
+    if content is None:
+        utils.error_exit("unsupported_format", f"Unsupported file type: {path.suffix}")
+    return content
+
+
 def _resolve_label_id(client: "ZohoMailClient", account_id: str, name_or_id: str) -> str:
     """Resolve a label name or numeric ID to a labelId string."""
     if name_or_id.isdigit():
@@ -466,20 +489,16 @@ def mail_download_attachment(
     cfg = _cfg()
     _, client, account_id, fid = _mail_message_context(cfg, message_id, folder_id)
 
-    data     = client.download_attachment(account_id, fid, message_id, attachment_id)
     out_path = Path(out)
-    out_path.parent.mkdir(parents=True, exist_ok=True)
-    out_path.write_bytes(data)
+    size = _download_attachment_to_path(client, account_id, fid, message_id, attachment_id, out_path)
     utils.output_status(
-        f"Saved {out_path.name} ({utils.format_size(len(data))})",
-        extra={"path": str(out_path.resolve()), "size": len(data)},
+        f"Saved {out_path.name} ({utils.format_size(size)})",
+        extra={"path": str(out_path.resolve()), "size": size},
     )
     
     if parse:
         try:
-            content = _parse.parse_attachment(out_path)
-            if content is None:
-                utils.error_exit("unsupported_format", f"Unsupported file type: {out_path.suffix}")
+            content = _parse_attachment_content(out_path)
             print(f"\n=== Content of {out_path.name} ===")
             print(content)
         except RuntimeError as e:
@@ -1014,16 +1033,13 @@ def attachment_content(
             utils.error_exit("invalid_input", "Please enter a number")
     
     # Download to temp file
-    import tempfile
-    with tempfile.NamedTemporaryFile(suffix=target.get("fileName"), delete=False) as tmp:
-        data = client.download_attachment(account_id, fid, message_id, target["attachmentId"])
-        tmp.write(data)
+    suffix = Path(target.get("fileName") or "").suffix
+    with tempfile.NamedTemporaryFile(suffix=suffix, delete=False) as tmp:
         tmp_path = Path(tmp.name)
+    _download_attachment_to_path(client, account_id, fid, message_id, target["attachmentId"], tmp_path)
     
     try:
-        content = _parse.parse_attachment(tmp_path)
-        if content is None:
-            utils.error_exit("unsupported_format", f"Unsupported file type: {tmp_path.suffix}")
+        content = _parse_attachment_content(tmp_path)
         print(f"\n=== Content of {target['fileName']} ===")
         print(content)
     finally:

@@ -1,0 +1,12 @@
+id: mail-002
+title: normalize mail output modes and formatter entry points
+module: mail
+stage: coding
+status: in_progress
+owner: automation
+success_criteria:
+  - output helpers have one canonical entry point
+  - mail/folders/config command outputs remain stable in JSON mode
+  - narrow tests added or updated
+  - changelog updated when behavior changes
+next_if_done: mail-003

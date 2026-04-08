@@ -1,5 +1,5 @@
 project: zoho-cli
-updated_at: "2026-04-08T04:45:42Z"
+updated_at: "2026-04-08T04:58:29Z"
 status: cliq-phase1
 canonical_workspace: "/Users/adwasd/.openclaw/workspace-coder"
 project_root: "/Users/adwasd/.openclaw/workspace-coder/job/zoho-cli"
@@ -7,8 +7,8 @@ module_order:
   - Mail
   - Cliq
   - CRM
-current_focus: execute cliq-002 baseline command work (channels/users/send)
+current_focus: finish cliq-002 live validation and move to cliq-003
 primary_blockers:
-  - live Cliq API currently returns `inactive_appaccount_user` for the test account
+  - cliq send live validation not yet captured on network-scoped endpoint
   - mail release train still not version-bumped for v0.2.0
-next_step: verify Cliq app/account activation, then run live validation for `cliq channels` and `cliq users`
+next_step: run one live `cliq send` smoke against network-scoped endpoint, then advance to cliq-003 workflow wiring

@@ -1,7 +1,7 @@
 - id: mail-001
   title: extract shared core modules from current mail implementation
   module: mail
-  stage: verification
+  stage: completed
   priority: high
   depends_on: []
 

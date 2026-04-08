@@ -852,6 +852,22 @@ def test_cliq_channels(mock_config: Path, mock_token_refresh: Any) -> None:
 
 
 @respx.mock
+def test_cliq_channels_with_network(mock_config: Path, mock_token_refresh: Any) -> None:
+    respx.get("https://cliq.zoho.com/network/happydistrouklimited/api/v2/channels").mock(
+        return_value=httpx.Response(200, json={"data": [{"id": "C2", "name": "Ops"}]})
+    )
+
+    result = runner.invoke(
+        app,
+        ["cliq", "channels", "--network", "happydistrouklimited", "--limit", "2"],
+        env=_cfg_env(mock_config),
+    )
+    assert result.exit_code == 0, result.output
+    payload = json.loads(result.output)
+    assert payload[0]["id"] == "C2"
+
+
+@respx.mock
 def test_cliq_users(mock_config: Path, mock_token_refresh: Any) -> None:
     respx.get("https://cliq.zoho.com/api/v2/users").mock(
         return_value=httpx.Response(200, json={"data": [{"id": "U1", "name": "Alice"}]})

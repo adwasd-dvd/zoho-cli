@@ -1,10 +1,12 @@
-last_run_at: "2026-04-08T04:45:42Z"
+last_run_at: "2026-04-08T04:58:29Z"
 last_result: pass
 current_focus: cliq
 suites:
   unit:
     status: passing
     notes:
+      - ./.venv/bin/pytest -q tests/test_mail.py tests/test_cli.py::test_mail_get_hydrates_missing_metadata_from_folder_summary tests/test_cli.py::test_mail_reply_sends_prefixed_payload_and_status tests/test_cli.py::test_mail_forward_sends_forward_payload_and_status tests/test_cli.py::test_mail_download_attachment_parse_success_returns_structured_json
+      - 18 passed in 0.08s (2026-04-08T04:57:12Z)
       - ./.venv/bin/pytest -q tests/test_cliq.py tests/test_cli.py::test_cliq_status_scaffold_info tests/test_cli.py::test_cliq_status_check_auth tests/test_cli.py::test_cliq_status_oauth_ready_when_scopes_present tests/test_cli.py::test_cliq_channels tests/test_cli.py::test_cliq_users tests/test_cli.py::test_cliq_send_channel tests/test_cli.py::test_cliq_send_requires_destination tests/test_auth.py::test_merge_scopes_deduplicates_preserving_order
       - 15 passed in 0.17s (2026-04-08T04:45:42Z)
       - make release-gate
@@ -36,10 +38,11 @@ suites:
       - mail download-attachment and attachment content now share attachment download + parse helpers via zoho_cli.cli._download_attachment_to_path and zoho_cli.cli._parse_attachment_content
       - mail get/attachments/download-attachment/reply/forward/attachment content now share message-target context setup via zoho_cli.cli._mail_message_context
   integration:
-    status: warning
+    status: passing
     notes:
-      - ./.venv/bin/python -m zoho_cli --config /tmp/zoho-test-config.json --account ai-dev@happy-distro.co.uk cliq channels --limit 3
-      - live Cliq call returned 403 `inactive_appaccount_user`; OAuth scopes are present but Cliq app/account activation is still required
+      - ./.venv/bin/python -m zoho_cli --config /tmp/zoho-test-config.json --account ai-dev@happy-distro.co.uk cliq channels --network happydistrouklimited --limit 3
+      - ./.venv/bin/python -m zoho_cli --config /tmp/zoho-test-config.json --account ai-dev@happy-distro.co.uk cliq users --network happydistrouklimited --limit 2
+      - network-scoped Cliq list endpoints now return live data for happydistrouklimited (2026-04-08T04:58:29Z)
       - ./.venv/bin/python -m zoho_cli --config /tmp/zoho-test-config.json --account ai-dev@happy-distro.co.uk mail attachments 1775620829752152900 --folder-id 2857786000000008014
       - ./.venv/bin/python -m zoho_cli --config /tmp/zoho-test-config.json --account ai-dev@happy-distro.co.uk mail download-attachment 1775620829752152900 <attachmentId> --folder-id 2857786000000008014 --out /tmp/zoho-attachment-test/<file>
       - validated subject `attachment test` with 4 attachments, all listed and downloaded with expected file sizes (2026-04-08T04:11:30Z)

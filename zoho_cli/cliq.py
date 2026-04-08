@@ -26,8 +26,12 @@ def infer_cliq_base_url(
     *,
     mail_base_url: str | None = None,
     accounts_server: str | None = None,
+    network: str | None = None,
 ) -> str:
     """Infer Cliq API base URL from known Zoho region hosts."""
+    if network:
+        return f"https://cliq.zoho.com/network/{network}/api/v2"
+
     if mail_base_url:
         parsed = urlparse(mail_base_url)
         host = parsed.netloc

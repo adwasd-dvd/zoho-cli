@@ -22,6 +22,11 @@ def test_infer_cliq_base_url_defaults_to_com() -> None:
     assert url == "https://cliq.zoho.com/api/v2"
 
 
+def test_infer_cliq_base_url_from_network_slug() -> None:
+    url = cliq.infer_cliq_base_url(network="happydistrouklimited")
+    assert url == "https://cliq.zoho.com/network/happydistrouklimited/api/v2"
+
+
 def test_missing_cliq_scopes_reports_missing_values() -> None:
     missing = cliq.missing_cliq_scopes(["ZohoCliq.Channels.ALL"])
     assert missing == ["ZohoCliq.Users.ALL", "ZohoCliq.Messages.ALL"]

@@ -3,7 +3,7 @@ mail:
   status: in_progress
   phase: stabilization
   target_release: v0.2.0
-  current_milestone: mail-core-extraction
+  current_milestone: mail-output-normalization
   blockers: []
 
 cliq:
@@ -12,8 +12,7 @@ cliq:
   phase: phase_1_basic
   target_release: v0.3.0
   current_milestone: cliq-phase1-basic
-  blockers:
-    - inactive_appaccount_user on live cliq channels/users calls
+  blockers: []
 
 crm:
   priority: 3

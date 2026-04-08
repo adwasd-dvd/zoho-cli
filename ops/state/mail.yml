@@ -1,5 +1,5 @@
 module: Mail
-updated_at: "2026-04-08T04:43:15Z"
+updated_at: "2026-04-08T04:57:12Z"
 status: in_progress
 blockers: []
-next_small_step: finish mail-core-extraction verification evidence and close remaining v0.2.0 release blockers
+next_small_step: close mail-002 verification with a focused JSON-mode sweep, then finish mail-004 release-gate close-out

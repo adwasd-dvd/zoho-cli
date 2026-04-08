@@ -146,7 +146,7 @@ def _get_client(cfg: dict, email: str) -> ZohoMailClient:
     return ZohoMailClient(access_token, mail_base_url=account_cfg.get("mail_base_url"))
 
 
-def _get_cliq_client(cfg: dict, email: str) -> ZohoCliqClient:
+def _get_cliq_client(cfg: dict, email: str, network: Optional[str] = None) -> ZohoCliqClient:
     cid, csec = _require_credentials(cfg)
     account_cfg = cfg.get("accounts", {}).get(email, {})
     access_token = auth.refresh_access_token(
@@ -158,6 +158,7 @@ def _get_cliq_client(cfg: dict, email: str) -> ZohoCliqClient:
         base_url=_cliq.infer_cliq_base_url(
             mail_base_url=account_cfg.get("mail_base_url"),
             accounts_server=account_cfg.get("accounts_server"),
+            network=network or account_cfg.get("cliq_network"),
         ),
     )
 
@@ -973,6 +974,7 @@ def labels_delete(label_id: str = typer.Argument(..., help="Label ID.")) -> None
 @cliq_app.command("status")
 def cliq_status(
     check_auth: bool = typer.Option(False, "--check-auth", help="Verify OAuth refresh for the selected account."),
+    network: Optional[str] = typer.Option(None, "--network", help="Cliq network slug (e.g. happydistrouklimited)."),
 ) -> None:
     """Show Cliq scaffold readiness and inferred API endpoint."""
     cfg = _cfg()
@@ -988,6 +990,7 @@ def cliq_status(
         "baseUrl": _cliq.infer_cliq_base_url(
             mail_base_url=account_cfg.get("mail_base_url"),
             accounts_server=account_cfg.get("accounts_server"),
+            network=network or account_cfg.get("cliq_network"),
         ),
         "requiredScopes": _cliq.DEFAULT_CLIQ_SCOPES,
         "grantedScopes": account_cfg.get("scopes", []),
@@ -1002,7 +1005,7 @@ def cliq_status(
     payload["oauthReady"] = len(payload["missingScopes"]) == 0
 
     if check_auth and email:
-        _get_client(cfg, email)
+        _get_cliq_client(cfg, email, network=network)
         payload["auth"] = "ok"
 
     utils.output(payload)
@@ -1011,11 +1014,12 @@ def cliq_status(
 @cliq_app.command("channels")
 def cliq_channels(
     limit: int = typer.Option(50, "--limit", "-n", help="Max channels to return."),
+    network: Optional[str] = typer.Option(None, "--network", help="Cliq network slug (e.g. happydistrouklimited)."),
 ) -> None:
     """List Cliq channels."""
     cfg = _cfg()
     email = _require_account(cfg)
-    client = _get_cliq_client(cfg, email)
+    client = _get_cliq_client(cfg, email, network=network)
 
     resp = client.channels(limit=limit)
     data = resp.get("data", resp)
@@ -1025,11 +1029,12 @@ def cliq_channels(
 @cliq_app.command("users")
 def cliq_users(
     limit: int = typer.Option(50, "--limit", "-n", help="Max users to return."),
+    network: Optional[str] = typer.Option(None, "--network", help="Cliq network slug (e.g. happydistrouklimited)."),
 ) -> None:
     """List Cliq users."""
     cfg = _cfg()
     email = _require_account(cfg)
-    client = _get_cliq_client(cfg, email)
+    client = _get_cliq_client(cfg, email, network=network)
 
     resp = client.users(limit=limit)
     data = resp.get("data", resp)
@@ -1041,11 +1046,12 @@ def cliq_send(
     text: str = typer.Option(..., "--text", "-t", help="Message text."),
     channel_id: Optional[str] = typer.Option(None, "--channel-id", help="Destination channel id."),
     user_id: Optional[str] = typer.Option(None, "--user-id", help="Destination user id."),
+    network: Optional[str] = typer.Option(None, "--network", help="Cliq network slug (e.g. happydistrouklimited)."),
 ) -> None:
     """Send a Cliq message to a channel or user."""
     cfg = _cfg()
     email = _require_account(cfg)
-    client = _get_cliq_client(cfg, email)
+    client = _get_cliq_client(cfg, email, network=network)
 
     try:
         resp = client.send_message(text, channel_id=channel_id, user_id=user_id)

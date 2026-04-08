@@ -1,7 +1,7 @@
 id: cliq-002
 title: implement cliq channels list users list and send baseline
 module: cliq
-stage: coding
+stage: verification
 status: in_progress
 owner: automation
 success_criteria:

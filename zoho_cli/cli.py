@@ -41,10 +41,11 @@ from zoho_cli.api import ZohoMailClient
 
 def _get_version() -> str:
     try:
-        return version("zoho-cli")
-    except Exception:
         from zoho_cli import __version__
+
         return __version__
+    except Exception:
+        return version("zoho-cli")
 
 
 # ── app setup ─────────────────────────────────────────────────────────────────

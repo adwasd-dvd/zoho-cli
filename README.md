@@ -1,9 +1,9 @@
-# zoho — Zoho Mail in your terminal
+# zoho — Zoho Mail, Cliq, and CRM in your terminal
 
 [![GitHub release](https://img.shields.io/github/v/release/adwasd-dvd/zoho-cli)](https://github.com/adwasd-dvd/zoho-cli/releases)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 
-Fast, script-friendly CLI for Zoho Mail. JSON output by default, Markdown tables with `--md`. Pipe to `jq`, use in scripts, or feed directly to AI agents.
+Fast, script-friendly CLI for Zoho Mail, Cliq, and CRM. JSON output by default, Markdown tables with `--md`. Pipe to `jq`, use in scripts, or feed directly to AI agents.
 
 Built in the spirit of [steipete/gog](https://github.com/steipete/gog) — a Google Workspace CLI designed to give LLMs and AI agents (like [OpenClaw](https://openclaw.ai)) direct access to your tools without any middleman. You create your own Zoho OAuth app, connect it once, and you're done. No third-party service, no subscription, no data leaving your machine. Free forever.
 
@@ -92,6 +92,12 @@ If you prefer to log in separately:
 
 ```bash
 zoho login
+# include recommended Cliq scopes
+zoho login --with-cliq
+# include recommended CRM scopes
+zoho login --with-crm
+# add extra scopes explicitly when needed
+zoho login --with-cliq --scope ZohoCliq.Messages.READ
 ```
 
 Your browser opens, you approve access on Zoho's consent screen, and a "You're connected" page confirms the callback was received. Tokens are stored in your OS keyring.
@@ -211,6 +217,58 @@ zoho config init    # interactive wizard
 zoho config show    # dump JSON (secret redacted)
 zoho config path    # show file path
 ```
+
+---
+
+## Cliq
+
+```bash
+# readiness + auth/scope status
+zoho cliq status --check-auth --network happydistrouklimited
+
+# capability matrix for token/org/network
+zoho cliq capabilities --network happydistrouklimited --channel-id <channelId>
+
+# read plane
+zoho cliq channels --network happydistrouklimited --limit 20
+zoho cliq users --network happydistrouklimited --limit 20
+zoho cliq members --network happydistrouklimited --channel-id <channelId>
+zoho cliq messages --network happydistrouklimited --channel-id <channelId> --limit 20
+zoho cliq message <messageId> --network happydistrouklimited --channel-id <channelId>
+zoho cliq context --network happydistrouklimited --channel-id <channelId> --before 3 --after 3 --limit 40
+
+# write plane
+zoho cliq send --network happydistrouklimited --channel-id <channelId> --text "hello"
+zoho cliq reply <messageId> --network happydistrouklimited --channel-id <channelId> --text "ack"
+zoho cliq edit <messageId> --network happydistrouklimited --channel-id <channelId> --text "edited"
+zoho cliq delete <messageId> --network happydistrouklimited --channel-id <channelId>
+zoho cliq react <messageId> --network happydistrouklimited --channel-id <channelId> --emoji :thumbsup:
+
+# admin plane (first slice)
+zoho cliq channel-create --network happydistrouklimited --name "ops-updates" --level organization
+zoho cliq channel-archive <channelId> --network happydistrouklimited
+zoho cliq channel-archive <channelId> --network happydistrouklimited --unarchive
+zoho cliq channel-delete <channelId> --network happydistrouklimited --force
+```
+
+Cliq scope notes:
+- message/context read requires `ZohoCliq.Messages.READ`
+- mutable/admin operations may require broader scopes, for example `ZohoCliq.Channels.ALL`, `ZohoCliq.Messages.UPDATE`, `ZohoCliq.Messages.DELETE`, `ZohoCliq.messageactions.CREATE`
+
+---
+
+## CRM
+
+```bash
+zoho crm status --check-auth
+zoho crm modules --limit 20
+zoho crm fields --module Leads --limit 50
+zoho crm list --module Leads --limit 20
+zoho crm get <recordId> --module Leads
+zoho crm search --module Leads --criteria "(Last_Name:equals:Smith)"
+```
+
+If your account is not part of a CRM org, Zoho will not grant CRM scopes and live CRM calls will return `OAUTH_SCOPE_MISMATCH`.
 
 ---
 
@@ -368,9 +426,33 @@ zoho_cli/
 ├── cli.py       # all Typer commands
 ├── api.py       # httpx client, one method per endpoint
 ├── auth.py      # OAuth flow, local callback server, token refresh
+├── cliq.py      # Cliq client and capability/read/write/admin helpers
+├── crm.py       # CRM client and read-only scaffolding
 ├── mail.py      # message formatters, folder resolution
 ├── folders.py   # folder formatter
 ├── config.py    # config load/save, env var overrides
 ├── storage.py   # OS keyring + encrypted file fallback
 └── utils.py     # JSON/markdown output, errors, date helpers
 ```
+
+
+---
+
+## OpenClaw quickstart
+
+This repository includes a ready-to-use OpenClaw starter pack for long-running development automation.
+
+From the repo root:
+
+```bash
+bash integrations/openclaw/bin/bootstrap_openclaw_workspace.sh --repo "$(pwd)"
+```
+
+That creates a dedicated OpenClaw workspace shell, points agents at the project state files, and gives you the kickoff prompt plus recurring job prompt files.
+
+Key files:
+- `integrations/openclaw/START_HERE.md`
+- `integrations/openclaw/templates/KICKOFF_PROMPT.md`
+- `ops/prompts/`
+- `ops/state/`
+- `ops/cron/README.md`

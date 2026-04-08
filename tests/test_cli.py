@@ -882,11 +882,14 @@ def test_cliq_users(mock_config: Path, mock_token_refresh: Any) -> None:
 
 @respx.mock
 def test_cliq_send_channel(mock_config: Path, mock_token_refresh: Any) -> None:
-    respx.post("https://cliq.zoho.com/api/v2/chats/C1/message").mock(
+    respx.post("https://cliq.zoho.com/api/v2/channelsbyname/C1/message").mock(
         return_value=httpx.Response(404, text="request_url_invalid")
     )
-    respx.post("https://cliq.zoho.com/api/v2/channels/C1/message").mock(
+    respx.post("https://cliq.zoho.com/api/v2/chats/C1/message").mock(
         return_value=httpx.Response(200, json={"data": {"message_id": "M1"}})
+    )
+    respx.get("https://cliq.zoho.com/api/v2/channels/C1").mock(
+        return_value=httpx.Response(404, text="not_found")
     )
 
     result = runner.invoke(
@@ -920,11 +923,14 @@ def test_cliq_notify_mail_to_channel(mock_config: Path, mock_token_refresh: Any)
             },
         )
     )
-    respx.post("https://cliq.zoho.com/api/v2/chats/C1/message").mock(
+    respx.post("https://cliq.zoho.com/api/v2/channelsbyname/C1/message").mock(
         return_value=httpx.Response(404, text="request_url_invalid")
     )
-    send_route = respx.post("https://cliq.zoho.com/api/v2/channels/C1/message").mock(
+    send_route = respx.post("https://cliq.zoho.com/api/v2/chats/C1/message").mock(
         return_value=httpx.Response(200, json={"data": {"message_id": "CM1"}})
+    )
+    respx.get("https://cliq.zoho.com/api/v2/channels/C1").mock(
+        return_value=httpx.Response(404, text="not_found")
     )
 
     result = runner.invoke(

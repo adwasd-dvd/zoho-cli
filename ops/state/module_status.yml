@@ -13,7 +13,7 @@ cliq:
   target_release: v0.3.0
   current_milestone: cliq-phase1-basic
   blockers:
-    - live send/notify paths require refreshed Cliq OAuth scopes
+    - live send/notify still needs post-fix verification after OAuth refresh cooldown
 
 crm:
   priority: 3

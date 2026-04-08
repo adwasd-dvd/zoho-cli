@@ -1,5 +1,5 @@
 project: zoho-cli
-updated_at: "2026-04-08T05:28:47Z"
+updated_at: "2026-04-08T07:08:12Z"
 status: cliq-phase1
 canonical_workspace: "/Users/adwasd/.openclaw/workspace-coder"
 project_root: "/Users/adwasd/.openclaw/workspace-coder/job/zoho-cli"
@@ -9,6 +9,6 @@ module_order:
   - CRM
 current_focus: finish cliq-003 live verification (`cliq send` + `cliq notify-mail`)
 primary_blockers:
-  - cliq send/notify live calls require `ZohoCliq.Webhooks.CREATE`; current token still reflects the older scope bundle
   - token refresh endpoint is temporarily throttling (`Access Denied: too many requests`)
-next_step: wait for auth throttle cooldown, re-run `login --with-cliq` to grant `ZohoCliq.Webhooks.CREATE`, then execute live `cliq send` and `cliq notify-mail` smoke checks
+  - live send/notify still needs post-fix verification after channel-id endpoint-resolution hardening
+next_step: wait for auth throttle cooldown, re-run `login --with-cliq`, then execute live `cliq send` and `cliq notify-mail` smoke checks using a channel ID from `cliq channels`

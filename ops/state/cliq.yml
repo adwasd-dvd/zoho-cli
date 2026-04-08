@@ -1,6 +1,6 @@
 module: Cliq
-updated_at: "2026-04-08T05:30:00Z"
+updated_at: "2026-04-08T07:08:12Z"
 status: in_progress
 blockers:
-  - live cliq send/notify still unverified; requires fresh token minted after latest scope bundle update
-next_small_step: re-run `login --with-cliq` with latest code, then execute live `cliq send` and `cliq notify-mail` smoke checks
+  - live cliq send/notify still unverified; token refresh is throttled (`Access Denied`) so fresh OAuth is pending cooldown
+next_small_step: after cooldown, re-run `login --with-cliq` and execute live `cliq send` + `cliq notify-mail` (channel-id flow now resolves via channel lookup to chat_id/unique_name)

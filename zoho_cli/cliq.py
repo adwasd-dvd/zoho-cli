@@ -105,6 +105,44 @@ class ZohoCliqClient:
         utils.error_exit("api_error", "No candidate endpoint available for request")
         return {}
 
+    def _resolve_channel_message_paths(self, channel_id: str) -> list[str]:
+        """Resolve channel-id to sendable chat/unique-name message endpoints."""
+        try:
+            resp = httpx.get(
+                f"{self.base_url}/channels/{channel_id}",
+                headers=self._headers,
+                timeout=httpx.Timeout(30.0),
+            )
+        except httpx.HTTPError:
+            return []
+
+        if not resp.is_success:
+            return []
+
+        try:
+            payload = resp.json()
+        except ValueError:
+            return []
+
+        data = payload.get("data", payload)
+        if not isinstance(data, dict):
+            return []
+
+        paths: list[str] = []
+        chat_id = data.get("chat_id") or data.get("chatId")
+        if isinstance(chat_id, str) and chat_id.strip():
+            paths.append(f"/chats/{chat_id.strip()}/message")
+
+        unique_name = (
+            data.get("unique_name")
+            or data.get("channel_unique_name")
+            or data.get("uniqueName")
+        )
+        if isinstance(unique_name, str) and unique_name.strip():
+            paths.append(f"/channelsbyname/{unique_name.strip()}/message")
+
+        return paths
+
     def channels(self, *, limit: int = 50) -> dict:
         """List channels."""
         return self._get("/channels", {"limit": limit})
@@ -126,15 +164,23 @@ class ZohoCliqClient:
 
         payload = {"text": text}
         if channel_id:
-            return self._post_json_with_fallback(
-                [
-                    f"/chats/{channel_id}/message",
-                    f"/channels/{channel_id}/message",
-                    f"/channelsbyname/{channel_id}/message",
-                ],
-                payload,
-            )
-        return self._post_json(f"/users/{user_id}/message", payload)
+            candidates = [
+                f"/channelsbyname/{channel_id}/message",
+                f"/chats/{channel_id}/message",
+            ]
+            candidates.extend(self._resolve_channel_message_paths(channel_id))
+
+            seen: set[str] = set()
+            paths = [p for p in candidates if not (p in seen or seen.add(p))]
+            return self._post_json_with_fallback(paths, payload)
+
+        return self._post_json_with_fallback(
+            [
+                f"/buddies/{user_id}/message",
+                f"/users/{user_id}/message",
+            ],
+            payload,
+        )
 
 
 def build_mail_notification_text(

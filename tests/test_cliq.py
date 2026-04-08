@@ -53,13 +53,52 @@ def test_cliq_client_channels(client: cliq.ZohoCliqClient) -> None:
 
 @respx.mock
 def test_cliq_client_send_to_channel(client: cliq.ZohoCliqClient) -> None:
-    respx.post("https://cliq.zoho.com/api/v2/chats/C1/message").mock(
+    respx.post("https://cliq.zoho.com/api/v2/channelsbyname/C1/message").mock(
         return_value=httpx.Response(404, text="request_url_invalid")
     )
-    route = respx.post("https://cliq.zoho.com/api/v2/channels/C1/message").mock(
+    route = respx.post("https://cliq.zoho.com/api/v2/chats/C1/message").mock(
         return_value=httpx.Response(200, json={"data": {"status": "ok"}})
     )
+    respx.get("https://cliq.zoho.com/api/v2/channels/C1").mock(
+        return_value=httpx.Response(404, text="not_found")
+    )
     result = client.send_message("hello", channel_id="C1")
+    assert route.called
+    assert result["data"]["status"] == "ok"
+
+
+@respx.mock
+def test_cliq_client_send_to_channel_id_resolves_channel_lookup(client: cliq.ZohoCliqClient) -> None:
+    respx.post("https://cliq.zoho.com/api/v2/channelsbyname/O1/message").mock(
+        return_value=httpx.Response(404, text="request_url_invalid")
+    )
+    respx.post("https://cliq.zoho.com/api/v2/chats/O1/message").mock(
+        return_value=httpx.Response(404, text="request_url_invalid")
+    )
+    respx.get("https://cliq.zoho.com/api/v2/channels/O1").mock(
+        return_value=httpx.Response(
+            200,
+            json={"data": {"chat_id": "CT_1", "unique_name": "ops-room"}},
+        )
+    )
+    route = respx.post("https://cliq.zoho.com/api/v2/chats/CT_1/message").mock(
+        return_value=httpx.Response(200, json={"data": {"status": "ok"}})
+    )
+
+    result = client.send_message("hello", channel_id="O1")
+
+    assert route.called
+    assert result["data"]["status"] == "ok"
+
+
+@respx.mock
+def test_cliq_client_send_to_user_uses_buddies_endpoint(client: cliq.ZohoCliqClient) -> None:
+    route = respx.post("https://cliq.zoho.com/api/v2/buddies/U1/message").mock(
+        return_value=httpx.Response(200, json={"data": {"status": "ok"}})
+    )
+
+    result = client.send_message("hello", user_id="U1")
+
     assert route.called
     assert result["data"]["status"] == "ok"
 

@@ -1152,6 +1152,23 @@ def test_cliq_channel_archive(mock_config: Path, mock_token_refresh: Any) -> Non
     assert payload["status"] == "ok"
 
 
+@respx.mock
+def test_cliq_channel_unarchive(mock_config: Path, mock_token_refresh: Any) -> None:
+    respx.post("https://cliq.zoho.com/api/v2/channels/O2/unarchive").mock(
+        return_value=httpx.Response(204, text="")
+    )
+
+    result = runner.invoke(
+        app,
+        ["cliq", "channel-unarchive", "O2"],
+        env=_cfg_env(mock_config),
+    )
+    assert result.exit_code == 0, result.output
+    payload = json.loads(result.output)
+    assert payload["status"] == "ok"
+    assert payload["unarchive"] is True
+
+
 def test_cliq_channel_delete_requires_force(
     mock_config: Path, mock_token_refresh: Any
 ) -> None:

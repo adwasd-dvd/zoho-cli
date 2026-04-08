@@ -1464,6 +1464,17 @@ def cliq_channel_delete(
     )
 
 
+@cliq_app.command("channel-unarchive")
+def cliq_channel_unarchive(
+    channel_id: str = typer.Argument(..., help="Target channel id."),
+    network: Optional[str] = typer.Option(
+        None, "--network", help="Cliq network slug (e.g. happydistrouklimited)."
+    ),
+) -> None:
+    """Unarchive a Cliq channel."""
+    cliq_channel_archive(channel_id=channel_id, unarchive=True, network=network)
+
+
 @cliq_app.command("messages")
 def cliq_messages(
     channel_id: Optional[str] = typer.Option(

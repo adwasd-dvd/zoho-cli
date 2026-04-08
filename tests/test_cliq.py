@@ -330,6 +330,18 @@ def test_cliq_client_archive_channel_success(client: cliq.ZohoCliqClient) -> Non
 
 
 @respx.mock
+def test_cliq_client_unarchive_channel_success(client: cliq.ZohoCliqClient) -> None:
+    route = respx.post("https://cliq.zoho.com/api/v2/channels/O2/unarchive").mock(
+        return_value=httpx.Response(204, text="")
+    )
+
+    result = client.archive_channel("O2", unarchive=True)
+
+    assert route.called
+    assert result["status"] == "ok"
+
+
+@respx.mock
 def test_cliq_client_delete_channel_success(client: cliq.ZohoCliqClient) -> None:
     route = respx.delete("https://cliq.zoho.com/api/v2/channels/O2").mock(
         return_value=httpx.Response(204, text="")

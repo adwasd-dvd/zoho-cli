@@ -15,6 +15,7 @@
 - Extracted `zoho_cli.mail.fetch_message_content` and switched `mail reply`/`mail forward` to share original-message fetch and normalization wiring before payload construction.
 - Switched `mail get` to the shared `zoho_cli.mail.fetch_message_content` helper so message-content normalization now follows one code path.
 - Refactored attachment download/parse wiring into shared CLI helpers so `mail download-attachment` and `attachment content` now follow the same path for file persistence and parsing.
+- Corrected `zoho config init` wizard guidance to use `http://localhost:51821/callback` (instead of `/`) for OAuth redirect URI.
 
 ### Release readiness
 - Assessed at 2026-04-08T02:00:05Z: release is **not ready**.

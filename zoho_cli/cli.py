@@ -924,7 +924,7 @@ def config_init() -> None:
     _stderr("Get your credentials at:  https://api-console.zoho.com/")
     _stderr("")
     _stderr("  1. Click 'Add Client' → 'Server-based Application'")
-    _stderr("  2. Add redirect URI:   http://localhost:51821/")
+    _stderr("  2. Add redirect URI:   http://localhost:51821/callback")
     _stderr("  3. Copy the Client ID and Secret from that page.")
     _stderr("")
     if is_first_run:

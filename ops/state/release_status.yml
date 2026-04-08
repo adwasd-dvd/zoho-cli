@@ -3,11 +3,11 @@ next_version: 0.2.1
 release_candidate: false
 last_release_tag: v0.1.9
 current_train: cliq-phase1
-assessed_at: "2026-04-08T07:08:12Z"
+assessed_at: "2026-04-08T08:35:28Z"
 current_milestone: cliq-phase1-basic
 current_milestone_complete: false
 missing_requirements:
-  - cliq live send/notify verification still blocked by OAuth refresh throttling (`Access Denied`) and needs one post-fix live recheck
+  - cliq live send/notify verification still blocked until OAuth token includes `ZohoCliq.Webhooks.CREATE` (current result: `oauth_scope_invalid`)
 release_gate:
   blocker_bugs_cleared: true
   unit_tests_passed: true

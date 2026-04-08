@@ -80,6 +80,7 @@ class ZohoCliqClient:
     def _post_json_with_fallback(self, paths: list[str], payload: dict[str, Any]) -> dict:
         """Try multiple POST paths, falling back on request_url_invalid/404 style misses."""
         last_error: tuple[int, str, str] | None = None
+        saw_scope_invalid = False
         for path in paths:
             resp = httpx.post(
                 f"{self.base_url}{path}",
@@ -93,10 +94,20 @@ class ZohoCliqClient:
             body = resp.text or ""
             last_error = (resp.status_code, path, body)
             lowered = body.lower()
-            if resp.status_code in (404, 405) or "request_url_invalid" in lowered or "oauthtoken_scope_invalid" in lowered:
+            scope_invalid = "oauthtoken_scope_invalid" in lowered
+            if scope_invalid:
+                saw_scope_invalid = True
+
+            if resp.status_code in (404, 405) or "request_url_invalid" in lowered or scope_invalid:
                 continue
 
             utils.error_exit("api_error", f"HTTP {resp.status_code} POST {path}: {resp.text}")
+
+        if saw_scope_invalid:
+            utils.error_exit(
+                "oauth_scope_invalid",
+                "Cliq token is missing required message scope. Re-run `zoho login --with-cliq` and grant `ZohoCliq.Webhooks.CREATE`, then retry.",
+            )
 
         if last_error is not None:
             status, path, body = last_error

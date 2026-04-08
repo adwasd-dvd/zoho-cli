@@ -14,6 +14,7 @@
 - Live Cliq list validation now passes on network-scoped endpoints for `happydistrouklimited` (`cliq channels` and `cliq users`).
 
 ### Fixed
+- Cliq send/notify now surface a dedicated `oauth_scope_invalid` error with an explicit re-auth hint (`zoho login --with-cliq` + `ZohoCliq.Webhooks.CREATE`) when all candidate message endpoints fail due to missing scope.
 - Hardened Cliq send/notify endpoint resolution: channel targets now retry by resolving `/channels/{id}` into `chat_id`/`unique_name` before posting, and user-target sends now prefer the documented `/buddies/{id_or_email}/message` endpoint (with legacy fallback retained).
 - Bumped package/runtime version metadata to `0.2.0` (`pyproject.toml` and `zoho_cli.__version__`) and made CLI `--version` prefer local package `__version__` first so source-checkout runs do not report stale installed metadata.
 - Updated Mail module status to in_progress and cleared blockers.

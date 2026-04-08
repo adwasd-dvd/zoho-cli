@@ -1,10 +1,12 @@
-last_run_at: "2026-04-08T07:08:12Z"
+last_run_at: "2026-04-08T08:35:28Z"
 last_result: warning
 current_focus: cliq
 suites:
   unit:
     status: passing
     notes:
+      - ./.venv/bin/pytest -q tests/test_cliq.py tests/test_cli.py::test_cliq_send_channel tests/test_cli.py::test_cliq_notify_mail_to_channel
+      - 14 passed in 0.15s (2026-04-08T08:35:28Z)
       - ./.venv/bin/pytest -q tests/test_cliq.py tests/test_cli.py::test_cliq_send_channel tests/test_cli.py::test_cliq_notify_mail_to_channel
       - 13 passed in 0.14s (2026-04-08T07:08:12Z)
       - make release-gate
@@ -50,7 +52,12 @@ suites:
   integration:
     status: warning
     notes:
-      - cliq send endpoint fallback now resolves `/channels/{id}` to `chat_id`/`unique_name` before retrying post-message paths; live verification still pending OAuth cooldown (2026-04-08T07:08:12Z)
+      - cliq send/notify now fail fast with `oauth_scope_invalid` and an explicit re-auth hint when token lacks message scope (`ZohoCliq.Webhooks.CREATE`) (2026-04-08T08:35:28Z)
+      - ./.venv/bin/python -m zoho_cli --config /tmp/zoho-test-config.json --account ai-dev@happy-distro.co.uk cliq status --check-auth --network happydistrouklimited
+      - auth refresh now succeeds, but `missingScopes` still reports `ZohoCliq.Webhooks.CREATE` (`oauthReady: false`) (2026-04-08T08:31:52Z)
+      - ./.venv/bin/python -m zoho_cli --config /tmp/zoho-test-config.json --account ai-dev@happy-distro.co.uk cliq send --network happydistrouklimited --channel-id O6576524000097556005 --text "zoho-cli cliq send smoke <utc-time>"
+      - ./.venv/bin/python -m zoho_cli --config /tmp/zoho-test-config.json --account ai-dev@happy-distro.co.uk cliq notify-mail 1775620829752152900 --folder-id 2857786000000008014 --network happydistrouklimited --channel-id O6576524000097556005 --include-body
+      - both live send/notify calls still fail until `ZohoCliq.Webhooks.CREATE` is granted; next step remains `zoho login --with-cliq` then rerun smoke checks
       - ./.venv/bin/python -m zoho_cli --config /tmp/zoho-test-config.json --account ai-dev@happy-distro.co.uk cliq status --check-auth --network happydistrouklimited
       - token refresh failed with HTTP 400 `Access Denied` (too many requests); wait for cooldown before live retest (2026-04-08T05:24:05Z)
       - previous `request_url_invalid` send-path issue has a code fix; requires one live rerun to confirm against current token/network state

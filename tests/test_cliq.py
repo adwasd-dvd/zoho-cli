@@ -103,6 +103,30 @@ def test_cliq_client_send_to_user_uses_buddies_endpoint(client: cliq.ZohoCliqCli
     assert result["data"]["status"] == "ok"
 
 
+@respx.mock
+def test_cliq_client_send_scope_invalid_reports_reauth_hint(
+    client: cliq.ZohoCliqClient,
+    capsys: pytest.CaptureFixture[str],
+) -> None:
+    respx.post("https://cliq.zoho.com/api/v2/channelsbyname/C1/message").mock(
+        return_value=httpx.Response(401, json={"code": "oauthtoken_scope_invalid"})
+    )
+    respx.post("https://cliq.zoho.com/api/v2/chats/C1/message").mock(
+        return_value=httpx.Response(401, json={"code": "oauthtoken_scope_invalid"})
+    )
+    respx.get("https://cliq.zoho.com/api/v2/channels/C1").mock(
+        return_value=httpx.Response(404, text="not_found")
+    )
+
+    with pytest.raises(SystemExit):
+        client.send_message("hello", channel_id="C1")
+
+    err = capsys.readouterr().err
+    assert "oauth_scope_invalid" in err
+    assert "zoho login --with-cliq" in err
+    assert "ZohoCliq.Webhooks.CREATE" in err
+
+
 def test_cliq_client_send_requires_exactly_one_destination(client: cliq.ZohoCliqClient) -> None:
     with pytest.raises(ValueError, match="exactly one"):
         client.send_message("hello")

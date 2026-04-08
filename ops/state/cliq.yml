@@ -1,6 +1,6 @@
 module: Cliq
-updated_at: "2026-04-08T07:08:12Z"
+updated_at: "2026-04-08T08:35:28Z"
 status: in_progress
 blockers:
-  - live cliq send/notify still unverified; token refresh is throttled (`Access Denied`) so fresh OAuth is pending cooldown
-next_small_step: after cooldown, re-run `login --with-cliq` and execute live `cliq send` + `cliq notify-mail` (channel-id flow now resolves via channel lookup to chat_id/unique_name)
+  - live cliq send/notify still unverified; active token is missing `ZohoCliq.Webhooks.CREATE` and both commands now fail fast with `oauth_scope_invalid`
+next_small_step: run `zoho login --with-cliq` to grant `ZohoCliq.Webhooks.CREATE`, then re-run live `cliq send` + `cliq notify-mail` on `happydistrouklimited`

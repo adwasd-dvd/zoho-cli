@@ -3,12 +3,12 @@ next_version: 0.2.1
 release_candidate: false
 last_release_tag: v0.1.9
 current_train: mail-stabilization
-assessed_at: "2026-04-08T05:16:53Z"
+assessed_at: "2026-04-08T05:24:05Z"
 current_milestone: mail-release-gate
 current_milestone_complete: false
 missing_requirements:
   - mail-004 release-gate verification close-out is still open
-  - cliq live send/notify verification is blocked on refreshed OAuth scope grant
+  - cliq live send/notify verification is blocked until `ZohoCliq.Webhooks.CREATE` is granted and auth throttling clears
 release_gate:
   blocker_bugs_cleared: true
   unit_tests_passed: true

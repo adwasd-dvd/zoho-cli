@@ -29,7 +29,7 @@ def test_infer_cliq_base_url_from_network_slug() -> None:
 
 def test_missing_cliq_scopes_reports_missing_values() -> None:
     missing = cliq.missing_cliq_scopes(["ZohoCliq.Channels.READ"])
-    assert missing == ["ZohoCliq.Users.READ", "ZohoCliq.Messages.CREATE"]
+    assert missing == ["ZohoCliq.Users.READ", "ZohoCliq.Webhooks.CREATE"]
 
 
 @pytest.fixture

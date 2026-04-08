@@ -6,7 +6,7 @@
 - Initialized repo control files, anchors, and memory scaffolding for the zoho coder loop.
 - Scaffolded Cliq phase-1 shell with `zoho cliq status`, regional Cliq base URL inference, and a minimal `ZohoCliqClient` skeleton.
 - Added Cliq OAuth preparation: `zoho login --with-cliq` scope bundling, generic `--scope` extension, and `zoho cliq status` scope readiness (`oauthReady` / `missingScopes`).
-- Updated default Cliq OAuth scope bundle to endpoint-specific scopes (`ZohoCliq.Channels.READ`, `ZohoCliq.Users.READ`, `ZohoCliq.Messages.CREATE`) to support live send API requirements.
+- Updated default Cliq OAuth scope bundle to endpoint-specific scopes (`ZohoCliq.Channels.READ`, `ZohoCliq.Users.READ`, `ZohoCliq.Webhooks.CREATE`) to match live send/notify API requirements.
 - Added cliq-002 baseline command surface: `zoho cliq channels`, `zoho cliq users`, and `zoho cliq send` wired through `ZohoCliqClient` with destination validation and JSON output.
 - Added cliq-003 workflow command `zoho cliq notify-mail` to send compact Mail summaries into Cliq channels/users.
 - Added Cliq network targeting support (`--network`) so commands can use `https://cliq.zoho.com/network/<slug>/api/v2/...` when org-scoped endpoints are required.

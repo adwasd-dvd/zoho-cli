@@ -13,7 +13,7 @@ from zoho_cli import utils
 DEFAULT_CLIQ_SCOPES = [
     "ZohoCliq.Channels.READ",
     "ZohoCliq.Users.READ",
-    "ZohoCliq.Messages.CREATE",
+    "ZohoCliq.Webhooks.CREATE",
 ]
 
 

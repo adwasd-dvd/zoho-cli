@@ -251,3 +251,16 @@ def build_forward_payload(
         _prefixed_subject(subject, "Fwd:"),
         body,
     )
+
+
+def build_send_status_extra(response: dict) -> dict:
+    """Normalize send/reply/forward API responses for CLI status output."""
+    payload = response.get("data", response) if isinstance(response, dict) else {}
+    if not isinstance(payload, dict):
+        payload = {}
+
+    extra: dict[str, str] = {"messageId": str(payload.get("messageId", ""))}
+    send_status = payload.get("status")
+    if send_status not in (None, ""):
+        extra["sendStatus"] = str(send_status)
+    return extra

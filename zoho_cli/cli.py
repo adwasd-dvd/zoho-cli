@@ -511,10 +511,11 @@ def mail_send(
         bcc_addresses=bcc,
     )
 
-    resp   = client.send_message(account_id, payload, attachment_paths=attach or None)
-    sent   = resp.get("data", resp)
-    msg_id = str(sent.get("messageId", ""))
-    utils.output_status(f"Sent to {', '.join(to)}", extra={"messageId": msg_id})
+    resp = client.send_message(account_id, payload, attachment_paths=attach or None)
+    utils.output_status(
+        f"Sent to {', '.join(to)}",
+        extra=_mail.build_send_status_extra(resp),
+    )
 
 
 # ── bulk helpers ──────────────────────────────────────────────────────────────
@@ -633,8 +634,10 @@ def mail_reply(
         original_text=msg.get("textBody"),
     )
     send_resp = client.send_message(account_id, payload)
-    sent      = send_resp.get("data", send_resp)
-    utils.output_status(f"Reply sent to {to_addr}", extra={"messageId": str(sent.get("messageId", ""))})
+    utils.output_status(
+        f"Reply sent to {to_addr}",
+        extra=_mail.build_send_status_extra(send_resp),
+    )
 
 
 @mail_app.command("forward")
@@ -664,8 +667,10 @@ def mail_forward(
         original_text=msg.get("textBody", ""),
     )
     send_resp = client.send_message(account_id, payload)
-    sent      = send_resp.get("data", send_resp)
-    utils.output_status(f"Forwarded to {', '.join(to)}", extra={"messageId": str(sent.get("messageId", ""))})
+    utils.output_status(
+        f"Forwarded to {', '.join(to)}",
+        extra=_mail.build_send_status_extra(send_resp),
+    )
 
 
 @mail_app.command("flag")

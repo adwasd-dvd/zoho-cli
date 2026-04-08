@@ -176,3 +176,15 @@ def test_build_forward_payload_with_note() -> None:
             "Body"
         ),
     }
+
+
+def test_build_send_status_extra_prefers_nested_data() -> None:
+    extra = mail.build_send_status_extra({"data": {"messageId": "M1", "status": "queued"}})
+
+    assert extra == {"messageId": "M1", "sendStatus": "queued"}
+
+
+def test_build_send_status_extra_handles_top_level_response() -> None:
+    extra = mail.build_send_status_extra({"messageId": 9001})
+
+    assert extra == {"messageId": "9001"}

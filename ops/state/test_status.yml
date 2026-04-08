@@ -1,4 +1,4 @@
-last_run_at: "2026-04-08T00:50:00Z"
+last_run_at: "2026-04-08T01:57:44Z"
 last_result: pass
 current_focus: mail
 suites:
@@ -9,7 +9,7 @@ suites:
   cli_smoke:
     status: passing
     notes:
-      - mail send now uses shared payload builder in zoho_cli.mail
+      - send/reply/forward now share send-result status extraction via zoho_cli.mail.build_send_status_extra
   integration:
     status: pending
     notes:

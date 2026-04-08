@@ -11,3 +11,4 @@
 - Normalized Mail attachment listing through shared helpers so `mail attachments` and `attachment content` now handle string attachment IDs consistently.
 - Refactored Mail `reply`/`forward` payload construction into shared helpers to reduce duplicate command wiring.
 - Refactored Mail `send` payload construction into a shared helper and added focused CLI coverage for plaintext send payloads.
+- Normalized Mail send-result status extraction into `zoho_cli.mail.build_send_status_extra`, and switched `mail send`, `mail reply`, and `mail forward` to share it.

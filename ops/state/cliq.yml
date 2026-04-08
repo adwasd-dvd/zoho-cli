@@ -1,5 +1,6 @@
 module: Cliq
 updated_at: "2026-04-08T04:58:29Z"
 status: in_progress
-blockers: []
-next_small_step: validate live `cliq send` path (channel/user) with explicit network slug and capture stable response shape
+blockers:
+  - cliq send currently returns `invalid_oauthtscope` until test account re-auths with updated Cliq scope bundle
+next_small_step: re-run `login --with-cliq` to pick up new endpoint-specific Cliq scopes, then re-test live `cliq send`

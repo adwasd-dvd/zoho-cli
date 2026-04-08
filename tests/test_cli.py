@@ -796,7 +796,7 @@ def test_cliq_status_scaffold_info(mock_config: Path) -> None:
     assert payload["hasAccountId"] is True
     assert payload["baseUrl"] == "https://cliq.zoho.com/api/v2"
     assert payload["oauthReady"] is False
-    assert "ZohoCliq.Channels.ALL" in payload["missingScopes"]
+    assert "ZohoCliq.Channels.READ" in payload["missingScopes"]
 
 
 def test_cliq_status_check_auth(mock_config: Path, mock_token_refresh: Any) -> None:
@@ -822,9 +822,9 @@ def test_cliq_status_oauth_ready_when_scopes_present(tmp_path: Path) -> None:
                 "accountId": ACCOUNT_ID,
                 "scopes": [
                     "ZohoMail.messages.ALL",
-                    "ZohoCliq.Channels.ALL",
-                    "ZohoCliq.Users.ALL",
-                    "ZohoCliq.Messages.ALL",
+                    "ZohoCliq.Channels.READ",
+                    "ZohoCliq.Users.READ",
+                    "ZohoCliq.Messages.CREATE",
                 ],
             }
         },

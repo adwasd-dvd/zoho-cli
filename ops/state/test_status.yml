@@ -38,11 +38,12 @@ suites:
       - mail download-attachment and attachment content now share attachment download + parse helpers via zoho_cli.cli._download_attachment_to_path and zoho_cli.cli._parse_attachment_content
       - mail get/attachments/download-attachment/reply/forward/attachment content now share message-target context setup via zoho_cli.cli._mail_message_context
   integration:
-    status: passing
+    status: warning
     notes:
       - ./.venv/bin/python -m zoho_cli --config /tmp/zoho-test-config.json --account ai-dev@happy-distro.co.uk cliq channels --network happydistrouklimited --limit 3
       - ./.venv/bin/python -m zoho_cli --config /tmp/zoho-test-config.json --account ai-dev@happy-distro.co.uk cliq users --network happydistrouklimited --limit 2
-      - network-scoped Cliq list endpoints now return live data for happydistrouklimited (2026-04-08T04:58:29Z)
+      - network-scoped Cliq list endpoints return live data for happydistrouklimited (2026-04-08T04:58:29Z)
+      - live `cliq send` smoke currently fails with `invalid_oauthtscope` and needs re-auth using updated scope bundle
       - ./.venv/bin/python -m zoho_cli --config /tmp/zoho-test-config.json --account ai-dev@happy-distro.co.uk mail attachments 1775620829752152900 --folder-id 2857786000000008014
       - ./.venv/bin/python -m zoho_cli --config /tmp/zoho-test-config.json --account ai-dev@happy-distro.co.uk mail download-attachment 1775620829752152900 <attachmentId> --folder-id 2857786000000008014 --out /tmp/zoho-attachment-test/<file>
       - validated subject `attachment test` with 4 attachments, all listed and downloaded with expected file sizes (2026-04-08T04:11:30Z)

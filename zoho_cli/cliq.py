@@ -11,9 +11,9 @@ from zoho_cli import utils
 
 
 DEFAULT_CLIQ_SCOPES = [
-    "ZohoCliq.Channels.ALL",
-    "ZohoCliq.Users.ALL",
-    "ZohoCliq.Messages.ALL",
+    "ZohoCliq.Channels.READ",
+    "ZohoCliq.Users.READ",
+    "ZohoCliq.Messages.CREATE",
 ]
 
 

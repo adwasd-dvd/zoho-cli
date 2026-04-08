@@ -29,7 +29,11 @@ def test_infer_cliq_base_url_from_network_slug() -> None:
 
 def test_missing_cliq_scopes_reports_missing_values() -> None:
     missing = cliq.missing_cliq_scopes(["ZohoCliq.Channels.READ"])
-    assert missing == ["ZohoCliq.Users.READ", "ZohoCliq.Webhooks.CREATE"]
+    assert missing == [
+        "ZohoCliq.Users.READ",
+        "ZohoCliq.Messages.CREATE",
+        "ZohoCliq.Webhooks.CREATE",
+    ]
 
 
 @pytest.fixture
@@ -49,6 +53,9 @@ def test_cliq_client_channels(client: cliq.ZohoCliqClient) -> None:
 
 @respx.mock
 def test_cliq_client_send_to_channel(client: cliq.ZohoCliqClient) -> None:
+    respx.post("https://cliq.zoho.com/api/v2/chats/C1/message").mock(
+        return_value=httpx.Response(404, text="request_url_invalid")
+    )
     route = respx.post("https://cliq.zoho.com/api/v2/channels/C1/message").mock(
         return_value=httpx.Response(200, json={"data": {"status": "ok"}})
     )

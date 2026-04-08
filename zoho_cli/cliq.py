@@ -13,6 +13,7 @@ from zoho_cli import utils
 DEFAULT_CLIQ_SCOPES = [
     "ZohoCliq.Channels.READ",
     "ZohoCliq.Users.READ",
+    "ZohoCliq.Messages.CREATE",
     "ZohoCliq.Webhooks.CREATE",
 ]
 
@@ -76,6 +77,34 @@ class ZohoCliqClient:
             utils.error_exit("api_error", f"HTTP {resp.status_code} POST {path}: {resp.text}")
         return resp.json()
 
+    def _post_json_with_fallback(self, paths: list[str], payload: dict[str, Any]) -> dict:
+        """Try multiple POST paths, falling back on request_url_invalid/404 style misses."""
+        last_error: tuple[int, str, str] | None = None
+        for path in paths:
+            resp = httpx.post(
+                f"{self.base_url}{path}",
+                headers=self._headers,
+                json=payload,
+                timeout=httpx.Timeout(30.0),
+            )
+            if resp.is_success:
+                return resp.json()
+
+            body = resp.text or ""
+            last_error = (resp.status_code, path, body)
+            lowered = body.lower()
+            if resp.status_code in (404, 405) or "request_url_invalid" in lowered or "oauthtoken_scope_invalid" in lowered:
+                continue
+
+            utils.error_exit("api_error", f"HTTP {resp.status_code} POST {path}: {resp.text}")
+
+        if last_error is not None:
+            status, path, body = last_error
+            utils.error_exit("api_error", f"HTTP {status} POST {path}: {body}")
+
+        utils.error_exit("api_error", "No candidate endpoint available for request")
+        return {}
+
     def channels(self, *, limit: int = 50) -> dict:
         """List channels."""
         return self._get("/channels", {"limit": limit})
@@ -97,7 +126,14 @@ class ZohoCliqClient:
 
         payload = {"text": text}
         if channel_id:
-            return self._post_json(f"/channels/{channel_id}/message", payload)
+            return self._post_json_with_fallback(
+                [
+                    f"/chats/{channel_id}/message",
+                    f"/channels/{channel_id}/message",
+                    f"/channelsbyname/{channel_id}/message",
+                ],
+                payload,
+            )
         return self._post_json(f"/users/{user_id}/message", payload)
 
 

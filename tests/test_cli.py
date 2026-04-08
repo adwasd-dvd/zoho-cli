@@ -824,6 +824,7 @@ def test_cliq_status_oauth_ready_when_scopes_present(tmp_path: Path) -> None:
                     "ZohoMail.messages.ALL",
                     "ZohoCliq.Channels.READ",
                     "ZohoCliq.Users.READ",
+                    "ZohoCliq.Messages.CREATE",
                     "ZohoCliq.Webhooks.CREATE",
                 ],
             }
@@ -881,6 +882,9 @@ def test_cliq_users(mock_config: Path, mock_token_refresh: Any) -> None:
 
 @respx.mock
 def test_cliq_send_channel(mock_config: Path, mock_token_refresh: Any) -> None:
+    respx.post("https://cliq.zoho.com/api/v2/chats/C1/message").mock(
+        return_value=httpx.Response(404, text="request_url_invalid")
+    )
     respx.post("https://cliq.zoho.com/api/v2/channels/C1/message").mock(
         return_value=httpx.Response(200, json={"data": {"message_id": "M1"}})
     )
@@ -915,6 +919,9 @@ def test_cliq_notify_mail_to_channel(mock_config: Path, mock_token_refresh: Any)
                 }
             },
         )
+    )
+    respx.post("https://cliq.zoho.com/api/v2/chats/C1/message").mock(
+        return_value=httpx.Response(404, text="request_url_invalid")
     )
     send_route = respx.post("https://cliq.zoho.com/api/v2/channels/C1/message").mock(
         return_value=httpx.Response(200, json={"data": {"message_id": "CM1"}})

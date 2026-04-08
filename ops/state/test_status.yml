@@ -1,15 +1,16 @@
-last_run_at: "2026-04-08T01:57:44Z"
+last_run_at: "2026-04-08T02:12:13Z"
 last_result: pass
 current_focus: mail
 suites:
   unit:
     status: passing
     notes:
-      - ./.venv/bin/pytest -q tests/test_mail.py tests/test_cli.py::test_mail_send_plaintext
+      - ./.venv/bin/pytest -q tests/test_cli.py::test_mail_send_plaintext tests/test_cli.py::test_mail_reply_sends_prefixed_payload_and_status tests/test_cli.py::test_mail_forward_sends_forward_payload_and_status
+      - 3 passed in 0.08s (2026-04-08T02:12:13Z)
   cli_smoke:
     status: passing
     notes:
-      - send/reply/forward now share send-result status extraction via zoho_cli.mail.build_send_status_extra
+      - send/reply/forward now share send API call + status output wiring via zoho_cli.cli._send_and_report
   integration:
     status: pending
     notes:

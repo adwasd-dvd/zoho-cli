@@ -153,6 +153,18 @@ def _stderr(msg: str) -> None:
     print(msg, file=sys.stderr)
 
 
+def _send_and_report(
+    client: ZohoMailClient,
+    account_id: str,
+    payload: dict,
+    success_message: str,
+    *,
+    attachment_paths: Optional[list[str]] = None,
+) -> None:
+    send_resp = client.send_message(account_id, payload, attachment_paths=attachment_paths)
+    utils.output_status(success_message, extra=_mail.build_send_status_extra(send_resp))
+
+
 def _resolve_label_id(client: "ZohoMailClient", account_id: str, name_or_id: str) -> str:
     """Resolve a label name or numeric ID to a labelId string."""
     if name_or_id.isdigit():
@@ -511,10 +523,12 @@ def mail_send(
         bcc_addresses=bcc,
     )
 
-    resp = client.send_message(account_id, payload, attachment_paths=attach or None)
-    utils.output_status(
+    _send_and_report(
+        client,
+        account_id,
+        payload,
         f"Sent to {', '.join(to)}",
-        extra=_mail.build_send_status_extra(resp),
+        attachment_paths=attach or None,
     )
 
 
@@ -633,11 +647,7 @@ def mail_reply(
         quote_original=quote,
         original_text=msg.get("textBody"),
     )
-    send_resp = client.send_message(account_id, payload)
-    utils.output_status(
-        f"Reply sent to {to_addr}",
-        extra=_mail.build_send_status_extra(send_resp),
-    )
+    _send_and_report(client, account_id, payload, f"Reply sent to {to_addr}")
 
 
 @mail_app.command("forward")
@@ -666,11 +676,7 @@ def mail_forward(
         note=text,
         original_text=msg.get("textBody", ""),
     )
-    send_resp = client.send_message(account_id, payload)
-    utils.output_status(
-        f"Forwarded to {', '.join(to)}",
-        extra=_mail.build_send_status_extra(send_resp),
-    )
+    _send_and_report(client, account_id, payload, f"Forwarded to {', '.join(to)}")
 
 
 @mail_app.command("flag")

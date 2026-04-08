@@ -249,6 +249,118 @@ def test_mail_send_plaintext(mock_config: Path, mock_token_refresh: Any) -> None
     assert status["messageId"] == "S1"
 
 
+@respx.mock
+def test_mail_reply_sends_prefixed_payload_and_status(
+    mock_config: Path, mock_token_refresh: Any
+) -> None:
+    """mail reply should fetch original message, send reply payload, and return send status."""
+    respx.get(
+        f"{MAIL_BASE}/accounts/{ACCOUNT_ID}/folders/F1/messages/M1/content"
+    ).mock(
+        return_value=httpx.Response(
+            200,
+            json={
+                "data": {
+                    "messageId": "M1",
+                    "subject": "Status",
+                    "sender": "alice@example.com",
+                    "textBody": "Original body",
+                }
+            },
+        )
+    )
+    send_route = respx.post(f"{MAIL_BASE}/accounts/{ACCOUNT_ID}/messages").mock(
+        return_value=httpx.Response(200, json={"data": {"messageId": "R1", "status": "queued"}})
+    )
+
+    result = runner.invoke(
+        app,
+        [
+            "mail",
+            "reply",
+            "M1",
+            "--folder-id",
+            "F1",
+            "--text",
+            "Looks good",
+        ],
+        env=_cfg_env(mock_config),
+    )
+
+    assert result.exit_code == 0, result.output
+    payload = json.loads(send_route.calls.last.request.content.decode("utf-8"))
+    assert payload == {
+        "fromAddress": ACCOUNT_EMAIL,
+        "toAddress": "alice@example.com",
+        "subject": "Re: Status",
+        "mailFormat": "plaintext",
+        "content": "Looks good",
+    }
+    status = json.loads(result.output)
+    assert status["status"] == "ok"
+    assert status["messageId"] == "R1"
+    assert status["sendStatus"] == "queued"
+
+
+@respx.mock
+def test_mail_forward_sends_forward_payload_and_status(
+    mock_config: Path, mock_token_refresh: Any
+) -> None:
+    """mail forward should include forwarded block and return send status."""
+    respx.get(
+        f"{MAIL_BASE}/accounts/{ACCOUNT_ID}/folders/F1/messages/M1/content"
+    ).mock(
+        return_value=httpx.Response(
+            200,
+            json={
+                "data": {
+                    "messageId": "M1",
+                    "subject": "Status",
+                    "sender": "alice@example.com",
+                    "textBody": "Original body",
+                }
+            },
+        )
+    )
+    send_route = respx.post(f"{MAIL_BASE}/accounts/{ACCOUNT_ID}/messages").mock(
+        return_value=httpx.Response(200, json={"data": {"messageId": "F1", "status": "accepted"}})
+    )
+
+    result = runner.invoke(
+        app,
+        [
+            "mail",
+            "forward",
+            "M1",
+            "--folder-id",
+            "F1",
+            "--to",
+            "a@example.com",
+            "--to",
+            "b@example.com",
+            "--text",
+            "FYI",
+        ],
+        env=_cfg_env(mock_config),
+    )
+
+    assert result.exit_code == 0, result.output
+    payload = json.loads(send_route.calls.last.request.content.decode("utf-8"))
+    assert payload["fromAddress"] == ACCOUNT_EMAIL
+    assert payload["toAddress"] == "a@example.com,b@example.com"
+    assert payload["subject"] == "Fwd: Status"
+    assert payload["mailFormat"] == "plaintext"
+    assert "---------- Forwarded message ----------" in payload["content"]
+    assert "From: alice@example.com" in payload["content"]
+    assert "Subject: Status" in payload["content"]
+    assert payload["content"].startswith("FYI")
+
+    status = json.loads(result.output)
+    assert status["status"] == "ok"
+    assert status["messageId"] == "F1"
+    assert status["sendStatus"] == "accepted"
+
+
 # ---------------------------------------------------------------------------
 # mail attachments
 # ---------------------------------------------------------------------------

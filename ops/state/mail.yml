@@ -1,5 +1,5 @@
 module: Mail
-updated_at: "2026-04-08T01:57:44Z"
+updated_at: "2026-04-08T02:12:13Z"
 status: in_progress
 blockers: []
-next_small_step: extract the next shared helper in send/reply/forward command flow (API call + output wiring)
+next_small_step: extract shared original-message fetch/format wiring used by mail reply/forward before payload construction

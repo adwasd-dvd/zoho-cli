@@ -3,7 +3,7 @@ mail:
   status: in_progress
   phase: stabilization
   target_release: v0.2.0
-  current_milestone: mail-output-normalization
+  current_milestone: mail-release-gate
   blockers: []
 
 cliq:

@@ -1,14 +1,14 @@
 project: zoho-cli
-updated_at: "2026-04-08T05:11:21Z"
-status: cliq-phase1
+updated_at: "2026-04-08T05:12:57Z"
+status: mail-stabilization
 canonical_workspace: "/Users/adwasd/.openclaw/workspace-coder"
 project_root: "/Users/adwasd/.openclaw/workspace-coder/job/zoho-cli"
 module_order:
   - Mail
   - Cliq
   - CRM
-current_focus: verify cliq-003 mail-to-cliq notification workflow live
+current_focus: close mail-004 release-gate verification after completing mail-002 JSON-mode sweep
 primary_blockers:
+  - mail-004 release-gate verification is still open
   - cliq send live call returns `invalid_oauthtscope` until Cliq re-auth with updated scopes
-  - mail release train still not version-bumped for v0.2.0
-next_step: re-auth test account with `login --with-cliq`, then live-test `cliq send` and `cliq notify-mail`
+next_step: run make release-gate, close mail-004 in state, then resume live `cliq send`/`cliq notify-mail` verification

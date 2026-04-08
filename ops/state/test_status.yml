@@ -1,10 +1,12 @@
-last_run_at: "2026-04-08T05:11:21Z"
+last_run_at: "2026-04-08T05:12:57Z"
 last_result: pass
-current_focus: cliq
+current_focus: mail
 suites:
   unit:
     status: passing
     notes:
+      - ./.venv/bin/pytest -q tests/test_cli.py::test_mail_search_valid tests/test_cli.py::test_mail_search_returns_empty_list tests/test_cli.py::test_mail_list tests/test_cli.py::test_mail_get_normalizes_nested_content_response tests/test_cli.py::test_mail_download_attachment_parse_success_returns_structured_json tests/test_cli.py::test_mail_download_attachment_parse_failure_is_non_fatal tests/test_cli.py::test_attachment_content_with_filename
+      - 7 passed in 0.11s (2026-04-08T05:12:57Z)
       - ./.venv/bin/pytest -q tests/test_cliq.py tests/test_cli.py::test_cliq_notify_mail_to_channel tests/test_cli.py::test_cliq_notify_mail_requires_destination tests/test_cli.py::test_cliq_channels_with_network tests/test_cli.py::test_cliq_send_channel
       - 13 passed in 0.18s (2026-04-08T05:08:21Z)
       - make release-gate

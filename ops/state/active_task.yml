@@ -1,12 +1,11 @@
-id: cliq-003
-title: implement mail to cliq notification workflows
-module: cliq
+id: mail-004
+title: add packaging smoke tests and release gate checks
+module: mail
 stage: verification
 status: in_progress
 owner: automation
 success_criteria:
-  - a mail-to-cliq notification command exists with stable JSON output
-  - destination validation is explicit and fail-fast
-  - narrow tests added or updated
-  - changelog updated when behavior changes
-next_if_done: crm-001
+  - make package-smoke passes in a clean env
+  - make release-gate passes after mail-002 verification close-out
+  - release gate state is recorded in ops/state/release_status.yml
+next_if_done: cliq-003

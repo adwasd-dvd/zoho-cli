@@ -1,5 +1,5 @@
 module: Mail
-updated_at: "2026-04-08T04:57:12Z"
+updated_at: "2026-04-08T05:12:57Z"
 status: in_progress
 blockers: []
-next_small_step: close mail-002 verification with a focused JSON-mode sweep, then finish mail-004 release-gate close-out
+next_small_step: run one release-gate verification pass and close mail-004, then resume cliq-003 live verification

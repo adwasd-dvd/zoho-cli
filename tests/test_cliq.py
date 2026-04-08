@@ -16,3 +16,8 @@ def test_infer_cliq_base_url_from_accounts_host() -> None:
 def test_infer_cliq_base_url_defaults_to_com() -> None:
     url = cliq.infer_cliq_base_url()
     assert url == "https://cliq.zoho.com/api/v2"
+
+
+def test_missing_cliq_scopes_reports_missing_values() -> None:
+    missing = cliq.missing_cliq_scopes(["ZohoCliq.Channels.ALL"])
+    assert missing == ["ZohoCliq.Users.ALL", "ZohoCliq.Messages.ALL"]

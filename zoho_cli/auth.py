@@ -20,6 +20,18 @@ DEFAULT_SCOPES = [
     "ZohoMail.tags.ALL",
 ]
 
+
+def merge_scopes(*scope_lists: list[str]) -> list[str]:
+    """Merge scopes preserving order and removing duplicates."""
+    merged: list[str] = []
+    seen: set[str] = set()
+    for scopes in scope_lists:
+        for scope in scopes:
+            if scope not in seen:
+                seen.add(scope)
+                merged.append(scope)
+    return merged
+
 # ── success page served to the browser after OAuth ───────────────────────────
 
 _SUCCESS_HTML = """\

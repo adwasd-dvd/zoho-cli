@@ -795,6 +795,8 @@ def test_cliq_status_scaffold_info(mock_config: Path) -> None:
     assert payload["hasAccount"] is True
     assert payload["hasAccountId"] is True
     assert payload["baseUrl"] == "https://cliq.zoho.com/api/v2"
+    assert payload["oauthReady"] is False
+    assert "ZohoCliq.Channels.ALL" in payload["missingScopes"]
 
 
 def test_cliq_status_check_auth(mock_config: Path, mock_token_refresh: Any) -> None:
@@ -808,6 +810,33 @@ def test_cliq_status_check_auth(mock_config: Path, mock_token_refresh: Any) -> N
 
     payload = json.loads(result.output)
     assert payload["auth"] == "ok"
+
+
+def test_cliq_status_oauth_ready_when_scopes_present(tmp_path: Path) -> None:
+    cfg = {
+        "client_id": "test_id",
+        "client_secret": "test_secret",
+        "default_account": ACCOUNT_EMAIL,
+        "accounts": {
+            ACCOUNT_EMAIL: {
+                "accountId": ACCOUNT_ID,
+                "scopes": [
+                    "ZohoMail.messages.ALL",
+                    "ZohoCliq.Channels.ALL",
+                    "ZohoCliq.Users.ALL",
+                    "ZohoCliq.Messages.ALL",
+                ],
+            }
+        },
+    }
+    cfg_path = tmp_path / "config.json"
+    cfg_path.write_text(json.dumps(cfg))
+
+    result = runner.invoke(app, ["cliq", "status"], env=_cfg_env(cfg_path))
+    assert result.exit_code == 0, result.output
+    payload = json.loads(result.output)
+    assert payload["oauthReady"] is True
+    assert payload["missingScopes"] == []
 
 
 # ---------------------------------------------------------------------------

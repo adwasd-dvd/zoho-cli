@@ -319,6 +319,12 @@ def login(
         False, "--no-browser",
         help="Print the URL instead of opening a browser (headless/remote use).",
     ),
+    with_cliq: bool = typer.Option(
+        False, "--with-cliq", help="Include recommended Cliq OAuth scopes in this login flow.",
+    ),
+    scope: List[str] = typer.Option(
+        [], "--scope", help="Additional OAuth scope(s) to include (repeatable).",
+    ),
 ) -> None:
     """Authenticate via Zoho OAuth 2.0."""
     cfg   = _cfg()
@@ -337,7 +343,11 @@ def login(
         cfg["client_secret"] = client_secret
 
     import os
-    scopes = auth.DEFAULT_SCOPES
+    scopes = auth.merge_scopes(
+        auth.DEFAULT_SCOPES,
+        _cliq.DEFAULT_CLIQ_SCOPES if with_cliq else [],
+        list(scope),
+    )
 
     if no_browser:
         # ── manual paste flow (headless / remote) ─────────────────────────
@@ -961,12 +971,17 @@ def cliq_status(
             mail_base_url=account_cfg.get("mail_base_url"),
             accounts_server=account_cfg.get("accounts_server"),
         ),
+        "requiredScopes": _cliq.DEFAULT_CLIQ_SCOPES,
+        "grantedScopes": account_cfg.get("scopes", []),
         "next": [
             "implement channels list",
             "implement users list",
             "implement send baseline",
         ],
     }
+
+    payload["missingScopes"] = _cliq.missing_cliq_scopes(payload.get("grantedScopes", []))
+    payload["oauthReady"] = len(payload["missingScopes"]) == 0
 
     if check_auth and email:
         _get_client(cfg, email)

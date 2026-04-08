@@ -90,6 +90,18 @@ def test_build_auth_url_uses_env_base(monkeypatch: pytest.MonkeyPatch) -> None:
     assert url.startswith("https://accounts.zoho.eu/")
 
 
+def test_merge_scopes_deduplicates_preserving_order() -> None:
+    scopes = auth.merge_scopes(
+        ["ZohoMail.messages.ALL", "ZohoMail.folders.ALL"],
+        ["ZohoMail.messages.ALL", "ZohoCliq.Channels.ALL"],
+    )
+    assert scopes == [
+        "ZohoMail.messages.ALL",
+        "ZohoMail.folders.ALL",
+        "ZohoCliq.Channels.ALL",
+    ]
+
+
 # ---------------------------------------------------------------------------
 # discover_accounts_server
 # ---------------------------------------------------------------------------

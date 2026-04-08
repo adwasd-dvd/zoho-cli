@@ -9,6 +9,18 @@ import httpx
 from zoho_cli import utils
 
 
+DEFAULT_CLIQ_SCOPES = [
+    "ZohoCliq.Channels.ALL",
+    "ZohoCliq.Users.ALL",
+    "ZohoCliq.Messages.ALL",
+]
+
+
+def missing_cliq_scopes(granted_scopes: list[str] | None) -> list[str]:
+    granted = set(granted_scopes or [])
+    return [s for s in DEFAULT_CLIQ_SCOPES if s not in granted]
+
+
 def infer_cliq_base_url(
     *,
     mail_base_url: str | None = None,

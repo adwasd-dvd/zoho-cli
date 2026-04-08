@@ -1,5 +1,5 @@
 project: zoho-cli
-updated_at: "2026-04-08T04:22:56Z"
+updated_at: "2026-04-08T04:27:25Z"
 status: mail-stabilizing
 canonical_workspace: "/Users/adwasd/.openclaw/workspace-coder"
 project_root: "/Users/adwasd/.openclaw/workspace-coder/job/zoho-cli"
@@ -10,5 +10,4 @@ module_order:
 current_focus: finish Mail stabilization gates to unblock Cliq
 primary_blockers:
   - mail-002 verification pass is still pending
-  - mail-003 verification needs explicit close-out in task/state files
-next_step: close mail-003 verification, then finalize mail-002 verification and reassess Cliq unblock
+next_step: finalize mail-002 verification and reassess readiness to close mail-004 release-gate work

@@ -1,10 +1,12 @@
-last_run_at: "2026-04-08T04:22:56Z"
+last_run_at: "2026-04-08T04:27:25Z"
 last_result: pass
 current_focus: mail
 suites:
   unit:
     status: passing
     notes:
+      - 3 passed in 0.04s (2026-04-08T04:27:25Z)
+      - ./.venv/bin/pytest -q tests/test_api.py::test_api_retries_on_429_then_succeeds tests/test_api.py::test_api_retries_on_transport_error_then_succeeds tests/test_api.py::test_api_does_not_retry_non_retryable_status
       - make release-gate
       - 105 passed in 2.01s (2026-04-08T04:22:56Z)
       - ./.venv/bin/pytest -q tests/test_api.py tests/test_cli.py::test_mail_download_attachment_parse_failure_is_non_fatal tests/test_cli.py::test_mail_download_attachment_parse_success_returns_structured_json tests/test_cli.py::test_attachment_content_with_filename

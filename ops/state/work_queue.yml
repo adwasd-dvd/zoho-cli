@@ -16,7 +16,7 @@
 - id: mail-003
   title: add retry and rate-limit handling around mail API client operations
   module: mail
-  stage: verification
+  stage: completed
   priority: high
   depends_on:
     - mail-001

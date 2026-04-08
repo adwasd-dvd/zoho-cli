@@ -1,5 +1,5 @@
 module: Mail
-updated_at: "2026-04-08T04:22:56Z"
+updated_at: "2026-04-08T04:27:25Z"
 status: in_progress
 blockers: []
-next_small_step: close mail-003 verification in state files and then finish mail-002 verification close-out
+next_small_step: finish mail-002 verification close-out, then move to mail-004 release-gate close-out

@@ -780,6 +780,37 @@ def test_folders_list(mock_config: Path, mock_token_refresh: Any) -> None:
 
 
 # ---------------------------------------------------------------------------
+# cliq status
+# ---------------------------------------------------------------------------
+
+
+def test_cliq_status_scaffold_info(mock_config: Path) -> None:
+    """cliq status returns scaffold readiness and inferred base URL."""
+    result = runner.invoke(app, ["cliq", "status"], env=_cfg_env(mock_config))
+    assert result.exit_code == 0, result.output
+
+    payload = json.loads(result.output)
+    assert payload["module"] == "cliq"
+    assert payload["scaffold"] == "ready"
+    assert payload["hasAccount"] is True
+    assert payload["hasAccountId"] is True
+    assert payload["baseUrl"] == "https://cliq.zoho.com/api/v2"
+
+
+def test_cliq_status_check_auth(mock_config: Path, mock_token_refresh: Any) -> None:
+    """--check-auth verifies OAuth refresh via shared account wiring."""
+    result = runner.invoke(
+        app,
+        ["cliq", "status", "--check-auth"],
+        env=_cfg_env(mock_config),
+    )
+    assert result.exit_code == 0, result.output
+
+    payload = json.loads(result.output)
+    assert payload["auth"] == "ok"
+
+
+# ---------------------------------------------------------------------------
 # config show
 # ---------------------------------------------------------------------------
 

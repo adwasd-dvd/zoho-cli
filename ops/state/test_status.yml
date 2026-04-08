@@ -1,11 +1,14 @@
-last_run_at: "2026-04-08T04:27:25Z"
+last_run_at: "2026-04-08T04:29:24Z"
 last_result: pass
-current_focus: mail
+current_focus: cliq
 suites:
   unit:
     status: passing
     notes:
-      - 3 passed in 0.04s (2026-04-08T04:27:25Z)
+      - ./.venv/bin/pytest -q tests/test_cliq.py tests/test_cli.py::test_cliq_status_scaffold_info tests/test_cli.py::test_cliq_status_check_auth
+      - 5 passed in 0.08s (2026-04-08T04:29:24Z)
+      - make release-gate
+      - 110 passed in 1.99s (2026-04-08T04:29:24Z)
       - ./.venv/bin/pytest -q tests/test_api.py::test_api_retries_on_429_then_succeeds tests/test_api.py::test_api_retries_on_transport_error_then_succeeds tests/test_api.py::test_api_does_not_retry_non_retryable_status
       - make release-gate
       - 105 passed in 2.01s (2026-04-08T04:22:56Z)
@@ -22,6 +25,7 @@ suites:
   cli_smoke:
     status: passing
     notes:
+      - cliq scaffold command `zoho cliq status` now reports readiness + inferred regional base URL and optional OAuth check
       - ZohoMailClient now retries retryable HTTP failures (429/5xx) and transport errors with bounded backoff
       - attachment content filename filtering + interactive target selection now flow through shared helper zoho_cli.cli._select_attachment_target
       - mail download-attachment and attachment content now share attachment download + parse helpers via zoho_cli.cli._download_attachment_to_path and zoho_cli.cli._parse_attachment_content

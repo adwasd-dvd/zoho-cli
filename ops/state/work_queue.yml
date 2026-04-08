@@ -33,7 +33,7 @@
 - id: cliq-001
   title: scaffold cliq product module and client shell
   module: cliq
-  stage: blocked
+  stage: coding
   priority: high
   depends_on:
     - mail-001

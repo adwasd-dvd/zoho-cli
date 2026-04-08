@@ -35,7 +35,7 @@ from zoho_cli import parse as _parse
 import click
 import typer
 
-from zoho_cli import auth, config as _config, folders as _folders, mail as _mail, storage, utils
+from zoho_cli import auth, cliq as _cliq, config as _config, folders as _folders, mail as _mail, storage, utils
 from zoho_cli.api import ZohoMailClient
 
 
@@ -59,12 +59,14 @@ mail_app        = typer.Typer(no_args_is_help=True, help="Message operations.")
 attachment_subapp = typer.Typer(no_args_is_help=True, name="attachment", help="Attachment management (download & parse).")
 folders_app     = typer.Typer(no_args_is_help=True, help="Folder management.")
 labels_app      = typer.Typer(no_args_is_help=True, help="Label management.")
+cliq_app        = typer.Typer(no_args_is_help=True, help="Cliq operations (scaffold).")
 config_app      = typer.Typer(no_args_is_help=True, help="Configuration helpers.")
 
 app.add_typer(mail_app,         name="mail")
 app.add_typer(attachment_subapp, name="attachment")
 app.add_typer(folders_app,       name="folders")
 app.add_typer(labels_app,  name="labels")
+app.add_typer(cliq_app,    name="cliq")
 app.add_typer(config_app,  name="config")
 
 # ── global state ──────────────────────────────────────────────────────────────
@@ -934,6 +936,43 @@ def labels_delete(label_id: str = typer.Argument(..., help="Label ID.")) -> None
     account_id = _require_account_id(cfg, email)
     client.delete_label(account_id, label_id)
     utils.output_status(f"Deleted label {label_id}", extra={"labelId": label_id})
+
+
+# ══════════════════════════════════════════════════════════════════════════════
+# zoho cliq …
+# ══════════════════════════════════════════════════════════════════════════════
+
+@cliq_app.command("status")
+def cliq_status(
+    check_auth: bool = typer.Option(False, "--check-auth", help="Verify OAuth refresh for the selected account."),
+) -> None:
+    """Show Cliq scaffold readiness and inferred API endpoint."""
+    cfg = _cfg()
+    email = _S.account or _config.default_account(cfg)
+    account_cfg = cfg.get("accounts", {}).get(email, {}) if email else {}
+
+    payload: dict = {
+        "module": "cliq",
+        "scaffold": "ready",
+        "account": email or "",
+        "hasAccount": bool(email),
+        "hasAccountId": bool(account_cfg.get("accountId")),
+        "baseUrl": _cliq.infer_cliq_base_url(
+            mail_base_url=account_cfg.get("mail_base_url"),
+            accounts_server=account_cfg.get("accounts_server"),
+        ),
+        "next": [
+            "implement channels list",
+            "implement users list",
+            "implement send baseline",
+        ],
+    }
+
+    if check_auth and email:
+        _get_client(cfg, email)
+        payload["auth"] = "ok"
+
+    utils.output(payload)
 
 
 # ══════════════════════════════════════════════════════════════════════════════

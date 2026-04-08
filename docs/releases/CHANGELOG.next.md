@@ -4,6 +4,7 @@
 
 ### Added
 - Initialized repo control files, anchors, and memory scaffolding for the zoho coder loop.
+- Scaffolded Cliq phase-1 shell with `zoho cliq status`, regional Cliq base URL inference, and a minimal `ZohoCliqClient` skeleton.
 
 ### Fixed
 - Updated Mail module status to in_progress and cleared blockers.

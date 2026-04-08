@@ -1,12 +1,13 @@
-id: mail-002
-title: normalize mail output modes and formatter entry points
-module: mail
-stage: verification
+id: cliq-001
+title: scaffold cliq product module and client shell
+module: cliq
+stage: coding
 status: in_progress
 owner: automation
 success_criteria:
-  - mail commands share consistent output mode handling through core formatters
-  - default JSON output paths remain machine-readable for parsed attachment workflows
+  - cliq command group exists in the CLI
+  - cliq client shell exists with basic endpoint wiring
+  - scaffold status command reports readiness and inferred endpoint
   - narrow tests added or updated
   - changelog updated when behavior changes
-next_if_done: mail-004
+next_if_done: cliq-002

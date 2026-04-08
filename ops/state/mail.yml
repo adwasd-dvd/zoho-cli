@@ -1,5 +1,5 @@
 module: Mail
-updated_at: "2026-04-08T05:12:57Z"
-status: in_progress
+updated_at: "2026-04-08T05:28:47Z"
+status: completed
 blockers: []
-next_small_step: run one release-gate verification pass and close mail-004, then resume cliq-003 live verification
+next_small_step: mail release-gate verification is closed; continue cliq-003 live send/notify verification after OAuth cooldown

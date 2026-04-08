@@ -1,12 +1,12 @@
-id: mail-002
-title: normalize mail output modes and formatter entry points
+id: mail-003
+title: add retry and rate-limit handling around mail API client operations
 module: mail
 stage: verification
 status: in_progress
 owner: automation
 success_criteria:
-  - output helpers have one canonical entry point
-  - mail/folders/config command outputs remain stable in JSON mode
+  - retryable API failures back off and retry before failing
+  - non-retryable API failures still fail fast with clear errors
   - narrow tests added or updated
   - changelog updated when behavior changes
-next_if_done: mail-003
+next_if_done: mail-004

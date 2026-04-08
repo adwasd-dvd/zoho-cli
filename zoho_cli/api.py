@@ -7,6 +7,7 @@ All errors call utils.error_exit() so callers never need to check status codes.
 import logging
 import mimetypes
 from pathlib import Path
+import time
 from typing import Any, Optional
 
 import httpx
@@ -20,71 +21,108 @@ _TIMEOUT = httpx.Timeout(30.0)
 
 
 class ZohoMailClient:
+    _RETRYABLE_STATUS = {408, 409, 425, 429, 500, 502, 503, 504}
+
     def __init__(self, access_token: str, mail_base_url: Optional[str] = None) -> None:
         self.access_token = access_token
         self.base_url = (mail_base_url or _config.mail_base_url()).rstrip("/")
         self._headers = {"Authorization": f"Zoho-oauthtoken {access_token}"}
 
+    def _request_with_retry(
+        self,
+        method: str,
+        path: str,
+        *,
+        params: Optional[dict] = None,
+        json_payload: Optional[dict] = None,
+        data: Optional[dict] = None,
+        files: Optional[list[tuple]] = None,
+        timeout: Optional[httpx.Timeout] = None,
+    ) -> httpx.Response:
+        url = f"{self.base_url}{path}"
+        max_attempts = 3
+        attempt = 0
+
+        while True:
+            attempt += 1
+            try:
+                logger.debug("%s %s attempt=%s", method, url, attempt)
+                resp = httpx.request(
+                    method,
+                    url,
+                    headers=self._headers,
+                    params=params or {},
+                    json=json_payload,
+                    data=data,
+                    files=files,
+                    timeout=timeout or _TIMEOUT,
+                )
+                logger.debug("→ %s", resp.status_code)
+            except (httpx.TimeoutException, httpx.NetworkError, httpx.TransportError) as e:
+                if attempt >= max_attempts:
+                    utils.error_exit("api_error", f"{method} {path} failed after {attempt} attempts: {e}")
+                backoff = min(0.5 * (2 ** (attempt - 1)), 5.0)
+                logger.debug("retrying %s %s after transport error: %s", method, path, e)
+                time.sleep(backoff)
+                continue
+
+            if resp.is_success:
+                return resp
+
+            if resp.status_code in self._RETRYABLE_STATUS and attempt < max_attempts:
+                retry_after_header = (resp.headers.get("retry-after") or "").strip()
+                retry_after: Optional[float] = None
+                if retry_after_header:
+                    try:
+                        retry_after = max(0.0, float(retry_after_header))
+                    except ValueError:
+                        retry_after = None
+                backoff = retry_after if retry_after is not None else min(0.5 * (2 ** (attempt - 1)), 5.0)
+                logger.debug(
+                    "retrying %s %s after HTTP %s, sleep=%ss",
+                    method,
+                    path,
+                    resp.status_code,
+                    backoff,
+                )
+                time.sleep(backoff)
+                continue
+
+            utils.error_exit("api_error", f"HTTP {resp.status_code} {method} {path}: {resp.text}")
+
+        # unreachable
+        raise RuntimeError("unreachable")
+
     # ── internal request helpers ──────────────────────────────────────────────
 
     def _get(self, path: str, params: Optional[dict] = None) -> dict:
-        url = f"{self.base_url}{path}"
-        logger.debug("GET %s params=%s", url, params)
-        resp = httpx.get(url, headers=self._headers, params=params or {}, timeout=_TIMEOUT)
-        logger.debug("→ %s", resp.status_code)
-        if not resp.is_success:
-            utils.error_exit("api_error", f"HTTP {resp.status_code} GET {path}: {resp.text}")
+        resp = self._request_with_retry("GET", path, params=params)
         return resp.json()
 
     def _post_json(self, path: str, payload: dict) -> dict:
-        url = f"{self.base_url}{path}"
-        logger.debug("POST %s", url)
-        resp = httpx.post(url, headers=self._headers, json=payload, timeout=_TIMEOUT)
-        logger.debug("→ %s", resp.status_code)
-        if not resp.is_success:
-            utils.error_exit("api_error", f"HTTP {resp.status_code} POST {path}: {resp.text}")
+        resp = self._request_with_retry("POST", path, json_payload=payload)
         return resp.json()
 
     def _post_multipart(self, path: str, data: dict, files: list[tuple]) -> dict:
-        url = f"{self.base_url}{path}"
-        logger.debug("POST (multipart) %s", url)
-        resp = httpx.post(
-            url,
-            headers=self._headers,
+        resp = self._request_with_retry(
+            "POST",
+            path,
             data=data,
             files=files,
-            timeout=httpx.Timeout(120.0),  # longer for uploads
+            timeout=httpx.Timeout(120.0),
         )
-        logger.debug("→ %s", resp.status_code)
-        if not resp.is_success:
-            utils.error_exit("api_error", f"HTTP {resp.status_code} POST {path}: {resp.text}")
         return resp.json()
 
     def _put(self, path: str, payload: dict) -> dict:
-        url = f"{self.base_url}{path}"
-        logger.debug("PUT %s", url)
-        resp = httpx.put(url, headers=self._headers, json=payload, timeout=_TIMEOUT)
-        logger.debug("→ %s", resp.status_code)
-        if not resp.is_success:
-            utils.error_exit("api_error", f"HTTP {resp.status_code} PUT {path}: {resp.text}")
+        resp = self._request_with_retry("PUT", path, json_payload=payload)
         return resp.json()
 
     def _delete(self, path: str) -> dict:
-        url = f"{self.base_url}{path}"
-        logger.debug("DELETE %s", url)
-        resp = httpx.delete(url, headers=self._headers, timeout=_TIMEOUT)
-        logger.debug("→ %s", resp.status_code)
-        if not resp.is_success:
-            utils.error_exit("api_error", f"HTTP {resp.status_code} DELETE {path}: {resp.text}")
+        resp = self._request_with_retry("DELETE", path)
         return resp.json()
 
     def _get_bytes(self, path: str) -> bytes:
-        url = f"{self.base_url}{path}"
-        logger.debug("GET (binary) %s", url)
-        resp = httpx.get(url, headers=self._headers, timeout=httpx.Timeout(120.0))
-        logger.debug("→ %s", resp.status_code)
-        if not resp.is_success:
-            utils.error_exit("api_error", f"HTTP {resp.status_code} GET {path}: {resp.text}")
+        resp = self._request_with_retry("GET", path, timeout=httpx.Timeout(120.0))
         return resp.content
 
     # ── account ───────────────────────────────────────────────────────────────

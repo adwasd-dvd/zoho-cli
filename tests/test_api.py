@@ -5,6 +5,7 @@ from __future__ import annotations
 import pytest
 import httpx
 import respx
+from unittest.mock import patch
 
 from zoho_cli.api import ZohoMailClient
 
@@ -132,6 +133,58 @@ def test_api_error_503_raises_system_exit(client: ZohoMailClient) -> None:
     with pytest.raises(SystemExit) as exc_info:
         client.search_messages(ACCOUNT_ID, "test")
     assert exc_info.value.code == 1
+
+
+@respx.mock
+def test_api_retries_on_429_then_succeeds(client: ZohoMailClient) -> None:
+    """Retryable 429 responses should be retried and eventually succeed."""
+    route = respx.get(f"{BASE}/accounts/{ACCOUNT_ID}/folders").mock(
+        side_effect=[
+            httpx.Response(429, headers={"Retry-After": "0"}, text="rate limited"),
+            httpx.Response(200, json={"data": [{"folderId": "1", "folderName": "Inbox"}]}),
+        ]
+    )
+
+    with patch("zoho_cli.api.time.sleep") as sleep_mock:
+        result = client.get_folders(ACCOUNT_ID)
+
+    assert result["data"][0]["folderName"] == "Inbox"
+    assert route.call_count == 2
+    sleep_mock.assert_called_once_with(0.0)
+
+
+@respx.mock
+def test_api_retries_on_transport_error_then_succeeds(client: ZohoMailClient) -> None:
+    """Transient transport exceptions should retry with backoff."""
+    route = respx.get(f"{BASE}/accounts/{ACCOUNT_ID}/folders").mock(
+        side_effect=[
+            httpx.ReadTimeout("timeout"),
+            httpx.Response(200, json={"data": []}),
+        ]
+    )
+
+    with patch("zoho_cli.api.time.sleep") as sleep_mock:
+        result = client.get_folders(ACCOUNT_ID)
+
+    assert result == {"data": []}
+    assert route.call_count == 2
+    sleep_mock.assert_called_once_with(0.5)
+
+
+@respx.mock
+def test_api_does_not_retry_non_retryable_status(client: ZohoMailClient) -> None:
+    """4xx statuses outside retry list should fail immediately."""
+    route = respx.get(f"{BASE}/accounts/{ACCOUNT_ID}/folders").mock(
+        return_value=httpx.Response(400, text="bad request")
+    )
+
+    with patch("zoho_cli.api.time.sleep") as sleep_mock:
+        with pytest.raises(SystemExit) as exc_info:
+            client.get_folders(ACCOUNT_ID)
+
+    assert exc_info.value.code == 1
+    assert route.call_count == 1
+    sleep_mock.assert_not_called()
 
 
 # ---------------------------------------------------------------------------

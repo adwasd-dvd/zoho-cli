@@ -20,6 +20,7 @@
 - Added metadata hydration fallback for `mail get` / `mail reply` / `mail forward` when Zoho content endpoint returns body-only payloads (fills subject/from/date/folder from folder summary).
 - Added release-gate automation script (`ops/scripts/release_gate.sh`) and Make targets (`make package-smoke`, `make release-gate`) for packaging smoke and full test+wheel gate checks.
 - Validated live attachment flow against test mail `attachment test` (4 attachments): list + download all attachments succeeded with size checks.
+- Added transient API retry handling in `ZohoMailClient` (429/5xx + transport errors with backoff and Retry-After support) and covered it with focused API tests.
 - Normalized parsed-attachment output to keep default stdout machine-readable: `mail download-attachment --parse` now emits one JSON payload (including `parsed` or `warning`), and `attachment content` now returns structured JSON by default.
 
 ### Release readiness

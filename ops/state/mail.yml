@@ -1,5 +1,5 @@
 module: Mail
-updated_at: "2026-04-08T04:13:19Z"
+updated_at: "2026-04-08T04:22:56Z"
 status: in_progress
 blockers: []
-next_small_step: run one broader Mail JSON-mode sweep, then close mail-002 and advance to mail-003
+next_small_step: close mail-003 verification in state files and then finish mail-002 verification close-out

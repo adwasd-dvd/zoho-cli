@@ -1,7 +1,6 @@
 module: Cliq
-updated_at: "2026-04-08T05:25:07Z"
-status: in_progress
+updated_at: "2026-04-08T05:27:00Z"
+status: blocked
 blockers:
-  - cliq send/notify requires fresh token with latest Cliq scope bundle (including `ZohoCliq.Webhooks.CREATE`)
-  - token refresh endpoint is temporarily throttling (`Access Denied: too many requests`) after rapid retries
-next_small_step: wait for throttle cool-down, run one clean `login --with-cliq`, then re-test live `cliq send` and `cliq notify-mail`
+  - Zoho API rate limit (approx. 40-minute reset window); re-auth deferred until next work session
+next_small_step: retry OAuth re-auth and live send/notify smoke checks on next run

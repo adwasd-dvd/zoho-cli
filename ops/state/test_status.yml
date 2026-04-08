@@ -1,4 +1,4 @@
-last_run_at: "2026-04-08T05:24:05Z"
+last_run_at: "2026-04-08T05:25:07Z"
 last_result: warning
 current_focus: cliq
 suites:
@@ -48,6 +48,7 @@ suites:
     notes:
       - ./.venv/bin/python -m zoho_cli --config /tmp/zoho-test-config.json --account ai-dev@happy-distro.co.uk cliq status --check-auth --network happydistrouklimited
       - token refresh failed with HTTP 400 `Access Denied` (too many requests); wait for cooldown before live retest (2026-04-08T05:24:05Z)
+      - after user re-auth, send attempt using network channel slug (`aichannelv`) failed with `request_url_invalid`; send path likely needs endpoint adjustment
       - updated Cliq scope bundle now requires `ZohoCliq.Webhooks.CREATE` for send/notify endpoints
       - ./.venv/bin/python -m zoho_cli --config /tmp/zoho-test-config.json --account ai-dev@happy-distro.co.uk cliq channels --network happydistrouklimited --limit 3
       - ./.venv/bin/python -m zoho_cli --config /tmp/zoho-test-config.json --account ai-dev@happy-distro.co.uk cliq users --network happydistrouklimited --limit 2

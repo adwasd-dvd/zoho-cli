@@ -1,15 +1,15 @@
-last_run_at: "2026-04-07T23:52:25Z"
+last_run_at: "2026-04-08T00:23:36Z"
 last_result: pass
 current_focus: mail
 suites:
   unit:
     status: passing
     notes:
-      - ./.venv/bin/pytest -q tests/test_mail.py tests/test_cli.py::test_mail_download_attachment_parse_failure_is_non_fatal tests/test_cli.py::test_mail_download_attachment_accepts_absolute_volumes_out_path
+      - ./.venv/bin/pytest -q tests/test_mail.py tests/test_cli.py::test_mail_attachments_includes_string_attachment_ids
   cli_smoke:
     status: passing
     notes:
-      - mail helper extraction keeps download-attachment flows stable in focused CLI checks
+      - mail attachments and attachment content now share helper-backed attachment normalization
   integration:
     status: pending
     notes:

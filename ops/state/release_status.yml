@@ -1,0 +1,11 @@
+current_version: 0.1.9
+next_version: 0.2.0
+release_candidate: false
+last_release_tag: v0.1.9
+current_train: mail-stabilization
+release_gate:
+  blocker_bugs_cleared: false
+  unit_tests_passed: false
+  integration_tests_passed_or_explicitly_skipped: false
+  changelog_updated: true
+  version_bumped: false

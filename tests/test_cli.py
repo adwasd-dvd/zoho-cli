@@ -209,6 +209,44 @@ def test_mail_list_limit_option(mock_config: Path, mock_token_refresh: Any) -> N
 
 
 # ---------------------------------------------------------------------------
+# mail attachments
+# ---------------------------------------------------------------------------
+
+
+@respx.mock
+def test_mail_attachments_includes_string_attachment_ids(
+    mock_config: Path, mock_token_refresh: Any
+) -> None:
+    """mail attachments should normalize both dict and string attachment entries."""
+    respx.get(
+        f"{MAIL_BASE}/accounts/{ACCOUNT_ID}/folders/F1/messages/M1/attachmentinfo"
+    ).mock(
+        return_value=httpx.Response(
+            200,
+            json={
+                "data": {
+                    "attachments": [
+                        {"attachmentId": "A1", "attachmentName": "report.csv", "attachmentSize": 42},
+                        "A2",
+                    ]
+                }
+            },
+        )
+    )
+
+    result = runner.invoke(
+        app, ["mail", "attachments", "M1", "--folder-id", "F1"], env=_cfg_env(mock_config)
+    )
+    assert result.exit_code == 0, result.output
+
+    atts = json.loads(result.output)
+    assert atts == [
+        {"attachmentId": "A1", "fileName": "report.csv", "size": 42},
+        {"attachmentId": "A2", "fileName": "", "size": 0},
+    ]
+
+
+# ---------------------------------------------------------------------------
 # mail download-attachment
 # ---------------------------------------------------------------------------
 

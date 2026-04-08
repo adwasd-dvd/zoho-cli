@@ -434,18 +434,7 @@ def mail_attachments(
 
     fid = _mail.resolve_message_folder_id(client, account_id, message_id, folder_id)
 
-    resp = client.get_attachment_info(account_id, fid, message_id)
-    data = resp.get("data", {}) or {}
-    raw_atts = []
-
-    if isinstance(data, dict):
-        raw_atts.extend(data.get("attachments", []) or [])
-        raw_atts.extend(data.get("inline", []) or [])
-    elif isinstance(data, list):
-        # Compatible with future variations or other return types
-        raw_atts.extend(data)
-
-    atts = [_mail.format_attachment(a) for a in raw_atts if isinstance(a, dict)]
+    atts = _mail.list_attachments(client, account_id, fid, message_id)
     utils.output(atts, md_render=_md_attachments)
 
 
@@ -1021,17 +1010,7 @@ def attachment_content(
     fid = _mail.resolve_message_folder_id(client, account_id, message_id, folder_id)
 
     # List attachments first to help user identify the right one
-    resp = client.get_attachment_info(account_id, fid, message_id)
-    data = resp.get("data", {}) or {}
-    raw_atts = []
-
-    if isinstance(data, dict):
-        raw_atts.extend(data.get("attachments", []) or [])
-        raw_atts.extend(data.get("inline", []) or [])
-    elif isinstance(data, list):
-        raw_atts.extend(data)
-
-    atts = [_mail.format_attachment(a) for a in raw_atts if isinstance(a, dict)]
+    atts = _mail.list_attachments(client, account_id, fid, message_id)
     
     if not atts:
         utils.error_exit("no_attachments", f"No attachments found for message {message_id}")

@@ -1,6 +1,6 @@
 module: Cliq
-updated_at: "2026-04-08T22:45:05Z"
+updated_at: "2026-04-08T23:03:50Z"
 status: in_progress
 blockers:
-  - Zoho token refresh endpoint is currently throttling (`token_refresh_failed`), so final live verification of the new member add/remove chat-resolution + payload fallbacks is pending cooldown
-next_small_step: after cooldown, rerun cliq-130 live admin sweep (`member-add`, `member-remove`, `channel-archive`, `channel-unarchive`, `channel-delete --force`) to close out the admin-plane slice
+  - Zoho token refresh endpoint is intermittently throttling (`token_refresh_failed`), delaying final live close-out for member-add/member-remove verification
+next_small_step: rerun live member add/remove after cooldown to confirm updated chat-resolution + payload fallback chain, then close cliq-130

@@ -2,9 +2,9 @@ id: cliq-130
 title: implement cliq admin plane (membership channel lifecycle)
 module: cliq
 stage: in_progress
-status: blocked
+status: in_progress
 owner: automation
-updated_at: "2026-04-08T22:45:05Z"
+updated_at: "2026-04-08T23:03:50Z"
 success_criteria:
   - add channel lifecycle operations (create/archive/rename/topic where API permits)
   - add member management operations (list/add/remove where API permits)
@@ -12,4 +12,4 @@ success_criteria:
   - focused tests added for admin-plane command routing and validation
   - changelog and state files updated with live verification notes
 next_if_done: cliq-140
-next_step: after refresh cooldown, rerun live cliq-130 admin sweep (member-add/member-remove + archive/unarchive/delete) using network `happydistrouklimited` with the new chat-resolution + payload fallbacks
+next_step: after refresh cooldown, rerun live cliq-130 admin sweep (member-add/member-remove + archive/unarchive/delete) with the updated fallback chain; close cliq-130 if green

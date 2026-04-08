@@ -131,3 +131,94 @@ def format_attachment(att: dict) -> dict:
         "fileName": att.get("attachmentName", att.get("fileName", "")),
         "size": int(att.get("attachmentSize", att.get("size", 0) or 0)),
     }
+
+
+def list_attachments(client: ZohoMailClient, account_id: str, folder_id: str,
+                     message_id: str) -> list[dict]:
+    """List attachments for a message.
+    
+    Returns a normalized list of attachment dicts with keys:
+    - attachmentId
+    - fileName  
+    - size
+    
+    Handles various API response shapes (dict/list, nested structures).
+    """
+    resp = client.get_attachment_info(account_id, folder_id, message_id)
+    data = resp.get("data", {}) or {}
+    raw_atts: list[dict | str] = []
+
+    if isinstance(data, dict):
+        raw_atts.extend(data.get("attachments", []) or [])
+        raw_atts.extend(data.get("inline", []) or [])
+    elif isinstance(data, list):
+        # Compatible with future variations or other return types
+        raw_atts.extend(data)
+
+    return [format_attachment(a) for a in raw_atts if isinstance(a, (dict, str))]
+
+
+# ── message composition helpers ──────────────────────────────────────────────
+
+def _prefixed_subject(subject: str, prefix: str) -> str:
+    if subject.lower().startswith(prefix.lower()):
+        return subject
+    return f"{prefix} {subject}"
+
+
+def _plaintext_payload(from_address: str, to_address: str, subject: str, body: str) -> dict:
+    return {
+        "fromAddress": from_address,
+        "toAddress": to_address,
+        "subject": subject,
+        "mailFormat": "plaintext",
+        "content": body,
+    }
+
+
+def build_reply_payload(
+    from_address: str,
+    to_address: str,
+    subject: str,
+    text: str,
+    *,
+    quote_original: bool = False,
+    original_text: str | None = None,
+) -> dict:
+    body = text
+    if quote_original and original_text:
+        quoted = "\n".join(f"> {line}" for line in original_text.splitlines())
+        body = f"{text}\n\n{quoted}"
+
+    return _plaintext_payload(
+        from_address,
+        to_address,
+        _prefixed_subject(subject, "Re:"),
+        body,
+    )
+
+
+def build_forward_payload(
+    from_address: str,
+    to_addresses: list[str],
+    subject: str,
+    original_from: str,
+    original_subject: str,
+    *,
+    note: str | None = None,
+    original_text: str = "",
+) -> dict:
+    forwarded_block = (
+        "\n\n---------- Forwarded message ----------\n"
+        f"From: {original_from}\n"
+        f"Subject: {original_subject}\n\n"
+        f"{original_text}"
+    )
+    body = (note or "") + forwarded_block
+
+    return _plaintext_payload(
+        from_address,
+        ",".join(to_addresses),
+        _prefixed_subject(subject, "Fwd:"),
+        body,
+    )

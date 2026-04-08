@@ -1,4 +1,4 @@
-last_run_at: "2026-04-08T00:23:36Z"
+last_run_at: "2026-04-08T00:39:12Z"
 last_result: pass
 current_focus: mail
 suites:
@@ -9,7 +9,7 @@ suites:
   cli_smoke:
     status: passing
     notes:
-      - mail attachments and attachment content now share helper-backed attachment normalization
+      - mail reply/forward now use shared payload builders in zoho_cli.mail
   integration:
     status: pending
     notes:

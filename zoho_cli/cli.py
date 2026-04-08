@@ -626,22 +626,14 @@ def mail_reply(
     resp    = client.get_message_content(account_id, fid, message_id)
     msg     = _mail.format_message_content(resp.get("data", resp))
     to_addr = msg["from"]
-    subject = msg["subject"]
-    if not subject.lower().startswith("re:"):
-        subject = f"Re: {subject}"
-
-    body = text
-    if quote and msg.get("textBody"):
-        orig = "\n".join(f"> {line}" for line in msg["textBody"].splitlines())
-        body = f"{text}\n\n{orig}"
-
-    payload = {
-        "fromAddress": email,
-        "toAddress":   to_addr,
-        "subject":     subject,
-        "mailFormat":  "plaintext",
-        "content":     body,
-    }
+    payload = _mail.build_reply_payload(
+        from_address=email,
+        to_address=to_addr,
+        subject=msg["subject"],
+        text=text,
+        quote_original=quote,
+        original_text=msg.get("textBody"),
+    )
     send_resp = client.send_message(account_id, payload)
     sent      = send_resp.get("data", send_resp)
     utils.output_status(f"Reply sent to {to_addr}", extra={"messageId": str(sent.get("messageId", ""))})
@@ -664,25 +656,15 @@ def mail_forward(
 
     resp    = client.get_message_content(account_id, fid, message_id)
     msg     = _mail.format_message_content(resp.get("data", resp))
-    subject = msg["subject"]
-    if not subject.lower().startswith("fwd:"):
-        subject = f"Fwd: {subject}"
-
-    orig_block = (
-        f"\n\n---------- Forwarded message ----------\n"
-        f"From: {msg['from']}\n"
-        f"Subject: {msg['subject']}\n\n"
-        f"{msg.get('textBody', '')}"
+    payload = _mail.build_forward_payload(
+        from_address=email,
+        to_addresses=to,
+        subject=msg["subject"],
+        original_from=msg["from"],
+        original_subject=msg["subject"],
+        note=text,
+        original_text=msg.get("textBody", ""),
     )
-    body = (text or "") + orig_block
-
-    payload = {
-        "fromAddress": email,
-        "toAddress":   ",".join(to),
-        "subject":     subject,
-        "mailFormat":  "plaintext",
-        "content":     body,
-    }
     send_resp = client.send_message(account_id, payload)
     sent      = send_resp.get("data", send_resp)
     utils.output_status(f"Forwarded to {', '.join(to)}", extra={"messageId": str(sent.get("messageId", ""))})

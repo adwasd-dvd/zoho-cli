@@ -82,3 +82,48 @@ def test_list_attachments_handles_list_payload() -> None:
     atts = mail.list_attachments(client, "ACC", "F1", "M1")
 
     assert [a["attachmentId"] for a in atts] == ["A1", "A2"]
+
+
+def test_build_reply_payload_with_quote() -> None:
+    payload = mail.build_reply_payload(
+        from_address="me@example.com",
+        to_address="you@example.com",
+        subject="Status update",
+        text="Looks good",
+        quote_original=True,
+        original_text="Line 1\nLine 2",
+    )
+
+    assert payload == {
+        "fromAddress": "me@example.com",
+        "toAddress": "you@example.com",
+        "subject": "Re: Status update",
+        "mailFormat": "plaintext",
+        "content": "Looks good\n\n> Line 1\n> Line 2",
+    }
+
+
+def test_build_forward_payload_with_note() -> None:
+    payload = mail.build_forward_payload(
+        from_address="me@example.com",
+        to_addresses=["a@example.com", "b@example.com"],
+        subject="Original",
+        original_from="sender@example.com",
+        original_subject="Original",
+        note="FYI",
+        original_text="Body",
+    )
+
+    assert payload == {
+        "fromAddress": "me@example.com",
+        "toAddress": "a@example.com,b@example.com",
+        "subject": "Fwd: Original",
+        "mailFormat": "plaintext",
+        "content": (
+            "FYI"
+            "\n\n---------- Forwarded message ----------\n"
+            "From: sender@example.com\n"
+            "Subject: Original\n\n"
+            "Body"
+        ),
+    }

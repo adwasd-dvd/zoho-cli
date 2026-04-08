@@ -1,5 +1,5 @@
 module: Mail
-updated_at: "2026-04-08T00:23:36Z"
+updated_at: "2026-04-08T00:39:12Z"
 status: in_progress
 blockers: []
-next_small_step: extract a shared helper for Mail reply/forward payload construction
+next_small_step: extract shared mail composition helpers for subject prefixing/body blocks used by send/reply/forward

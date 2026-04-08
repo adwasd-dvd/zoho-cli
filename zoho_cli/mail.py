@@ -121,9 +121,53 @@ def fetch_message_content(
     folder_id: str,
     message_id: str,
 ) -> dict:
-    """Fetch and normalize full message content."""
+    """Fetch and normalize full message content.
+
+    Some API responses only include ``messageId`` + ``content`` for this endpoint.
+    When metadata is absent, enrich from folder message list so `mail get` keeps
+    returning useful summary fields.
+    """
     resp = client.get_message_content(account_id, folder_id, message_id)
-    return format_message_content(resp.get("data", resp))
+    data = resp.get("data", resp)
+    if not isinstance(data, dict):
+        return format_message_content({})
+
+    formatted = format_message_content(data)
+
+    needs_summary_enrichment = not (
+        data.get("subject")
+        or data.get("sender")
+        or data.get("fromAddress")
+        or data.get("from")
+    )
+    if not needs_summary_enrichment:
+        return formatted
+
+    try:
+        summaries = client.get_messages(account_id, folder_id, limit=200).get("data", [])
+    except SystemExit:
+        return formatted
+
+    target_summary = next(
+        (m for m in summaries if str(m.get("messageId", "")) == str(message_id)),
+        None,
+    )
+    if not target_summary:
+        return formatted
+
+    summary = format_message_summary(target_summary)
+
+    # Preserve content endpoint values when present, backfill only missing fields.
+    for key in ("folderId", "subject", "from", "to", "date", "tags"):
+        if not formatted.get(key):
+            formatted[key] = summary.get(key, formatted.get(key))
+
+    if "isRead" not in data:
+        formatted["unread"] = summary.get("unread", formatted["unread"])
+    if "hasAttachment" not in data:
+        formatted["hasAttachments"] = summary.get("hasAttachments", formatted["hasAttachments"])
+
+    return formatted
 
 
 def format_attachment(att: dict) -> dict:

@@ -113,6 +113,41 @@ def test_fetch_message_content_normalizes_nested_data_response() -> None:
     assert msg["textBody"] == "Original body"
 
 
+def test_fetch_message_content_backfills_summary_when_content_response_is_sparse() -> None:
+    class _SparseContentClient:
+        def get_message_content(self, account_id: str, folder_id: str, message_id: str) -> dict:
+            return {"data": {"messageId": "M1", "content": "Original body"}}
+
+        def get_messages(self, account_id: str, folder_id: str, limit: int = 200) -> dict:
+            return {
+                "data": [
+                    {
+                        "messageId": "M1",
+                        "folderId": "F1",
+                        "subject": "Status",
+                        "sender": "alice@example.com",
+                        "toAddress": "bob@example.com",
+                        "receivedTime": "1700000000000",
+                        "isRead": True,
+                        "hasAttachment": True,
+                        "tags": ["inbox"],
+                    }
+                ]
+            }
+
+    msg = mail.fetch_message_content(_SparseContentClient(), "ACC", "F1", "M1")
+
+    assert msg["messageId"] == "M1"
+    assert msg["folderId"] == "F1"
+    assert msg["subject"] == "Status"
+    assert msg["from"] == "alice@example.com"
+    assert msg["to"] == ["bob@example.com"]
+    assert msg["date"] == "1700000000000"
+    assert msg["unread"] is False
+    assert msg["hasAttachments"] is True
+    assert msg["textBody"] == "Original body"
+
+
 def test_build_reply_payload_with_quote() -> None:
     payload = mail.build_reply_payload(
         from_address="me@example.com",

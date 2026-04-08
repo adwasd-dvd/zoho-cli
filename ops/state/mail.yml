@@ -1,5 +1,5 @@
 module: Mail
-updated_at: "2026-04-08T03:39:07Z"
+updated_at: "2026-04-08T03:44:53Z"
 status: in_progress
 blockers: []
-next_small_step: run integration smoke against test account `ai-dev@happy-distro.co.uk` to close Mail verification risk before mail-002
+next_small_step: start mail-002 by normalizing output mode/formatter entry points after the integration smoke pass

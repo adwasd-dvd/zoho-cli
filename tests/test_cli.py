@@ -208,6 +208,44 @@ def test_mail_list_limit_option(mock_config: Path, mock_token_refresh: Any) -> N
     assert called_params["limit"] == "5"
 
 
+@respx.mock
+def test_mail_get_normalizes_nested_content_response(
+    mock_config: Path, mock_token_refresh: Any
+) -> None:
+    """mail get should return normalized message content fields via shared helper."""
+    route = respx.get(
+        f"{MAIL_BASE}/accounts/{ACCOUNT_ID}/folders/F1/messages/M1/content"
+    ).mock(
+        return_value=httpx.Response(
+            200,
+            json={
+                "data": {
+                    "messageId": "M1",
+                    "folderId": "F1",
+                    "subject": "Status",
+                    "sender": "alice@example.com",
+                    "toAddress": "bob@example.com",
+                    "textBody": "Original body",
+                }
+            },
+        )
+    )
+
+    result = runner.invoke(
+        app,
+        ["mail", "get", "M1", "--folder-id", "F1"],
+        env=_cfg_env(mock_config),
+    )
+
+    assert route.called
+    assert result.exit_code == 0, result.output
+    msg = json.loads(result.output)
+    assert msg["messageId"] == "M1"
+    assert msg["from"] == "alice@example.com"
+    assert msg["to"] == ["bob@example.com"]
+    assert msg["textBody"] == "Original body"
+
+
 # ---------------------------------------------------------------------------
 # mail send
 # ---------------------------------------------------------------------------

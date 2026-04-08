@@ -13,6 +13,7 @@
 - Refactored Mail `send` payload construction into a shared helper and added focused CLI coverage for plaintext send payloads.
 - Normalized Mail send-result status extraction into `zoho_cli.mail.build_send_status_extra`, and switched `mail send`, `mail reply`, and `mail forward` to share it.
 - Extracted `zoho_cli.mail.fetch_message_content` and switched `mail reply`/`mail forward` to share original-message fetch and normalization wiring before payload construction.
+- Switched `mail get` to the shared `zoho_cli.mail.fetch_message_content` helper so message-content normalization now follows one code path.
 
 ### Release readiness
 - Assessed at 2026-04-08T02:00:05Z: release is **not ready**.

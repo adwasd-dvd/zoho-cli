@@ -428,9 +428,8 @@ def mail_get(
 
     fid = _mail.resolve_message_folder_id(client, account_id, message_id, folder_id)
 
-    resp = client.get_message_content(account_id, fid, message_id)
-    msg  = resp.get("data", resp)
-    utils.output(_mail.format_message_content(msg), md_render=_md_message)
+    msg = _mail.fetch_message_content(client, account_id, fid, message_id)
+    utils.output(msg, md_render=_md_message)
 
 
 @mail_app.command("attachments")

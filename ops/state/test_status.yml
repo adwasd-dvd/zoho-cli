@@ -1,16 +1,16 @@
-last_run_at: "2026-04-08T02:26:58Z"
+last_run_at: "2026-04-08T02:42:58Z"
 last_result: pass
 current_focus: mail
 suites:
   unit:
     status: passing
     notes:
-      - ./.venv/bin/pytest -q tests/test_mail.py::test_fetch_message_content_normalizes_nested_data_response tests/test_cli.py::test_mail_reply_sends_prefixed_payload_and_status tests/test_cli.py::test_mail_forward_sends_forward_payload_and_status
-      - 3 passed in 0.08s (2026-04-08T02:26:58Z)
+      - ./.venv/bin/pytest -q tests/test_cli.py::test_mail_get_normalizes_nested_content_response tests/test_mail.py::test_fetch_message_content_normalizes_nested_data_response
+      - 2 passed in 0.06s (2026-04-08T02:42:58Z)
   cli_smoke:
     status: passing
     notes:
-      - mail reply/forward now share original-message fetch + normalization wiring via zoho_cli.mail.fetch_message_content
+      - mail get/reply/forward now share message-content fetch + normalization wiring via zoho_cli.mail.fetch_message_content
   integration:
     status: pending
     notes:

@@ -1,10 +1,12 @@
-last_run_at: "2026-04-08T13:25:55Z"
-last_result: warning
+last_run_at: "2026-04-08T13:41:33Z"
+last_result: pass
 current_focus: cliq
 suites:
   unit:
     status: passing
     notes:
+      - ./.venv/bin/pytest -q tests/test_cliq.py tests/test_cli.py::test_cliq_send_channel tests/test_cli.py::test_cliq_send_channel_accepts_204_empty_body tests/test_cli.py::test_cliq_notify_mail_to_channel tests/test_cli.py::test_cliq_send_requires_destination
+      - 17 passed in 0.21s (2026-04-08T13:38:41Z)
       - make release-gate
       - 128 passed in 2.39s + wheel smoke passed (0.2.0) (2026-04-08T13:25:55Z)
       - ./.venv/bin/pytest -q tests/test_cliq.py::test_missing_cliq_scopes_reports_missing_values tests/test_cli.py::test_cliq_status_scaffold_info tests/test_cli.py::test_cliq_status_oauth_ready_when_scopes_present
@@ -54,8 +56,14 @@ suites:
       - mail download-attachment and attachment content now share attachment download + parse helpers via zoho_cli.cli._download_attachment_to_path and zoho_cli.cli._parse_attachment_content
       - mail get/attachments/download-attachment/reply/forward/attachment content now share message-target context setup via zoho_cli.cli._mail_message_context
   integration:
-    status: warning
+    status: passing
     notes:
+      - ./.venv/bin/python -m zoho_cli --config /tmp/zoho-test-config.json --account ai-dev@happy-distro.co.uk cliq status --check-auth --network happydistrouklimited
+      - auth check now succeeds with `oauthReady: true` and `missingScopes: []` after re-auth (2026-04-08T13:41:33Z)
+      - ./.venv/bin/python -m zoho_cli --config /tmp/zoho-test-config.json --account ai-dev@happy-distro.co.uk cliq send --network happydistrouklimited --channel-id O6576524000097556005 --text "zoho-cli cliq send smoke <utc-time>"
+      - live send now returns status ok (`httpStatus: 204`) after handling success-with-empty-body responses (2026-04-08T13:41:33Z)
+      - ./.venv/bin/python -m zoho_cli --config /tmp/zoho-test-config.json --account ai-dev@happy-distro.co.uk cliq notify-mail 1775620829752152900 --folder-id 2857786000000008014 --network happydistrouklimited --channel-id O6576524000097556005 --include-body
+      - live notify-mail now returns status ok (`httpStatus: 204`) and cliq-003 live verification is complete (2026-04-08T13:41:33Z)
       - ./.venv/bin/python -m zoho_cli --config /tmp/zoho-test-config.json --account ai-dev@happy-distro.co.uk cliq status --check-auth --network happydistrouklimited
       - auth check succeeds, but `missingScopes` still reports `ZohoCliq.Webhooks.CREATE` (`oauthReady: false`) (2026-04-08T13:25:55Z)
       - ./.venv/bin/python -m zoho_cli --config /tmp/zoho-test-config.json --account ai-dev@happy-distro.co.uk cliq send --network happydistrouklimited --channel-id O6576524000097556005 --text "zoho-cli nightly verify <utc-time>"

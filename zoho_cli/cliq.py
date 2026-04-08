@@ -54,6 +54,17 @@ class ZohoCliqClient:
         self.base_url = (base_url or infer_cliq_base_url()).rstrip("/")
         self._headers = {"Authorization": f"Zoho-oauthtoken {access_token}"}
 
+    @staticmethod
+    def _decode_success_response(resp: httpx.Response) -> dict[str, Any]:
+        """Decode a success response, tolerating 204/empty/non-JSON bodies."""
+        body = (resp.text or "").strip()
+        if not body:
+            return {"status": "ok", "httpStatus": resp.status_code}
+        try:
+            return resp.json()
+        except ValueError:
+            return {"status": "ok", "httpStatus": resp.status_code, "raw": resp.text}
+
     def _get(self, path: str, params: dict | None = None) -> dict:
         resp = httpx.get(
             f"{self.base_url}{path}",
@@ -74,7 +85,7 @@ class ZohoCliqClient:
         )
         if not resp.is_success:
             utils.error_exit("api_error", f"HTTP {resp.status_code} POST {path}: {resp.text}")
-        return resp.json()
+        return self._decode_success_response(resp)
 
     def _post_json_with_fallback(self, paths: list[str], payload: dict[str, Any]) -> dict:
         """Try multiple POST paths, falling back on request_url_invalid/404 style misses."""
@@ -88,7 +99,7 @@ class ZohoCliqClient:
                 timeout=httpx.Timeout(30.0),
             )
             if resp.is_success:
-                return resp.json()
+                return self._decode_success_response(resp)
 
             body = resp.text or ""
             last_error = (resp.status_code, path, body)

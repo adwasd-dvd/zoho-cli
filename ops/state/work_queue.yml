@@ -50,7 +50,7 @@
 - id: cliq-003
   title: implement mail to cliq notification workflows
   module: cliq
-  stage: verification
+  stage: completed
   priority: medium
   depends_on:
     - cliq-002
@@ -66,7 +66,7 @@
 - id: crm-002
   title: implement crm modules list fields list get list and search
   module: crm
-  stage: blocked
+  stage: queued
   priority: high
   depends_on:
     - crm-001

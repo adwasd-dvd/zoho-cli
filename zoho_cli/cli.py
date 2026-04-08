@@ -1049,15 +1049,14 @@ def cliq_send(
     network: Optional[str] = typer.Option(None, "--network", help="Cliq network slug (e.g. happydistrouklimited)."),
 ) -> None:
     """Send a Cliq message to a channel or user."""
+    if bool(channel_id) == bool(user_id):
+        utils.error_exit("invalid_destination", "Provide exactly one of channel_id or user_id")
+
     cfg = _cfg()
     email = _require_account(cfg)
     client = _get_cliq_client(cfg, email, network=network)
 
-    try:
-        resp = client.send_message(text, channel_id=channel_id, user_id=user_id)
-    except ValueError as e:
-        utils.error_exit("invalid_destination", str(e))
-        return
+    resp = client.send_message(text, channel_id=channel_id, user_id=user_id)
 
     data = resp.get("data", resp)
     utils.output_status("Cliq message sent", extra={"result": data})

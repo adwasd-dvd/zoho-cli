@@ -13,6 +13,8 @@
 - Live Cliq list validation now passes on network-scoped endpoints for `happydistrouklimited` (`cliq channels` and `cliq users`).
 
 ### Fixed
+- Cliq send/notify now tolerate successful empty-body responses (`HTTP 204`) from live endpoints and return stable JSON status payloads instead of raising JSON decode errors.
+- Tightened `zoho cliq send` destination validation so only true destination mistakes map to `invalid_destination` (no longer swallows unrelated `ValueError` from response parsing).
 - Cliq send/notify now surface a dedicated `oauth_scope_invalid` error with an explicit re-auth hint (`zoho login --with-cliq` + `ZohoCliq.Webhooks.CREATE`) when all candidate message endpoints fail due to missing scope.
 - Removed legacy `ZohoCliq.Messages.CREATE` from the recommended `--with-cliq` scope bundle so `zoho cliq status` and login guidance align with the actual send/notify requirement (`ZohoCliq.Webhooks.CREATE`).
 - Hardened Cliq send/notify endpoint resolution: channel targets now retry by resolving `/channels/{id}` into `chat_id`/`unique_name` before posting, and user-target sends now prefer the documented `/buddies/{id_or_email}/message` endpoint (with legacy fallback retained).

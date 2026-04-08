@@ -1,15 +1,13 @@
 project: zoho-cli
-updated_at: "2026-04-08T13:25:55Z"
-status: cliq-phase1
+updated_at: "2026-04-08T13:41:33Z"
+status: crm-phase1
 canonical_workspace: "/Users/adwasd/.openclaw/workspace-coder"
 project_root: "/Users/adwasd/.openclaw/workspace-coder/job/zoho-cli"
 module_order:
   - Mail
   - Cliq
   - CRM
-current_focus: finish cliq-003 live verification (`cliq send` + `cliq notify-mail`)
+current_focus: begin crm-001 scaffold
 primary_blockers:
-  - active OAuth token is missing `ZohoCliq.Webhooks.CREATE`; re-verified via `cliq status --check-auth` plus live `cliq send` / `cliq notify-mail`, both returning `oauth_scope_invalid` (2026-04-08T13:25:55Z)
-  - default `--with-cliq` scope guidance has been aligned to required scopes only; waiting on one post-auth live verification pass
-  - cliq-003 cannot close until one post-auth live send/notify pass succeeds
-next_step: run `zoho login --with-cliq` to grant `ZohoCliq.Webhooks.CREATE`, then execute live `cliq send` and `cliq notify-mail` smoke checks using a channel ID from `cliq channels`
+  - `make ci` still fails at `ruff format --check` (format drift remains)
+next_step: start crm-001 scaffold and keep CI formatting cleanup queued for next hygiene pass

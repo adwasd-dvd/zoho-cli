@@ -1,12 +1,12 @@
-id: cliq-003
-title: implement mail to cliq notification workflows
-module: cliq
-stage: verification
-status: in_progress
+id: crm-001
+title: scaffold crm product module and client shell
+module: crm
+stage: queued
+status: queued
 owner: automation
 success_criteria:
-  - a mail-to-cliq notification command exists with stable JSON output
-  - destination validation is explicit and fail-fast
-  - narrow tests added or updated
+  - crm command group scaffolded with status and read-only shell commands
+  - shared config/auth wiring reused from mail/cliq modules
+  - focused CRM scaffold tests added
   - changelog updated when behavior changes
-next_if_done: crm-001
+next_if_done: crm-002

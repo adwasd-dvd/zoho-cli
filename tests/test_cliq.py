@@ -67,6 +67,25 @@ def test_cliq_client_send_to_channel(client: cliq.ZohoCliqClient) -> None:
 
 
 @respx.mock
+def test_cliq_client_send_to_channel_accepts_204_empty_body(client: cliq.ZohoCliqClient) -> None:
+    respx.post("https://cliq.zoho.com/api/v2/channelsbyname/C1/message").mock(
+        return_value=httpx.Response(404, text="request_url_invalid")
+    )
+    route = respx.post("https://cliq.zoho.com/api/v2/chats/C1/message").mock(
+        return_value=httpx.Response(204, text="")
+    )
+    respx.get("https://cliq.zoho.com/api/v2/channels/C1").mock(
+        return_value=httpx.Response(404, text="not_found")
+    )
+
+    result = client.send_message("hello", channel_id="C1")
+
+    assert route.called
+    assert result["status"] == "ok"
+    assert result["httpStatus"] == 204
+
+
+@respx.mock
 def test_cliq_client_send_to_channel_id_resolves_channel_lookup(client: cliq.ZohoCliqClient) -> None:
     respx.post("https://cliq.zoho.com/api/v2/channelsbyname/O1/message").mock(
         return_value=httpx.Response(404, text="request_url_invalid")

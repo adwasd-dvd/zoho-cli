@@ -901,6 +901,28 @@ def test_cliq_send_channel(mock_config: Path, mock_token_refresh: Any) -> None:
     assert payload["status"] == "ok"
 
 
+@respx.mock
+def test_cliq_send_channel_accepts_204_empty_body(mock_config: Path, mock_token_refresh: Any) -> None:
+    respx.post("https://cliq.zoho.com/api/v2/channelsbyname/C1/message").mock(
+        return_value=httpx.Response(404, text="request_url_invalid")
+    )
+    respx.post("https://cliq.zoho.com/api/v2/chats/C1/message").mock(
+        return_value=httpx.Response(204, text="")
+    )
+    respx.get("https://cliq.zoho.com/api/v2/channels/C1").mock(
+        return_value=httpx.Response(404, text="not_found")
+    )
+
+    result = runner.invoke(
+        app,
+        ["cliq", "send", "--channel-id", "C1", "--text", "hello"],
+        env=_cfg_env(mock_config),
+    )
+    assert result.exit_code == 0, result.output
+    payload = json.loads(result.output)
+    assert payload["status"] == "ok"
+
+
 def test_cliq_send_requires_destination(mock_config: Path, mock_token_refresh: Any) -> None:
     result = runner.invoke(app, ["cliq", "send", "--text", "hello"], env=_cfg_env(mock_config))
     assert result.exit_code == 1

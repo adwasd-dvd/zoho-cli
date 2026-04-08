@@ -8,12 +8,11 @@ mail:
 
 cliq:
   priority: 2
-  status: in_progress
-  phase: phase_1_basic
+  status: completed
+  phase: phase_1_basic_complete
   target_release: v0.3.0
   current_milestone: cliq-phase1-basic
-  blockers:
-    - live send/notify still needs post-fix verification after granting `ZohoCliq.Webhooks.CREATE` via `zoho login --with-cliq` (re-verified 2026-04-08T13:25:55Z; current token still returns `oauth_scope_invalid`)
+  blockers: []
 
 crm:
   priority: 3
@@ -21,5 +20,4 @@ crm:
   phase: phase_1_read_only
   target_release: v0.5.0
   current_milestone: crm-phase1-read-only
-  blockers:
-    - wait_for_cliq_baseline
+  blockers: []

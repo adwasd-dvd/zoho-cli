@@ -1127,6 +1127,69 @@ def test_cliq_context_with_anchor(mock_config: Path, mock_token_refresh: Any) ->
 
 
 @respx.mock
+def test_cliq_context_from_chat_id_typed_dm_matrix(
+    mock_config: Path, mock_token_refresh: Any
+) -> None:
+    respx.get("https://cliq.zoho.com/api/v2/chats/CT_DM/messages").mock(
+        return_value=httpx.Response(
+            200,
+            json={
+                "data": [
+                    {
+                        "id": "M3",
+                        "attachments": [
+                            {
+                                "mimeType": "audio/ogg",
+                                "url": "https://example.com/voice-note.ogg",
+                            }
+                        ],
+                    },
+                    {
+                        "id": "M2",
+                        "attachments": [
+                            {
+                                "contentType": "image/png",
+                                "url": "https://example.com/pic.png",
+                            }
+                        ],
+                    },
+                    {"id": "M1", "text": "plain text ping"},
+                ]
+            },
+        )
+    )
+
+    result = runner.invoke(
+        app,
+        [
+            "cliq",
+            "context",
+            "--chat-id",
+            "CT_DM",
+            "--before",
+            "2",
+            "--after",
+            "0",
+            "--limit",
+            "10",
+        ],
+        env=_cfg_env(mock_config),
+    )
+    assert result.exit_code == 0, result.output
+
+    payload = json.loads(result.output)
+    assert payload["chatId"] == "CT_DM"
+    assert payload["channelId"] == ""
+
+    typed_by_id = {
+        item["messageId"]: item["types"] for item in payload["typedMessages"]
+    }
+    assert typed_by_id["M3"] == ["voice"]
+    assert typed_by_id["M2"] == ["image"]
+    assert typed_by_id["M1"] == ["text"]
+
+
+@respx.mock
 def test_cliq_watch_context_from_channel(
     mock_config: Path, mock_token_refresh: Any
 ) -> None:

@@ -1,5 +1,5 @@
 project: zoho-cli
-updated_at: '2026-04-09T06:05:00Z'
+updated_at: '2026-04-09T05:33:42Z'
 status: cliq-expansion
 canonical_workspace: /Users/adwasd/.openclaw/workspace-coder
 project_root: /Users/adwasd/.openclaw/workspace-coder/job/zoho-cli
@@ -14,4 +14,4 @@ primary_blockers:
   - cliq search endpoint variants are not available on happydistrouklimited for current token/api combinations (`extra_param_found` / `request_url_invalid`)
   - "`/chats` listing is currently scope-blocked on current token/network (`oauthtoken_scope_invalid`), so DM/group discovery needs a chat-read scope positive-path run"
   - native attachment upload/download behavior still needs live endpoint matrix hardening across network and non-network bases (message-level probe support added, live evidence pending)
-next_step: "keep typed conversation outputs in place, close `cliq chats` positive path with chat-read scope, then continue native local-file upload/download verification and fold outcomes into cliq-160 hardening"
+next_step: "typed conversation coverage now includes a DM chat-id matrix fixture; next close-out is `cliq chats` live positive-path validation with chat-read scope, then native local-file upload/download verification for cliq-160 hardening"

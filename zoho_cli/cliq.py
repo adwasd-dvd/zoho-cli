@@ -1055,6 +1055,10 @@ class ZohoCliqClient:
                 return value
             if isinstance(value, dict):
                 return [value]
+            if isinstance(value, str):
+                text = value.strip()
+                if text:
+                    return [text]
             return []
 
         types: set[str] = set()

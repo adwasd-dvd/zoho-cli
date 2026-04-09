@@ -103,6 +103,17 @@ def test_cliq_client_infer_message_types_detects_voice_sticker_and_text() -> Non
     assert "sticker" in result
 
 
+def test_cliq_client_infer_message_types_detects_scalar_attachment_string() -> None:
+    message = {
+        "id": "M_local",
+        "file": "https://example.com/contracts/latest.pdf",
+    }
+
+    result = cliq.ZohoCliqClient.infer_message_types(message)
+
+    assert result == ["file"]
+
+
 @respx.mock
 def test_cliq_client_resolve_users_email_exact_first(
     client: cliq.ZohoCliqClient,

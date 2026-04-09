@@ -1,10 +1,12 @@
-last_run_at: "2026-04-09T20:28:02Z"
+last_run_at: "2026-04-09T21:06:35Z"
 last_result: warning
 current_focus: cliq
 suites:
   unit:
     status: passing
     notes:
+      - ./.venv/bin/pytest -q tests/test_cliq.py::test_cliq_client_send_local_file_message_channel_id_tries_channels_endpoint tests/test_cliq.py::test_cliq_client_send_local_image_message_prefers_image_field tests/test_cli.py::test_cliq_send_channel_with_local_image_file
+      - 3 passed in 0.20s (local multipart channel-id sends now also try `/channels/{channel_id}/message` before descriptor-derived fallback paths, 2026-04-09T21:06:35Z)
       - ./.venv/bin/pytest -q tests/test_cliq.py::test_cliq_client_send_local_file_message_to_user tests/test_cliq.py::test_cliq_client_send_local_file_message_resolves_email_user_id tests/test_cliq.py::test_cliq_client_send_message_resolves_email_user_id tests/test_cli.py::test_cliq_send_channel_with_local_image_file tests/test_cli.py::test_cliq_send_channel_with_local_voice_file
       - 5 passed in 0.41s (Cliq send now keeps raw email-style user target first and adds resolved user-id fallback candidate for user sends/local multipart sends, 2026-04-09T20:28:02Z)
       - ./.venv/bin/pytest -q tests/test_cli.py::test_cliq_voice_from_channel_filters_audio_files tests/test_cli.py::test_cliq_voice_handles_message_without_attachments

@@ -514,6 +514,39 @@ def test_cliq_client_send_local_image_message_prefers_image_field(
 
 
 @respx.mock
+def test_cliq_client_send_local_file_message_channel_id_tries_channels_endpoint(
+    client: cliq.ZohoCliqClient,
+    tmp_path: Path,
+) -> None:
+    sample = tmp_path / "voice.m4a"
+    sample.write_bytes(b"voice-bytes")
+
+    respx.post("https://cliq.zoho.com/api/v2/channelsbyname/O1/message").mock(
+        return_value=httpx.Response(404, text="request_url_invalid")
+    )
+    respx.post("https://cliq.zoho.com/api/v2/chats/O1/message").mock(
+        return_value=httpx.Response(404, text="request_url_invalid")
+    )
+    route = respx.post("https://cliq.zoho.com/api/v2/channels/O1/message").mock(
+        return_value=httpx.Response(200, json={"data": {"status": "ok"}})
+    )
+    respx.get("https://cliq.zoho.com/api/v2/channels/O1").mock(
+        return_value=httpx.Response(404, text="not_found")
+    )
+
+    result = client.send_local_file_message(
+        str(sample),
+        channel_id="O1",
+        text="voice",
+        media_kind="voice",
+    )
+
+    assert route.called
+    assert result["data"]["status"] == "ok"
+    assert result["data"]["upload"]["path"] == "/channels/O1/message"
+
+
+@respx.mock
 def test_cliq_client_send_scope_invalid_reports_reauth_hint(
     client: cliq.ZohoCliqClient,
     capsys: pytest.CaptureFixture[str],

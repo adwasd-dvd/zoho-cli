@@ -1,5 +1,5 @@
 project: zoho-cli
-updated_at: '2026-04-09T20:28:02Z'
+updated_at: '2026-04-09T21:06:35Z'
 status: cliq-expansion
 canonical_workspace: /Users/adwasd/.openclaw/workspace-coder
 project_root: /Users/adwasd/.openclaw/workspace-coder/job/zoho-cli
@@ -12,5 +12,5 @@ primary_blockers:
   - crm live read-only verification remains blocked by account-level CRM org access
   - cliq search endpoint variants are not available on happydistrouklimited for current token/api combinations (`extra_param_found` / `request_url_invalid`)
   - "`/chats` listing is currently scope-blocked on current token/network (`oauthtoken_scope_invalid`), so DM/group discovery needs a chat-read scope positive-path run"
-  - native local-file upload/download behavior now has local multipart scaffolding (with image-field fallback preference, upload endpoint/field metadata, file/voice retrieval sourcePath metadata, and raw+resolved user-target fallback), but still needs live endpoint matrix hardening because tested multipart sends currently fail with endpoint-level `request_url_invalid` / `operation_failed` responses (evidence pending)
-next_step: "run one `zoho login --with-cliq` re-auth pass (default bundle now includes `ZohoCliq.Chats.ALL`) to validate `cliq chats` live positive path, then continue live native local-file upload/download verification for voice/image/file and capture upload/download endpoint evidence (`path`, `field`, `mimeType`, `sourcePath`, and failing error codes where applicable) from `cliq send`/`cliq file`/`cliq voice` to harden cliq-155 toward cliq-160"
+  - native local-file upload/download behavior now has local multipart scaffolding (with image-field fallback preference, upload endpoint/field metadata, file/voice retrieval sourcePath metadata, raw+resolved user-target fallback, and a direct `/channels/{channel_id}/message` fallback for channel-id sends), but still needs live endpoint matrix hardening because tested multipart sends currently fail with endpoint-level `request_url_invalid` / `operation_failed` responses (evidence pending)
+next_step: "run one `zoho login --with-cliq` re-auth pass (default bundle now includes `ZohoCliq.Chats.ALL`) to validate `cliq chats` live positive path, then continue live native local-file upload/download verification for voice/image/file and capture upload/download endpoint evidence (`path`, `field`, `mimeType`, `sourcePath`, and failing error codes where applicable) from `cliq send`/`cliq file`/`cliq voice`, including whether `/channels/{channel_id}/message` succeeds where older channel-path fallbacks fail"

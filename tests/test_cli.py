@@ -2313,6 +2313,7 @@ def test_cliq_voice_from_channel_filters_audio_files(
     assert payload["count"] == 1
     assert payload["voiceFiles"][0]["id"] == "A1"
     assert payload["allFilesCount"] == 2
+    assert payload["sourcePath"] == "/chats/CT_1/messages/M1/files"
 
 
 @respx.mock
@@ -2341,6 +2342,7 @@ def test_cliq_voice_handles_message_without_attachments(
     payload = json.loads(result.output)
     assert payload["count"] == 0
     assert payload["voiceFiles"] == []
+    assert payload["sourcePath"] == "/chats/CT_1/messages/M1/files"
 
 
 def test_cliq_send_requires_content(mock_config: Path, mock_token_refresh: Any) -> None:

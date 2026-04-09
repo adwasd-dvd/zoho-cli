@@ -1,10 +1,12 @@
-last_run_at: "2026-04-09T18:49:01Z"
+last_run_at: "2026-04-09T19:36:57Z"
 last_result: warning
 current_focus: cliq
 suites:
   unit:
     status: passing
     notes:
+      - ./.venv/bin/pytest -q tests/test_cli.py::test_cliq_voice_from_channel_filters_audio_files tests/test_cli.py::test_cliq_voice_handles_message_without_attachments
+      - 2 passed in 0.15s (`zoho cliq voice` now surfaces retrieval endpoint metadata as `sourcePath` for matrix evidence parity with `cliq file`, 2026-04-09T19:36:57Z)
       - ./.venv/bin/pytest -q tests/test_cliq.py::test_cliq_client_get_message_files_with_fallback_endpoint tests/test_cliq.py::test_cliq_client_get_message_files_no_attachment_returns_empty tests/test_cli.py::test_cliq_file_from_channel
       - 3 passed in 0.21s (cliq file retrieval now surfaces endpoint metadata as `fetch.path` and CLI `sourcePath` for live matrix logging, 2026-04-09T18:49:01Z)
       - ./.venv/bin/pytest -q tests/test_cliq.py::test_cliq_client_send_local_file_message_to_user tests/test_cliq.py::test_cliq_client_send_local_image_message_prefers_image_field tests/test_cli.py::test_cliq_send_channel_with_local_voice_file tests/test_cli.py::test_cliq_send_channel_with_local_image_file
@@ -224,6 +226,8 @@ suites:
   ci:
     status: passing
     notes:
+      - ./.venv/bin/ruff format --check zoho_cli/cli.py tests/test_cli.py
+      - 2 files already formatted (2026-04-09T19:36:57Z)
       - make ci
       - fmt-check, lint, and full pytest gate now pass after small lint-cleanup follow-up (2026-04-09T10:35:10Z)
       - make ci

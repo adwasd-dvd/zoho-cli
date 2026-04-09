@@ -1,5 +1,5 @@
 project: zoho-cli
-updated_at: '2026-04-09T10:29:10Z'
+updated_at: '2026-04-09T10:38:34Z'
 status: cliq-expansion
 canonical_workspace: /Users/adwasd/.openclaw/workspace-coder
 project_root: /Users/adwasd/.openclaw/workspace-coder/job/zoho-cli
@@ -10,8 +10,7 @@ module_order:
 current_focus: cliq-155 dm/group/channel visibility and typed context matrix
 primary_blockers:
   - crm live read-only verification remains blocked by account-level CRM org access
-  - full `make ci` is still failing lint checks in tracked repo files
   - cliq search endpoint variants are not available on happydistrouklimited for current token/api combinations (`extra_param_found` / `request_url_invalid`)
   - "`/chats` listing is currently scope-blocked on current token/network (`oauthtoken_scope_invalid`), so DM/group discovery needs a chat-read scope positive-path run"
   - native local-file upload/download behavior now has local multipart scaffolding, but still needs live endpoint matrix hardening across network and non-network bases (evidence pending)
-next_step: "cliq-155 now includes DM typed-context fixture coverage and local multipart media-send baseline; next close-out is `cliq chats` live positive-path validation with chat-read scope, then live native local-file upload/download verification for cliq-160 hardening"
+next_step: "broad nightly verification is now green in local gates (`make release-gate` + `make ci`); cliq-155 still needs `cliq chats` live positive-path validation with chat-read scope, then live native local-file upload/download verification for cliq-160 hardening"

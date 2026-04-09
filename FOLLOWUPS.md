@@ -4,5 +4,5 @@
 - [ ] Replace any exact-text markdown update flow with section-based rewrite logic.
 - [ ] Confirm mail path handling preserves absolute `/Volumes/...` inputs.
 - [ ] Keep coding loop changes small enough to finish comfortably within the run timeout.
-- [ ] Clear repository-wide formatting drift so `make ci` passes (`ruff format --check` currently wants to rewrite 19 files).
-- [ ] Re-run `zoho login --with-cliq` and grant `ZohoCliq.Webhooks.CREATE`, then repeat live `cliq send` + `cliq notify-mail` to close `cliq-003`.
+- [ ] Run one interactive `zoho login --with-cliq` re-auth that includes chat-read scope, then verify `zoho cliq chats --network happydistrouklimited` succeeds.
+- [ ] Execute live native local-file upload probes (`cliq send` with voice/image/file local paths) and record endpoint matrix evidence to close cliq-155.

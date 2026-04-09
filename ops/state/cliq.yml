@@ -1,5 +1,5 @@
 module: Cliq
-updated_at: '2026-04-09T10:29:10Z'
+updated_at: '2026-04-09T10:38:34Z'
 status: in_progress
 blockers:
   - "live `/messages/search` APIs on happydistrouklimited still look unsupported for current endpoint variants (`extra_param_found` / `request_url_invalid`), so search remains limitation-documented"

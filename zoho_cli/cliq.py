@@ -2029,9 +2029,8 @@ class ZohoCliqClient:
             utils.error_exit("invalid_file", f"File not found: {path_obj}")
 
         msg_text = text.strip()
-        guessed_mime = (
-            mimetypes.guess_type(path_obj.name)[0]
-            or ("audio/mp4" if media_kind == "voice" else "application/octet-stream")
+        guessed_mime = mimetypes.guess_type(path_obj.name)[0] or (
+            "audio/mp4" if media_kind == "voice" else "application/octet-stream"
         )
 
         destination_paths: list[str]

@@ -6,6 +6,8 @@ Output:
 - stderr  → errors, debug, interactive prompts (never pollutes stdout)
 """
 
+# ruff: noqa: E402
+
 from __future__ import annotations
 
 import json
@@ -17,7 +19,7 @@ _REQUIRED_DEPS = ("idna", "httpx", "typer", "keyring", "platformdirs")
 for _dep in _REQUIRED_DEPS:
     try:
         __import__(_dep)
-    except ImportError as e:
+    except ImportError:
         print(
             f"zoho-cli: missing dependency '{_dep}'.\n"
             "Reinstall with:  pip install zoho-cli   or   brew reinstall zoho-cli",
@@ -1135,7 +1137,12 @@ def folders_move(
 
 def _md_labels(lbls: list) -> None:
     rows = [
-        [l.get("labelId", ""), l.get("labelName", ""), l.get("color", "")] for l in lbls
+        [
+            label.get("labelId", ""),
+            label.get("labelName", ""),
+            label.get("color", ""),
+        ]
+        for label in lbls
     ]
     print(utils.md_table(["ID", "NAME", "COLOR"], rows))
 
@@ -1150,11 +1157,11 @@ def labels_list() -> None:
     resp = client.get_labels(account_id)
     result = [
         {
-            "labelId": str(l.get("labelId", "")),
-            "labelName": l.get("labelName", ""),
-            "color": l.get("color", ""),
+            "labelId": str(label.get("labelId", "")),
+            "labelName": label.get("labelName", ""),
+            "color": label.get("color", ""),
         }
-        for l in resp.get("data", [])
+        for label in resp.get("data", [])
     ]
     utils.output(result, md_render=_md_labels)
 
@@ -2478,7 +2485,9 @@ def cliq_send(
             text=text_payload,
             channel_id=channel_id,
             user_id=user_id,
-            media_kind="voice" if selected_media_kind == "audio" else selected_media_kind,
+            media_kind="voice"
+            if selected_media_kind == "audio"
+            else selected_media_kind,
         )
     else:
         resp = client.send_message(

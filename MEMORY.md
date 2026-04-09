@@ -14,5 +14,5 @@ Known recurring failure modes:
 4. overlong prompt / run leading to timeout before real work starts
 
 Test account status:
-- `ai-dev@happy-distro.co.uk` token missing or invalid; refresh returns `invalid_code`
-- Re-auth via OAuth flow required before live Cliq admin-plane verification (cliq-130)
+- `ai-dev@happy-distro.co.uk` baseline Cliq auth is healthy for current status/read-plane checks, but `/chats` still returns `oauthtoken_scope_invalid` on current token/network until chat-read scope is granted
+- CRM live verification is still blocked because this account is not in a CRM org (`OAUTH_SCOPE_MISMATCH` on CRM APIs)

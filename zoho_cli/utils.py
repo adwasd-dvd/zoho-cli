@@ -56,3 +56,16 @@ def setup_debug() -> None:
     )
     logging.getLogger("httpx").setLevel(logging.WARNING)
     logging.getLogger("httpcore").setLevel(logging.WARNING)
+
+
+__all__ = [
+    "configure",
+    "format_date",
+    "format_size",
+    "md_table",
+    "output",
+    "output_json",
+    "output_status",
+    "error_exit",
+    "setup_debug",
+]

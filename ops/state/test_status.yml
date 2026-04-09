@@ -1,10 +1,16 @@
-last_run_at: "2026-04-09T10:29:10Z"
+last_run_at: "2026-04-09T10:38:34Z"
 last_result: warning
 current_focus: cliq
 suites:
   unit:
     status: passing
     notes:
+      - make release-gate
+      - 243 passed in 3.83s + wheel smoke passed (0.2.0) (2026-04-09T10:38:34Z)
+      - ./.venv/bin/pytest -q
+      - 243 passed in 3.88s (full suite via make ci verification rerun, 2026-04-09T10:35:10Z)
+      - make release-gate
+      - 243 passed in 3.84s + wheel smoke passed (0.2.0) (2026-04-09T10:33:27Z)
       - ./.venv/bin/pytest -q tests/test_cliq.py::test_cliq_client_send_to_user_with_attachment_payload tests/test_cliq.py::test_cliq_client_send_with_strict_media_does_not_fallback_to_text_only tests/test_cli.py::test_cliq_send_channel tests/test_cli.py::test_cliq_send_channel_with_image_url tests/test_cli.py::test_cliq_send_channel_with_voice_url tests/test_cli.py::test_cliq_send_channel_with_local_voice_file tests/test_cli.py::test_cliq_send_rejects_missing_local_file
       - 7 passed in 0.13s (cliq send strict-media fallback hardening + local-file multipart send baseline coverage, 2026-04-09T10:29:10Z)
       - ./.venv/bin/pytest -q tests/test_cli.py::test_cliq_context_from_chat_id_typed_dm_matrix
@@ -204,8 +210,12 @@ suites:
       - ./.venv/bin/python -m zoho_cli --config /tmp/zoho-test-config.json --account ai-dev@happy-distro.co.uk mail get 1775618034273140900 --folder-id 2857786000000008014
       - read-only smoke passed against configured account with hydrated metadata output (2026-04-08T03:48:31Z)
   ci:
-    status: warning
+    status: passing
     notes:
+      - make ci
+      - fmt-check, lint, and full pytest gate now pass after small lint-cleanup follow-up (2026-04-09T10:35:10Z)
+      - make ci
+      - fmt-check failure and lint regression surfaced broader gate drift (`ruff format --check` and `ruff check`) before cleanup (2026-04-09T10:34:10Z)
       - ./.venv/bin/ruff format --check tests/test_cli.py
       - 1 file already formatted (2026-04-09T05:33:42Z)
       - ./.venv/bin/ruff format --check zoho_cli/cliq.py zoho_cli/cli.py tests/test_cliq.py tests/test_cli.py
@@ -238,10 +248,11 @@ suites:
       - 22 files reformatted (2026-04-08T16:15:56Z)
       - ./.venv/bin/ruff format --check
       - 33 files already formatted (2026-04-08T16:15:56Z)
-      - full `make ci` rerun pending; previous failure was fmt-check drift (2026-04-08T13:25:55Z)
   packaging:
     status: passing
     notes:
+      - make release-gate passed (243 tests + wheel smoke) (2026-04-09T10:38:34Z)
+      - make release-gate passed (243 tests + wheel smoke) (2026-04-09T10:33:27Z)
       - make release-gate passed (128 tests + wheel smoke) (2026-04-08T13:25:55Z)
       - make release-gate passed (125 tests + wheel smoke) (2026-04-08T05:28:47Z)
       - make release-gate rerun passed after retry hardening (105 tests + wheel smoke) (2026-04-08T04:22:56Z)

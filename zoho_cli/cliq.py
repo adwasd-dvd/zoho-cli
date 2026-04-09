@@ -508,15 +508,10 @@ class ZohoCliqClient:
         limit: int = 50,
     ) -> dict:
         """List messages for a chat (or a resolvable channel id)."""
-        resolved_chat = (chat_id or "").strip()
-        if not resolved_chat and channel_id:
-            resolved_chat = self.resolve_chat_id(channel_id) or ""
-        if not resolved_chat and channel_id:
-            resolved_chat = self.resolve_chat_id(channel_id) or ""
-        if not resolved_chat:
-            utils.error_exit(
-                "invalid_destination", "Provide --chat-id or resolvable --channel-id"
-            )
+        resolved_chat = self._resolve_chat_destination(
+            chat_id=chat_id,
+            channel_id=channel_id,
+        )
 
         resp = httpx.get(
             f"{self.base_url}/chats/{resolved_chat}/messages",
@@ -548,15 +543,10 @@ class ZohoCliqClient:
         channel_id: str | None = None,
     ) -> dict:
         """Fetch one message by id for a chat (or a resolvable channel id)."""
-        resolved_chat = (chat_id or "").strip()
-        if not resolved_chat and channel_id:
-            resolved_chat = self.resolve_chat_id(channel_id) or ""
-        if not resolved_chat and channel_id:
-            resolved_chat = self.resolve_chat_id(channel_id) or ""
-        if not resolved_chat:
-            utils.error_exit(
-                "invalid_destination", "Provide --chat-id or resolvable --channel-id"
-            )
+        resolved_chat = self._resolve_chat_destination(
+            chat_id=chat_id,
+            channel_id=channel_id,
+        )
 
         mid = message_id.strip()
         if not mid:

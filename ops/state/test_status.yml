@@ -1,10 +1,12 @@
-last_run_at: "2026-04-09T11:58:26Z"
+last_run_at: "2026-04-09T12:43:57Z"
 last_result: warning
 current_focus: cliq
 suites:
   unit:
     status: passing
     notes:
+      - ./.venv/bin/pytest -q tests/test_cliq.py::test_cliq_client_list_messages_from_channel_id tests/test_cliq.py::test_cliq_client_get_message_from_channel_id
+      - 2 passed in 0.08s (cliq read-plane channel-id resolution now avoids duplicate `/channels/{id}` descriptor fetches before message list/get, 2026-04-09T12:43:57Z)
       - ./.venv/bin/pytest -q tests/test_cliq.py::test_missing_cliq_scopes_reports_missing_values tests/test_cli.py::test_cliq_status_oauth_ready_when_scopes_present
       - 2 passed in 0.14s (default `zoho login --with-cliq` scope bundle now includes `ZohoCliq.Chats.ALL` for chat discovery readiness, 2026-04-09T11:58:26Z)
       - ./.venv/bin/pytest -q tests/test_cliq.py::test_cliq_client_send_local_image_message_prefers_image_field tests/test_cli.py::test_cliq_send_channel_with_local_image_file tests/test_cli.py::test_cliq_send_channel_with_local_voice_file

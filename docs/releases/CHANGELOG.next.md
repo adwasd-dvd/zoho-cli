@@ -57,6 +57,7 @@
 - Cliq search fallback now treats `extra_param_found` as retryable, so unsupported query-key variants no longer hard-fail before probing alternate search params/endpoints.
 - Added Cliq file/attachment fallback probing in `ZohoCliqClient.get_message_files`, including explicit `not_supported` and `oauth_scope_invalid` fail-fast errors when message file endpoints are unsupported or scope-blocked.
 - Cliq file/voice lookup now treats `message_attachment_not_found` as an empty attachment list instead of a hard `api_error`, so receive-path commands can safely return `count: 0`.
+- Cliq read-plane channel routing now resolves `channel_id -> chat_id` only once for `cliq messages` and `cliq message`, avoiding duplicate `/channels/{id}` descriptor probes before message list/get calls.
 - `cliq whoami` no longer hard-fails when `/users` list is restricted on a base URL; it now reports unresolved/best-effort identity with captured probe attempts.
 - `cliq chats` now fails fast with explicit `oauth_scope_invalid`/`not_supported` diagnostics instead of generic API errors when conversation listing is blocked by token or endpoint constraints.
 - `zoho cliq send` no longer silently degrades media sends to text-only fallback payloads when media attachment candidates fail; strict media mode now preserves attachment/card intent and surfaces API failure directly.

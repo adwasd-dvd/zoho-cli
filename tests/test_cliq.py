@@ -457,7 +457,7 @@ def test_cliq_client_send_requires_message_or_media(
 
 @respx.mock
 def test_cliq_client_list_messages_from_channel_id(client: cliq.ZohoCliqClient) -> None:
-    respx.get("https://cliq.zoho.com/api/v2/channels/O1").mock(
+    descriptor = respx.get("https://cliq.zoho.com/api/v2/channels/O1").mock(
         return_value=httpx.Response(200, json={"data": {"chat_id": "CT_1"}})
     )
     route = respx.get("https://cliq.zoho.com/api/v2/chats/CT_1/messages").mock(
@@ -466,6 +466,7 @@ def test_cliq_client_list_messages_from_channel_id(client: cliq.ZohoCliqClient) 
 
     result = client.list_messages(channel_id="O1", limit=7)
 
+    assert descriptor.call_count == 1
     assert result["data"][0]["id"] == "M1"
     assert dict(route.calls.last.request.url.params) == {"limit": "7"}
 
@@ -710,6 +711,22 @@ def test_cliq_client_get_message_from_chat_id(client: cliq.ZohoCliqClient) -> No
 
     result = client.get_message("M1", chat_id="CT_1")
 
+    assert route.called
+    assert result["data"]["id"] == "M1"
+
+
+@respx.mock
+def test_cliq_client_get_message_from_channel_id(client: cliq.ZohoCliqClient) -> None:
+    descriptor = respx.get("https://cliq.zoho.com/api/v2/channels/O1").mock(
+        return_value=httpx.Response(200, json={"data": {"chat_id": "CT_1"}})
+    )
+    route = respx.get("https://cliq.zoho.com/api/v2/chats/CT_1/messages/M1").mock(
+        return_value=httpx.Response(200, json={"data": {"id": "M1", "text": "ok"}})
+    )
+
+    result = client.get_message("M1", channel_id="O1")
+
+    assert descriptor.call_count == 1
     assert route.called
     assert result["data"]["id"] == "M1"
 

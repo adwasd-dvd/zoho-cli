@@ -65,6 +65,7 @@
 - Local multipart upload sends now include structured upload metadata in success payloads (`path`, `field`, `fileName`, `mimeType`) so live matrix probes can capture which endpoint/form-field variant succeeded.
 - Cliq user-target send paths now keep the original `--user-id` value first and then fallback to one resolved directory user id when an email-like identifier is supplied, so send probes can try both raw and canonical user targets without breaking existing email-target flows.
 - Local multipart channel-id sends now also probe `/channels/{channel_id}/message` before descriptor-derived chat/name fallbacks, improving endpoint coverage for `cliq send --image-url|--voice-url|--file-url <local-path>` matrix runs.
+- Cliq channel-id send fallback resolution now reuses a single `/channels/{id}` descriptor fetch when building chat/name path candidates, avoiding duplicate descriptor lookups per send attempt.
 - Cliq file retrieval now includes source endpoint metadata (`fetch.path` from `ZohoCliqClient.get_message_files`) and `zoho cliq file` surfaces it as `sourcePath` for live upload/download matrix logging.
 - `zoho cliq voice` now also surfaces retrieval endpoint metadata as `sourcePath`, so voice-only attachment probes capture the same download-path evidence as `zoho cliq file`.
 - Cliq typed message inference now treats scalar attachment URL fields (for example `file: "https://..."`) as media-bearing payloads, so `cliq messages` / `cliq message` / `cliq context` no longer drop type classification for string-shaped attachment fields.

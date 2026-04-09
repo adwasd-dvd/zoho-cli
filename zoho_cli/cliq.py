@@ -276,7 +276,7 @@ class ZohoCliqClient:
             return []
 
         paths: list[str] = []
-        chat_id = self.resolve_chat_id(channel_id)
+        chat_id = data.get("chat_id") or data.get("chatId")
         if isinstance(chat_id, str) and chat_id:
             paths.append(f"/chats/{chat_id}/message")
 

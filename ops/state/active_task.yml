@@ -4,11 +4,11 @@ module: cliq
 stage: in_progress
 status: in_progress
 owner: automation
-updated_at: '2026-04-09T21:06:35Z'
+updated_at: '2026-04-09T21:51:38Z'
 success_criteria:
   - provide chat discovery command surface (`cliq chats`) with explicit scope/not-supported diagnostics
   - keep per-conversation context outputs machine-readable with inferred message content types (`text`, `image`, `file`, `voice`, `sticker`, `reaction`)
   - maintain channel/chat context extraction for agent loops (`messages`, `message`, `context`) with typed summaries
   - validate via focused tests and at least one live smoke path on current token/network
 next_if_done: cliq-160
-next_step: local multipart channel sends now also probe `/channels/{channel_id}/message` before descriptor-derived fallbacks; next run should complete pending `zoho login --with-cliq` re-auth for `cliq chats` positive-path and continue native local-file upload/download matrix probes (voice/image/file plus file/voice retrieval) because current live multipart sends still return endpoint-level `request_url_invalid`/`operation_failed` errors on tested user/channel targets
+next_step: channel-id send fallback path resolution now avoids duplicate `/channels/{id}` descriptor fetches per send attempt; next run should complete pending `zoho login --with-cliq` re-auth for `cliq chats` positive-path and continue native local-file upload/download matrix probes (voice/image/file plus file/voice retrieval) because current live multipart sends still return endpoint-level `request_url_invalid`/`operation_failed` errors on tested user/channel targets

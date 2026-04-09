@@ -58,10 +58,12 @@ uv tool install .
 - `cliq messages <channel-id>` / `message <id>` — Read messages
 - `cliq context` — Message thread context
 - `cliq file <message-id>` — Fetch message attachment/file metadata
+- `cliq voice <message-id>` — Filter voice/audio attachment metadata for one message
 
 **Write plane:**
 - `cliq send --text ...` — Send plain text
-- `cliq send --image-url/--file-url/--audio-url ...` — Send rich link-style media payloads
+- `cliq send --image-url/--file-url/--audio-url/--voice-url ...` — Send rich link-style media payloads
+- `cliq voice-send --voice-url ...` — Explicit voice-message send wrapper
 - `cliq send --sticker :thumbsup:` — Append sticker/emoji shortcode in outbound text
 - `cliq reply/edit/delete/react` — Message operations
 

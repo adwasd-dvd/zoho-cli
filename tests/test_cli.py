@@ -1947,6 +1947,137 @@ def test_cliq_send_channel_with_image_url(
     assert payload["media"]["imageUrl"] == "https://example.com/image.jpg"
 
 
+@respx.mock
+def test_cliq_send_channel_with_voice_url(
+    mock_config: Path, mock_token_refresh: Any
+) -> None:
+    route = respx.post("https://cliq.zoho.com/api/v2/channelsbyname/C1/message").mock(
+        return_value=httpx.Response(200, json={"data": {"message_id": "M3"}})
+    )
+    respx.get("https://cliq.zoho.com/api/v2/channels/C1").mock(
+        return_value=httpx.Response(404, text="not_found")
+    )
+
+    result = runner.invoke(
+        app,
+        [
+            "cliq",
+            "send",
+            "--channel-id",
+            "C1",
+            "--voice-url",
+            "https://example.com/voice.ogg",
+            "--text",
+            "voice",
+        ],
+        env=_cfg_env(mock_config),
+    )
+    assert result.exit_code == 0, result.output
+
+    body = json.loads(route.calls.last.request.content.decode("utf-8"))
+    assert body["attachments"]["url"] == "https://example.com/voice.ogg"
+
+    payload = json.loads(result.output)
+    assert payload["status"] == "ok"
+    assert payload["media"]["voiceUrl"] == "https://example.com/voice.ogg"
+
+
+@respx.mock
+def test_cliq_voice_send_command(mock_config: Path, mock_token_refresh: Any) -> None:
+    route = respx.post("https://cliq.zoho.com/api/v2/channelsbyname/C1/message").mock(
+        return_value=httpx.Response(200, json={"data": {"message_id": "M4"}})
+    )
+    respx.get("https://cliq.zoho.com/api/v2/channels/C1").mock(
+        return_value=httpx.Response(404, text="not_found")
+    )
+
+    result = runner.invoke(
+        app,
+        [
+            "cliq",
+            "voice-send",
+            "--channel-id",
+            "C1",
+            "--voice-url",
+            "https://example.com/voice.ogg",
+            "--text",
+            "voice send",
+        ],
+        env=_cfg_env(mock_config),
+    )
+    assert result.exit_code == 0, result.output
+
+    body = json.loads(route.calls.last.request.content.decode("utf-8"))
+    assert body["attachments"]["url"] == "https://example.com/voice.ogg"
+
+
+@respx.mock
+def test_cliq_voice_from_channel_filters_audio_files(
+    mock_config: Path, mock_token_refresh: Any
+) -> None:
+    respx.get("https://cliq.zoho.com/api/v2/channels/O1").mock(
+        return_value=httpx.Response(200, json={"data": {"chat_id": "CT_1"}})
+    )
+    respx.get("https://cliq.zoho.com/api/v2/chats/CT_1/messages/M1/files").mock(
+        return_value=httpx.Response(
+            200,
+            json={
+                "files": [
+                    {
+                        "id": "A1",
+                        "mimeType": "audio/ogg",
+                        "url": "https://example.com/voice.ogg",
+                    },
+                    {
+                        "id": "A2",
+                        "mimeType": "image/png",
+                        "url": "https://example.com/image.png",
+                    },
+                ]
+            },
+        )
+    )
+
+    result = runner.invoke(
+        app,
+        ["cliq", "voice", "M1", "--channel-id", "O1"],
+        env=_cfg_env(mock_config),
+    )
+    assert result.exit_code == 0, result.output
+    payload = json.loads(result.output)
+    assert payload["count"] == 1
+    assert payload["voiceFiles"][0]["id"] == "A1"
+    assert payload["allFilesCount"] == 2
+
+
+@respx.mock
+def test_cliq_voice_handles_message_without_attachments(
+    mock_config: Path, mock_token_refresh: Any
+) -> None:
+    respx.get("https://cliq.zoho.com/api/v2/channels/O1").mock(
+        return_value=httpx.Response(200, json={"data": {"chat_id": "CT_1"}})
+    )
+    respx.get("https://cliq.zoho.com/api/v2/chats/CT_1/messages/M1/files").mock(
+        return_value=httpx.Response(
+            400,
+            json={
+                "code": "message_attachment_not_found",
+                "message": "No attachment found for this message.",
+            },
+        )
+    )
+
+    result = runner.invoke(
+        app,
+        ["cliq", "voice", "M1", "--channel-id", "O1"],
+        env=_cfg_env(mock_config),
+    )
+    assert result.exit_code == 0, result.output
+    payload = json.loads(result.output)
+    assert payload["count"] == 0
+    assert payload["voiceFiles"] == []
+
+
 def test_cliq_send_requires_content(mock_config: Path, mock_token_refresh: Any) -> None:
     result = runner.invoke(
         app, ["cliq", "send", "--channel-id", "C1"], env=_cfg_env(mock_config)
@@ -1974,6 +2105,14 @@ def test_cliq_send_rejects_multiple_media_options(
     )
     assert result.exit_code == 1
     assert "invalid_media" in result.output
+
+
+def test_cliq_voice_requires_destination(
+    mock_config: Path, mock_token_refresh: Any
+) -> None:
+    result = runner.invoke(app, ["cliq", "voice", "M1"], env=_cfg_env(mock_config))
+    assert result.exit_code == 1
+    assert "invalid_destination" in result.output
 
 
 def test_cliq_send_requires_destination(

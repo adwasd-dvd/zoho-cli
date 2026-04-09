@@ -793,6 +793,12 @@ class ZohoCliqClient:
             except ValueError:
                 pass
 
+            if error_code in {
+                "message_attachment_not_found",
+                "no_attachments_found",
+            }:
+                return {"files": []}
+
             if "oauthtoken_scope_invalid" in lowered:
                 saw_scope_invalid = True
                 last_error = (resp.status_code, path, body)
@@ -1757,7 +1763,7 @@ class ZohoCliqClient:
         if not msg_text and not attachment and not card:
             utils.error_exit(
                 "invalid_message",
-                "Provide --text, --sticker, or one media option (--image-url/--file-url/--audio-url)",
+                "Provide --text, --sticker, or one media option (--image-url/--file-url/--audio-url/--voice-url)",
             )
 
         payloads: list[dict[str, Any]] = []

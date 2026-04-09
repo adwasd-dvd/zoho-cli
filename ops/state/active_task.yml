@@ -4,11 +4,12 @@ module: cliq
 stage: in_progress
 status: in_progress
 owner: automation
-updated_at: '2026-04-09T05:25:00Z'
+updated_at: '2026-04-09T05:40:00Z'
 success_criteria:
   - keep watch-context/watch-act primitives deterministic for OpenClaw loops
   - ship identity guardrails (`cliq whoami`) so token/account mismatches are diagnosable
-  - support rich media outbound baseline via Cliq send (text, image/file/audio link attachments, sticker shortcode append)
+  - support rich media outbound baseline via Cliq send (text, image/file/audio/voice link attachments, sticker shortcode append)
+  - provide explicit voice primitives (`cliq voice-send`, `cliq voice`) for send/receive workflows
   - validate with focused tests and at least one live smoke path
 next_if_done: cliq-160
-next_step: expand from link-style media to native upload/download coverage (image/file/audio fixtures + inbound verification) and fold results into cliq-160 hardening matrix
+next_step: expand from link-style media to native upload/download coverage (image/file/audio fixtures + inbound voice verification with user-provided sample) and fold results into cliq-160 hardening matrix

@@ -27,7 +27,8 @@
 - Added `zoho cliq search` baseline (`cliq-140`) with keyword + optional `--from-time/--to-time` window filters, channel/chat destination support, and response shaping for message lists.
 - Added `zoho cliq file` baseline (`cliq-140`) to retrieve per-message file/attachment metadata from channel/chat destinations.
 - Added `zoho cliq whoami` best-effort identity diagnostics to surface active token identity, with `/users/me|self|current` probing plus directory email-match fallback.
-- Expanded `zoho cliq send` with rich media options (`--image-url`, `--file-url`, `--audio-url`, `--sticker`) and payload fallback chaining for network-scoped endpoints.
+- Expanded `zoho cliq send` with rich media options (`--image-url`, `--file-url`, `--audio-url`, `--voice-url`, `--sticker`) and payload fallback chaining for network-scoped endpoints.
+- Added voice-specific Cliq primitives: `zoho cliq voice-send` (voice URL send wrapper) and `zoho cliq voice` (voice/audio attachment filtering for one message).
 - Added first `cliq-150` OpenClaw watch primitive: `zoho cliq watch-context` plus `ZohoCliqClient.build_watch_context_seed` for cursor-based incremental context payloads.
 - Added companion `cliq-150` action primitive: `zoho cliq watch-act` plus `ZohoCliqClient.build_watch_reply_action` / `execute_watch_reply_action` to consume `watch-context` payloads and deterministically reply to the latest unseen message.
 - Extended `zoho cliq watch-act` stdin workflow: `--watch-file` now defaults to `-`, so watch payload JSON can be piped directly without passing a path flag.
@@ -50,6 +51,7 @@
 - Added Cliq search fallback probing in `ZohoCliqClient.search_messages` across endpoint and query/window param variants, including explicit `not_supported` and `oauth_scope_invalid` fail-fast errors for unsupported or scope-blocked search APIs.
 - Cliq search fallback now treats `extra_param_found` as retryable, so unsupported query-key variants no longer hard-fail before probing alternate search params/endpoints.
 - Added Cliq file/attachment fallback probing in `ZohoCliqClient.get_message_files`, including explicit `not_supported` and `oauth_scope_invalid` fail-fast errors when message file endpoints are unsupported or scope-blocked.
+- Cliq file/voice lookup now treats `message_attachment_not_found` as an empty attachment list instead of a hard `api_error`, so receive-path commands can safely return `count: 0`.
 - `cliq whoami` no longer hard-fails when `/users` list is restricted on a base URL; it now reports unresolved/best-effort identity with captured probe attempts.
 - Bumped package/runtime version metadata to `0.2.0` (`pyproject.toml` and `zoho_cli.__version__`) and made CLI `--version` prefer local package `__version__` first so source-checkout runs do not report stale installed metadata.
 - Updated Mail module status to in_progress and cleared blockers.

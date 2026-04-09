@@ -1683,6 +1683,91 @@ def cliq_file(
     )
 
 
+@cliq_app.command("voice")
+def cliq_voice(
+    message_id: str = typer.Argument(..., help="Cliq message id."),
+    channel_id: Optional[str] = typer.Option(
+        None, "--channel-id", help="Source channel id (resolved to chat_id)."
+    ),
+    chat_id: Optional[str] = typer.Option(None, "--chat-id", help="Source chat id."),
+    network: Optional[str] = typer.Option(
+        None, "--network", help="Cliq network slug (e.g. happydistrouklimited)."
+    ),
+) -> None:
+    """Retrieve voice/audio attachment metadata from one Cliq message."""
+    if not chat_id and not channel_id:
+        utils.error_exit("invalid_destination", "Provide --chat-id or --channel-id")
+
+    cfg = _cfg()
+    email = _require_account(cfg)
+    client = _get_cliq_client(cfg, email, network=network)
+
+    resolved_chat = (chat_id or "").strip() or client.resolve_chat_id(channel_id or "")
+    resp = client.get_message_files(
+        message_id,
+        chat_id=resolved_chat,
+        channel_id=channel_id,
+    )
+    data = resp.get("data", resp)
+    files: list[dict] = []
+    if isinstance(data, list):
+        files = [item for item in data if isinstance(item, dict)]
+    elif isinstance(data, dict):
+        for key in ("files", "attachments", "items", "data"):
+            candidate = data.get(key)
+            if isinstance(candidate, list):
+                files = [item for item in candidate if isinstance(item, dict)]
+                break
+
+    def _is_voice(item: dict) -> bool:
+        value = " ".join(
+            str(item.get(k) or "")
+            for k in (
+                "type",
+                "mime_type",
+                "mimeType",
+                "content_type",
+                "contentType",
+                "file_type",
+                "fileType",
+                "name",
+                "file_name",
+                "fileName",
+                "title",
+                "url",
+            )
+        ).lower()
+        if "audio" in value or "voice" in value:
+            return True
+        return any(
+            ext in value
+            for ext in (
+                ".mp3",
+                ".m4a",
+                ".wav",
+                ".ogg",
+                ".aac",
+                ".flac",
+                ".opus",
+                ".webm",
+                ".amr",
+            )
+        )
+
+    voice_files = [item for item in files if _is_voice(item)]
+
+    utils.output(
+        {
+            "chatId": resolved_chat or "",
+            "channelId": channel_id or "",
+            "messageId": message_id,
+            "count": len(voice_files),
+            "voiceFiles": voice_files,
+            "allFilesCount": len(files),
+        }
+    )
+
+
 @cliq_app.command("messages")
 def cliq_messages(
     channel_id: Optional[str] = typer.Option(
@@ -2119,6 +2204,44 @@ def cliq_react(
     )
 
 
+@cliq_app.command("voice-send")
+def cliq_voice_send(
+    voice_url: str = typer.Option(..., "--voice-url", help="Voice/audio URL to send."),
+    text: Optional[str] = typer.Option(
+        None, "--text", "-t", help="Optional message text."
+    ),
+    channel_id: Optional[str] = typer.Option(
+        None, "--channel-id", help="Destination channel id."
+    ),
+    user_id: Optional[str] = typer.Option(
+        None, "--user-id", help="Destination user id."
+    ),
+    title: Optional[str] = typer.Option(
+        None, "--title", help="Optional voice card title."
+    ),
+    button_label: Optional[str] = typer.Option(
+        None, "--button-label", help="Optional voice card button label."
+    ),
+    network: Optional[str] = typer.Option(
+        None, "--network", help="Cliq network slug (e.g. happydistrouklimited)."
+    ),
+) -> None:
+    """Send a voice/audio message link to a channel or user."""
+    cliq_send(
+        text=text,
+        channel_id=channel_id,
+        user_id=user_id,
+        image_url=None,
+        file_url=None,
+        audio_url=None,
+        voice_url=voice_url,
+        title=title,
+        button_label=button_label,
+        sticker=None,
+        network=network,
+    )
+
+
 @cliq_app.command("send")
 def cliq_send(
     text: Optional[str] = typer.Option(None, "--text", "-t", help="Message text."),
@@ -2142,6 +2265,11 @@ def cliq_send(
         None,
         "--audio-url",
         help="Audio/voice URL to send as a rich media attachment card.",
+    ),
+    voice_url: Optional[str] = typer.Option(
+        None,
+        "--voice-url",
+        help="Alias for --audio-url (voice message URL).",
     ),
     title: Optional[str] = typer.Option(
         None,
@@ -2172,12 +2300,13 @@ def cliq_send(
         ("image", (image_url or "").strip()),
         ("file", (file_url or "").strip()),
         ("audio", (audio_url or "").strip()),
+        ("audio", (voice_url or "").strip()),
     ]
     selected_media = [(kind, url) for kind, url in media_inputs if url]
     if len(selected_media) > 1:
         utils.error_exit(
             "invalid_media",
-            "Provide only one of --image-url, --file-url, or --audio-url per send operation",
+            "Provide only one of --image-url, --file-url, --audio-url, or --voice-url per send operation",
         )
 
     text_payload = (text or "").strip()
@@ -2218,7 +2347,7 @@ def cliq_send(
     if not text_payload and not attachment:
         utils.error_exit(
             "invalid_message",
-            "Provide --text/--sticker or one media option (--image-url/--file-url/--audio-url)",
+            "Provide --text/--sticker or one media option (--image-url/--file-url/--audio-url/--voice-url)",
         )
 
     cfg = _cfg()
@@ -2242,6 +2371,7 @@ def cliq_send(
                 "imageUrl": (image_url or "").strip(),
                 "fileUrl": (file_url or "").strip(),
                 "audioUrl": (audio_url or "").strip(),
+                "voiceUrl": (voice_url or "").strip(),
                 "sticker": sticker_payload,
             },
         },

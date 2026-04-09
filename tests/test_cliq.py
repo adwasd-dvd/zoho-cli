@@ -403,6 +403,87 @@ def test_cliq_client_send_local_file_message_to_user(
 
 
 @respx.mock
+def test_cliq_client_send_local_file_message_resolves_email_user_id(
+    client: cliq.ZohoCliqClient,
+    tmp_path: Path,
+) -> None:
+    sample = tmp_path / "voice.m4a"
+    sample.write_bytes(b"voice-bytes")
+
+    users_route = respx.get("https://cliq.zoho.com/api/v2/users").mock(
+        return_value=httpx.Response(
+            200,
+            json={
+                "data": [
+                    {
+                        "zuid": "U1",
+                        "display_name": "David Wang",
+                        "email_id": "david@happy-distro.com",
+                    }
+                ]
+            },
+        )
+    )
+    respx.post(
+        "https://cliq.zoho.com/api/v2/buddies/david@happy-distro.com/message"
+    ).mock(return_value=httpx.Response(400, json={"code": "request_url_invalid"}))
+    respx.post(
+        "https://cliq.zoho.com/api/v2/users/david@happy-distro.com/message"
+    ).mock(return_value=httpx.Response(400, json={"code": "request_url_invalid"}))
+    route = respx.post("https://cliq.zoho.com/api/v2/buddies/U1/message").mock(
+        return_value=httpx.Response(200, json={"data": {"status": "ok"}})
+    )
+
+    result = client.send_local_file_message(
+        str(sample),
+        user_id="david@happy-distro.com",
+        text="voice",
+        media_kind="voice",
+    )
+
+    assert users_route.called
+    assert route.called
+    assert result["data"]["status"] == "ok"
+    assert result["data"]["upload"]["path"] == "/buddies/U1/message"
+
+
+@respx.mock
+def test_cliq_client_send_message_resolves_email_user_id(
+    client: cliq.ZohoCliqClient,
+) -> None:
+    users_route = respx.get("https://cliq.zoho.com/api/v2/users").mock(
+        return_value=httpx.Response(
+            200,
+            json={
+                "data": [
+                    {
+                        "zuid": "U1",
+                        "display_name": "David Wang",
+                        "email_id": "david@happy-distro.com",
+                    }
+                ]
+            },
+        )
+    )
+    respx.post(
+        "https://cliq.zoho.com/api/v2/buddies/david@happy-distro.com/message"
+    ).mock(return_value=httpx.Response(400, json={"code": "request_url_invalid"}))
+    respx.post(
+        "https://cliq.zoho.com/api/v2/users/david@happy-distro.com/message"
+    ).mock(return_value=httpx.Response(400, json={"code": "request_url_invalid"}))
+    route = respx.post("https://cliq.zoho.com/api/v2/buddies/U1/message").mock(
+        return_value=httpx.Response(204, text="")
+    )
+
+    result = client.send_message("hello", user_id="david@happy-distro.com")
+
+    assert users_route.called
+    assert route.called
+    assert result["status"] == "ok"
+    assert result["httpStatus"] == 204
+
+
+@respx.mock
 def test_cliq_client_send_local_image_message_prefers_image_field(
     client: cliq.ZohoCliqClient,
     tmp_path: Path,

@@ -1404,6 +1404,63 @@ class ZohoCliqClient:
             "matches": matches,
         }
 
+    def _resolve_user_target(self, user_id: str) -> str:
+        """Best-effort normalization for user destinations.
+
+        Cliq send endpoints usually accept canonical user ids reliably.
+        When callers pass an email-like identifier, attempt one directory
+        lookup and fall back to the original value if lookup is unavailable.
+        """
+        target = (user_id or "").strip()
+        if not target or "@" not in target:
+            return target
+
+        try:
+            resolved = self.resolve_users(target, by="email", limit=200)
+        except SystemExit:
+            return target
+
+        matches = resolved.get("matches") if isinstance(resolved, dict) else []
+        if not isinstance(matches, list) or not matches:
+            return target
+
+        for match in matches:
+            if not isinstance(match, dict):
+                continue
+            if match.get("emailExact"):
+                user_match = str(match.get("userId") or "").strip()
+                if user_match:
+                    return user_match
+
+        for match in matches:
+            if not isinstance(match, dict):
+                continue
+            user_match = str(match.get("userId") or "").strip()
+            if user_match:
+                return user_match
+
+        return target
+
+    def _candidate_user_targets(self, user_id: str) -> list[str]:
+        """Build a fallback chain for user-target endpoints.
+
+        Keep the original input first for backward compatibility, then append
+        one resolved canonical id when available.
+        """
+        raw_target = (user_id or "").strip()
+        if not raw_target:
+            return []
+
+        resolved_target = self._resolve_user_target(raw_target)
+        candidates = [raw_target]
+        if resolved_target and resolved_target != raw_target:
+            candidates.append(resolved_target)
+
+        seen: set[str] = set()
+        return [
+            target for target in candidates if not (target in seen or seen.add(target))
+        ]
+
     def list_members(
         self,
         *,
@@ -2005,10 +2062,14 @@ class ZohoCliqClient:
             seen: set[str] = set()
             paths = [p for p in candidates if not (p in seen or seen.add(p))]
         else:
-            paths = [
-                f"/buddies/{user_id}/message",
-                f"/users/{user_id}/message",
-            ]
+            paths = []
+            for target_user in self._candidate_user_targets(user_id or ""):
+                paths.extend(
+                    [
+                        f"/buddies/{target_user}/message",
+                        f"/users/{target_user}/message",
+                    ]
+                )
 
         candidates: list[tuple[str, str, dict[str, Any] | None]] = []
         for payload in unique_payloads:
@@ -2055,10 +2116,14 @@ class ZohoCliqClient:
                 p for p in candidates if not (p in seen or seen.add(p))
             ]
         else:
-            destination_paths = [
-                f"/buddies/{user_id}/message",
-                f"/users/{user_id}/message",
-            ]
+            destination_paths = []
+            for target_user in self._candidate_user_targets(user_id or ""):
+                destination_paths.extend(
+                    [
+                        f"/buddies/{target_user}/message",
+                        f"/users/{target_user}/message",
+                    ]
+                )
 
         file_fields = [
             "file",

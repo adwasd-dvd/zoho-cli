@@ -63,6 +63,7 @@
 - `zoho cliq send` no longer silently degrades media sends to text-only fallback payloads when media attachment candidates fail; strict media mode now preserves attachment/card intent and surfaces API failure directly.
 - Local multipart image uploads now prefer `image`/`photo` form field candidates before generic file keys, improving compatibility for `zoho cliq send --image-url <local-path>` endpoint variants.
 - Local multipart upload sends now include structured upload metadata in success payloads (`path`, `field`, `fileName`, `mimeType`) so live matrix probes can capture which endpoint/form-field variant succeeded.
+- Cliq user-target send paths now keep the original `--user-id` value first and then fallback to one resolved directory user id when an email-like identifier is supplied, so send probes can try both raw and canonical user targets without breaking existing email-target flows.
 - Cliq file retrieval now includes source endpoint metadata (`fetch.path` from `ZohoCliqClient.get_message_files`) and `zoho cliq file` surfaces it as `sourcePath` for live upload/download matrix logging.
 - `zoho cliq voice` now also surfaces retrieval endpoint metadata as `sourcePath`, so voice-only attachment probes capture the same download-path evidence as `zoho cliq file`.
 - Cliq typed message inference now treats scalar attachment URL fields (for example `file: "https://..."`) as media-bearing payloads, so `cliq messages` / `cliq message` / `cliq context` no longer drop type classification for string-shaped attachment fields.

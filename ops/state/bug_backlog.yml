@@ -3,5 +3,5 @@ blockers:
 high: []
 normal:
   - "cliq-140 live search verification on happydistrouklimited returns unsupported endpoint patterns (`extra_param_found` on `/messages/search` with query key attempts and `request_url_invalid` on fallback paths); command now reports `not_supported` with capabilities hint"
-  - "cliq-155 chat discovery live positive-path is still blocked on current token/network: `/chats` returns `oauthtoken_scope_invalid` until chat-read scope is granted via re-auth; local multipart upload responses now include upload endpoint/field metadata and `cliq file` now returns retrieval `sourcePath`, but live matrix evidence is still pending"
+  - "cliq-155 chat discovery live positive-path is still blocked on current token/network: `/chats` returns `oauthtoken_scope_invalid` until chat-read scope is granted via re-auth; local multipart upload path now tries both raw email and resolved user-id targets and returns structured upload metadata on success, but current live probes still fail with endpoint-level `request_url_invalid` / `operation_failed`, so matrix evidence remains pending"
 low: []

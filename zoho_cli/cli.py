@@ -27,7 +27,7 @@ for _dep in _REQUIRED_DEPS:
 
 from importlib.metadata import version
 from pathlib import Path
-from typing import List, Optional
+from typing import Any, List, Optional
 import tempfile
 
 # Import parse module for content extraction
@@ -399,6 +399,45 @@ def _md_message(msg: dict) -> None:
         msg.get("textBody") or msg.get("htmlBody") or "_No body_",
     ]
     print("\n".join(lines))
+
+
+def _cliq_typed_message_view(message: dict[str, Any]) -> dict[str, Any]:
+    mid = _cliq.ZohoCliqClient._extract_message_id(message)
+    text = str(
+        message.get("text")
+        or message.get("content")
+        or message.get("message")
+        or message.get("message_text")
+        or ""
+    ).strip()
+    sender_raw = (
+        message.get("sender")
+        or message.get("from")
+        or message.get("author")
+        or message.get("display_name")
+        or ""
+    )
+    if isinstance(sender_raw, dict):
+        sender = str(
+            sender_raw.get("name")
+            or sender_raw.get("display_name")
+            or sender_raw.get("id")
+            or ""
+        ).strip()
+    else:
+        sender = str(sender_raw).strip()
+    return {
+        "messageId": mid,
+        "types": _cliq.ZohoCliqClient.infer_message_types(message),
+        "sender": sender,
+        "textPreview": text[:160],
+    }
+
+
+def _cliq_typed_messages(messages: list[dict[str, Any]]) -> list[dict[str, Any]]:
+    return [
+        _cliq_typed_message_view(item) for item in messages if isinstance(item, dict)
+    ]
 
 
 # ══════════════════════════════════════════════════════════════════════════════
@@ -1280,6 +1319,50 @@ def cliq_channels(
     utils.output(data)
 
 
+@cliq_app.command("chats")
+def cliq_chats(
+    limit: int = typer.Option(50, "--limit", "-n", help="Max chats to return."),
+    network: Optional[str] = typer.Option(
+        None, "--network", help="Cliq network slug (e.g. happydistrouklimited)."
+    ),
+) -> None:
+    """List Cliq chats (DM/group conversation descriptors)."""
+    cfg = _cfg()
+    email = _require_account(cfg)
+    client = _get_cliq_client(cfg, email, network=network)
+
+    resp = client.chats(limit=limit)
+    data = resp.get("data", resp)
+    if not isinstance(data, list):
+        data = []
+
+    views: list[dict[str, Any]] = []
+    for row in data:
+        if not isinstance(row, dict):
+            continue
+        views.append(
+            {
+                "chatId": str(
+                    row.get("id") or row.get("chat_id") or row.get("chatId") or ""
+                ),
+                "name": str(
+                    row.get("name") or row.get("title") or row.get("display_name") or ""
+                ),
+                "type": str(
+                    row.get("type") or row.get("chat_type") or row.get("chatType") or ""
+                ),
+                "raw": row,
+            }
+        )
+
+    utils.output(
+        {
+            "count": len(views),
+            "chats": views,
+        }
+    )
+
+
 @cliq_app.command("users")
 def cliq_users(
     limit: int = typer.Option(50, "--limit", "-n", help="Max users to return."),
@@ -1817,6 +1900,7 @@ def cliq_messages(
             "channelId": channel_id or "",
             "count": len(messages),
             "messages": messages,
+            "typedMessages": _cliq_typed_messages(messages),
         }
     )
 
@@ -1850,6 +1934,9 @@ def cliq_message(
             "chatId": resolved_chat or "",
             "channelId": channel_id or "",
             "message": message,
+            "messageTypes": _cliq.ZohoCliqClient.infer_message_types(
+                message if isinstance(message, dict) else {}
+            ),
         }
     )
 
@@ -1924,7 +2011,13 @@ def cliq_context(
             "window": {"before": before, "after": after},
             "totalFetched": len(messages),
             "anchor": anchor or {},
+            "anchorTypes": _cliq.ZohoCliqClient.infer_message_types(
+                anchor if isinstance(anchor, dict) else {}
+            ),
             "messages": context_messages,
+            "typedMessages": _cliq_typed_messages(
+                [item for item in context_messages if isinstance(item, dict)]
+            ),
         }
     )
 

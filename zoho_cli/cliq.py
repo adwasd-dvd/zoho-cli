@@ -1022,9 +1022,132 @@ class ZohoCliqClient:
         """List channels."""
         return self._get("/channels", {"limit": limit})
 
+    def chats(self, *, limit: int = 50) -> dict:
+        """List chats (DM/group conversation descriptors)."""
+        resp = httpx.get(
+            f"{self.base_url}/chats",
+            headers=self._headers,
+            params={"limit": limit},
+            timeout=httpx.Timeout(30.0),
+        )
+        if resp.is_success:
+            return resp.json()
+
+        body = resp.text or ""
+        lowered = body.lower()
+        if "oauthtoken_scope_invalid" in lowered:
+            utils.error_exit(
+                "oauth_scope_invalid",
+                "Cliq token is missing chat-read scope. Re-run `zoho login --with-cliq` with chat-read scopes (for example `ZohoCliq.Chats.ALL`) and retry.",
+            )
+        if resp.status_code in (404, 405) or "request_url_invalid" in lowered:
+            utils.error_exit(
+                "not_supported",
+                "Cliq chat listing endpoint is not available for this token/network endpoint.",
+            )
+
+        utils.error_exit("api_error", f"HTTP {resp.status_code} GET /chats: {body}")
+        return {}
+
     def users(self, *, limit: int = 50) -> dict:
         """List users."""
         return self._get("/users", {"limit": limit})
+
+    @staticmethod
+    def infer_message_types(message: dict[str, Any]) -> list[str]:
+        """Infer coarse content types from a raw Cliq message payload."""
+
+        def _as_list(value: Any) -> list[Any]:
+            if isinstance(value, list):
+                return value
+            if isinstance(value, dict):
+                return [value]
+            return []
+
+        types: set[str] = set()
+
+        text_value = str(
+            message.get("text")
+            or message.get("content")
+            or message.get("message")
+            or message.get("message_text")
+            or message.get("plain_text")
+            or ""
+        ).strip()
+        if text_value:
+            types.add("text")
+
+        for key in (
+            "reactions",
+            "reaction",
+            "messageactions",
+            "messageActions",
+        ):
+            if message.get(key):
+                types.add("reaction")
+                break
+
+        for key in ("sticker", "stickers", "emoji", "emojis"):
+            if message.get(key):
+                types.add("sticker")
+                break
+
+        attachment_items: list[Any] = []
+        for key in (
+            "attachments",
+            "attachment",
+            "files",
+            "file",
+            "slides",
+            "cards",
+            "card",
+            "media",
+        ):
+            attachment_items.extend(_as_list(message.get(key)))
+
+        for item in attachment_items:
+            blob = str(item).lower()
+            if any(
+                token in blob
+                for token in (
+                    "voice",
+                    "audio/",
+                    ".mp3",
+                    ".m4a",
+                    ".wav",
+                    ".ogg",
+                    ".opus",
+                    ".aac",
+                    ".amr",
+                    ".flac",
+                    ".webm",
+                )
+            ):
+                types.add("voice")
+            elif any(
+                token in blob
+                for token in (
+                    "image",
+                    ".jpg",
+                    ".jpeg",
+                    ".png",
+                    ".gif",
+                    ".webp",
+                    ".bmp",
+                    ".heic",
+                    ".svg",
+                )
+            ):
+                types.add("image")
+            elif any(token in blob for token in ("video", ".mp4", ".mov", ".mkv")):
+                types.add("video")
+            else:
+                types.add("file")
+
+        if not types:
+            types.add("unknown")
+
+        return sorted(types)
 
     def whoami(self, *, account_email: str | None = None, limit: int = 500) -> dict:
         """Best-effort identity lookup for the active Cliq token."""

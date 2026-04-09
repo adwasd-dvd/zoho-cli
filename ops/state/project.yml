@@ -1,17 +1,17 @@
 project: zoho-cli
-updated_at: '2026-04-09T04:53:00Z'
+updated_at: '2026-04-09T06:05:00Z'
 status: cliq-expansion
 canonical_workspace: /Users/adwasd/.openclaw/workspace-coder
 project_root: /Users/adwasd/.openclaw/workspace-coder/job/zoho-cli
 module_order:
-- Mail
-- Cliq
-- CRM
-current_focus: cliq-150 media/watch integration primitives
+  - Mail
+  - Cliq
+  - CRM
+current_focus: cliq-155 dm/group/channel visibility and typed context matrix
 primary_blockers:
-- crm live read-only verification remains blocked by account-level CRM org access
-- full `make ci` is still failing lint checks in tracked repo files
-- cliq search endpoint variants are not available on happydistrouklimited for current
-  token/api combinations (`extra_param_found` / `request_url_invalid`)
-- native attachment upload/download behavior still needs live endpoint matrix hardening across network and non-network bases (message-level probe support added, live evidence pending)
-next_step: run message-scoped capability probes (`cliq capabilities --channel-id <id> --message-id <id>`) against attachment-positive samples, then continue native upload/download verification and fold outcomes into cliq-160 hardening
+  - crm live read-only verification remains blocked by account-level CRM org access
+  - full `make ci` is still failing lint checks in tracked repo files
+  - cliq search endpoint variants are not available on happydistrouklimited for current token/api combinations (`extra_param_found` / `request_url_invalid`)
+  - "`/chats` listing is currently scope-blocked on current token/network (`oauthtoken_scope_invalid`), so DM/group discovery needs a chat-read scope positive-path run"
+  - native attachment upload/download behavior still needs live endpoint matrix hardening across network and non-network bases (message-level probe support added, live evidence pending)
+next_step: "keep typed conversation outputs in place, close `cliq chats` positive path with chat-read scope, then continue native local-file upload/download verification and fold outcomes into cliq-160 hardening"

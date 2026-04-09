@@ -9,12 +9,13 @@ mail:
 cliq:
   priority: 2
   status: in_progress
-  phase: expansion_media_watch_primitives
+  phase: expansion_conversation_visibility_and_media_primitives
   target_release: v0.4.0
   current_milestone: cliq-expansion-phase
   blockers:
-    - live search endpoint variants are currently unsupported on happydistrouklimited (`extra_param_found` / `request_url_invalid`)
-    - native attachment upload/download endpoint variants still need a stable cross-network matrix; current media baseline is link-card oriented
+    - "live search endpoint variants are currently unsupported on happydistrouklimited (`extra_param_found` / `request_url_invalid`)"
+    - "`/chats` listing is scope-blocked on current token/network (`oauthtoken_scope_invalid`), so DM/group discovery is not yet closed"
+    - "native local-file upload endpoint variants still need a stable cross-network matrix; current media baseline is link-card oriented"
 
 crm:
   priority: 3

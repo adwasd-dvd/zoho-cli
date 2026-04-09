@@ -1,7 +1,8 @@
 module: Cliq
-updated_at: '2026-04-09T04:53:00Z'
+updated_at: '2026-04-09T06:05:00Z'
 status: in_progress
 blockers:
-  - live `/messages/search` APIs on happydistrouklimited still look unsupported for current endpoint variants (`extra_param_found` / `request_url_invalid`), so search remains limitation-documented
-  - native attachment upload/download path details are still partially unknown across network/non-network endpoints; message-level capability probes exist now but still need live evidence against attachment-positive samples
-next_small_step: run `cliq capabilities --channel-id <id> --message-id <id>` on a known attachment message, record `/files` vs `/attachments` endpoint outcomes, then continue native upload/download verification (image/file/audio + user-assisted voice sample)
+  - "live `/messages/search` APIs on happydistrouklimited still look unsupported for current endpoint variants (`extra_param_found` / `request_url_invalid`), so search remains limitation-documented"
+  - "`/chats` listing is currently scope-blocked on the active token/network (`oauthtoken_scope_invalid`), so DM/group discovery needs a chat-read capable token for positive-path closure"
+  - "native attachment upload (local file -> outbound voice/image/file) is still unresolved; current outbound media baseline is URL/link-card oriented"
+next_small_step: "run one re-auth round with explicit chat-read scope, validate `cliq chats` positive path, then continue native local-file upload probing for voice/image/file while preserving typed context outputs"

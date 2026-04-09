@@ -53,10 +53,10 @@ uv tool install .
 **Read plane:**
 - `cliq status --check-auth` — Auth and scope verification
 - `cliq capabilities` — Capability matrix for token/org/network
-- `cliq channels`, `users`, `members` — List resources
+- `cliq channels`, `chats`, `users`, `members` — List resources (`chats` may require extra read scope)
 - `cliq whoami` — Best-effort current-token identity diagnostic (direct endpoint first, directory fallback)
-- `cliq messages <channel-id>` / `message <id>` — Read messages
-- `cliq context` — Message thread context
+- `cliq messages <channel-id>` / `message <id>` — Read messages (with inferred content types)
+- `cliq context` — Message thread context (with inferred content types)
 - `cliq file <message-id>` — Fetch message attachment/file metadata
 - `cliq voice <message-id>` — Filter voice/audio attachment metadata for one message
 

@@ -1,10 +1,16 @@
-last_run_at: "2026-04-09T04:53:00Z"
+last_run_at: "2026-04-09T06:05:00Z"
 last_result: warning
 current_focus: cliq
 suites:
   unit:
     status: passing
     notes:
+      - ./.venv/bin/pytest -q tests/test_cliq.py::test_cliq_client_chats tests/test_cliq.py::test_cliq_client_chats_scope_invalid_reports_hint tests/test_cliq.py::test_cliq_client_infer_message_types_detects_voice_sticker_and_text tests/test_cli.py::test_cliq_chats tests/test_cli.py::test_cliq_messages_from_channel tests/test_cli.py::test_cliq_message_get_from_channel tests/test_cli.py::test_cliq_context_with_anchor tests/test_cli.py::test_cliq_send_channel_with_voice_url tests/test_cli.py::test_cliq_voice_send_command tests/test_cli.py::test_cliq_voice_from_channel_filters_audio_files
+      - 10 passed in 0.21s (conversation visibility + typed message classification + voice regression slice, 2026-04-09T06:05:00Z)
+      - ./.venv/bin/pytest -q tests/test_cliq.py tests/test_cli.py::test_cliq_whoami_from_users_me tests/test_cli.py::test_cliq_whoami_fallback_to_email_match tests/test_cli.py::test_cliq_channels tests/test_cli.py::test_cliq_chats tests/test_cli.py::test_cliq_users tests/test_cli.py::test_cliq_user_resolve_email tests/test_cli.py::test_cliq_user_resolve_name tests/test_cli.py::test_cliq_messages_from_channel tests/test_cli.py::test_cliq_message_get_from_channel tests/test_cli.py::test_cliq_context_with_anchor tests/test_cli.py::test_cliq_search_from_channel tests/test_cli.py::test_cliq_file_from_channel tests/test_cli.py::test_cliq_voice_from_channel_filters_audio_files tests/test_cli.py::test_cliq_voice_handles_message_without_attachments tests/test_cli.py::test_cliq_send_channel tests/test_cli.py::test_cliq_send_channel_with_image_url tests/test_cli.py::test_cliq_send_channel_with_voice_url tests/test_cli.py::test_cliq_voice_send_command tests/test_cli.py::test_cliq_send_requires_content tests/test_cli.py::test_cliq_send_rejects_multiple_media_options tests/test_cli.py::test_cliq_voice_requires_destination tests/test_cli.py::test_cliq_status_check_auth
+      - 77 passed in 0.92s (full cliq slice including chats command and typed context outputs, 2026-04-09T06:05:00Z)
+      - ./.venv/bin/pytest -q
+      - 239 passed, 1 warning in 3.79s (full suite, 2026-04-09T06:05:00Z)
       - ./.venv/bin/pytest -q tests/test_cliq.py::test_cliq_client_probe_capabilities_baseline tests/test_cliq.py::test_cliq_client_probe_capabilities_with_channel_context tests/test_cliq.py::test_cliq_client_probe_capabilities_with_message_context tests/test_cli.py::test_cliq_capabilities tests/test_cli.py::test_cliq_capabilities_with_message_probe tests/test_cli.py::test_cliq_capabilities_message_probe_requires_channel
       - 6 passed in 0.31s (cliq capabilities now supports optional message-scoped probes for message/files/attachments endpoint readiness, 2026-04-09T04:53:00Z)
       - ./.venv/bin/pytest -q tests/test_cliq.py tests/test_cli.py::test_cliq_whoami_from_users_me tests/test_cli.py::test_cliq_whoami_fallback_to_email_match tests/test_cli.py::test_cliq_send_channel tests/test_cli.py::test_cliq_send_channel_accepts_204_empty_body tests/test_cli.py::test_cliq_send_channel_with_image_url tests/test_cli.py::test_cliq_send_channel_with_voice_url tests/test_cli.py::test_cliq_voice_send_command tests/test_cli.py::test_cliq_voice_from_channel_filters_audio_files tests/test_cli.py::test_cliq_voice_handles_message_without_attachments tests/test_cli.py::test_cliq_send_requires_destination tests/test_cli.py::test_cliq_send_requires_content tests/test_cli.py::test_cliq_send_rejects_multiple_media_options tests/test_cli.py::test_cliq_voice_requires_destination tests/test_cli.py::test_cliq_user_resolve_email tests/test_cli.py::test_cliq_user_resolve_name tests/test_cli.py::test_cliq_messages_from_channel tests/test_cli.py::test_cliq_message_get_from_channel tests/test_cli.py::test_cliq_context_with_anchor tests/test_cli.py::test_cliq_search_from_channel tests/test_cli.py::test_cliq_file_from_channel tests/test_cli.py::test_cliq_react_add tests/test_cli.py::test_cliq_status_check_auth
@@ -97,7 +103,7 @@ suites:
   cli_smoke:
     status: passing
     notes:
-      - `./.venv/bin/python -m zoho_cli --config /tmp/zoho-test-config.json --account ai-dev@happy-distro.co.uk crm status` returns scaffold-ready payload with inferred base URL (`https://www.zohoapis.com/crm/v2`) (2026-04-08T14:07:20Z)
+      - "`./.venv/bin/python -m zoho_cli --config /tmp/zoho-test-config.json --account ai-dev@happy-distro.co.uk crm status` returns scaffold-ready payload with inferred base URL (`https://www.zohoapis.com/crm/v2`) (2026-04-08T14:07:20Z)"
       - cliq OAuth readiness surfaced in `zoho cliq status` (`requiredScopes`, `missingScopes`, `oauthReady`) and login now supports `--with-cliq` + repeatable `--scope`
       - cliq scaffold command `zoho cliq status` now reports readiness + inferred regional base URL and optional OAuth check
       - ZohoMailClient now retries retryable HTTP failures (429/5xx) and transport errors with bounded backoff
@@ -115,7 +121,9 @@ suites:
       - ./.venv/bin/python -m zoho_cli --config /tmp/zoho-test-config.json --account ai-dev@happy-distro.co.uk cliq send --network happydistrouklimited --user-id david@happy-distro.com --text "sticker smoke" --sticker :thumbsup:
       - ./.venv/bin/python -m zoho_cli --config /tmp/zoho-test-config.json --account ai-dev@happy-distro.co.uk cliq voice-send --network happydistrouklimited --user-id david@happy-distro.com --voice-url https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3 --text "voice-send smoke v2"
       - ./.venv/bin/python -m zoho_cli --config /tmp/zoho-test-config.json --account ai-dev@happy-distro.co.uk cliq voice 1775672331710_74865282494 --network happydistrouklimited --channel-id O6576524000097556005
-      - rich-media send baseline (image/file/audio/voice link cards + sticker shortcode append) returned `httpStatus: 204` in live DM smoke against david@happy-distro.com; voice receive path now returns empty list (not hard error) when a message has no attachments (2026-04-09T05:40:00Z)
+      - ./.venv/bin/python -m zoho_cli --config /tmp/zoho-test-config.json --account ai-dev@happy-distro.co.uk cliq voice-send --network happydistrouklimited --user-id david@happy-distro.com --voice-url /Users/adwasd/.openclaw/workspace-coder/test/sample-3.m4a --text "local voice file smoke 2"
+      - ./.venv/bin/python -m zoho_cli --config /tmp/zoho-test-config.json --account ai-dev@happy-distro.co.uk cliq chats --network happydistrouklimited
+      - rich-media send baseline (image/file/audio/voice link cards + sticker shortcode append) returned `httpStatus: 204` in live DM smoke against david@happy-distro.com, including local-path voice-url pass-through; `cliq chats` now exists but currently returns explicit `oauth_scope_invalid` on active token/network; voice receive path returns empty list (not hard error) when a message has no attachments (2026-04-09T06:05:00Z)
       - ./.venv/bin/python -m zoho_cli --config /tmp/zoho-test-config.json --account ai-dev@happy-distro.co.uk cliq search "cliq" --network happydistrouklimited --channel-id O6576524000097556005 --limit 5
       - live search now falls through endpoint/query variants and exits with documented `not_supported` (no hard api_error on first `extra_param_found`) (2026-04-09T01:49:18Z)
       - ./.venv/bin/python -m zoho_cli --config /tmp/zoho-test-config.json --account ai-dev@happy-distro.co.uk cliq file 1775672331710_74865282494 --network happydistrouklimited --channel-id O6576524000097556005
@@ -154,7 +162,7 @@ suites:
       - ./.venv/bin/python -m zoho_cli --config /tmp/zoho-test-config.json --account ai-dev@happy-distro.co.uk crm list --module Leads --limit 1
       - live crm list still fails with `HTTP 401 ... OAUTH_SCOPE_MISMATCH` (2026-04-08T15:47:19Z)
       - ./.venv/bin/python -m zoho_cli --config /tmp/zoho-test-config.json --account ai-dev@happy-distro.co.uk crm status --check-auth
-      - auth refresh succeeds, but CRM status reports `missingScopes: ["ZohoCRM.modules.ALL", "ZohoCRM.settings.ALL"]` and `oauthReady: false` (2026-04-08T15:37:04Z)
+      - "auth refresh succeeds, but CRM status reports `missingScopes: [\"ZohoCRM.modules.ALL\", \"ZohoCRM.settings.ALL\"]` and `oauthReady: false` (2026-04-08T15:37:04Z)"
       - ./.venv/bin/python -m zoho_cli --config /tmp/zoho-test-config.json --account ai-dev@happy-distro.co.uk crm list --module Leads --limit 1
       - live crm list currently fails with `HTTP 401 ... OAUTH_SCOPE_MISMATCH`; rerun after `zoho login --with-crm` (2026-04-08T15:37:14Z)
       - ./.venv/bin/python -m zoho_cli --config /tmp/zoho-test-config.json --account ai-dev@happy-distro.co.uk cliq status --check-auth --network happydistrouklimited
@@ -195,7 +203,7 @@ suites:
     status: warning
     notes:
       - ./.venv/bin/ruff format --check zoho_cli/cliq.py zoho_cli/cli.py tests/test_cliq.py tests/test_cli.py
-      - 4 files already formatted (2026-04-09T04:53:00Z)
+      - 4 files already formatted (2026-04-09T06:05:00Z)
       - ./.venv/bin/ruff format --check zoho_cli/cliq.py zoho_cli/cli.py tests/test_cliq.py tests/test_cli.py
       - 4 files already formatted (2026-04-09T05:40:00Z)
       - ./.venv/bin/ruff format --check zoho_cli/cli.py tests/test_cli.py

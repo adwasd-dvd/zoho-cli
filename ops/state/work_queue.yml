@@ -88,6 +88,14 @@
     - cliq-110
     - cliq-120
 
+- id: cliq-155
+  title: implement dm/group/channel conversation visibility and typed context matrix
+  module: cliq
+  stage: in_progress
+  priority: high
+  depends_on:
+    - cliq-150
+
 - id: cliq-160
   title: cliq hardening live matrix and release gate
   module: cliq

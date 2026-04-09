@@ -53,6 +53,55 @@ def test_cliq_client_channels(client: cliq.ZohoCliqClient) -> None:
 
 
 @respx.mock
+def test_cliq_client_chats(client: cliq.ZohoCliqClient) -> None:
+    route = respx.get("https://cliq.zoho.com/api/v2/chats").mock(
+        return_value=httpx.Response(
+            200,
+            json={"data": [{"id": "CT_1", "name": "DM David", "type": "direct"}]},
+        )
+    )
+    result = client.chats(limit=9)
+    assert result["data"][0]["id"] == "CT_1"
+    assert dict(route.calls.last.request.url.params)["limit"] == "9"
+
+
+@respx.mock
+def test_cliq_client_chats_scope_invalid_reports_hint(
+    client: cliq.ZohoCliqClient,
+    capsys: pytest.CaptureFixture[str],
+) -> None:
+    respx.get("https://cliq.zoho.com/api/v2/chats").mock(
+        return_value=httpx.Response(401, json={"code": "oauthtoken_scope_invalid"})
+    )
+
+    with pytest.raises(SystemExit):
+        client.chats(limit=3)
+
+    err = capsys.readouterr().err
+    assert "oauth_scope_invalid" in err
+    assert "ZohoCliq.Chats.ALL" in err
+
+
+def test_cliq_client_infer_message_types_detects_voice_sticker_and_text() -> None:
+    message = {
+        "text": "hello :thumbsup:",
+        "attachments": [
+            {
+                "mimeType": "audio/ogg",
+                "url": "https://example.com/voice.ogg",
+            }
+        ],
+        "sticker": {"id": "S1"},
+    }
+
+    result = cliq.ZohoCliqClient.infer_message_types(message)
+
+    assert "text" in result
+    assert "voice" in result
+    assert "sticker" in result
+
+
+@respx.mock
 def test_cliq_client_resolve_users_email_exact_first(
     client: cliq.ZohoCliqClient,
 ) -> None:

@@ -979,6 +979,8 @@ def test_cliq_messages_from_channel(mock_config: Path, mock_token_refresh: Any) 
     payload = json.loads(result.output)
     assert payload["chatId"] == "CT_1"
     assert payload["count"] == 1
+    assert payload["typedMessages"][0]["messageId"] == "M1"
+    assert "text" in payload["typedMessages"][0]["types"]
     assert dict(route.calls.last.request.url.params) == {"limit": "2"}
 
 
@@ -1082,6 +1084,7 @@ def test_cliq_message_get_from_channel(
     payload = json.loads(result.output)
     assert payload["chatId"] == "CT_1"
     assert payload["message"]["id"] == "M1"
+    assert "text" in payload["messageTypes"]
 
 
 @respx.mock
@@ -1120,6 +1123,7 @@ def test_cliq_context_with_anchor(mock_config: Path, mock_token_refresh: Any) ->
     payload = json.loads(result.output)
     assert payload["anchorInWindow"] is True
     assert len(payload["messages"]) == 3
+    assert len(payload["typedMessages"]) == 3
 
 
 @respx.mock
@@ -1797,6 +1801,25 @@ def test_cliq_channels_with_network(mock_config: Path, mock_token_refresh: Any) 
     assert result.exit_code == 0, result.output
     payload = json.loads(result.output)
     assert payload[0]["id"] == "C2"
+
+
+@respx.mock
+def test_cliq_chats(mock_config: Path, mock_token_refresh: Any) -> None:
+    respx.get("https://cliq.zoho.com/api/v2/chats").mock(
+        return_value=httpx.Response(
+            200,
+            json={"data": [{"id": "CT_1", "name": "DM David", "type": "direct"}]},
+        )
+    )
+
+    result = runner.invoke(
+        app, ["cliq", "chats", "--limit", "2"], env=_cfg_env(mock_config)
+    )
+    assert result.exit_code == 0, result.output
+    payload = json.loads(result.output)
+    assert payload["count"] == 1
+    assert payload["chats"][0]["chatId"] == "CT_1"
+    assert payload["chats"][0]["type"] == "direct"
 
 
 @respx.mock

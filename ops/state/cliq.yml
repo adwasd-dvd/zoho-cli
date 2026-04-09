@@ -1,5 +1,5 @@
 module: Cliq
-updated_at: "2026-04-08T23:26:36Z"
+updated_at: "2026-04-09T00:18:26Z"
 status: in_progress
 blockers: []
-next_small_step: start cliq-140 by implementing search command baseline with capability-aware endpoint fallbacks
+next_small_step: add cliq file/attachment retrieval baseline with capability-aware endpoint fallbacks

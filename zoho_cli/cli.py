@@ -1525,6 +1525,71 @@ def cliq_channel_unarchive(
     cliq_channel_archive(channel_id=channel_id, unarchive=True, network=network)
 
 
+@cliq_app.command("search")
+def cliq_search(
+    query: str = typer.Argument(..., help="Search query text."),
+    channel_id: Optional[str] = typer.Option(
+        None, "--channel-id", help="Source channel id (resolved to chat_id)."
+    ),
+    chat_id: Optional[str] = typer.Option(None, "--chat-id", help="Source chat id."),
+    limit: int = typer.Option(50, "--limit", "-n", help="Max results to return."),
+    from_time: Optional[str] = typer.Option(
+        None,
+        "--from-time",
+        help="Search window start (passed through to Cliq API).",
+    ),
+    to_time: Optional[str] = typer.Option(
+        None,
+        "--to-time",
+        help="Search window end (passed through to Cliq API).",
+    ),
+    network: Optional[str] = typer.Option(
+        None, "--network", help="Cliq network slug (e.g. happydistrouklimited)."
+    ),
+) -> None:
+    """Search messages for a channel/chat with keyword + optional time window."""
+    if not chat_id and not channel_id:
+        utils.error_exit("invalid_destination", "Provide --chat-id or --channel-id")
+
+    cfg = _cfg()
+    email = _require_account(cfg)
+    client = _get_cliq_client(cfg, email, network=network)
+
+    resolved_chat = (chat_id or "").strip() or client.resolve_chat_id(channel_id or "")
+    resp = client.search_messages(
+        query,
+        chat_id=resolved_chat,
+        channel_id=channel_id,
+        limit=limit,
+        from_time=from_time,
+        to_time=to_time,
+    )
+    data = resp.get("data", resp)
+    messages: list[dict] = []
+    if isinstance(data, list):
+        messages = [item for item in data if isinstance(item, dict)]
+    elif isinstance(data, dict):
+        for key in ("messages", "results", "items", "data"):
+            candidate = data.get(key)
+            if isinstance(candidate, list):
+                messages = [item for item in candidate if isinstance(item, dict)]
+                break
+
+    utils.output(
+        {
+            "chatId": resolved_chat or "",
+            "channelId": channel_id or "",
+            "query": query,
+            "window": {
+                "fromTime": from_time or "",
+                "toTime": to_time or "",
+            },
+            "count": len(messages),
+            "messages": messages,
+        }
+    )
+
+
 @cliq_app.command("messages")
 def cliq_messages(
     channel_id: Optional[str] = typer.Option(

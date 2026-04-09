@@ -23,6 +23,7 @@
 - Added explicit Cliq lifecycle command `zoho cliq channel-unarchive` as an alias for the existing unarchive flow to make admin sweep scripts clearer (`channel-create/archive/unarchive/delete`).
 - Added remaining Cliq admin lifecycle commands for `cliq-130`: `zoho cliq channel-rename` and `zoho cliq channel-topic`, with fallback endpoint/payload probing for org API variations.
 - Completed live cliq-130 admin sweep verification on `happydistrouklimited` (`member-add`, `member-remove`, `channel-create`, `channel-archive`, `channel-unarchive`, `channel-delete`) with corrected channel id handling.
+- Added `zoho cliq search` baseline (`cliq-140`) with keyword + optional `--from-time/--to-time` window filters, channel/chat destination support, and response shaping for message lists.
 - Added CRM fields read path: `zoho crm fields --module <api_name>` with pagination, backed by `ZohoCrmClient.fields` (`/settings/fields`).
 - Added CRM read-only record commands for `crm-002`: `zoho crm list`, `zoho crm get`, and `zoho crm search` (`--criteria` or `--word`) wired through `ZohoCrmClient` with pagination/field-selection support.
 
@@ -39,6 +40,7 @@
 - Cliq send/notify now surface a dedicated `oauth_scope_invalid` error with an explicit re-auth hint (`zoho login --with-cliq` + `ZohoCliq.Webhooks.CREATE`) when all candidate message endpoints fail due to missing scope.
 - Removed legacy `ZohoCliq.Messages.CREATE` from the recommended `--with-cliq` scope bundle so `zoho cliq status` and login guidance align with the actual send/notify requirement (`ZohoCliq.Webhooks.CREATE`).
 - Hardened Cliq send/notify endpoint resolution: channel targets now retry by resolving `/channels/{id}` into `chat_id`/`unique_name` before posting, and user-target sends now prefer the documented `/buddies/{id_or_email}/message` endpoint (with legacy fallback retained).
+- Added Cliq search fallback probing in `ZohoCliqClient.search_messages` across endpoint and query/window param variants, including explicit `not_supported` and `oauth_scope_invalid` fail-fast errors for unsupported or scope-blocked search APIs.
 - Bumped package/runtime version metadata to `0.2.0` (`pyproject.toml` and `zoho_cli.__version__`) and made CLI `--version` prefer local package `__version__` first so source-checkout runs do not report stale installed metadata.
 - Updated Mail module status to in_progress and cleared blockers.
 - Prevented `mail download-attachment --parse` from crashing when parsing fails; it now returns a warning payload after saving the file.

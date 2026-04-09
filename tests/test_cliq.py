@@ -175,6 +175,53 @@ def test_cliq_client_list_messages_from_channel_id(client: cliq.ZohoCliqClient) 
 
 
 @respx.mock
+def test_cliq_client_search_messages_with_fallback_endpoint(
+    client: cliq.ZohoCliqClient,
+) -> None:
+    respx.get("https://cliq.zoho.com/api/v2/channels/O1").mock(
+        return_value=httpx.Response(200, json={"data": {"chat_id": "CT_1"}})
+    )
+    respx.get("https://cliq.zoho.com/api/v2/chats/CT_1/messages/search").mock(
+        return_value=httpx.Response(404, text="request_url_invalid")
+    )
+    route = respx.get("https://cliq.zoho.com/api/v2/chats/CT_1/search/messages").mock(
+        return_value=httpx.Response(200, json={"data": [{"id": "M1"}]})
+    )
+
+    result = client.search_messages(
+        "deploy",
+        channel_id="O1",
+        limit=5,
+        from_time="1710000000",
+        to_time="1710009999",
+    )
+
+    assert route.called
+    assert result["data"][0]["id"] == "M1"
+    assert dict(route.calls.last.request.url.params).get("limit") == "5"
+
+
+@respx.mock
+def test_cliq_client_search_messages_not_supported_reports_capability_hint(
+    client: cliq.ZohoCliqClient,
+    capsys: pytest.CaptureFixture[str],
+) -> None:
+    respx.get("https://cliq.zoho.com/api/v2/chats/CT_1/messages/search").mock(
+        return_value=httpx.Response(404, text="request_url_invalid")
+    )
+    respx.get("https://cliq.zoho.com/api/v2/chats/CT_1/search/messages").mock(
+        return_value=httpx.Response(404, text="request_url_invalid")
+    )
+
+    with pytest.raises(SystemExit):
+        client.search_messages("deploy", chat_id="CT_1")
+
+    err = capsys.readouterr().err
+    assert "not_supported" in err
+    assert "cliq capabilities" in err
+
+
+@respx.mock
 def test_cliq_client_get_message_from_chat_id(client: cliq.ZohoCliqClient) -> None:
     route = respx.get("https://cliq.zoho.com/api/v2/chats/CT_1/messages/M1").mock(
         return_value=httpx.Response(200, json={"data": {"id": "M1", "text": "hello"}})

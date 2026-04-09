@@ -1,10 +1,12 @@
-last_run_at: "2026-04-08T23:26:36Z"
+last_run_at: "2026-04-09T00:18:26Z"
 last_result: warning
 current_focus: cliq
 suites:
   unit:
     status: passing
     notes:
+      - ./.venv/bin/pytest -q tests/test_cliq.py::test_cliq_client_search_messages_with_fallback_endpoint tests/test_cliq.py::test_cliq_client_search_messages_not_supported_reports_capability_hint tests/test_cli.py::test_cliq_search_from_channel tests/test_cli.py::test_cliq_search_requires_destination
+      - 4 passed in 0.18s (cliq-140 search baseline command + fallback routing coverage, 2026-04-09T00:18:26Z)
       - ./.venv/bin/pytest -q tests/test_cliq.py tests/test_cli.py::test_cliq_member_add tests/test_cli.py::test_cliq_member_remove tests/test_cli.py::test_cliq_members_from_channel tests/test_cli.py::test_cliq_channel_create tests/test_cli.py::test_cliq_channel_archive tests/test_cli.py::test_cliq_channel_delete tests/test_cli.py::test_cliq_reply_from_channel tests/test_cli.py::test_cliq_edit_message tests/test_cli.py::test_cliq_delete_message tests/test_cli.py::test_cliq_react_add tests/test_cli.py::test_cliq_messages_from_channel tests/test_cli.py::test_cliq_message_get_from_channel tests/test_cli.py::test_cliq_context_with_anchor tests/test_cli.py::test_cliq_capabilities tests/test_cli.py::test_cliq_send_channel tests/test_cli.py::test_cliq_notify_mail_to_channel tests/test_cli.py::test_cliq_status_check_auth
       - 51 passed in 0.40s (cliq admin/write/read focused suite with updated member fallback chain, 2026-04-08T22:45:05Z)
       - ./.venv/bin/pytest -q tests/test_cliq.py::test_request_with_candidates_retries_on_extra_key_found tests/test_cliq.py::test_request_with_candidates_retries_on_request_method_invalid tests/test_cliq.py::test_cliq_client_update_channel_topic_success tests/test_cliq.py::test_cliq_client_add_member_success tests/test_cli.py::test_cliq_channel_topic tests/test_cli.py::test_cliq_member_add tests/test_cli.py::test_cliq_member_remove
@@ -159,6 +161,8 @@ suites:
   ci:
     status: warning
     notes:
+      - ./.venv/bin/ruff format --check zoho_cli/cliq.py zoho_cli/cli.py tests/test_cliq.py tests/test_cli.py
+      - 4 files already formatted (2026-04-09T00:18:26Z)
       - ./.venv/bin/ruff format --check zoho_cli/cliq.py tests/test_cliq.py
       - 2 files already formatted (2026-04-08T21:19:33Z)
       - ./.venv/bin/ruff format --check zoho_cli/cliq.py zoho_cli/cli.py tests/test_cliq.py tests/test_cli.py

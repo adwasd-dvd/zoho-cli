@@ -913,6 +913,52 @@ def test_cliq_messages_from_channel(mock_config: Path, mock_token_refresh: Any) 
 
 
 @respx.mock
+def test_cliq_search_from_channel(mock_config: Path, mock_token_refresh: Any) -> None:
+    respx.get("https://cliq.zoho.com/api/v2/channels/O1").mock(
+        return_value=httpx.Response(200, json={"data": {"chat_id": "CT_1"}})
+    )
+    route = respx.get("https://cliq.zoho.com/api/v2/chats/CT_1/messages/search").mock(
+        return_value=httpx.Response(200, json={"data": [{"id": "M1"}]})
+    )
+
+    result = runner.invoke(
+        app,
+        [
+            "cliq",
+            "search",
+            "deploy",
+            "--channel-id",
+            "O1",
+            "--limit",
+            "3",
+            "--from-time",
+            "1710000000",
+            "--to-time",
+            "1710009999",
+        ],
+        env=_cfg_env(mock_config),
+    )
+    assert result.exit_code == 0, result.output
+    payload = json.loads(result.output)
+    assert payload["chatId"] == "CT_1"
+    assert payload["query"] == "deploy"
+    assert payload["count"] == 1
+    assert dict(route.calls.last.request.url.params)["limit"] == "3"
+
+
+def test_cliq_search_requires_destination(
+    mock_config: Path, mock_token_refresh: Any
+) -> None:
+    result = runner.invoke(
+        app,
+        ["cliq", "search", "deploy"],
+        env=_cfg_env(mock_config),
+    )
+    assert result.exit_code == 1
+    assert "invalid_destination" in result.output
+
+
+@respx.mock
 def test_cliq_message_get_from_channel(
     mock_config: Path, mock_token_refresh: Any
 ) -> None:

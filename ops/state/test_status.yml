@@ -1,10 +1,12 @@
-last_run_at: "2026-04-09T10:38:34Z"
+last_run_at: "2026-04-09T11:12:55Z"
 last_result: warning
 current_focus: cliq
 suites:
   unit:
     status: passing
     notes:
+      - ./.venv/bin/pytest -q tests/test_cliq.py::test_cliq_client_send_local_image_message_prefers_image_field tests/test_cli.py::test_cliq_send_channel_with_local_image_file tests/test_cli.py::test_cliq_send_channel_with_local_voice_file
+      - 3 passed in 0.18s (local multipart upload fallback now prefers `image`/`photo` field candidates for local image sends, 2026-04-09T11:12:55Z)
       - make release-gate
       - 243 passed in 3.83s + wheel smoke passed (0.2.0) (2026-04-09T10:38:34Z)
       - ./.venv/bin/pytest -q

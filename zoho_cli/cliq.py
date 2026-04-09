@@ -2071,6 +2071,17 @@ class ZohoCliqClient:
                 "files[]",
                 "attachments[]",
             ]
+        elif media_kind == "image":
+            file_fields = [
+                "image",
+                "photo",
+                "file",
+                "files",
+                "attachment",
+                "attachments",
+                "files[]",
+                "attachments[]",
+            ]
 
         text_fields: list[dict[str, Any]] = []
         if msg_text:

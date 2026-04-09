@@ -59,6 +59,7 @@
 - `cliq whoami` no longer hard-fails when `/users` list is restricted on a base URL; it now reports unresolved/best-effort identity with captured probe attempts.
 - `cliq chats` now fails fast with explicit `oauth_scope_invalid`/`not_supported` diagnostics instead of generic API errors when conversation listing is blocked by token or endpoint constraints.
 - `zoho cliq send` no longer silently degrades media sends to text-only fallback payloads when media attachment candidates fail; strict media mode now preserves attachment/card intent and surfaces API failure directly.
+- Local multipart image uploads now prefer `image`/`photo` form field candidates before generic file keys, improving compatibility for `zoho cliq send --image-url <local-path>` endpoint variants.
 - Bumped package/runtime version metadata to `0.2.0` (`pyproject.toml` and `zoho_cli.__version__`) and made CLI `--version` prefer local package `__version__` first so source-checkout runs do not report stale installed metadata.
 - Updated Mail module status to in_progress and cleared blockers.
 - Prevented `mail download-attachment --parse` from crashing when parsing fails; it now returns a warning payload after saving the file.

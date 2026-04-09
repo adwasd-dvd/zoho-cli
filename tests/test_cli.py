@@ -2179,6 +2179,47 @@ def test_cliq_send_channel_with_local_voice_file(
     assert payload["media"]["localPath"] == str(sample)
 
 
+@respx.mock
+def test_cliq_send_channel_with_local_image_file(
+    tmp_path: Path,
+    mock_config: Path,
+    mock_token_refresh: Any,
+) -> None:
+    sample = tmp_path / "image.png"
+    sample.write_bytes(b"png-bytes")
+
+    route = respx.post("https://cliq.zoho.com/api/v2/channelsbyname/C1/message").mock(
+        return_value=httpx.Response(200, json={"data": {"message_id": "M3"}})
+    )
+    respx.get("https://cliq.zoho.com/api/v2/channels/C1").mock(
+        return_value=httpx.Response(404, text="not_found")
+    )
+
+    result = runner.invoke(
+        app,
+        [
+            "cliq",
+            "send",
+            "--channel-id",
+            "C1",
+            "--image-url",
+            str(sample),
+            "--text",
+            "image",
+        ],
+        env=_cfg_env(mock_config),
+    )
+    assert result.exit_code == 0, result.output
+
+    raw = route.calls.last.request.content
+    assert b'name="image"' in raw
+    assert b'filename="image.png"' in raw
+
+    payload = json.loads(result.output)
+    assert payload["status"] == "ok"
+    assert payload["media"]["localPath"] == str(sample)
+
+
 def test_cliq_send_rejects_missing_local_file(
     mock_config: Path,
     mock_token_refresh: Any,

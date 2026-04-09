@@ -387,6 +387,32 @@ def test_cliq_client_send_local_file_message_to_user(
 
 
 @respx.mock
+def test_cliq_client_send_local_image_message_prefers_image_field(
+    client: cliq.ZohoCliqClient,
+    tmp_path: Path,
+) -> None:
+    sample = tmp_path / "image.png"
+    sample.write_bytes(b"png-bytes")
+
+    route = respx.post("https://cliq.zoho.com/api/v2/buddies/U1/message").mock(
+        return_value=httpx.Response(200, json={"data": {"status": "ok"}})
+    )
+
+    result = client.send_local_file_message(
+        str(sample),
+        user_id="U1",
+        text="image",
+        media_kind="image",
+    )
+
+    assert route.called
+    raw = route.calls.last.request.content
+    assert b'name="image"' in raw
+    assert b'filename="image.png"' in raw
+    assert result["data"]["status"] == "ok"
+
+
+@respx.mock
 def test_cliq_client_send_scope_invalid_reports_reauth_hint(
     client: cliq.ZohoCliqClient,
     capsys: pytest.CaptureFixture[str],

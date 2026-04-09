@@ -1,116 +1,91 @@
-# zoho — Zoho Mail, Cliq, and CRM in your terminal
-
-[![GitHub release](https://img.shields.io/github/v/release/adwasd-dvd/zoho-cli)](https://github.com/adwasd-dvd/zoho-cli/releases)
-[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
+# zoho-cli — Zoho Mail, Cliq, and CRM in your terminal
 
 Fast, script-friendly CLI for Zoho Mail, Cliq, and CRM. JSON output by default, Markdown tables with `--md`. Pipe to `jq`, use in scripts, or feed directly to AI agents.
 
-Built in the spirit of [steipete/gog](https://github.com/steipete/gog) — a Google Workspace CLI designed to give LLMs and AI agents (like [OpenClaw](https://openclaw.ai)) direct access to your tools without any middleman. You create your own Zoho OAuth app, connect it once, and you're done. No third-party service, no subscription, no data leaving your machine. Free forever.
-
-```bash
-$ zoho mail list
-[
-  {
-    "messageId": "1771333290108014300",
-    "subject": "Q1 invoice attached",
-    "from": "billing@acme.com",
-    "date": "1740067200000",
-    "unread": true,
-    "hasAttachments": true
-  }
-]
-
-$ zoho --md mail list
-| ID                   | FROM            | SUBJECT              | DATE   | UNREAD |
-| -------------------- | --------------- | -------------------- | ------ | ------ |
-| 1771333290108014300  | billing@acme.com| Q1 invoice attached  | Feb 20 | ●      |
-```
+[![GitHub release](https://img.shields.io/github/v/release/adwasd-dvd/zoho-mail-cli-zomacli)](https://github.com/adwasd-dvd/zoho-mail-cli-zomacli/releases)
+[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 
 ---
 
-## Install
-
-**Requires Python 3.11+. Works on macOS, Linux, and Windows.**
+## Quick start
 
 ```bash
-# Homebrew (macOS / Linux)
-brew install adwasd-dvd/tap/zoho-cli
+# Install via uv (recommended)
+uv tool install git+https://github.com/adwasd-dvd/zoho-mail-cli-zomacli
 
-# uv (all platforms)
-uv tool install git+https://github.com/adwasd-dvd/zoho-cli
+# Or pipx
+pipx install git+https://github.com/adwasd-dvd/zoho-mail-cli-zomacli
 
-# pipx (all platforms)
-pipx install git+https://github.com/adwasd-dvd/zoho-cli
-```
-
-Or from source:
-
-```bash
-git clone https://github.com/adwasd-dvd/zoho-cli
-cd zoho-cli
+# From source
+git clone https://github.com/adwasd-dvd/zoho-mail-cli-zomacli
+cd zoho-mail-cli-zomacli
 uv tool install .
-
-This fork also includes OpenClaw integration helpers in `integrations/openclaw/` and sanitized debugging notes in `experiments/attachment-debug/`.
 ```
+
+### Setup
+
+1. **Create an OAuth client** in [Zoho API Console](https://api-console.zoho.com) → Server-based Application
+   - Redirect URI: `http://localhost:51821/callback` (or add headless fallback)
+   
+2. **Authenticate**
+   ```bash
+   zoho login
+   # For Cliq/CRM scopes:
+   zoho login --with-cliq --with-crm
+   ```
 
 ---
 
-## Setup
+## What works now
 
-### 1 — Create an OAuth client in Zoho
+### ✅ Zoho Mail (v0.2.0 stable)
 
-1. Go to **[api-console.zoho.com](https://api-console.zoho.com/)** → **Add Client** → **Server-based Application**.
+- `zoho mail list` — List messages with filtering
+- `zoho mail search "query"` — Full-text and field-based search
+- `zoho mail get <id>` — Get full message content
+- `zoho mail send --to ... --subject ... --text ...` — Send messages
+- `zoho mail attachments <id>` / `download-attachment` — Handle attachments
+- `zoho mail mark-read/unread`, `archive`, `delete`, `move` — Message operations
+- Folder management: `folders list/create/rename/delete`
 
-2. Fill in:
+### ✅ Zoho Cliq (v0.4.0 in progress)
 
-   | Field | Value |
-   |---|---|
-   | Client Name | `zoho-cli` |
-   | Homepage URL | `https://example.com` |
-   | Authorized Redirect URIs | `http://localhost:51821/callback` |
+**Read plane:**
+- `cliq status --check-auth` — Auth and scope verification
+- `cliq capabilities` — Capability matrix for token/org/network
+- `cliq channels`, `users`, `members` — List resources
+- `cliq messages <channel-id>` / `message <id>` — Read messages
+- `cliq context` — Message thread context
 
-   > The CLI spins up a local server on port 51821 to capture the OAuth code automatically — no copy-pasting URLs.
-   >
-   > For headless/CI use, also add `https://example.com/zoho/oauth/callback` and use `zoho login --no-browser`.
+**Write plane:**
+- `cliq send --text ...` — Send messages
+- `cliq reply/edit/delete/react` — Message operations
 
-3. Copy the **Client ID** and **Client Secret**.
+**Admin plane (active development):**
+- `cliq channel-create`, `channel-archive/unarchive`, `channel-delete --force`
+- `cliq member-add/remove`
+- `cliq channel-rename`, `channel-topic`
 
-### 2 — Run the setup wizard
+### ⏳ Zoho CRM (planned)
 
-```bash
-zoho config init
-```
+- Module/field listing
+- Record CRUD operations
+- Search and advanced queries
 
-The wizard walks you through entering your credentials, saves the config, then offers to open the browser and log you in immediately — so steps 2 and 3 are one command.
+---
 
-Config is saved to the platform config dir:
-- macOS: `~/Library/Application Support/zoho-cli/config.json`
-- Linux: `~/.config/zoho-cli/config.json`
-- Windows: `%APPDATA%\zoho-cli\config.json`
-
-If you prefer to log in separately:
-
-```bash
-zoho login
-# include recommended Cliq scopes
-zoho login --with-cliq
-# include recommended CRM scopes
-zoho login --with-crm
-# add extra scopes explicitly when needed
-zoho login --with-cliq --scope ZohoCliq.Messages.READ
-```
-
-Your browser opens, you approve access on Zoho's consent screen, and a "You're connected" page confirms the callback was received. Tokens are stored in your OS keyring.
-
-> **Note:** The consent screen appears every time you run `zoho login`. This is intentional — it ensures Zoho always issues a fresh token.
-
-**Region is auto-detected** — the CLI probes all Zoho data centres in parallel and picks the right one for your client ID. EU, India, Australia, Japan, Canada accounts all work without any extra config.
-
-**Headless / SSH:**
+## Output formats
 
 ```bash
-zoho login --no-browser
-# prints URL → paste the redirect URL back into the terminal
+# JSON (default, script-friendly)
+zoho mail list | jq '.[].subject'
+
+# Markdown tables (--md flag)
+zoho --md mail list
+zoho --md folders list
+
+# Errors go to stderr, data to stdout
+zoho mail list 2>/dev/null
 ```
 
 ---
@@ -118,7 +93,7 @@ zoho login --no-browser
 ## Global flags
 
 | Flag | Env var | Description |
-|---|---|---|
+| --- | --- | --- |
 | `--account EMAIL` | `ZOHO_ACCOUNT` | Account to use |
 | `--config PATH` | `ZOHO_CONFIG` | Config file path |
 | `--md` | — | Markdown table output |
@@ -126,295 +101,24 @@ zoho login --no-browser
 
 ---
 
-## Mail
-
-### List
-
-```bash
-zoho mail list                          # Inbox, 50 messages
-zoho mail list --folder Sent -n 20
-zoho mail list --folder "My Project" --limit 100
-```
-
-Output fields: `messageId`, `folderId`, `subject`, `from`, `to`, `date`, `unread`, `hasAttachments`, `tags`.
-
-### Search
-
-```bash
-zoho mail search "invoice 2025"                  # plain text → searches everywhere
-zoho mail search "subject:invoice" -n 10         # subject only
-zoho mail search "from:boss@example.com" -n 10   # by sender
-zoho mail search "entire:oliwa" -n 20            # explicit full-text
-```
-
-Plain words are automatically searched across all fields (`entire:`). You can also use Zoho's search syntax directly: `subject:`, `from:`, `content:`, `entire:`, `has:attachment`, `newMails`.
-
-### Get full message
-
-```bash
-zoho mail get MESSAGE_ID
-zoho mail get MESSAGE_ID --folder-id FOLDER_ID   # faster, skips folder scan
-zoho mail get MESSAGE_ID | jq '.textBody'
-```
-
-Output adds: `cc`, `bcc`, `textBody`, `htmlBody`.
-
-### Send
-
-```bash
-# Plain text
-zoho mail send --to alice@example.com --subject "Hello" --text "Hi there!"
-
-# HTML + attachments + multiple recipients
-zoho mail send \
-  --to alice@example.com --to bob@example.com \
-  --cc manager@example.com \
-  --subject "Q1 Report" \
-  --html-file report.html \
-  --attach report.pdf --attach data.csv
-```
-
-### Attachments
-
-```bash
-zoho mail attachments MESSAGE_ID
-zoho mail download-attachment MESSAGE_ID ATTACHMENT_ID --out ~/Downloads/invoice.pdf
-```
-
-### Flag / status operations
-
-All accept one or more message IDs:
-
-```bash
-zoho mail mark-read   ID [ID …]
-zoho mail mark-unread ID [ID …]
-zoho mail move        ID [ID …] --to Archive
-zoho mail spam        ID [ID …]
-zoho mail not-spam    ID [ID …]
-zoho mail archive     ID [ID …]
-zoho mail unarchive   ID [ID …]
-zoho mail delete      ID [ID …]            # → Trash
-zoho mail delete      ID [ID …] --permanent
-```
-
----
-
-## Folders
-
-```bash
-zoho folders list
-zoho folders create "Project X" [--parent-id ID]
-zoho folders rename FOLDER_ID "New Name"
-zoho folders delete FOLDER_ID
-```
-
----
-
-## Config
-
-```bash
-zoho config init    # interactive wizard
-zoho config show    # dump JSON (secret redacted)
-zoho config path    # show file path
-```
-
----
-
-## Cliq
-
-```bash
-# readiness + auth/scope status
-zoho cliq status --check-auth --network happydistrouklimited
-
-# capability matrix for token/org/network
-zoho cliq capabilities --network happydistrouklimited --channel-id <channelId>
-
-# read plane
-zoho cliq channels --network happydistrouklimited --limit 20
-zoho cliq users --network happydistrouklimited --limit 20
-zoho cliq user-resolve "david@happy-distro.com" --by email --network happydistrouklimited
-zoho cliq user-resolve "David Wang" --by name --network happydistrouklimited
-zoho cliq members --network happydistrouklimited --channel-id <channelId>
-zoho cliq messages --network happydistrouklimited --channel-id <channelId> --limit 20
-zoho cliq message <messageId> --network happydistrouklimited --channel-id <channelId>
-zoho cliq context --network happydistrouklimited --channel-id <channelId> --before 3 --after 3 --limit 40
-
-# write plane
-zoho cliq send --network happydistrouklimited --channel-id <channelId> --text "hello"
-zoho cliq reply <messageId> --network happydistrouklimited --channel-id <channelId> --text "ack"
-zoho cliq edit <messageId> --network happydistrouklimited --channel-id <channelId> --text "edited"
-zoho cliq delete <messageId> --network happydistrouklimited --channel-id <channelId>
-zoho cliq react <messageId> --network happydistrouklimited --channel-id <channelId> --emoji :thumbsup:
-
-# admin plane (first slice)
-zoho cliq channel-create --network happydistrouklimited --name "ops-updates" --level organization
-zoho cliq channel-archive <channelId> --network happydistrouklimited
-zoho cliq channel-archive <channelId> --network happydistrouklimited --unarchive
-zoho cliq channel-delete <channelId> --network happydistrouklimited --force
-zoho cliq member-add <userId> --network happydistrouklimited --channel-id <channelId>
-zoho cliq member-remove <userId> --network happydistrouklimited --channel-id <channelId>
-zoho cliq channel-rename <channelId> --name "ops-updates-renamed" --network happydistrouklimited
-zoho cliq channel-topic <channelId> --topic "incident bridge" --network happydistrouklimited
-```
-
-Cliq scope notes:
-- message/context read requires `ZohoCliq.Messages.READ`
-- mutable/admin operations may require broader scopes, for example `ZohoCliq.Channels.ALL`, `ZohoCliq.Messages.UPDATE`, `ZohoCliq.Messages.DELETE`, `ZohoCliq.messageactions.CREATE`
-
----
-
-## CRM
-
-```bash
-zoho crm status --check-auth
-zoho crm modules --limit 20
-zoho crm fields --module Leads --limit 50
-zoho crm list --module Leads --limit 20
-zoho crm get <recordId> --module Leads
-zoho crm search --module Leads --criteria "(Last_Name:equals:Smith)"
-```
-
-If your account is not part of a CRM org, Zoho will not grant CRM scopes and live CRM calls will return `OAUTH_SCOPE_MISMATCH`.
-
----
-
-## Output
-
-JSON is always the default — in a terminal, in a pipe, everywhere. Use `--md` for markdown tables.
-
-```bash
-zoho mail list                      # JSON
-zoho mail list | jq '.[].subject'   # pipe to jq
-zoho --md mail list                 # markdown table
-zoho --md folders list              # markdown table
-
-# errors go to stderr as JSON, stdout stays clean
-zoho mail list 2>/dev/null
-```
-
-`NO_COLOR=1` disables colour.
-
----
-
-## Scripting
-
-```bash
-# all unread subjects
-zoho mail list | jq -r '.[] | select(.unread) | .subject'
-
-# download all attachments from a message
-ATTS=$(zoho mail attachments "$MSG_ID" | jq -r '.[].attachmentId')
-for id in $ATTS; do
-  zoho mail download-attachment "$MSG_ID" "$id" --out "/tmp/$id"
-done
-
-# search → get body → send summary
-BODY=$(zoho mail search "budget approval" -n 1 \
-  | jq -r '.[0].messageId' \
-  | xargs -I{} zoho mail get {} \
-  | jq -r '.textBody')
-zoho mail send --to cfo@example.com --subject "FWD: budget approval" --text "$BODY"
-```
-
----
-
-## Multiple accounts
-
-```bash
-zoho login --account work@company.com
-zoho login --account personal@me.com
-
-zoho --account work@company.com mail list
-export ZOHO_ACCOUNT=work@company.com
-```
-
----
-
-## Environment variables
-
-| Variable | Default | Description |
-|---|---|---|
-| `ZOHO_ACCOUNT` | — | Default account |
-| `ZOHO_CONFIG` | platform default | Config file path |
-| `ZOHO_BASE_URL` | `https://mail.zoho.com/api` | Mail API base (EU: `https://mail.zoho.eu/api`) |
-| `ZOHO_ACCOUNTS_BASE_URL` | `https://accounts.zoho.com` | OAuth base (EU: `https://accounts.zoho.eu`) |
-| `ZOHO_TOKEN_PASSWORD` | — | Passphrase for encrypted file token storage (CI/headless) |
-| `NO_COLOR` | — | Disable colour |
-
-**EU / India:** these are set automatically per-account during login. Override manually only if needed.
-
----
-
-## CI / headless
-
-```bash
-# 1. Login locally with file-based token storage
-export ZOHO_TOKEN_PASSWORD=ci-secret
-export ZOHO_CONFIG=/tmp/zoho-ci/config.json
-zoho login --no-browser
-
-# 2. Copy config dir to CI secrets
-
-# 3. In CI
-export ZOHO_TOKEN_PASSWORD=ci-secret
-export ZOHO_CONFIG=/secrets/zoho-ci/config.json
-zoho mail list
-```
-
----
-
-## Config file
-
-```json
-{
-  "client_id": "1000.XXXXXXXXX",
-  "client_secret": "xxxxxxxxxxxxx",
-  "redirect_uri": "https://example.com/zoho/oauth/callback",
-  "default_account": "you@example.com",
-  "accounts": {
-    "you@example.com": {
-      "accountId": "2560636000000008002",
-      "scopes": ["ZohoMail.messages.ALL", "ZohoMail.folders.ALL", "ZohoMail.accounts.READ"],
-      "accounts_server": "https://accounts.zoho.eu",
-      "mail_base_url": "https://mail.zoho.eu/api"
-    }
-  }
-}
-```
-
----
-
-## Troubleshooting
-
-**Homebrew: `ModuleNotFoundError: No module named 'idna'`** — You're on an old formula that didn't install all Python deps. Upgrade to the latest formula (0.1.5+), which includes them:
-
-```bash
-brew update && brew upgrade zoho-cli
-```
-
-Check version with `zoho -v`; you should see 0.1.5 or newer. If the error persists, the tap formula may need its resources refreshed. In the [tap repo](https://github.com/adwasd-dvd/homebrew-tap) run `brew update-python-resources adwasd-dvd/tap/zoho-cli`, commit the updated `Formula/zoho-cli.rb`, push, then on your Mac run `brew update && brew upgrade zoho-cli` again.
-
-**`No stored token`** → run `zoho login --account you@example.com`.
-
-**`oauth_no_refresh_token`** → Zoho didn't issue a refresh token. Either:
-
-- The app's **Access Type** in the API console is set to **Online** instead of **Offline** — open [api-console.zoho.com](https://api-console.zoho.com/), edit your client, set Access Type to Offline.
-- Or a previous failed login left a stale authorization on Zoho's side. Go to [accounts.zoho.com/apiauthstatus](https://accounts.zoho.com/apiauthstatus) (use `.eu`/`.in`/etc. for your region), revoke **zoho-cli**, then run `zoho login` again.
-
-**`token_refresh_failed HTTP 400`** → refresh token revoked (password change, client regenerated). Run `zoho login` again.
-
-**`No accountId stored`** → run `zoho login` again; the CLI will re-discover it.
-
-**"This site can't be reached" in browser** → that is expected for `https://example.com/…`. Only happens with `--no-browser`. Copy the full URL from the address bar.
-
-**`invalid_client` on token exchange** → your account is on a different regional server. Make sure you are using the latest version; regional detection is automatic.
-
-**keyring errors on Linux** →
-
-```bash
-sudo apt install gnome-keyring libsecret-1-0
-# or use file fallback:
-export ZOHO_TOKEN_PASSWORD=passphrase
+## Project structure
+
+```text
+zoho_cli/
+├── core/              # Shared platform layers
+│   ├── auth/          # OAuth flow, token refresh
+│   ├── config/        # Config loading, regions
+│   ├── http/          # HTTP client with error handling
+│   ├── output/        # JSON/Markdown formatters
+│   ├── errors/        # Error types and exit handling
+│   └── pagination/    # Pagination helpers
+├── products/          # Product modules (mail/cliq/crm)
+├── cli.py             # CLI entry point (Typer)
+└── registry.py        # Command registration
+
+ops/state/             # Project state files (source of truth)
+docs/roadmap/          # Release plans and milestones
+integrations/openclaw/ # OpenClaw automation helpers
 ```
 
 ---
@@ -423,42 +127,64 @@ export ZOHO_TOKEN_PASSWORD=passphrase
 
 ```bash
 uv venv && uv pip install -e ".[dev]"
-source .venv/bin/activate
 pytest
+make release-gate   # Packaging + lint checks
 ```
 
-```
-zoho_cli/
-├── cli.py       # all Typer commands
-├── api.py       # httpx client, one method per endpoint
-├── auth.py      # OAuth flow, local callback server, token refresh
-├── cliq.py      # Cliq client and capability/read/write/admin helpers
-├── crm.py       # CRM client and read-only scaffolding
-├── mail.py      # message formatters, folder resolution
-├── folders.py   # folder formatter
-├── config.py    # config load/save, env var overrides
-├── storage.py   # OS keyring + encrypted file fallback
-└── utils.py     # JSON/markdown output, errors, date helpers
-```
+### State-driven workflow
 
+Project state lives in `ops/state/*.yml`:
+- `module_status.yml` — Module priorities and blockers
+- `active_task.yml` — Current task with success criteria
+- `work_queue.yml` — Backlog of tasks
+- `test_status.yml`, `release_status.yml` — Verification tracking
 
 ---
 
-## OpenClaw quickstart
+## Release train
 
-This repository includes a ready-to-use OpenClaw starter pack for long-running development automation.
+| Version | Milestone | Status |
+| --- | --- | --- |
+| v0.2.0 | Mail stabilized + shared core extracted | ✅ Stable |
+| v0.3.0 | Cliq baseline (read/write) | ⏳ In progress |
+| v0.4.0 | Cliq admin plane + Mail×Cliq integration | 🚧 Active |
+| v0.5.0 | CRM read-only scaffolding | 📋 Planned |
+| v0.6.0 | CRM write baseline | 📋 Planned |
 
-From the repo root:
+---
+
+## OpenClaw automation
+
+This repo includes helpers for long-running development automation:
 
 ```bash
 bash integrations/openclaw/bin/bootstrap_openclaw_workspace.sh --repo "$(pwd)"
 ```
 
-That creates a dedicated OpenClaw workspace shell, points agents at the project state files, and gives you the kickoff prompt plus recurring job prompt files.
-
 Key files:
-- `integrations/openclaw/START_HERE.md`
-- `integrations/openclaw/templates/KICKOFF_PROMPT.md`
-- `ops/prompts/`
-- `ops/state/`
-- `ops/cron/README.md`
+- `integrations/openclaw/START_HERE.md` — Quickstart guide
+- `ops/prompts/` — Agent prompts for consistent workflows
+- `ops/cron/README.md` — Scheduled verification setup
+
+---
+
+## Contributing
+
+This project is forked from [robsannaa/zoho-cli](https://github.com/robsannaa/zoho-cli).
+
+**Current maintainers:**
+- @adwasd-dvd (primary development, OpenClaw integration)
+
+**Original author:**
+- @robsannaa (initial Zoho Mail implementation)
+
+**Ways to contribute:**
+- Report bugs or request features via GitHub issues
+- Submit PRs for bug fixes or new commands
+- Help with documentation and examples
+
+---
+
+## License
+
+MIT License — see [LICENSE](LICENSE) for details.

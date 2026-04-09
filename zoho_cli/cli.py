@@ -1608,6 +1608,53 @@ def cliq_search(
     )
 
 
+@cliq_app.command("file")
+def cliq_file(
+    message_id: str = typer.Argument(..., help="Cliq message id."),
+    channel_id: Optional[str] = typer.Option(
+        None, "--channel-id", help="Source channel id (resolved to chat_id)."
+    ),
+    chat_id: Optional[str] = typer.Option(None, "--chat-id", help="Source chat id."),
+    network: Optional[str] = typer.Option(
+        None, "--network", help="Cliq network slug (e.g. happydistrouklimited)."
+    ),
+) -> None:
+    """Retrieve file/attachment metadata for one message in a channel/chat."""
+    if not chat_id and not channel_id:
+        utils.error_exit("invalid_destination", "Provide --chat-id or --channel-id")
+
+    cfg = _cfg()
+    email = _require_account(cfg)
+    client = _get_cliq_client(cfg, email, network=network)
+
+    resolved_chat = (chat_id or "").strip() or client.resolve_chat_id(channel_id or "")
+    resp = client.get_message_files(
+        message_id,
+        chat_id=resolved_chat,
+        channel_id=channel_id,
+    )
+    data = resp.get("data", resp)
+    files: list[dict] = []
+    if isinstance(data, list):
+        files = [item for item in data if isinstance(item, dict)]
+    elif isinstance(data, dict):
+        for key in ("files", "attachments", "items", "data"):
+            candidate = data.get(key)
+            if isinstance(candidate, list):
+                files = [item for item in candidate if isinstance(item, dict)]
+                break
+
+    utils.output(
+        {
+            "chatId": resolved_chat or "",
+            "channelId": channel_id or "",
+            "messageId": message_id,
+            "count": len(files),
+            "files": files,
+        }
+    )
+
+
 @cliq_app.command("messages")
 def cliq_messages(
     channel_id: Optional[str] = typer.Option(

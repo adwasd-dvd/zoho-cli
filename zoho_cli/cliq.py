@@ -529,6 +529,110 @@ class ZohoCliqClient:
         )
         return {}
 
+    def get_message_files(
+        self,
+        message_id: str,
+        *,
+        chat_id: str | None = None,
+        channel_id: str | None = None,
+    ) -> dict:
+        """Fetch file/attachment payloads for one message with endpoint fallbacks."""
+        resolved_chat = (chat_id or "").strip()
+        if not resolved_chat and channel_id:
+            resolved_chat = self.resolve_chat_id(channel_id) or ""
+        if not resolved_chat:
+            utils.error_exit(
+                "invalid_destination", "Provide --chat-id or resolvable --channel-id"
+            )
+
+        mid = message_id.strip()
+        if not mid:
+            utils.error_exit("invalid_message_id", "message_id cannot be empty")
+
+        path_candidates: list[str] = [
+            f"/chats/{resolved_chat}/messages/{mid}/files",
+            f"/chats/{resolved_chat}/messages/{mid}/attachments",
+        ]
+        if channel_id:
+            path_candidates.extend(
+                [
+                    f"/channels/{channel_id}/messages/{mid}/files",
+                    f"/channels/{channel_id}/messages/{mid}/attachments",
+                ]
+            )
+
+        # Preserve order while deduplicating.
+        seen_paths: set[str] = set()
+        path_candidates = [
+            p for p in path_candidates if not (p in seen_paths or seen_paths.add(p))
+        ]
+
+        saw_scope_invalid = False
+        saw_not_supported = False
+        last_error: tuple[int, str, str] | None = None
+
+        for path in path_candidates:
+            resp = httpx.get(
+                f"{self.base_url}{path}",
+                headers=self._headers,
+                timeout=httpx.Timeout(30.0),
+            )
+            if resp.is_success:
+                return resp.json()
+
+            body = resp.text or ""
+            lowered = body.lower()
+            error_code = ""
+            try:
+                parsed = resp.json()
+                if isinstance(parsed, dict):
+                    error_code = str(
+                        parsed.get("code") or parsed.get("error") or ""
+                    ).lower()
+            except ValueError:
+                pass
+
+            if "oauthtoken_scope_invalid" in lowered:
+                saw_scope_invalid = True
+                last_error = (resp.status_code, path, body)
+                continue
+
+            if (
+                resp.status_code in (404, 405)
+                or "request_url_invalid" in lowered
+                or error_code
+                in {"operation_not_allowed", "not_supported", "unsupported"}
+            ):
+                saw_not_supported = True
+                last_error = (resp.status_code, path, body)
+                continue
+
+            utils.error_exit(
+                "api_error",
+                f"HTTP {resp.status_code} GET {path}: {body}",
+            )
+
+        if saw_scope_invalid:
+            utils.error_exit(
+                "oauth_scope_invalid",
+                "Cliq token is missing message-read scope for file retrieval. Re-run `zoho login --with-cliq --scope ZohoCliq.Messages.READ` and retry.",
+            )
+
+        if saw_not_supported:
+            utils.error_exit(
+                "not_supported",
+                "Cliq file/attachment retrieval is not available for this token/network endpoint. Run `zoho cliq capabilities --channel-id <id>` to confirm available operations.",
+            )
+
+        if last_error is not None:
+            status, path, body = last_error
+            utils.error_exit("api_error", f"HTTP {status} GET {path}: {body}")
+
+        utils.error_exit(
+            "api_error", "No candidate endpoint available for message file retrieval"
+        )
+        return {}
+
     def _resolve_chat_destination(
         self,
         *,

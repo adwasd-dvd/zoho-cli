@@ -959,6 +959,40 @@ def test_cliq_search_requires_destination(
 
 
 @respx.mock
+def test_cliq_file_from_channel(mock_config: Path, mock_token_refresh: Any) -> None:
+    respx.get("https://cliq.zoho.com/api/v2/channels/O1").mock(
+        return_value=httpx.Response(200, json={"data": {"chat_id": "CT_1"}})
+    )
+    respx.get("https://cliq.zoho.com/api/v2/chats/CT_1/messages/M1/files").mock(
+        return_value=httpx.Response(200, json={"data": [{"id": "F1"}]})
+    )
+
+    result = runner.invoke(
+        app,
+        ["cliq", "file", "M1", "--channel-id", "O1"],
+        env=_cfg_env(mock_config),
+    )
+    assert result.exit_code == 0, result.output
+    payload = json.loads(result.output)
+    assert payload["chatId"] == "CT_1"
+    assert payload["messageId"] == "M1"
+    assert payload["count"] == 1
+    assert payload["files"][0]["id"] == "F1"
+
+
+def test_cliq_file_requires_destination(
+    mock_config: Path, mock_token_refresh: Any
+) -> None:
+    result = runner.invoke(
+        app,
+        ["cliq", "file", "M1"],
+        env=_cfg_env(mock_config),
+    )
+    assert result.exit_code == 1
+    assert "invalid_destination" in result.output
+
+
+@respx.mock
 def test_cliq_message_get_from_channel(
     mock_config: Path, mock_token_refresh: Any
 ) -> None:

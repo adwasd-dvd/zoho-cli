@@ -282,6 +282,43 @@ def test_cliq_client_search_messages_not_supported_reports_capability_hint(
 
 
 @respx.mock
+def test_cliq_client_get_message_files_with_fallback_endpoint(
+    client: cliq.ZohoCliqClient,
+) -> None:
+    respx.get("https://cliq.zoho.com/api/v2/chats/CT_1/messages/M1/files").mock(
+        return_value=httpx.Response(404, text="request_url_invalid")
+    )
+    route = respx.get(
+        "https://cliq.zoho.com/api/v2/chats/CT_1/messages/M1/attachments"
+    ).mock(return_value=httpx.Response(200, json={"data": [{"id": "F1"}]}))
+
+    result = client.get_message_files("M1", chat_id="CT_1")
+
+    assert route.called
+    assert result["data"][0]["id"] == "F1"
+
+
+@respx.mock
+def test_cliq_client_get_message_files_not_supported_reports_capability_hint(
+    client: cliq.ZohoCliqClient,
+    capsys: pytest.CaptureFixture[str],
+) -> None:
+    respx.get("https://cliq.zoho.com/api/v2/chats/CT_1/messages/M1/files").mock(
+        return_value=httpx.Response(404, text="request_url_invalid")
+    )
+    respx.get("https://cliq.zoho.com/api/v2/chats/CT_1/messages/M1/attachments").mock(
+        return_value=httpx.Response(404, text="request_url_invalid")
+    )
+
+    with pytest.raises(SystemExit):
+        client.get_message_files("M1", chat_id="CT_1")
+
+    err = capsys.readouterr().err
+    assert "not_supported" in err
+    assert "cliq capabilities" in err
+
+
+@respx.mock
 def test_cliq_client_get_message_from_chat_id(client: cliq.ZohoCliqClient) -> None:
     route = respx.get("https://cliq.zoho.com/api/v2/chats/CT_1/messages/M1").mock(
         return_value=httpx.Response(200, json={"data": {"id": "M1", "text": "hello"}})

@@ -1,9 +1,9 @@
 module: Cliq
-updated_at: '2026-04-09T03:21:27Z'
+updated_at: '2026-04-09T04:00:00Z'
 status: in_progress
 blockers:
 - live `/messages/search` APIs on happydistrouklimited appear unsupported for current
   endpoint variants (`extra_param_found` / `request_url_invalid`), so search is currently
   limitation-documented
-next_small_step: extend cliq-150 watch-act with one additional deterministic execution
-  mode (or stdin pipeline path), then stage cliq-160 hardening checks
+next_small_step: stage cliq-160 hardening checks (focused local matrix + live rerun plan)
+  now that watch-act stdin pipeline flow is covered

@@ -3,14 +3,14 @@ next_version: 0.2.1
 release_candidate: false
 last_release_tag: v0.1.9
 current_train: cliq-expansion
-assessed_at: '2026-04-09T03:21:27Z'
+assessed_at: '2026-04-09T04:00:00Z'
 current_milestone: cliq-expansion-phase
 current_milestone_complete: false
 missing_requirements:
 - 'blocker backlog not clear: crm-002 live smoke is blocked by account-level CRM org
   access (`OAUTH_SCOPE_MISMATCH`)'
-- 'current focus milestone is incomplete: cliq-150 watch-act baseline is shipped but
-  additional action/hardening work remains before cliq-160'
+- 'current focus milestone is incomplete: cliq-150 now includes default stdin watch-act
+  handoff, but cliq-160 hardening and live matrix work are still pending'
 - 'full CI gate is not green: `make ci` fails current lint checks (ruff check in `zoho_cli/cli.py`,
   `zoho_cli/core/*`, and `zoho_cli/utils.py`)'
 release_gate:

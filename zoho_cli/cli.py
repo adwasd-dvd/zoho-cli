@@ -1873,7 +1873,7 @@ def cliq_watch_context(
 @cliq_app.command("watch-act")
 def cliq_watch_act(
     watch_file: str = typer.Option(
-        ...,
+        "-",
         "--watch-file",
         help="Path to watch-context JSON payload (use '-' to read from stdin).",
     ),

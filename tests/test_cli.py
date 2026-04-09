@@ -1150,6 +1150,45 @@ def test_cliq_watch_act_replies_to_latest_message(
     assert payload["targetMessageId"] == "M2"
 
 
+@respx.mock
+def test_cliq_watch_act_reads_stdin_when_watch_file_not_provided(
+    mock_config: Path,
+    mock_token_refresh: Any,
+) -> None:
+    route = respx.post(
+        "https://cliq.zoho.com/api/v2/chats/CT_1/messages/M2/reply"
+    ).mock(return_value=httpx.Response(200, json={"data": {"id": "M3"}}))
+
+    result = runner.invoke(
+        app,
+        [
+            "cliq",
+            "watch-act",
+            "--text",
+            "ack",
+        ],
+        input=json.dumps(
+            {
+                "chatId": "CT_1",
+                "channelId": "O1",
+                "newCount": 2,
+                "messages": [
+                    {"messageId": "M1", "senderId": "U1", "text": "first"},
+                    {"messageId": "M2", "senderId": "U2", "text": "latest"},
+                ],
+            }
+        ),
+        env=_cfg_env(mock_config),
+    )
+
+    assert result.exit_code == 0, result.output
+    assert route.called
+    payload = json.loads(result.output)
+    assert payload["status"] == "ok"
+    assert payload["applied"] is True
+    assert payload["targetMessageId"] == "M2"
+
+
 def test_cliq_watch_act_no_messages_returns_noop(
     tmp_path: Path,
     mock_config: Path,

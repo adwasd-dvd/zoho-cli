@@ -1,5 +1,5 @@
 project: zoho-cli
-updated_at: '2026-04-09T03:21:27Z'
+updated_at: '2026-04-09T04:00:00Z'
 status: cliq-expansion
 canonical_workspace: /Users/adwasd/.openclaw/workspace-coder
 project_root: /Users/adwasd/.openclaw/workspace-coder/job/zoho-cli
@@ -13,5 +13,5 @@ primary_blockers:
 - full `make ci` is still failing lint checks in tracked repo files
 - cliq search endpoint variants are not available on happydistrouklimited for current
   token/api combinations (`extra_param_found` / `request_url_invalid`)
-next_step: extend cliq-150 watch-act beyond reply-latest (or add stdin handoff coverage),
-  then move into cliq-160 hardening + live matrix
+next_step: move into cliq-160 hardening + live matrix planning now that cliq watch-act
+  supports default stdin handoff flow

@@ -2121,7 +2121,19 @@ class ZohoCliqClient:
                         )
 
                     if resp.is_success:
-                        return self._decode_success_response(resp)
+                        decoded = self._decode_success_response(resp)
+                        upload_meta = {
+                            "path": send_path,
+                            "field": field_name,
+                            "fileName": path_obj.name,
+                            "mimeType": guessed_mime,
+                        }
+                        data_payload = decoded.get("data")
+                        if isinstance(data_payload, dict):
+                            data_payload.setdefault("upload", upload_meta)
+                        else:
+                            decoded["upload"] = upload_meta
+                        return decoded
 
                     body = resp.text or ""
                     lowered = body.lower()

@@ -396,6 +396,10 @@ def test_cliq_client_send_local_file_message_to_user(
     assert b'name="voice"' in raw
     assert b'filename="voice.m4a"' in raw
     assert result["data"]["status"] == "ok"
+    assert result["data"]["upload"]["path"] == "/buddies/U1/message"
+    assert result["data"]["upload"]["field"] == "voice"
+    assert result["data"]["upload"]["fileName"] == "voice.m4a"
+    assert result["data"]["upload"]["mimeType"].startswith("audio/")
 
 
 @respx.mock
@@ -422,6 +426,10 @@ def test_cliq_client_send_local_image_message_prefers_image_field(
     assert b'name="image"' in raw
     assert b'filename="image.png"' in raw
     assert result["data"]["status"] == "ok"
+    assert result["data"]["upload"]["path"] == "/buddies/U1/message"
+    assert result["data"]["upload"]["field"] == "image"
+    assert result["data"]["upload"]["fileName"] == "image.png"
+    assert result["data"]["upload"]["mimeType"] == "image/png"
 
 
 @respx.mock

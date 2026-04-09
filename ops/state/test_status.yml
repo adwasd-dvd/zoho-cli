@@ -1,10 +1,12 @@
-last_run_at: "2026-04-09T17:18:54Z"
+last_run_at: "2026-04-09T18:04:36Z"
 last_result: warning
 current_focus: cliq
 suites:
   unit:
     status: passing
     notes:
+      - ./.venv/bin/pytest -q tests/test_cliq.py::test_cliq_client_send_local_file_message_to_user tests/test_cliq.py::test_cliq_client_send_local_image_message_prefers_image_field tests/test_cli.py::test_cliq_send_channel_with_local_voice_file tests/test_cli.py::test_cliq_send_channel_with_local_image_file
+      - 4 passed in 0.12s (local multipart send success payload now includes upload metadata: endpoint path + form field + mime type, 2026-04-09T18:04:36Z)
       - ./.venv/bin/pytest -q tests/test_cliq.py::test_cliq_client_infer_message_types_detects_voice_sticker_and_text tests/test_cliq.py::test_cliq_client_infer_message_types_detects_scalar_attachment_string
       - 2 passed in 0.05s (typed message inference now treats scalar attachment URL fields as media-bearing content instead of dropping them, 2026-04-09T17:18:54Z)
       - ./.venv/bin/pytest -q tests/test_cliq.py::test_cliq_client_list_messages_from_channel_id tests/test_cliq.py::test_cliq_client_get_message_from_channel_id

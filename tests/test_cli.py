@@ -2178,6 +2178,8 @@ def test_cliq_send_channel_with_local_voice_file(
     payload = json.loads(result.output)
     assert payload["status"] == "ok"
     assert payload["media"]["localPath"] == str(sample)
+    assert payload["result"]["upload"]["path"] == "/channelsbyname/C1/message"
+    assert payload["result"]["upload"]["field"] == "voice"
 
 
 @respx.mock
@@ -2219,6 +2221,8 @@ def test_cliq_send_channel_with_local_image_file(
     payload = json.loads(result.output)
     assert payload["status"] == "ok"
     assert payload["media"]["localPath"] == str(sample)
+    assert payload["result"]["upload"]["path"] == "/channelsbyname/C1/message"
+    assert payload["result"]["upload"]["field"] == "image"
 
 
 def test_cliq_send_rejects_missing_local_file(

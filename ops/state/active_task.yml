@@ -4,11 +4,11 @@ module: cliq
 stage: in_progress
 status: in_progress
 owner: automation
-updated_at: "2026-04-09T01:49:18Z"
+updated_at: "2026-04-09T02:36:46Z"
 success_criteria:
   - define first cliq watch/context primitive for OpenClaw handoff
   - add one minimal command or helper that emits stable machine-readable context payloads for agent loops
   - add focused tests for command routing and payload shape
   - update changelog and state files with local test evidence
 next_if_done: cliq-160
-next_step: design and ship the first cliq-150 primitive (watch-context seed) using existing cliq context/message helpers, then verify with focused tests
+next_step: extend cliq-150 with the first action/execute primitive that pairs with `cliq watch-context` for agent loop handoff

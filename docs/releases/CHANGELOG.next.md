@@ -26,6 +26,7 @@
 - Completed live cliq-130 admin sweep verification on `happydistrouklimited` (`member-add`, `member-remove`, `channel-create`, `channel-archive`, `channel-unarchive`, `channel-delete`) with corrected channel id handling.
 - Added `zoho cliq search` baseline (`cliq-140`) with keyword + optional `--from-time/--to-time` window filters, channel/chat destination support, and response shaping for message lists.
 - Added `zoho cliq file` baseline (`cliq-140`) to retrieve per-message file/attachment metadata from channel/chat destinations.
+- Added first `cliq-150` OpenClaw watch primitive: `zoho cliq watch-context` plus `ZohoCliqClient.build_watch_context_seed` for cursor-based incremental context payloads.
 - Added CRM fields read path: `zoho crm fields --module <api_name>` with pagination, backed by `ZohoCrmClient.fields` (`/settings/fields`).
 - Added CRM read-only record commands for `crm-002`: `zoho crm list`, `zoho crm get`, and `zoho crm search` (`--criteria` or `--word`) wired through `ZohoCrmClient` with pagination/field-selection support.
 
@@ -71,5 +72,5 @@
   - Changelog draft is current for Cliq/CRM train work.
 - Remaining release blockers:
   - blocker bugs are **not** clear (`crm-002` live smoke remains blocked by missing CRM org access and returns `OAUTH_SCOPE_MISMATCH`)
-  - current focus milestone `cliq-expansion-phase` is **not complete** (`cliq-140` in progress, `cliq-150/160` queued)
+  - current focus milestone `cliq-expansion-phase` is **not complete** (`cliq-150` in progress, `cliq-160` queued)
   - `make ci` is still failing lint checks, so the full validation gate is not green

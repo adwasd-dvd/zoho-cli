@@ -234,6 +234,47 @@ def test_cliq_client_list_messages_from_channel_id(client: cliq.ZohoCliqClient) 
     assert dict(route.calls.last.request.url.params) == {"limit": "7"}
 
 
+def test_build_watch_context_seed_with_cursor_found() -> None:
+    payload = cliq.ZohoCliqClient.build_watch_context_seed(
+        [
+            {"id": "M5", "text": "latest", "sender_id": "U5", "time": "5000"},
+            {
+                "id": "M4",
+                "message": "next",
+                "sender": {"id": "U4"},
+                "created_time": "4000",
+            },
+            {"id": "M3", "text": "anchor", "sender_id": "U3", "time": "3000"},
+        ],
+        since_message_id="M3",
+        max_messages=10,
+    )
+
+    assert payload["cursorFound"] is True
+    assert payload["latestMessageId"] == "M5"
+    assert payload["nextSinceMessageId"] == "M5"
+    assert payload["newCount"] == 2
+    assert [item["messageId"] for item in payload["messages"]] == ["M4", "M5"]
+
+
+def test_build_watch_context_seed_truncates_when_cursor_not_found() -> None:
+    payload = cliq.ZohoCliqClient.build_watch_context_seed(
+        [
+            {"id": "M4", "text": "4"},
+            {"id": "M3", "text": "3"},
+            {"id": "M2", "text": "2"},
+            {"id": "M1", "text": "1"},
+        ],
+        since_message_id="M0",
+        max_messages=2,
+    )
+
+    assert payload["cursorFound"] is False
+    assert payload["truncated"] is True
+    assert payload["newCount"] == 2
+    assert [item["messageId"] for item in payload["messages"]] == ["M3", "M4"]
+
+
 @respx.mock
 def test_cliq_client_search_messages_with_fallback_endpoint(
     client: cliq.ZohoCliqClient,

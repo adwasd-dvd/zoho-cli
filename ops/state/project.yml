@@ -1,5 +1,5 @@
 project: zoho-cli
-updated_at: "2026-04-09T01:49:18Z"
+updated_at: "2026-04-09T02:36:46Z"
 status: cliq-expansion
 canonical_workspace: "/Users/adwasd/.openclaw/workspace-coder"
 project_root: "/Users/adwasd/.openclaw/workspace-coder/job/zoho-cli"
@@ -12,4 +12,4 @@ primary_blockers:
   - crm live read-only verification remains blocked by account-level CRM org access
   - full `make ci` is still failing lint checks in tracked repo files
   - cliq search endpoint variants are not available on happydistrouklimited for current token/api combinations (`extra_param_found` / `request_url_invalid`)
-next_step: implement the first cliq-150 watch-context primitive and keep cliq-140 live limitation notes as known behavior
+next_step: build the companion cliq-150 action primitive after shipping `cliq watch-context`, while keeping cliq-140 live search limitations documented

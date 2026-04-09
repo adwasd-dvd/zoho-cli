@@ -1800,6 +1800,75 @@ def cliq_context(
     )
 
 
+@cliq_app.command("watch-context")
+def cliq_watch_context(
+    channel_id: Optional[str] = typer.Option(
+        None, "--channel-id", help="Source channel id (resolved to chat_id)."
+    ),
+    chat_id: Optional[str] = typer.Option(None, "--chat-id", help="Source chat id."),
+    since_message_id: Optional[str] = typer.Option(
+        None,
+        "--since-message-id",
+        help="Last processed message id cursor from a previous watch pass.",
+    ),
+    limit: int = typer.Option(50, "--limit", "-n", help="Max messages to fetch."),
+    max_messages: int = typer.Option(
+        20,
+        "--max-messages",
+        help="Max new messages to emit in one watch payload.",
+    ),
+    network: Optional[str] = typer.Option(
+        None, "--network", help="Cliq network slug (e.g. happydistrouklimited)."
+    ),
+) -> None:
+    """Emit a stable incremental context payload for OpenClaw-style watch loops."""
+    if not chat_id and not channel_id:
+        utils.error_exit("invalid_destination", "Provide --chat-id or --channel-id")
+    if limit < 1 or max_messages < 1:
+        utils.error_exit("invalid_limit", "--limit/--max-messages must be >= 1")
+
+    cfg = _cfg()
+    email = _require_account(cfg)
+    client = _get_cliq_client(cfg, email, network=network)
+
+    fetch_limit = max(limit, max_messages)
+    resolved_chat = (chat_id or "").strip() or client.resolve_chat_id(channel_id or "")
+    resp = client.list_messages(
+        chat_id=resolved_chat,
+        channel_id=channel_id,
+        limit=fetch_limit,
+    )
+    data = resp.get("data", resp)
+    messages = (
+        [item for item in data if isinstance(item, dict)]
+        if isinstance(data, list)
+        else []
+    )
+
+    watch = _cliq.ZohoCliqClient.build_watch_context_seed(
+        messages,
+        since_message_id=since_message_id,
+        max_messages=max_messages,
+    )
+
+    utils.output(
+        {
+            "chatId": resolved_chat or "",
+            "channelId": channel_id or "",
+            "cursor": {
+                "sinceMessageId": watch["sinceMessageId"],
+                "cursorFound": watch["cursorFound"],
+                "latestMessageId": watch["latestMessageId"],
+                "nextSinceMessageId": watch["nextSinceMessageId"],
+            },
+            "totalFetched": watch["totalFetched"],
+            "newCount": watch["newCount"],
+            "truncated": watch["truncated"],
+            "messages": watch["messages"],
+        }
+    )
+
+
 @cliq_app.command("reply")
 def cliq_reply(
     message_id: str = typer.Argument(..., help="Anchor message id to reply to."),

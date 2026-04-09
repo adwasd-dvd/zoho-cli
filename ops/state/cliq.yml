@@ -1,6 +1,6 @@
 module: Cliq
-updated_at: "2026-04-09T01:49:18Z"
+updated_at: "2026-04-09T02:36:46Z"
 status: in_progress
 blockers:
   - live `/messages/search` APIs on happydistrouklimited appear unsupported for current endpoint variants (`extra_param_found` / `request_url_invalid`), so search is currently limitation-documented
-next_small_step: start cliq-150 by adding the first OpenClaw watch-context primitive on top of existing cliq context/message flows
+next_small_step: add the first cliq-150 action primitive that consumes `cliq watch-context` cursor output and performs one deterministic follow-up action

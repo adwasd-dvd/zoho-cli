@@ -1052,6 +1052,58 @@ def test_cliq_context_with_anchor(mock_config: Path, mock_token_refresh: Any) ->
     assert len(payload["messages"]) == 3
 
 
+@respx.mock
+def test_cliq_watch_context_from_channel(
+    mock_config: Path, mock_token_refresh: Any
+) -> None:
+    respx.get("https://cliq.zoho.com/api/v2/channels/O1").mock(
+        return_value=httpx.Response(200, json={"data": {"chat_id": "CT_1"}})
+    )
+    respx.get("https://cliq.zoho.com/api/v2/chats/CT_1/messages").mock(
+        return_value=httpx.Response(
+            200,
+            json={
+                "data": [
+                    {"id": "M3", "text": "third"},
+                    {"id": "M2", "text": "second"},
+                    {"id": "M1", "text": "first"},
+                ]
+            },
+        )
+    )
+
+    result = runner.invoke(
+        app,
+        [
+            "cliq",
+            "watch-context",
+            "--channel-id",
+            "O1",
+            "--since-message-id",
+            "M2",
+            "--limit",
+            "10",
+            "--max-messages",
+            "5",
+        ],
+        env=_cfg_env(mock_config),
+    )
+    assert result.exit_code == 0, result.output
+    payload = json.loads(result.output)
+    assert payload["chatId"] == "CT_1"
+    assert payload["cursor"]["cursorFound"] is True
+    assert payload["newCount"] == 1
+    assert payload["messages"][0]["messageId"] == "M3"
+
+
+def test_cliq_watch_context_requires_destination(
+    mock_config: Path, mock_token_refresh: Any
+) -> None:
+    result = runner.invoke(app, ["cliq", "watch-context"], env=_cfg_env(mock_config))
+    assert result.exit_code == 1
+    assert "invalid_destination" in result.output
+
+
 def test_cliq_messages_requires_destination(
     mock_config: Path, mock_token_refresh: Any
 ) -> None:

@@ -297,6 +297,113 @@ class ZohoCliqClient:
                     return text
         return ""
 
+    @staticmethod
+    def _extract_sender_id(message: dict[str, Any]) -> str:
+        sender = message.get("sender")
+        if isinstance(sender, dict):
+            for key in ("id", "zuid", "user_id", "userId"):
+                value = sender.get(key)
+                if value is not None:
+                    text = str(value).strip()
+                    if text:
+                        return text
+
+        for key in ("sender_id", "senderId", "user_id", "userId", "zuid"):
+            value = message.get(key)
+            if value is not None:
+                text = str(value).strip()
+                if text:
+                    return text
+        return ""
+
+    @staticmethod
+    def _extract_message_text(message: dict[str, Any]) -> str:
+        for key in ("text", "message", "content", "message_text", "messageText"):
+            value = message.get(key)
+            if value is None:
+                continue
+            text = str(value).strip()
+            if text:
+                return text
+        return ""
+
+    @staticmethod
+    def _extract_message_timestamp(message: dict[str, Any]) -> str:
+        for key in (
+            "time",
+            "timestamp",
+            "created_time",
+            "createdTime",
+            "time_in_millis",
+            "sent_time",
+        ):
+            value = message.get(key)
+            if value is None:
+                continue
+            text = str(value).strip()
+            if text:
+                return text
+        return ""
+
+    @classmethod
+    def build_watch_context_seed(
+        cls,
+        messages: list[dict[str, Any]],
+        *,
+        since_message_id: str | None = None,
+        max_messages: int = 20,
+    ) -> dict[str, Any]:
+        """Build a stable, incremental message payload for watch loops."""
+        max_items = max(1, max_messages)
+        since = (since_message_id or "").strip()
+
+        cleaned_messages = [item for item in messages if isinstance(item, dict)]
+        latest_message_id = ""
+        for item in cleaned_messages:
+            latest_message_id = cls._extract_message_id(item)
+            if latest_message_id:
+                break
+
+        selected: list[dict[str, Any]] = []
+        cursor_found = False
+        truncated = False
+
+        for item in cleaned_messages:
+            mid = cls._extract_message_id(item)
+            if since and mid == since:
+                cursor_found = True
+                break
+            if len(selected) >= max_items:
+                truncated = True
+                break
+            selected.append(item)
+
+        normalized_messages: list[dict[str, Any]] = []
+        for item in reversed(selected):
+            mid = cls._extract_message_id(item)
+            if not mid:
+                continue
+            normalized_messages.append(
+                {
+                    "messageId": mid,
+                    "senderId": cls._extract_sender_id(item),
+                    "text": cls._extract_message_text(item),
+                    "timestamp": cls._extract_message_timestamp(item),
+                    "raw": item,
+                }
+            )
+
+        return {
+            "sinceMessageId": since,
+            "cursorFound": cursor_found,
+            "latestMessageId": latest_message_id,
+            "nextSinceMessageId": latest_message_id or since,
+            "totalFetched": len(cleaned_messages),
+            "newCount": len(normalized_messages),
+            "truncated": truncated,
+            "messages": normalized_messages,
+        }
+
     def list_messages(
         self,
         *,

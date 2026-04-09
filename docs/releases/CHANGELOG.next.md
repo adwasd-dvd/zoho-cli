@@ -63,6 +63,7 @@
 - `zoho cliq send` no longer silently degrades media sends to text-only fallback payloads when media attachment candidates fail; strict media mode now preserves attachment/card intent and surfaces API failure directly.
 - Local multipart image uploads now prefer `image`/`photo` form field candidates before generic file keys, improving compatibility for `zoho cliq send --image-url <local-path>` endpoint variants.
 - Local multipart upload sends now include structured upload metadata in success payloads (`path`, `field`, `fileName`, `mimeType`) so live matrix probes can capture which endpoint/form-field variant succeeded.
+- Cliq file retrieval now includes source endpoint metadata (`fetch.path` from `ZohoCliqClient.get_message_files`) and `zoho cliq file` surfaces it as `sourcePath` for live upload/download matrix logging.
 - Cliq typed message inference now treats scalar attachment URL fields (for example `file: "https://..."`) as media-bearing payloads, so `cliq messages` / `cliq message` / `cliq context` no longer drop type classification for string-shaped attachment fields.
 - Bumped package/runtime version metadata to `0.2.0` (`pyproject.toml` and `zoho_cli.__version__`) and made CLI `--version` prefer local package `__version__` first so source-checkout runs do not report stale installed metadata.
 - Updated Mail module status to in_progress and cleared blockers.

@@ -772,7 +772,22 @@ class ZohoCliqClient:
                 timeout=httpx.Timeout(30.0),
             )
             if resp.is_success:
-                return resp.json()
+                payload = resp.json()
+                fetch_meta = {
+                    "path": path,
+                }
+                if isinstance(payload, dict):
+                    data_payload = payload.get("data")
+                    if isinstance(data_payload, dict):
+                        data_payload.setdefault("fetch", fetch_meta)
+                    else:
+                        payload.setdefault("fetch", fetch_meta)
+                    return payload
+
+                return {
+                    "data": payload,
+                    "fetch": fetch_meta,
+                }
 
             body = resp.text or ""
             lowered = body.lower()
@@ -790,7 +805,7 @@ class ZohoCliqClient:
                 "message_attachment_not_found",
                 "no_attachments_found",
             }:
-                return {"files": []}
+                return {"files": [], "fetch": {"path": path}}
 
             if "oauthtoken_scope_invalid" in lowered:
                 saw_scope_invalid = True

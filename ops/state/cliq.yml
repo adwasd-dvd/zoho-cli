@@ -1,8 +1,8 @@
 module: Cliq
-updated_at: '2026-04-09T18:04:36Z'
+updated_at: '2026-04-09T18:49:01Z'
 status: in_progress
 blockers:
   - "live `/messages/search` APIs on happydistrouklimited still look unsupported for current endpoint variants (`extra_param_found` / `request_url_invalid`), so search remains limitation-documented"
   - "`/chats` listing is currently scope-blocked on the active token/network (`oauthtoken_scope_invalid`), so DM/group discovery needs a chat-read capable token for positive-path closure"
-  - "native local-file upload now has multipart client/CLI baseline (including image-field fallback preference and upload endpoint/field metadata in success payloads), but live endpoint matrix verification is still pending for outbound voice/image/file across token/network variants"
-next_small_step: "Re-run `zoho login --with-cliq` (now includes `ZohoCliq.Chats.ALL`) and validate `cliq chats` positive path, then execute live native local-file upload probes (voice/image/file) and record returned upload metadata (`path`, `field`, `mimeType`) to close remaining cliq-155 upload matrix evidence gaps"
+  - "native local-file upload now has multipart client/CLI baseline (including image-field fallback preference and upload endpoint/field metadata in success payloads), and file retrieval now reports source endpoint metadata (`sourcePath`), but live endpoint matrix verification is still pending for outbound voice/image/file and attachment reads across token/network variants"
+next_small_step: "Re-run `zoho login --with-cliq` (now includes `ZohoCliq.Chats.ALL`) and validate `cliq chats` positive path, then execute live native local-file upload probes (voice/image/file) plus `cliq file` retrieval probes and record returned upload/download metadata (`path`, `field`, `mimeType`, `sourcePath`) to close remaining cliq-155 matrix evidence gaps"

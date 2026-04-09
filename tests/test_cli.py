@@ -1049,6 +1049,7 @@ def test_cliq_file_from_channel(mock_config: Path, mock_token_refresh: Any) -> N
     payload = json.loads(result.output)
     assert payload["chatId"] == "CT_1"
     assert payload["messageId"] == "M1"
+    assert payload["sourcePath"] == "/chats/CT_1/messages/M1/files"
     assert payload["count"] == 1
     assert payload["files"][0]["id"] == "F1"
 

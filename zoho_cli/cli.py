@@ -1767,6 +1767,10 @@ def cliq_file(
         chat_id=resolved_chat,
         channel_id=channel_id,
     )
+    fetch_meta = resp.get("fetch") if isinstance(resp, dict) else None
+    if not isinstance(fetch_meta, dict):
+        fetch_meta = {}
+
     data = resp.get("data", resp)
     files: list[dict] = []
     if isinstance(data, list):
@@ -1783,6 +1787,7 @@ def cliq_file(
             "chatId": resolved_chat or "",
             "channelId": channel_id or "",
             "messageId": message_id,
+            "sourcePath": str(fetch_meta.get("path") or ""),
             "count": len(files),
             "files": files,
         }

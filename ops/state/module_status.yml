@@ -15,7 +15,7 @@ cliq:
   blockers:
     - "live search endpoint variants are currently unsupported on happydistrouklimited (`extra_param_found` / `request_url_invalid`)"
     - "`/chats` listing is scope-blocked on current token/network (`oauthtoken_scope_invalid`), so DM/group discovery is not yet closed"
-    - "native local-file upload endpoint variants still need a stable cross-network matrix; multipart baseline is in place and now returns upload endpoint/field metadata, but live verification evidence is still pending"
+    - "native local-file upload/download endpoint variants still need a stable cross-network matrix; multipart baseline now returns upload endpoint/field metadata and `cliq file` reports retrieval `sourcePath`, but live verification evidence is still pending"
 
 crm:
   priority: 3

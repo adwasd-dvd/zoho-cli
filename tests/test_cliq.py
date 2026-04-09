@@ -681,6 +681,7 @@ def test_cliq_client_get_message_files_with_fallback_endpoint(
 
     assert route.called
     assert result["data"][0]["id"] == "F1"
+    assert result["fetch"]["path"] == "/chats/CT_1/messages/M1/attachments"
 
 
 @respx.mock
@@ -719,7 +720,10 @@ def test_cliq_client_get_message_files_no_attachment_returns_empty(
 
     result = client.get_message_files("M1", chat_id="CT_1")
 
-    assert result == {"files": []}
+    assert result == {
+        "files": [],
+        "fetch": {"path": "/chats/CT_1/messages/M1/files"},
+    }
 
 
 @respx.mock

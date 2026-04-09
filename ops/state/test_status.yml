@@ -1,10 +1,12 @@
-last_run_at: "2026-04-09T00:18:26Z"
+last_run_at: "2026-04-09T00:46:57Z"
 last_result: warning
 current_focus: cliq
 suites:
   unit:
     status: passing
     notes:
+      - ./.venv/bin/pytest -q tests/test_cliq.py tests/test_cli.py::test_cliq_user_resolve_email tests/test_cli.py::test_cliq_user_resolve_name tests/test_cli.py::test_cliq_users tests/test_cli.py::test_cliq_members_from_channel tests/test_cli.py::test_cliq_member_add tests/test_cli.py::test_cliq_member_remove tests/test_cli.py::test_cliq_channel_create tests/test_cli.py::test_cliq_channel_archive tests/test_cli.py::test_cliq_channel_delete tests/test_cli.py::test_cliq_messages_from_channel tests/test_cli.py::test_cliq_message_get_from_channel tests/test_cli.py::test_cliq_context_with_anchor tests/test_cli.py::test_cliq_send_channel tests/test_cli.py::test_cliq_notify_mail_to_channel tests/test_cli.py::test_cliq_status_check_auth
+      - 53 passed in 0.60s (cliq user-resolve + admin/write/read focused suite, 2026-04-09T00:46:57Z)
       - ./.venv/bin/pytest -q tests/test_cliq.py::test_cliq_client_search_messages_with_fallback_endpoint tests/test_cliq.py::test_cliq_client_search_messages_not_supported_reports_capability_hint tests/test_cli.py::test_cliq_search_from_channel tests/test_cli.py::test_cliq_search_requires_destination
       - 4 passed in 0.18s (cliq-140 search baseline command + fallback routing coverage, 2026-04-09T00:18:26Z)
       - ./.venv/bin/pytest -q tests/test_cliq.py tests/test_cli.py::test_cliq_member_add tests/test_cli.py::test_cliq_member_remove tests/test_cli.py::test_cliq_members_from_channel tests/test_cli.py::test_cliq_channel_create tests/test_cli.py::test_cliq_channel_archive tests/test_cli.py::test_cliq_channel_delete tests/test_cli.py::test_cliq_reply_from_channel tests/test_cli.py::test_cliq_edit_message tests/test_cli.py::test_cliq_delete_message tests/test_cli.py::test_cliq_react_add tests/test_cli.py::test_cliq_messages_from_channel tests/test_cli.py::test_cliq_message_get_from_channel tests/test_cli.py::test_cliq_context_with_anchor tests/test_cli.py::test_cliq_capabilities tests/test_cli.py::test_cliq_send_channel tests/test_cli.py::test_cliq_notify_mail_to_channel tests/test_cli.py::test_cliq_status_check_auth
@@ -90,7 +92,9 @@ suites:
     status: warning
     notes:
       - ./.venv/bin/python -m zoho_cli --config /tmp/zoho-test-config.json --account ai-dev@happy-distro.co.uk cliq status --network happydistrouklimited --check-auth
-      - cliq auth is currently healthy (`oauthReady: true`, no missing scopes) for live cliq-130 checks (2026-04-08T21:19:33Z)
+      - cliq auth is currently healthy (`oauthReady: true`, no missing scopes) for live cliq checks (2026-04-09T00:46:57Z)
+      - ./.venv/bin/python -m zoho_cli --config /tmp/zoho-test-config.json --account ai-dev@happy-distro.co.uk cliq user-resolve "david@happy-distro.com" --by email --network happydistrouklimited
+      - live user lookup now resolves email/display-name to stable user id for DM/member workflows (2026-04-09T00:46:57Z)
       - ./.venv/bin/python -m zoho_cli --config /tmp/zoho-test-config.json --account ai-dev@happy-distro.co.uk cliq channel-create --network happydistrouklimited --name oc-admin-20260408211524 --level organization; cliq channel-rename O6576524000097774005 --network happydistrouklimited --name oc-admin-renamed-20260408; cliq channel-topic O6576524000097774005 --network happydistrouklimited --topic "cliq-130 live sweep 2026-04-08"
       - live create+rename succeeded; channel-topic initially failed with `extra_key_found` then succeeded after fallback retry hardening (2026-04-08T21:19:33Z)
       - ./.venv/bin/python -m zoho_cli --config /tmp/zoho-test-config.json --account ai-dev@happy-distro.co.uk cliq member-add o-CT-911174541-802016712 --channel-id O6576524000097556005 --network happydistrouklimited

@@ -3,7 +3,7 @@ next_version: 0.2.1
 release_candidate: false
 last_release_tag: v0.1.9
 current_train: cliq-expansion
-assessed_at: "2026-04-09T00:18:26Z"
+assessed_at: "2026-04-09T00:46:57Z"
 current_milestone: cliq-expansion-phase
 current_milestone_complete: false
 missing_requirements:

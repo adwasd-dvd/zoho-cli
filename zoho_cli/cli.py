@@ -1280,6 +1280,24 @@ def cliq_users(
     utils.output(data)
 
 
+@cliq_app.command("user-resolve")
+def cliq_user_resolve(
+    query: str = typer.Argument(..., help="User lookup query (email or display name)."),
+    by: str = typer.Option("auto", "--by", help="Match mode: auto|email|name."),
+    limit: int = typer.Option(500, "--limit", "-n", help="Max users to scan."),
+    network: Optional[str] = typer.Option(
+        None, "--network", help="Cliq network slug (e.g. happydistrouklimited)."
+    ),
+) -> None:
+    """Resolve user ids by email or display name."""
+    cfg = _cfg()
+    email = _require_account(cfg)
+    client = _get_cliq_client(cfg, email, network=network)
+
+    result = client.resolve_users(query, by=by, limit=limit)
+    utils.output(result)
+
+
 @cliq_app.command("members")
 def cliq_members(
     channel_id: Optional[str] = typer.Option(

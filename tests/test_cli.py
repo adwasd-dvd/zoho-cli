@@ -1536,6 +1536,67 @@ def test_cliq_users(mock_config: Path, mock_token_refresh: Any) -> None:
 
 
 @respx.mock
+def test_cliq_user_resolve_email(mock_config: Path, mock_token_refresh: Any) -> None:
+    respx.get("https://cliq.zoho.com/api/v2/users").mock(
+        return_value=httpx.Response(
+            200,
+            json={
+                "data": [
+                    {
+                        "zuid": "U1",
+                        "display_name": "David Wang",
+                        "email_id": "david@happy-distro.com",
+                    }
+                ]
+            },
+        )
+    )
+
+    result = runner.invoke(
+        app,
+        ["cliq", "user-resolve", "david@happy-distro.com", "--by", "email"],
+        env=_cfg_env(mock_config),
+    )
+    assert result.exit_code == 0, result.output
+    payload = json.loads(result.output)
+    assert payload["count"] == 1
+    assert payload["matches"][0]["userId"] == "U1"
+
+
+@respx.mock
+def test_cliq_user_resolve_name(mock_config: Path, mock_token_refresh: Any) -> None:
+    respx.get("https://cliq.zoho.com/api/v2/users").mock(
+        return_value=httpx.Response(
+            200,
+            json={
+                "data": [
+                    {
+                        "zuid": "U1",
+                        "display_name": "David Wang",
+                        "email_id": "david@happy-distro.com",
+                    },
+                    {
+                        "zuid": "U2",
+                        "display_name": "Alice",
+                        "email_id": "alice@happy-distro.com",
+                    },
+                ]
+            },
+        )
+    )
+
+    result = runner.invoke(
+        app,
+        ["cliq", "user-resolve", "david", "--by", "name"],
+        env=_cfg_env(mock_config),
+    )
+    assert result.exit_code == 0, result.output
+    payload = json.loads(result.output)
+    assert payload["count"] == 1
+    assert payload["matches"][0]["name"] == "David Wang"
+
+
+@respx.mock
 def test_cliq_send_channel(mock_config: Path, mock_token_refresh: Any) -> None:
     respx.post("https://cliq.zoho.com/api/v2/channelsbyname/C1/message").mock(
         return_value=httpx.Response(404, text="request_url_invalid")

@@ -715,6 +715,106 @@ class ZohoCliqClient:
         """List users."""
         return self._get("/users", {"limit": limit})
 
+    def resolve_users(
+        self,
+        query: str,
+        *,
+        by: str = "auto",
+        limit: int = 500,
+    ) -> dict:
+        """Resolve user ids by email or display name from the user directory."""
+        needle = query.strip()
+        if not needle:
+            utils.error_exit("invalid_query", "query cannot be empty")
+
+        mode = by.strip().lower()
+        if mode not in {"auto", "email", "name"}:
+            utils.error_exit(
+                "invalid_query_mode", "--by must be one of: auto, email, name"
+            )
+
+        payload = self.users(limit=limit)
+        users = payload.get("data", payload)
+        if not isinstance(users, list):
+            users = []
+
+        needle_lc = needle.lower()
+        email_first = mode == "email" or (mode == "auto" and "@" in needle_lc)
+        name_only = mode == "name"
+
+        matches: list[dict[str, Any]] = []
+        for user in users:
+            if not isinstance(user, dict):
+                continue
+
+            name = str(
+                user.get("display_name")
+                or user.get("name")
+                or user.get("full_name")
+                or ""
+            ).strip()
+            email = str(user.get("email_id") or user.get("email") or "").strip()
+            user_id = str(
+                user.get("zuid") or user.get("user_id") or user.get("id") or ""
+            ).strip()
+            if not user_id:
+                continue
+
+            name_lc = name.lower()
+            email_lc = email.lower()
+
+            email_exact = bool(email) and email_lc == needle_lc
+            name_exact = bool(name) and name_lc == needle_lc
+            email_hit = bool(email) and needle_lc in email_lc
+            name_hit = bool(name) and needle_lc in name_lc
+
+            matched = False
+            if name_only:
+                matched = name_hit
+            elif email_first:
+                matched = email_hit or name_exact
+            else:
+                matched = email_hit or name_hit
+
+            if not matched:
+                continue
+
+            score = 0
+            if email_exact:
+                score += 100
+            if name_exact:
+                score += 90
+            if email_hit:
+                score += 40
+            if name_hit:
+                score += 30
+
+            matches.append(
+                {
+                    "userId": user_id,
+                    "name": name,
+                    "email": email,
+                    "emailExact": email_exact,
+                    "nameExact": name_exact,
+                    "score": score,
+                }
+            )
+
+        matches.sort(
+            key=lambda item: (
+                -int(item.get("score", 0)),
+                str(item.get("name", "")).lower(),
+                str(item.get("email", "")).lower(),
+            )
+        )
+
+        return {
+            "query": needle,
+            "by": mode,
+            "count": len(matches),
+            "matches": matches,
+        }
+
     def list_members(
         self,
         *,

@@ -1,5 +1,5 @@
 project: zoho-cli
-updated_at: "2026-04-09T00:18:26Z"
+updated_at: "2026-04-09T00:46:57Z"
 status: cliq-expansion
 canonical_workspace: "/Users/adwasd/.openclaw/workspace-coder"
 project_root: "/Users/adwasd/.openclaw/workspace-coder/job/zoho-cli"
@@ -11,4 +11,4 @@ current_focus: cliq-140 files and search plane
 primary_blockers:
   - crm live read-only verification remains blocked by account-level CRM org access
   - `ruff format --check` currently fails for unrelated files in repo history
-next_step: implement cliq file retrieval command under cliq-140, then run one live search verification on happydistrouklimited
+next_step: implement cliq file retrieval command under cliq-140 (after adding `cliq user-resolve`), then run one live search verification on happydistrouklimited

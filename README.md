@@ -232,6 +232,8 @@ zoho cliq capabilities --network happydistrouklimited --channel-id <channelId>
 # read plane
 zoho cliq channels --network happydistrouklimited --limit 20
 zoho cliq users --network happydistrouklimited --limit 20
+zoho cliq user-resolve "david@happy-distro.com" --by email --network happydistrouklimited
+zoho cliq user-resolve "David Wang" --by name --network happydistrouklimited
 zoho cliq members --network happydistrouklimited --channel-id <channelId>
 zoho cliq messages --network happydistrouklimited --channel-id <channelId> --limit 20
 zoho cliq message <messageId> --network happydistrouklimited --channel-id <channelId>
@@ -249,6 +251,10 @@ zoho cliq channel-create --network happydistrouklimited --name "ops-updates" --l
 zoho cliq channel-archive <channelId> --network happydistrouklimited
 zoho cliq channel-archive <channelId> --network happydistrouklimited --unarchive
 zoho cliq channel-delete <channelId> --network happydistrouklimited --force
+zoho cliq member-add <userId> --network happydistrouklimited --channel-id <channelId>
+zoho cliq member-remove <userId> --network happydistrouklimited --channel-id <channelId>
+zoho cliq channel-rename <channelId> --name "ops-updates-renamed" --network happydistrouklimited
+zoho cliq channel-topic <channelId> --topic "incident bridge" --network happydistrouklimited
 ```
 
 Cliq scope notes:

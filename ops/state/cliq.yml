@@ -1,5 +1,5 @@
 module: Cliq
-updated_at: "2026-04-09T00:18:26Z"
+updated_at: "2026-04-09T00:46:57Z"
 status: in_progress
 blockers: []
-next_small_step: add cliq file/attachment retrieval baseline with capability-aware endpoint fallbacks
+next_small_step: add cliq file/attachment retrieval baseline with capability-aware endpoint fallbacks (user lookup helper already added via `cliq user-resolve`)

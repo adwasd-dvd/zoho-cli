@@ -4,7 +4,7 @@ module: cliq
 stage: in_progress
 status: in_progress
 owner: automation
-updated_at: "2026-04-09T00:18:26Z"
+updated_at: "2026-04-09T00:46:57Z"
 success_criteria:
   - add message search command with keyword/time-window filters
   - add file/attachment retrieval command for Cliq messages where API permits
@@ -12,4 +12,4 @@ success_criteria:
   - focused tests added for search and file command routing
   - changelog and state files updated with live verification notes
 next_if_done: cliq-150
-next_step: implement `cliq file` retrieval baseline with capability-aware endpoint fallbacks and focused routing tests
+next_step: continue cliq-140 with `cliq file` retrieval baseline; `cliq user-resolve` is now available for email/name -> user-id discovery in DM/member flows

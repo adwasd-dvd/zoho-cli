@@ -2139,6 +2139,68 @@ def test_cliq_send_channel_with_voice_url(
 
 
 @respx.mock
+def test_cliq_send_channel_with_local_voice_file(
+    tmp_path: Path,
+    mock_config: Path,
+    mock_token_refresh: Any,
+) -> None:
+    sample = tmp_path / "voice.m4a"
+    sample.write_bytes(b"voice-bytes")
+
+    route = respx.post("https://cliq.zoho.com/api/v2/channelsbyname/C1/message").mock(
+        return_value=httpx.Response(200, json={"data": {"message_id": "M3"}})
+    )
+    respx.get("https://cliq.zoho.com/api/v2/channels/C1").mock(
+        return_value=httpx.Response(404, text="not_found")
+    )
+
+    result = runner.invoke(
+        app,
+        [
+            "cliq",
+            "send",
+            "--channel-id",
+            "C1",
+            "--voice-url",
+            str(sample),
+            "--text",
+            "voice",
+        ],
+        env=_cfg_env(mock_config),
+    )
+    assert result.exit_code == 0, result.output
+
+    raw = route.calls.last.request.content
+    assert b'name="voice"' in raw
+    assert b'filename="voice.m4a"' in raw
+
+    payload = json.loads(result.output)
+    assert payload["status"] == "ok"
+    assert payload["media"]["localPath"] == str(sample)
+
+
+def test_cliq_send_rejects_missing_local_file(
+    mock_config: Path,
+    mock_token_refresh: Any,
+) -> None:
+    result = runner.invoke(
+        app,
+        [
+            "cliq",
+            "send",
+            "--channel-id",
+            "C1",
+            "--voice-url",
+            "/tmp/definitely-missing-file-zoho-cli.m4a",
+        ],
+        env=_cfg_env(mock_config),
+    )
+
+    assert result.exit_code == 1
+    assert "invalid_file" in result.output
+
+
+@respx.mock
 def test_cliq_voice_send_command(mock_config: Path, mock_token_refresh: Any) -> None:
     route = respx.post("https://cliq.zoho.com/api/v2/channelsbyname/C1/message").mock(
         return_value=httpx.Response(200, json={"data": {"message_id": "M4"}})

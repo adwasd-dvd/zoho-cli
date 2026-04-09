@@ -1,10 +1,12 @@
-last_run_at: "2026-04-09T05:33:42Z"
+last_run_at: "2026-04-09T10:29:10Z"
 last_result: warning
 current_focus: cliq
 suites:
   unit:
     status: passing
     notes:
+      - ./.venv/bin/pytest -q tests/test_cliq.py::test_cliq_client_send_to_user_with_attachment_payload tests/test_cliq.py::test_cliq_client_send_with_strict_media_does_not_fallback_to_text_only tests/test_cli.py::test_cliq_send_channel tests/test_cli.py::test_cliq_send_channel_with_image_url tests/test_cli.py::test_cliq_send_channel_with_voice_url tests/test_cli.py::test_cliq_send_channel_with_local_voice_file tests/test_cli.py::test_cliq_send_rejects_missing_local_file
+      - 7 passed in 0.13s (cliq send strict-media fallback hardening + local-file multipart send baseline coverage, 2026-04-09T10:29:10Z)
       - ./.venv/bin/pytest -q tests/test_cli.py::test_cliq_context_from_chat_id_typed_dm_matrix
       - 1 passed in 0.12s (DM chat-id typed context matrix fixture coverage for cliq-155, 2026-04-09T05:33:42Z)
       - ./.venv/bin/pytest -q tests/test_cliq.py::test_cliq_client_chats tests/test_cliq.py::test_cliq_client_chats_scope_invalid_reports_hint tests/test_cliq.py::test_cliq_client_infer_message_types_detects_voice_sticker_and_text tests/test_cli.py::test_cliq_chats tests/test_cli.py::test_cliq_messages_from_channel tests/test_cli.py::test_cliq_message_get_from_channel tests/test_cli.py::test_cliq_context_with_anchor tests/test_cli.py::test_cliq_send_channel_with_voice_url tests/test_cli.py::test_cliq_voice_send_command tests/test_cli.py::test_cliq_voice_from_channel_filters_audio_files

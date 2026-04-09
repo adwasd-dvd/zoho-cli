@@ -4,11 +4,11 @@ module: cliq
 stage: in_progress
 status: in_progress
 owner: automation
-updated_at: '2026-04-09T05:33:42Z'
+updated_at: '2026-04-09T10:29:10Z'
 success_criteria:
   - provide chat discovery command surface (`cliq chats`) with explicit scope/not-supported diagnostics
   - keep per-conversation context outputs machine-readable with inferred message content types (`text`, `image`, `file`, `voice`, `sticker`, `reaction`)
   - maintain channel/chat context extraction for agent loops (`messages`, `message`, `context`) with typed summaries
   - validate via focused tests and at least one live smoke path on current token/network
 next_if_done: cliq-160
-next_step: DM positive-path typed context fixture is now covered; next close-out step is one chat-read-scope re-auth run to validate `cliq chats` live positive path, then continue native local-file upload probing for voice/image/file
+next_step: DM typed-context fixture and local multipart media-send baseline are now covered; next close-out step is one chat-read-scope re-auth run to validate `cliq chats` live positive path, then run live native local-file upload probes for voice/image/file

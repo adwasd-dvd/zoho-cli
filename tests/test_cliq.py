@@ -1,6 +1,7 @@
 """Tests for zoho_cli.cliq helpers."""
 
 import json
+from pathlib import Path
 import httpx
 import pytest
 import respx
@@ -319,6 +320,69 @@ def test_cliq_client_send_to_user_with_attachment_payload(
 
     payload = json.loads(route.calls.last.request.content.decode("utf-8"))
     assert payload["attachments"]["url"] == "https://example.com/image.jpg"
+    assert result["data"]["status"] == "ok"
+
+
+@respx.mock
+def test_cliq_client_send_with_strict_media_does_not_fallback_to_text_only(
+    client: cliq.ZohoCliqClient,
+    capsys: pytest.CaptureFixture[str],
+) -> None:
+    buddies_route = respx.post("https://cliq.zoho.com/api/v2/buddies/U1/message").mock(
+        return_value=httpx.Response(400, json={"code": "operation_failed"})
+    )
+    users_route = respx.post("https://cliq.zoho.com/api/v2/users/U1/message").mock(
+        return_value=httpx.Response(400, json={"code": "operation_failed"})
+    )
+
+    with pytest.raises(SystemExit):
+        client.send_message(
+            "hello",
+            user_id="U1",
+            attachment={
+                "title": "Image",
+                "url": "https://example.com/image.jpg",
+                "button_label": "View",
+            },
+            strict_media=True,
+        )
+
+    sent_payloads = [
+        json.loads(call.request.content.decode("utf-8"))
+        for route in (buddies_route, users_route)
+        for call in route.calls
+    ]
+    assert sent_payloads
+    assert all("attachments" in payload for payload in sent_payloads)
+    assert all("text" in payload for payload in sent_payloads)
+    assert all(set(payload.keys()) != {"text"} for payload in sent_payloads)
+    err = capsys.readouterr().err
+    assert "api_error" in err
+
+
+@respx.mock
+def test_cliq_client_send_local_file_message_to_user(
+    client: cliq.ZohoCliqClient,
+    tmp_path: Path,
+) -> None:
+    sample = tmp_path / "voice.m4a"
+    sample.write_bytes(b"voice-bytes")
+
+    route = respx.post("https://cliq.zoho.com/api/v2/buddies/U1/message").mock(
+        return_value=httpx.Response(200, json={"data": {"status": "ok"}})
+    )
+
+    result = client.send_local_file_message(
+        str(sample),
+        user_id="U1",
+        text="voice",
+        media_kind="voice",
+    )
+
+    assert route.called
+    raw = route.calls.last.request.content
+    assert b'name="voice"' in raw
+    assert b'filename="voice.m4a"' in raw
     assert result["data"]["status"] == "ok"
 
 

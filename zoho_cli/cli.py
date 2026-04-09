@@ -2429,8 +2429,17 @@ def cliq_send(
 
     attachment: dict | None = None
     card: dict | None = None
+    local_media_path: Path | None = None
+    selected_media_kind = ""
     if selected_media:
         media_kind, media_url = selected_media[0]
+        selected_media_kind = media_kind
+        candidate_path = Path(media_url).expanduser()
+        if candidate_path.exists() and candidate_path.is_file():
+            local_media_path = candidate_path
+        elif media_url.startswith("/"):
+            utils.error_exit("invalid_file", f"File not found: {candidate_path}")
+
         default_title = {
             "image": "Image",
             "file": "File",
@@ -2463,13 +2472,23 @@ def cliq_send(
     email = _require_account(cfg)
     client = _get_cliq_client(cfg, email, network=network)
 
-    resp = client.send_message(
-        text_payload,
-        channel_id=channel_id,
-        user_id=user_id,
-        attachment=attachment,
-        card=card,
-    )
+    if local_media_path is not None:
+        resp = client.send_local_file_message(
+            str(local_media_path),
+            text=text_payload,
+            channel_id=channel_id,
+            user_id=user_id,
+            media_kind="voice" if selected_media_kind == "audio" else selected_media_kind,
+        )
+    else:
+        resp = client.send_message(
+            text_payload,
+            channel_id=channel_id,
+            user_id=user_id,
+            attachment=attachment,
+            card=card,
+            strict_media=bool(selected_media),
+        )
 
     data = resp.get("data", resp)
     utils.output_status(
@@ -2481,6 +2500,7 @@ def cliq_send(
                 "fileUrl": (file_url or "").strip(),
                 "audioUrl": (audio_url or "").strip(),
                 "voiceUrl": (voice_url or "").strip(),
+                "localPath": str(local_media_path) if local_media_path else "",
                 "sticker": sticker_payload,
             },
         },

@@ -29,6 +29,7 @@
 - Added `zoho cliq file` baseline (`cliq-140`) to retrieve per-message file/attachment metadata from channel/chat destinations.
 - Added `zoho cliq whoami` best-effort identity diagnostics to surface active token identity, with `/users/me|self|current` probing plus directory email-match fallback.
 - Expanded `zoho cliq send` with rich media options (`--image-url`, `--file-url`, `--audio-url`, `--voice-url`, `--sticker`) and payload fallback chaining for network-scoped endpoints.
+- Added local media-file send support to `zoho cliq send` when `--image-url`/`--file-url`/`--audio-url`/`--voice-url` points to an existing local file path; CLI now uploads multipart payloads instead of forcing URL-only link cards.
 - Added voice-specific Cliq primitives: `zoho cliq voice-send` (voice URL send wrapper) and `zoho cliq voice` (voice/audio attachment filtering for one message).
 - Added `zoho cliq chats` for DM/group conversation discovery where `/chats` is available for the current token/network.
 - Added inferred message content typing (`text`/`image`/`file`/`voice`/`sticker`/`reaction`) to `cliq messages`, `cliq message`, and `cliq context` outputs.
@@ -57,6 +58,7 @@
 - Cliq file/voice lookup now treats `message_attachment_not_found` as an empty attachment list instead of a hard `api_error`, so receive-path commands can safely return `count: 0`.
 - `cliq whoami` no longer hard-fails when `/users` list is restricted on a base URL; it now reports unresolved/best-effort identity with captured probe attempts.
 - `cliq chats` now fails fast with explicit `oauth_scope_invalid`/`not_supported` diagnostics instead of generic API errors when conversation listing is blocked by token or endpoint constraints.
+- `zoho cliq send` no longer silently degrades media sends to text-only fallback payloads when media attachment candidates fail; strict media mode now preserves attachment/card intent and surfaces API failure directly.
 - Bumped package/runtime version metadata to `0.2.0` (`pyproject.toml` and `zoho_cli.__version__`) and made CLI `--version` prefer local package `__version__` first so source-checkout runs do not report stale installed metadata.
 - Updated Mail module status to in_progress and cleared blockers.
 - Prevented `mail download-attachment --parse` from crashing when parsing fails; it now returns a warning payload after saving the file.

@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+import mimetypes
+from pathlib import Path
 from typing import Any, Optional
 from urllib.parse import urlparse
 
@@ -1935,6 +1937,7 @@ class ZohoCliqClient:
         user_id: Optional[str] = None,
         attachment: dict[str, Any] | None = None,
         card: dict[str, Any] | None = None,
+        strict_media: bool = False,
     ) -> dict:
         """Send a message to either a channel or a user."""
         if bool(channel_id) == bool(user_id):
@@ -1960,6 +1963,13 @@ class ZohoCliqClient:
             payloads.append(dict(base_payload))
         elif attachment and isinstance(attachment.get("url"), str):
             payloads.append({"text": str(attachment.get("url", "")).strip()})
+
+        if strict_media and (attachment or card):
+            payloads = [
+                payload
+                for payload in payloads
+                if "attachments" in payload or "card" in payload
+            ]
 
         # Preserve order while deduplicating payload variants.
         seen_payloads: set[str] = set()
@@ -2000,6 +2010,155 @@ class ZohoCliqClient:
             scope_hint="ZohoCliq.Webhooks.CREATE",
             operation_label="send",
         )
+
+    def send_local_file_message(
+        self,
+        file_path: str,
+        *,
+        text: str = "",
+        channel_id: Optional[str] = None,
+        user_id: Optional[str] = None,
+        media_kind: str = "file",
+    ) -> dict:
+        """Send a local file via multipart form-data to a channel or user."""
+        if bool(channel_id) == bool(user_id):
+            raise ValueError("Provide exactly one of channel_id or user_id")
+
+        path_obj = Path(file_path).expanduser()
+        if not path_obj.exists() or not path_obj.is_file():
+            utils.error_exit("invalid_file", f"File not found: {path_obj}")
+
+        msg_text = text.strip()
+        guessed_mime = (
+            mimetypes.guess_type(path_obj.name)[0]
+            or ("audio/mp4" if media_kind == "voice" else "application/octet-stream")
+        )
+
+        destination_paths: list[str]
+        if channel_id:
+            candidates = [
+                f"/channelsbyname/{channel_id}/message",
+                f"/chats/{channel_id}/message",
+            ]
+            candidates.extend(self._resolve_channel_message_paths(channel_id))
+            seen: set[str] = set()
+            destination_paths = [
+                p for p in candidates if not (p in seen or seen.add(p))
+            ]
+        else:
+            destination_paths = [
+                f"/buddies/{user_id}/message",
+                f"/users/{user_id}/message",
+            ]
+
+        file_fields = [
+            "file",
+            "files",
+            "attachment",
+            "attachments",
+            "audio",
+            "voice",
+            "files[]",
+            "attachments[]",
+        ]
+        if media_kind == "voice":
+            file_fields = [
+                "voice",
+                "audio",
+                "file",
+                "files",
+                "attachment",
+                "attachments",
+                "files[]",
+                "attachments[]",
+            ]
+
+        text_fields: list[dict[str, Any]] = []
+        if msg_text:
+            text_fields.extend(
+                [
+                    {"text": msg_text},
+                    {"caption": msg_text},
+                    {"comment": msg_text},
+                    {"content": msg_text},
+                ]
+            )
+        text_fields.append({})
+
+        last_error: tuple[int, str, str] | None = None
+        saw_scope_invalid = False
+        retryable_codes = {
+            "param_missing",
+            "invalid_data",
+            "operation_failed",
+            "extra_key_found",
+            "request_method_invalid",
+            "request_url_invalid",
+            "input_json_invalid",
+        }
+
+        for send_path in destination_paths:
+            for field_name in file_fields:
+                for form_data in text_fields:
+                    with path_obj.open("rb") as handle:
+                        files = [
+                            (
+                                field_name,
+                                (path_obj.name, handle, guessed_mime),
+                            )
+                        ]
+                        resp = httpx.post(
+                            f"{self.base_url}{send_path}",
+                            headers=self._headers,
+                            data=form_data,
+                            files=files,
+                            timeout=httpx.Timeout(60.0),
+                        )
+
+                    if resp.is_success:
+                        return self._decode_success_response(resp)
+
+                    body = resp.text or ""
+                    lowered = body.lower()
+                    code = ""
+                    try:
+                        parsed = resp.json()
+                        if isinstance(parsed, dict):
+                            code = str(
+                                parsed.get("code") or parsed.get("error") or ""
+                            ).lower()
+                    except ValueError:
+                        pass
+
+                    last_error = (resp.status_code, send_path, body)
+                    if "oauthtoken_scope_invalid" in lowered:
+                        saw_scope_invalid = True
+                        continue
+
+                    if (
+                        resp.status_code in (404, 405)
+                        or "request_url_invalid" in lowered
+                        or code in retryable_codes
+                    ):
+                        continue
+
+                    utils.error_exit(
+                        "api_error",
+                        f"HTTP {resp.status_code} POST {send_path}: {body}",
+                    )
+
+        if saw_scope_invalid:
+            utils.error_exit(
+                "oauth_scope_invalid",
+                "Cliq token is missing scope for local file upload send. Re-run `zoho login --with-cliq` and include chat/message/media scopes, then retry.",
+            )
+
+        if last_error is not None:
+            status, send_path, body = last_error
+            utils.error_exit("api_error", f"HTTP {status} POST {send_path}: {body}")
+
+        utils.error_exit("api_error", "No candidate endpoint available for file send")
+        return {}
 
 
 def build_mail_notification_text(

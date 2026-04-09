@@ -4,7 +4,7 @@ module: cliq
 stage: in_progress
 status: in_progress
 owner: automation
-updated_at: '2026-04-09T05:40:00Z'
+updated_at: '2026-04-09T04:53:00Z'
 success_criteria:
   - keep watch-context/watch-act primitives deterministic for OpenClaw loops
   - ship identity guardrails (`cliq whoami`) so token/account mismatches are diagnosable
@@ -12,4 +12,4 @@ success_criteria:
   - provide explicit voice primitives (`cliq voice-send`, `cliq voice`) for send/receive workflows
   - validate with focused tests and at least one live smoke path
 next_if_done: cliq-160
-next_step: expand from link-style media to native upload/download coverage (image/file/audio fixtures + inbound voice verification with user-provided sample) and fold results into cliq-160 hardening matrix
+next_step: run live `cliq capabilities --channel-id <id> --message-id <id>` probes to capture real files/attachments endpoint readiness, then use one attachment-positive message sample to continue native upload/download hardening for cliq-160

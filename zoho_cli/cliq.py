@@ -1651,6 +1651,7 @@ class ZohoCliqClient:
         *,
         channel_id: str | None = None,
         user_id: str | None = None,
+        message_id: str | None = None,
     ) -> dict[str, Any]:
         """Probe currently-available Cliq read endpoints for this token/org."""
         checks: list[dict[str, Any]] = [
@@ -1698,6 +1699,63 @@ class ZohoCliqClient:
                     },
                 ]
             )
+
+        probe_message_id = (message_id or "").strip()
+        if probe_message_id:
+            target_chat = (resolved_chat_id or channel_id or "").strip()
+            if target_chat:
+                checks.extend(
+                    [
+                        {
+                            "name": "chats.messages.get",
+                            "kind": "read",
+                            "method": "GET",
+                            "path": f"/chats/{target_chat}/messages/{probe_message_id}",
+                            "params": {},
+                        },
+                        {
+                            "name": "chats.messages.files",
+                            "kind": "read",
+                            "method": "GET",
+                            "path": f"/chats/{target_chat}/messages/{probe_message_id}/files",
+                            "params": {},
+                        },
+                        {
+                            "name": "chats.messages.attachments",
+                            "kind": "read",
+                            "method": "GET",
+                            "path": f"/chats/{target_chat}/messages/{probe_message_id}/attachments",
+                            "params": {},
+                        },
+                    ]
+                )
+
+            if channel_id:
+                checks.extend(
+                    [
+                        {
+                            "name": "channels.messages.get",
+                            "kind": "read",
+                            "method": "GET",
+                            "path": f"/channels/{channel_id}/messages/{probe_message_id}",
+                            "params": {},
+                        },
+                        {
+                            "name": "channels.messages.files",
+                            "kind": "read",
+                            "method": "GET",
+                            "path": f"/channels/{channel_id}/messages/{probe_message_id}/files",
+                            "params": {},
+                        },
+                        {
+                            "name": "channels.messages.attachments",
+                            "kind": "read",
+                            "method": "GET",
+                            "path": f"/channels/{channel_id}/messages/{probe_message_id}/attachments",
+                            "params": {},
+                        },
+                    ]
+                )
 
         if user_id:
             checks.extend(

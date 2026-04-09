@@ -1,5 +1,5 @@
 project: zoho-cli
-updated_at: '2026-04-09T05:40:00Z'
+updated_at: '2026-04-09T04:53:00Z'
 status: cliq-expansion
 canonical_workspace: /Users/adwasd/.openclaw/workspace-coder
 project_root: /Users/adwasd/.openclaw/workspace-coder/job/zoho-cli
@@ -13,5 +13,5 @@ primary_blockers:
 - full `make ci` is still failing lint checks in tracked repo files
 - cliq search endpoint variants are not available on happydistrouklimited for current
   token/api combinations (`extra_param_found` / `request_url_invalid`)
-- native attachment upload/download behavior still needs endpoint matrix hardening across network and non-network bases
-next_step: keep cliq voice/image/file media baseline in place, then extend to native upload/download verification and roll those checks into cliq-160 hardening gate
+- native attachment upload/download behavior still needs live endpoint matrix hardening across network and non-network bases (message-level probe support added, live evidence pending)
+next_step: run message-scoped capability probes (`cliq capabilities --channel-id <id> --message-id <id>`) against attachment-positive samples, then continue native upload/download verification and fold outcomes into cliq-160 hardening

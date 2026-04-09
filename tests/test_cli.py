@@ -889,6 +889,76 @@ def test_cliq_capabilities(mock_config: Path, mock_token_refresh: Any) -> None:
     assert payload["module"] == "cliq"
     assert payload["capabilityStage"] == "cliq-100"
     assert payload["summary"]["total"] == 2
+    assert payload["inputs"]["messageId"] == ""
+
+
+@respx.mock
+def test_cliq_capabilities_with_message_probe(
+    mock_config: Path, mock_token_refresh: Any
+) -> None:
+    respx.get("https://cliq.zoho.com/api/v2/channels").mock(
+        return_value=httpx.Response(200, json={"data": []})
+    )
+    respx.get("https://cliq.zoho.com/api/v2/users").mock(
+        return_value=httpx.Response(200, json={"data": []})
+    )
+    respx.get("https://cliq.zoho.com/api/v2/channels/O1").mock(
+        return_value=httpx.Response(200, json={"data": {"chat_id": "CT_1"}})
+    )
+    respx.get("https://cliq.zoho.com/api/v2/chats/CT_1/messages").mock(
+        return_value=httpx.Response(200, json={"data": []})
+    )
+    respx.get("https://cliq.zoho.com/api/v2/channels/O1/messages").mock(
+        return_value=httpx.Response(200, json={"data": []})
+    )
+    respx.get("https://cliq.zoho.com/api/v2/chats/CT_1/messages/M1").mock(
+        return_value=httpx.Response(200, json={"data": {"id": "M1"}})
+    )
+    respx.get("https://cliq.zoho.com/api/v2/chats/CT_1/messages/M1/files").mock(
+        return_value=httpx.Response(404, text="request_url_invalid")
+    )
+    respx.get("https://cliq.zoho.com/api/v2/chats/CT_1/messages/M1/attachments").mock(
+        return_value=httpx.Response(200, json={"data": []})
+    )
+    respx.get("https://cliq.zoho.com/api/v2/channels/O1/messages/M1").mock(
+        return_value=httpx.Response(200, json={"data": {"id": "M1"}})
+    )
+    respx.get("https://cliq.zoho.com/api/v2/channels/O1/messages/M1/files").mock(
+        return_value=httpx.Response(404, text="request_url_invalid")
+    )
+    respx.get("https://cliq.zoho.com/api/v2/channels/O1/messages/M1/attachments").mock(
+        return_value=httpx.Response(200, json={"data": []})
+    )
+
+    result = runner.invoke(
+        app,
+        [
+            "cliq",
+            "capabilities",
+            "--channel-id",
+            "O1",
+            "--message-id",
+            "M1",
+        ],
+        env=_cfg_env(mock_config),
+    )
+    assert result.exit_code == 0, result.output
+
+    payload = json.loads(result.output)
+    assert payload["inputs"]["messageId"] == "M1"
+    assert payload["summary"]["total"] == 11
+
+
+def test_cliq_capabilities_message_probe_requires_channel(
+    mock_config: Path, mock_token_refresh: Any
+) -> None:
+    result = runner.invoke(
+        app,
+        ["cliq", "capabilities", "--message-id", "M1"],
+        env=_cfg_env(mock_config),
+    )
+    assert result.exit_code == 1
+    assert "invalid_destination" in result.output
 
 
 @respx.mock

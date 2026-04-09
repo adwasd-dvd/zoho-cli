@@ -867,6 +867,53 @@ def test_cliq_client_probe_capabilities_with_channel_context(
     assert checks["channels.messages.list"]["status"] == "forbidden_or_scope"
 
 
+@respx.mock
+def test_cliq_client_probe_capabilities_with_message_context(
+    client: cliq.ZohoCliqClient,
+) -> None:
+    respx.get("https://cliq.zoho.com/api/v2/channels").mock(
+        return_value=httpx.Response(200, json={"data": []})
+    )
+    respx.get("https://cliq.zoho.com/api/v2/users").mock(
+        return_value=httpx.Response(200, json={"data": []})
+    )
+    respx.get("https://cliq.zoho.com/api/v2/channels/O1").mock(
+        return_value=httpx.Response(200, json={"data": {"chat_id": "CT_1"}})
+    )
+    respx.get("https://cliq.zoho.com/api/v2/chats/CT_1/messages").mock(
+        return_value=httpx.Response(200, json={"data": []})
+    )
+    respx.get("https://cliq.zoho.com/api/v2/channels/O1/messages").mock(
+        return_value=httpx.Response(200, json={"data": []})
+    )
+    respx.get("https://cliq.zoho.com/api/v2/chats/CT_1/messages/M1").mock(
+        return_value=httpx.Response(200, json={"data": {"id": "M1"}})
+    )
+    respx.get("https://cliq.zoho.com/api/v2/chats/CT_1/messages/M1/files").mock(
+        return_value=httpx.Response(404, text="request_url_invalid")
+    )
+    respx.get("https://cliq.zoho.com/api/v2/chats/CT_1/messages/M1/attachments").mock(
+        return_value=httpx.Response(401, json={"code": "oauthtoken_scope_invalid"})
+    )
+    respx.get("https://cliq.zoho.com/api/v2/channels/O1/messages/M1").mock(
+        return_value=httpx.Response(200, json={"data": {"id": "M1"}})
+    )
+    respx.get("https://cliq.zoho.com/api/v2/channels/O1/messages/M1/files").mock(
+        return_value=httpx.Response(404, text="request_url_invalid")
+    )
+    respx.get("https://cliq.zoho.com/api/v2/channels/O1/messages/M1/attachments").mock(
+        return_value=httpx.Response(200, json={"data": []})
+    )
+
+    result = client.probe_capabilities(channel_id="O1", message_id="M1")
+
+    checks = {item["name"]: item for item in result["checks"]}
+    assert checks["chats.messages.get"]["ok"] is True
+    assert checks["chats.messages.files"]["status"] == "not_supported"
+    assert checks["chats.messages.attachments"]["status"] == "forbidden_or_scope"
+    assert checks["channels.messages.attachments"]["ok"] is True
+
+
 def test_build_mail_notification_text() -> None:
     text = cliq.build_mail_notification_text(
         {

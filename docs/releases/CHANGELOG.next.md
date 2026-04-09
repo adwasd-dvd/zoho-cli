@@ -15,6 +15,7 @@
 - Added CRM read-only command scaffold surface: `zoho crm fields`, `zoho crm list`, `zoho crm get`, and `zoho crm search`.
 - Added CRM OAuth readiness support: `zoho login --with-crm` scope bundling plus `zoho crm status` scope diagnostics (`requiredScopes` / `missingScopes` / `oauthReady`).
 - Added Cliq capability discovery command `zoho cliq capabilities` (`cliq-100`) with baseline read-endpoint probes (`channels/users` plus optional channel/user-context checks) and machine-readable status classification (`ok`, `forbidden_or_scope`, `not_supported`, `rate_limited`).
+- Extended `zoho cliq capabilities` with optional `--message-id` probing (requires `--channel-id`) so capability reports can include message/get and file/attachment endpoint readiness (`/chats/.../messages/{id}`, `/files`, `/attachments`, plus channel path variants).
 - Added Cliq read-plane commands (`cliq-110`): `zoho cliq messages`, `zoho cliq message`, and `zoho cliq context` with channel-to-chat resolution and context-window output.
 - Expanded recommended Cliq scope bundle to include `ZohoCliq.Messages.READ` so message/context operations can be verified live.
 - Added Cliq write-plane commands (`cliq-120`): `zoho cliq reply`, `zoho cliq edit`, `zoho cliq delete`, and `zoho cliq react` with endpoint/payload fallback logic for network-scoped org APIs.

@@ -1225,13 +1225,28 @@ def cliq_capabilities(
     user_id: Optional[str] = typer.Option(
         None, "--user-id", help="Optional user id for deeper endpoint probes."
     ),
+    message_id: Optional[str] = typer.Option(
+        None,
+        "--message-id",
+        help="Optional message id for deeper message/file/attachment probes (requires --channel-id).",
+    ),
 ) -> None:
     """Probe currently-available Cliq read capabilities for this token and org."""
+    if (message_id or "").strip() and not (channel_id or "").strip():
+        utils.error_exit(
+            "invalid_destination",
+            "Provide --channel-id when using --message-id for message/file capability probes",
+        )
+
     cfg = _cfg()
     email = _require_account(cfg)
     client = _get_cliq_client(cfg, email, network=network)
 
-    probe = client.probe_capabilities(channel_id=channel_id, user_id=user_id)
+    probe = client.probe_capabilities(
+        channel_id=channel_id,
+        user_id=user_id,
+        message_id=message_id,
+    )
     payload = {
         "module": "cliq",
         "capabilityStage": "cliq-100",
@@ -1241,6 +1256,7 @@ def cliq_capabilities(
             "network": network or "",
             "channelId": channel_id or "",
             "userId": user_id or "",
+            "messageId": message_id or "",
         },
         **probe,
     }

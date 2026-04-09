@@ -64,9 +64,11 @@
 - Removed duplicate CRM `fields` command/client definitions so the CRM read-only surface now has one canonical `fields` implementation.
 
 ### Release readiness
-- Assessed at 2026-04-08T02:00:05Z: release is **not ready**.
-- Blocker bugs are clear and targeted Mail unit tests pass (`13 passed`).
+- Assessed at 2026-04-09T01:36:11Z: release is **not ready**.
+- Fresh gate evidence:
+  - `make release-gate` passed (`205 passed in 3.24s`, wheel smoke passed for `0.2.0`).
+  - Changelog draft is current for Cliq/CRM train work.
 - Remaining release blockers:
-  - current focus milestone `mail-core-extraction` is still active (not complete)
-  - integration tests are pending and not explicitly skipped for this train
-  - packaging/release gate task (`mail-004`) is still queued
+  - blocker bugs are **not** clear (`crm-002` live smoke remains blocked by missing CRM org access and returns `OAUTH_SCOPE_MISMATCH`)
+  - current focus milestone `cliq-expansion-phase` is **not complete** (`cliq-140` in progress, `cliq-150/160` queued)
+  - `make ci` is still failing lint checks, so the full validation gate is not green

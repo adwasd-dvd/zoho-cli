@@ -275,6 +275,71 @@ def test_build_watch_context_seed_truncates_when_cursor_not_found() -> None:
     assert [item["messageId"] for item in payload["messages"]] == ["M3", "M4"]
 
 
+def test_build_watch_reply_action_selects_latest_message() -> None:
+    action = cliq.ZohoCliqClient.build_watch_reply_action(
+        {
+            "chatId": "CT_1",
+            "channelId": "O1",
+            "messages": [
+                {"messageId": "M1", "senderId": "U1", "text": "first"},
+                {"messageId": "M2", "senderId": "U2", "text": "latest"},
+            ],
+        },
+        text="ack",
+    )
+
+    assert action["action"] == "reply-latest"
+    assert action["chatId"] == "CT_1"
+    assert action["channelId"] == "O1"
+    assert action["targetMessageId"] == "M2"
+    assert action["hasTarget"] is True
+
+
+@respx.mock
+def test_execute_watch_reply_action_replies_to_latest_message(
+    client: cliq.ZohoCliqClient,
+) -> None:
+    route = respx.post(
+        "https://cliq.zoho.com/api/v2/chats/CT_1/messages/M2/reply"
+    ).mock(return_value=httpx.Response(200, json={"data": {"id": "M3"}}))
+
+    result = client.execute_watch_reply_action(
+        {
+            "chatId": "CT_1",
+            "channelId": "O1",
+            "messages": [
+                {"messageId": "M1", "senderId": "U1", "text": "first"},
+                {"messageId": "M2", "senderId": "U2", "text": "latest"},
+            ],
+        },
+        text="ack",
+    )
+
+    assert route.called
+    assert result["status"] == "ok"
+    assert result["applied"] is True
+    assert result["targetMessageId"] == "M2"
+    assert result["result"]["id"] == "M3"
+
+
+def test_execute_watch_reply_action_no_messages_returns_noop(
+    client: cliq.ZohoCliqClient,
+) -> None:
+    result = client.execute_watch_reply_action(
+        {
+            "chatId": "CT_1",
+            "channelId": "O1",
+            "messages": [],
+        },
+        text="ack",
+    )
+
+    assert result["status"] == "ok"
+    assert result["applied"] is False
+    assert result["reason"] == "no_new_messages"
+    assert result["targetMessageId"] == ""
+
+
 @respx.mock
 def test_cliq_client_search_messages_with_fallback_endpoint(
     client: cliq.ZohoCliqClient,

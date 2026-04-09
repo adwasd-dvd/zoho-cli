@@ -27,6 +27,7 @@
 - Added `zoho cliq search` baseline (`cliq-140`) with keyword + optional `--from-time/--to-time` window filters, channel/chat destination support, and response shaping for message lists.
 - Added `zoho cliq file` baseline (`cliq-140`) to retrieve per-message file/attachment metadata from channel/chat destinations.
 - Added first `cliq-150` OpenClaw watch primitive: `zoho cliq watch-context` plus `ZohoCliqClient.build_watch_context_seed` for cursor-based incremental context payloads.
+- Added companion `cliq-150` action primitive: `zoho cliq watch-act` plus `ZohoCliqClient.build_watch_reply_action` / `execute_watch_reply_action` to consume `watch-context` payloads and deterministically reply to the latest unseen message.
 - Added CRM fields read path: `zoho crm fields --module <api_name>` with pagination, backed by `ZohoCrmClient.fields` (`/settings/fields`).
 - Added CRM read-only record commands for `crm-002`: `zoho crm list`, `zoho crm get`, and `zoho crm search` (`--criteria` or `--word`) wired through `ZohoCrmClient` with pagination/field-selection support.
 

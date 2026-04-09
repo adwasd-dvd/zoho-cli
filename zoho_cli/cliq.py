@@ -404,6 +404,99 @@ class ZohoCliqClient:
             "messages": normalized_messages,
         }
 
+    @classmethod
+    def build_watch_reply_action(
+        cls,
+        watch_payload: dict[str, Any],
+        *,
+        text: str,
+        chat_id: str | None = None,
+        channel_id: str | None = None,
+    ) -> dict[str, Any]:
+        """Build a deterministic reply-latest action from watch-context output."""
+        payload_chat = str(watch_payload.get("chatId") or "").strip()
+        payload_channel = str(watch_payload.get("channelId") or "").strip()
+
+        resolved_chat = (chat_id or "").strip() or payload_chat
+        resolved_channel = (channel_id or "").strip() or payload_channel
+
+        data = watch_payload.get("messages")
+        messages = (
+            [item for item in data if isinstance(item, dict)]
+            if isinstance(data, list)
+            else []
+        )
+
+        target: dict[str, Any] | None = None
+        for item in reversed(messages):
+            if cls._extract_message_id(item):
+                target = item
+                break
+
+        target_id = cls._extract_message_id(target or {})
+        return {
+            "action": "reply-latest",
+            "chatId": resolved_chat,
+            "channelId": resolved_channel,
+            "newCount": watch_payload.get("newCount", len(messages)),
+            "targetMessageId": target_id,
+            "targetSenderId": cls._extract_sender_id(target or {}),
+            "targetText": cls._extract_message_text(target or {}),
+            "replyText": text,
+            "hasTarget": bool(target_id),
+        }
+
+    def execute_watch_reply_action(
+        self,
+        watch_payload: dict[str, Any],
+        *,
+        text: str,
+        chat_id: str | None = None,
+        channel_id: str | None = None,
+    ) -> dict[str, Any]:
+        """Execute one deterministic watch action: reply to the latest new message."""
+        reply_text = text.strip()
+        if not reply_text:
+            utils.error_exit("invalid_text", "reply text cannot be empty")
+
+        action = self.build_watch_reply_action(
+            watch_payload,
+            text=reply_text,
+            chat_id=chat_id,
+            channel_id=channel_id,
+        )
+
+        resolved_chat = str(action.get("chatId") or "").strip()
+        resolved_channel = str(action.get("channelId") or "").strip()
+        if not resolved_chat and not resolved_channel:
+            utils.error_exit(
+                "invalid_destination",
+                "Watch payload is missing destination. Provide --chat-id/--channel-id or use payload from `zoho cliq watch-context`.",
+            )
+
+        target_id = str(action.get("targetMessageId") or "").strip()
+        if not target_id:
+            return {
+                "status": "ok",
+                **action,
+                "applied": False,
+                "reason": "no_new_messages",
+                "result": {},
+            }
+
+        resp = self.reply_message(
+            reply_text,
+            message_id=target_id,
+            chat_id=resolved_chat or None,
+            channel_id=resolved_channel or None,
+        )
+        return {
+            "status": "ok",
+            **action,
+            "applied": True,
+            "result": resp.get("data", resp),
+        }
+
     def list_messages(
         self,
         *,

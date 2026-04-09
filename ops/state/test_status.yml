@@ -1,10 +1,12 @@
-last_run_at: "2026-04-09T02:36:46Z"
+last_run_at: "2026-04-09T03:21:27Z"
 last_result: warning
 current_focus: cliq
 suites:
   unit:
     status: passing
     notes:
+      - ./.venv/bin/pytest -q tests/test_cliq.py::test_build_watch_reply_action_selects_latest_message tests/test_cliq.py::test_execute_watch_reply_action_replies_to_latest_message tests/test_cliq.py::test_execute_watch_reply_action_no_messages_returns_noop tests/test_cli.py::test_cliq_watch_act_replies_to_latest_message tests/test_cli.py::test_cliq_watch_act_no_messages_returns_noop
+      - 5 passed in 0.20s (cliq-150 watch-act baseline deterministic reply-latest action + CLI routing coverage, 2026-04-09T03:21:27Z)
       - ./.venv/bin/pytest -q tests/test_cliq.py::test_build_watch_context_seed_with_cursor_found tests/test_cliq.py::test_build_watch_context_seed_truncates_when_cursor_not_found tests/test_cli.py::test_cliq_watch_context_from_channel tests/test_cli.py::test_cliq_watch_context_requires_destination
       - 4 passed in 0.15s (cliq-150 watch-context seed payload + CLI routing coverage, 2026-04-09T02:36:46Z)
       - ./.venv/bin/pytest -q tests/test_cliq.py::test_cliq_client_search_messages_with_fallback_endpoint tests/test_cliq.py::test_cliq_client_search_messages_retries_on_extra_param_found tests/test_cliq.py::test_cliq_client_search_messages_not_supported_reports_capability_hint tests/test_cli.py::test_cliq_search_from_channel tests/test_cli.py::test_cliq_search_requires_destination
@@ -175,6 +177,8 @@ suites:
   ci:
     status: warning
     notes:
+      - ./.venv/bin/ruff format --check zoho_cli/cliq.py zoho_cli/cli.py tests/test_cliq.py tests/test_cli.py
+      - 4 files already formatted (2026-04-09T03:21:27Z)
       - ./.venv/bin/ruff format --check zoho_cli/cliq.py zoho_cli/cli.py tests/test_cliq.py tests/test_cli.py
       - 4 files already formatted (2026-04-09T02:36:46Z)
       - ./.venv/bin/ruff format --check zoho_cli/cliq.py tests/test_cliq.py

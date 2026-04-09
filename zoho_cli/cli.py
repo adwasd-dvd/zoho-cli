@@ -8,6 +8,7 @@ Output:
 
 from __future__ import annotations
 
+import json
 import sys
 
 # Fail fast with a clear message if any runtime dependency is missing
@@ -1867,6 +1868,60 @@ def cliq_watch_context(
             "messages": watch["messages"],
         }
     )
+
+
+@cliq_app.command("watch-act")
+def cliq_watch_act(
+    watch_file: str = typer.Option(
+        ...,
+        "--watch-file",
+        help="Path to watch-context JSON payload (use '-' to read from stdin).",
+    ),
+    text: str = typer.Option(..., "--text", "-t", help="Reply text to send."),
+    channel_id: Optional[str] = typer.Option(
+        None,
+        "--channel-id",
+        help="Override destination channel id from payload.",
+    ),
+    chat_id: Optional[str] = typer.Option(
+        None,
+        "--chat-id",
+        help="Override destination chat id from payload.",
+    ),
+    network: Optional[str] = typer.Option(
+        None, "--network", help="Cliq network slug (e.g. happydistrouklimited)."
+    ),
+) -> None:
+    """Execute one deterministic action from watch payload (reply to latest message)."""
+    raw = ""
+    source = watch_file.strip()
+    if source == "-":
+        raw = sys.stdin.read()
+    else:
+        payload_path = Path(source)
+        if not payload_path.exists():
+            utils.error_exit("file_not_found", f"Watch payload not found: {source}")
+        raw = payload_path.read_text()
+
+    try:
+        watch_payload = json.loads(raw)
+    except json.JSONDecodeError as exc:
+        utils.error_exit("invalid_watch_payload", f"Invalid JSON payload: {exc}")
+
+    if not isinstance(watch_payload, dict):
+        utils.error_exit("invalid_watch_payload", "Watch payload must be a JSON object")
+
+    cfg = _cfg()
+    email = _require_account(cfg)
+    client = _get_cliq_client(cfg, email, network=network)
+
+    result = client.execute_watch_reply_action(
+        watch_payload,
+        text=text,
+        chat_id=chat_id,
+        channel_id=channel_id,
+    )
+    utils.output(result)
 
 
 @cliq_app.command("reply")

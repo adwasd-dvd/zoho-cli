@@ -1104,6 +1104,89 @@ def test_cliq_watch_context_requires_destination(
     assert "invalid_destination" in result.output
 
 
+@respx.mock
+def test_cliq_watch_act_replies_to_latest_message(
+    tmp_path: Path,
+    mock_config: Path,
+    mock_token_refresh: Any,
+) -> None:
+    watch_file = tmp_path / "watch.json"
+    watch_file.write_text(
+        json.dumps(
+            {
+                "chatId": "CT_1",
+                "channelId": "O1",
+                "newCount": 2,
+                "messages": [
+                    {"messageId": "M1", "senderId": "U1", "text": "first"},
+                    {"messageId": "M2", "senderId": "U2", "text": "latest"},
+                ],
+            }
+        )
+    )
+
+    route = respx.post(
+        "https://cliq.zoho.com/api/v2/chats/CT_1/messages/M2/reply"
+    ).mock(return_value=httpx.Response(200, json={"data": {"id": "M3"}}))
+
+    result = runner.invoke(
+        app,
+        [
+            "cliq",
+            "watch-act",
+            "--watch-file",
+            str(watch_file),
+            "--text",
+            "ack",
+        ],
+        env=_cfg_env(mock_config),
+    )
+
+    assert result.exit_code == 0, result.output
+    assert route.called
+    payload = json.loads(result.output)
+    assert payload["status"] == "ok"
+    assert payload["applied"] is True
+    assert payload["targetMessageId"] == "M2"
+
+
+def test_cliq_watch_act_no_messages_returns_noop(
+    tmp_path: Path,
+    mock_config: Path,
+    mock_token_refresh: Any,
+) -> None:
+    watch_file = tmp_path / "watch-empty.json"
+    watch_file.write_text(
+        json.dumps(
+            {
+                "chatId": "CT_1",
+                "channelId": "O1",
+                "newCount": 0,
+                "messages": [],
+            }
+        )
+    )
+
+    result = runner.invoke(
+        app,
+        [
+            "cliq",
+            "watch-act",
+            "--watch-file",
+            str(watch_file),
+            "--text",
+            "ack",
+        ],
+        env=_cfg_env(mock_config),
+    )
+
+    assert result.exit_code == 0, result.output
+    payload = json.loads(result.output)
+    assert payload["status"] == "ok"
+    assert payload["applied"] is False
+    assert payload["reason"] == "no_new_messages"
+
+
 def test_cliq_messages_requires_destination(
     mock_config: Path, mock_token_refresh: Any
 ) -> None:

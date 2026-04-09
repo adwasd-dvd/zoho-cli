@@ -65,7 +65,7 @@
 - id: cliq-140
   title: implement cliq files and search plane
   module: cliq
-  stage: in_progress
+  stage: completed
   priority: medium
   depends_on:
     - cliq-110
@@ -73,7 +73,7 @@
 - id: cliq-150
   title: implement openclaw integration primitives for cliq watch context and act
   module: cliq
-  stage: queued
+  stage: in_progress
   priority: high
   depends_on:
     - cliq-110

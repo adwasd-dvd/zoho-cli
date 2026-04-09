@@ -1,5 +1,5 @@
 project: zoho-cli
-updated_at: "2026-04-09T01:05:37Z"
+updated_at: "2026-04-09T01:49:18Z"
 status: cliq-expansion
 canonical_workspace: "/Users/adwasd/.openclaw/workspace-coder"
 project_root: "/Users/adwasd/.openclaw/workspace-coder/job/zoho-cli"
@@ -7,8 +7,9 @@ module_order:
   - Mail
   - Cliq
   - CRM
-current_focus: cliq-140 files and search plane
+current_focus: cliq-150 openclaw integration primitives
 primary_blockers:
   - crm live read-only verification remains blocked by account-level CRM org access
-  - `ruff format --check` currently fails for unrelated files in repo history
-next_step: run one live `cliq search` + `cliq file` verification on happydistrouklimited, then decide whether cliq-140 can close or needs a documented endpoint-support caveat
+  - full `make ci` is still failing lint checks in tracked repo files
+  - cliq search endpoint variants are not available on happydistrouklimited for current token/api combinations (`extra_param_found` / `request_url_invalid`)
+next_step: implement the first cliq-150 watch-context primitive and keep cliq-140 live limitation notes as known behavior

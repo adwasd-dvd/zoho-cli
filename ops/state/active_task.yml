@@ -1,15 +1,14 @@
-id: cliq-140
-title: implement cliq files and search plane
+id: cliq-150
+title: implement openclaw integration primitives for cliq watch context and act
 module: cliq
 stage: in_progress
 status: in_progress
 owner: automation
-updated_at: "2026-04-09T01:05:37Z"
+updated_at: "2026-04-09T01:49:18Z"
 success_criteria:
-  - add message search command with keyword/time-window filters
-  - add file/attachment retrieval command for Cliq messages where API permits
-  - include capability-aware fail-fast errors for unsupported file/search endpoints
-  - focused tests added for search and file command routing
-  - changelog and state files updated with live verification notes
-next_if_done: cliq-150
-next_step: run one live `cliq search` + `cliq file` verification on happydistrouklimited; if file endpoints are unsupported, capture capability/error output and advance to cliq-150 with the limitation documented
+  - define first cliq watch/context primitive for OpenClaw handoff
+  - add one minimal command or helper that emits stable machine-readable context payloads for agent loops
+  - add focused tests for command routing and payload shape
+  - update changelog and state files with local test evidence
+next_if_done: cliq-160
+next_step: design and ship the first cliq-150 primitive (watch-context seed) using existing cliq context/message helpers, then verify with focused tests

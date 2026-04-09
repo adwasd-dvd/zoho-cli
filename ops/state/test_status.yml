@@ -1,10 +1,12 @@
-last_run_at: "2026-04-09T01:05:37Z"
+last_run_at: "2026-04-09T01:49:18Z"
 last_result: warning
 current_focus: cliq
 suites:
   unit:
     status: passing
     notes:
+      - ./.venv/bin/pytest -q tests/test_cliq.py::test_cliq_client_search_messages_with_fallback_endpoint tests/test_cliq.py::test_cliq_client_search_messages_retries_on_extra_param_found tests/test_cliq.py::test_cliq_client_search_messages_not_supported_reports_capability_hint tests/test_cli.py::test_cliq_search_from_channel tests/test_cli.py::test_cliq_search_requires_destination
+      - 5 passed in 0.20s (cliq-140 search fallback now retries on `extra_param_found`, 2026-04-09T01:49:18Z)
       - ./.venv/bin/pytest -q tests/test_cliq.py::test_cliq_client_get_message_files_with_fallback_endpoint tests/test_cliq.py::test_cliq_client_get_message_files_not_supported_reports_capability_hint tests/test_cli.py::test_cliq_file_from_channel tests/test_cli.py::test_cliq_file_requires_destination
       - 4 passed in 0.16s (cliq-140 file retrieval baseline + CLI routing coverage, 2026-04-09T01:05:37Z)
       - ./.venv/bin/pytest -q tests/test_cliq.py tests/test_cli.py::test_cliq_user_resolve_email tests/test_cli.py::test_cliq_user_resolve_name tests/test_cli.py::test_cliq_users tests/test_cli.py::test_cliq_members_from_channel tests/test_cli.py::test_cliq_member_add tests/test_cli.py::test_cliq_member_remove tests/test_cli.py::test_cliq_channel_create tests/test_cli.py::test_cliq_channel_archive tests/test_cli.py::test_cliq_channel_delete tests/test_cli.py::test_cliq_messages_from_channel tests/test_cli.py::test_cliq_message_get_from_channel tests/test_cli.py::test_cliq_context_with_anchor tests/test_cli.py::test_cliq_send_channel tests/test_cli.py::test_cliq_notify_mail_to_channel tests/test_cli.py::test_cliq_status_check_auth
@@ -93,6 +95,10 @@ suites:
   integration:
     status: warning
     notes:
+      - ./.venv/bin/python -m zoho_cli --config /tmp/zoho-test-config.json --account ai-dev@happy-distro.co.uk cliq search "cliq" --network happydistrouklimited --channel-id O6576524000097556005 --limit 5
+      - live search now falls through endpoint/query variants and exits with documented `not_supported` (no hard api_error on first `extra_param_found`) (2026-04-09T01:49:18Z)
+      - ./.venv/bin/python -m zoho_cli --config /tmp/zoho-test-config.json --account ai-dev@happy-distro.co.uk cliq file 1775672331710_74865282494 --network happydistrouklimited --channel-id O6576524000097556005
+      - live file endpoint reached but selected message has no attachments (`message_attachment_not_found`), so command behavior is verified while attachment-positive sample is still pending (2026-04-09T01:49:18Z)
       - ./.venv/bin/python -m zoho_cli --config /tmp/zoho-test-config.json --account ai-dev@happy-distro.co.uk cliq status --network happydistrouklimited --check-auth
       - cliq auth is currently healthy (`oauthReady: true`, no missing scopes) for live cliq checks (2026-04-09T00:46:57Z)
       - ./.venv/bin/python -m zoho_cli --config /tmp/zoho-test-config.json --account ai-dev@happy-distro.co.uk cliq user-resolve "david@happy-distro.com" --by email --network happydistrouklimited
@@ -167,6 +173,8 @@ suites:
   ci:
     status: warning
     notes:
+      - ./.venv/bin/ruff format --check zoho_cli/cliq.py tests/test_cliq.py
+      - 2 files already formatted (2026-04-09T01:49:18Z)
       - ./.venv/bin/ruff format --check zoho_cli/cliq.py zoho_cli/cli.py tests/test_cliq.py tests/test_cli.py
       - 4 files already formatted (2026-04-09T01:05:37Z)
       - ./.venv/bin/ruff format --check zoho_cli/cliq.py zoho_cli/cli.py tests/test_cliq.py tests/test_cli.py

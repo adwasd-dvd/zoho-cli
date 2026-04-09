@@ -43,6 +43,7 @@
 - Removed legacy `ZohoCliq.Messages.CREATE` from the recommended `--with-cliq` scope bundle so `zoho cliq status` and login guidance align with the actual send/notify requirement (`ZohoCliq.Webhooks.CREATE`).
 - Hardened Cliq send/notify endpoint resolution: channel targets now retry by resolving `/channels/{id}` into `chat_id`/`unique_name` before posting, and user-target sends now prefer the documented `/buddies/{id_or_email}/message` endpoint (with legacy fallback retained).
 - Added Cliq search fallback probing in `ZohoCliqClient.search_messages` across endpoint and query/window param variants, including explicit `not_supported` and `oauth_scope_invalid` fail-fast errors for unsupported or scope-blocked search APIs.
+- Cliq search fallback now treats `extra_param_found` as retryable, so unsupported query-key variants no longer hard-fail before probing alternate search params/endpoints.
 - Added Cliq file/attachment fallback probing in `ZohoCliqClient.get_message_files`, including explicit `not_supported` and `oauth_scope_invalid` fail-fast errors when message file endpoints are unsupported or scope-blocked.
 - Bumped package/runtime version metadata to `0.2.0` (`pyproject.toml` and `zoho_cli.__version__`) and made CLI `--version` prefer local package `__version__` first so source-checkout runs do not report stale installed metadata.
 - Updated Mail module status to in_progress and cleared blockers.

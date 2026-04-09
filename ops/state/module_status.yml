@@ -9,10 +9,11 @@ mail:
 cliq:
   priority: 2
   status: in_progress
-  phase: expansion_files_search
+  phase: expansion_integration_primitives
   target_release: v0.4.0
   current_milestone: cliq-expansion-phase
-  blockers: []
+  blockers:
+    - live search endpoint variants are currently unsupported on happydistrouklimited (`extra_param_found` / `request_url_invalid`)
 
 crm:
   priority: 3

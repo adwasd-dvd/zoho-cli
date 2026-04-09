@@ -460,6 +460,7 @@ class ZohoCliqClient:
             "invalid_data",
             "operation_failed",
             "extra_key_found",
+            "extra_param_found",
         }
 
         for path in path_candidates:

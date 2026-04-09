@@ -262,6 +262,29 @@ def test_cliq_client_search_messages_with_fallback_endpoint(
 
 
 @respx.mock
+def test_cliq_client_search_messages_retries_on_extra_param_found(
+    client: cliq.ZohoCliqClient,
+) -> None:
+    respx.get("https://cliq.zoho.com/api/v2/chats/CT_1/messages/search").mock(
+        return_value=httpx.Response(
+            400,
+            json={
+                "code": "extra_param_found",
+                "message": "'search' is an extra param in the query.",
+            },
+        )
+    )
+    fallback = respx.get(
+        "https://cliq.zoho.com/api/v2/chats/CT_1/search/messages"
+    ).mock(return_value=httpx.Response(200, json={"data": [{"id": "M2"}]}))
+
+    result = client.search_messages("deploy", chat_id="CT_1", limit=3)
+
+    assert fallback.called
+    assert result["data"][0]["id"] == "M2"
+
+
+@respx.mock
 def test_cliq_client_search_messages_not_supported_reports_capability_hint(
     client: cliq.ZohoCliqClient,
     capsys: pytest.CaptureFixture[str],

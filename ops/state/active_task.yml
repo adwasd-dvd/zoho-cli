@@ -4,11 +4,11 @@ module: cliq
 stage: in_progress
 status: in_progress
 owner: automation
-updated_at: '2026-04-09T11:12:55Z'
+updated_at: '2026-04-09T11:58:26Z'
 success_criteria:
   - provide chat discovery command surface (`cliq chats`) with explicit scope/not-supported diagnostics
   - keep per-conversation context outputs machine-readable with inferred message content types (`text`, `image`, `file`, `voice`, `sticker`, `reaction`)
   - maintain channel/chat context extraction for agent loops (`messages`, `message`, `context`) with typed summaries
   - validate via focused tests and at least one live smoke path on current token/network
 next_if_done: cliq-160
-next_step: local multipart upload fallback now prefers image-specific field keys for `--image-url <local-path>` and has focused test coverage; remaining close-out is one chat-read-scope re-auth run for `cliq chats` positive path, then live native local-file upload probes (voice/image/file)
+next_step: default `zoho login --with-cliq` scope bundle now includes `ZohoCliq.Chats.ALL`; rerun one chat-read re-auth pass to validate `cliq chats` positive path, then execute live native local-file upload probes (voice/image/file)

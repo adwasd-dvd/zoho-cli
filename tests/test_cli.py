@@ -858,6 +858,7 @@ def test_cliq_status_oauth_ready_when_scopes_present(tmp_path: Path) -> None:
                     "ZohoCliq.Channels.READ",
                     "ZohoCliq.Users.READ",
                     "ZohoCliq.Messages.READ",
+                    "ZohoCliq.Chats.ALL",
                     "ZohoCliq.Webhooks.CREATE",
                 ],
             }

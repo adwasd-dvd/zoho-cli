@@ -18,6 +18,7 @@
 - Extended `zoho cliq capabilities` with optional `--message-id` probing (requires `--channel-id`) so capability reports can include message/get and file/attachment endpoint readiness (`/chats/.../messages/{id}`, `/files`, `/attachments`, plus channel path variants).
 - Added Cliq read-plane commands (`cliq-110`): `zoho cliq messages`, `zoho cliq message`, and `zoho cliq context` with channel-to-chat resolution and context-window output.
 - Expanded recommended Cliq scope bundle to include `ZohoCliq.Messages.READ` so message/context operations can be verified live.
+- Expanded recommended Cliq scope bundle to include `ZohoCliq.Chats.ALL` so `zoho cliq chats` can be validated after a standard `zoho login --with-cliq` re-auth.
 - Added Cliq write-plane commands (`cliq-120`): `zoho cliq reply`, `zoho cliq edit`, `zoho cliq delete`, and `zoho cliq react` with endpoint/payload fallback logic for network-scoped org APIs.
 - Added first Cliq admin-plane commands (`cliq-130`): `zoho cliq members`, `zoho cliq channel-create`, `zoho cliq channel-archive`, and `zoho cliq channel-delete`.
 - Expanded Cliq admin-plane membership management with `zoho cliq member-add` and `zoho cliq member-remove`, including endpoint/payload fallbacks and destination validation.

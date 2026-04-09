@@ -16,6 +16,7 @@ DEFAULT_CLIQ_SCOPES = [
     "ZohoCliq.Channels.READ",
     "ZohoCliq.Users.READ",
     "ZohoCliq.Messages.READ",
+    "ZohoCliq.Chats.ALL",
     "ZohoCliq.Webhooks.CREATE",
 ]
 

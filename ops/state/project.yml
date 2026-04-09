@@ -1,5 +1,5 @@
 project: zoho-cli
-updated_at: '2026-04-09T11:12:55Z'
+updated_at: '2026-04-09T11:58:26Z'
 status: cliq-expansion
 canonical_workspace: /Users/adwasd/.openclaw/workspace-coder
 project_root: /Users/adwasd/.openclaw/workspace-coder/job/zoho-cli
@@ -13,4 +13,4 @@ primary_blockers:
   - cliq search endpoint variants are not available on happydistrouklimited for current token/api combinations (`extra_param_found` / `request_url_invalid`)
   - "`/chats` listing is currently scope-blocked on current token/network (`oauthtoken_scope_invalid`), so DM/group discovery needs a chat-read scope positive-path run"
   - native local-file upload/download behavior now has local multipart scaffolding (with image-field fallback preference for local image sends), but still needs live endpoint matrix hardening across network and non-network bases (evidence pending)
-next_step: "run one chat-read-scope re-auth pass to validate `cliq chats` live positive path, then execute live native local-file upload/download verification for voice/image/file to harden cliq-155 toward cliq-160"
+next_step: "run one `zoho login --with-cliq` re-auth pass (default bundle now includes `ZohoCliq.Chats.ALL`) to validate `cliq chats` live positive path, then execute live native local-file upload/download verification for voice/image/file to harden cliq-155 toward cliq-160"

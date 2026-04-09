@@ -1,16 +1,14 @@
 id: cliq-150
-title: implement openclaw integration primitives for cliq watch context and act
+title: implement cliq media/watch integration primitives for openclaw loops
 module: cliq
 stage: in_progress
 status: in_progress
 owner: automation
-updated_at: '2026-04-09T04:00:00Z'
+updated_at: '2026-04-09T05:25:00Z'
 success_criteria:
-- define first cliq watch/context primitive for OpenClaw handoff
-- add one minimal action primitive that consumes watch-context payloads and deterministically
-  replies to the latest unseen message
-- add focused tests for command routing and payload shape
-- update changelog and state files with local test evidence
+  - keep watch-context/watch-act primitives deterministic for OpenClaw loops
+  - ship identity guardrails (`cliq whoami`) so token/account mismatches are diagnosable
+  - support rich media outbound baseline via Cliq send (text, image/file/audio link attachments, sticker shortcode append)
+  - validate with focused tests and at least one live smoke path
 next_if_done: cliq-160
-next_step: stdin handoff coverage is now in place for cliq watch-act; next is cliq-160
-  hardening matrix prep (live matrix + release gate checks)
+next_step: expand from link-style media to native upload/download coverage (image/file/audio fixtures + inbound verification) and fold results into cliq-160 hardening matrix

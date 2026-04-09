@@ -1,5 +1,5 @@
 project: zoho-cli
-updated_at: '2026-04-09T04:00:00Z'
+updated_at: '2026-04-09T05:25:00Z'
 status: cliq-expansion
 canonical_workspace: /Users/adwasd/.openclaw/workspace-coder
 project_root: /Users/adwasd/.openclaw/workspace-coder/job/zoho-cli
@@ -7,11 +7,11 @@ module_order:
 - Mail
 - Cliq
 - CRM
-current_focus: cliq-150 openclaw integration primitives
+current_focus: cliq-150 media/watch integration primitives
 primary_blockers:
 - crm live read-only verification remains blocked by account-level CRM org access
 - full `make ci` is still failing lint checks in tracked repo files
 - cliq search endpoint variants are not available on happydistrouklimited for current
   token/api combinations (`extra_param_found` / `request_url_invalid`)
-next_step: move into cliq-160 hardening + live matrix planning now that cliq watch-act
-  supports default stdin handoff flow
+- native attachment upload/download behavior still needs endpoint matrix hardening across network and non-network bases
+next_step: extend cliq media plane from link-card baseline to native upload/download verification, then roll those checks into cliq-160 hardening gate

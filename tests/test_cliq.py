@@ -1,5 +1,6 @@
 """Tests for zoho_cli.cliq helpers."""
 
+import json
 import httpx
 import pytest
 import respx
@@ -112,6 +113,67 @@ def test_cliq_client_resolve_users_name_contains(client: cliq.ZohoCliqClient) ->
 
 
 @respx.mock
+def test_cliq_client_whoami_from_users_me_endpoint(
+    client: cliq.ZohoCliqClient,
+) -> None:
+    respx.get("https://cliq.zoho.com/api/v2/users/me").mock(
+        return_value=httpx.Response(
+            200,
+            json={
+                "data": {
+                    "zuid": "U_SELF",
+                    "display_name": "Ai Dev",
+                    "email_id": "ai-dev@happy-distro.co.uk",
+                }
+            },
+        )
+    )
+
+    result = client.whoami(account_email="ai-dev@happy-distro.co.uk")
+
+    assert result["status"] == "ok"
+    assert result["source"] == "/users/me"
+    assert result["user"]["userId"] == "U_SELF"
+    assert result["user"]["email"] == "ai-dev@happy-distro.co.uk"
+
+
+@respx.mock
+def test_cliq_client_whoami_falls_back_to_email_match(
+    client: cliq.ZohoCliqClient,
+) -> None:
+    respx.get("https://cliq.zoho.com/api/v2/users/me").mock(
+        return_value=httpx.Response(403, json={"code": "inactive_appaccount_user"})
+    )
+    respx.get("https://cliq.zoho.com/api/v2/users/self").mock(
+        return_value=httpx.Response(403, json={"code": "inactive_appaccount_user"})
+    )
+    respx.get("https://cliq.zoho.com/api/v2/users/current").mock(
+        return_value=httpx.Response(404, json={"code": "request_url_invalid"})
+    )
+    respx.get("https://cliq.zoho.com/api/v2/users").mock(
+        return_value=httpx.Response(
+            200,
+            json={
+                "data": [
+                    {
+                        "zuid": "U_MATCH",
+                        "display_name": "David Wang",
+                        "email_id": "david@happy-distro.com",
+                    }
+                ]
+            },
+        )
+    )
+
+    result = client.whoami(account_email="david@happy-distro.com")
+
+    assert result["status"] == "best_effort"
+    assert result["source"] == "users.email_match"
+    assert result["user"]["userId"] == "U_MATCH"
+    assert "warning" in result
+
+
+@respx.mock
 def test_cliq_client_send_to_channel(client: cliq.ZohoCliqClient) -> None:
     respx.post("https://cliq.zoho.com/api/v2/channelsbyname/C1/message").mock(
         return_value=httpx.Response(404, text="request_url_invalid")
@@ -189,6 +251,29 @@ def test_cliq_client_send_to_user_uses_buddies_endpoint(
 
 
 @respx.mock
+def test_cliq_client_send_to_user_with_attachment_payload(
+    client: cliq.ZohoCliqClient,
+) -> None:
+    route = respx.post("https://cliq.zoho.com/api/v2/buddies/U1/message").mock(
+        return_value=httpx.Response(200, json={"data": {"status": "ok"}})
+    )
+
+    result = client.send_message(
+        "media test",
+        user_id="U1",
+        attachment={
+            "title": "Image",
+            "url": "https://example.com/image.jpg",
+            "button_label": "View",
+        },
+    )
+
+    payload = json.loads(route.calls.last.request.content.decode("utf-8"))
+    assert payload["attachments"]["url"] == "https://example.com/image.jpg"
+    assert result["data"]["status"] == "ok"
+
+
+@respx.mock
 def test_cliq_client_send_scope_invalid_reports_reauth_hint(
     client: cliq.ZohoCliqClient,
     capsys: pytest.CaptureFixture[str],
@@ -217,6 +302,17 @@ def test_cliq_client_send_requires_exactly_one_destination(
 ) -> None:
     with pytest.raises(ValueError, match="exactly one"):
         client.send_message("hello")
+
+
+def test_cliq_client_send_requires_message_or_media(
+    client: cliq.ZohoCliqClient,
+    capsys: pytest.CaptureFixture[str],
+) -> None:
+    with pytest.raises(SystemExit):
+        client.send_message("   ", user_id="U1")
+
+    err = capsys.readouterr().err
+    assert "invalid_message" in err
 
 
 @respx.mock

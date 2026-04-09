@@ -1,10 +1,14 @@
-last_run_at: "2026-04-09T04:00:00Z"
+last_run_at: "2026-04-09T05:25:00Z"
 last_result: warning
 current_focus: cliq
 suites:
   unit:
     status: passing
     notes:
+      - ./.venv/bin/pytest -q tests/test_cliq.py tests/test_cli.py::test_cliq_whoami_from_users_me tests/test_cli.py::test_cliq_whoami_fallback_to_email_match tests/test_cli.py::test_cliq_send_channel tests/test_cli.py::test_cliq_send_channel_accepts_204_empty_body tests/test_cli.py::test_cliq_send_channel_with_image_url tests/test_cli.py::test_cliq_send_requires_destination tests/test_cli.py::test_cliq_send_requires_content tests/test_cli.py::test_cliq_send_rejects_multiple_media_options tests/test_cli.py::test_cliq_user_resolve_email tests/test_cli.py::test_cliq_user_resolve_name tests/test_cli.py::test_cliq_messages_from_channel tests/test_cli.py::test_cliq_message_get_from_channel tests/test_cli.py::test_cliq_context_with_anchor tests/test_cli.py::test_cliq_search_from_channel tests/test_cli.py::test_cliq_file_from_channel tests/test_cli.py::test_cliq_react_add tests/test_cli.py::test_cliq_status_check_auth
+      - 67 passed in 0.73s (whoami + rich-media send command coverage plus full cliq regression slice, 2026-04-09T05:25:00Z)
+      - ./.venv/bin/pytest -q
+      - 226 passed, 1 warning (full suite, 2026-04-09T05:25:00Z)
       - ./.venv/bin/pytest -q tests/test_cli.py::test_cliq_watch_act_replies_to_latest_message tests/test_cli.py::test_cliq_watch_act_reads_stdin_when_watch_file_not_provided tests/test_cli.py::test_cliq_watch_act_no_messages_returns_noop
       - 3 passed in 0.13s (cliq-150 watch-act now supports default stdin payload handoff when --watch-file is omitted, 2026-04-09T04:00:00Z)
       - ./.venv/bin/pytest -q tests/test_cliq.py::test_build_watch_reply_action_selects_latest_message tests/test_cliq.py::test_execute_watch_reply_action_replies_to_latest_message tests/test_cliq.py::test_execute_watch_reply_action_no_messages_returns_noop tests/test_cli.py::test_cliq_watch_act_replies_to_latest_message tests/test_cli.py::test_cliq_watch_act_no_messages_returns_noop
@@ -101,6 +105,13 @@ suites:
   integration:
     status: warning
     notes:
+      - ./.venv/bin/python -m zoho_cli --config /tmp/zoho-test-config.json --account ai-dev@happy-distro.co.uk cliq whoami --network happydistrouklimited
+      - whoami command now returns structured best-effort/unknown identity diagnostics instead of hard-failing when direct self endpoints are unavailable on current network base (2026-04-09T05:25:00Z)
+      - ./.venv/bin/python -m zoho_cli --config /tmp/zoho-test-config.json --account ai-dev@happy-distro.co.uk cliq send --network happydistrouklimited --user-id david@happy-distro.com --text "media link smoke" --image-url https://picsum.photos/200 --title "Smoke image"
+      - ./.venv/bin/python -m zoho_cli --config /tmp/zoho-test-config.json --account ai-dev@happy-distro.co.uk cliq send --network happydistrouklimited --user-id david@happy-distro.com --text "file link smoke" --file-url https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf --title "Smoke file"
+      - ./.venv/bin/python -m zoho_cli --config /tmp/zoho-test-config.json --account ai-dev@happy-distro.co.uk cliq send --network happydistrouklimited --user-id david@happy-distro.com --text "audio link smoke" --audio-url https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3 --title "Smoke audio"
+      - ./.venv/bin/python -m zoho_cli --config /tmp/zoho-test-config.json --account ai-dev@happy-distro.co.uk cliq send --network happydistrouklimited --user-id david@happy-distro.com --text "sticker smoke" --sticker :thumbsup:
+      - rich-media send baseline (image/file/audio link cards + sticker shortcode append) returned `httpStatus: 204` in live DM smoke against david@happy-distro.com (2026-04-09T05:25:00Z)
       - ./.venv/bin/python -m zoho_cli --config /tmp/zoho-test-config.json --account ai-dev@happy-distro.co.uk cliq search "cliq" --network happydistrouklimited --channel-id O6576524000097556005 --limit 5
       - live search now falls through endpoint/query variants and exits with documented `not_supported` (no hard api_error on first `extra_param_found`) (2026-04-09T01:49:18Z)
       - ./.venv/bin/python -m zoho_cli --config /tmp/zoho-test-config.json --account ai-dev@happy-distro.co.uk cliq file 1775672331710_74865282494 --network happydistrouklimited --channel-id O6576524000097556005
@@ -179,6 +190,8 @@ suites:
   ci:
     status: warning
     notes:
+      - ./.venv/bin/ruff format --check zoho_cli/cliq.py zoho_cli/cli.py tests/test_cliq.py tests/test_cli.py
+      - 4 files already formatted (2026-04-09T05:25:00Z)
       - ./.venv/bin/ruff format --check zoho_cli/cli.py tests/test_cli.py
       - 2 files already formatted (2026-04-09T04:00:00Z)
       - ./.venv/bin/ruff format --check zoho_cli/cliq.py zoho_cli/cli.py tests/test_cliq.py tests/test_cli.py

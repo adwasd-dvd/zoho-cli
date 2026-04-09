@@ -70,12 +70,21 @@
   depends_on:
     - cliq-110
 
+- id: cliq-145
+  title: implement cliq identity check and rich media link messaging baseline
+  module: cliq
+  stage: completed
+  priority: medium
+  depends_on:
+    - cliq-140
+
 - id: cliq-150
-  title: implement openclaw integration primitives for cliq watch context and act
+  title: implement cliq media/watch integration primitives for openclaw loops
   module: cliq
   stage: in_progress
   priority: high
   depends_on:
+    - cliq-145
     - cliq-110
     - cliq-120
 

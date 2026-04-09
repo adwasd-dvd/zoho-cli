@@ -9,11 +9,12 @@ mail:
 cliq:
   priority: 2
   status: in_progress
-  phase: expansion_integration_primitives
+  phase: expansion_media_watch_primitives
   target_release: v0.4.0
   current_milestone: cliq-expansion-phase
   blockers:
     - live search endpoint variants are currently unsupported on happydistrouklimited (`extra_param_found` / `request_url_invalid`)
+    - native attachment upload/download endpoint variants still need a stable cross-network matrix; current media baseline is link-card oriented
 
 crm:
   priority: 3

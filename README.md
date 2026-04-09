@@ -54,11 +54,15 @@ uv tool install .
 - `cliq status --check-auth` — Auth and scope verification
 - `cliq capabilities` — Capability matrix for token/org/network
 - `cliq channels`, `users`, `members` — List resources
+- `cliq whoami` — Best-effort current-token identity diagnostic (direct endpoint first, directory fallback)
 - `cliq messages <channel-id>` / `message <id>` — Read messages
 - `cliq context` — Message thread context
+- `cliq file <message-id>` — Fetch message attachment/file metadata
 
 **Write plane:**
-- `cliq send --text ...` — Send messages
+- `cliq send --text ...` — Send plain text
+- `cliq send --image-url/--file-url/--audio-url ...` — Send rich link-style media payloads
+- `cliq send --sticker :thumbsup:` — Append sticker/emoji shortcode in outbound text
 - `cliq reply/edit/delete/react` — Message operations
 
 **Admin plane (active development):**

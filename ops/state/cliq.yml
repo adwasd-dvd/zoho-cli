@@ -1,9 +1,7 @@
 module: Cliq
-updated_at: '2026-04-09T04:00:00Z'
+updated_at: '2026-04-09T05:25:00Z'
 status: in_progress
 blockers:
-- live `/messages/search` APIs on happydistrouklimited appear unsupported for current
-  endpoint variants (`extra_param_found` / `request_url_invalid`), so search is currently
-  limitation-documented
-next_small_step: stage cliq-160 hardening checks (focused local matrix + live rerun plan)
-  now that watch-act stdin pipeline flow is covered
+  - live `/messages/search` APIs on happydistrouklimited still look unsupported for current endpoint variants (`extra_param_found` / `request_url_invalid`), so search remains limitation-documented
+  - native attachment upload/download path details are still partially unknown across network/non-network endpoints; current baseline uses rich link-style media payloads
+next_small_step: extend media plane with native upload/download probing and inbound attachment fixture verification (image/file/audio)

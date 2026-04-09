@@ -1281,6 +1281,33 @@ def cliq_users(
     utils.output(data)
 
 
+@cliq_app.command("whoami")
+def cliq_whoami(
+    network: Optional[str] = typer.Option(
+        None, "--network", help="Cliq network slug (e.g. happydistrouklimited)."
+    ),
+    limit: int = typer.Option(
+        500,
+        "--limit",
+        "-n",
+        help="Directory scan size for email-match fallback.",
+    ),
+) -> None:
+    """Best-effort identity check for the current Cliq token."""
+    cfg = _cfg()
+    email = _require_account(cfg)
+    client = _get_cliq_client(cfg, email, network=network)
+
+    result = client.whoami(account_email=email, limit=limit)
+    utils.output(
+        {
+            "account": email,
+            "baseUrl": client.base_url,
+            **result,
+        }
+    )
+
+
 @cliq_app.command("user-resolve")
 def cliq_user_resolve(
     query: str = typer.Argument(..., help="User lookup query (email or display name)."),
@@ -2094,31 +2121,131 @@ def cliq_react(
 
 @cliq_app.command("send")
 def cliq_send(
-    text: str = typer.Option(..., "--text", "-t", help="Message text."),
+    text: Optional[str] = typer.Option(None, "--text", "-t", help="Message text."),
     channel_id: Optional[str] = typer.Option(
         None, "--channel-id", help="Destination channel id."
     ),
     user_id: Optional[str] = typer.Option(
         None, "--user-id", help="Destination user id."
     ),
+    image_url: Optional[str] = typer.Option(
+        None,
+        "--image-url",
+        help="Image URL to send as a rich media attachment card.",
+    ),
+    file_url: Optional[str] = typer.Option(
+        None,
+        "--file-url",
+        help="File URL to send as a rich media attachment card.",
+    ),
+    audio_url: Optional[str] = typer.Option(
+        None,
+        "--audio-url",
+        help="Audio/voice URL to send as a rich media attachment card.",
+    ),
+    title: Optional[str] = typer.Option(
+        None,
+        "--title",
+        help="Optional media title override for --image-url/--file-url/--audio-url.",
+    ),
+    button_label: Optional[str] = typer.Option(
+        None,
+        "--button-label",
+        help="Optional attachment button label. Defaults by media type.",
+    ),
+    sticker: Optional[str] = typer.Option(
+        None,
+        "--sticker",
+        help="Sticker/emoji shortcode appended to the outgoing text.",
+    ),
     network: Optional[str] = typer.Option(
         None, "--network", help="Cliq network slug (e.g. happydistrouklimited)."
     ),
 ) -> None:
-    """Send a Cliq message to a channel or user."""
+    """Send a Cliq message to a channel or user (text + rich-link media)."""
     if bool(channel_id) == bool(user_id):
         utils.error_exit(
             "invalid_destination", "Provide exactly one of channel_id or user_id"
+        )
+
+    media_inputs = [
+        ("image", (image_url or "").strip()),
+        ("file", (file_url or "").strip()),
+        ("audio", (audio_url or "").strip()),
+    ]
+    selected_media = [(kind, url) for kind, url in media_inputs if url]
+    if len(selected_media) > 1:
+        utils.error_exit(
+            "invalid_media",
+            "Provide only one of --image-url, --file-url, or --audio-url per send operation",
+        )
+
+    text_payload = (text or "").strip()
+    sticker_payload = (sticker or "").strip()
+    if sticker_payload:
+        text_payload = (
+            f"{text_payload} {sticker_payload}".strip()
+            if text_payload
+            else sticker_payload
+        )
+
+    attachment: dict | None = None
+    card: dict | None = None
+    if selected_media:
+        media_kind, media_url = selected_media[0]
+        default_title = {
+            "image": "Image",
+            "file": "File",
+            "audio": "Audio",
+        }.get(media_kind, "Attachment")
+        default_button = {
+            "image": "View",
+            "file": "Download",
+            "audio": "Listen",
+        }.get(media_kind, "Open")
+
+        attachment = {
+            "title": (title or "").strip() or default_title,
+            "url": media_url,
+            "button_label": (button_label or "").strip() or default_button,
+        }
+        if media_kind == "image":
+            card = {
+                "title": attachment["title"],
+                "thumbnail": media_url,
+            }
+
+    if not text_payload and not attachment:
+        utils.error_exit(
+            "invalid_message",
+            "Provide --text/--sticker or one media option (--image-url/--file-url/--audio-url)",
         )
 
     cfg = _cfg()
     email = _require_account(cfg)
     client = _get_cliq_client(cfg, email, network=network)
 
-    resp = client.send_message(text, channel_id=channel_id, user_id=user_id)
+    resp = client.send_message(
+        text_payload,
+        channel_id=channel_id,
+        user_id=user_id,
+        attachment=attachment,
+        card=card,
+    )
 
     data = resp.get("data", resp)
-    utils.output_status("Cliq message sent", extra={"result": data})
+    utils.output_status(
+        "Cliq message sent",
+        extra={
+            "result": data,
+            "media": {
+                "imageUrl": (image_url or "").strip(),
+                "fileUrl": (file_url or "").strip(),
+                "audioUrl": (audio_url or "").strip(),
+                "sticker": sticker_payload,
+            },
+        },
+    )
 
 
 @cliq_app.command("notify-mail")

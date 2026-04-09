@@ -1805,6 +1805,65 @@ def test_cliq_user_resolve_name(mock_config: Path, mock_token_refresh: Any) -> N
 
 
 @respx.mock
+def test_cliq_whoami_from_users_me(mock_config: Path, mock_token_refresh: Any) -> None:
+    respx.get("https://cliq.zoho.com/api/v2/users/me").mock(
+        return_value=httpx.Response(
+            200,
+            json={
+                "data": {
+                    "zuid": "U_SELF",
+                    "display_name": "Ai Dev",
+                    "email_id": "ai-dev@happy-distro.co.uk",
+                }
+            },
+        )
+    )
+
+    result = runner.invoke(app, ["cliq", "whoami"], env=_cfg_env(mock_config))
+    assert result.exit_code == 0, result.output
+    payload = json.loads(result.output)
+    assert payload["status"] == "ok"
+    assert payload["source"] == "/users/me"
+    assert payload["user"]["userId"] == "U_SELF"
+
+
+@respx.mock
+def test_cliq_whoami_fallback_to_email_match(
+    mock_config: Path, mock_token_refresh: Any
+) -> None:
+    respx.get("https://cliq.zoho.com/api/v2/users/me").mock(
+        return_value=httpx.Response(403, json={"code": "inactive_appaccount_user"})
+    )
+    respx.get("https://cliq.zoho.com/api/v2/users/self").mock(
+        return_value=httpx.Response(403, json={"code": "inactive_appaccount_user"})
+    )
+    respx.get("https://cliq.zoho.com/api/v2/users/current").mock(
+        return_value=httpx.Response(404, json={"code": "request_url_invalid"})
+    )
+    respx.get("https://cliq.zoho.com/api/v2/users").mock(
+        return_value=httpx.Response(
+            200,
+            json={
+                "data": [
+                    {
+                        "zuid": "U_MATCH",
+                        "display_name": "Ai Dev",
+                        "email_id": ACCOUNT_EMAIL,
+                    }
+                ]
+            },
+        )
+    )
+
+    result = runner.invoke(app, ["cliq", "whoami"], env=_cfg_env(mock_config))
+    assert result.exit_code == 0, result.output
+    payload = json.loads(result.output)
+    assert payload["status"] == "best_effort"
+    assert payload["user"]["userId"] == "U_MATCH"
+    assert "warning" in payload
+
+
+@respx.mock
 def test_cliq_send_channel(mock_config: Path, mock_token_refresh: Any) -> None:
     respx.post("https://cliq.zoho.com/api/v2/channelsbyname/C1/message").mock(
         return_value=httpx.Response(404, text="request_url_invalid")
@@ -1848,6 +1907,73 @@ def test_cliq_send_channel_accepts_204_empty_body(
     assert result.exit_code == 0, result.output
     payload = json.loads(result.output)
     assert payload["status"] == "ok"
+
+
+@respx.mock
+def test_cliq_send_channel_with_image_url(
+    mock_config: Path, mock_token_refresh: Any
+) -> None:
+    route = respx.post("https://cliq.zoho.com/api/v2/channelsbyname/C1/message").mock(
+        return_value=httpx.Response(200, json={"data": {"message_id": "M2"}})
+    )
+    respx.get("https://cliq.zoho.com/api/v2/channels/C1").mock(
+        return_value=httpx.Response(404, text="not_found")
+    )
+
+    result = runner.invoke(
+        app,
+        [
+            "cliq",
+            "send",
+            "--channel-id",
+            "C1",
+            "--text",
+            "look",
+            "--image-url",
+            "https://example.com/image.jpg",
+            "--title",
+            "Screenshot",
+        ],
+        env=_cfg_env(mock_config),
+    )
+    assert result.exit_code == 0, result.output
+
+    body = json.loads(route.calls.last.request.content.decode("utf-8"))
+    assert body["attachments"]["url"] == "https://example.com/image.jpg"
+    assert body["attachments"]["title"] == "Screenshot"
+
+    payload = json.loads(result.output)
+    assert payload["status"] == "ok"
+    assert payload["media"]["imageUrl"] == "https://example.com/image.jpg"
+
+
+def test_cliq_send_requires_content(mock_config: Path, mock_token_refresh: Any) -> None:
+    result = runner.invoke(
+        app, ["cliq", "send", "--channel-id", "C1"], env=_cfg_env(mock_config)
+    )
+    assert result.exit_code == 1
+    assert "invalid_message" in result.output
+
+
+def test_cliq_send_rejects_multiple_media_options(
+    mock_config: Path, mock_token_refresh: Any
+) -> None:
+    result = runner.invoke(
+        app,
+        [
+            "cliq",
+            "send",
+            "--channel-id",
+            "C1",
+            "--image-url",
+            "https://example.com/a.jpg",
+            "--file-url",
+            "https://example.com/a.pdf",
+        ],
+        env=_cfg_env(mock_config),
+    )
+    assert result.exit_code == 1
+    assert "invalid_media" in result.output
 
 
 def test_cliq_send_requires_destination(

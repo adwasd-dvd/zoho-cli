@@ -1020,6 +1020,149 @@ class ZohoCliqClient:
         """List users."""
         return self._get("/users", {"limit": limit})
 
+    def whoami(self, *, account_email: str | None = None, limit: int = 500) -> dict:
+        """Best-effort identity lookup for the active Cliq token."""
+
+        attempts: list[dict[str, Any]] = []
+        for path in ("/users/me", "/users/self", "/users/current"):
+            resp = httpx.get(
+                f"{self.base_url}{path}",
+                headers=self._headers,
+                timeout=httpx.Timeout(30.0),
+            )
+            if resp.is_success:
+                payload = resp.json()
+                data = payload.get("data", payload)
+                user = data if isinstance(data, dict) else {}
+                return {
+                    "status": "ok",
+                    "source": path,
+                    "configuredAccount": (account_email or "").strip(),
+                    "user": {
+                        "userId": str(
+                            user.get("zuid")
+                            or user.get("user_id")
+                            or user.get("id")
+                            or ""
+                        ),
+                        "name": str(
+                            user.get("display_name")
+                            or user.get("name")
+                            or user.get("full_name")
+                            or ""
+                        ),
+                        "email": str(user.get("email_id") or user.get("email") or ""),
+                        "raw": user,
+                    },
+                    "attempts": attempts,
+                }
+
+            body = resp.text or ""
+            code = ""
+            message = body[:200]
+            try:
+                parsed = resp.json()
+                if isinstance(parsed, dict):
+                    code = str(parsed.get("code") or parsed.get("error") or "")
+                    message = str(
+                        parsed.get("message")
+                        or parsed.get("error_description")
+                        or message
+                    )
+            except ValueError:
+                pass
+            attempts.append(
+                {
+                    "path": path,
+                    "httpStatus": resp.status_code,
+                    "code": code,
+                    "message": message,
+                }
+            )
+
+        configured = (account_email or "").strip()
+        if configured:
+            directory_resp = httpx.get(
+                f"{self.base_url}/users",
+                headers=self._headers,
+                params={"limit": limit},
+                timeout=httpx.Timeout(30.0),
+            )
+            if directory_resp.is_success:
+                payload = directory_resp.json()
+                users = payload.get("data", payload)
+                if not isinstance(users, list):
+                    users = []
+
+                configured_lc = configured.lower()
+                match: dict[str, Any] | None = None
+                for user in users:
+                    if not isinstance(user, dict):
+                        continue
+                    email = str(user.get("email_id") or user.get("email") or "").strip()
+                    if email and email.lower() == configured_lc:
+                        match = user
+                        break
+
+                if match is not None:
+                    return {
+                        "status": "best_effort",
+                        "source": "users.email_match",
+                        "configuredAccount": configured,
+                        "user": {
+                            "userId": str(
+                                match.get("zuid")
+                                or match.get("user_id")
+                                or match.get("id")
+                                or ""
+                            ),
+                            "name": str(
+                                match.get("display_name")
+                                or match.get("name")
+                                or match.get("full_name")
+                                or ""
+                            ),
+                            "email": str(
+                                match.get("email_id") or match.get("email") or ""
+                            ),
+                            "raw": match,
+                        },
+                        "attempts": attempts,
+                        "warning": "Direct /users/me lookup was unavailable; result is inferred from directory email match.",
+                    }
+            else:
+                body = directory_resp.text or ""
+                code = ""
+                message = body[:200]
+                try:
+                    parsed = directory_resp.json()
+                    if isinstance(parsed, dict):
+                        code = str(parsed.get("code") or parsed.get("error") or "")
+                        message = str(
+                            parsed.get("message")
+                            or parsed.get("error_description")
+                            or message
+                        )
+                except ValueError:
+                    pass
+                attempts.append(
+                    {
+                        "path": "/users",
+                        "httpStatus": directory_resp.status_code,
+                        "code": code,
+                        "message": message,
+                    }
+                )
+
+        return {
+            "status": "unknown",
+            "source": "unresolved",
+            "configuredAccount": configured,
+            "user": {},
+            "attempts": attempts,
+            "warning": "Unable to resolve active Cliq identity from current token/network endpoints.",
+        }
+
     def resolve_users(
         self,
         query: str,
@@ -1603,12 +1746,48 @@ class ZohoCliqClient:
         *,
         channel_id: Optional[str] = None,
         user_id: Optional[str] = None,
+        attachment: dict[str, Any] | None = None,
+        card: dict[str, Any] | None = None,
     ) -> dict:
         """Send a message to either a channel or a user."""
         if bool(channel_id) == bool(user_id):
             raise ValueError("Provide exactly one of channel_id or user_id")
 
-        payload = {"text": text}
+        msg_text = text.strip()
+        if not msg_text and not attachment and not card:
+            utils.error_exit(
+                "invalid_message",
+                "Provide --text, --sticker, or one media option (--image-url/--file-url/--audio-url)",
+            )
+
+        payloads: list[dict[str, Any]] = []
+        base_payload: dict[str, Any] = {}
+        if msg_text:
+            base_payload["text"] = msg_text
+
+        if attachment:
+            payloads.append({**base_payload, "attachments": attachment})
+        if card:
+            payloads.append({**base_payload, "card": card})
+        if msg_text:
+            payloads.append(dict(base_payload))
+        elif attachment and isinstance(attachment.get("url"), str):
+            payloads.append({"text": str(attachment.get("url", "")).strip()})
+
+        # Preserve order while deduplicating payload variants.
+        seen_payloads: set[str] = set()
+        unique_payloads: list[dict[str, Any]] = []
+        for payload in payloads:
+            key = repr(sorted(payload.items(), key=lambda kv: kv[0]))
+            if key in seen_payloads:
+                continue
+            seen_payloads.add(key)
+            unique_payloads.append(payload)
+
+        if not unique_payloads:
+            unique_payloads = [dict(base_payload)]
+
+        paths: list[str]
         if channel_id:
             candidates = [
                 f"/channelsbyname/{channel_id}/message",
@@ -1618,14 +1797,21 @@ class ZohoCliqClient:
 
             seen: set[str] = set()
             paths = [p for p in candidates if not (p in seen or seen.add(p))]
-            return self._post_json_with_fallback(paths, payload)
-
-        return self._post_json_with_fallback(
-            [
+        else:
+            paths = [
                 f"/buddies/{user_id}/message",
                 f"/users/{user_id}/message",
-            ],
-            payload,
+            ]
+
+        candidates: list[tuple[str, str, dict[str, Any] | None]] = []
+        for payload in unique_payloads:
+            for path in paths:
+                candidates.append(("POST", path, payload))
+
+        return self._request_with_candidates(
+            candidates,
+            scope_hint="ZohoCliq.Webhooks.CREATE",
+            operation_label="send",
         )
 
 

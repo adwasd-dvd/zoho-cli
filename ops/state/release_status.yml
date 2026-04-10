@@ -3,13 +3,13 @@ next_version: 0.2.1
 release_candidate: false
 last_release_tag: v0.1.9
 current_train: cliq-expansion
-assessed_at: '2026-04-09T21:51:38Z'
+assessed_at: '2026-04-10T00:06:00Z'
 current_milestone: cliq-expansion-phase
 current_milestone_complete: false
 missing_requirements:
 - 'blocker backlog not clear: crm-002 live smoke is blocked by account-level CRM org
   access (`OAUTH_SCOPE_MISMATCH`)'
-- 'current focus milestone is incomplete: cliq-155 now includes chats command surface + typed context output (including DM chat-id fixture coverage and scalar attachment URL media-type inference), local multipart media-send baseline (with image-field fallback preference, upload endpoint/field metadata, raw+resolved user-target fallback, direct `/channels/{channel_id}/message` probing, and single-fetch channel descriptor resolution for channel-id sends), file/voice retrieval source endpoint metadata (`sourcePath`), and default `--with-cliq` chat scope bundling (`ZohoCliq.Chats.ALL`), but `/chats` live positive-path and live native local-file upload/download matrix verification remain pending before cliq-160 release gate work'
+- 'current focus milestone is incomplete: cliq-155 now includes chats command surface + typed context output (including DM chat-id fixture coverage and scalar attachment URL media-type inference), local multipart media-send baseline (with image-field fallback preference, upload endpoint/field metadata, raw+resolved user-target fallback, direct `/channels/{channel_id}/message` probing, and single-fetch channel descriptor resolution for channel-id sends), standard channel-id send fallback probing on `/channels/{channel_id}/message`, file/voice retrieval source endpoint metadata (`sourcePath`), and default `--with-cliq` chat scope bundling (`ZohoCliq.Chats.ALL`), but `/chats` live positive-path and live native local-file upload/download matrix verification remain pending before cliq-160 release gate work'
 - 'integration evidence remains partial for cliq-155: chat discovery positive-path and native local-file upload/download matrix verification still need live token/network confirmation'
 release_gate:
   blocker_bugs_cleared: false

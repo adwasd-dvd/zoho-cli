@@ -2056,6 +2056,7 @@ class ZohoCliqClient:
             candidates = [
                 f"/channelsbyname/{channel_id}/message",
                 f"/chats/{channel_id}/message",
+                f"/channels/{channel_id}/message",
             ]
             candidates.extend(self._resolve_channel_message_paths(channel_id))
 

@@ -1,10 +1,16 @@
-last_run_at: "2026-04-09T21:51:38Z"
+last_run_at: "2026-04-10T00:06:00Z"
 last_result: warning
 current_focus: cliq
 suites:
   unit:
     status: passing
     notes:
+      - ./.venv/bin/pytest -q tests/test_cliq.py::test_cliq_client_send_to_channel tests/test_cliq.py::test_cliq_client_send_to_channel_accepts_204_empty_body tests/test_cli.py::test_cliq_send_channel
+      - 3 passed in 0.09s (regression slice confirms standard channel send paths remain healthy after adding direct `/channels/{channel_id}/message` probe, 2026-04-10T00:06:00Z)
+      - ./.venv/bin/pytest -q tests/test_cliq.py::test_cliq_client_send_to_channel_id_resolves_channel_lookup tests/test_cliq.py::test_cliq_client_send_to_channel_id_tries_channels_endpoint
+      - 2 passed in 0.08s (standard channel-id `cliq send` now probes direct `/channels/{channel_id}/message` in addition to existing fallback chain, 2026-04-10T00:06:00Z)
+      - ./.venv/bin/ruff format --check zoho_cli/cliq.py tests/test_cliq.py
+      - 2 files already formatted (2026-04-10T00:06:00Z)
       - ./.venv/bin/pytest -q tests/test_cliq.py::test_cliq_client_send_to_channel_id_resolves_channel_lookup tests/test_cliq.py::test_cliq_client_send_local_file_message_channel_id_tries_channels_endpoint
       - 2 passed in 0.38s (channel-id send fallback path resolution now reuses a single `/channels/{id}` descriptor fetch per send attempt, 2026-04-09T21:51:38Z)
       - ./.venv/bin/pytest -q tests/test_cliq.py::test_cliq_client_send_local_file_message_channel_id_tries_channels_endpoint tests/test_cliq.py::test_cliq_client_send_local_image_message_prefers_image_field tests/test_cli.py::test_cliq_send_channel_with_local_image_file

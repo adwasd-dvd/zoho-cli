@@ -282,6 +282,9 @@ def test_cliq_client_send_to_channel_id_resolves_channel_lookup(
     respx.post("https://cliq.zoho.com/api/v2/chats/O1/message").mock(
         return_value=httpx.Response(404, text="request_url_invalid")
     )
+    respx.post("https://cliq.zoho.com/api/v2/channels/O1/message").mock(
+        return_value=httpx.Response(404, text="request_url_invalid")
+    )
     descriptor = respx.get("https://cliq.zoho.com/api/v2/channels/O1").mock(
         return_value=httpx.Response(
             200,
@@ -290,6 +293,30 @@ def test_cliq_client_send_to_channel_id_resolves_channel_lookup(
     )
     route = respx.post("https://cliq.zoho.com/api/v2/chats/CT_1/message").mock(
         return_value=httpx.Response(200, json={"data": {"status": "ok"}})
+    )
+
+    result = client.send_message("hello", channel_id="O1")
+
+    assert descriptor.call_count == 1
+    assert route.called
+    assert result["data"]["status"] == "ok"
+
+
+@respx.mock
+def test_cliq_client_send_to_channel_id_tries_channels_endpoint(
+    client: cliq.ZohoCliqClient,
+) -> None:
+    respx.post("https://cliq.zoho.com/api/v2/channelsbyname/O1/message").mock(
+        return_value=httpx.Response(404, text="request_url_invalid")
+    )
+    respx.post("https://cliq.zoho.com/api/v2/chats/O1/message").mock(
+        return_value=httpx.Response(404, text="request_url_invalid")
+    )
+    route = respx.post("https://cliq.zoho.com/api/v2/channels/O1/message").mock(
+        return_value=httpx.Response(200, json={"data": {"status": "ok"}})
+    )
+    descriptor = respx.get("https://cliq.zoho.com/api/v2/channels/O1").mock(
+        return_value=httpx.Response(404, text="not_found")
     )
 
     result = client.send_message("hello", channel_id="O1")

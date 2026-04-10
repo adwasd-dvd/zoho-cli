@@ -1,5 +1,5 @@
 project: zoho-cli
-updated_at: '2026-04-10T04:30:42Z'
+updated_at: '2026-04-10T04:39:44Z'
 status: cliq-expansion
 canonical_workspace: /Users/adwasd/.openclaw/workspace-coder
 project_root: /Users/adwasd/.openclaw/workspace-coder/job/zoho-cli
@@ -13,4 +13,4 @@ primary_blockers:
   - cliq search endpoint variants are not available on happydistrouklimited for current token/api combinations (`extra_param_found` / `request_url_invalid`)
   - "`cliq chats` now validates on live token/network after re-auth (`count: 0`), but DM/group attachment-positive evidence is still pending"
   - native local-file upload/download behavior now has local multipart scaffolding (with image-field fallback preference, upload endpoint/field metadata, file/voice retrieval sourcePath metadata, raw+resolved user-target fallback, direct `/channels/{channel_id}/message` probing, single-fetch channel descriptor resolution for channel-id sends, multipart failure diagnostics that include attempted form field metadata `field=...`, and compact `attempts:` path/field/status/code tuples); standard channel-id sends now also probe direct `/channels/{channel_id}/message`, but live endpoint matrix hardening is still pending because tested multipart sends continue to return `request_url_invalid` / `operation_failed` (evidence pending)
-next_step: "`make release-gate` is now green again after the scope-invalid send regression fix (252 passed + wheel smoke); continue live native local-file upload/download verification for voice/image/file with `cliq send`/`cliq file`/`cliq voice` and capture upload/download endpoint evidence (`path`, `field`, `mimeType`, `sourcePath`, plus failing endpoint+field+status/code tuples from `attempts:`) until one attachment-positive retrieval sample is recorded"
+next_step: "nightly broad verification (`make release-gate && make ci`) is green (252 tests + wheel smoke + fmt/lint); continue live native local-file upload/download verification for voice/image/file with `cliq send`/`cliq file`/`cliq voice` and capture upload/download endpoint evidence (`path`, `field`, `mimeType`, `sourcePath`, plus failing endpoint+field+status/code tuples from `attempts:`) until one attachment-positive retrieval sample is recorded"

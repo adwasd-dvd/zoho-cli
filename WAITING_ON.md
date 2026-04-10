@@ -3,4 +3,5 @@
 - Gmail gog OAuth may be unconfigured.
 - Some historical mail-export file paths under `/Volumes/Happy Work Drive/...` may no longer exist.
 - Cron prompt and workspace root may still need manual alignment in `jobs.json`.
+- CRM live verification remains blocked until a CRM-enabled org account is available.
 - Cliq native local multipart sends (voice/image/file) still fail on tested user/channel targets with endpoint-level `request_url_invalid` / `operation_failed`; endpoint+field matrix evidence is still being collected for cliq-155 closure.

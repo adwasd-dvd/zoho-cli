@@ -14,5 +14,5 @@ Known recurring failure modes:
 4. overlong prompt / run leading to timeout before real work starts
 
 Test account status:
-- `ai-dev@happy-distro.co.uk` baseline Cliq auth is healthy for current status/read-plane checks, but `/chats` still returns `oauthtoken_scope_invalid` on current token/network until chat-read scope is granted
+- `ai-dev@happy-distro.co.uk` Cliq auth now includes chat-read scope and `zoho cliq chats --network happydistrouklimited` succeeds (`count: 0`), but native local multipart sends/retrieval probes are still needed to close cliq-155
 - CRM live verification is still blocked because this account is not in a CRM org (`OAUTH_SCOPE_MISMATCH` on CRM APIs)

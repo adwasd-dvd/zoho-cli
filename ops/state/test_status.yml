@@ -1,10 +1,12 @@
-last_run_at: "2026-04-10T04:30:42Z"
+last_run_at: "2026-04-10T04:39:44Z"
 last_result: passed
 current_focus: cliq
 suites:
   unit:
     status: passing
     notes:
+      - make release-gate
+      - 252 passed in 4.84s + wheel smoke passed (0.2.0) (2026-04-10T04:39:44Z)
       - make release-gate
       - 252 passed in 4.46s + wheel smoke passed (0.2.0) (2026-04-10T04:30:42Z)
       - ./.venv/bin/pytest -q tests/test_cliq.py::test_cliq_client_send_scope_invalid_reports_reauth_hint tests/test_cliq.py::test_cliq_client_send_to_channel_id_tries_channels_endpoint
@@ -264,6 +266,8 @@ suites:
   ci:
     status: passing
     notes:
+      - make ci
+      - fmt-check, lint, and full pytest gate passed (252 tests) (2026-04-10T04:39:44Z)
       - ./.venv/bin/ruff format --check zoho_cli/cli.py tests/test_cli.py
       - 2 files already formatted (2026-04-09T19:36:57Z)
       - make ci
@@ -305,6 +309,7 @@ suites:
   packaging:
     status: passing
     notes:
+      - make release-gate passed (252 tests + wheel smoke) (2026-04-10T04:39:44Z)
       - make release-gate passed (252 tests + wheel smoke) (2026-04-10T04:30:42Z)
       - make release-gate failed (1 failed, 251 passed) on `tests/test_cliq.py::test_cliq_client_send_scope_invalid_reports_reauth_hint` (2026-04-10T03:38:56Z)
       - make release-gate passed (243 tests + wheel smoke) (2026-04-09T10:38:34Z)

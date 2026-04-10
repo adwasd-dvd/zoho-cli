@@ -5,4 +5,5 @@
 - [ ] Confirm mail path handling preserves absolute `/Volumes/...` inputs.
 - [ ] Keep coding loop changes small enough to finish comfortably within the run timeout.
 - [x] Run one interactive `zoho login --with-cliq` re-auth that includes chat-read scope, then verify `zoho cliq chats --network happydistrouklimited` succeeds.
+- [x] Re-run broad verification gate (`make release-gate && make ci`) after the latest cliq send fallback changes.
 - [ ] Execute live native local-file upload probes (`cliq send` with voice/image/file local paths) and record endpoint matrix evidence to close cliq-155.

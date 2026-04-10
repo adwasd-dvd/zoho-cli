@@ -362,6 +362,12 @@ def refresh_access_token_info(
         )
     data = resp.json()
     if "access_token" not in data:
+        error_code = str(data.get("error") or "").lower()
+        if error_code == "invalid_client":
+            utils.error_exit(
+                "token_refresh_failed",
+                "OAuth refresh failed with invalid_client. Check client_id/client_secret for this config and re-run `zoho login`.",
+            )
         utils.error_exit("token_refresh_failed", f"No access_token in response: {data}")
     return {
         "access_token": data["access_token"],

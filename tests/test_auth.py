@@ -114,6 +114,39 @@ def test_parse_scope_value_supports_comma_delimited_strings() -> None:
     assert parsed == ["ZohoCRM.modules.ALL", "ZohoCRM.settings.ALL"]
 
 
+@respx.mock
+def test_refresh_access_token_info_invalid_client_reports_config_hint(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    monkeypatch.setattr(
+        auth.storage,
+        "load_token",
+        lambda _email: {
+            "refresh_token": "refresh-token",
+            "accounts_server": "https://accounts.zoho.com",
+        },
+    )
+    respx.post("https://accounts.zoho.com/oauth/v2/token").mock(
+        return_value=httpx.Response(200, json={"error": "invalid_client"})
+    )
+
+    with patch(
+        "zoho_cli.auth.utils.error_exit", side_effect=SystemExit(1)
+    ) as mocked_error:
+        with pytest.raises(SystemExit):
+            auth.refresh_access_token_info(
+                "ai-dev@happy-distro.co.uk",
+                "bad-client-id",
+                "bad-client-secret",
+            )
+
+    mocked_error.assert_called_once()
+    code, details = mocked_error.call_args.args[:2]
+    assert code == "token_refresh_failed"
+    assert "invalid_client" in details
+    assert "client_id/client_secret" in details
+
+
 # ---------------------------------------------------------------------------
 # discover_accounts_server
 # ---------------------------------------------------------------------------

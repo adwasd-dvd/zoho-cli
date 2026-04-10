@@ -1,8 +1,9 @@
 module: Cliq
-updated_at: '2026-04-10T04:47:56Z'
+updated_at: '2026-04-10T20:08:48Z'
 status: in_progress
 blockers:
   - "live `/messages/search` APIs on happydistrouklimited still look unsupported for current endpoint variants (`extra_param_found` / `request_url_invalid`), so search remains limitation-documented"
   - "`cliq chats` now passes on the active token/network after re-auth (`count: 0`), but DM/group discovery still needs attachment-positive evidence for cliq-155 closure"
+  - "current shared live config (`/tmp/zoho-test-config.json`) now returns refresh `invalid_client`, so matrix probes are blocked until OAuth client credentials are corrected or re-auth is completed with a valid client"
   - "native local-file upload now has multipart client/CLI baseline (including image-field fallback preference, upload endpoint/field metadata, raw+resolved user-target fallback, direct `/channels/{channel_id}/message` fallback, plural `/messages` fallback variants for channel sends, single-fetch channel descriptor resolution for channel-id sends, multipart failure diagnostics with attempted form field metadata `field=...`, and compact `attempts:` path/field/status/code tuples); standard `cliq send --channel-id` also probes `/channels/{channel_id}/message`, and both `cliq file` + `cliq voice` report retrieval `sourcePath`, but live endpoint matrix verification is still pending because tested multipart sends currently fail with endpoint-level `request_url_invalid` / `operation_failed` responses"
-next_small_step: "nightly broad verification (`make release-gate && make ci`) is green; rerun live native local-file upload probes (voice/image/file) plus `cliq file`/`cliq voice` retrieval probes after adding plural `/messages` channel-send fallbacks, and record returned upload/download metadata (`path`, `field`, `mimeType`, `sourcePath`) along with failing endpoint+field+status/code tuples from `api_error` `attempts:` output"
+next_small_step: "repair `/tmp/zoho-test-config.json` OAuth client validity (or re-login via a valid client), then rerun live native local-file upload probes (voice/image/file) plus `cliq file`/`cliq voice` retrieval probes and record returned upload/download metadata (`path`, `field`, `mimeType`, `sourcePath`) along with failing endpoint+field+status/code tuples from `api_error` `attempts:` output"

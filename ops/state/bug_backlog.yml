@@ -2,6 +2,7 @@ blockers:
   - "crm-002 live smoke remains blocked: current test account is not in a CRM org, so CRM scopes are not granted and live calls return `OAUTH_SCOPE_MISMATCH` (verified 2026-04-08T15:49:49Z)"
 high: []
 normal:
+  - "live config `/tmp/zoho-test-config.json` currently fails token refresh with `invalid_client`; added explicit auth diagnostic, but cliq-155 matrix probes remain blocked until client credentials are corrected"
   - "local multipart channel sends now probe plural `/messages` fallback variants after singular `/message` attempts (focused tests green), reducing endpoint-coverage risk while cliq-155 live matrix evidence is still being collected"
   - "nightly broad verification rerun is green (`make release-gate && make ci`: 252 tests + wheel smoke + fmt/lint), so no new unit/packaging regressions were found; remaining cliq-155 risk is live multipart endpoint behavior"
   - "cliq send scope-invalid regression is fixed in test coverage by mocking the direct `/channels/{id}/message` fallback path; `make release-gate` rerun is green (252 passed + wheel smoke), so remaining cliq-155 risk is live endpoint behavior, not unit regression"

@@ -3,12 +3,13 @@ next_version: 0.2.1
 release_candidate: false
 last_release_tag: v0.1.9
 current_train: cliq-expansion
-assessed_at: '2026-04-10T04:47:56Z'
+assessed_at: '2026-04-10T20:08:48Z'
 current_milestone: cliq-expansion-phase
 current_milestone_complete: false
 missing_requirements:
   - 'blocker backlog not clear: crm-002 live smoke is blocked by account-level CRM org access (`OAUTH_SCOPE_MISMATCH`)'
   - 'current focus milestone is incomplete: cliq-expansion-phase still has pending local multipart upload/download matrix verification and follow-on cliq-160 gate work'
+  - 'shared live probe config currently fails token refresh with `invalid_client`, so cliq-155 integration verification is blocked until OAuth client credentials are corrected'
   - 'integration evidence remains partial for cliq-155: native local-file upload/download matrix still needs live token/network confirmation (voice/image/file sends still returning `request_url_invalid` / `operation_failed` on tested targets, even after adding plural `/messages` channel-send fallback variants)'
   - 'release readiness remains blocked by integration scope: latest nightly broad verification (`make release-gate && make ci`) is green (252 passed + wheel smoke + fmt/lint), but cliq-155 still lacks one attachment-positive live retrieval sample'
 release_gate:

@@ -2,6 +2,7 @@ blockers:
   - "crm-002 live smoke remains blocked: current test account is not in a CRM org, so CRM scopes are not granted and live calls return `OAUTH_SCOPE_MISMATCH` (verified 2026-04-08T15:49:49Z)"
 high: []
 normal:
+  - "cliq send scope-invalid regression is fixed in test coverage by mocking the direct `/channels/{id}/message` fallback path; `make release-gate` rerun is green (252 passed + wheel smoke), so remaining cliq-155 risk is live endpoint behavior, not unit regression"
   - "cliq-140 live search verification on happydistrouklimited returns unsupported endpoint patterns (`extra_param_found` on `/messages/search` with query key attempts and `request_url_invalid` on fallback paths); command now reports `not_supported` with capabilities hint"
   - "cliq-155 chat discovery live positive-path is now verified (`cliq chats` returns `count: 0` after re-auth), but native local multipart upload/download matrix evidence is still incomplete: probes still fail on tested targets with endpoint-level `request_url_invalid` / `operation_failed`; diagnostics now include `field=...` and compact `attempts:` path/field/status/code tuples for faster endpoint classification"
 low: []

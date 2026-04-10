@@ -615,6 +615,9 @@ def test_cliq_client_send_scope_invalid_reports_reauth_hint(
     respx.post("https://cliq.zoho.com/api/v2/chats/C1/message").mock(
         return_value=httpx.Response(401, json={"code": "oauthtoken_scope_invalid"})
     )
+    respx.post("https://cliq.zoho.com/api/v2/channels/C1/message").mock(
+        return_value=httpx.Response(401, json={"code": "oauthtoken_scope_invalid"})
+    )
     respx.get("https://cliq.zoho.com/api/v2/channels/C1").mock(
         return_value=httpx.Response(404, text="not_found")
     )

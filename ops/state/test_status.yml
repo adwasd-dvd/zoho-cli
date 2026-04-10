@@ -1,10 +1,18 @@
-last_run_at: "2026-04-10T03:35:51Z"
-last_result: warning
+last_run_at: "2026-04-10T04:30:42Z"
+last_result: passed
 current_focus: cliq
 suites:
   unit:
     status: passing
     notes:
+      - make release-gate
+      - 252 passed in 4.46s + wheel smoke passed (0.2.0) (2026-04-10T04:30:42Z)
+      - ./.venv/bin/pytest -q tests/test_cliq.py::test_cliq_client_send_scope_invalid_reports_reauth_hint tests/test_cliq.py::test_cliq_client_send_to_channel_id_tries_channels_endpoint
+      - 2 passed in 0.10s (scope-invalid send regression is green again after adding `/channels/C1/message` RESPX mock coverage for the newer fallback path, 2026-04-10T04:21:23Z)
+      - make release-gate
+      - 1 failed, 251 passed in 4.67s (`tests/test_cliq.py::test_cliq_client_send_scope_invalid_reports_reauth_hint` fails with RESPX unmocked POST `/api/v2/channels/C1/message`, 2026-04-10T03:38:56Z)
+      - ./.venv/bin/pytest -q tests/test_cliq.py::test_cliq_client_send_scope_invalid_reports_reauth_hint
+      - 1 failed in 0.12s (same unmocked POST `/api/v2/channels/C1/message` regression confirmed, 2026-04-10T03:39:09Z)
       - ./.venv/bin/pytest -q tests/test_cliq.py::test_cliq_client_send_local_file_message_error_reports_form_field tests/test_cliq.py::test_cliq_client_send_local_file_message_to_user
       - 2 passed in 0.08s (local multipart send failures now include compact `attempts:` path/field/status/code tuples in `api_error` output, 2026-04-10T03:35:51Z)
       - ./.venv/bin/ruff format --check zoho_cli/cliq.py tests/test_cliq.py
@@ -297,6 +305,8 @@ suites:
   packaging:
     status: passing
     notes:
+      - make release-gate passed (252 tests + wheel smoke) (2026-04-10T04:30:42Z)
+      - make release-gate failed (1 failed, 251 passed) on `tests/test_cliq.py::test_cliq_client_send_scope_invalid_reports_reauth_hint` (2026-04-10T03:38:56Z)
       - make release-gate passed (243 tests + wheel smoke) (2026-04-09T10:38:34Z)
       - make release-gate passed (243 tests + wheel smoke) (2026-04-09T10:33:27Z)
       - make release-gate passed (128 tests + wheel smoke) (2026-04-08T13:25:55Z)

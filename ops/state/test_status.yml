@@ -1,10 +1,14 @@
-last_run_at: "2026-04-10T04:39:44Z"
+last_run_at: "2026-04-10T04:47:56Z"
 last_result: passed
 current_focus: cliq
 suites:
   unit:
     status: passing
     notes:
+      - ./.venv/bin/pytest -q tests/test_cliq.py::test_cliq_client_send_local_file_message_channel_id_tries_channels_endpoint tests/test_cliq.py::test_cliq_client_send_local_file_message_channel_id_tries_plural_message_endpoint
+      - 2 passed in 0.81s (local multipart channel-send fallback now probes plural `/messages` variants after singular `/message`, 2026-04-10T04:47:56Z)
+      - ./.venv/bin/ruff format --check zoho_cli/cliq.py tests/test_cliq.py
+      - 2 files already formatted (2026-04-10T04:47:56Z)
       - make release-gate
       - 252 passed in 4.84s + wheel smoke passed (0.2.0) (2026-04-10T04:39:44Z)
       - make release-gate

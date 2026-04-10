@@ -2113,9 +2113,16 @@ class ZohoCliqClient:
                 f"/channels/{channel_id}/message",
             ]
             candidates.extend(self._resolve_channel_message_paths(channel_id))
+
+            expanded_candidates: list[str] = []
+            for candidate in candidates:
+                expanded_candidates.append(candidate)
+                if candidate.endswith("/message"):
+                    expanded_candidates.append(f"{candidate}s")
+
             seen: set[str] = set()
             destination_paths = [
-                p for p in candidates if not (p in seen or seen.add(p))
+                p for p in expanded_candidates if not (p in seen or seen.add(p))
             ]
         else:
             destination_paths = []

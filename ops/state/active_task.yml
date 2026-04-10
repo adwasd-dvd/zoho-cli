@@ -4,11 +4,11 @@ module: cliq
 stage: in_progress
 status: in_progress
 owner: automation
-updated_at: '2026-04-10T04:39:44Z'
+updated_at: '2026-04-10T04:47:56Z'
 success_criteria:
   - provide chat discovery command surface (`cliq chats`) with explicit scope/not-supported diagnostics
   - keep per-conversation context outputs machine-readable with inferred message content types (`text`, `image`, `file`, `voice`, `sticker`, `reaction`)
   - maintain channel/chat context extraction for agent loops (`messages`, `message`, `context`) with typed summaries
   - validate via focused tests and at least one live smoke path on current token/network
 next_if_done: cliq-160
-next_step: "nightly broad verification is green (`make release-gate && make ci`: 252 tests, wheel smoke, fmt/lint all passing); continue native local-file upload/download matrix probes (voice/image/file plus file/voice retrieval), capturing endpoint + field + status/code evidence from `api_error` `attempts:` tuples and landing one attachment-positive retrieval sample"
+next_step: "nightly broad verification is green (`make release-gate && make ci`: 252 tests, wheel smoke, fmt/lint all passing); local multipart channel sends now probe plural `/messages` fallback variants in addition to singular `/message` (focused tests green), so rerun live upload/download matrix probes (voice/image/file plus file/voice retrieval), capture endpoint + field + status/code evidence from `api_error` `attempts:` tuples, and land one attachment-positive retrieval sample"

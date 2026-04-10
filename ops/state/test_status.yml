@@ -1,4 +1,4 @@
-last_run_at: "2026-04-10T00:54:00Z"
+last_run_at: "2026-04-10T01:39:14Z"
 last_result: warning
 current_focus: cliq
 suites:
@@ -151,21 +151,29 @@ suites:
   integration:
     status: warning
     notes:
+      - ./.venv/bin/python -m zoho_cli --config /tmp/zoho-test-config.json --account ai-dev@happy-distro.co.uk login --with-cliq
+      - ./.venv/bin/python -m zoho_cli --config /tmp/zoho-test-config.json --account ai-dev@happy-distro.co.uk cliq chats --network happydistrouklimited
+      - live `cliq chats` positive path now succeeds after re-auth (`count: 0`, no `oauth_scope_invalid`) (2026-04-10T01:39:14Z)
       - ./.venv/bin/python -m zoho_cli --config /tmp/zoho-test-config.json --account ai-dev@happy-distro.co.uk cliq send --network happydistrouklimited --user-id david@happy-distro.com --text "local image probe <utc-time>" --image-url /Users/adwasd/.openclaw/workspace-coder/job/zoho-cli/.tmp/live-probes/probe-image.png --title "Local image probe <utc-time>"
       - ./.venv/bin/python -m zoho_cli --config /tmp/zoho-test-config.json --account ai-dev@happy-distro.co.uk cliq send --network happydistrouklimited --channel-id O6576524000097556005 --text "local image probe <utc-time>" --image-url /Users/adwasd/.openclaw/workspace-coder/job/zoho-cli/.tmp/live-probes/probe-image.png --title "Local image probe <utc-time>"
-      - ./.venv/bin/python -m zoho_cli --config /tmp/zoho-test-config.json --account ai-dev@happy-distro.co.uk cliq send --network happydistrouklimited --user-id david@happy-distro.com --text "email-target regression probe <utc-time>"
-      - local multipart image probe is still failing live on both tested user/channel targets (`request_url_invalid` on `/users/<target>/message`, `operation_failed` on `/channelsbyname/<name>/message`), but plain email-target send remains healthy (`httpStatus: 204`) after adding raw+resolved user-target fallback chaining (2026-04-09T20:28:02Z)
+      - ./.venv/bin/python -m zoho_cli --config /tmp/zoho-test-config.json --account ai-dev@happy-distro.co.uk cliq send --network happydistrouklimited --user-id david@happy-distro.com --text "local file probe <utc-time>" --file-url /Users/adwasd/.openclaw/workspace-coder/job/zoho-cli/.tmp/live-probes/probe-file.txt --title "Local file probe <utc-time>"
+      - ./.venv/bin/python -m zoho_cli --config /tmp/zoho-test-config.json --account ai-dev@happy-distro.co.uk cliq send --network happydistrouklimited --channel-id O6576524000097556005 --text "local file probe <utc-time>" --file-url /Users/adwasd/.openclaw/workspace-coder/job/zoho-cli/.tmp/live-probes/probe-file.txt --title "Local file probe <utc-time>"
+      - ./.venv/bin/python -m zoho_cli --config /tmp/zoho-test-config.json --account ai-dev@happy-distro.co.uk cliq voice-send --network happydistrouklimited --user-id david@happy-distro.com --voice-url /Users/adwasd/.openclaw/workspace-coder/test/sample-3.m4a --text "local voice probe <utc-time>"
+      - local multipart media probes still fail live on tested user/channel targets (`request_url_invalid` on `/users/<target>/message`, `operation_failed` on `/channelsbyname/<name>/message`); failure diagnostics now include attempted field metadata (`field=attachments[]`) (2026-04-10T01:39:14Z)
+      - ./.venv/bin/python -m zoho_cli --config /tmp/zoho-test-config.json --account ai-dev@happy-distro.co.uk cliq file 1775672331710_74865282494 --network happydistrouklimited --channel-id O6576524000097556005
+      - ./.venv/bin/python -m zoho_cli --config /tmp/zoho-test-config.json --account ai-dev@happy-distro.co.uk cliq voice 1775672331710_74865282494 --network happydistrouklimited --channel-id O6576524000097556005
+      - file/voice retrieval probes now return structured `sourcePath` on live reads, but sampled message is still attachment-empty (`count: 0`) (2026-04-10T01:39:14Z)
       - ./.venv/bin/python -m zoho_cli --config /tmp/zoho-test-config.json --account ai-dev@happy-distro.co.uk cliq whoami --network happydistrouklimited
       - whoami command now returns structured best-effort/unknown identity diagnostics instead of hard-failing when direct self endpoints are unavailable on current network base (2026-04-09T05:40:00Z)
       - ./.venv/bin/python -m zoho_cli --config /tmp/zoho-test-config.json --account ai-dev@happy-distro.co.uk cliq send --network happydistrouklimited --user-id david@happy-distro.com --text "media link smoke" --image-url https://picsum.photos/200 --title "Smoke image"
       - ./.venv/bin/python -m zoho_cli --config /tmp/zoho-test-config.json --account ai-dev@happy-distro.co.uk cliq send --network happydistrouklimited --user-id david@happy-distro.com --text "file link smoke" --file-url https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf --title "Smoke file"
       - ./.venv/bin/python -m zoho_cli --config /tmp/zoho-test-config.json --account ai-dev@happy-distro.co.uk cliq send --network happydistrouklimited --user-id david@happy-distro.com --text "audio link smoke" --audio-url https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3 --title "Smoke audio"
-      - ./.venv/bin/python -m zoho_cli --config /tmp/zoho-test-config.json --account ai-dev@happy-distro.co.uk cliq send --network happydistrouklimited --user-id david@happy-distro.com --text "sticker smoke" --sticker :thumbsup:
+      - './.venv/bin/python -m zoho_cli --config /tmp/zoho-test-config.json --account ai-dev@happy-distro.co.uk cliq send --network happydistrouklimited --user-id david@happy-distro.com --text "sticker smoke" --sticker :thumbsup:'
       - ./.venv/bin/python -m zoho_cli --config /tmp/zoho-test-config.json --account ai-dev@happy-distro.co.uk cliq voice-send --network happydistrouklimited --user-id david@happy-distro.com --voice-url https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3 --text "voice-send smoke v2"
       - ./.venv/bin/python -m zoho_cli --config /tmp/zoho-test-config.json --account ai-dev@happy-distro.co.uk cliq voice 1775672331710_74865282494 --network happydistrouklimited --channel-id O6576524000097556005
       - ./.venv/bin/python -m zoho_cli --config /tmp/zoho-test-config.json --account ai-dev@happy-distro.co.uk cliq voice-send --network happydistrouklimited --user-id david@happy-distro.com --voice-url /Users/adwasd/.openclaw/workspace-coder/test/sample-3.m4a --text "local voice file smoke 2"
       - ./.venv/bin/python -m zoho_cli --config /tmp/zoho-test-config.json --account ai-dev@happy-distro.co.uk cliq chats --network happydistrouklimited
-      - rich-media send baseline (image/file/audio/voice link cards + sticker shortcode append) returned `httpStatus: 204` in live DM smoke against david@happy-distro.com, including local-path voice-url pass-through; `cliq chats` now exists but currently returns explicit `oauth_scope_invalid` on active token/network; voice receive path returns empty list (not hard error) when a message has no attachments (2026-04-09T06:05:00Z)
+      - rich-media send baseline (image/file/audio/voice link cards + sticker shortcode append) returned `httpStatus: 204` in live DM smoke against david@happy-distro.com, including local-path voice-url pass-through; at that point `cliq chats` returned `oauth_scope_invalid` on active token/network (later re-auth cleared this); voice receive path returned empty list (not hard error) when a message had no attachments (2026-04-09T06:05:00Z)
       - ./.venv/bin/python -m zoho_cli --config /tmp/zoho-test-config.json --account ai-dev@happy-distro.co.uk cliq search "cliq" --network happydistrouklimited --channel-id O6576524000097556005 --limit 5
       - live search now falls through endpoint/query variants and exits with documented `not_supported` (no hard api_error on first `extra_param_found`) (2026-04-09T01:49:18Z)
       - ./.venv/bin/python -m zoho_cli --config /tmp/zoho-test-config.json --account ai-dev@happy-distro.co.uk cliq file 1775672331710_74865282494 --network happydistrouklimited --channel-id O6576524000097556005
@@ -193,7 +201,7 @@ suites:
       - live channel create + archive succeeded; additional lifecycle verifies are currently rate-limited by Zoho token refresh throttle (2026-04-08T18:21:53Z)
       - ./.venv/bin/python -m zoho_cli --config /tmp/zoho-test-config.json --account ai-dev@happy-distro.co.uk cliq reply 1775672331710_74865282494 --network happydistrouklimited --channel-id O6576524000097556005 --text "cliq-120 reply smoke"
       - live reply command succeeded against channel chat context (2026-04-08T18:21:53Z)
-      - ./.venv/bin/python -m zoho_cli --config /tmp/zoho-test-config.json --account ai-dev@happy-distro.co.uk cliq react 1775672331710_74865282494 --network happydistrouklimited --channel-id O6576524000097556005 --emoji :thumbsup:
+      - './.venv/bin/python -m zoho_cli --config /tmp/zoho-test-config.json --account ai-dev@happy-distro.co.uk cliq react 1775672331710_74865282494 --network happydistrouklimited --channel-id O6576524000097556005 --emoji :thumbsup:'
       - live reaction add succeeded after payload fallback update (`emoji_code`) (2026-04-08T18:21:53Z)
       - ./.venv/bin/python -m zoho_cli --config /tmp/zoho-test-config.json --account ai-dev@happy-distro.co.uk cliq edit 1775672331710_74865282494 --network happydistrouklimited --channel-id O6576524000097556005 --text "cliq-120 edit smoke"
       - live edit command succeeded via endpoint fallback chain (2026-04-08T18:21:53Z)

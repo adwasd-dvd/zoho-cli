@@ -33,6 +33,7 @@
 - Added local media-file send support to `zoho cliq send` when `--image-url`/`--file-url`/`--audio-url`/`--voice-url` points to an existing local file path; CLI now uploads multipart payloads instead of forcing URL-only link cards.
 - Added voice-specific Cliq primitives: `zoho cliq voice-send` (voice URL send wrapper) and `zoho cliq voice` (voice/audio attachment filtering for one message).
 - Added `zoho cliq chats` for DM/group conversation discovery where `/chats` is available for the current token/network.
+- Validated live `zoho cliq chats --network happydistrouklimited` positive path after `zoho login --with-cliq` re-auth (`count: 0`, no scope error).
 - Added inferred message content typing (`text`/`image`/`file`/`voice`/`sticker`/`reaction`) to `cliq messages`, `cliq message`, and `cliq context` outputs.
 - Added first `cliq-150` OpenClaw watch primitive: `zoho cliq watch-context` plus `ZohoCliqClient.build_watch_context_seed` for cursor-based incremental context payloads.
 - Added companion `cliq-150` action primitive: `zoho cliq watch-act` plus `ZohoCliqClient.build_watch_reply_action` / `execute_watch_reply_action` to consume `watch-context` payloads and deterministically reply to the latest unseen message.

@@ -2174,6 +2174,8 @@ class ZohoCliqClient:
 
         last_error: tuple[int, str, str, str] | None = None
         saw_scope_invalid = False
+        attempt_summaries: list[str] = []
+        seen_attempt_summaries: set[str] = set()
         retryable_codes = {
             "param_missing",
             "invalid_data",
@@ -2183,6 +2185,33 @@ class ZohoCliqClient:
             "request_url_invalid",
             "input_json_invalid",
         }
+
+        def _record_attempt(
+            status: int,
+            send_path: str,
+            field_name: str,
+            code: str,
+            body: str,
+        ) -> None:
+            error_code = code
+            if not error_code:
+                stripped = body.strip()
+                error_code = stripped.split()[0].lower() if stripped else "unknown"
+            summary = (
+                f"{send_path} field={field_name} status={status} code={error_code}"
+            )
+            if summary in seen_attempt_summaries:
+                return
+            seen_attempt_summaries.add(summary)
+            attempt_summaries.append(summary)
+
+        def _attempt_suffix() -> str:
+            if not attempt_summaries:
+                return ""
+            preview = "; ".join(attempt_summaries[:12])
+            if len(attempt_summaries) > 12:
+                preview = f"{preview}; ..."
+            return f" | attempts: {preview}"
 
         for send_path in destination_paths:
             for field_name in file_fields:
@@ -2230,6 +2259,7 @@ class ZohoCliqClient:
                         pass
 
                     last_error = (resp.status_code, send_path, field_name, body)
+                    _record_attempt(resp.status_code, send_path, field_name, code, body)
                     if "oauthtoken_scope_invalid" in lowered:
                         saw_scope_invalid = True
                         continue
@@ -2243,7 +2273,7 @@ class ZohoCliqClient:
 
                     utils.error_exit(
                         "api_error",
-                        f"HTTP {resp.status_code} POST {send_path} (field={field_name}): {body}",
+                        f"HTTP {resp.status_code} POST {send_path} (field={field_name}): {body}{_attempt_suffix()}",
                     )
 
         if saw_scope_invalid:
@@ -2256,7 +2286,7 @@ class ZohoCliqClient:
             status, send_path, field_name, body = last_error
             utils.error_exit(
                 "api_error",
-                f"HTTP {status} POST {send_path} (field={field_name}): {body}",
+                f"HTTP {status} POST {send_path} (field={field_name}): {body}{_attempt_suffix()}",
             )
 
         utils.error_exit("api_error", "No candidate endpoint available for file send")

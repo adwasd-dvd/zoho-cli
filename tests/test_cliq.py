@@ -455,6 +455,9 @@ def test_cliq_client_send_local_file_message_error_reports_form_field(
     assert "api_error" in err
     assert "POST /buddies/U1/message" in err
     assert "field=voice" in err
+    assert "attempts:" in err
+    assert "status=500" in err
+    assert "code=server_error" in err
 
 
 @respx.mock

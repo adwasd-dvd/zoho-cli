@@ -431,6 +431,33 @@ def test_cliq_client_send_local_file_message_to_user(
 
 
 @respx.mock
+def test_cliq_client_send_local_file_message_error_reports_form_field(
+    client: cliq.ZohoCliqClient,
+    tmp_path: Path,
+    capsys: pytest.CaptureFixture[str],
+) -> None:
+    sample = tmp_path / "voice.m4a"
+    sample.write_bytes(b"voice-bytes")
+
+    respx.post("https://cliq.zoho.com/api/v2/buddies/U1/message").mock(
+        return_value=httpx.Response(500, text="server_error")
+    )
+
+    with pytest.raises(SystemExit):
+        client.send_local_file_message(
+            str(sample),
+            user_id="U1",
+            text="voice",
+            media_kind="voice",
+        )
+
+    err = capsys.readouterr().err
+    assert "api_error" in err
+    assert "POST /buddies/U1/message" in err
+    assert "field=voice" in err
+
+
+@respx.mock
 def test_cliq_client_send_local_file_message_resolves_email_user_id(
     client: cliq.ZohoCliqClient,
     tmp_path: Path,

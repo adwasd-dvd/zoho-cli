@@ -34,7 +34,7 @@
 - Added voice-specific Cliq primitives: `zoho cliq voice-send` (voice URL send wrapper) and `zoho cliq voice` (voice/audio attachment filtering for one message).
 - Added `zoho cliq chats` for DM/group conversation discovery where `/chats` is available for the current token/network.
 - Added deep Cliq history helpers (`get_all_users`, `get_dm_history`, `get_chat_history`) with bounded pagination handling for bulk-read test scenarios.
-- Added SCAP deep Cliq auto-pilot tests (`tests/auto_pilot/scenarios/test_social.py`, `test_messaging.py`) plus semi-manual runner script (`tests/auto_pilot/run_cliq_deep_scan.sh`) covering user list reads, DM/channel history reads, text send fallback, and local media send upload metadata.
+- Added SCAP deep Cliq auto-pilot tests (`tests/auto_pilot/scenarios/test_social.py`, `test_messaging.py`) plus semi-manual runners (`tests/auto_pilot/run_cliq_deep_scan.sh`, `tests/auto_pilot/cliq_live_probe.py`) covering user list reads, DM/channel history reads, text send fallback, and local media send upload metadata.
 - Validated live `zoho cliq chats --network happydistrouklimited` positive path after `zoho login --with-cliq` re-auth (`count: 0`, no scope error).
 - Added inferred message content typing (`text`/`image`/`file`/`voice`/`sticker`/`reaction`) to `cliq messages`, `cliq message`, and `cliq context` outputs.
 - Added first `cliq-150` OpenClaw watch primitive: `zoho cliq watch-context` plus `ZohoCliqClient.build_watch_context_seed` for cursor-based incremental context payloads.

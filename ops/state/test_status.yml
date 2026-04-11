@@ -1,10 +1,12 @@
-last_run_at: "2026-04-10T20:08:48Z"
+last_run_at: "2026-04-11T04:48:24Z"
 last_result: passed
 current_focus: cliq
 suites:
   unit:
     status: passing
     notes:
+      - ./.venv/bin/pytest -q tests/test_cliq.py::test_cliq_client_chats_scope_invalid_reports_hint tests/test_cli.py::test_cliq_chats
+      - 2 passed in 0.11s (chat-scope errors now include a concrete `zoho cliq status --check-auth` diagnostic step before re-auth guidance, 2026-04-11T04:48:24Z)
       - ./.venv/bin/pytest -q tests/test_auth.py::test_refresh_access_token_info_invalid_client_reports_config_hint
       - 1 passed in 0.03s (token refresh now reports explicit `invalid_client` client-credential guidance instead of generic missing access token noise, 2026-04-10T20:08:48Z)
       - ./.venv/bin/pytest -q tests/test_cliq.py::test_cliq_client_send_local_file_message_channel_id_tries_channels_endpoint tests/test_cliq.py::test_cliq_client_send_local_file_message_channel_id_tries_plural_message_endpoint

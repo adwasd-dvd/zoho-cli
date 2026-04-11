@@ -1046,7 +1046,7 @@ class ZohoCliqClient:
         if "oauthtoken_scope_invalid" in lowered:
             utils.error_exit(
                 "oauth_scope_invalid",
-                "Cliq token is missing chat-read scope. Re-run `zoho login --with-cliq` with chat-read scopes (for example `ZohoCliq.Chats.ALL`) and retry.",
+                "Cliq token is missing chat-read scope. Run `zoho cliq status --check-auth` to inspect granted scopes, then re-run `zoho login --with-cliq --scope ZohoCliq.Chats.ALL` and retry.",
             )
         if resp.status_code in (404, 405) or "request_url_invalid" in lowered:
             utils.error_exit(

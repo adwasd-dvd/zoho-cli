@@ -42,6 +42,7 @@
 - Added CRM read-only record commands for `crm-002`: `zoho crm list`, `zoho crm get`, and `zoho crm search` (`--criteria` or `--word`) wired through `ZohoCrmClient` with pagination/field-selection support.
 
 ### Fixed
+- `zoho cliq chats` scope-invalid failures now include a concrete diagnostic step (`zoho cliq status --check-auth`) before the re-auth guidance so operators can confirm live granted scopes quickly.
 - Cliq mutable-message fallback now retries on endpoint payload mismatches (`param_missing` / `invalid_data` / `operation_failed`) so write operations can probe alternate method/path payload variants before failing.
 - Cliq mutable/admin fallback now also retries on `extra_key_found` and `request_method_invalid`, allowing command probes to continue across API payload/method variants instead of failing on the first unsupported candidate.
 - Cliq member add/remove now resolves `channel_id` into `chat_id` for fallback routing and probes expanded membership payload shapes (`user_id`, `member_id`, `users`, `members`, `user_ids`, `member_ids`) to improve compatibility across org endpoint variants.

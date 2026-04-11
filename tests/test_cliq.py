@@ -81,6 +81,7 @@ def test_cliq_client_chats_scope_invalid_reports_hint(
 
     err = capsys.readouterr().err
     assert "oauth_scope_invalid" in err
+    assert "zoho cliq status --check-auth" in err
     assert "ZohoCliq.Chats.ALL" in err
 
 

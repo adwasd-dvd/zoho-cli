@@ -1,0 +1,37 @@
+#!/usr/bin/env bash
+set -u
+
+CONFIG="${1:-/tmp/zoho-test-config.json}"
+ACCOUNT="${2:-ai-dev@happy-distro.co.uk}"
+NETWORK="${3:-happydistrouklimited}"
+CHANNEL_ID="${4:-O6576524000097556005}"
+DM_USER_ID="${5:-o-CT-911174541-754805990}"
+SEND_USER_ID="${6:-david@happy-distro.com}"
+
+mkdir -p tests/auto_pilot/reports
+TS="$(date +%Y%m%d_%H%M%S)"
+OUT_OK="tests/auto_pilot/reports/cliq_live_probe_ok_${TS}.json"
+OUT_DM="tests/auto_pilot/reports/cliq_live_probe_dm_${TS}.json"
+
+echo "[SCAP] live probe (no DM) -> ${OUT_OK}"
+python3.11 tests/auto_pilot/cliq_live_probe.py \
+  --config "$CONFIG" \
+  --account "$ACCOUNT" \
+  --network "$NETWORK" \
+  --channel-id "$CHANNEL_ID" \
+  --send-user-id "$SEND_USER_ID" \
+  --send-text "SCAP live text probe $(date -u +%H:%M:%S)" | tee "$OUT_OK"
+
+echo
+
+echo "[SCAP] DM probe (expected to validate endpoint support) -> ${OUT_DM}"
+python3.11 tests/auto_pilot/cliq_live_probe.py \
+  --config "$CONFIG" \
+  --account "$ACCOUNT" \
+  --network "$NETWORK" \
+  --dm-user-id "$DM_USER_ID" \
+  --channel-id "$CHANNEL_ID" \
+  --send-user-id "$SEND_USER_ID" \
+  --send-text "SCAP live text probe dm $(date -u +%H:%M:%S)" | tee "$OUT_DM"
+
+echo "[SCAP] done"

@@ -5,6 +5,7 @@ import json
 import os
 from typing import Any
 
+from zoho_cli import auth, config
 from zoho_cli.cliq import ZohoCliqClient, infer_cliq_base_url
 
 
@@ -17,6 +18,8 @@ def _build_base_url(network: str | None, base_url: str | None) -> str:
 def main() -> None:
     parser = argparse.ArgumentParser(description="Semi-manual Cliq deep probe")
     parser.add_argument("--access-token", default=os.getenv("ZOHO_CLIQ_ACCESS_TOKEN"))
+    parser.add_argument("--config", dest="config_path", default=None)
+    parser.add_argument("--account", default=None)
     parser.add_argument("--network", default=None)
     parser.add_argument("--base-url", default=None)
 
@@ -31,11 +34,31 @@ def main() -> None:
 
     args = parser.parse_args()
 
-    if not args.access_token:
-        raise SystemExit("Missing access token. Use --access-token or ZOHO_CLIQ_ACCESS_TOKEN")
+    access_token = (args.access_token or "").strip()
+    if not access_token and args.config_path:
+        cfg = config.load(args.config_path)
+        account = (args.account or cfg.get("default_account") or "").strip()
+        if not account:
+            raise SystemExit("Missing account. Use --account or set default_account in config.")
+        client_id = (cfg.get("client_id") or "").strip()
+        client_secret = (cfg.get("client_secret") or "").strip()
+        if not client_id or not client_secret:
+            raise SystemExit("Config missing client_id/client_secret.")
+        account_cfg = cfg.get("accounts", {}).get(account, {})
+        access_token = auth.refresh_access_token(
+            account,
+            client_id,
+            client_secret,
+            accounts_base_url=account_cfg.get("accounts_server"),
+        )
+
+    if not access_token:
+        raise SystemExit(
+            "Missing access token. Use --access-token/ZOHO_CLIQ_ACCESS_TOKEN or --config + --account."
+        )
 
     base_url = _build_base_url(args.network, args.base_url)
-    client = ZohoCliqClient(args.access_token, base_url=base_url)
+    client = ZohoCliqClient(access_token, base_url=base_url)
 
     result: dict[str, Any] = {
         "baseUrl": base_url,

@@ -1,5 +1,5 @@
 project: zoho-cli
-updated_at: '2026-04-11T04:48:24Z'
+updated_at: '2026-04-11T05:00:27Z'
 status: cliq-expansion
 canonical_workspace: /Users/adwasd/.openclaw/workspace-coder
 project_root: /Users/adwasd/.openclaw/workspace-coder/job/zoho-cli
@@ -17,3 +17,4 @@ primary_blockers:
 next_step: "re-run `zoho login --with-cliq` against `/tmp/zoho-test-config.json` to restore Cliq chat/message/write scopes, then rerun cliq-155 native local-file upload/download verification (`cliq send`/`cliq file`/`cliq voice`) and capture endpoint evidence (`path`, `field`, `mimeType`, `sourcePath`, plus failing endpoint+field+status/code tuples from `attempts:`) until one attachment-positive retrieval sample is recorded"
 additional_info:
   - Token refresh failures now report explicit `invalid_client` guidance (check `client_id`/`client_secret` and re-run `zoho login`) instead of only emitting a generic missing `access_token` payload error.
+  - OAuth login defaults are now aligned on `http://localhost:51821/callback` (including `--no-browser` fallback from legacy `example.com`), and callback success UI now renders scope-aware Mail/Cliq/CRM guidance.

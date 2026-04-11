@@ -1,5 +1,6 @@
 """OAuth 2.0 helpers: login flow, token exchange, token refresh."""
 
+import html
 import logging
 import sys
 from http.server import BaseHTTPRequestHandler, HTTPServer
@@ -50,7 +51,57 @@ def parse_scope_value(scope_value: object) -> list[str]:
 
 # ── success page served to the browser after OAuth ───────────────────────────
 
-_SUCCESS_HTML = """\
+
+def _scope_flags(scopes: list[str]) -> tuple[bool, bool, bool]:
+    lowered = [scope.lower() for scope in scopes]
+    has_mail = any(scope.startswith("zohomail.") for scope in lowered)
+    has_cliq = any(scope.startswith("zohocliq.") for scope in lowered)
+    has_crm = any(scope.startswith("zohocrm.") for scope in lowered)
+    return has_mail, has_cliq, has_crm
+
+
+def _render_success_html(scopes: list[str]) -> str:
+    has_mail, has_cliq, has_crm = _scope_flags(scopes)
+
+    products: list[str] = []
+    badges: list[str] = []
+    if has_mail:
+        products.append("Zoho Mail")
+        badges.append('<span class="tag tag-mail">Zoho Mail</span>')
+    if has_cliq:
+        products.append("Zoho Cliq")
+        badges.append('<span class="tag tag-cliq">Zoho Cliq</span>')
+    if has_crm:
+        products.append("Zoho CRM")
+        badges.append('<span class="tag tag-crm">Zoho CRM</span>')
+
+    subtitle = (
+        "zoho is now authorized to access " + ", ".join(products)
+        if products
+        else "zoho authorization completed"
+    )
+
+    commands: list[str] = []
+    if has_mail:
+        commands.extend(["zoho mail list", 'zoho mail search "invoice"'])
+    if has_cliq:
+        commands.extend(["zoho cliq status --check-auth", "zoho cliq chats"])
+    if has_crm:
+        commands.append("zoho crm status --check-auth")
+    if not commands:
+        commands.append("zoho --help")
+
+    command_html = "".join(
+        f'<div><span class="p">$ </span><span class="cmd">{html.escape(cmd)}</span></div>'
+        for cmd in commands
+    )
+    scope_list_html = "".join(f"<li><code>{html.escape(scope)}</code></li>" for scope in scopes)
+    if not scope_list_html:
+        scope_list_html = "<li><code>(scope not present in callback)</code></li>"
+
+    badge_html = "".join(badges) if badges else '<span class="tag">OAuth</span>'
+
+    return f"""\
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -58,70 +109,59 @@ _SUCCESS_HTML = """\
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Connected — zoho</title>
 <style>
-*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
-body{
+*,*::before,*::after{{box-sizing:border-box;margin:0;padding:0}}
+body{{
   font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;
   background:linear-gradient(145deg,#0f1117 0%,#151c2c 100%);
   color:#e2e8f0;min-height:100vh;
   display:flex;flex-direction:column;align-items:center;justify-content:center;
   padding:2rem;gap:1.25rem;
-}
-.icon-wrap{position:relative;display:inline-flex;margin-bottom:.25rem}
-.icon{font-size:3.5rem;line-height:1}
-.badge{
+}}
+.icon-wrap{{position:relative;display:inline-flex;margin-bottom:.25rem}}
+.icon{{font-size:3.2rem;line-height:1}}
+.badge{{
   position:absolute;bottom:-2px;right:-2px;
   background:#22c55e;border-radius:50%;width:1.5rem;height:1.5rem;
   display:flex;align-items:center;justify-content:center;
   font-size:.9rem;color:#fff;font-weight:700;
-}
-h1{font-size:2rem;font-weight:700;letter-spacing:-.025em}
-.sub{color:#64748b;font-size:.95rem}
-.card{
+}}
+h1{{font-size:2rem;font-weight:700;letter-spacing:-.025em}}
+.sub{{color:#64748b;font-size:.95rem;text-align:center}}
+.card{{
   background:#161b27;border:1px solid #1e293b;border-radius:14px;
-  padding:1.25rem 1.5rem;width:100%;max-width:500px;
-}
-.mono{font-family:'SF Mono','Fira Code','Cascadia Code',monospace;font-size:.8rem;line-height:2}
-.p{color:#334155;user-select:none}.cmd{color:#7dd3fc}.str{color:#86efac}.dim{color:#475569}
-.cursor{
-  display:inline-block;width:.45rem;height:.9em;background:#475569;
-  vertical-align:text-bottom;animation:blink 1.1s step-end infinite;
-}
-@keyframes blink{50%{opacity:0}}
-.ret{display:flex;align-items:center;gap:1rem}
-.ret-ico{font-size:1.5rem;flex-shrink:0}
-.ret h3{font-size:.875rem;font-weight:600;margin-bottom:.25rem}
-.ret p{font-size:.8rem;color:#64748b;line-height:1.5}
-.ret code{color:#7dd3fc;background:#1e293b;padding:.1em .35em;border-radius:4px;font-family:monospace}
-footer{color:#334155;font-size:.8rem;margin-top:.25rem}
+  padding:1rem 1.25rem;width:100%;max-width:560px;
+}}
+.tag{{display:inline-block;padding:.2rem .5rem;border-radius:.35rem;background:#334155;font-size:.75rem;margin-right:.45rem}}
+.tag-mail{{background:#1d4ed8}}
+.tag-cliq{{background:#166534}}
+.tag-crm{{background:#7e22ce}}
+.mono{{font-family:'SF Mono','Fira Code','Cascadia Code',monospace;font-size:.82rem;line-height:1.8}}
+.p{{color:#334155;user-select:none}}
+.cmd{{color:#7dd3fc}}
+ul{{margin:.4rem 0 0 1.1rem}}
+li{{margin:.2rem 0}}
+code{{background:#0f172a;border-radius:6px;padding:.1rem .35rem}}
+footer{{color:#334155;font-size:.8rem;margin-top:.25rem}}
 </style>
 </head>
 <body>
-<div class="icon-wrap"><span class="icon">✉️</span><span class="badge">✓</span></div>
-<h1>You're connected</h1>
-<p class="sub">zoho is now authorized to access Zoho Mail</p>
+<div class="icon-wrap"><span class="icon">🦞</span><span class="badge">✓</span></div>
+<h1>Connected</h1>
+<p class="sub">{html.escape(subtitle)}</p>
+
+<div class="card">{badge_html}</div>
 
 <div class="card mono">
-  <div class="dim"># list your inbox</div>
-  <div><span class="p">$ </span><span class="cmd">zoho mail list</span></div>
-  <br>
-  <div class="dim"># search messages</div>
-  <div><span class="p">$ </span><span class="cmd">zoho mail search </span><span class="str">"invoice"</span></div>
-  <br>
-  <div class="dim"># pipe to jq</div>
-  <div><span class="p">$ </span><span class="cmd">zoho mail list</span><span class="dim"> | jq '.[].subject'</span></div>
-  <br>
-  <div><span class="p">$ </span><span class="cursor"></span></div>
+  <div># next commands</div>
+  {command_html}
 </div>
 
-<div class="card ret">
-  <span class="ret-ico">⌨️</span>
-  <div>
-    <h3>Return to your terminal</h3>
-    <p>You can close this window. Run <code>zoho --help</code> to see all commands.</p>
-  </div>
+<div class="card">
+  <div style="font-weight:600;margin-bottom:.35rem">Callback scopes</div>
+  <ul>{scope_list_html}</ul>
 </div>
 
-<footer>You can close this window.</footer>
+<footer>You can close this window and return to your terminal.</footer>
 </body>
 </html>
 """
@@ -139,11 +179,15 @@ def _make_callback_handler(result: dict) -> type:
             params = parse_qs(parsed.query)
             code = params.get("code", [None])[0]
             accounts_server = params.get("accounts-server", [None])[0]
+            callback_scopes = parse_scope_value(params.get("scope", [""])[0])
 
             if code:
                 result["code"] = code
                 result["accounts_server"] = accounts_server
-                body = _SUCCESS_HTML.encode("utf-8")
+                result["callback_scopes"] = callback_scopes
+                requested_scopes = result.get("requested_scopes", [])
+                effective_scopes = callback_scopes or requested_scopes
+                body = _render_success_html(effective_scopes).encode("utf-8")
                 self.send_response(200)
                 self.send_header("Content-Type", "text/html; charset=utf-8")
                 self.send_header("Content-Length", str(len(body)))
@@ -160,7 +204,10 @@ def _make_callback_handler(result: dict) -> type:
     return _Handler
 
 
-def create_callback_server(preferred_port: int = 51821) -> tuple:
+def create_callback_server(
+    preferred_port: int = 51821,
+    requested_scopes: Optional[list[str]] = None,
+) -> tuple:
     """
     Bind the OAuth callback server immediately and return early.
     Call this BEFORE region detection so the port is held the whole time.
@@ -171,7 +218,7 @@ def create_callback_server(preferred_port: int = 51821) -> tuple:
 
     Returns (server, redirect_uri, result_dict).
     """
-    result: dict = {}
+    result: dict = {"requested_scopes": list(requested_scopes or [])}
     handler_cls = _make_callback_handler(result)
     try:
         server = HTTPServer(("127.0.0.1", preferred_port), handler_cls)
@@ -207,7 +254,10 @@ def browser_login_flow(
     if _server is not None and _redirect_uri is not None and _result is not None:
         server, redirect_uri, result = _server, _redirect_uri, _result
     else:
-        server, redirect_uri, result = create_callback_server(preferred_port)
+        server, redirect_uri, result = create_callback_server(
+            preferred_port,
+            requested_scopes=scopes,
+        )
 
     auth_url = build_auth_url(client_id, redirect_uri, scopes)
 
@@ -366,7 +416,7 @@ def refresh_access_token_info(
         if error_code == "invalid_client":
             utils.error_exit(
                 "token_refresh_failed",
-                "OAuth refresh failed with invalid_client. Check client_id/client_secret for this config and re-run `zoho login`.",
+                f"OAuth refresh failed with invalid_client (HTTP {resp.status_code}). Check client_id/client_secret for this config and re-run `zoho login`.",
             )
         utils.error_exit("token_refresh_failed", f"No access_token in response: {data}")
     return {

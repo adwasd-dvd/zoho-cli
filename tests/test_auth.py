@@ -114,6 +114,43 @@ def test_parse_scope_value_supports_comma_delimited_strings() -> None:
     assert parsed == ["ZohoCRM.modules.ALL", "ZohoCRM.settings.ALL"]
 
 
+def test_scope_flags_detect_mail_cliq_crm() -> None:
+    has_mail, has_cliq, has_crm = auth._scope_flags(  # type: ignore[attr-defined]
+        [
+            "ZohoMail.messages.ALL",
+            "ZohoCliq.Channels.ALL",
+            "ZohoCRM.modules.ALL",
+        ]
+    )
+    assert has_mail is True
+    assert has_cliq is True
+    assert has_crm is True
+
+
+def test_render_success_html_shows_product_specific_commands() -> None:
+    html = auth._render_success_html(  # type: ignore[attr-defined]
+        ["ZohoMail.messages.ALL", "ZohoCliq.Channels.ALL"]
+    )
+    assert "Zoho Mail" in html
+    assert "Zoho Cliq" in html
+    assert "zoho mail list" in html
+    assert "zoho cliq chats" in html
+
+
+def test_create_callback_server_tracks_requested_scopes() -> None:
+    server, _redirect_uri, result = auth.create_callback_server(
+        0,
+        requested_scopes=["ZohoMail.messages.ALL", "ZohoCliq.Channels.ALL"],
+    )
+    try:
+        assert result["requested_scopes"] == [
+            "ZohoMail.messages.ALL",
+            "ZohoCliq.Channels.ALL",
+        ]
+    finally:
+        server.server_close()
+
+
 @respx.mock
 def test_refresh_access_token_info_invalid_client_reports_config_hint(
     monkeypatch: pytest.MonkeyPatch,

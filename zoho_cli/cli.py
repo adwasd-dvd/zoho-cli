@@ -519,9 +519,15 @@ def login(
             _stderr(f"Detected: {forced_accounts_url}")
         os.environ["ZOHO_ACCOUNTS_BASE_URL"] = forced_accounts_url
 
-        redirect_uri = cfg.get(
-            "redirect_uri", "https://example.com/zoho/oauth/callback"
-        )
+        default_redirect_uri = f"http://localhost:{port}/callback"
+        configured_redirect = str(cfg.get("redirect_uri") or "").strip()
+        if configured_redirect in {
+            "",
+            "https://example.com/zoho/oauth/callback",  # legacy default
+        }:
+            redirect_uri = default_redirect_uri
+        else:
+            redirect_uri = configured_redirect
         auth_url = auth.build_auth_url(client_id, redirect_uri, scopes)
         _stderr("\n── Zoho OAuth Login (manual) ──────────────────────────────")
         _stderr("1. Open this URL in your browser:\n")
@@ -535,7 +541,10 @@ def login(
         # ── browser flow with local callback server ────────────────────────
         # Bind the port NOW — before region detection — so it is held during
         # the ~8 s probe window and ready the instant the browser redirects.
-        cb_server, redirect_uri, _cb_result = auth.create_callback_server(port)
+        cb_server, redirect_uri, _cb_result = auth.create_callback_server(
+            port,
+            requested_scopes=scopes,
+        )
         _stderr(f"Listening on {redirect_uri} …")
 
         # Detect region while the server is already bound.
@@ -2834,7 +2843,7 @@ def config_init() -> None:
     if not is_first_run:
         cfg["redirect_uri"] = _optional(
             "Redirect URI (--no-browser mode)",
-            cfg.get("redirect_uri", "https://example.com/zoho/oauth/callback"),
+            cfg.get("redirect_uri", "http://localhost:51821/callback"),
         )
 
     # ── save ──────────────────────────────────────────────────────────────────

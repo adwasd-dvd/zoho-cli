@@ -25,7 +25,7 @@ uv tool install .
 ### Setup
 
 1. **Create an OAuth client** in [Zoho API Console](https://api-console.zoho.com) → Server-based Application
-   - Redirect URI: `http://localhost:51821/callback` (or add headless fallback)
+   - Redirect URI: `http://localhost:51821/callback` (used by both browser and `--no-browser` flows by default)
    
 2. **Authenticate**
    ```bash

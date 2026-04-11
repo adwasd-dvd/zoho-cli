@@ -40,8 +40,11 @@
 - Extended `zoho cliq watch-act` stdin workflow: `--watch-file` now defaults to `-`, so watch payload JSON can be piped directly without passing a path flag.
 - Added CRM fields read path: `zoho crm fields --module <api_name>` with pagination, backed by `ZohoCrmClient.fields` (`/settings/fields`).
 - Added CRM read-only record commands for `crm-002`: `zoho crm list`, `zoho crm get`, and `zoho crm search` (`--criteria` or `--word`) wired through `ZohoCrmClient` with pagination/field-selection support.
+- Callback success page now adapts to OAuth scopes and displays Mail/Cliq/CRM-specific guidance instead of a Mail-only static success page.
 
 ### Fixed
+- `zoho login --no-browser` now defaults to `http://localhost:{port}/callback` and automatically falls back from legacy `https://example.com/zoho/oauth/callback` config values.
+- `zoho config init` now defaults the advanced `redirect_uri` prompt to `http://localhost:51821/callback` for headless/manual OAuth parity.
 - `zoho cliq chats` scope-invalid failures now include a concrete diagnostic step (`zoho cliq status --check-auth`) before the re-auth guidance so operators can confirm live granted scopes quickly.
 - Cliq mutable-message fallback now retries on endpoint payload mismatches (`param_missing` / `invalid_data` / `operation_failed`) so write operations can probe alternate method/path payload variants before failing.
 - Cliq mutable/admin fallback now also retries on `extra_key_found` and `request_method_invalid`, allowing command probes to continue across API payload/method variants instead of failing on the first unsupported candidate.

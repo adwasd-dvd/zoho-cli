@@ -4,7 +4,7 @@ module: cliq
 stage: in_progress
 status: in_progress
 owner: automation
-updated_at: '2026-04-11T04:48:24Z'
+updated_at: '2026-04-11T05:00:27Z'
 success_criteria:
   - provide chat discovery command surface (`cliq chats`) with explicit scope/not-supported diagnostics
   - keep per-conversation context outputs machine-readable with inferred message content types (`text`, `image`, `file`, `voice`, `sticker`, `reaction`)

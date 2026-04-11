@@ -49,6 +49,14 @@ def parse_scope_value(scope_value: object) -> list[str]:
     return merge_scopes(raw)
 
 
+def parse_scope_values(scope_values: list[str]) -> list[str]:
+    """Normalize repeatable scope option values into a deduplicated scope list."""
+    parsed: list[str] = []
+    for scope_value in scope_values:
+        parsed.extend(parse_scope_value(scope_value))
+    return merge_scopes(parsed)
+
+
 # ── success page served to the browser after OAuth ───────────────────────────
 
 
@@ -95,7 +103,9 @@ def _render_success_html(scopes: list[str]) -> str:
         f'<div><span class="p">$ </span><span class="cmd">{html.escape(cmd)}</span></div>'
         for cmd in commands
     )
-    scope_list_html = "".join(f"<li><code>{html.escape(scope)}</code></li>" for scope in scopes)
+    scope_list_html = "".join(
+        f"<li><code>{html.escape(scope)}</code></li>" for scope in scopes
+    )
     if not scope_list_html:
         scope_list_html = "<li><code>(scope not present in callback)</code></li>"
 

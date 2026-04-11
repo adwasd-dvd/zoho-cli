@@ -114,6 +114,21 @@ def test_parse_scope_value_supports_comma_delimited_strings() -> None:
     assert parsed == ["ZohoCRM.modules.ALL", "ZohoCRM.settings.ALL"]
 
 
+def test_parse_scope_values_splits_and_deduplicates_repeatable_inputs() -> None:
+    parsed = auth.parse_scope_values(
+        [
+            "ZohoCliq.Chats.ALL,ZohoCliq.Messages.READ",
+            "ZohoCliq.Messages.READ ZohoCliq.Webhooks.CREATE",
+            "ZohoCliq.Chats.ALL",
+        ]
+    )
+    assert parsed == [
+        "ZohoCliq.Chats.ALL",
+        "ZohoCliq.Messages.READ",
+        "ZohoCliq.Webhooks.CREATE",
+    ]
+
+
 def test_scope_flags_detect_mail_cliq_crm() -> None:
     has_mail, has_cliq, has_crm = auth._scope_flags(  # type: ignore[attr-defined]
         [

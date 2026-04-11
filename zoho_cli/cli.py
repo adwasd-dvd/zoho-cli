@@ -506,7 +506,7 @@ def login(
         auth.DEFAULT_SCOPES,
         _cliq.DEFAULT_CLIQ_SCOPES if with_cliq else [],
         _crm.DEFAULT_CRM_SCOPES if with_crm else [],
-        list(scope),
+        auth.parse_scope_values(list(scope)),
     )
 
     if no_browser:

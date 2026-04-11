@@ -2139,7 +2139,9 @@ class ZohoCliqClient:
                 paths.extend(
                     [
                         f"/buddies/{target_user}/message",
+                        f"/buddies/{target_user}/messages",
                         f"/users/{target_user}/message",
+                        f"/users/{target_user}/messages",
                     ]
                 )
 
@@ -2201,7 +2203,9 @@ class ZohoCliqClient:
                 destination_paths.extend(
                     [
                         f"/buddies/{target_user}/message",
+                        f"/buddies/{target_user}/messages",
                         f"/users/{target_user}/message",
+                        f"/users/{target_user}/messages",
                     ]
                 )
 

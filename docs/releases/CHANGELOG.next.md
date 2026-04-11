@@ -73,6 +73,7 @@
 - `zoho cliq send` no longer silently degrades media sends to text-only fallback payloads when media attachment candidates fail; strict media mode now preserves attachment/card intent and surfaces API failure directly.
 - `zoho cliq send --image-url|--file-url|--audio-url` now appends the remote media URL into message text when a local file is not used, so link preview/media visibility is retained even on endpoints that ignore rich attachment keys.
 - Local multipart media send attempts now use bounded timeouts and capped probe fan-out, and they skip invalid endpoint paths early, so unsupported local file uploads fail fast with actionable attempt diagnostics instead of hanging for minutes.
+- User-target local multipart sends now probe plural user endpoints (`/buddies/{id}/messages`, `/users/{id}/messages`) in addition to singular paths, improving DM compatibility across endpoint variants.
 - Local multipart image uploads now prefer `image`/`photo` form field candidates before generic file keys, improving compatibility for `zoho cliq send --image-url <local-path>` endpoint variants.
 - Local multipart upload sends now include structured upload metadata in success payloads (`path`, `field`, `fileName`, `mimeType`) so live matrix probes can capture which endpoint/form-field variant succeeded.
 - Local multipart upload failures now include the attempted multipart form field in `api_error` output (`field=...`), improving endpoint-matrix debugging when sends fail with `request_url_invalid` / `operation_failed` patterns.

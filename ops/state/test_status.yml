@@ -1,10 +1,14 @@
-last_run_at: "2026-04-11T17:55:00Z"
+last_run_at: "2026-04-11T23:22:30Z"
 last_result: passed
 current_focus: cliq
 suites:
   unit:
     status: passing
     notes:
+      - python3.11 -m pytest -q tests/test_cliq.py::test_cliq_client_send_local_file_message_to_user tests/test_cliq.py::test_cliq_client_send_local_file_message_error_reports_form_field tests/test_cliq.py::test_cliq_client_send_local_image_message_prefers_image_field tests/test_cliq.py::test_cliq_client_send_local_file_message_channel_id_tries_channels_endpoint tests/test_cliq.py::test_cliq_client_send_local_file_message_channel_id_tries_plural_message_endpoint tests/test_cli.py::test_cliq_send_channel_with_image_url
+      - 7 passed (local multipart retry loop now bounded/fast-fail; remote image-url path kept green, 2026-04-11T23:22:30Z)
+      - python3.11 -m pytest -q tests/test_cliq.py
+      - 66 passed in 1.79s (full cliq regression after multipart timeout/fan-out tuning, 2026-04-11T23:22:30Z)
       - ./.venv/bin/pytest -q tests/test_auth.py::test_parse_scope_values_splits_and_deduplicates_repeatable_inputs tests/test_auth.py::test_parse_scope_value_supports_comma_delimited_strings
       - 2 passed in 0.05s (`zoho login` now normalizes repeatable/comma-delimited `--scope` values before merging defaults, preventing duplicated Cliq scopes in generated OAuth URLs, 2026-04-11T17:55:00Z)
       - python3.11 -m pytest -q tests/auto_pilot/scenarios/test_social.py tests/auto_pilot/scenarios/test_messaging.py --maxfail=1 --disable-warnings

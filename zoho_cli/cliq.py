@@ -2205,50 +2205,23 @@ class ZohoCliqClient:
                     ]
                 )
 
-        file_fields = [
-            "file",
-            "files",
-            "attachment",
-            "attachments",
-            "audio",
-            "voice",
-            "files[]",
-            "attachments[]",
-        ]
+        file_fields = ["file", "attachment", "files", "attachments"]
         if media_kind == "voice":
-            file_fields = [
-                "voice",
-                "audio",
-                "file",
-                "files",
-                "attachment",
-                "attachments",
-                "files[]",
-                "attachments[]",
-            ]
+            file_fields = ["voice", "audio", "file", "attachment"]
         elif media_kind == "image":
-            file_fields = [
-                "image",
-                "photo",
-                "file",
-                "files",
-                "attachment",
-                "attachments",
-                "files[]",
-                "attachments[]",
-            ]
+            file_fields = ["image", "photo", "file", "attachment"]
 
         text_fields: list[dict[str, Any]] = []
         if msg_text:
-            text_fields.extend(
-                [
-                    {"text": msg_text},
-                    {"caption": msg_text},
-                    {"comment": msg_text},
-                    {"content": msg_text},
-                ]
-            )
+            text_fields.append({"text": msg_text})
+            if media_kind in {"image", "file"}:
+                text_fields.append({"caption": msg_text})
         text_fields.append({})
+
+        # Bound attempt fan-out to avoid long hangs on non-responsive endpoints.
+        request_timeout = httpx.Timeout(20.0, connect=8.0, read=8.0, write=12.0)
+        max_attempts = 40
+        attempts = 0
 
         last_error: tuple[int, str, str, str] | None = None
         saw_scope_invalid = False
@@ -2291,23 +2264,36 @@ class ZohoCliqClient:
                 preview = f"{preview}; ..."
             return f" | attempts: {preview}"
 
+        stop_early = False
         for send_path in destination_paths:
+            skip_current_path = False
             for field_name in file_fields:
                 for form_data in text_fields:
-                    with path_obj.open("rb") as handle:
-                        files = [
-                            (
-                                field_name,
-                                (path_obj.name, handle, guessed_mime),
+                    attempts += 1
+                    if attempts > max_attempts:
+                        stop_early = True
+                        break
+
+                    try:
+                        with path_obj.open("rb") as handle:
+                            files = [
+                                (
+                                    field_name,
+                                    (path_obj.name, handle, guessed_mime),
+                                )
+                            ]
+                            resp = httpx.post(
+                                f"{self.base_url}{send_path}",
+                                headers=self._headers,
+                                data=form_data,
+                                files=files,
+                                timeout=request_timeout,
                             )
-                        ]
-                        resp = httpx.post(
-                            f"{self.base_url}{send_path}",
-                            headers=self._headers,
-                            data=form_data,
-                            files=files,
-                            timeout=httpx.Timeout(60.0),
-                        )
+                    except httpx.TimeoutException as exc:
+                        body = f"timeout: {exc.__class__.__name__}"
+                        last_error = (599, send_path, field_name, body)
+                        _record_attempt(599, send_path, field_name, "timeout", body)
+                        continue
 
                     if resp.is_success:
                         decoded = self._decode_success_response(resp)
@@ -2345,14 +2331,25 @@ class ZohoCliqClient:
                     if (
                         resp.status_code in (404, 405)
                         or "request_url_invalid" in lowered
-                        or code in retryable_codes
                     ):
+                        skip_current_path = True
+                        break
+
+                    if code in retryable_codes:
+                        continue
+
+                    if resp.status_code == 408:
                         continue
 
                     utils.error_exit(
                         "api_error",
                         f"HTTP {resp.status_code} POST {send_path} (field={field_name}): {body}{_attempt_suffix()}",
                     )
+
+                if stop_early or skip_current_path:
+                    break
+            if stop_early:
+                break
 
         if saw_scope_invalid:
             utils.error_exit(
@@ -2362,9 +2359,14 @@ class ZohoCliqClient:
 
         if last_error is not None:
             status, send_path, field_name, body = last_error
+            capped_note = (
+                " (attempt cap reached)"
+                if stop_early or attempts >= max_attempts
+                else ""
+            )
             utils.error_exit(
                 "api_error",
-                f"HTTP {status} POST {send_path} (field={field_name}): {body}{_attempt_suffix()}",
+                f"HTTP {status} POST {send_path} (field={field_name}): {body}{capped_note}{_attempt_suffix()}",
             )
 
         utils.error_exit("api_error", "No candidate endpoint available for file send")

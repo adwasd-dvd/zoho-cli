@@ -2466,6 +2466,16 @@ def cliq_send(
         elif media_url.startswith("/"):
             utils.error_exit("invalid_file", f"File not found: {candidate_path}")
 
+        # Ensure link-preview style media still appears even when rich payload
+        # variants are accepted but attachment fields are ignored by endpoint.
+        if local_media_path is None and media_url.startswith(("http://", "https://")):
+            if media_url not in text_payload:
+                text_payload = (
+                    f"{text_payload}\n{media_url}".strip()
+                    if text_payload
+                    else media_url
+                )
+
         default_title = {
             "image": "Image",
             "file": "File",

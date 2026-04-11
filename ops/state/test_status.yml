@@ -1,10 +1,16 @@
-last_run_at: "2026-04-11T04:48:24Z"
+last_run_at: "2026-04-11T17:55:00Z"
 last_result: passed
 current_focus: cliq
 suites:
   unit:
     status: passing
     notes:
+      - ./.venv/bin/pytest -q tests/test_auth.py::test_parse_scope_values_splits_and_deduplicates_repeatable_inputs tests/test_auth.py::test_parse_scope_value_supports_comma_delimited_strings
+      - 2 passed in 0.05s (`zoho login` now normalizes repeatable/comma-delimited `--scope` values before merging defaults, preventing duplicated Cliq scopes in generated OAuth URLs, 2026-04-11T17:55:00Z)
+      - python3.11 -m pytest -q tests/auto_pilot/scenarios/test_social.py tests/auto_pilot/scenarios/test_messaging.py --maxfail=1 --disable-warnings
+      - 5 passed in 0.05s (deep cliq coverage for user list pagination, full DM/channel history reconstruction helpers, text send fallback, and local media send upload metadata assertions, 2026-04-11T17:50:06Z)
+      - python3.11 -m pytest -q tests/test_cliq.py
+      - full cliq regression slice passed (2026-04-11T17:50:06Z)
       - ./.venv/bin/pytest -q tests/test_cliq.py::test_cliq_client_chats_scope_invalid_reports_hint tests/test_cli.py::test_cliq_chats
       - 2 passed in 0.11s (chat-scope errors now include a concrete `zoho cliq status --check-auth` diagnostic step before re-auth guidance, 2026-04-11T04:48:24Z)
       - ./.venv/bin/pytest -q tests/test_auth.py::test_refresh_access_token_info_invalid_client_reports_config_hint

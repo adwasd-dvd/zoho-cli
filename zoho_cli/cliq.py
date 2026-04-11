@@ -58,6 +58,77 @@ class ZohoCliqClient:
         self.base_url = (base_url or infer_cliq_base_url()).rstrip("/")
         self._headers = {"Authorization": f"Zoho-oauthtoken {access_token}"}
 
+    def _collect_paginated_get(
+        self,
+        path: str,
+        *,
+        limit: int = 100,
+        token_param: str = "next_page_token",
+    ) -> list[dict[str, Any]]:
+        """Collect list payloads across paginated GET endpoints."""
+        items: list[dict[str, Any]] = []
+        next_token: str | None = None
+        seen_tokens: set[str] = set()
+
+        while True:
+            params: dict[str, Any] = {"limit": limit}
+            if next_token:
+                params[token_param] = next_token
+
+            payload = self._get(path, params=params)
+            batch = payload.get("data", [])
+            if isinstance(batch, list):
+                items.extend([entry for entry in batch if isinstance(entry, dict)])
+
+            has_more = bool(payload.get("has_more") or payload.get("hasMore"))
+            candidate_token = payload.get("next_page_token") or payload.get(
+                "nextPageToken"
+            )
+            token_text = str(candidate_token).strip() if candidate_token else ""
+
+            if not has_more:
+                break
+            if not token_text:
+                break
+            if token_text in seen_tokens:
+                break
+
+            seen_tokens.add(token_text)
+            next_token = token_text
+
+        return items
+
+    def get_all_users(self, *, limit: int = 100) -> list[dict[str, Any]]:
+        """Fetch the full user list with pagination."""
+        return self._collect_paginated_get("/users", limit=limit)
+
+    def get_dm_history(self, user_id: str, *, limit: int = 100) -> list[dict[str, Any]]:
+        """Fetch full DM history with one user (best-effort pagination)."""
+        target = user_id.strip()
+        if not target:
+            utils.error_exit("invalid_user_id", "user_id cannot be empty")
+        return self._collect_paginated_get(
+            f"/conversations/{target}/messages",
+            limit=limit,
+        )
+
+    def get_chat_history(
+        self,
+        *,
+        chat_id: str | None = None,
+        channel_id: str | None = None,
+        limit: int = 100,
+    ) -> list[dict[str, Any]]:
+        """Fetch full history for a chat/channel (best-effort pagination)."""
+        resolved_chat = self._resolve_chat_destination(
+            chat_id=chat_id,
+            channel_id=channel_id,
+        )
+        return self._collect_paginated_get(
+            f"/chats/{resolved_chat}/messages",
+            limit=limit,
+        )
+
     @staticmethod
     def _decode_success_response(resp: httpx.Response) -> dict[str, Any]:
         """Decode a success response, tolerating 204/empty/non-JSON bodies."""

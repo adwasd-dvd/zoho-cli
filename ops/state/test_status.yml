@@ -1,4 +1,4 @@
-last_run_at: "2026-04-12T06:04:38Z"
+last_run_at: "2026-04-12T06:23:24Z"
 last_result: warning
 current_focus: cliq
 suites:
@@ -236,11 +236,11 @@ suites:
     status: warning
     notes:
       - "python3.11 -m zoho_cli --config /tmp/zoho-test-config.json --account ai-dev@happy-distro.co.uk cliq status --check-auth --network happydistrouklimited"
-      - "live auth check still reports `exportOauthReady: false` with missing export scopes (`ZohoCliq.OrganizationChats.READ`, `ZohoCliq.OrganizationMessages.READ`), confirming cliq-165 remains blocked pending re-auth (2026-04-12T06:04:38Z)"
+      - "live auth check still reports `exportOauthReady: false` with missing export scopes (`ZohoCliq.OrganizationChats.READ`, `ZohoCliq.OrganizationMessages.READ`); evidence: `tests/auto_pilot/reports/cliq_status_export_scope_recheck_20260412_062324.json` (2026-04-12T06:23:24Z)"
       - "python3.11 -m zoho_cli --config /tmp/zoho-test-config.json --account ai-dev@happy-distro.co.uk cliq export-chats --network happydistrouklimited"
-      - "live export list recheck still returns `oauth_scope_invalid`; evidence: `tests/auto_pilot/reports/cliq_export_chats_list_scope_recheck_20260412_044316.json` (2026-04-12T04:43:16Z)"
+      - "live export list recheck still returns `oauth_scope_invalid` with organization-chat scope guidance; evidence: `tests/auto_pilot/reports/cliq_export_chats_list_scope_recheck_20260412_062324.json` (2026-04-12T06:23:24Z)"
       - "python3.11 -m zoho_cli --config /tmp/zoho-test-config.json --account ai-dev@happy-distro.co.uk cliq export-chats --network happydistrouklimited --chat-id CT_1424657670787261966_911174541"
-      - "explicit `--chat-id` recheck returns the same scope blocker (`oauth_scope_invalid`); evidence: `tests/auto_pilot/reports/cliq_export_chat_scope_recheck_20260412_044323.json` (2026-04-12T04:43:23Z)"
+      - "explicit `--chat-id` recheck returns the same blocker (`oauth_scope_invalid`) with organization-message scope guidance; evidence: `tests/auto_pilot/reports/cliq_export_chat_scope_recheck_20260412_062324.json` (2026-04-12T06:23:24Z)"
       - "python3.11 one-token workspace matrix rerun across all current local test assets (`test.png`, `sample-3.m4a`, `2026-04-10-report.pdf`, `lv1_capturable_report.csv`)"
       - "8/8 sends succeeded (channel+user targets for image/voice/pdf/csv) with zero errors; evidence: `tests/auto_pilot/reports/cliq_workspace_test_media_matrix_20260412_042955.json` (2026-04-12T04:29:55Z)"
       - "bash tests/auto_pilot/run_cliq_local_media_matrix_cooldown.sh /tmp/zoho-test-config.json ai-dev@happy-distro.co.uk happydistrouklimited O6576524000097556005 david@happy-distro.com /Users/adwasd/.openclaw/workspace-coder/test/test.png /Users/adwasd/.openclaw/workspace-coder/test/sample-3.m4a /Users/adwasd/.openclaw/workspace-coder/test/2026-04-10-report.pdf"

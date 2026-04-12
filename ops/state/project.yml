@@ -1,5 +1,5 @@
 project: zoho-cli
-updated_at: '2026-04-12T06:04:38Z'
+updated_at: '2026-04-12T06:23:24Z'
 status: cliq-expansion
 canonical_workspace: /Users/adwasd/.openclaw/workspace-coder
 project_root: /Users/adwasd/.openclaw/workspace-coder/job/zoho-cli
@@ -22,6 +22,7 @@ next_step: run `zoho cliq status --check-auth --network happydistrouklimited`; i
   archive success evidence to close `cliq-165`
 additional_info:
 - '2026-04-12 unit follow-up: `zoho cliq status` now includes `exportNext` command hints when export scopes are missing, including network-aware re-auth/probe command strings for cliq-165 live loops.'
+- '2026-04-12 live recheck: `cliq status --check-auth` still reports `exportOauthReady: false`; `cliq export-chats` list and `--chat-id` probes still return `oauth_scope_invalid` with maintenance-scope guidance (`ZohoCliq.OrganizationChats.READ` / `ZohoCliq.OrganizationMessages.READ`) (evidence: `tests/auto_pilot/reports/cliq_status_export_scope_recheck_20260412_062324.json`, `tests/auto_pilot/reports/cliq_export_chats_list_scope_recheck_20260412_062324.json`, `tests/auto_pilot/reports/cliq_export_chat_scope_recheck_20260412_062324.json`).'
 - '2026-04-12 live check: `zoho cliq status --check-auth --network happydistrouklimited` still reports `exportOauthReady: false` with `missingExportScopes: [ZohoCliq.OrganizationChats.READ, ZohoCliq.OrganizationMessages.READ]`; re-auth is still required before export probes can pass.'
 - '2026-04-12 unit follow-up: `zoho cliq status` now reports maintenance export readiness fields (`requiredExportScopes`, `missingExportScopes`, `exportOauthReady`) so cliq-165 checks can confirm scope readiness before live export probes.'
 - '2026-04-12 unit follow-up: `zoho login` now supports `--with-cliq-export` to bundle `ZohoCliq.OrganizationChats.READ` + `ZohoCliq.OrganizationMessages.READ`, and export scope-invalid hints now point to `--with-cliq --with-cliq-export` with explicit `--scope` fallback text.'

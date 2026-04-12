@@ -1,5 +1,5 @@
 module: Cliq
-updated_at: '2026-04-12T04:21:00Z'
+updated_at: '2026-04-12T04:24:55Z'
 status: in_progress
 blockers:
 - live `/messages/search` APIs on happydistrouklimited remain unsupported for current
@@ -10,7 +10,6 @@ blockers:
   `cliq_retrieval_recheck_after_success_20260411_192603.log`)'
 - "maintenance export command surface (`cliq export-chats`) is implemented and response-shape normalization is hardened; scope-miss detection now handles both `oauthtoken_scope_invalid` and `oauth_scope_invalid`, but live verification is still blocked by missing `ZohoCliq.Org.Admin` scope on both list + `--chat-id` probes (evidence: `tests/auto_pilot/reports/cliq_export_chats_list_scope_invalid_20260412_031212.json`, `tests/auto_pilot/reports/cliq_export_chat_scope_invalid_20260412_031212.json`)"
 - "additional workspace test assets now validate local upload breadth: image (`test.png`), audio (`sample-3.m4a`), PDF (`2026-04-10-report.pdf`), and CSV (`lv1_capturable_report.csv`) all sent successfully to both channel and user targets in one-token matrix run (`tests/auto_pilot/reports/cliq_workspace_test_media_matrix_20260412_042345.json`)"
-- "latest live export probe still returns scope-invalid (`ZohoCliq.Org.Admin` missing) with refreshed evidence (`tests/auto_pilot/reports/cliq_export_chats_live_20260412_042453.json`)"
 next_small_step: re-auth with Org.Admin scope (`zoho login --with-cliq --scope ZohoCliq.Org.Admin`),
   then rerun `cliq export-chats` list + one `--chat-id` export and archive successful
   JSON samples

@@ -1,0 +1,167 @@
+{
+  "generatedAt": "2026-04-12T04:23:45Z",
+  "baseUrl": "https://cliq.zoho.com/network/happydistrouklimited/api/v2",
+  "files": [
+    "2026-04-10-report.pdf",
+    "lv1_capturable_report.csv",
+    "sample-3.m4a",
+    "test.png"
+  ],
+  "total": 8,
+  "ok": 8,
+  "error": 0,
+  "results": [
+    {
+      "file": "2026-04-10-report.pdf",
+      "bytes": 341302,
+      "mime": "application/pdf",
+      "mediaKind": "file",
+      "targetKind": "channel",
+      "target": "O6576524000097556005",
+      "status": "ok",
+      "result": {
+        "status": "ok",
+        "httpStatus": 204,
+        "upload": {
+          "path": "/chats/CT_1424657670787261966_911174541/files",
+          "field": "files",
+          "fileName": "2026-04-10-report.pdf",
+          "mimeType": "application/pdf"
+        }
+      }
+    },
+    {
+      "file": "2026-04-10-report.pdf",
+      "bytes": 341302,
+      "mime": "application/pdf",
+      "mediaKind": "file",
+      "targetKind": "user",
+      "target": "david@happy-distro.com",
+      "status": "ok",
+      "result": {
+        "status": "ok",
+        "httpStatus": 204,
+        "upload": {
+          "path": "/buddies/david@happy-distro.com/files",
+          "field": "files",
+          "fileName": "2026-04-10-report.pdf",
+          "mimeType": "application/pdf"
+        }
+      }
+    },
+    {
+      "file": "lv1_capturable_report.csv",
+      "bytes": 16596,
+      "mime": "text/csv",
+      "mediaKind": "file",
+      "targetKind": "channel",
+      "target": "O6576524000097556005",
+      "status": "ok",
+      "result": {
+        "status": "ok",
+        "httpStatus": 204,
+        "upload": {
+          "path": "/chats/CT_1424657670787261966_911174541/files",
+          "field": "files",
+          "fileName": "lv1_capturable_report.csv",
+          "mimeType": "text/csv"
+        }
+      }
+    },
+    {
+      "file": "lv1_capturable_report.csv",
+      "bytes": 16596,
+      "mime": "text/csv",
+      "mediaKind": "file",
+      "targetKind": "user",
+      "target": "david@happy-distro.com",
+      "status": "ok",
+      "result": {
+        "status": "ok",
+        "httpStatus": 204,
+        "upload": {
+          "path": "/buddies/david@happy-distro.com/files",
+          "field": "files",
+          "fileName": "lv1_capturable_report.csv",
+          "mimeType": "text/csv"
+        }
+      }
+    },
+    {
+      "file": "sample-3.m4a",
+      "bytes": 343380,
+      "mime": "audio/mp4a-latm",
+      "mediaKind": "voice",
+      "targetKind": "channel",
+      "target": "O6576524000097556005",
+      "status": "ok",
+      "result": {
+        "status": "ok",
+        "httpStatus": 204,
+        "upload": {
+          "path": "/chats/CT_1424657670787261966_911174541/files",
+          "field": "files",
+          "fileName": "sample-3.m4a",
+          "mimeType": "audio/mp4a-latm"
+        }
+      }
+    },
+    {
+      "file": "sample-3.m4a",
+      "bytes": 343380,
+      "mime": "audio/mp4a-latm",
+      "mediaKind": "voice",
+      "targetKind": "user",
+      "target": "david@happy-distro.com",
+      "status": "ok",
+      "result": {
+        "status": "ok",
+        "httpStatus": 204,
+        "upload": {
+          "path": "/buddies/david@happy-distro.com/files",
+          "field": "files",
+          "fileName": "sample-3.m4a",
+          "mimeType": "audio/mp4a-latm"
+        }
+      }
+    },
+    {
+      "file": "test.png",
+      "bytes": 280386,
+      "mime": "image/png",
+      "mediaKind": "image",
+      "targetKind": "channel",
+      "target": "O6576524000097556005",
+      "status": "ok",
+      "result": {
+        "status": "ok",
+        "httpStatus": 204,
+        "upload": {
+          "path": "/chats/CT_1424657670787261966_911174541/files",
+          "field": "files",
+          "fileName": "test.png",
+          "mimeType": "image/png"
+        }
+      }
+    },
+    {
+      "file": "test.png",
+      "bytes": 280386,
+      "mime": "image/png",
+      "mediaKind": "image",
+      "targetKind": "user",
+      "target": "david@happy-distro.com",
+      "status": "ok",
+      "result": {
+        "status": "ok",
+        "httpStatus": 204,
+        "upload": {
+          "path": "/buddies/david@happy-distro.com/files",
+          "field": "files",
+          "fileName": "test.png",
+          "mimeType": "image/png"
+        }
+      }
+    }
+  ]
+}

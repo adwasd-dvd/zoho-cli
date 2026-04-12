@@ -107,6 +107,7 @@
 - Cliq typed message inference now also inspects card/unfurl payloads (`unfurled_details`, content URL/thumbnail fields), so card-style remote image messages are classified as `image` in typed context outputs.
 - Added single-token local media matrix probe runner (`tests/auto_pilot/cliq_local_media_matrix.py` + `run_cliq_local_media_matrix_cooldown.sh`) to reduce refresh churn during cliq-156 live upload evidence runs.
 - Local media matrix runner now surfaces refresh throttling as structured JSON errors (`token_refresh_rate_limited`) so automation loops can back off cleanly instead of failing with unstructured exits.
+- Expanded live local-file verification coverage with user-provided workspace fixtures (`test.png`, `sample-3.m4a`, `2026-04-10-report.pdf`, `lv1_capturable_report.csv`), confirming successful channel+user uploads across image/voice/file payloads in cooldown-safe matrix runs.
 - Bumped package/runtime version metadata to `0.2.0` (`pyproject.toml` and `zoho_cli.__version__`) and made CLI `--version` prefer local package `__version__` first so source-checkout runs do not report stale installed metadata.
 - Updated Mail module status to in_progress and cleared blockers.
 - Prevented `mail download-attachment --parse` from crashing when parsing fails; it now returns a warning payload after saving the file.

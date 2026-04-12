@@ -2329,6 +2329,36 @@ def test_cliq_unpin_from_channel(
     )
 
 
+def test_cliq_pinned_from_channel(
+    mock_config: Path,
+    mock_token_refresh: Any,
+) -> None:
+    mock_client = MagicMock()
+    mock_client.resolve_chat_id.return_value = "C1"
+    mock_client.list_pinned_messages.return_value = {
+        "data": [{"id": "M1"}, {"id": "M2"}]
+    }
+
+    with patch("zoho_cli.cli._get_cliq_client", return_value=mock_client):
+        result = runner.invoke(
+            app,
+            ["cliq", "pinned", "--channel-id", "O2", "--limit", "10"],
+            env=_cfg_env(mock_config),
+        )
+
+    assert result.exit_code == 0, result.output
+    payload = json.loads(result.output)
+    assert payload["chatId"] == "C1"
+    assert payload["channelId"] == "O2"
+    assert payload["count"] == 2
+    assert payload["pinnedMessages"][0]["id"] == "M1"
+    mock_client.list_pinned_messages.assert_called_once_with(
+        chat_id="C1",
+        channel_id="O2",
+        limit=10,
+    )
+
+
 def test_cliq_thread_followers(
     mock_config: Path,
     mock_token_refresh: Any,

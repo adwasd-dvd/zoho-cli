@@ -15,6 +15,7 @@
 - Added the first cliq-181 chat-control slice: `zoho cliq leave` plus fallback client routing (`leave_chat`) for chat/channel targets.
 - Added the second cliq-181 chat-control slice: `zoho cliq mute` + `zoho cliq unmute` plus fallback client routing (`set_chat_mute`) for chat/channel targets.
 - Added the third cliq-181 chat-control slice: `zoho cliq pin` + `zoho cliq unpin` plus fallback client routing (`set_chat_pin`) for chat/channel targets.
+- Added the fourth cliq-181 chat-control slice: `zoho cliq pinned` plus fallback client routing (`list_pinned_messages`) for chat/channel pinned-message retrieval.
 - Scaffolded Cliq phase-1 shell with `zoho cliq status`, regional Cliq base URL inference, and a minimal `ZohoCliqClient` skeleton.
 - Added Cliq OAuth preparation: `zoho login --with-cliq` scope bundling, generic `--scope` extension, and `zoho cliq status` scope readiness (`oauthReady` / `missingScopes`).
 - Updated default Cliq OAuth scope bundle to endpoint-specific scopes (`ZohoCliq.Channels.READ`, `ZohoCliq.Users.READ`, `ZohoCliq.Webhooks.CREATE`) to match live send/notify API requirements.

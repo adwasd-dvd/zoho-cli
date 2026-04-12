@@ -2227,6 +2227,52 @@ def test_cliq_client_set_chat_unpin_scope_invalid_reports_hint(
 
 
 @respx.mock
+def test_cliq_client_list_pinned_messages_falls_back_to_messages_endpoint(
+    client: cliq.ZohoCliqClient,
+) -> None:
+    primary = respx.get("https://cliq.zoho.com/api/v2/chats/C1/pinned").mock(
+        return_value=httpx.Response(
+            404,
+            json={
+                "code": "request_url_invalid",
+                "message": "Not found",
+            },
+        )
+    )
+    fallback = respx.get("https://cliq.zoho.com/api/v2/chats/C1/messages/pinned").mock(
+        return_value=httpx.Response(200, json={"data": [{"id": "M1"}]})
+    )
+
+    payload = client.list_pinned_messages(chat_id="C1")
+    assert primary.called
+    assert fallback.called
+    assert payload["data"][0]["id"] == "M1"
+
+
+@respx.mock
+def test_cliq_client_list_pinned_messages_scope_invalid_reports_hint(
+    client: cliq.ZohoCliqClient,
+    capsys: pytest.CaptureFixture[str],
+) -> None:
+    respx.get(url__regex=r"https://cliq\.zoho\.com/api/v2/chats/C1/.*").mock(
+        return_value=httpx.Response(
+            401,
+            json={
+                "code": "oauthtoken_scope_invalid",
+                "message": "scope missing",
+            },
+        )
+    )
+
+    with pytest.raises(SystemExit):
+        client.list_pinned_messages(chat_id="C1")
+
+    err = capsys.readouterr().err
+    assert "oauth_scope_invalid" in err
+    assert "ZohoCliq.Messages.READ" in err
+
+
+@respx.mock
 def test_cliq_client_list_thread_followers_scope_invalid_reports_hint(
     client: cliq.ZohoCliqClient,
     capsys: pytest.CaptureFixture[str],

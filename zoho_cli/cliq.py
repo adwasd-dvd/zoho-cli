@@ -2103,6 +2103,50 @@ class ZohoCliqClient:
             not_supported_message=f"Cliq {state} endpoints are not available for this token/network endpoint. Run `zoho cliq capabilities --channel-id <id>` and confirm chat control operations for the target conversation.",
         )
 
+    def list_pinned_messages(
+        self,
+        *,
+        chat_id: str | None = None,
+        channel_id: str | None = None,
+        limit: int = 50,
+    ) -> dict:
+        """List pinned messages for one chat/channel conversation."""
+        resolved_chat = self._resolve_chat_destination(
+            chat_id=chat_id,
+            channel_id=channel_id,
+        )
+        limit_value = max(1, limit)
+
+        candidates: list[tuple[str, dict[str, Any] | None]] = [
+            (f"/chats/{resolved_chat}/pinned", {"limit": limit_value}),
+            (f"/chats/{resolved_chat}/messages/pinned", {"limit": limit_value}),
+            (f"/chats/{resolved_chat}/pinned/messages", {"limit": limit_value}),
+            (f"/chats/{resolved_chat}/pins", {"limit": limit_value}),
+        ]
+
+        if channel_id:
+            candidates.extend(
+                [
+                    (f"/channels/{channel_id}/pinned", {"limit": limit_value}),
+                    (
+                        f"/channels/{channel_id}/messages/pinned",
+                        {"limit": limit_value},
+                    ),
+                    (
+                        f"/channels/{channel_id}/pinned/messages",
+                        {"limit": limit_value},
+                    ),
+                    (f"/channels/{channel_id}/pins", {"limit": limit_value}),
+                ]
+            )
+
+        return self._get_with_candidates_and_not_supported(
+            candidates,
+            scope_hint="ZohoCliq.Messages.READ",
+            operation_label="pinned",
+            not_supported_message="Cliq pinned-message endpoints are not available for this token/network endpoint. Run `zoho cliq capabilities --channel-id <id>` and confirm chat control operations for the target conversation.",
+        )
+
     def post_to_bot(
         self,
         bot_id: str,

@@ -1,10 +1,14 @@
-last_run_at: "2026-04-12T16:09:01Z"
+last_run_at: "2026-04-12T16:26:49Z"
 last_result: warning
 current_focus: cliq
 suites:
   unit:
     status: passing
     notes:
+      - "python3.11 -m pytest -q tests/test_cliq.py::test_cliq_client_list_pinned_messages_falls_back_to_messages_endpoint tests/test_cliq.py::test_cliq_client_list_pinned_messages_scope_invalid_reports_hint tests/test_cli.py::test_cliq_pinned_from_channel"
+      - "3 passed in 0.26s (cliq-181 fourth slice: new `zoho cliq pinned` command + `ZohoCliqClient.list_pinned_messages` fallback coverage, 2026-04-12T16:26:49Z)"
+      - "./.venv/bin/ruff format --check zoho_cli/cliq.py zoho_cli/cli.py tests/test_cliq.py tests/test_cli.py"
+      - "4 files already formatted (2026-04-12T16:26:49Z)"
       - "python3.11 -m pytest -q tests/test_cliq.py::test_cliq_client_set_chat_pin_falls_back_to_messages_endpoint tests/test_cliq.py::test_cliq_client_set_chat_unpin_scope_invalid_reports_hint tests/test_cli.py::test_cliq_pin_from_channel tests/test_cli.py::test_cliq_unpin_from_channel"
       - "4 passed in 0.12s (cliq-181 third slice: new `zoho cliq pin`/`zoho cliq unpin` commands + `ZohoCliqClient.set_chat_pin` fallback coverage, 2026-04-12T16:09:01Z)"
       - "./.venv/bin/ruff format --check zoho_cli/cliq.py zoho_cli/cli.py tests/test_cliq.py tests/test_cli.py"

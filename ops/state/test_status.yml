@@ -1,10 +1,14 @@
-last_run_at: "2026-04-12T02:11:22Z"
+last_run_at: "2026-04-12T02:30:24Z"
 last_result: passed
 current_focus: cliq
 suites:
   unit:
     status: passing
     notes:
+      - "python3.11 -m pytest -q tests/test_cliq.py::test_cliq_client_export_conversations tests/test_cliq.py::test_cliq_client_export_conversations_scope_invalid_reports_hint tests/test_cliq.py::test_cliq_client_export_chat_messages tests/test_cli.py::test_cliq_export_chats_list tests/test_cli.py::test_cliq_export_chats_messages_and_out"
+      - "5 passed in 0.31s (new maintenance export command/client coverage for conversation list + chat message export, 2026-04-12T02:27:50Z)"
+      - "python3.11 -m pytest -q tests/test_cliq.py::test_cliq_client_export_conversations tests/test_cliq.py::test_cliq_client_export_chat_messages tests/test_cli.py::test_cliq_export_chats_list tests/test_cli.py::test_cliq_export_chats_messages_and_out"
+      - "4 passed in 0.30s (post-format rerun confirms export command remains green, 2026-04-12T02:29:24Z)"
       - "python3.11 -m pytest -q tests/test_cliq.py -k send_local_file_message"
       - "12 passed (local multipart now covers new `/files` fallback candidates for user/channel sends, 2026-04-12T02:13:52Z)"
       - "python3.11 -m pytest -q tests/test_cliq.py"

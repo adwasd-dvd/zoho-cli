@@ -2078,6 +2078,175 @@ def cliq_widgets(
     )
 
 
+@cliq_app.command("map-tickers")
+def cliq_map_tickers(
+    limit: int = typer.Option(50, "--limit", "-n", help="Max map tickers to return."),
+    network: Optional[str] = typer.Option(
+        None, "--network", help="Cliq network slug (e.g. happydistrouklimited)."
+    ),
+) -> None:
+    """List Cliq platform map tickers (cliq-192 third slice)."""
+    cfg = _cfg()
+    email = _require_account(cfg)
+    client = _get_cliq_client(cfg, email, network=network)
+
+    resp = client.list_map_tickers(limit=limit)
+    data = resp.get("data", resp)
+    if not isinstance(data, list):
+        data = []
+
+    views: list[dict[str, Any]] = []
+    for row in data:
+        if not isinstance(row, dict):
+            continue
+        views.append(
+            {
+                "tickerId": str(
+                    row.get("ticker_id")
+                    or row.get("tickerId")
+                    or row.get("id")
+                    or row.get("zuid")
+                    or ""
+                ),
+                "name": str(
+                    row.get("name")
+                    or row.get("ticker_name")
+                    or row.get("title")
+                    or row.get("display_name")
+                    or ""
+                ),
+                "symbol": str(
+                    row.get("symbol")
+                    or row.get("ticker_symbol")
+                    or row.get("code")
+                    or ""
+                ),
+                "status": str(
+                    row.get("status")
+                    or row.get("state")
+                    or row.get("ticker_status")
+                    or ""
+                ),
+                "raw": row,
+            }
+        )
+
+    utils.output(
+        {
+            "count": len(views),
+            "mapTickers": views,
+        }
+    )
+
+
+@cliq_app.command("custom-domains")
+def cliq_custom_domains(
+    limit: int = typer.Option(50, "--limit", "-n", help="Max custom domains to return."),
+    network: Optional[str] = typer.Option(
+        None, "--network", help="Cliq network slug (e.g. happydistrouklimited)."
+    ),
+) -> None:
+    """List Cliq platform custom domains (cliq-192 fourth slice)."""
+    cfg = _cfg()
+    email = _require_account(cfg)
+    client = _get_cliq_client(cfg, email, network=network)
+
+    resp = client.list_custom_domains(limit=limit)
+    data = resp.get("data", resp)
+    if not isinstance(data, list):
+        data = []
+
+    views: list[dict[str, Any]] = []
+    for row in data:
+        if not isinstance(row, dict):
+            continue
+        views.append(
+            {
+                "domainId": str(
+                    row.get("domain_id")
+                    or row.get("domainId")
+                    or row.get("id")
+                    or row.get("zuid")
+                    or ""
+                ),
+                "domain": str(
+                    row.get("domain")
+                    or row.get("name")
+                    or row.get("custom_domain")
+                    or ""
+                ),
+                "status": str(
+                    row.get("status")
+                    or row.get("state")
+                    or row.get("domain_status")
+                    or ""
+                ),
+                "raw": row,
+            }
+        )
+
+    utils.output(
+        {
+            "count": len(views),
+            "customDomains": views,
+        }
+    )
+
+
+@cliq_app.command("custom-emails")
+def cliq_custom_emails(
+    limit: int = typer.Option(50, "--limit", "-n", help="Max custom emails to return."),
+    network: Optional[str] = typer.Option(
+        None, "--network", help="Cliq network slug (e.g. happydistrouklimited)."
+    ),
+) -> None:
+    """List Cliq platform custom emails (cliq-192 fifth slice)."""
+    cfg = _cfg()
+    email = _require_account(cfg)
+    client = _get_cliq_client(cfg, email, network=network)
+
+    resp = client.list_custom_emails(limit=limit)
+    data = resp.get("data", resp)
+    if not isinstance(data, list):
+        data = []
+
+    views: list[dict[str, Any]] = []
+    for row in data:
+        if not isinstance(row, dict):
+            continue
+        views.append(
+            {
+                "emailId": str(
+                    row.get("email_id")
+                    or row.get("emailId")
+                    or row.get("id")
+                    or row.get("zuid")
+                    or ""
+                ),
+                "email": str(
+                    row.get("email")
+                    or row.get("address")
+                    or row.get("custom_email")
+                    or ""
+                ),
+                "status": str(
+                    row.get("status")
+                    or row.get("state")
+                    or row.get("email_status")
+                    or ""
+                ),
+                "raw": row,
+            }
+        )
+
+    utils.output(
+        {
+            "count": len(views),
+            "customEmails": views,
+        }
+    )
+
+
 @cliq_app.command("export-chats")
 def cliq_export_chats(
     chat_id: Optional[str] = typer.Option(

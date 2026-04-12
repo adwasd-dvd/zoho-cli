@@ -4,18 +4,17 @@ module: cliq
 stage: in_progress
 status: in_progress
 owner: automation
-updated_at: '2026-04-12T22:08:30Z'
+updated_at: '2026-04-12T22:35:32Z'
 success_criteria:
 - run one focused live verification pass for `zoho cliq databases` and archive endpoint behavior evidence
 - keep cliq-165 export blocker evidence fresh while app-account activation remains external
 - continue cliq-192 with one next smallest platform-extension slice and targeted tests
 next_if_done: >-
-  take the next cliq-192 platform-extension slice (`map tickers`) with
-  targeted CLI/client coverage while cliq-165 remains externally blocked
+  advance to the next queued Cliq slice after cliq-192 by taking one smallest
+  cliq-193 app-governance command/client slice with focused coverage
 next_step: >-
-  second cliq-192 code slice is now in place (`zoho cliq widgets` +
-  `ZohoCliqClient.list_widgets`) with targeted tests green; focused live
-  `cliq databases` evidence remains scope-blocked
-  (`tests/auto_pilot/reports/cliq192_probe_summary_20260412_214538.json`), so
-  continue blocker-skipping with the next smallest cliq-192 slice (`map
-  tickers`)
+  fourth+fifth cliq-192 slices are now in place (`zoho cliq custom-domains`,
+  `zoho cliq custom-emails`, `ZohoCliqClient.list_custom_domains`,
+  `ZohoCliqClient.list_custom_emails`) with targeted tests green; run one focused
+  live platform-extension verification bundle (databases/widgets/map/custom),
+  then promote to cliq-193 while keeping cliq-165 export blocker tracking fresh

@@ -3036,6 +3036,101 @@ def test_cliq_widgets(
     mock_client.list_widgets.assert_called_once_with(limit=6)
 
 
+def test_cliq_map_tickers(
+    mock_config: Path,
+    mock_token_refresh: Any,
+) -> None:
+    mock_client = MagicMock()
+    mock_client.list_map_tickers.return_value = {
+        "data": [
+            {
+                "ticker_id": "TK_1",
+                "name": "Ops Ticker",
+                "symbol": "OPS",
+                "status": "active",
+            }
+        ]
+    }
+
+    with patch("zoho_cli.cli._get_cliq_client", return_value=mock_client):
+        result = runner.invoke(
+            app,
+            ["cliq", "map-tickers", "--limit", "8"],
+            env=_cfg_env(mock_config),
+        )
+
+    assert result.exit_code == 0, result.output
+    payload = json.loads(result.output)
+    assert payload["count"] == 1
+    assert payload["mapTickers"][0]["tickerId"] == "TK_1"
+    assert payload["mapTickers"][0]["name"] == "Ops Ticker"
+    assert payload["mapTickers"][0]["symbol"] == "OPS"
+    assert payload["mapTickers"][0]["status"] == "active"
+    mock_client.list_map_tickers.assert_called_once_with(limit=8)
+
+
+def test_cliq_custom_domains(
+    mock_config: Path,
+    mock_token_refresh: Any,
+) -> None:
+    mock_client = MagicMock()
+    mock_client.list_custom_domains.return_value = {
+        "data": [
+            {
+                "domain_id": "CD_1",
+                "domain": "chat.example.com",
+                "status": "active",
+            }
+        ]
+    }
+
+    with patch("zoho_cli.cli._get_cliq_client", return_value=mock_client):
+        result = runner.invoke(
+            app,
+            ["cliq", "custom-domains", "--limit", "17"],
+            env=_cfg_env(mock_config),
+        )
+
+    assert result.exit_code == 0, result.output
+    payload = json.loads(result.output)
+    assert payload["count"] == 1
+    assert payload["customDomains"][0]["domainId"] == "CD_1"
+    assert payload["customDomains"][0]["domain"] == "chat.example.com"
+    assert payload["customDomains"][0]["status"] == "active"
+    mock_client.list_custom_domains.assert_called_once_with(limit=17)
+
+
+def test_cliq_custom_emails(
+    mock_config: Path,
+    mock_token_refresh: Any,
+) -> None:
+    mock_client = MagicMock()
+    mock_client.list_custom_emails.return_value = {
+        "data": [
+            {
+                "email_id": "CE_1",
+                "email": "alerts@example.com",
+                "status": "verified",
+            }
+        ]
+    }
+
+    with patch("zoho_cli.cli._get_cliq_client", return_value=mock_client):
+        result = runner.invoke(
+            app,
+            ["cliq", "custom-emails", "--limit", "19"],
+            env=_cfg_env(mock_config),
+        )
+
+    assert result.exit_code == 0, result.output
+    payload = json.loads(result.output)
+    assert payload["count"] == 1
+    assert payload["customEmails"][0]["emailId"] == "CE_1"
+    assert payload["customEmails"][0]["email"] == "alerts@example.com"
+    assert payload["customEmails"][0]["status"] == "verified"
+    mock_client.list_custom_emails.assert_called_once_with(limit=19)
+
+
 @respx.mock
 def test_cliq_export_chats_list(mock_config: Path, mock_token_refresh: Any) -> None:
     respx.get("https://cliq.zoho.com/maintenanceapi/v2/chats").mock(

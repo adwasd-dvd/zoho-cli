@@ -2809,6 +2809,56 @@ class ZohoCliqClient:
             not_supported_message="Cliq platform widget listing endpoints are not available for this token/network endpoint.",
         )
 
+    def list_map_tickers(self, *, limit: int = 50) -> dict:
+        """List platform map tickers (cliq-192 third slice)."""
+        return self._get_with_candidates_and_not_supported(
+            [
+                ("/map/tickers", {"limit": limit}),
+                ("/map/tickers", None),
+                ("/map/ticker", {"limit": limit}),
+                ("/map/ticker", None),
+                ("/admin/map/tickers", {"limit": limit}),
+                ("/admin/map/tickers", None),
+                ("/admin/map/ticker", {"limit": limit}),
+                ("/admin/map/ticker", None),
+            ],
+            scope_hint="ZohoCliq.Tickers.READ",
+            operation_label="map-tickers-list",
+            not_supported_message="Cliq platform map ticker listing endpoints are not available for this token/network endpoint.",
+        )
+
+    def list_custom_domains(self, *, limit: int = 50) -> dict:
+        """List platform custom domains (cliq-192 fourth slice)."""
+        return self._get_with_candidates_and_not_supported(
+            [
+                ("/customdomains", {"limit": limit}),
+                ("/customdomains", None),
+                ("/customdomain", {"limit": limit}),
+                ("/customdomain", None),
+                ("/admin/customdomains", {"limit": limit}),
+                ("/admin/customdomains", None),
+            ],
+            scope_hint="ZohoCliq.CustomDomains.READ",
+            operation_label="custom-domains-list",
+            not_supported_message="Cliq platform custom domain listing endpoints are not available for this token/network endpoint.",
+        )
+
+    def list_custom_emails(self, *, limit: int = 50) -> dict:
+        """List platform custom emails (cliq-192 fifth slice)."""
+        return self._get_with_candidates_and_not_supported(
+            [
+                ("/customemails", {"limit": limit}),
+                ("/customemails", None),
+                ("/customemail", {"limit": limit}),
+                ("/customemail", None),
+                ("/admin/customemails", {"limit": limit}),
+                ("/admin/customemails", None),
+            ],
+            scope_hint="ZohoCliq.CustomEmails.READ",
+            operation_label="custom-emails-list",
+            not_supported_message="Cliq platform custom email listing endpoints are not available for this token/network endpoint.",
+        )
+
     @staticmethod
     def infer_message_types(message: dict[str, Any]) -> list[str]:
         """Infer coarse content types from a raw Cliq message payload."""

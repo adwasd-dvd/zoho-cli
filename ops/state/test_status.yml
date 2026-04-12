@@ -1,10 +1,18 @@
-last_run_at: "2026-04-12T22:08:30Z"
+last_run_at: "2026-04-12T22:35:32Z"
 last_result: warning
 current_focus: cliq
 suites:
   unit:
     status: passing
     notes:
+      - "python3.11 -m pytest -q tests/test_cliq.py::test_cliq_client_list_custom_domains_falls_back_to_admin_endpoint tests/test_cliq.py::test_cliq_client_list_custom_emails_falls_back_to_admin_endpoint tests/test_cli.py::test_cliq_custom_domains tests/test_cli.py::test_cliq_custom_emails"
+      - "4 passed in 0.08s (cliq-192 fourth+fifth slices: new `zoho cliq custom-domains`/`zoho cliq custom-emails` commands + `ZohoCliqClient.list_custom_domains`/`list_custom_emails` fallback coverage, 2026-04-12T22:35:32Z)"
+      - "python3.11 -m pytest -q tests/test_cliq.py::test_cliq_client_list_databases_falls_back_to_admin_endpoint tests/test_cliq.py::test_cliq_client_list_widgets_falls_back_to_admin_endpoint tests/test_cliq.py::test_cliq_client_list_map_tickers_falls_back_to_admin_endpoint tests/test_cli.py::test_cliq_databases tests/test_cli.py::test_cliq_widgets tests/test_cli.py::test_cliq_map_tickers tests/test_cli.py::test_cliq_custom_domains tests/test_cli.py::test_cliq_custom_emails"
+      - "8 passed in 0.18s (focused platform-extension regression after custom domain/email slice, 2026-04-12T22:35:32Z)"
+      - "python3.11 -m pytest -q tests/test_cliq.py::test_cliq_client_list_map_tickers_falls_back_to_admin_endpoint tests/test_cliq.py::test_cliq_client_list_map_tickers_scope_invalid_reports_hint tests/test_cli.py::test_cliq_map_tickers tests/test_cliq.py::test_cliq_client_list_widgets_falls_back_to_admin_endpoint tests/test_cli.py::test_cliq_widgets"
+      - "5 passed in 0.16s (cliq-192 third slice: new `zoho cliq map-tickers` command + `ZohoCliqClient.list_map_tickers` fallback coverage, 2026-04-12T22:28:04Z)"
+      - "./.venv/bin/ruff format --check zoho_cli/cliq.py zoho_cli/cli.py tests/test_cliq.py tests/test_cli.py"
+      - "4 files already formatted (2026-04-12T22:28:04Z)"
       - "python3.11 -m pytest -q tests/test_cliq.py::test_cliq_client_list_widgets_falls_back_to_admin_endpoint tests/test_cliq.py::test_cliq_client_list_widgets_scope_invalid_reports_hint tests/test_cli.py::test_cliq_widgets"
       - "3 passed in 0.11s (cliq-192 second slice: new `zoho cliq widgets` command + `ZohoCliqClient.list_widgets` fallback coverage, 2026-04-12T22:08:30Z)"
       - "./.venv/bin/ruff format --check zoho_cli/cliq.py zoho_cli/cli.py tests/test_cliq.py tests/test_cli.py"

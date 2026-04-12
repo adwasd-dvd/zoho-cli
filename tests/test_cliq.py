@@ -674,6 +674,101 @@ def test_cliq_client_list_widgets_scope_invalid_reports_hint(
 
 
 @respx.mock
+def test_cliq_client_list_map_tickers_falls_back_to_admin_endpoint(
+    client: cliq.ZohoCliqClient,
+) -> None:
+    map_tickers_route = respx.get("https://cliq.zoho.com/api/v2/map/tickers").mock(
+        return_value=httpx.Response(404, text="request_url_invalid")
+    )
+    map_ticker_route = respx.get("https://cliq.zoho.com/api/v2/map/ticker").mock(
+        return_value=httpx.Response(404, text="request_url_invalid")
+    )
+    admin_route = respx.get("https://cliq.zoho.com/api/v2/admin/map/tickers").mock(
+        return_value=httpx.Response(200, json={"data": [{"ticker_id": "TK_1"}]})
+    )
+
+    result = client.list_map_tickers(limit=23)
+
+    assert map_tickers_route.called
+    assert map_ticker_route.called
+    assert admin_route.called
+    assert dict(admin_route.calls.last.request.url.params) == {"limit": "23"}
+    assert result["data"][0]["ticker_id"] == "TK_1"
+
+
+@respx.mock
+def test_cliq_client_list_map_tickers_scope_invalid_reports_hint(
+    client: cliq.ZohoCliqClient,
+    capsys: pytest.CaptureFixture[str],
+) -> None:
+    respx.get("https://cliq.zoho.com/api/v2/map/tickers").mock(
+        return_value=httpx.Response(401, json={"code": "oauth_scope_invalid"})
+    )
+    respx.get("https://cliq.zoho.com/api/v2/map/ticker").mock(
+        return_value=httpx.Response(401, json={"code": "oauth_scope_invalid"})
+    )
+    respx.get("https://cliq.zoho.com/api/v2/admin/map/tickers").mock(
+        return_value=httpx.Response(401, json={"code": "oauth_scope_invalid"})
+    )
+    respx.get("https://cliq.zoho.com/api/v2/admin/map/ticker").mock(
+        return_value=httpx.Response(401, json={"code": "oauth_scope_invalid"})
+    )
+
+    with pytest.raises(SystemExit):
+        client.list_map_tickers(limit=23)
+
+    err = capsys.readouterr().err
+    assert "oauth_scope_invalid" in err
+    assert "ZohoCliq.Tickers.READ" in err
+
+
+@respx.mock
+def test_cliq_client_list_custom_domains_falls_back_to_admin_endpoint(
+    client: cliq.ZohoCliqClient,
+) -> None:
+    plural_route = respx.get("https://cliq.zoho.com/api/v2/customdomains").mock(
+        return_value=httpx.Response(404, text="request_url_invalid")
+    )
+    singular_route = respx.get("https://cliq.zoho.com/api/v2/customdomain").mock(
+        return_value=httpx.Response(404, text="request_url_invalid")
+    )
+    admin_route = respx.get("https://cliq.zoho.com/api/v2/admin/customdomains").mock(
+        return_value=httpx.Response(200, json={"data": [{"domain_id": "CD_1"}]})
+    )
+
+    result = client.list_custom_domains(limit=29)
+
+    assert plural_route.called
+    assert singular_route.called
+    assert admin_route.called
+    assert dict(admin_route.calls.last.request.url.params) == {"limit": "29"}
+    assert result["data"][0]["domain_id"] == "CD_1"
+
+
+@respx.mock
+def test_cliq_client_list_custom_emails_falls_back_to_admin_endpoint(
+    client: cliq.ZohoCliqClient,
+) -> None:
+    plural_route = respx.get("https://cliq.zoho.com/api/v2/customemails").mock(
+        return_value=httpx.Response(404, text="request_url_invalid")
+    )
+    singular_route = respx.get("https://cliq.zoho.com/api/v2/customemail").mock(
+        return_value=httpx.Response(404, text="request_url_invalid")
+    )
+    admin_route = respx.get("https://cliq.zoho.com/api/v2/admin/customemails").mock(
+        return_value=httpx.Response(200, json={"data": [{"email_id": "CE_1"}]})
+    )
+
+    result = client.list_custom_emails(limit=31)
+
+    assert plural_route.called
+    assert singular_route.called
+    assert admin_route.called
+    assert dict(admin_route.calls.last.request.url.params) == {"limit": "31"}
+    assert result["data"][0]["email_id"] == "CE_1"
+
+
+@respx.mock
 def test_cliq_client_export_conversations(client: cliq.ZohoCliqClient) -> None:
     route = respx.get("https://cliq.zoho.com/maintenanceapi/v2/chats").mock(
         return_value=httpx.Response(

@@ -1982,6 +1982,35 @@ def test_cliq_export_chats_list(mock_config: Path, mock_token_refresh: Any) -> N
 
 
 @respx.mock
+def test_cliq_export_chats_list_accepts_nested_data_shape(
+    mock_config: Path, mock_token_refresh: Any
+) -> None:
+    respx.get("https://cliq.zoho.com/maintenanceapi/v2/chats").mock(
+        return_value=httpx.Response(
+            200,
+            json={
+                "data": {
+                    "chats": [
+                        {
+                            "chatId": "CT_2",
+                            "name": "Ops",
+                            "type": "channel",
+                        }
+                    ]
+                }
+            },
+        )
+    )
+
+    result = runner.invoke(app, ["cliq", "export-chats"], env=_cfg_env(mock_config))
+    assert result.exit_code == 0, result.output
+    payload = json.loads(result.output)
+    assert payload["count"] == 1
+    assert payload["chats"][0]["chatId"] == "CT_2"
+    assert payload["chats"][0]["title"] == "Ops"
+
+
+@respx.mock
 def test_cliq_export_chats_messages_and_out(
     mock_config: Path,
     mock_token_refresh: Any,
@@ -2014,6 +2043,35 @@ def test_cliq_export_chats_messages_and_out(
     assert payload["savedTo"] == str(out_file)
     file_payload = json.loads(out_file.read_text())
     assert file_payload["messages"][0]["id"] == "M1"
+
+
+@respx.mock
+def test_cliq_export_chats_messages_accepts_messages_key(
+    mock_config: Path,
+    mock_token_refresh: Any,
+) -> None:
+    respx.get("https://cliq.zoho.com/maintenanceapi/v2/chats/CT_2/messages").mock(
+        return_value=httpx.Response(
+            200,
+            json={"messages": [{"id": "M2", "text": "hello from messages key"}]},
+        )
+    )
+
+    result = runner.invoke(
+        app,
+        [
+            "cliq",
+            "export-chats",
+            "--chat-id",
+            "CT_2",
+        ],
+        env=_cfg_env(mock_config),
+    )
+    assert result.exit_code == 0, result.output
+    payload = json.loads(result.output)
+    assert payload["chatId"] == "CT_2"
+    assert payload["count"] == 1
+    assert payload["messages"][0]["id"] == "M2"
 
 
 @respx.mock

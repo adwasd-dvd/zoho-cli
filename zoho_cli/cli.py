@@ -1413,6 +1413,61 @@ def cliq_export_chats(
     ),
 ) -> None:
     """Export Cliq chats or one chat's message history via maintenance API."""
+
+    def _extract_chat_rows(payload: Any) -> list[dict[str, Any]]:
+        if isinstance(payload, list):
+            return [row for row in payload if isinstance(row, dict)]
+
+        if not isinstance(payload, dict):
+            return []
+
+        candidates: list[Any] = [
+            payload.get("list"),
+            payload.get("chats"),
+            payload.get("data"),
+        ]
+        nested_data = payload.get("data")
+        if isinstance(nested_data, dict):
+            candidates.extend(
+                [
+                    nested_data.get("list"),
+                    nested_data.get("chats"),
+                    nested_data.get("data"),
+                ]
+            )
+
+        for candidate in candidates:
+            if isinstance(candidate, list):
+                return [row for row in candidate if isinstance(row, dict)]
+        return []
+
+    def _extract_messages(payload: Any) -> list[dict[str, Any]]:
+        if isinstance(payload, list):
+            return [row for row in payload if isinstance(row, dict)]
+
+        if not isinstance(payload, dict):
+            return []
+
+        candidates: list[Any] = [
+            payload.get("messages"),
+            payload.get("data"),
+            payload.get("list"),
+        ]
+        nested_data = payload.get("data")
+        if isinstance(nested_data, dict):
+            candidates.extend(
+                [
+                    nested_data.get("messages"),
+                    nested_data.get("data"),
+                    nested_data.get("list"),
+                ]
+            )
+
+        for candidate in candidates:
+            if isinstance(candidate, list):
+                return [row for row in candidate if isinstance(row, dict)]
+        return []
+
     cfg = _cfg()
     email = _require_account(cfg)
     client = _get_cliq_client(cfg, email, network=network)
@@ -1421,8 +1476,7 @@ def cliq_export_chats(
     if (chat_id or "").strip():
         resolved_chat = (chat_id or "").strip()
         resp = client.export_chat_messages(resolved_chat)
-        data = resp.get("data", resp)
-        messages = data if isinstance(data, list) else []
+        messages = _extract_messages(resp)
         payload = {
             "chatId": resolved_chat,
             "count": len(messages),
@@ -1430,14 +1484,10 @@ def cliq_export_chats(
         }
     else:
         resp = client.export_conversations()
-        rows = resp.get("list", [])
-        if not isinstance(rows, list):
-            rows = []
+        rows = _extract_chat_rows(resp)
 
         chats: list[dict[str, Any]] = []
         for row in rows:
-            if not isinstance(row, dict):
-                continue
             chats.append(
                 {
                     "chatId": str(

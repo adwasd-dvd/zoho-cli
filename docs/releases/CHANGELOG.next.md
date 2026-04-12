@@ -4,6 +4,7 @@
 
 ### Added
 - Initialized repo control files, anchors, and memory scaffolding for the zoho coder loop.
+- Added first `cliq-180` bot-operation slice: `zoho cliq post-to-bot` plus `ZohoCliqClient.post_to_bot` fallback routing and targeted CLI/client regression tests.
 - Added Cliq thread-plane command surface (`zoho cliq thread-create`, `thread-reply`, `threads`, `thread-followers`, `thread-state`) with capability-gated fallback routing in `ZohoCliqClient` and targeted thread command/client tests.
 - Added the cliq-171 `schedule` slice: `zoho cliq schedule` plus fallback client routing (`schedule_message`) for chat/channel targets.
 - Added the first cliq-171 scheduled-message command slice: `zoho cliq scheduled` plus fallback client routing (`list_scheduled_messages`) for chat/channel targets.
@@ -58,6 +59,7 @@
 - Callback success page now adapts to OAuth scopes and displays Mail/Cliq/CRM-specific guidance instead of a Mail-only static success page.
 
 ### Fixed
+- Cliq mutable fallback helper (`_request_with_candidates_and_not_supported`) now correctly treats `oauthtoken_scope_invalid` as a retryable candidate miss and returns the expected `oauth_scope_invalid` guidance instead of an early generic `api_error`.
 - Auto-pilot state/probe scripts now resolve project paths from script location instead of assuming a specific current working directory: `tests/auto_pilot/scenario_runner.py`, `run_cliq_live_probe.sh`, and `run_cliq_alt_probe.sh` now run correctly from either repo root or workspace root, and SCAP report table rows now escape multi-line/pipe-heavy validator messages.
 - `tests/auto_pilot/run_cliq_export_scope_recheck.sh` now captures both stdout and stderr into evidence artifacts, so scope-blocked `cliq export-chats` JSON errors are archived instead of producing empty logs.
 - `tests/auto_pilot/run_cliq_export_scope_recheck.sh` now runs with `pipefail`, records the real `zoho_cli` exit code for each probe (instead of `tee` exit codes), supports `PYTHON_BIN` / `SCAP_REPORT_DIR` overrides for safer automation, and exits non-zero when any probe fails.

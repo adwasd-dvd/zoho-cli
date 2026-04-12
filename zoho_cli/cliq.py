@@ -618,6 +618,7 @@ class ZohoCliqClient:
             if (
                 resp.status_code in (404, 405)
                 or "request_url_invalid" in lowered
+                or scope_invalid
                 or error_code
                 in {"operation_not_allowed", "not_supported", "unsupported"}
                 or error_code in {"request_method_invalid", "extra_param_found"}
@@ -1984,6 +1985,55 @@ class ZohoCliqClient:
             scope_hint="ZohoCliq.Messages.DELETE",
             operation_label="scheduled-cancel",
             not_supported_message="Cliq scheduled-message cancel endpoints are not available for this token/network endpoint. Run `zoho cliq capabilities --channel-id <id>` and confirm scheduled-message operations for the target conversation.",
+        )
+
+    def post_to_bot(
+        self,
+        bot_id: str,
+        text: str,
+        *,
+        title: str | None = None,
+    ) -> dict:
+        """Post one message to a bot using endpoint/payload fallbacks."""
+        target_bot = bot_id.strip()
+        if not target_bot:
+            utils.error_exit("invalid_bot_id", "bot_id cannot be empty")
+
+        body = text.strip()
+        if not body:
+            utils.error_exit("invalid_text", "text cannot be empty")
+
+        title_text = (title or "").strip()
+        payloads: list[dict[str, Any]] = [
+            {"text": body},
+            {"message": body},
+            {"content": body},
+        ]
+        if title_text:
+            payloads.extend(
+                [
+                    {"text": body, "title": title_text},
+                    {"message": body, "title": title_text},
+                    {"content": body, "title": title_text},
+                ]
+            )
+
+        candidates: list[tuple[str, str, dict[str, Any] | None]] = []
+        for payload in payloads:
+            candidates.extend(
+                [
+                    ("POST", f"/bots/{target_bot}/message", payload),
+                    ("POST", f"/bots/{target_bot}/messages", payload),
+                    ("POST", f"/bots/{target_bot}/send", payload),
+                    ("POST", f"/bot/{target_bot}/message", payload),
+                ]
+            )
+
+        return self._request_with_candidates_and_not_supported(
+            candidates,
+            scope_hint="ZohoCliq.Webhooks.CREATE",
+            operation_label="post-to-bot",
+            not_supported_message="Cliq bot post endpoints are not available for this token/network endpoint. Capture one capabilities snapshot and continue with non-bot operations for this network.",
         )
 
     def list_thread_followers(

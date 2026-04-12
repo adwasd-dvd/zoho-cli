@@ -2068,6 +2068,46 @@ def cliq_schedule(
     )
 
 
+@cliq_app.command("post-to-bot")
+def cliq_post_to_bot(
+    bot_id: str = typer.Argument(..., help="Bot id or unique name."),
+    text: str = typer.Option(..., "--text", "-t", help="Message text."),
+    title: Optional[str] = typer.Option(
+        None,
+        "--title",
+        help="Optional title/context field for bot message payloads.",
+    ),
+    network: Optional[str] = typer.Option(
+        None, "--network", help="Cliq network slug (e.g. happydistrouklimited)."
+    ),
+) -> None:
+    """Post one message to a bot."""
+    cfg = _cfg()
+    email = _require_account(cfg)
+    client = _get_cliq_client(cfg, email, network=network)
+
+    target_bot = bot_id.strip()
+    resp = client.post_to_bot(target_bot, text, title=title)
+    data = resp.get("data", resp)
+
+    message_id = ""
+    if isinstance(data, dict):
+        for key in ("message_id", "messageId", "id"):
+            value = data.get(key)
+            if isinstance(value, str) and value.strip():
+                message_id = value.strip()
+                break
+
+    utils.output_status(
+        "Cliq bot message sent",
+        extra={
+            "botId": target_bot,
+            "messageId": message_id,
+            "result": data,
+        },
+    )
+
+
 @cliq_app.command("scheduled")
 def cliq_scheduled(
     channel_id: Optional[str] = typer.Option(

@@ -1,10 +1,16 @@
-last_run_at: "2026-04-12T13:45:14Z"
+last_run_at: "2026-04-12T14:09:15Z"
 last_result: warning
 current_focus: cliq
 suites:
   unit:
     status: passing
     notes:
+      - "python3.11 -m pytest -q tests/test_cliq.py::test_cliq_client_post_to_bot_falls_back_to_messages tests/test_cliq.py::test_cliq_client_post_to_bot_scope_invalid_reports_hint tests/test_cli.py::test_cliq_post_to_bot"
+      - "3 passed in 0.24s (cliq-180 first slice: new `zoho cliq post-to-bot` command + `ZohoCliqClient.post_to_bot` fallback coverage, 2026-04-12T14:09:15Z)"
+      - "python3.11 -m pytest -q tests/test_cliq.py::test_cliq_client_list_thread_followers_scope_invalid_reports_hint"
+      - "1 passed in 0.14s (regression check after scope-invalid fallback helper fix, 2026-04-12T14:09:15Z)"
+      - "./.venv/bin/ruff format --check zoho_cli/cliq.py zoho_cli/cli.py tests/test_cliq.py tests/test_cli.py"
+      - "4 files already formatted (2026-04-12T14:09:15Z)"
       - "python3.11 -m zoho_cli --config /tmp/zoho-test-config.json --account ai-dev@happy-distro.co.uk cliq status --check-auth --network happydistrouklimited"
       - "python3.11 -m zoho_cli --config /tmp/zoho-test-config.json --account ai-dev@happy-distro.co.uk cliq search SCAP --network happydistrouklimited --channel-id O6576524000097556005 --limit 5"
       - "python3.11 -m zoho_cli --config /tmp/zoho-test-config.json --account ai-dev@happy-distro.co.uk cliq messages --network happydistrouklimited --channel-id O6576524000097556005 --limit 25"

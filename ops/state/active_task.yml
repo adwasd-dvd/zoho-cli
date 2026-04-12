@@ -4,10 +4,10 @@ module: cliq
 stage: in_progress
 status: in_progress
 owner: automation
-updated_at: '2026-04-12T13:45:14Z'
+updated_at: '2026-04-12T14:09:15Z'
 success_criteria:
 - implement first cliq-180 bot-operation slice in client + CLI with fallback guidance parity
 - add targeted regression tests for new bot operation command surface
 - keep cliq-165 export-scope blocker loop documented while bot-plane work proceeds
 next_if_done: continue to cliq-181 chat control plane expansion
-next_step: scaffold `cliq-180` first slice (`post-to-bot`) with targeted tests, then iterate subscribers/trigger operations
+next_step: first `cliq-180` slice (`post-to-bot`) is in place with targeted tests; proceed to bot subscribers/trigger operations while keeping cliq-165 on blocker-skip loop

@@ -2023,6 +2023,40 @@ def test_cliq_schedule_from_channel(
     )
 
 
+def test_cliq_post_to_bot(
+    mock_config: Path,
+    mock_token_refresh: Any,
+) -> None:
+    mock_client = MagicMock()
+    mock_client.post_to_bot.return_value = {"data": {"id": "BM1"}}
+
+    with patch("zoho_cli.cli._get_cliq_client", return_value=mock_client):
+        result = runner.invoke(
+            app,
+            [
+                "cliq",
+                "post-to-bot",
+                "bot-123",
+                "--text",
+                "hello bot",
+                "--title",
+                "Automation ping",
+            ],
+            env=_cfg_env(mock_config),
+        )
+
+    assert result.exit_code == 0, result.output
+    payload = json.loads(result.output)
+    assert payload["status"] == "ok"
+    assert payload["botId"] == "bot-123"
+    assert payload["messageId"] == "BM1"
+    mock_client.post_to_bot.assert_called_once_with(
+        "bot-123",
+        "hello bot",
+        title="Automation ping",
+    )
+
+
 def test_cliq_scheduled_get_from_channel(
     mock_config: Path,
     mock_token_refresh: Any,

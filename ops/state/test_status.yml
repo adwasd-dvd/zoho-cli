@@ -1,4 +1,4 @@
-last_run_at: "2026-04-12T13:07:58Z"
+last_run_at: "2026-04-12T13:24:12Z"
 last_result: warning
 current_focus: cliq
 suites:
@@ -317,6 +317,10 @@ suites:
   integration:
     status: warning
     notes:
+      - "python3.11 -m zoho_cli --config /tmp/zoho-test-config.json --account ai-dev@happy-distro.co.uk cliq status --check-auth --network happydistrouklimited"
+      - "auth check remains healthy (`oauthReady: true`, `missingScopes: []`) while running cliq-171 scheduled lifecycle probes; evidence: `tests/auto_pilot/reports/cliq_scheduled_status_20260412_132412.json` (2026-04-12T13:24:12Z)"
+      - "python3.11 live cliq-171 scheduled lifecycle bundle (`cliq schedule`, `cliq scheduled`, `cliq scheduled-get`, `cliq scheduled-cancel`) against channel `O6576524000097556005`"
+      - "all four scheduled-message command paths return `not_supported` on happydistrouklimited; evidence: `tests/auto_pilot/reports/cliq_schedule_create_20260412_132412.json`, `tests/auto_pilot/reports/cliq_scheduled_list_20260412_132412.json`, `tests/auto_pilot/reports/cliq_scheduled_get_20260412_132412.json`, `tests/auto_pilot/reports/cliq_scheduled_cancel_20260412_132412.json` (summary: `tests/auto_pilot/reports/cliq_scheduled_probe_summary_20260412_132412.json`)"
       - "bash tests/auto_pilot/run_cliq_export_scope_recheck.sh"
       - "one-command recheck still reports `exportOauthReady: false` with missing export scopes (`ZohoCliq.OrganizationChats.READ`, `ZohoCliq.OrganizationMessages.READ`); evidence: `tests/auto_pilot/reports/cliq_status_export_scope_recheck_20260412_032238.json` (2026-04-12T10:22:38Z)"
       - "same one-command run confirms list export still returns `oauth_scope_invalid`; evidence: `tests/auto_pilot/reports/cliq_export_chats_list_scope_recheck_20260412_032238.json` (2026-04-12T10:22:38Z)"

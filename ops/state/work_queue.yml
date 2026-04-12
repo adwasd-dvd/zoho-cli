@@ -128,14 +128,14 @@
 - id: cliq-171
   title: implement scheduled message lifecycle (schedule/list/get/cancel) for chat/channel targets
   module: cliq
-  stage: in_progress
+  stage: completed
   priority: high
   depends_on:
   - cliq-160
 - id: cliq-172
   title: close search and attachment retrieval parity with endpoint taxonomy and blocker-skip handoff logs
   module: cliq
-  stage: queued
+  stage: in_progress
   priority: high
   depends_on:
   - cliq-160

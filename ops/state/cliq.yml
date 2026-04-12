@@ -1,18 +1,13 @@
 module: Cliq
-updated_at: '2026-04-12T13:07:58Z'
+updated_at: '2026-04-12T13:24:12Z'
 status: in_progress
 blockers:
-- 'live thread-plane probe now classifies thread endpoints as unsupported on happydistrouklimited: `thread-create`, `thread-reply`, `thread-followers`, `thread-state` all return `not_supported`, and `threads` currently returns `count: 0` (`tests/auto_pilot/reports/cliq_thread_probe_summary_20260412_044149.json`)'
-- live `/messages/search` APIs on happydistrouklimited remain unsupported for current
-  endpoint variants (`extra_param_found` / `request_url_invalid`), documented as endpoint
-  limitation
-- 'attachment retrieval parity remains endpoint-limited: post-upload media-visible
-  messages still return zero payloads on `/attachments` (`cliq_single_token_retrieval_after_upload_20260411_192343.json`,
-  `cliq_retrieval_recheck_after_success_20260411_192603.log`)'
+- 'live thread-plane probe classifies thread endpoints as unsupported on happydistrouklimited: `thread-create`, `thread-reply`, `thread-followers`, `thread-state` all return `not_supported`, and `threads` currently returns `count: 0` (`tests/auto_pilot/reports/cliq_thread_probe_summary_20260412_044149.json`)'
+- 'live scheduled-message probe classifies schedule endpoints as unsupported on happydistrouklimited: `schedule`, `scheduled`, `scheduled-get`, and `scheduled-cancel` all return `not_supported` while auth remains healthy (`tests/auto_pilot/reports/cliq_scheduled_probe_summary_20260412_132412.json`)'
+- live `/messages/search` APIs on happydistrouklimited remain unsupported for current endpoint variants (`extra_param_found` / `request_url_invalid`), documented as endpoint limitation
+- 'attachment retrieval parity remains endpoint-limited: post-upload media-visible messages still return zero payloads on `/attachments` (`tests/auto_pilot/reports/cliq_single_token_retrieval_after_upload_20260411_192343.json`, `tests/auto_pilot/reports/cliq_retrieval_recheck_after_success_20260411_192603.log`)'
 - "maintenance export command surface (`cliq export-chats`) is implemented and response-shape normalization is hardened; live auth still reports missing maintenance export scopes (`ZohoCliq.OrganizationChats.READ`, `ZohoCliq.OrganizationMessages.READ`), and export verification remains blocked with `oauth_scope_invalid` on both list + explicit `--chat-id` probes (latest one-command evidence: `tests/auto_pilot/reports/cliq_status_export_scope_recheck_20260412_032238.json`, `tests/auto_pilot/reports/cliq_export_chats_list_scope_recheck_20260412_032238.json`, `tests/auto_pilot/reports/cliq_export_chat_scope_recheck_20260412_032238.json`; runner summary `tests/auto_pilot/reports/cliq_export_scope_recheck_summary_20260412_032238.json` reports `scopeBlocked: true` and `recommendedNext: interactive_reauth_then_rerun` from status `exportOauthReady`/`missingExportScopes` signals)"
-- 'export-scope recheck summary now emits explicit refresh-throttle classification (`rateLimited`) and `recommendedNext: wait_for_refresh_cooldown_then_rerun` when probes hit `token_refresh_rate_limited`/"too many requests", reducing blind retry loops during cliq-165 live runs'
-- "additional workspace test assets continue to validate local upload breadth: image (`test.png`), audio (`sample-3.m4a`), PDF (`2026-04-10-report.pdf`), and CSV (`lv1_capturable_report.csv`) all sent successfully to both channel and user targets in latest one-token matrix rerun (`tests/auto_pilot/reports/cliq_workspace_test_media_matrix_20260412_042955.json`)"
 next_small_step: >-
-  run one live cliq-171 scheduled-message probe bundle (`schedule`,
-  `scheduled`, `scheduled-get`, `scheduled-cancel`) on happydistrouklimited and
-  archive evidence; keep cliq-165 blocked for human interactive re-auth
+  run one targeted cliq-172 live probe pass for search + attachment retrieval parity,
+  archive fresh endpoint-taxonomy evidence, and keep cliq-165 blocked for human
+  interactive re-auth

@@ -1,13 +1,13 @@
-id: cliq-171
-title: implement scheduled message lifecycle (schedule/list/get/cancel) for chat/channel targets
+id: cliq-172
+title: close search and attachment retrieval parity with endpoint taxonomy and blocker-skip handoff logs
 module: cliq
 stage: in_progress
 status: in_progress
 owner: automation
-updated_at: '2026-04-12T13:07:58Z'
+updated_at: '2026-04-12T13:24:12Z'
 success_criteria:
-- implement `zoho cliq schedule`, `scheduled`, `scheduled-get`, and `scheduled-cancel`
-- add scheduled-message client fallbacks that emit clear `not_supported` / scope-invalid guidance
-- add targeted unit + CLI test coverage for schedule/list/get/cancel command paths
-next_if_done: continue to cliq-172 search + attachment retrieval parity closeout
-next_step: 'schedule/scheduled/scheduled-get/scheduled-cancel code paths now have targeted unit+CLI coverage; run one live scheduled-message probe bundle on happydistrouklimited and archive evidence before moving to cliq-172'
+- refresh live search + attachment retrieval evidence on happydistrouklimited and classify endpoint support clearly
+- keep blocker-skipping handoff logs current so cliq work continues while cliq-165 export scopes remain human-blocked
+- preserve explicit `not_supported` guidance for unsupported search/retrieval endpoint families
+next_if_done: continue to cliq-180 / cliq-181 bot + chat control plane expansion
+next_step: run one targeted cliq-172 live probe pass (search + attachment retrieval around media-visible messages) and archive evidence before starting cliq-180/cliq-181

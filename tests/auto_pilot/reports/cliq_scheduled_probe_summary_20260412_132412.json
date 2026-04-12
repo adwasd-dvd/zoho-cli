@@ -1,0 +1,22 @@
+{
+  "summaryVersion": 1,
+  "timestamp": "20260412_132412",
+  "config": "/tmp/zoho-test-config.json",
+  "account": "ai-dev@happy-distro.co.uk",
+  "network": "happydistrouklimited",
+  "channelId": "O6576524000097556005",
+  "scheduledAt": "2026-04-12T13:39:12Z",
+  "probeText": "SCAP cliq-171 scheduled probe 20260412_132412",
+  "scheduledId": "SCHEDULED_PROBE_FAKE_20260412_132412",
+  "statusReport": "tests/auto_pilot/reports/cliq_scheduled_status_20260412_132412.json",
+  "scheduleReport": "tests/auto_pilot/reports/cliq_schedule_create_20260412_132412.json",
+  "listReport": "tests/auto_pilot/reports/cliq_scheduled_list_20260412_132412.json",
+  "getReport": "tests/auto_pilot/reports/cliq_scheduled_get_20260412_132412.json",
+  "cancelReport": "tests/auto_pilot/reports/cliq_scheduled_cancel_20260412_132412.json",
+  "statusExit": 0,
+  "scheduleExit": 1,
+  "listExit": 1,
+  "getExit": 1,
+  "cancelExit": 1,
+  "overallExit": 1
+}

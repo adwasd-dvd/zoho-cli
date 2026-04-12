@@ -1247,6 +1247,7 @@ def cliq_status(
     cfg = _cfg()
     email = _S.account or _config.default_account(cfg)
     account_cfg = cfg.get("accounts", {}).get(email, {}) if email else {}
+    resolved_network = network or account_cfg.get("cliq_network")
 
     payload: dict = {
         "module": "cliq",
@@ -1257,7 +1258,7 @@ def cliq_status(
         "baseUrl": _cliq.infer_cliq_base_url(
             mail_base_url=account_cfg.get("mail_base_url"),
             accounts_server=account_cfg.get("accounts_server"),
-            network=network or account_cfg.get("cliq_network"),
+            network=resolved_network,
         ),
         "requiredScopes": _cliq.DEFAULT_CLIQ_SCOPES,
         "requiredExportScopes": _cliq.DEFAULT_CLIQ_EXPORT_SCOPES,
@@ -1277,6 +1278,13 @@ def cliq_status(
         payload.get("grantedScopes", [])
     )
     payload["exportOauthReady"] = len(payload["missingExportScopes"]) == 0
+    if not payload["exportOauthReady"]:
+        network_hint = f" --network {resolved_network}" if resolved_network else ""
+        payload["exportNext"] = [
+            "re-auth with Cliq export scopes: `zoho login --with-cliq --with-cliq-export`",
+            f"verify export scope readiness: `zoho cliq status --check-auth{network_hint}`",
+            f"rerun export probes: `zoho cliq export-chats{network_hint}` and `zoho cliq export-chats{network_hint} --chat-id <chat_id>`",
+        ]
 
     if check_auth and email:
         cid, csec = _require_credentials(cfg)
@@ -1296,6 +1304,17 @@ def cliq_status(
                 live_scopes
             )
             payload["exportOauthReady"] = len(payload["missingExportScopes"]) == 0
+            if payload["exportOauthReady"]:
+                payload.pop("exportNext", None)
+            else:
+                network_hint = (
+                    f" --network {resolved_network}" if resolved_network else ""
+                )
+                payload["exportNext"] = [
+                    "re-auth with Cliq export scopes: `zoho login --with-cliq --with-cliq-export`",
+                    f"verify export scope readiness: `zoho cliq status --check-auth{network_hint}`",
+                    f"rerun export probes: `zoho cliq export-chats{network_hint}` and `zoho cliq export-chats{network_hint} --chat-id <chat_id>`",
+                ]
 
     utils.output(payload)
 

@@ -1,0 +1,881 @@
+{
+  "command": "python3.11 -m zoho_cli --config /tmp/zoho-test-config.json --account ai-dev@happy-distro.co.uk cliq messages --network happydistrouklimited --channel-id O6576524000097556005 --limit 25",
+  "exitCode": 0,
+  "stdout": "{\n  \"chatId\": \"CT_1424657670787261966_911174541\",\n  \"channelId\": \"O6576524000097556005\",\n  \"count\": 25,\n  \"messages\": [\n    {\n      \"is_read\": false,\n      \"sender\": {\n        \"name\": \"David Wang\",\n        \"id\": \"o-CT-911174541-754805990\"\n      },\n      \"id\": \"1775689355662_83472241038\",\n      \"time\": 1775689355662,\n      \"type\": \"info\",\n      \"content\": {\n        \"data\": {\n          \"users\": {\n            \"o-CT-911174541-802016712\": \"Jiameng Han Han\"\n          }\n        },\n        \"type\": \"user_added\"\n      },\n      \"revision\": 2,\n      \"is_pinned\": false\n    },\n    {\n      \"is_read\": false,\n      \"sender\": {\n        \"name\": \"o-CT-911174541-754805990\",\n        \"id\": \"o-CT-911174541-754805990\"\n      },\n      \"id\": \"1775689372943_87767225615\",\n      \"time\": 1775689372943,\n      \"type\": \"info\",\n      \"content\": {\n        \"data\": {\n          \"users\": {\n            \"o-CT-911174541-802016712\": \"Jiameng Han Han\"\n          }\n        },\n        \"type\": \"user_removed\"\n      },\n      \"revision\": 2,\n      \"is_pinned\": false\n    },\n    {\n      \"is_read\": false,\n      \"sender\": {\n        \"name\": \"David Wang\",\n        \"id\": \"o-CT-911174541-754805990\"\n      },\n      \"id\": \"1775689401317_92062221285\",\n      \"time\": 1775689401317,\n      \"type\": \"info\",\n      \"content\": {\n        \"data\": {\n          \"users\": {\n            \"o-CT-911174541-802016712\": \"Jiameng Han Han\"\n          }\n        },\n        \"type\": \"user_added\"\n      },\n      \"revision\": 2,\n      \"is_pinned\": false\n    },\n    {\n      \"is_read\": false,\n      \"sender\": {\n        \"name\": \"o-CT-911174541-754805990\",\n        \"id\": \"o-CT-911174541-754805990\"\n      },\n      \"id\": \"1775689402639_96357189903\",\n      \"time\": 1775689402639,\n      \"type\": \"info\",\n      \"content\": {\n        \"data\": {\n          \"users\": {\n            \"o-CT-911174541-802016712\": \"Jiameng Han Han\"\n          }\n        },\n        \"type\": \"user_removed\"\n      },\n      \"revision\": 2,\n      \"is_pinned\": false\n    },\n    {\n      \"is_read\": true,\n      \"sender\": {\n        \"name\": \"ai-dev\",\n        \"id\": \"o-CT-911174541-916478296\"\n      },\n      \"id\": \"1775957529661_100920284221\",\n      \"time\": 1775957529661,\n      \"type\": \"text\",\n      \"content\": {\n        \"text\": \"SCAP_TEXT_VIS2_013209\"\n      },\n      \"revision\": 2,\n      \"is_pinned\": false\n    },\n    {\n      \"is_read\": true,\n      \"unfurled_details\": {\n        \"url\": \"https://upload.wikimedia.org/wikipedia/commons/3/3f/JPEG_example_flower.jpg\"\n      },\n      \"sender\": {\n        \"name\": \"ai-dev\",\n        \"id\": \"o-CT-911174541-916478296\"\n      },\n      \"id\": \"1775957550478_105215272334\",\n      \"time\": 1775957550478,\n      \"type\": \"card\",\n      \"content\": {\n        \"text\": \"SCAP_REMOTE_IMG2_013228 https://upload.wikimedia.org/wikipedia/commons/3/3f/JPEG_example_flower.jpg\",\n        \"card\": {\n          \"preview\": \"https://upload.wikimedia.org/wikipedia/commons/3/3f/JPEG_example_flower.jpg\",\n          \"title\": \"SCAP remote image\",\n          \"thumbnail\": \"https://upload.wikimedia.org/wikipedia/commons/3/3f/JPEG_example_flower.jpg\"\n        }\n      },\n      \"revision\": 2,\n      \"is_pinned\": false\n    },\n    {\n      \"is_read\": true,\n      \"sender\": {\n        \"name\": \"ai-dev\",\n        \"id\": \"o-CT-911174541-916478296\"\n      },\n      \"id\": \"1775957729671_109510418823\",\n      \"time\": 1775957729671,\n      \"type\": \"text\",\n      \"content\": {\n        \"text\": \"SCAP_TEXT_VIS3_013529\"\n      },\n      \"revision\": 2,\n      \"is_pinned\": false\n    },\n    {\n      \"is_read\": true,\n      \"unfurled_details\": {\n        \"url\": \"https://upload.wikimedia.org/wikipedia/commons/3/3f/JPEG_example_flower.jpg\"\n      },\n      \"sender\": {\n        \"name\": \"ai-dev\",\n        \"id\": \"o-CT-911174541-916478296\"\n      },\n      \"id\": \"1775957731803_113805388251\",\n      \"time\": 1775957731803,\n      \"type\": \"card\",\n      \"content\": {\n        \"text\": \"SCAP_REMOTE_IMG3_013530 https://upload.wikimedia.org/wikipedia/commons/3/3f/JPEG_example_flower.jpg\",\n        \"card\": {\n          \"preview\": \"https://upload.wikimedia.org/wikipedia/commons/3/3f/JPEG_example_flower.jpg\",\n          \"title\": \"SCAP remote image\",\n          \"thumbnail\": \"https://upload.wikimedia.org/wikipedia/commons/3/3f/JPEG_example_flower.jpg\"\n        }\n      },\n      \"revision\": 2,\n      \"is_pinned\": false\n    },\n    {\n      \"is_read\": true,\n      \"sender\": {\n        \"name\": \"o-CT-911174541-916478296\",\n        \"id\": \"o-CT-911174541-916478296\"\n      },\n      \"id\": \"1775960471460_118103095204\",\n      \"time\": 1775960471460,\n      \"type\": \"file\",\n      \"content\": {\n        \"thumbnail\": {\n          \"height\": \"682\",\n          \"width\": \"682\",\n          \"blur_data\": \"/9j/4AAQSkZJRgABAgAAAQABAAD/2wBDAFA3PEY8MlBGQUZaVVBfeMiCeG5uePWvuZHI////////////////////////////////////////////////////2wBDAVVaWnhpeOuCguv/////////////////////////////////////////////////////////////////////////wAARCAAyADIDASIAAhEBAxEB/8QAHwAAAQUBAQEBAQEAAAAAAAAAAAECAwQFBgcICQoL/8QAtRAAAgEDAwIEAwUFBAQAAAF9AQIDAAQRBRIhMUEGE1FhByJxFDKBkaEII0KxwRVS0fAkM2JyggkKFhcYGRolJicoKSo0NTY3ODk6Q0RFRkdISUpTVFVWV1hZWmNkZWZnaGlqc3R1dnd4eXqDhIWGh4iJipKTlJWWl5iZmqKjpKWmp6ipqrKztLW2t7i5usLDxMXGx8jJytLT1NXW19jZ2uHi4+Tl5ufo6erx8vP09fb3+Pn6/8QAHwEAAwEBAQEBAQEBAQAAAAAAAAECAwQFBgcICQoL/8QAtREAAgECBAQDBAcFBAQAAQJ3AAECAxEEBSExBhJBUQdhcRMiMoEIFEKRobHBCSMzUvAVYnLRChYkNOEl8RcYGRomJygpKjU2Nzg5OkNERUZHSElKU1RVVldYWVpjZGVmZ2hpanN0dXZ3eHl6goOEhYaHiImKkpOUlZaXmJmaoqOkpaanqKmqsrO0tba3uLm6wsPExcbHyMnK0tPU1dbX2Nna4uPk5ebn6Onq8vP09fb3+Pn6/9oADAMBAAIRAxEAPwC7SEgDJOB70tUrmQyPsGML74yaAHyXfOI1/E1F9ol/v/oKj2nOOPzFGw+3/fQoAnS7YffAI9RVpHV13Kcis4qR6fgafE5iYNn5T1APWgDQopAcjI6UUAI7bUZvQZrOHXk4rSYBlKnoRis0DBIK59qAFXoCCcemf8/59KUgnvTkUsCFVQemPT3p/lJhmVyMevagasQ9DjdgfypDjHDZ9v8AIp0qkE89B396acY+7j8/8aBPceLiVQAGGBwOKKctq7KGDLgjNFMC9VO6i2t5g6Hr7VcqOdisTEY/GkBUVGUgqDke3H+f51MG4P7ojPUY606Ji0YJ+lKTjOATj0xj8e/+e9MCuyO5yVI9gKSGEyPyPlHWrDnAx3ptm2VYd+Dn/P0oEWaKKKQwpkwBifPoaKKAIof9Uv4/zqTGRzRRTEQ96dZ/6tv97+goopsZYoooqQP/2Q==\"\n        },\n        \"file\": {\n          \"name\": \"test.png\",\n          \"type\": \"image/png\",\n          \"dimensions\": {\n            \"height\": 682,\n            \"size\": 280386,\n            \"width\": 682\n          },\n          \"id\": \"a_01008015600617759604714340_2_911174541\"\n        },\n        \"comment\": \"SCAP single-token channel image\"\n      },\n      \"revision\": 2,\n      \"is_pinned\": false\n    },\n    {\n      \"is_read\": true,\n      \"sender\": {\n        \"name\": \"o-CT-911174541-916478296\",\n        \"id\": \"o-CT-911174541-916478296\"\n      },\n      \"id\": \"1775960484504_122398075544\",\n      \"time\": 1775960484504,\n      \"type\": \"file\",\n      \"content\": {\n        \"thumbnail\": {},\n        \"file\": {\n          \"name\": \"sample-3.m4a\",\n          \"type\": \"audio/mp4\",\n          \"dimensions\": {\n            \"size\": 343380\n          },\n          \"id\": \"a_01008015424717759604844860_2_911174541\"\n        },\n        \"comment\": \"SCAP single-token channel voice\"\n      },\n      \"revision\": 2,\n      \"is_pinned\": false\n    },\n    {\n      \"is_read\": true,\n      \"sender\": {\n        \"name\": \"o-CT-911174541-916478296\",\n        \"id\": \"o-CT-911174541-916478296\"\n      },\n      \"id\": \"1775960497954_126693056290\",\n      \"time\": 1775960497954,\n      \"type\": \"file\",\n      \"content\": {\n        \"thumbnail\": {\n          \"height\": \"682\",\n          \"width\": \"682\",\n          \"blur_data\": \"/9j/4AAQSkZJRgABAgAAAQABAAD/2wBDAFA3PEY8MlBGQUZaVVBfeMiCeG5uePWvuZHI////////////////////////////////////////////////////2wBDAVVaWnhpeOuCguv/////////////////////////////////////////////////////////////////////////wAARCAAyADIDASIAAhEBAxEB/8QAHwAAAQUBAQEBAQEAAAAAAAAAAAECAwQFBgcICQoL/8QAtRAAAgEDAwIEAwUFBAQAAAF9AQIDAAQRBRIhMUEGE1FhByJxFDKBkaEII0KxwRVS0fAkM2JyggkKFhcYGRolJicoKSo0NTY3ODk6Q0RFRkdISUpTVFVWV1hZWmNkZWZnaGlqc3R1dnd4eXqDhIWGh4iJipKTlJWWl5iZmqKjpKWmp6ipqrKztLW2t7i5usLDxMXGx8jJytLT1NXW19jZ2uHi4+Tl5ufo6erx8vP09fb3+Pn6/8QAHwEAAwEBAQEBAQEBAQAAAAAAAAECAwQFBgcICQoL/8QAtREAAgECBAQDBAcFBAQAAQJ3AAECAxEEBSExBhJBUQdhcRMiMoEIFEKRobHBCSMzUvAVYnLRChYkNOEl8RcYGRomJygpKjU2Nzg5OkNERUZHSElKU1RVVldYWVpjZGVmZ2hpanN0dXZ3eHl6goOEhYaHiImKkpOUlZaXmJmaoqOkpaanqKmqsrO0tba3uLm6wsPExcbHyMnK0tPU1dbX2Nna4uPk5ebn6Onq8vP09fb3+Pn6/9oADAMBAAIRAxEAPwC7SEgDJOB70tUrmQyPsGML74yaAHyXfOI1/E1F9ol/v/oKj2nOOPzFGw+3/fQoAnS7YffAI9RVpHV13Kcis4qR6fgafE5iYNn5T1APWgDQopAcjI6UUAI7bUZvQZrOHXk4rSYBlKnoRis0DBIK59qAFXoCCcemf8/59KUgnvTkUsCFVQemPT3p/lJhmVyMevagasQ9DjdgfypDjHDZ9v8AIp0qkE89B396acY+7j8/8aBPceLiVQAGGBwOKKctq7KGDLgjNFMC9VO6i2t5g6Hr7VcqOdisTEY/GkBUVGUgqDke3H+f51MG4P7ojPUY606Ji0YJ+lKTjOATj0xj8e/+e9MCuyO5yVI9gKSGEyPyPlHWrDnAx3ptm2VYd+Dn/P0oEWaKKKQwpkwBifPoaKKAIof9Uv4/zqTGRzRRTEQ96dZ/6tv97+goopsZYoooqQP/2Q==\"\n        },\n        \"file\": {\n          \"name\": \"test.png\",\n          \"type\": \"image/png\",\n          \"dimensions\": {\n            \"height\": 682,\n            \"size\": 280386,\n            \"width\": 682\n          },\n          \"id\": \"a_01008015613117759604979350_2_911174541\"\n        },\n        \"comment\": \"SCAP single-token channel file\"\n      },\n      \"revision\": 2,\n      \"is_pinned\": false\n    },\n    {\n      \"is_read\": true,\n      \"sender\": {\n        \"name\": \"o-CT-911174541-916478296\",\n        \"id\": \"o-CT-911174541-916478296\"\n      },\n      \"id\": \"1775967794190_130995319822\",\n      \"time\": 1775967794190,\n      \"type\": \"file\",\n      \"content\": {\n        \"thumbnail\": {\n          \"height\": \"720\",\n          \"width\": \"509\",\n          \"blur_data\": \"/9j/4AAQSkZJRgABAgAAAQABAAD/2wBDAFA3PEY8MlBGQUZaVVBfeMiCeG5uePWvuZHI////////////////////////////////////////////////////2wBDAVVaWnhpeOuCguv/////////////////////////////////////////////////////////////////////////wAARCAAyACMDASIAAhEBAxEB/8QAHwAAAQUBAQEBAQEAAAAAAAAAAAECAwQFBgcICQoL/8QAtRAAAgEDAwIEAwUFBAQAAAF9AQIDAAQRBRIhMUEGE1FhByJxFDKBkaEII0KxwRVS0fAkM2JyggkKFhcYGRolJicoKSo0NTY3ODk6Q0RFRkdISUpTVFVWV1hZWmNkZWZnaGlqc3R1dnd4eXqDhIWGh4iJipKTlJWWl5iZmqKjpKWmp6ipqrKztLW2t7i5usLDxMXGx8jJytLT1NXW19jZ2uHi4+Tl5ufo6erx8vP09fb3+Pn6/8QAHwEAAwEBAQEBAQEBAQAAAAAAAAECAwQFBgcICQoL/8QAtREAAgECBAQDBAcFBAQAAQJ3AAECAxEEBSExBhJBUQdhcRMiMoEIFEKRobHBCSMzUvAVYnLRChYkNOEl8RcYGRomJygpKjU2Nzg5OkNERUZHSElKU1RVVldYWVpjZGVmZ2hpanN0dXZ3eHl6goOEhYaHiImKkpOUlZaXmJmaoqOkpaanqKmqsrO0tba3uLm6wsPExcbHyMnK0tPU1dbX2Nna4uPk5ebn6Onq8vP09fb3+Pn6/9oADAMBAAIRAxEAPwC7RSHOOOtJtyctzxigB1FJtGc475paACiiigBsg3IQf5Zpq7h2545xTzntSAYHQfnQAYbH3u3XFChh94il5x/9ekGcDgfnQA6iiigBDjvTMLncUGR3xTyMgg96TbkYPP1oAAR1xgnrxTqaEA//AFD/AD/+ulAwc0ALRRRQAUUUUAFFFFABRRRQB//Z\"\n        },\n        \"file\": {\n          \"name\": \"2026-04-10-report.pdf\",\n          \"type\": \"application/pdf\",\n          \"dimensions\": {\n            \"height\": 720,\n            \"size\": 341302,\n            \"width\": 509\n          },\n          \"id\": \"a_01008015600617759677941700_2_911174541\"\n        },\n        \"comment\": \"SCAP workspace test 2026-04-10-report.pdf 04:23:07\"\n      },\n      \"revision\": 2,\n      \"is_pinned\": false\n    },\n    {\n      \"is_read\": true,\n      \"sender\": {\n        \"name\": \"o-CT-911174541-916478296\",\n        \"id\": \"o-CT-911174541-916478296\"\n      },\n      \"id\": \"1775967803028_135290295956\",\n      \"time\": 1775967803028,\n      \"type\": \"file\",\n      \"content\": {\n        \"thumbnail\": {\n          \"height\": \"230\",\n          \"width\": \"163\",\n          \"blur_data\": \"/9j/4AAQSkZJRgABAgAAAQABAAD/2wBDAFA3PEY8MlBGQUZaVVBfeMiCeG5uePWvuZHI////////////////////////////////////////////////////2wBDAVVaWnhpeOuCguv/////////////////////////////////////////////////////////////////////////wAARCAAyACMDASIAAhEBAxEB/8QAHwAAAQUBAQEBAQEAAAAAAAAAAAECAwQFBgcICQoL/8QAtRAAAgEDAwIEAwUFBAQAAAF9AQIDAAQRBRIhMUEGE1FhByJxFDKBkaEII0KxwRVS0fAkM2JyggkKFhcYGRolJicoKSo0NTY3ODk6Q0RFRkdISUpTVFVWV1hZWmNkZWZnaGlqc3R1dnd4eXqDhIWGh4iJipKTlJWWl5iZmqKjpKWmp6ipqrKztLW2t7i5usLDxMXGx8jJytLT1NXW19jZ2uHi4+Tl5ufo6erx8vP09fb3+Pn6/8QAHwEAAwEBAQEBAQEBAQAAAAAAAAECAwQFBgcICQoL/8QAtREAAgECBAQDBAcFBAQAAQJ3AAECAxEEBSExBhJBUQdhcRMiMoEIFEKRobHBCSMzUvAVYnLRChYkNOEl8RcYGRomJygpKjU2Nzg5OkNERUZHSElKU1RVVldYWVpjZGVmZ2hpanN0dXZ3eHl6goOEhYaHiImKkpOUlZaXmJmaoqOkpaanqKmqsrO0tba3uLm6wsPExcbHyMnK0tPU1dbX2Nna4uPk5ebn6Onq8vP09fb3+Pn6/9oADAMBAAIRAxEAPwC00gX6UhlADHnAoZSTgfWjYcEccnPHegAEoPTJ520vmJ/e9qb5ZGAvABz1pBCBj65oAlBBGRzRTUDhQDjP0ooAjfmRuSP6UNuJwG6sAeOlPdsE8EkDpilJG4/Ie3OOtADQcZycEt3B/wA/0oycjkYJ96cTkA47+lLn2/SgBBtIzkfnmigYxwo/L/61FACFcueevPWjZktkDn078U1wSzdev6cf/XoIbnIPUY+nH/16AH7cYA6d+TRt6YPT3P8AjTQGGMk/e96XL+3X0NACjeBjK0UqliMkCigBe9GB6UUUAA60GiigBaKKKAP/2Q==\"\n        },\n        \"file\": {\n          \"name\": \"lv1_capturable_report.csv\",\n          \"type\": \"text/plain\",\n          \"dimensions\": {\n            \"height\": 230,\n            \"size\": 16596,\n            \"width\": 163\n          },\n          \"id\": \"a_01008015600617759678030110_2_911174541\"\n        },\n        \"comment\": \"SCAP workspace test lv1_capturable_report.csv 04:23:18\"\n      },\n      \"revision\": 2,\n      \"is_pinned\": false\n    },\n    {\n      \"is_read\": true,\n      \"sender\": {\n        \"name\": \"o-CT-911174541-916478296\",\n        \"id\": \"o-CT-911174541-916478296\"\n      },\n      \"id\": \"1775967812651_139585272875\",\n      \"time\": 1775967812651,\n      \"type\": \"file\",\n      \"content\": {\n        \"thumbnail\": {},\n        \"file\": {\n          \"name\": \"sample-3.m4a\",\n          \"type\": \"audio/mp4\",\n          \"dimensions\": {\n            \"size\": 343380\n          },\n          \"id\": \"a_01008015613117759678126360_2_911174541\"\n        },\n        \"comment\": \"SCAP workspace test sample-3.m4a 04:23:27\"\n      },\n      \"revision\": 2,\n      \"is_pinned\": false\n    },\n    {\n      \"is_read\": true,\n      \"sender\": {\n        \"name\": \"o-CT-911174541-916478296\",\n        \"id\": \"o-CT-911174541-916478296\"\n      },\n      \"id\": \"1775967820809_143880248329\",\n      \"time\": 1775967820809,\n      \"type\": \"file\",\n      \"content\": {\n        \"thumbnail\": {\n          \"height\": \"682\",\n          \"width\": \"682\",\n          \"blur_data\": \"/9j/4AAQSkZJRgABAgAAAQABAAD/2wBDAFA3PEY8MlBGQUZaVVBfeMiCeG5uePWvuZHI////////////////////////////////////////////////////2wBDAVVaWnhpeOuCguv/////////////////////////////////////////////////////////////////////////wAARCAAyADIDASIAAhEBAxEB/8QAHwAAAQUBAQEBAQEAAAAAAAAAAAECAwQFBgcICQoL/8QAtRAAAgEDAwIEAwUFBAQAAAF9AQIDAAQRBRIhMUEGE1FhByJxFDKBkaEII0KxwRVS0fAkM2JyggkKFhcYGRolJicoKSo0NTY3ODk6Q0RFRkdISUpTVFVWV1hZWmNkZWZnaGlqc3R1dnd4eXqDhIWGh4iJipKTlJWWl5iZmqKjpKWmp6ipqrKztLW2t7i5usLDxMXGx8jJytLT1NXW19jZ2uHi4+Tl5ufo6erx8vP09fb3+Pn6/8QAHwEAAwEBAQEBAQEBAQAAAAAAAAECAwQFBgcICQoL/8QAtREAAgECBAQDBAcFBAQAAQJ3AAECAxEEBSExBhJBUQdhcRMiMoEIFEKRobHBCSMzUvAVYnLRChYkNOEl8RcYGRomJygpKjU2Nzg5OkNERUZHSElKU1RVVldYWVpjZGVmZ2hpanN0dXZ3eHl6goOEhYaHiImKkpOUlZaXmJmaoqOkpaanqKmqsrO0tba3uLm6wsPExcbHyMnK0tPU1dbX2Nna4uPk5ebn6Onq8vP09fb3+Pn6/9oADAMBAAIRAxEAPwC7SEgDJOB70tUrmQyPsGML74yaAHyXfOI1/E1F9ol/v/oKj2nOOPzFGw+3/fQoAnS7YffAI9RVpHV13Kcis4qR6fgafE5iYNn5T1APWgDQopAcjI6UUAI7bUZvQZrOHXk4rSYBlKnoRis0DBIK59qAFXoCCcemf8/59KUgnvTkUsCFVQemPT3p/lJhmVyMevagasQ9DjdgfypDjHDZ9v8AIp0qkE89B396acY+7j8/8aBPceLiVQAGGBwOKKctq7KGDLgjNFMC9VO6i2t5g6Hr7VcqOdisTEY/GkBUVGUgqDke3H+f51MG4P7ojPUY606Ji0YJ+lKTjOATj0xj8e/+e9MCuyO5yVI9gKSGEyPyPlHWrDnAx3ptm2VYd+Dn/P0oEWaKKKQwpkwBifPoaKKAIof9Uv4/zqTGRzRRTEQ96dZ/6tv97+goopsZYoooqQP/2Q==\"\n        },\n        \"file\": {\n          \"name\": \"test.png\",\n          \"type\": \"image/png\",\n          \"dimensions\": {\n            \"height\": 682,\n            \"size\": 280386,\n            \"width\": 682\n          },\n          \"id\": \"a_01008015613117759678207910_2_911174541\"\n        },\n        \"comment\": \"SCAP workspace test test.png 04:23:35\"\n      },\n      \"revision\": 2,\n      \"is_pinned\": false\n    },\n    {\n      \"is_read\": true,\n      \"sender\": {\n        \"name\": \"o-CT-911174541-916478296\",\n        \"id\": \"o-CT-911174541-916478296\"\n      },\n      \"id\": \"1775967842837_148175237653\",\n      \"time\": 1775967842837,\n      \"type\": \"file\",\n      \"content\": {\n        \"thumbnail\": {\n          \"height\": \"682\",\n          \"width\": \"682\",\n          \"blur_data\": \"/9j/4AAQSkZJRgABAgAAAQABAAD/2wBDAFA3PEY8MlBGQUZaVVBfeMiCeG5uePWvuZHI////////////////////////////////////////////////////2wBDAVVaWnhpeOuCguv/////////////////////////////////////////////////////////////////////////wAARCAAyADIDASIAAhEBAxEB/8QAHwAAAQUBAQEBAQEAAAAAAAAAAAECAwQFBgcICQoL/8QAtRAAAgEDAwIEAwUFBAQAAAF9AQIDAAQRBRIhMUEGE1FhByJxFDKBkaEII0KxwRVS0fAkM2JyggkKFhcYGRolJicoKSo0NTY3ODk6Q0RFRkdISUpTVFVWV1hZWmNkZWZnaGlqc3R1dnd4eXqDhIWGh4iJipKTlJWWl5iZmqKjpKWmp6ipqrKztLW2t7i5usLDxMXGx8jJytLT1NXW19jZ2uHi4+Tl5ufo6erx8vP09fb3+Pn6/8QAHwEAAwEBAQEBAQEBAQAAAAAAAAECAwQFBgcICQoL/8QAtREAAgECBAQDBAcFBAQAAQJ3AAECAxEEBSExBhJBUQdhcRMiMoEIFEKRobHBCSMzUvAVYnLRChYkNOEl8RcYGRomJygpKjU2Nzg5OkNERUZHSElKU1RVVldYWVpjZGVmZ2hpanN0dXZ3eHl6goOEhYaHiImKkpOUlZaXmJmaoqOkpaanqKmqsrO0tba3uLm6wsPExcbHyMnK0tPU1dbX2Nna4uPk5ebn6Onq8vP09fb3+Pn6/9oADAMBAAIRAxEAPwC7SEgDJOB70tUrmQyPsGML74yaAHyXfOI1/E1F9ol/v/oKj2nOOPzFGw+3/fQoAnS7YffAI9RVpHV13Kcis4qR6fgafE5iYNn5T1APWgDQopAcjI6UUAI7bUZvQZrOHXk4rSYBlKnoRis0DBIK59qAFXoCCcemf8/59KUgnvTkUsCFVQemPT3p/lJhmVyMevagasQ9DjdgfypDjHDZ9v8AIp0qkE89B396acY+7j8/8aBPceLiVQAGGBwOKKctq7KGDLgjNFMC9VO6i2t5g6Hr7VcqOdisTEY/GkBUVGUgqDke3H+f51MG4P7ojPUY606Ji0YJ+lKTjOATj0xj8e/+e9MCuyO5yVI9gKSGEyPyPlHWrDnAx3ptm2VYd+Dn/P0oEWaKKKQwpkwBifPoaKKAIof9Uv4/zqTGRzRRTEQ96dZ/6tv97+goopsZYoooqQP/2Q==\"\n        },\n        \"file\": {\n          \"name\": \"test.png\",\n          \"type\": \"image/png\",\n          \"dimensions\": {\n            \"height\": 682,\n            \"size\": 280386,\n            \"width\": 682\n          },\n          \"id\": \"a_01008015424717759678428190_2_911174541\"\n        },\n        \"comment\": \"SCAP single-token channel image\"\n      },\n      \"revision\": 2,\n      \"is_pinned\": false\n    },\n    {\n      \"is_read\": true,\n      \"sender\": {\n        \"name\": \"o-CT-911174541-916478296\",\n        \"id\": \"o-CT-911174541-916478296\"\n      },\n      \"id\": \"1775967853171_152470215283\",\n      \"time\": 1775967853171,\n      \"type\": \"file\",\n      \"content\": {\n        \"thumbnail\": {},\n        \"file\": {\n          \"name\": \"sample-3.m4a\",\n          \"type\": \"audio/mp4\",\n          \"dimensions\": {\n            \"size\": 343380\n          },\n          \"id\": \"a_01008015424717759678531560_2_911174541\"\n        },\n        \"comment\": \"SCAP single-token channel voice\"\n      },\n      \"revision\": 2,\n      \"is_pinned\": false\n    },\n    {\n      \"is_read\": true,\n      \"sender\": {\n        \"name\": \"o-CT-911174541-916478296\",\n        \"id\": \"o-CT-911174541-916478296\"\n      },\n      \"id\": \"1775967864396_156765193804\",\n      \"time\": 1775967864396,\n      \"type\": \"file\",\n      \"content\": {\n        \"thumbnail\": {\n          \"height\": \"720\",\n          \"width\": \"509\",\n          \"blur_data\": \"/9j/4AAQSkZJRgABAgAAAQABAAD/2wBDAFA3PEY8MlBGQUZaVVBfeMiCeG5uePWvuZHI////////////////////////////////////////////////////2wBDAVVaWnhpeOuCguv/////////////////////////////////////////////////////////////////////////wAARCAAyACMDASIAAhEBAxEB/8QAHwAAAQUBAQEBAQEAAAAAAAAAAAECAwQFBgcICQoL/8QAtRAAAgEDAwIEAwUFBAQAAAF9AQIDAAQRBRIhMUEGE1FhByJxFDKBkaEII0KxwRVS0fAkM2JyggkKFhcYGRolJicoKSo0NTY3ODk6Q0RFRkdISUpTVFVWV1hZWmNkZWZnaGlqc3R1dnd4eXqDhIWGh4iJipKTlJWWl5iZmqKjpKWmp6ipqrKztLW2t7i5usLDxMXGx8jJytLT1NXW19jZ2uHi4+Tl5ufo6erx8vP09fb3+Pn6/8QAHwEAAwEBAQEBAQEBAQAAAAAAAAECAwQFBgcICQoL/8QAtREAAgECBAQDBAcFBAQAAQJ3AAECAxEEBSExBhJBUQdhcRMiMoEIFEKRobHBCSMzUvAVYnLRChYkNOEl8RcYGRomJygpKjU2Nzg5OkNERUZHSElKU1RVVldYWVpjZGVmZ2hpanN0dXZ3eHl6goOEhYaHiImKkpOUlZaXmJmaoqOkpaanqKmqsrO0tba3uLm6wsPExcbHyMnK0tPU1dbX2Nna4uPk5ebn6Onq8vP09fb3+Pn6/9oADAMBAAIRAxEAPwC7RSHOOOtJtyctzxigB1FJtGc475paACiiigBsg3IQf5Zpq7h2545xTzntSAYHQfnQAYbH3u3XFChh94il5x/9ekGcDgfnQA6iiigBDjvTMLncUGR3xTyMgg96TbkYPP1oAAR1xgnrxTqaEA//AFD/AD/+ulAwc0ALRRRQAUUUUAFFFFABRRRQB//Z\"\n        },\n        \"file\": {\n          \"name\": \"2026-04-10-report.pdf\",\n          \"type\": \"application/pdf\",\n          \"dimensions\": {\n            \"height\": 720,\n            \"size\": 341302,\n            \"width\": 509\n          },\n          \"id\": \"a_01008015613117759678643740_2_911174541\"\n        },\n        \"comment\": \"SCAP single-token channel file\"\n      },\n      \"revision\": 2,\n      \"is_pinned\": false\n    },\n    {\n      \"is_read\": true,\n      \"sender\": {\n        \"name\": \"o-CT-911174541-916478296\",\n        \"id\": \"o-CT-911174541-916478296\"\n      },\n      \"id\": \"1775967901225_161060197929\",\n      \"time\": 1775967901225,\n      \"type\": \"file\",\n      \"content\": {\n        \"thumbnail\": {\n          \"height\": \"682\",\n          \"width\": \"682\",\n          \"blur_data\": \"/9j/4AAQSkZJRgABAgAAAQABAAD/2wBDAFA3PEY8MlBGQUZaVVBfeMiCeG5uePWvuZHI////////////////////////////////////////////////////2wBDAVVaWnhpeOuCguv/////////////////////////////////////////////////////////////////////////wAARCAAyADIDASIAAhEBAxEB/8QAHwAAAQUBAQEBAQEAAAAAAAAAAAECAwQFBgcICQoL/8QAtRAAAgEDAwIEAwUFBAQAAAF9AQIDAAQRBRIhMUEGE1FhByJxFDKBkaEII0KxwRVS0fAkM2JyggkKFhcYGRolJicoKSo0NTY3ODk6Q0RFRkdISUpTVFVWV1hZWmNkZWZnaGlqc3R1dnd4eXqDhIWGh4iJipKTlJWWl5iZmqKjpKWmp6ipqrKztLW2t7i5usLDxMXGx8jJytLT1NXW19jZ2uHi4+Tl5ufo6erx8vP09fb3+Pn6/8QAHwEAAwEBAQEBAQEBAQAAAAAAAAECAwQFBgcICQoL/8QAtREAAgECBAQDBAcFBAQAAQJ3AAECAxEEBSExBhJBUQdhcRMiMoEIFEKRobHBCSMzUvAVYnLRChYkNOEl8RcYGRomJygpKjU2Nzg5OkNERUZHSElKU1RVVldYWVpjZGVmZ2hpanN0dXZ3eHl6goOEhYaHiImKkpOUlZaXmJmaoqOkpaanqKmqsrO0tba3uLm6wsPExcbHyMnK0tPU1dbX2Nna4uPk5ebn6Onq8vP09fb3+Pn6/9oADAMBAAIRAxEAPwC7SEgDJOB70tUrmQyPsGML74yaAHyXfOI1/E1F9ol/v/oKj2nOOPzFGw+3/fQoAnS7YffAI9RVpHV13Kcis4qR6fgafE5iYNn5T1APWgDQopAcjI6UUAI7bUZvQZrOHXk4rSYBlKnoRis0DBIK59qAFXoCCcemf8/59KUgnvTkUsCFVQemPT3p/lJhmVyMevagasQ9DjdgfypDjHDZ9v8AIp0qkE89B396acY+7j8/8aBPceLiVQAGGBwOKKctq7KGDLgjNFMC9VO6i2t5g6Hr7VcqOdisTEY/GkBUVGUgqDke3H+f51MG4P7ojPUY606Ji0YJ+lKTjOATj0xj8e/+e9MCuyO5yVI9gKSGEyPyPlHWrDnAx3ptm2VYd+Dn/P0oEWaKKKQwpkwBifPoaKKAIof9Uv4/zqTGRzRRTEQ96dZ/6tv97+goopsZYoooqQP/2Q==\"\n        },\n        \"file\": {\n          \"name\": \"test.png\",\n          \"type\": \"image/png\",\n          \"dimensions\": {\n            \"height\": 682,\n            \"size\": 280386,\n            \"width\": 682\n          },\n          \"id\": \"a_01008015600617759679012090_2_911174541\"\n        },\n        \"comment\": \"SCAP single-token channel image\"\n      },\n      \"revision\": 2,\n      \"is_pinned\": false\n    },\n    {\n      \"is_read\": true,\n      \"sender\": {\n        \"name\": \"o-CT-911174541-916478296\",\n        \"id\": \"o-CT-911174541-916478296\"\n      },\n      \"id\": \"1775967913022_165355177022\",\n      \"time\": 1775967913022,\n      \"type\": \"file\",\n      \"content\": {\n        \"thumbnail\": {},\n        \"file\": {\n          \"name\": \"sample-3.m4a\",\n          \"type\": \"audio/mp4\",\n          \"dimensions\": {\n            \"size\": 343380\n          },\n          \"id\": \"a_01008015600617759679130060_2_911174541\"\n        },\n        \"comment\": \"SCAP single-token channel voice\"\n      },\n      \"revision\": 2,\n      \"is_pinned\": false\n    },\n    {\n      \"is_read\": true,\n      \"sender\": {\n        \"name\": \"o-CT-911174541-916478296\",\n        \"id\": \"o-CT-911174541-916478296\"\n      },\n      \"id\": \"1775967923673_169650154969\",\n      \"time\": 1775967923673,\n      \"type\": \"file\",\n      \"content\": {\n        \"thumbnail\": {\n          \"height\": \"230\",\n          \"width\": \"163\",\n          \"blur_data\": \"/9j/4AAQSkZJRgABAgAAAQABAAD/2wBDAFA3PEY8MlBGQUZaVVBfeMiCeG5uePWvuZHI////////////////////////////////////////////////////2wBDAVVaWnhpeOuCguv/////////////////////////////////////////////////////////////////////////wAARCAAyACMDASIAAhEBAxEB/8QAHwAAAQUBAQEBAQEAAAAAAAAAAAECAwQFBgcICQoL/8QAtRAAAgEDAwIEAwUFBAQAAAF9AQIDAAQRBRIhMUEGE1FhByJxFDKBkaEII0KxwRVS0fAkM2JyggkKFhcYGRolJicoKSo0NTY3ODk6Q0RFRkdISUpTVFVWV1hZWmNkZWZnaGlqc3R1dnd4eXqDhIWGh4iJipKTlJWWl5iZmqKjpKWmp6ipqrKztLW2t7i5usLDxMXGx8jJytLT1NXW19jZ2uHi4+Tl5ufo6erx8vP09fb3+Pn6/8QAHwEAAwEBAQEBAQEBAQAAAAAAAAECAwQFBgcICQoL/8QAtREAAgECBAQDBAcFBAQAAQJ3AAECAxEEBSExBhJBUQdhcRMiMoEIFEKRobHBCSMzUvAVYnLRChYkNOEl8RcYGRomJygpKjU2Nzg5OkNERUZHSElKU1RVVldYWVpjZGVmZ2hpanN0dXZ3eHl6goOEhYaHiImKkpOUlZaXmJmaoqOkpaanqKmqsrO0tba3uLm6wsPExcbHyMnK0tPU1dbX2Nna4uPk5ebn6Onq8vP09fb3+Pn6/9oADAMBAAIRAxEAPwC00gX6UhlADHnAoZSTgfWjYcEccnPHegAEoPTJ520vmJ/e9qb5ZGAvABz1pBCBj65oAlBBGRzRTUDhQDjP0ooAjfmRuSP6UNuJwG6sAeOlPdsE8EkDpilJG4/Ie3OOtADQcZycEt3B/wA/0oycjkYJ96cTkA47+lLn2/SgBBtIzkfnmigYxwo/L/61FACFcueevPWjZktkDn078U1wSzdev6cf/XoIbnIPUY+nH/16AH7cYA6d+TRt6YPT3P8AjTQGGMk/e96XL+3X0NACjeBjK0UqliMkCigBe9GB6UUUAA60GiigBaKKKAP/2Q==\"\n        },\n        \"file\": {\n          \"name\": \"lv1_capturable_report.csv\",\n          \"type\": \"text/plain\",\n          \"dimensions\": {\n            \"height\": 230,\n            \"size\": 16596,\n            \"width\": 163\n          },\n          \"id\": \"a_01008015613117759679236570_2_911174541\"\n        },\n        \"comment\": \"SCAP single-token channel file\"\n      },\n      \"revision\": 2,\n      \"is_pinned\": false\n    },\n    {\n      \"is_read\": true,\n      \"sender\": {\n        \"name\": \"o-CT-911174541-916478296\",\n        \"id\": \"o-CT-911174541-916478296\"\n      },\n      \"id\": \"1775968164188_173945362780\",\n      \"time\": 1775968164188,\n      \"type\": \"file\",\n      \"content\": {\n        \"thumbnail\": {\n          \"height\": \"720\",\n          \"width\": \"509\",\n          \"blur_data\": \"/9j/4AAQSkZJRgABAgAAAQABAAD/2wBDAFA3PEY8MlBGQUZaVVBfeMiCeG5uePWvuZHI////////////////////////////////////////////////////2wBDAVVaWnhpeOuCguv/////////////////////////////////////////////////////////////////////////wAARCAAyACMDASIAAhEBAxEB/8QAHwAAAQUBAQEBAQEAAAAAAAAAAAECAwQFBgcICQoL/8QAtRAAAgEDAwIEAwUFBAQAAAF9AQIDAAQRBRIhMUEGE1FhByJxFDKBkaEII0KxwRVS0fAkM2JyggkKFhcYGRolJicoKSo0NTY3ODk6Q0RFRkdISUpTVFVWV1hZWmNkZWZnaGlqc3R1dnd4eXqDhIWGh4iJipKTlJWWl5iZmqKjpKWmp6ipqrKztLW2t7i5usLDxMXGx8jJytLT1NXW19jZ2uHi4+Tl5ufo6erx8vP09fb3+Pn6/8QAHwEAAwEBAQEBAQEBAQAAAAAAAAECAwQFBgcICQoL/8QAtREAAgECBAQDBAcFBAQAAQJ3AAECAxEEBSExBhJBUQdhcRMiMoEIFEKRobHBCSMzUvAVYnLRChYkNOEl8RcYGRomJygpKjU2Nzg5OkNERUZHSElKU1RVVldYWVpjZGVmZ2hpanN0dXZ3eHl6goOEhYaHiImKkpOUlZaXmJmaoqOkpaanqKmqsrO0tba3uLm6wsPExcbHyMnK0tPU1dbX2Nna4uPk5ebn6Onq8vP09fb3+Pn6/9oADAMBAAIRAxEAPwC7RSHOOOtJtyctzxigB1FJtGc475paACiiigBsg3IQf5Zpq7h2545xTzntSAYHQfnQAYbH3u3XFChh94il5x/9ekGcDgfnQA6iiigBDjvTMLncUGR3xTyMgg96TbkYPP1oAAR1xgnrxTqaEA//AFD/AD/+ulAwc0ALRRRQAUUUUAFFFFABRRRQB//Z\"\n        },\n        \"file\": {\n          \"name\": \"2026-04-10-report.pdf\",\n          \"type\": \"application/pdf\",\n          \"dimensions\": {\n            \"height\": 720,\n            \"size\": 341302,\n            \"width\": 509\n          },\n          \"id\": \"a_01008015424717759681641690_2_911174541\"\n        },\n        \"comment\": \"SCAP retest 2026-04-10-report.pdf 04:29:17\"\n      },\n      \"revision\": 2,\n      \"is_pinned\": false\n    },\n    {\n      \"is_read\": true,\n      \"sender\": {\n        \"name\": \"o-CT-911174541-916478296\",\n        \"id\": \"o-CT-911174541-916478296\"\n      },\n      \"id\": \"1775968173497_178240339385\",\n      \"time\": 1775968173497,\n      \"type\": \"file\",\n      \"content\": {\n        \"thumbnail\": {\n          \"height\": \"230\",\n          \"width\": \"163\",\n          \"blur_data\": \"/9j/4AAQSkZJRgABAgAAAQABAAD/2wBDAFA3PEY8MlBGQUZaVVBfeMiCeG5uePWvuZHI////////////////////////////////////////////////////2wBDAVVaWnhpeOuCguv/////////////////////////////////////////////////////////////////////////wAARCAAyACMDASIAAhEBAxEB/8QAHwAAAQUBAQEBAQEAAAAAAAAAAAECAwQFBgcICQoL/8QAtRAAAgEDAwIEAwUFBAQAAAF9AQIDAAQRBRIhMUEGE1FhByJxFDKBkaEII0KxwRVS0fAkM2JyggkKFhcYGRolJicoKSo0NTY3ODk6Q0RFRkdISUpTVFVWV1hZWmNkZWZnaGlqc3R1dnd4eXqDhIWGh4iJipKTlJWWl5iZmqKjpKWmp6ipqrKztLW2t7i5usLDxMXGx8jJytLT1NXW19jZ2uHi4+Tl5ufo6erx8vP09fb3+Pn6/8QAHwEAAwEBAQEBAQEBAQAAAAAAAAECAwQFBgcICQoL/8QAtREAAgECBAQDBAcFBAQAAQJ3AAECAxEEBSExBhJBUQdhcRMiMoEIFEKRobHBCSMzUvAVYnLRChYkNOEl8RcYGRomJygpKjU2Nzg5OkNERUZHSElKU1RVVldYWVpjZGVmZ2hpanN0dXZ3eHl6goOEhYaHiImKkpOUlZaXmJmaoqOkpaanqKmqsrO0tba3uLm6wsPExcbHyMnK0tPU1dbX2Nna4uPk5ebn6Onq8vP09fb3+Pn6/9oADAMBAAIRAxEAPwC00gX6UhlADHnAoZSTgfWjYcEccnPHegAEoPTJ520vmJ/e9qb5ZGAvABz1pBCBj65oAlBBGRzRTUDhQDjP0ooAjfmRuSP6UNuJwG6sAeOlPdsE8EkDpilJG4/Ie3OOtADQcZycEt3B/wA/0oycjkYJ96cTkA47+lLn2/SgBBtIzkfnmigYxwo/L/61FACFcueevPWjZktkDn078U1wSzdev6cf/XoIbnIPUY+nH/16AH7cYA6d+TRt6YPT3P8AjTQGGMk/e96XL+3X0NACjeBjK0UqliMkCigBe9GB6UUUAA60GiigBaKKKAP/2Q==\"\n        },\n        \"file\": {\n          \"name\": \"lv1_capturable_report.csv\",\n          \"type\": \"text/plain\",\n          \"dimensions\": {\n            \"height\": 230,\n            \"size\": 16596,\n            \"width\": 163\n          },\n          \"id\": \"a_01008015600617759681734800_2_911174541\"\n        },\n        \"comment\": \"SCAP retest lv1_capturable_report.csv 04:29:28\"\n      },\n      \"revision\": 2,\n      \"is_pinned\": false\n    },\n    {\n      \"is_read\": true,\n      \"sender\": {\n        \"name\": \"o-CT-911174541-916478296\",\n        \"id\": \"o-CT-911174541-916478296\"\n      },\n      \"id\": \"1775968183154_182535316338\",\n      \"time\": 1775968183154,\n      \"type\": \"file\",\n      \"content\": {\n        \"thumbnail\": {},\n        \"file\": {\n          \"name\": \"sample-3.m4a\",\n          \"type\": \"audio/mp4\",\n          \"dimensions\": {\n            \"size\": 343380\n          },\n          \"id\": \"a_01008015600617759681831380_2_911174541\"\n        },\n        \"comment\": \"SCAP retest sample-3.m4a 04:29:37\"\n      },\n      \"revision\": 2,\n      \"is_pinned\": false\n    },\n    {\n      \"is_read\": true,\n      \"sender\": {\n        \"name\": \"o-CT-911174541-916478296\",\n        \"id\": \"o-CT-911174541-916478296\"\n      },\n      \"id\": \"1775968191651_186830292131\",\n      \"time\": 1775968191651,\n      \"type\": \"file\",\n      \"content\": {\n        \"thumbnail\": {\n          \"height\": \"682\",\n          \"width\": \"682\",\n          \"blur_data\": \"/9j/4AAQSkZJRgABAgAAAQABAAD/2wBDAFA3PEY8MlBGQUZaVVBfeMiCeG5uePWvuZHI////////////////////////////////////////////////////2wBDAVVaWnhpeOuCguv/////////////////////////////////////////////////////////////////////////wAARCAAyADIDASIAAhEBAxEB/8QAHwAAAQUBAQEBAQEAAAAAAAAAAAECAwQFBgcICQoL/8QAtRAAAgEDAwIEAwUFBAQAAAF9AQIDAAQRBRIhMUEGE1FhByJxFDKBkaEII0KxwRVS0fAkM2JyggkKFhcYGRolJicoKSo0NTY3ODk6Q0RFRkdISUpTVFVWV1hZWmNkZWZnaGlqc3R1dnd4eXqDhIWGh4iJipKTlJWWl5iZmqKjpKWmp6ipqrKztLW2t7i5usLDxMXGx8jJytLT1NXW19jZ2uHi4+Tl5ufo6erx8vP09fb3+Pn6/8QAHwEAAwEBAQEBAQEBAQAAAAAAAAECAwQFBgcICQoL/8QAtREAAgECBAQDBAcFBAQAAQJ3AAECAxEEBSExBhJBUQdhcRMiMoEIFEKRobHBCSMzUvAVYnLRChYkNOEl8RcYGRomJygpKjU2Nzg5OkNERUZHSElKU1RVVldYWVpjZGVmZ2hpanN0dXZ3eHl6goOEhYaHiImKkpOUlZaXmJmaoqOkpaanqKmqsrO0tba3uLm6wsPExcbHyMnK0tPU1dbX2Nna4uPk5ebn6Onq8vP09fb3+Pn6/9oADAMBAAIRAxEAPwC7SEgDJOB70tUrmQyPsGML74yaAHyXfOI1/E1F9ol/v/oKj2nOOPzFGw+3/fQoAnS7YffAI9RVpHV13Kcis4qR6fgafE5iYNn5T1APWgDQopAcjI6UUAI7bUZvQZrOHXk4rSYBlKnoRis0DBIK59qAFXoCCcemf8/59KUgnvTkUsCFVQemPT3p/lJhmVyMevagasQ9DjdgfypDjHDZ9v8AIp0qkE89B396acY+7j8/8aBPceLiVQAGGBwOKKctq7KGDLgjNFMC9VO6i2t5g6Hr7VcqOdisTEY/GkBUVGUgqDke3H+f51MG4P7ojPUY606Ji0YJ+lKTjOATj0xj8e/+e9MCuyO5yVI9gKSGEyPyPlHWrDnAx3ptm2VYd+Dn/P0oEWaKKKQwpkwBifPoaKKAIof9Uv4/zqTGRzRRTEQ96dZ/6tv97+goopsZYoooqQP/2Q==\"\n        },\n        \"file\": {\n          \"name\": \"test.png\",\n          \"type\": \"image/png\",\n          \"dimensions\": {\n            \"height\": 682,\n            \"size\": 280386,\n            \"width\": 682\n          },\n          \"id\": \"a_01008015600617759681916340_2_911174541\"\n        },\n        \"comment\": \"SCAP retest test.png 04:29:46\"\n      },\n      \"revision\": 2,\n      \"is_pinned\": false\n    }\n  ],\n  \"typedMessages\": [\n    {\n      \"messageId\": \"1775689355662_83472241038\",\n      \"types\": [\n        \"text\"\n      ],\n      \"sender\": \"David Wang\",\n      \"textPreview\": \"{'data': {'users': {'o-CT-911174541-802016712': 'Jiameng Han Han'}}, 'type': 'user_added'}\"\n    },\n    {\n      \"messageId\": \"1775689372943_87767225615\",\n      \"types\": [\n        \"text\"\n      ],\n      \"sender\": \"o-CT-911174541-754805990\",\n      \"textPreview\": \"{'data': {'users': {'o-CT-911174541-802016712': 'Jiameng Han Han'}}, 'type': 'user_removed'}\"\n    },\n    {\n      \"messageId\": \"1775689401317_92062221285\",\n      \"types\": [\n        \"text\"\n      ],\n      \"sender\": \"David Wang\",\n      \"textPreview\": \"{'data': {'users': {'o-CT-911174541-802016712': 'Jiameng Han Han'}}, 'type': 'user_added'}\"\n    },\n    {\n      \"messageId\": \"1775689402639_96357189903\",\n      \"types\": [\n        \"text\"\n      ],\n      \"sender\": \"o-CT-911174541-754805990\",\n      \"textPreview\": \"{'data': {'users': {'o-CT-911174541-802016712': 'Jiameng Han Han'}}, 'type': 'user_removed'}\"\n    },\n    {\n      \"messageId\": \"1775957529661_100920284221\",\n      \"types\": [\n        \"text\"\n      ],\n      \"sender\": \"ai-dev\",\n      \"textPreview\": \"{'text': 'SCAP_TEXT_VIS2_013209'}\"\n    },\n    {\n      \"messageId\": \"1775957550478_105215272334\",\n      \"types\": [\n        \"image\",\n        \"text\"\n      ],\n      \"sender\": \"ai-dev\",\n      \"textPreview\": \"{'text': 'SCAP_REMOTE_IMG2_013228 https://upload.wikimedia.org/wikipedia/commons/3/3f/JPEG_example_flower.jpg', 'card': {'preview': 'https://upload.wikimedia.or\"\n    },\n    {\n      \"messageId\": \"1775957729671_109510418823\",\n      \"types\": [\n        \"text\"\n      ],\n      \"sender\": \"ai-dev\",\n      \"textPreview\": \"{'text': 'SCAP_TEXT_VIS3_013529'}\"\n    },\n    {\n      \"messageId\": \"1775957731803_113805388251\",\n      \"types\": [\n        \"image\",\n        \"text\"\n      ],\n      \"sender\": \"ai-dev\",\n      \"textPreview\": \"{'text': 'SCAP_REMOTE_IMG3_013530 https://upload.wikimedia.org/wikipedia/commons/3/3f/JPEG_example_flower.jpg', 'card': {'preview': 'https://upload.wikimedia.or\"\n    },\n    {\n      \"messageId\": \"1775960471460_118103095204\",\n      \"types\": [\n        \"file\",\n        \"image\",\n        \"text\"\n      ],\n      \"sender\": \"o-CT-911174541-916478296\",\n      \"textPreview\": \"{'thumbnail': {'height': '682', 'width': '682', 'blur_data': '/9j/4AAQSkZJRgABAgAAAQABAAD/2wBDAFA3PEY8MlBGQUZaVVBfeMiCeG5uePWvuZHI//////////////////////////////\"\n    },\n    {\n      \"messageId\": \"1775960484504_122398075544\",\n      \"types\": [\n        \"file\",\n        \"text\",\n        \"voice\"\n      ],\n      \"sender\": \"o-CT-911174541-916478296\",\n      \"textPreview\": \"{'thumbnail': {}, 'file': {'name': 'sample-3.m4a', 'type': 'audio/mp4', 'dimensions': {'size': 343380}, 'id': 'a_01008015424717759604844860_2_911174541'}, 'comm\"\n    },\n    {\n      \"messageId\": \"1775960497954_126693056290\",\n      \"types\": [\n        \"file\",\n        \"image\",\n        \"text\"\n      ],\n      \"sender\": \"o-CT-911174541-916478296\",\n      \"textPreview\": \"{'thumbnail': {'height': '682', 'width': '682', 'blur_data': '/9j/4AAQSkZJRgABAgAAAQABAAD/2wBDAFA3PEY8MlBGQUZaVVBfeMiCeG5uePWvuZHI//////////////////////////////\"\n    },\n    {\n      \"messageId\": \"1775967794190_130995319822\",\n      \"types\": [\n        \"file\",\n        \"text\"\n      ],\n      \"sender\": \"o-CT-911174541-916478296\",\n      \"textPreview\": \"{'thumbnail': {'height': '720', 'width': '509', 'blur_data': '/9j/4AAQSkZJRgABAgAAAQABAAD/2wBDAFA3PEY8MlBGQUZaVVBfeMiCeG5uePWvuZHI//////////////////////////////\"\n    },\n    {\n      \"messageId\": \"1775967803028_135290295956\",\n      \"types\": [\n        \"file\",\n        \"text\"\n      ],\n      \"sender\": \"o-CT-911174541-916478296\",\n      \"textPreview\": \"{'thumbnail': {'height': '230', 'width': '163', 'blur_data': '/9j/4AAQSkZJRgABAgAAAQABAAD/2wBDAFA3PEY8MlBGQUZaVVBfeMiCeG5uePWvuZHI//////////////////////////////\"\n    },\n    {\n      \"messageId\": \"1775967812651_139585272875\",\n      \"types\": [\n        \"file\",\n        \"text\",\n        \"voice\"\n      ],\n      \"sender\": \"o-CT-911174541-916478296\",\n      \"textPreview\": \"{'thumbnail': {}, 'file': {'name': 'sample-3.m4a', 'type': 'audio/mp4', 'dimensions': {'size': 343380}, 'id': 'a_01008015613117759678126360_2_911174541'}, 'comm\"\n    },\n    {\n      \"messageId\": \"1775967820809_143880248329\",\n      \"types\": [\n        \"file\",\n        \"image\",\n        \"text\"\n      ],\n      \"sender\": \"o-CT-911174541-916478296\",\n      \"textPreview\": \"{'thumbnail': {'height': '682', 'width': '682', 'blur_data': '/9j/4AAQSkZJRgABAgAAAQABAAD/2wBDAFA3PEY8MlBGQUZaVVBfeMiCeG5uePWvuZHI//////////////////////////////\"\n    },\n    {\n      \"messageId\": \"1775967842837_148175237653\",\n      \"types\": [\n        \"file\",\n        \"image\",\n        \"text\"\n      ],\n      \"sender\": \"o-CT-911174541-916478296\",\n      \"textPreview\": \"{'thumbnail': {'height': '682', 'width': '682', 'blur_data': '/9j/4AAQSkZJRgABAgAAAQABAAD/2wBDAFA3PEY8MlBGQUZaVVBfeMiCeG5uePWvuZHI//////////////////////////////\"\n    },\n    {\n      \"messageId\": \"1775967853171_152470215283\",\n      \"types\": [\n        \"file\",\n        \"text\",\n        \"voice\"\n      ],\n      \"sender\": \"o-CT-911174541-916478296\",\n      \"textPreview\": \"{'thumbnail': {}, 'file': {'name': 'sample-3.m4a', 'type': 'audio/mp4', 'dimensions': {'size': 343380}, 'id': 'a_01008015424717759678531560_2_911174541'}, 'comm\"\n    },\n    {\n      \"messageId\": \"1775967864396_156765193804\",\n      \"types\": [\n        \"file\",\n        \"text\"\n      ],\n      \"sender\": \"o-CT-911174541-916478296\",\n      \"textPreview\": \"{'thumbnail': {'height': '720', 'width': '509', 'blur_data': '/9j/4AAQSkZJRgABAgAAAQABAAD/2wBDAFA3PEY8MlBGQUZaVVBfeMiCeG5uePWvuZHI//////////////////////////////\"\n    },\n    {\n      \"messageId\": \"1775967901225_161060197929\",\n      \"types\": [\n        \"file\",\n        \"image\",\n        \"text\"\n      ],\n      \"sender\": \"o-CT-911174541-916478296\",\n      \"textPreview\": \"{'thumbnail': {'height': '682', 'width': '682', 'blur_data': '/9j/4AAQSkZJRgABAgAAAQABAAD/2wBDAFA3PEY8MlBGQUZaVVBfeMiCeG5uePWvuZHI//////////////////////////////\"\n    },\n    {\n      \"messageId\": \"1775967913022_165355177022\",\n      \"types\": [\n        \"file\",\n        \"text\",\n        \"voice\"\n      ],\n      \"sender\": \"o-CT-911174541-916478296\",\n      \"textPreview\": \"{'thumbnail': {}, 'file': {'name': 'sample-3.m4a', 'type': 'audio/mp4', 'dimensions': {'size': 343380}, 'id': 'a_01008015600617759679130060_2_911174541'}, 'comm\"\n    },\n    {\n      \"messageId\": \"1775967923673_169650154969\",\n      \"types\": [\n        \"file\",\n        \"text\"\n      ],\n      \"sender\": \"o-CT-911174541-916478296\",\n      \"textPreview\": \"{'thumbnail': {'height': '230', 'width': '163', 'blur_data': '/9j/4AAQSkZJRgABAgAAAQABAAD/2wBDAFA3PEY8MlBGQUZaVVBfeMiCeG5uePWvuZHI//////////////////////////////\"\n    },\n    {\n      \"messageId\": \"1775968164188_173945362780\",\n      \"types\": [\n        \"file\",\n        \"text\"\n      ],\n      \"sender\": \"o-CT-911174541-916478296\",\n      \"textPreview\": \"{'thumbnail': {'height': '720', 'width': '509', 'blur_data': '/9j/4AAQSkZJRgABAgAAAQABAAD/2wBDAFA3PEY8MlBGQUZaVVBfeMiCeG5uePWvuZHI//////////////////////////////\"\n    },\n    {\n      \"messageId\": \"1775968173497_178240339385\",\n      \"types\": [\n        \"file\",\n        \"text\"\n      ],\n      \"sender\": \"o-CT-911174541-916478296\",\n      \"textPreview\": \"{'thumbnail': {'height': '230', 'width': '163', 'blur_data': '/9j/4AAQSkZJRgABAgAAAQABAAD/2wBDAFA3PEY8MlBGQUZaVVBfeMiCeG5uePWvuZHI//////////////////////////////\"\n    },\n    {\n      \"messageId\": \"1775968183154_182535316338\",\n      \"types\": [\n        \"file\",\n        \"text\",\n        \"voice\"\n      ],\n      \"sender\": \"o-CT-911174541-916478296\",\n      \"textPreview\": \"{'thumbnail': {}, 'file': {'name': 'sample-3.m4a', 'type': 'audio/mp4', 'dimensions': {'size': 343380}, 'id': 'a_01008015600617759681831380_2_911174541'}, 'comm\"\n    },\n    {\n      \"messageId\": \"1775968191651_186830292131\",\n      \"types\": [\n        \"file\",\n        \"image\",\n        \"text\"\n      ],\n      \"sender\": \"o-CT-911174541-916478296\",\n      \"textPreview\": \"{'thumbnail': {'height': '682', 'width': '682', 'blur_data': '/9j/4AAQSkZJRgABAgAAAQABAAD/2wBDAFA3PEY8MlBGQUZaVVBfeMiCeG5uePWvuZHI//////////////////////////////\"\n    }\n  ]\n}",
+  "stderr": "",
+  "json": {
+    "chatId": "CT_1424657670787261966_911174541",
+    "channelId": "O6576524000097556005",
+    "count": 25,
+    "messages": [
+      {
+        "is_read": false,
+        "sender": {
+          "name": "David Wang",
+          "id": "o-CT-911174541-754805990"
+        },
+        "id": "1775689355662_83472241038",
+        "time": 1775689355662,
+        "type": "info",
+        "content": {
+          "data": {
+            "users": {
+              "o-CT-911174541-802016712": "Jiameng Han Han"
+            }
+          },
+          "type": "user_added"
+        },
+        "revision": 2,
+        "is_pinned": false
+      },
+      {
+        "is_read": false,
+        "sender": {
+          "name": "o-CT-911174541-754805990",
+          "id": "o-CT-911174541-754805990"
+        },
+        "id": "1775689372943_87767225615",
+        "time": 1775689372943,
+        "type": "info",
+        "content": {
+          "data": {
+            "users": {
+              "o-CT-911174541-802016712": "Jiameng Han Han"
+            }
+          },
+          "type": "user_removed"
+        },
+        "revision": 2,
+        "is_pinned": false
+      },
+      {
+        "is_read": false,
+        "sender": {
+          "name": "David Wang",
+          "id": "o-CT-911174541-754805990"
+        },
+        "id": "1775689401317_92062221285",
+        "time": 1775689401317,
+        "type": "info",
+        "content": {
+          "data": {
+            "users": {
+              "o-CT-911174541-802016712": "Jiameng Han Han"
+            }
+          },
+          "type": "user_added"
+        },
+        "revision": 2,
+        "is_pinned": false
+      },
+      {
+        "is_read": false,
+        "sender": {
+          "name": "o-CT-911174541-754805990",
+          "id": "o-CT-911174541-754805990"
+        },
+        "id": "1775689402639_96357189903",
+        "time": 1775689402639,
+        "type": "info",
+        "content": {
+          "data": {
+            "users": {
+              "o-CT-911174541-802016712": "Jiameng Han Han"
+            }
+          },
+          "type": "user_removed"
+        },
+        "revision": 2,
+        "is_pinned": false
+      },
+      {
+        "is_read": true,
+        "sender": {
+          "name": "ai-dev",
+          "id": "o-CT-911174541-916478296"
+        },
+        "id": "1775957529661_100920284221",
+        "time": 1775957529661,
+        "type": "text",
+        "content": {
+          "text": "SCAP_TEXT_VIS2_013209"
+        },
+        "revision": 2,
+        "is_pinned": false
+      },
+      {
+        "is_read": true,
+        "unfurled_details": {
+          "url": "https://upload.wikimedia.org/wikipedia/commons/3/3f/JPEG_example_flower.jpg"
+        },
+        "sender": {
+          "name": "ai-dev",
+          "id": "o-CT-911174541-916478296"
+        },
+        "id": "1775957550478_105215272334",
+        "time": 1775957550478,
+        "type": "card",
+        "content": {
+          "text": "SCAP_REMOTE_IMG2_013228 https://upload.wikimedia.org/wikipedia/commons/3/3f/JPEG_example_flower.jpg",
+          "card": {
+            "preview": "https://upload.wikimedia.org/wikipedia/commons/3/3f/JPEG_example_flower.jpg",
+            "title": "SCAP remote image",
+            "thumbnail": "https://upload.wikimedia.org/wikipedia/commons/3/3f/JPEG_example_flower.jpg"
+          }
+        },
+        "revision": 2,
+        "is_pinned": false
+      },
+      {
+        "is_read": true,
+        "sender": {
+          "name": "ai-dev",
+          "id": "o-CT-911174541-916478296"
+        },
+        "id": "1775957729671_109510418823",
+        "time": 1775957729671,
+        "type": "text",
+        "content": {
+          "text": "SCAP_TEXT_VIS3_013529"
+        },
+        "revision": 2,
+        "is_pinned": false
+      },
+      {
+        "is_read": true,
+        "unfurled_details": {
+          "url": "https://upload.wikimedia.org/wikipedia/commons/3/3f/JPEG_example_flower.jpg"
+        },
+        "sender": {
+          "name": "ai-dev",
+          "id": "o-CT-911174541-916478296"
+        },
+        "id": "1775957731803_113805388251",
+        "time": 1775957731803,
+        "type": "card",
+        "content": {
+          "text": "SCAP_REMOTE_IMG3_013530 https://upload.wikimedia.org/wikipedia/commons/3/3f/JPEG_example_flower.jpg",
+          "card": {
+            "preview": "https://upload.wikimedia.org/wikipedia/commons/3/3f/JPEG_example_flower.jpg",
+            "title": "SCAP remote image",
+            "thumbnail": "https://upload.wikimedia.org/wikipedia/commons/3/3f/JPEG_example_flower.jpg"
+          }
+        },
+        "revision": 2,
+        "is_pinned": false
+      },
+      {
+        "is_read": true,
+        "sender": {
+          "name": "o-CT-911174541-916478296",
+          "id": "o-CT-911174541-916478296"
+        },
+        "id": "1775960471460_118103095204",
+        "time": 1775960471460,
+        "type": "file",
+        "content": {
+          "thumbnail": {
+            "height": "682",
+            "width": "682",
+            "blur_data": "/9j/4AAQSkZJRgABAgAAAQABAAD/2wBDAFA3PEY8MlBGQUZaVVBfeMiCeG5uePWvuZHI////////////////////////////////////////////////////2wBDAVVaWnhpeOuCguv/////////////////////////////////////////////////////////////////////////wAARCAAyADIDASIAAhEBAxEB/8QAHwAAAQUBAQEBAQEAAAAAAAAAAAECAwQFBgcICQoL/8QAtRAAAgEDAwIEAwUFBAQAAAF9AQIDAAQRBRIhMUEGE1FhByJxFDKBkaEII0KxwRVS0fAkM2JyggkKFhcYGRolJicoKSo0NTY3ODk6Q0RFRkdISUpTVFVWV1hZWmNkZWZnaGlqc3R1dnd4eXqDhIWGh4iJipKTlJWWl5iZmqKjpKWmp6ipqrKztLW2t7i5usLDxMXGx8jJytLT1NXW19jZ2uHi4+Tl5ufo6erx8vP09fb3+Pn6/8QAHwEAAwEBAQEBAQEBAQAAAAAAAAECAwQFBgcICQoL/8QAtREAAgECBAQDBAcFBAQAAQJ3AAECAxEEBSExBhJBUQdhcRMiMoEIFEKRobHBCSMzUvAVYnLRChYkNOEl8RcYGRomJygpKjU2Nzg5OkNERUZHSElKU1RVVldYWVpjZGVmZ2hpanN0dXZ3eHl6goOEhYaHiImKkpOUlZaXmJmaoqOkpaanqKmqsrO0tba3uLm6wsPExcbHyMnK0tPU1dbX2Nna4uPk5ebn6Onq8vP09fb3+Pn6/9oADAMBAAIRAxEAPwC7SEgDJOB70tUrmQyPsGML74yaAHyXfOI1/E1F9ol/v/oKj2nOOPzFGw+3/fQoAnS7YffAI9RVpHV13Kcis4qR6fgafE5iYNn5T1APWgDQopAcjI6UUAI7bUZvQZrOHXk4rSYBlKnoRis0DBIK59qAFXoCCcemf8/59KUgnvTkUsCFVQemPT3p/lJhmVyMevagasQ9DjdgfypDjHDZ9v8AIp0qkE89B396acY+7j8/8aBPceLiVQAGGBwOKKctq7KGDLgjNFMC9VO6i2t5g6Hr7VcqOdisTEY/GkBUVGUgqDke3H+f51MG4P7ojPUY606Ji0YJ+lKTjOATj0xj8e/+e9MCuyO5yVI9gKSGEyPyPlHWrDnAx3ptm2VYd+Dn/P0oEWaKKKQwpkwBifPoaKKAIof9Uv4/zqTGRzRRTEQ96dZ/6tv97+goopsZYoooqQP/2Q=="
+          },
+          "file": {
+            "name": "test.png",
+            "type": "image/png",
+            "dimensions": {
+              "height": 682,
+              "size": 280386,
+              "width": 682
+            },
+            "id": "a_01008015600617759604714340_2_911174541"
+          },
+          "comment": "SCAP single-token channel image"
+        },
+        "revision": 2,
+        "is_pinned": false
+      },
+      {
+        "is_read": true,
+        "sender": {
+          "name": "o-CT-911174541-916478296",
+          "id": "o-CT-911174541-916478296"
+        },
+        "id": "1775960484504_122398075544",
+        "time": 1775960484504,
+        "type": "file",
+        "content": {
+          "thumbnail": {},
+          "file": {
+            "name": "sample-3.m4a",
+            "type": "audio/mp4",
+            "dimensions": {
+              "size": 343380
+            },
+            "id": "a_01008015424717759604844860_2_911174541"
+          },
+          "comment": "SCAP single-token channel voice"
+        },
+        "revision": 2,
+        "is_pinned": false
+      },
+      {
+        "is_read": true,
+        "sender": {
+          "name": "o-CT-911174541-916478296",
+          "id": "o-CT-911174541-916478296"
+        },
+        "id": "1775960497954_126693056290",
+        "time": 1775960497954,
+        "type": "file",
+        "content": {
+          "thumbnail": {
+            "height": "682",
+            "width": "682",
+            "blur_data": "/9j/4AAQSkZJRgABAgAAAQABAAD/2wBDAFA3PEY8MlBGQUZaVVBfeMiCeG5uePWvuZHI////////////////////////////////////////////////////2wBDAVVaWnhpeOuCguv/////////////////////////////////////////////////////////////////////////wAARCAAyADIDASIAAhEBAxEB/8QAHwAAAQUBAQEBAQEAAAAAAAAAAAECAwQFBgcICQoL/8QAtRAAAgEDAwIEAwUFBAQAAAF9AQIDAAQRBRIhMUEGE1FhByJxFDKBkaEII0KxwRVS0fAkM2JyggkKFhcYGRolJicoKSo0NTY3ODk6Q0RFRkdISUpTVFVWV1hZWmNkZWZnaGlqc3R1dnd4eXqDhIWGh4iJipKTlJWWl5iZmqKjpKWmp6ipqrKztLW2t7i5usLDxMXGx8jJytLT1NXW19jZ2uHi4+Tl5ufo6erx8vP09fb3+Pn6/8QAHwEAAwEBAQEBAQEBAQAAAAAAAAECAwQFBgcICQoL/8QAtREAAgECBAQDBAcFBAQAAQJ3AAECAxEEBSExBhJBUQdhcRMiMoEIFEKRobHBCSMzUvAVYnLRChYkNOEl8RcYGRomJygpKjU2Nzg5OkNERUZHSElKU1RVVldYWVpjZGVmZ2hpanN0dXZ3eHl6goOEhYaHiImKkpOUlZaXmJmaoqOkpaanqKmqsrO0tba3uLm6wsPExcbHyMnK0tPU1dbX2Nna4uPk5ebn6Onq8vP09fb3+Pn6/9oADAMBAAIRAxEAPwC7SEgDJOB70tUrmQyPsGML74yaAHyXfOI1/E1F9ol/v/oKj2nOOPzFGw+3/fQoAnS7YffAI9RVpHV13Kcis4qR6fgafE5iYNn5T1APWgDQopAcjI6UUAI7bUZvQZrOHXk4rSYBlKnoRis0DBIK59qAFXoCCcemf8/59KUgnvTkUsCFVQemPT3p/lJhmVyMevagasQ9DjdgfypDjHDZ9v8AIp0qkE89B396acY+7j8/8aBPceLiVQAGGBwOKKctq7KGDLgjNFMC9VO6i2t5g6Hr7VcqOdisTEY/GkBUVGUgqDke3H+f51MG4P7ojPUY606Ji0YJ+lKTjOATj0xj8e/+e9MCuyO5yVI9gKSGEyPyPlHWrDnAx3ptm2VYd+Dn/P0oEWaKKKQwpkwBifPoaKKAIof9Uv4/zqTGRzRRTEQ96dZ/6tv97+goopsZYoooqQP/2Q=="
+          },
+          "file": {
+            "name": "test.png",
+            "type": "image/png",
+            "dimensions": {
+              "height": 682,
+              "size": 280386,
+              "width": 682
+            },
+            "id": "a_01008015613117759604979350_2_911174541"
+          },
+          "comment": "SCAP single-token channel file"
+        },
+        "revision": 2,
+        "is_pinned": false
+      },
+      {
+        "is_read": true,
+        "sender": {
+          "name": "o-CT-911174541-916478296",
+          "id": "o-CT-911174541-916478296"
+        },
+        "id": "1775967794190_130995319822",
+        "time": 1775967794190,
+        "type": "file",
+        "content": {
+          "thumbnail": {
+            "height": "720",
+            "width": "509",
+            "blur_data": "/9j/4AAQSkZJRgABAgAAAQABAAD/2wBDAFA3PEY8MlBGQUZaVVBfeMiCeG5uePWvuZHI////////////////////////////////////////////////////2wBDAVVaWnhpeOuCguv/////////////////////////////////////////////////////////////////////////wAARCAAyACMDASIAAhEBAxEB/8QAHwAAAQUBAQEBAQEAAAAAAAAAAAECAwQFBgcICQoL/8QAtRAAAgEDAwIEAwUFBAQAAAF9AQIDAAQRBRIhMUEGE1FhByJxFDKBkaEII0KxwRVS0fAkM2JyggkKFhcYGRolJicoKSo0NTY3ODk6Q0RFRkdISUpTVFVWV1hZWmNkZWZnaGlqc3R1dnd4eXqDhIWGh4iJipKTlJWWl5iZmqKjpKWmp6ipqrKztLW2t7i5usLDxMXGx8jJytLT1NXW19jZ2uHi4+Tl5ufo6erx8vP09fb3+Pn6/8QAHwEAAwEBAQEBAQEBAQAAAAAAAAECAwQFBgcICQoL/8QAtREAAgECBAQDBAcFBAQAAQJ3AAECAxEEBSExBhJBUQdhcRMiMoEIFEKRobHBCSMzUvAVYnLRChYkNOEl8RcYGRomJygpKjU2Nzg5OkNERUZHSElKU1RVVldYWVpjZGVmZ2hpanN0dXZ3eHl6goOEhYaHiImKkpOUlZaXmJmaoqOkpaanqKmqsrO0tba3uLm6wsPExcbHyMnK0tPU1dbX2Nna4uPk5ebn6Onq8vP09fb3+Pn6/9oADAMBAAIRAxEAPwC7RSHOOOtJtyctzxigB1FJtGc475paACiiigBsg3IQf5Zpq7h2545xTzntSAYHQfnQAYbH3u3XFChh94il5x/9ekGcDgfnQA6iiigBDjvTMLncUGR3xTyMgg96TbkYPP1oAAR1xgnrxTqaEA//AFD/AD/+ulAwc0ALRRRQAUUUUAFFFFABRRRQB//Z"
+          },
+          "file": {
+            "name": "2026-04-10-report.pdf",
+            "type": "application/pdf",
+            "dimensions": {
+              "height": 720,
+              "size": 341302,
+              "width": 509
+            },
+            "id": "a_01008015600617759677941700_2_911174541"
+          },
+          "comment": "SCAP workspace test 2026-04-10-report.pdf 04:23:07"
+        },
+        "revision": 2,
+        "is_pinned": false
+      },
+      {
+        "is_read": true,
+        "sender": {
+          "name": "o-CT-911174541-916478296",
+          "id": "o-CT-911174541-916478296"
+        },
+        "id": "1775967803028_135290295956",
+        "time": 1775967803028,
+        "type": "file",
+        "content": {
+          "thumbnail": {
+            "height": "230",
+            "width": "163",
+            "blur_data": "/9j/4AAQSkZJRgABAgAAAQABAAD/2wBDAFA3PEY8MlBGQUZaVVBfeMiCeG5uePWvuZHI////////////////////////////////////////////////////2wBDAVVaWnhpeOuCguv/////////////////////////////////////////////////////////////////////////wAARCAAyACMDASIAAhEBAxEB/8QAHwAAAQUBAQEBAQEAAAAAAAAAAAECAwQFBgcICQoL/8QAtRAAAgEDAwIEAwUFBAQAAAF9AQIDAAQRBRIhMUEGE1FhByJxFDKBkaEII0KxwRVS0fAkM2JyggkKFhcYGRolJicoKSo0NTY3ODk6Q0RFRkdISUpTVFVWV1hZWmNkZWZnaGlqc3R1dnd4eXqDhIWGh4iJipKTlJWWl5iZmqKjpKWmp6ipqrKztLW2t7i5usLDxMXGx8jJytLT1NXW19jZ2uHi4+Tl5ufo6erx8vP09fb3+Pn6/8QAHwEAAwEBAQEBAQEBAQAAAAAAAAECAwQFBgcICQoL/8QAtREAAgECBAQDBAcFBAQAAQJ3AAECAxEEBSExBhJBUQdhcRMiMoEIFEKRobHBCSMzUvAVYnLRChYkNOEl8RcYGRomJygpKjU2Nzg5OkNERUZHSElKU1RVVldYWVpjZGVmZ2hpanN0dXZ3eHl6goOEhYaHiImKkpOUlZaXmJmaoqOkpaanqKmqsrO0tba3uLm6wsPExcbHyMnK0tPU1dbX2Nna4uPk5ebn6Onq8vP09fb3+Pn6/9oADAMBAAIRAxEAPwC00gX6UhlADHnAoZSTgfWjYcEccnPHegAEoPTJ520vmJ/e9qb5ZGAvABz1pBCBj65oAlBBGRzRTUDhQDjP0ooAjfmRuSP6UNuJwG6sAeOlPdsE8EkDpilJG4/Ie3OOtADQcZycEt3B/wA/0oycjkYJ96cTkA47+lLn2/SgBBtIzkfnmigYxwo/L/61FACFcueevPWjZktkDn078U1wSzdev6cf/XoIbnIPUY+nH/16AH7cYA6d+TRt6YPT3P8AjTQGGMk/e96XL+3X0NACjeBjK0UqliMkCigBe9GB6UUUAA60GiigBaKKKAP/2Q=="
+          },
+          "file": {
+            "name": "lv1_capturable_report.csv",
+            "type": "text/plain",
+            "dimensions": {
+              "height": 230,
+              "size": 16596,
+              "width": 163
+            },
+            "id": "a_01008015600617759678030110_2_911174541"
+          },
+          "comment": "SCAP workspace test lv1_capturable_report.csv 04:23:18"
+        },
+        "revision": 2,
+        "is_pinned": false
+      },
+      {
+        "is_read": true,
+        "sender": {
+          "name": "o-CT-911174541-916478296",
+          "id": "o-CT-911174541-916478296"
+        },
+        "id": "1775967812651_139585272875",
+        "time": 1775967812651,
+        "type": "file",
+        "content": {
+          "thumbnail": {},
+          "file": {
+            "name": "sample-3.m4a",
+            "type": "audio/mp4",
+            "dimensions": {
+              "size": 343380
+            },
+            "id": "a_01008015613117759678126360_2_911174541"
+          },
+          "comment": "SCAP workspace test sample-3.m4a 04:23:27"
+        },
+        "revision": 2,
+        "is_pinned": false
+      },
+      {
+        "is_read": true,
+        "sender": {
+          "name": "o-CT-911174541-916478296",
+          "id": "o-CT-911174541-916478296"
+        },
+        "id": "1775967820809_143880248329",
+        "time": 1775967820809,
+        "type": "file",
+        "content": {
+          "thumbnail": {
+            "height": "682",
+            "width": "682",
+            "blur_data": "/9j/4AAQSkZJRgABAgAAAQABAAD/2wBDAFA3PEY8MlBGQUZaVVBfeMiCeG5uePWvuZHI////////////////////////////////////////////////////2wBDAVVaWnhpeOuCguv/////////////////////////////////////////////////////////////////////////wAARCAAyADIDASIAAhEBAxEB/8QAHwAAAQUBAQEBAQEAAAAAAAAAAAECAwQFBgcICQoL/8QAtRAAAgEDAwIEAwUFBAQAAAF9AQIDAAQRBRIhMUEGE1FhByJxFDKBkaEII0KxwRVS0fAkM2JyggkKFhcYGRolJicoKSo0NTY3ODk6Q0RFRkdISUpTVFVWV1hZWmNkZWZnaGlqc3R1dnd4eXqDhIWGh4iJipKTlJWWl5iZmqKjpKWmp6ipqrKztLW2t7i5usLDxMXGx8jJytLT1NXW19jZ2uHi4+Tl5ufo6erx8vP09fb3+Pn6/8QAHwEAAwEBAQEBAQEBAQAAAAAAAAECAwQFBgcICQoL/8QAtREAAgECBAQDBAcFBAQAAQJ3AAECAxEEBSExBhJBUQdhcRMiMoEIFEKRobHBCSMzUvAVYnLRChYkNOEl8RcYGRomJygpKjU2Nzg5OkNERUZHSElKU1RVVldYWVpjZGVmZ2hpanN0dXZ3eHl6goOEhYaHiImKkpOUlZaXmJmaoqOkpaanqKmqsrO0tba3uLm6wsPExcbHyMnK0tPU1dbX2Nna4uPk5ebn6Onq8vP09fb3+Pn6/9oADAMBAAIRAxEAPwC7SEgDJOB70tUrmQyPsGML74yaAHyXfOI1/E1F9ol/v/oKj2nOOPzFGw+3/fQoAnS7YffAI9RVpHV13Kcis4qR6fgafE5iYNn5T1APWgDQopAcjI6UUAI7bUZvQZrOHXk4rSYBlKnoRis0DBIK59qAFXoCCcemf8/59KUgnvTkUsCFVQemPT3p/lJhmVyMevagasQ9DjdgfypDjHDZ9v8AIp0qkE89B396acY+7j8/8aBPceLiVQAGGBwOKKctq7KGDLgjNFMC9VO6i2t5g6Hr7VcqOdisTEY/GkBUVGUgqDke3H+f51MG4P7ojPUY606Ji0YJ+lKTjOATj0xj8e/+e9MCuyO5yVI9gKSGEyPyPlHWrDnAx3ptm2VYd+Dn/P0oEWaKKKQwpkwBifPoaKKAIof9Uv4/zqTGRzRRTEQ96dZ/6tv97+goopsZYoooqQP/2Q=="
+          },
+          "file": {
+            "name": "test.png",
+            "type": "image/png",
+            "dimensions": {
+              "height": 682,
+              "size": 280386,
+              "width": 682
+            },
+            "id": "a_01008015613117759678207910_2_911174541"
+          },
+          "comment": "SCAP workspace test test.png 04:23:35"
+        },
+        "revision": 2,
+        "is_pinned": false
+      },
+      {
+        "is_read": true,
+        "sender": {
+          "name": "o-CT-911174541-916478296",
+          "id": "o-CT-911174541-916478296"
+        },
+        "id": "1775967842837_148175237653",
+        "time": 1775967842837,
+        "type": "file",
+        "content": {
+          "thumbnail": {
+            "height": "682",
+            "width": "682",
+            "blur_data": "/9j/4AAQSkZJRgABAgAAAQABAAD/2wBDAFA3PEY8MlBGQUZaVVBfeMiCeG5uePWvuZHI////////////////////////////////////////////////////2wBDAVVaWnhpeOuCguv/////////////////////////////////////////////////////////////////////////wAARCAAyADIDASIAAhEBAxEB/8QAHwAAAQUBAQEBAQEAAAAAAAAAAAECAwQFBgcICQoL/8QAtRAAAgEDAwIEAwUFBAQAAAF9AQIDAAQRBRIhMUEGE1FhByJxFDKBkaEII0KxwRVS0fAkM2JyggkKFhcYGRolJicoKSo0NTY3ODk6Q0RFRkdISUpTVFVWV1hZWmNkZWZnaGlqc3R1dnd4eXqDhIWGh4iJipKTlJWWl5iZmqKjpKWmp6ipqrKztLW2t7i5usLDxMXGx8jJytLT1NXW19jZ2uHi4+Tl5ufo6erx8vP09fb3+Pn6/8QAHwEAAwEBAQEBAQEBAQAAAAAAAAECAwQFBgcICQoL/8QAtREAAgECBAQDBAcFBAQAAQJ3AAECAxEEBSExBhJBUQdhcRMiMoEIFEKRobHBCSMzUvAVYnLRChYkNOEl8RcYGRomJygpKjU2Nzg5OkNERUZHSElKU1RVVldYWVpjZGVmZ2hpanN0dXZ3eHl6goOEhYaHiImKkpOUlZaXmJmaoqOkpaanqKmqsrO0tba3uLm6wsPExcbHyMnK0tPU1dbX2Nna4uPk5ebn6Onq8vP09fb3+Pn6/9oADAMBAAIRAxEAPwC7SEgDJOB70tUrmQyPsGML74yaAHyXfOI1/E1F9ol/v/oKj2nOOPzFGw+3/fQoAnS7YffAI9RVpHV13Kcis4qR6fgafE5iYNn5T1APWgDQopAcjI6UUAI7bUZvQZrOHXk4rSYBlKnoRis0DBIK59qAFXoCCcemf8/59KUgnvTkUsCFVQemPT3p/lJhmVyMevagasQ9DjdgfypDjHDZ9v8AIp0qkE89B396acY+7j8/8aBPceLiVQAGGBwOKKctq7KGDLgjNFMC9VO6i2t5g6Hr7VcqOdisTEY/GkBUVGUgqDke3H+f51MG4P7ojPUY606Ji0YJ+lKTjOATj0xj8e/+e9MCuyO5yVI9gKSGEyPyPlHWrDnAx3ptm2VYd+Dn/P0oEWaKKKQwpkwBifPoaKKAIof9Uv4/zqTGRzRRTEQ96dZ/6tv97+goopsZYoooqQP/2Q=="
+          },
+          "file": {
+            "name": "test.png",
+            "type": "image/png",
+            "dimensions": {
+              "height": 682,
+              "size": 280386,
+              "width": 682
+            },
+            "id": "a_01008015424717759678428190_2_911174541"
+          },
+          "comment": "SCAP single-token channel image"
+        },
+        "revision": 2,
+        "is_pinned": false
+      },
+      {
+        "is_read": true,
+        "sender": {
+          "name": "o-CT-911174541-916478296",
+          "id": "o-CT-911174541-916478296"
+        },
+        "id": "1775967853171_152470215283",
+        "time": 1775967853171,
+        "type": "file",
+        "content": {
+          "thumbnail": {},
+          "file": {
+            "name": "sample-3.m4a",
+            "type": "audio/mp4",
+            "dimensions": {
+              "size": 343380
+            },
+            "id": "a_01008015424717759678531560_2_911174541"
+          },
+          "comment": "SCAP single-token channel voice"
+        },
+        "revision": 2,
+        "is_pinned": false
+      },
+      {
+        "is_read": true,
+        "sender": {
+          "name": "o-CT-911174541-916478296",
+          "id": "o-CT-911174541-916478296"
+        },
+        "id": "1775967864396_156765193804",
+        "time": 1775967864396,
+        "type": "file",
+        "content": {
+          "thumbnail": {
+            "height": "720",
+            "width": "509",
+            "blur_data": "/9j/4AAQSkZJRgABAgAAAQABAAD/2wBDAFA3PEY8MlBGQUZaVVBfeMiCeG5uePWvuZHI////////////////////////////////////////////////////2wBDAVVaWnhpeOuCguv/////////////////////////////////////////////////////////////////////////wAARCAAyACMDASIAAhEBAxEB/8QAHwAAAQUBAQEBAQEAAAAAAAAAAAECAwQFBgcICQoL/8QAtRAAAgEDAwIEAwUFBAQAAAF9AQIDAAQRBRIhMUEGE1FhByJxFDKBkaEII0KxwRVS0fAkM2JyggkKFhcYGRolJicoKSo0NTY3ODk6Q0RFRkdISUpTVFVWV1hZWmNkZWZnaGlqc3R1dnd4eXqDhIWGh4iJipKTlJWWl5iZmqKjpKWmp6ipqrKztLW2t7i5usLDxMXGx8jJytLT1NXW19jZ2uHi4+Tl5ufo6erx8vP09fb3+Pn6/8QAHwEAAwEBAQEBAQEBAQAAAAAAAAECAwQFBgcICQoL/8QAtREAAgECBAQDBAcFBAQAAQJ3AAECAxEEBSExBhJBUQdhcRMiMoEIFEKRobHBCSMzUvAVYnLRChYkNOEl8RcYGRomJygpKjU2Nzg5OkNERUZHSElKU1RVVldYWVpjZGVmZ2hpanN0dXZ3eHl6goOEhYaHiImKkpOUlZaXmJmaoqOkpaanqKmqsrO0tba3uLm6wsPExcbHyMnK0tPU1dbX2Nna4uPk5ebn6Onq8vP09fb3+Pn6/9oADAMBAAIRAxEAPwC7RSHOOOtJtyctzxigB1FJtGc475paACiiigBsg3IQf5Zpq7h2545xTzntSAYHQfnQAYbH3u3XFChh94il5x/9ekGcDgfnQA6iiigBDjvTMLncUGR3xTyMgg96TbkYPP1oAAR1xgnrxTqaEA//AFD/AD/+ulAwc0ALRRRQAUUUUAFFFFABRRRQB//Z"
+          },
+          "file": {
+            "name": "2026-04-10-report.pdf",
+            "type": "application/pdf",
+            "dimensions": {
+              "height": 720,
+              "size": 341302,
+              "width": 509
+            },
+            "id": "a_01008015613117759678643740_2_911174541"
+          },
+          "comment": "SCAP single-token channel file"
+        },
+        "revision": 2,
+        "is_pinned": false
+      },
+      {
+        "is_read": true,
+        "sender": {
+          "name": "o-CT-911174541-916478296",
+          "id": "o-CT-911174541-916478296"
+        },
+        "id": "1775967901225_161060197929",
+        "time": 1775967901225,
+        "type": "file",
+        "content": {
+          "thumbnail": {
+            "height": "682",
+            "width": "682",
+            "blur_data": "/9j/4AAQSkZJRgABAgAAAQABAAD/2wBDAFA3PEY8MlBGQUZaVVBfeMiCeG5uePWvuZHI////////////////////////////////////////////////////2wBDAVVaWnhpeOuCguv/////////////////////////////////////////////////////////////////////////wAARCAAyADIDASIAAhEBAxEB/8QAHwAAAQUBAQEBAQEAAAAAAAAAAAECAwQFBgcICQoL/8QAtRAAAgEDAwIEAwUFBAQAAAF9AQIDAAQRBRIhMUEGE1FhByJxFDKBkaEII0KxwRVS0fAkM2JyggkKFhcYGRolJicoKSo0NTY3ODk6Q0RFRkdISUpTVFVWV1hZWmNkZWZnaGlqc3R1dnd4eXqDhIWGh4iJipKTlJWWl5iZmqKjpKWmp6ipqrKztLW2t7i5usLDxMXGx8jJytLT1NXW19jZ2uHi4+Tl5ufo6erx8vP09fb3+Pn6/8QAHwEAAwEBAQEBAQEBAQAAAAAAAAECAwQFBgcICQoL/8QAtREAAgECBAQDBAcFBAQAAQJ3AAECAxEEBSExBhJBUQdhcRMiMoEIFEKRobHBCSMzUvAVYnLRChYkNOEl8RcYGRomJygpKjU2Nzg5OkNERUZHSElKU1RVVldYWVpjZGVmZ2hpanN0dXZ3eHl6goOEhYaHiImKkpOUlZaXmJmaoqOkpaanqKmqsrO0tba3uLm6wsPExcbHyMnK0tPU1dbX2Nna4uPk5ebn6Onq8vP09fb3+Pn6/9oADAMBAAIRAxEAPwC7SEgDJOB70tUrmQyPsGML74yaAHyXfOI1/E1F9ol/v/oKj2nOOPzFGw+3/fQoAnS7YffAI9RVpHV13Kcis4qR6fgafE5iYNn5T1APWgDQopAcjI6UUAI7bUZvQZrOHXk4rSYBlKnoRis0DBIK59qAFXoCCcemf8/59KUgnvTkUsCFVQemPT3p/lJhmVyMevagasQ9DjdgfypDjHDZ9v8AIp0qkE89B396acY+7j8/8aBPceLiVQAGGBwOKKctq7KGDLgjNFMC9VO6i2t5g6Hr7VcqOdisTEY/GkBUVGUgqDke3H+f51MG4P7ojPUY606Ji0YJ+lKTjOATj0xj8e/+e9MCuyO5yVI9gKSGEyPyPlHWrDnAx3ptm2VYd+Dn/P0oEWaKKKQwpkwBifPoaKKAIof9Uv4/zqTGRzRRTEQ96dZ/6tv97+goopsZYoooqQP/2Q=="
+          },
+          "file": {
+            "name": "test.png",
+            "type": "image/png",
+            "dimensions": {
+              "height": 682,
+              "size": 280386,
+              "width": 682
+            },
+            "id": "a_01008015600617759679012090_2_911174541"
+          },
+          "comment": "SCAP single-token channel image"
+        },
+        "revision": 2,
+        "is_pinned": false
+      },
+      {
+        "is_read": true,
+        "sender": {
+          "name": "o-CT-911174541-916478296",
+          "id": "o-CT-911174541-916478296"
+        },
+        "id": "1775967913022_165355177022",
+        "time": 1775967913022,
+        "type": "file",
+        "content": {
+          "thumbnail": {},
+          "file": {
+            "name": "sample-3.m4a",
+            "type": "audio/mp4",
+            "dimensions": {
+              "size": 343380
+            },
+            "id": "a_01008015600617759679130060_2_911174541"
+          },
+          "comment": "SCAP single-token channel voice"
+        },
+        "revision": 2,
+        "is_pinned": false
+      },
+      {
+        "is_read": true,
+        "sender": {
+          "name": "o-CT-911174541-916478296",
+          "id": "o-CT-911174541-916478296"
+        },
+        "id": "1775967923673_169650154969",
+        "time": 1775967923673,
+        "type": "file",
+        "content": {
+          "thumbnail": {
+            "height": "230",
+            "width": "163",
+            "blur_data": "/9j/4AAQSkZJRgABAgAAAQABAAD/2wBDAFA3PEY8MlBGQUZaVVBfeMiCeG5uePWvuZHI////////////////////////////////////////////////////2wBDAVVaWnhpeOuCguv/////////////////////////////////////////////////////////////////////////wAARCAAyACMDASIAAhEBAxEB/8QAHwAAAQUBAQEBAQEAAAAAAAAAAAECAwQFBgcICQoL/8QAtRAAAgEDAwIEAwUFBAQAAAF9AQIDAAQRBRIhMUEGE1FhByJxFDKBkaEII0KxwRVS0fAkM2JyggkKFhcYGRolJicoKSo0NTY3ODk6Q0RFRkdISUpTVFVWV1hZWmNkZWZnaGlqc3R1dnd4eXqDhIWGh4iJipKTlJWWl5iZmqKjpKWmp6ipqrKztLW2t7i5usLDxMXGx8jJytLT1NXW19jZ2uHi4+Tl5ufo6erx8vP09fb3+Pn6/8QAHwEAAwEBAQEBAQEBAQAAAAAAAAECAwQFBgcICQoL/8QAtREAAgECBAQDBAcFBAQAAQJ3AAECAxEEBSExBhJBUQdhcRMiMoEIFEKRobHBCSMzUvAVYnLRChYkNOEl8RcYGRomJygpKjU2Nzg5OkNERUZHSElKU1RVVldYWVpjZGVmZ2hpanN0dXZ3eHl6goOEhYaHiImKkpOUlZaXmJmaoqOkpaanqKmqsrO0tba3uLm6wsPExcbHyMnK0tPU1dbX2Nna4uPk5ebn6Onq8vP09fb3+Pn6/9oADAMBAAIRAxEAPwC00gX6UhlADHnAoZSTgfWjYcEccnPHegAEoPTJ520vmJ/e9qb5ZGAvABz1pBCBj65oAlBBGRzRTUDhQDjP0ooAjfmRuSP6UNuJwG6sAeOlPdsE8EkDpilJG4/Ie3OOtADQcZycEt3B/wA/0oycjkYJ96cTkA47+lLn2/SgBBtIzkfnmigYxwo/L/61FACFcueevPWjZktkDn078U1wSzdev6cf/XoIbnIPUY+nH/16AH7cYA6d+TRt6YPT3P8AjTQGGMk/e96XL+3X0NACjeBjK0UqliMkCigBe9GB6UUUAA60GiigBaKKKAP/2Q=="
+          },
+          "file": {
+            "name": "lv1_capturable_report.csv",
+            "type": "text/plain",
+            "dimensions": {
+              "height": 230,
+              "size": 16596,
+              "width": 163
+            },
+            "id": "a_01008015613117759679236570_2_911174541"
+          },
+          "comment": "SCAP single-token channel file"
+        },
+        "revision": 2,
+        "is_pinned": false
+      },
+      {
+        "is_read": true,
+        "sender": {
+          "name": "o-CT-911174541-916478296",
+          "id": "o-CT-911174541-916478296"
+        },
+        "id": "1775968164188_173945362780",
+        "time": 1775968164188,
+        "type": "file",
+        "content": {
+          "thumbnail": {
+            "height": "720",
+            "width": "509",
+            "blur_data": "/9j/4AAQSkZJRgABAgAAAQABAAD/2wBDAFA3PEY8MlBGQUZaVVBfeMiCeG5uePWvuZHI////////////////////////////////////////////////////2wBDAVVaWnhpeOuCguv/////////////////////////////////////////////////////////////////////////wAARCAAyACMDASIAAhEBAxEB/8QAHwAAAQUBAQEBAQEAAAAAAAAAAAECAwQFBgcICQoL/8QAtRAAAgEDAwIEAwUFBAQAAAF9AQIDAAQRBRIhMUEGE1FhByJxFDKBkaEII0KxwRVS0fAkM2JyggkKFhcYGRolJicoKSo0NTY3ODk6Q0RFRkdISUpTVFVWV1hZWmNkZWZnaGlqc3R1dnd4eXqDhIWGh4iJipKTlJWWl5iZmqKjpKWmp6ipqrKztLW2t7i5usLDxMXGx8jJytLT1NXW19jZ2uHi4+Tl5ufo6erx8vP09fb3+Pn6/8QAHwEAAwEBAQEBAQEBAQAAAAAAAAECAwQFBgcICQoL/8QAtREAAgECBAQDBAcFBAQAAQJ3AAECAxEEBSExBhJBUQdhcRMiMoEIFEKRobHBCSMzUvAVYnLRChYkNOEl8RcYGRomJygpKjU2Nzg5OkNERUZHSElKU1RVVldYWVpjZGVmZ2hpanN0dXZ3eHl6goOEhYaHiImKkpOUlZaXmJmaoqOkpaanqKmqsrO0tba3uLm6wsPExcbHyMnK0tPU1dbX2Nna4uPk5ebn6Onq8vP09fb3+Pn6/9oADAMBAAIRAxEAPwC7RSHOOOtJtyctzxigB1FJtGc475paACiiigBsg3IQf5Zpq7h2545xTzntSAYHQfnQAYbH3u3XFChh94il5x/9ekGcDgfnQA6iiigBDjvTMLncUGR3xTyMgg96TbkYPP1oAAR1xgnrxTqaEA//AFD/AD/+ulAwc0ALRRRQAUUUUAFFFFABRRRQB//Z"
+          },
+          "file": {
+            "name": "2026-04-10-report.pdf",
+            "type": "application/pdf",
+            "dimensions": {
+              "height": 720,
+              "size": 341302,
+              "width": 509
+            },
+            "id": "a_01008015424717759681641690_2_911174541"
+          },
+          "comment": "SCAP retest 2026-04-10-report.pdf 04:29:17"
+        },
+        "revision": 2,
+        "is_pinned": false
+      },
+      {
+        "is_read": true,
+        "sender": {
+          "name": "o-CT-911174541-916478296",
+          "id": "o-CT-911174541-916478296"
+        },
+        "id": "1775968173497_178240339385",
+        "time": 1775968173497,
+        "type": "file",
+        "content": {
+          "thumbnail": {
+            "height": "230",
+            "width": "163",
+            "blur_data": "/9j/4AAQSkZJRgABAgAAAQABAAD/2wBDAFA3PEY8MlBGQUZaVVBfeMiCeG5uePWvuZHI////////////////////////////////////////////////////2wBDAVVaWnhpeOuCguv/////////////////////////////////////////////////////////////////////////wAARCAAyACMDASIAAhEBAxEB/8QAHwAAAQUBAQEBAQEAAAAAAAAAAAECAwQFBgcICQoL/8QAtRAAAgEDAwIEAwUFBAQAAAF9AQIDAAQRBRIhMUEGE1FhByJxFDKBkaEII0KxwRVS0fAkM2JyggkKFhcYGRolJicoKSo0NTY3ODk6Q0RFRkdISUpTVFVWV1hZWmNkZWZnaGlqc3R1dnd4eXqDhIWGh4iJipKTlJWWl5iZmqKjpKWmp6ipqrKztLW2t7i5usLDxMXGx8jJytLT1NXW19jZ2uHi4+Tl5ufo6erx8vP09fb3+Pn6/8QAHwEAAwEBAQEBAQEBAQAAAAAAAAECAwQFBgcICQoL/8QAtREAAgECBAQDBAcFBAQAAQJ3AAECAxEEBSExBhJBUQdhcRMiMoEIFEKRobHBCSMzUvAVYnLRChYkNOEl8RcYGRomJygpKjU2Nzg5OkNERUZHSElKU1RVVldYWVpjZGVmZ2hpanN0dXZ3eHl6goOEhYaHiImKkpOUlZaXmJmaoqOkpaanqKmqsrO0tba3uLm6wsPExcbHyMnK0tPU1dbX2Nna4uPk5ebn6Onq8vP09fb3+Pn6/9oADAMBAAIRAxEAPwC00gX6UhlADHnAoZSTgfWjYcEccnPHegAEoPTJ520vmJ/e9qb5ZGAvABz1pBCBj65oAlBBGRzRTUDhQDjP0ooAjfmRuSP6UNuJwG6sAeOlPdsE8EkDpilJG4/Ie3OOtADQcZycEt3B/wA/0oycjkYJ96cTkA47+lLn2/SgBBtIzkfnmigYxwo/L/61FACFcueevPWjZktkDn078U1wSzdev6cf/XoIbnIPUY+nH/16AH7cYA6d+TRt6YPT3P8AjTQGGMk/e96XL+3X0NACjeBjK0UqliMkCigBe9GB6UUUAA60GiigBaKKKAP/2Q=="
+          },
+          "file": {
+            "name": "lv1_capturable_report.csv",
+            "type": "text/plain",
+            "dimensions": {
+              "height": 230,
+              "size": 16596,
+              "width": 163
+            },
+            "id": "a_01008015600617759681734800_2_911174541"
+          },
+          "comment": "SCAP retest lv1_capturable_report.csv 04:29:28"
+        },
+        "revision": 2,
+        "is_pinned": false
+      },
+      {
+        "is_read": true,
+        "sender": {
+          "name": "o-CT-911174541-916478296",
+          "id": "o-CT-911174541-916478296"
+        },
+        "id": "1775968183154_182535316338",
+        "time": 1775968183154,
+        "type": "file",
+        "content": {
+          "thumbnail": {},
+          "file": {
+            "name": "sample-3.m4a",
+            "type": "audio/mp4",
+            "dimensions": {
+              "size": 343380
+            },
+            "id": "a_01008015600617759681831380_2_911174541"
+          },
+          "comment": "SCAP retest sample-3.m4a 04:29:37"
+        },
+        "revision": 2,
+        "is_pinned": false
+      },
+      {
+        "is_read": true,
+        "sender": {
+          "name": "o-CT-911174541-916478296",
+          "id": "o-CT-911174541-916478296"
+        },
+        "id": "1775968191651_186830292131",
+        "time": 1775968191651,
+        "type": "file",
+        "content": {
+          "thumbnail": {
+            "height": "682",
+            "width": "682",
+            "blur_data": "/9j/4AAQSkZJRgABAgAAAQABAAD/2wBDAFA3PEY8MlBGQUZaVVBfeMiCeG5uePWvuZHI////////////////////////////////////////////////////2wBDAVVaWnhpeOuCguv/////////////////////////////////////////////////////////////////////////wAARCAAyADIDASIAAhEBAxEB/8QAHwAAAQUBAQEBAQEAAAAAAAAAAAECAwQFBgcICQoL/8QAtRAAAgEDAwIEAwUFBAQAAAF9AQIDAAQRBRIhMUEGE1FhByJxFDKBkaEII0KxwRVS0fAkM2JyggkKFhcYGRolJicoKSo0NTY3ODk6Q0RFRkdISUpTVFVWV1hZWmNkZWZnaGlqc3R1dnd4eXqDhIWGh4iJipKTlJWWl5iZmqKjpKWmp6ipqrKztLW2t7i5usLDxMXGx8jJytLT1NXW19jZ2uHi4+Tl5ufo6erx8vP09fb3+Pn6/8QAHwEAAwEBAQEBAQEBAQAAAAAAAAECAwQFBgcICQoL/8QAtREAAgECBAQDBAcFBAQAAQJ3AAECAxEEBSExBhJBUQdhcRMiMoEIFEKRobHBCSMzUvAVYnLRChYkNOEl8RcYGRomJygpKjU2Nzg5OkNERUZHSElKU1RVVldYWVpjZGVmZ2hpanN0dXZ3eHl6goOEhYaHiImKkpOUlZaXmJmaoqOkpaanqKmqsrO0tba3uLm6wsPExcbHyMnK0tPU1dbX2Nna4uPk5ebn6Onq8vP09fb3+Pn6/9oADAMBAAIRAxEAPwC7SEgDJOB70tUrmQyPsGML74yaAHyXfOI1/E1F9ol/v/oKj2nOOPzFGw+3/fQoAnS7YffAI9RVpHV13Kcis4qR6fgafE5iYNn5T1APWgDQopAcjI6UUAI7bUZvQZrOHXk4rSYBlKnoRis0DBIK59qAFXoCCcemf8/59KUgnvTkUsCFVQemPT3p/lJhmVyMevagasQ9DjdgfypDjHDZ9v8AIp0qkE89B396acY+7j8/8aBPceLiVQAGGBwOKKctq7KGDLgjNFMC9VO6i2t5g6Hr7VcqOdisTEY/GkBUVGUgqDke3H+f51MG4P7ojPUY606Ji0YJ+lKTjOATj0xj8e/+e9MCuyO5yVI9gKSGEyPyPlHWrDnAx3ptm2VYd+Dn/P0oEWaKKKQwpkwBifPoaKKAIof9Uv4/zqTGRzRRTEQ96dZ/6tv97+goopsZYoooqQP/2Q=="
+          },
+          "file": {
+            "name": "test.png",
+            "type": "image/png",
+            "dimensions": {
+              "height": 682,
+              "size": 280386,
+              "width": 682
+            },
+            "id": "a_01008015600617759681916340_2_911174541"
+          },
+          "comment": "SCAP retest test.png 04:29:46"
+        },
+        "revision": 2,
+        "is_pinned": false
+      }
+    ],
+    "typedMessages": [
+      {
+        "messageId": "1775689355662_83472241038",
+        "types": [
+          "text"
+        ],
+        "sender": "David Wang",
+        "textPreview": "{'data': {'users': {'o-CT-911174541-802016712': 'Jiameng Han Han'}}, 'type': 'user_added'}"
+      },
+      {
+        "messageId": "1775689372943_87767225615",
+        "types": [
+          "text"
+        ],
+        "sender": "o-CT-911174541-754805990",
+        "textPreview": "{'data': {'users': {'o-CT-911174541-802016712': 'Jiameng Han Han'}}, 'type': 'user_removed'}"
+      },
+      {
+        "messageId": "1775689401317_92062221285",
+        "types": [
+          "text"
+        ],
+        "sender": "David Wang",
+        "textPreview": "{'data': {'users': {'o-CT-911174541-802016712': 'Jiameng Han Han'}}, 'type': 'user_added'}"
+      },
+      {
+        "messageId": "1775689402639_96357189903",
+        "types": [
+          "text"
+        ],
+        "sender": "o-CT-911174541-754805990",
+        "textPreview": "{'data': {'users': {'o-CT-911174541-802016712': 'Jiameng Han Han'}}, 'type': 'user_removed'}"
+      },
+      {
+        "messageId": "1775957529661_100920284221",
+        "types": [
+          "text"
+        ],
+        "sender": "ai-dev",
+        "textPreview": "{'text': 'SCAP_TEXT_VIS2_013209'}"
+      },
+      {
+        "messageId": "1775957550478_105215272334",
+        "types": [
+          "image",
+          "text"
+        ],
+        "sender": "ai-dev",
+        "textPreview": "{'text': 'SCAP_REMOTE_IMG2_013228 https://upload.wikimedia.org/wikipedia/commons/3/3f/JPEG_example_flower.jpg', 'card': {'preview': 'https://upload.wikimedia.or"
+      },
+      {
+        "messageId": "1775957729671_109510418823",
+        "types": [
+          "text"
+        ],
+        "sender": "ai-dev",
+        "textPreview": "{'text': 'SCAP_TEXT_VIS3_013529'}"
+      },
+      {
+        "messageId": "1775957731803_113805388251",
+        "types": [
+          "image",
+          "text"
+        ],
+        "sender": "ai-dev",
+        "textPreview": "{'text': 'SCAP_REMOTE_IMG3_013530 https://upload.wikimedia.org/wikipedia/commons/3/3f/JPEG_example_flower.jpg', 'card': {'preview': 'https://upload.wikimedia.or"
+      },
+      {
+        "messageId": "1775960471460_118103095204",
+        "types": [
+          "file",
+          "image",
+          "text"
+        ],
+        "sender": "o-CT-911174541-916478296",
+        "textPreview": "{'thumbnail': {'height': '682', 'width': '682', 'blur_data': '/9j/4AAQSkZJRgABAgAAAQABAAD/2wBDAFA3PEY8MlBGQUZaVVBfeMiCeG5uePWvuZHI//////////////////////////////"
+      },
+      {
+        "messageId": "1775960484504_122398075544",
+        "types": [
+          "file",
+          "text",
+          "voice"
+        ],
+        "sender": "o-CT-911174541-916478296",
+        "textPreview": "{'thumbnail': {}, 'file': {'name': 'sample-3.m4a', 'type': 'audio/mp4', 'dimensions': {'size': 343380}, 'id': 'a_01008015424717759604844860_2_911174541'}, 'comm"
+      },
+      {
+        "messageId": "1775960497954_126693056290",
+        "types": [
+          "file",
+          "image",
+          "text"
+        ],
+        "sender": "o-CT-911174541-916478296",
+        "textPreview": "{'thumbnail': {'height': '682', 'width': '682', 'blur_data': '/9j/4AAQSkZJRgABAgAAAQABAAD/2wBDAFA3PEY8MlBGQUZaVVBfeMiCeG5uePWvuZHI//////////////////////////////"
+      },
+      {
+        "messageId": "1775967794190_130995319822",
+        "types": [
+          "file",
+          "text"
+        ],
+        "sender": "o-CT-911174541-916478296",
+        "textPreview": "{'thumbnail': {'height': '720', 'width': '509', 'blur_data': '/9j/4AAQSkZJRgABAgAAAQABAAD/2wBDAFA3PEY8MlBGQUZaVVBfeMiCeG5uePWvuZHI//////////////////////////////"
+      },
+      {
+        "messageId": "1775967803028_135290295956",
+        "types": [
+          "file",
+          "text"
+        ],
+        "sender": "o-CT-911174541-916478296",
+        "textPreview": "{'thumbnail': {'height': '230', 'width': '163', 'blur_data': '/9j/4AAQSkZJRgABAgAAAQABAAD/2wBDAFA3PEY8MlBGQUZaVVBfeMiCeG5uePWvuZHI//////////////////////////////"
+      },
+      {
+        "messageId": "1775967812651_139585272875",
+        "types": [
+          "file",
+          "text",
+          "voice"
+        ],
+        "sender": "o-CT-911174541-916478296",
+        "textPreview": "{'thumbnail': {}, 'file': {'name': 'sample-3.m4a', 'type': 'audio/mp4', 'dimensions': {'size': 343380}, 'id': 'a_01008015613117759678126360_2_911174541'}, 'comm"
+      },
+      {
+        "messageId": "1775967820809_143880248329",
+        "types": [
+          "file",
+          "image",
+          "text"
+        ],
+        "sender": "o-CT-911174541-916478296",
+        "textPreview": "{'thumbnail': {'height': '682', 'width': '682', 'blur_data': '/9j/4AAQSkZJRgABAgAAAQABAAD/2wBDAFA3PEY8MlBGQUZaVVBfeMiCeG5uePWvuZHI//////////////////////////////"
+      },
+      {
+        "messageId": "1775967842837_148175237653",
+        "types": [
+          "file",
+          "image",
+          "text"
+        ],
+        "sender": "o-CT-911174541-916478296",
+        "textPreview": "{'thumbnail': {'height': '682', 'width': '682', 'blur_data': '/9j/4AAQSkZJRgABAgAAAQABAAD/2wBDAFA3PEY8MlBGQUZaVVBfeMiCeG5uePWvuZHI//////////////////////////////"
+      },
+      {
+        "messageId": "1775967853171_152470215283",
+        "types": [
+          "file",
+          "text",
+          "voice"
+        ],
+        "sender": "o-CT-911174541-916478296",
+        "textPreview": "{'thumbnail': {}, 'file': {'name': 'sample-3.m4a', 'type': 'audio/mp4', 'dimensions': {'size': 343380}, 'id': 'a_01008015424717759678531560_2_911174541'}, 'comm"
+      },
+      {
+        "messageId": "1775967864396_156765193804",
+        "types": [
+          "file",
+          "text"
+        ],
+        "sender": "o-CT-911174541-916478296",
+        "textPreview": "{'thumbnail': {'height': '720', 'width': '509', 'blur_data': '/9j/4AAQSkZJRgABAgAAAQABAAD/2wBDAFA3PEY8MlBGQUZaVVBfeMiCeG5uePWvuZHI//////////////////////////////"
+      },
+      {
+        "messageId": "1775967901225_161060197929",
+        "types": [
+          "file",
+          "image",
+          "text"
+        ],
+        "sender": "o-CT-911174541-916478296",
+        "textPreview": "{'thumbnail': {'height': '682', 'width': '682', 'blur_data': '/9j/4AAQSkZJRgABAgAAAQABAAD/2wBDAFA3PEY8MlBGQUZaVVBfeMiCeG5uePWvuZHI//////////////////////////////"
+      },
+      {
+        "messageId": "1775967913022_165355177022",
+        "types": [
+          "file",
+          "text",
+          "voice"
+        ],
+        "sender": "o-CT-911174541-916478296",
+        "textPreview": "{'thumbnail': {}, 'file': {'name': 'sample-3.m4a', 'type': 'audio/mp4', 'dimensions': {'size': 343380}, 'id': 'a_01008015600617759679130060_2_911174541'}, 'comm"
+      },
+      {
+        "messageId": "1775967923673_169650154969",
+        "types": [
+          "file",
+          "text"
+        ],
+        "sender": "o-CT-911174541-916478296",
+        "textPreview": "{'thumbnail': {'height': '230', 'width': '163', 'blur_data': '/9j/4AAQSkZJRgABAgAAAQABAAD/2wBDAFA3PEY8MlBGQUZaVVBfeMiCeG5uePWvuZHI//////////////////////////////"
+      },
+      {
+        "messageId": "1775968164188_173945362780",
+        "types": [
+          "file",
+          "text"
+        ],
+        "sender": "o-CT-911174541-916478296",
+        "textPreview": "{'thumbnail': {'height': '720', 'width': '509', 'blur_data': '/9j/4AAQSkZJRgABAgAAAQABAAD/2wBDAFA3PEY8MlBGQUZaVVBfeMiCeG5uePWvuZHI//////////////////////////////"
+      },
+      {
+        "messageId": "1775968173497_178240339385",
+        "types": [
+          "file",
+          "text"
+        ],
+        "sender": "o-CT-911174541-916478296",
+        "textPreview": "{'thumbnail': {'height': '230', 'width': '163', 'blur_data': '/9j/4AAQSkZJRgABAgAAAQABAAD/2wBDAFA3PEY8MlBGQUZaVVBfeMiCeG5uePWvuZHI//////////////////////////////"
+      },
+      {
+        "messageId": "1775968183154_182535316338",
+        "types": [
+          "file",
+          "text",
+          "voice"
+        ],
+        "sender": "o-CT-911174541-916478296",
+        "textPreview": "{'thumbnail': {}, 'file': {'name': 'sample-3.m4a', 'type': 'audio/mp4', 'dimensions': {'size': 343380}, 'id': 'a_01008015600617759681831380_2_911174541'}, 'comm"
+      },
+      {
+        "messageId": "1775968191651_186830292131",
+        "types": [
+          "file",
+          "image",
+          "text"
+        ],
+        "sender": "o-CT-911174541-916478296",
+        "textPreview": "{'thumbnail': {'height': '682', 'width': '682', 'blur_data': '/9j/4AAQSkZJRgABAgAAAQABAAD/2wBDAFA3PEY8MlBGQUZaVVBfeMiCeG5uePWvuZHI//////////////////////////////"
+      }
+    ]
+  }
+}

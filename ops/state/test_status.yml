@@ -1,10 +1,16 @@
-last_run_at: "2026-04-12T13:24:12Z"
+last_run_at: "2026-04-12T13:45:14Z"
 last_result: warning
 current_focus: cliq
 suites:
   unit:
     status: passing
     notes:
+      - "python3.11 -m zoho_cli --config /tmp/zoho-test-config.json --account ai-dev@happy-distro.co.uk cliq status --check-auth --network happydistrouklimited"
+      - "python3.11 -m zoho_cli --config /tmp/zoho-test-config.json --account ai-dev@happy-distro.co.uk cliq search SCAP --network happydistrouklimited --channel-id O6576524000097556005 --limit 5"
+      - "python3.11 -m zoho_cli --config /tmp/zoho-test-config.json --account ai-dev@happy-distro.co.uk cliq messages --network happydistrouklimited --channel-id O6576524000097556005 --limit 25"
+      - "python3.11 -m zoho_cli --config /tmp/zoho-test-config.json --account ai-dev@happy-distro.co.uk cliq file 1775957550478_105215272334 --network happydistrouklimited --channel-id O6576524000097556005"
+      - "python3.11 -m zoho_cli --config /tmp/zoho-test-config.json --account ai-dev@happy-distro.co.uk cliq voice 1775957550478_105215272334 --network happydistrouklimited --channel-id O6576524000097556005"
+      - "cliq-172 targeted parity probe archived at `tests/auto_pilot/reports/cliq172_probe_summary_20260412_134514.json`: search returns `not_supported`, and media-typed message retrieval still reports `media_visible_without_attachment_payload` with `count: 0` (2026-04-12T13:45:14Z)"
       - "python3.11 -m pytest -q tests/test_cliq.py::test_cliq_client_schedule_message_falls_back_to_messages_scheduled tests/test_cliq.py::test_cliq_client_list_scheduled_messages_falls_back_to_messages_scheduled tests/test_cliq.py::test_cliq_client_get_scheduled_message_falls_back_to_messages_scheduled tests/test_cliq.py::test_cliq_client_cancel_scheduled_message_falls_back_to_messages_scheduled tests/test_cli.py::test_cliq_schedule_from_channel tests/test_cli.py::test_cliq_scheduled_from_channel tests/test_cli.py::test_cliq_scheduled_get_from_channel tests/test_cli.py::test_cliq_scheduled_cancel_from_channel"
       - "8 passed in 0.18s (cliq-171 schedule slice: new `zoho cliq schedule` command + `ZohoCliqClient.schedule_message` fallback path coverage, 2026-04-12T13:07:58Z)"
       - "./.venv/bin/ruff format --check zoho_cli/cliq.py zoho_cli/cli.py tests/test_cliq.py tests/test_cli.py"

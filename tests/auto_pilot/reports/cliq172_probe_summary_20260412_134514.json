@@ -1,0 +1,28 @@
+{
+  "timestampUtc": "20260412_134514",
+  "network": "happydistrouklimited",
+  "channelId": "O6576524000097556005",
+  "artifacts": {
+    "status": "tests/auto_pilot/reports/cliq172_status_20260412_134514.json",
+    "search": "tests/auto_pilot/reports/cliq172_search_20260412_134514.json",
+    "messages": "tests/auto_pilot/reports/cliq172_messages_20260412_134514.json",
+    "file": "tests/auto_pilot/reports/cliq172_file_20260412_134514.json",
+    "voice": "tests/auto_pilot/reports/cliq172_voice_20260412_134514.json"
+  },
+  "statusExit": 0,
+  "searchExit": 1,
+  "messagesExit": 0,
+  "messageCount": 25,
+  "selectedMessageId": "1775957550478_105215272334",
+  "selectedMessageReason": "typedMessages-media",
+  "selectedMessageTypes": [
+    "image",
+    "text"
+  ],
+  "fileExit": 0,
+  "fileRetrievalResult": "media_visible_without_attachment_payload",
+  "fileCount": 0,
+  "voiceExit": 0,
+  "voiceRetrievalResult": "media_visible_without_attachment_payload",
+  "voiceCount": 0
+}

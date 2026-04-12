@@ -1,0 +1,6 @@
+{
+  "command": "python3.11 -m zoho_cli --config /tmp/zoho-test-config.json --account ai-dev@happy-distro.co.uk cliq search SCAP --network happydistrouklimited --channel-id O6576524000097556005 --limit 5",
+  "exitCode": 1,
+  "stdout": "",
+  "stderr": "{\"status\": \"error\", \"error\": \"not_supported\", \"details\": \"Cliq message search is not available for this token/network endpoint. Run `zoho cliq capabilities --channel-id <id>` to confirm available operations.\"}"
+}

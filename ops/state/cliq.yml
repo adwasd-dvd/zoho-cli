@@ -1,13 +1,13 @@
 module: Cliq
-updated_at: '2026-04-12T13:24:12Z'
+updated_at: '2026-04-12T13:45:14Z'
 status: in_progress
 blockers:
 - 'live thread-plane probe classifies thread endpoints as unsupported on happydistrouklimited: `thread-create`, `thread-reply`, `thread-followers`, `thread-state` all return `not_supported`, and `threads` currently returns `count: 0` (`tests/auto_pilot/reports/cliq_thread_probe_summary_20260412_044149.json`)'
 - 'live scheduled-message probe classifies schedule endpoints as unsupported on happydistrouklimited: `schedule`, `scheduled`, `scheduled-get`, and `scheduled-cancel` all return `not_supported` while auth remains healthy (`tests/auto_pilot/reports/cliq_scheduled_probe_summary_20260412_132412.json`)'
-- live `/messages/search` APIs on happydistrouklimited remain unsupported for current endpoint variants (`extra_param_found` / `request_url_invalid`), documented as endpoint limitation
-- 'attachment retrieval parity remains endpoint-limited: post-upload media-visible messages still return zero payloads on `/attachments` (`tests/auto_pilot/reports/cliq_single_token_retrieval_after_upload_20260411_192343.json`, `tests/auto_pilot/reports/cliq_retrieval_recheck_after_success_20260411_192603.log`)'
+- 'cliq-172 live probe confirms search endpoints remain unsupported on happydistrouklimited: `cliq search` returns `not_supported` in targeted pass (`tests/auto_pilot/reports/cliq172_search_20260412_134514.json`)'
+- 'cliq-172 live probe confirms attachment retrieval parity remains endpoint-limited: media-typed message `1775957550478_105215272334` returns `retrievalResult: media_visible_without_attachment_payload` and `count: 0` for both `cliq file` and `cliq voice` (`tests/auto_pilot/reports/cliq172_probe_summary_20260412_134514.json`)'
 - "maintenance export command surface (`cliq export-chats`) is implemented and response-shape normalization is hardened; live auth still reports missing maintenance export scopes (`ZohoCliq.OrganizationChats.READ`, `ZohoCliq.OrganizationMessages.READ`), and export verification remains blocked with `oauth_scope_invalid` on both list + explicit `--chat-id` probes (latest one-command evidence: `tests/auto_pilot/reports/cliq_status_export_scope_recheck_20260412_032238.json`, `tests/auto_pilot/reports/cliq_export_chats_list_scope_recheck_20260412_032238.json`, `tests/auto_pilot/reports/cliq_export_chat_scope_recheck_20260412_032238.json`; runner summary `tests/auto_pilot/reports/cliq_export_scope_recheck_summary_20260412_032238.json` reports `scopeBlocked: true` and `recommendedNext: interactive_reauth_then_rerun` from status `exportOauthReady`/`missingExportScopes` signals)"
 next_small_step: >-
-  run one targeted cliq-172 live probe pass for search + attachment retrieval parity,
-  archive fresh endpoint-taxonomy evidence, and keep cliq-165 blocked for human
+  start cliq-180 bot operations by implementing the first `post-to-bot` slice with
+  targeted tests, while keeping cliq-165 export scope verification blocked for
   interactive re-auth

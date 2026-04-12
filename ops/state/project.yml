@@ -1,5 +1,5 @@
 project: zoho-cli
-updated_at: '2026-04-12T11:22:41Z'
+updated_at: '2026-04-12T11:45:00Z'
 status: cliq-expansion
 canonical_workspace: /Users/adwasd/.openclaw/workspace-coder
 project_root: /Users/adwasd/.openclaw/workspace-coder/job/zoho-cli
@@ -7,7 +7,7 @@ module_order:
 - Mail
 - Cliq
 - CRM
-current_focus: cliq-170 thread plane implementation in progress (skip blocked cliq-165 until human re-auth is available)
+current_focus: cliq-171 scheduled message lifecycle in progress (cliq-170 live probe evidence archived; skip blocked cliq-165 until human re-auth is available)
 primary_blockers:
 - crm live read-only verification remains blocked by account-level CRM org access
 - cliq search endpoint variants are not available on happydistrouklimited for current
@@ -16,11 +16,13 @@ primary_blockers:
   returns zero payloads for media-visible messages)
 - cliq maintenance export verification is blocked by missing maintenance export
   scopes on current live config (`oauth_scope_invalid`)
-next_step: run one cooldown-safe live probe bundle for `thread-create`,
-  `thread-reply`, `threads`, `thread-followers`, and `thread-state`; archive
-  success/failure evidence and classify endpoint-level unsupported behavior so
-  cliq-171 can start without waiting for cliq-165 export-scope re-auth
+- thread-plane endpoints remain unsupported on current token/network (`thread-create`
+  / `thread-reply` / `thread-followers` / `thread-state` report `not_supported`)
+next_step: scaffold cliq-171 scheduled message lifecycle (`schedule`, `scheduled`,
+  `scheduled-get`, `scheduled-cancel`) with focused unit+CLI tests, then run one
+  live probe bundle on happydistrouklimited
 additional_info:
+- '2026-04-12 live probe: ran one thread-plane bundle (`thread-create`, `threads`, `thread-reply`, `thread-followers`, `thread-state`, plus state-update check) against happydistrouklimited; create/reply/followers/state all return `not_supported` and `threads` returns `count: 0`, so cliq-170 is now classified as endpoint limitation on current token/network (evidence: `tests/auto_pilot/reports/cliq_thread_probe_summary_20260412_044149.json`).'
 - '2026-04-12 unit delivery: implemented thread plane in code (`zoho cliq thread-create`, `thread-reply`, `threads`, `thread-followers`, `thread-state`) with capability-gated fallback helpers and targeted tests; thread slices pass locally.'
 - '2026-04-12 unit follow-up: `tests/auto_pilot/run_cliq_export_scope_recheck.sh` now emits `rateLimited` and returns `recommendedNext: wait_for_refresh_cooldown_then_rerun` when probes show `token_refresh_rate_limited`/"too many requests"; `tests/test_auto_pilot_scripts.py` now covers this branch.'
 - '2026-04-12 live recheck: reran `tests/auto_pilot/run_cliq_export_scope_recheck.sh`; status remains `exportOauthReady: false` with missing `ZohoCliq.OrganizationChats.READ` + `ZohoCliq.OrganizationMessages.READ`, list/chat export probes still return `oauth_scope_invalid`, and summary marks `scopeBlocked: true` with `recommendedNext: interactive_reauth_then_rerun` (evidence: `tests/auto_pilot/reports/cliq_status_export_scope_recheck_20260412_032238.json`, `tests/auto_pilot/reports/cliq_export_chats_list_scope_recheck_20260412_032238.json`, `tests/auto_pilot/reports/cliq_export_chat_scope_recheck_20260412_032238.json`, `tests/auto_pilot/reports/cliq_export_scope_recheck_summary_20260412_032238.json`).'

@@ -1,0 +1,48 @@
+{
+  "module": "cliq",
+  "scaffold": "ready",
+  "account": "ai-dev@happy-distro.co.uk",
+  "hasAccount": true,
+  "hasAccountId": true,
+  "baseUrl": "https://cliq.zoho.com/network/happydistrouklimited/api/v2",
+  "requiredScopes": [
+    "ZohoCliq.Channels.READ",
+    "ZohoCliq.Users.READ",
+    "ZohoCliq.Messages.READ",
+    "ZohoCliq.Chats.ALL",
+    "ZohoCliq.Webhooks.CREATE"
+  ],
+  "requiredExportScopes": [
+    "ZohoCliq.OrganizationChats.READ",
+    "ZohoCliq.OrganizationMessages.READ"
+  ],
+  "grantedScopes": [
+    "ZohoMail.messages.ALL",
+    "ZohoMail.folders.ALL",
+    "ZohoMail.accounts.READ",
+    "ZohoMail.tags.ALL",
+    "ZohoCliq.Channels.READ",
+    "ZohoCliq.Users.READ",
+    "ZohoCliq.Messages.READ",
+    "ZohoCliq.Chats.ALL",
+    "ZohoCliq.Webhooks.CREATE"
+  ],
+  "next": [
+    "discover capability matrix",
+    "implement messages/context read plane",
+    "implement watch/reply/edit/delete operations"
+  ],
+  "missingScopes": [],
+  "oauthReady": true,
+  "missingExportScopes": [
+    "ZohoCliq.OrganizationChats.READ",
+    "ZohoCliq.OrganizationMessages.READ"
+  ],
+  "exportOauthReady": false,
+  "exportNext": [
+    "re-auth with Cliq export scopes: `zoho --config /tmp/zoho-test-config.json --account ai-dev@happy-distro.co.uk login --with-cliq --with-cliq-export` (fallback: `zoho --config /tmp/zoho-test-config.json --account ai-dev@happy-distro.co.uk login --with-cliq --scope ZohoCliq.OrganizationChats.READ --scope ZohoCliq.OrganizationMessages.READ`)",
+    "verify export scope readiness: `zoho --config /tmp/zoho-test-config.json --account ai-dev@happy-distro.co.uk cliq status --check-auth --network happydistrouklimited`",
+    "rerun export probes: `zoho --config /tmp/zoho-test-config.json --account ai-dev@happy-distro.co.uk cliq export-chats --network happydistrouklimited` and `zoho --config /tmp/zoho-test-config.json --account ai-dev@happy-distro.co.uk cliq export-chats --chat-id '<chat_id>' --network happydistrouklimited`"
+  ],
+  "auth": "ok"
+}

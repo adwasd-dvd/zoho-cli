@@ -2217,6 +2217,62 @@ def test_cliq_leave_from_channel(
     )
 
 
+def test_cliq_mute_from_channel(
+    mock_config: Path,
+    mock_token_refresh: Any,
+) -> None:
+    mock_client = MagicMock()
+    mock_client.resolve_chat_id.return_value = "C1"
+    mock_client.set_chat_mute.return_value = {"data": {"muted": True}}
+
+    with patch("zoho_cli.cli._get_cliq_client", return_value=mock_client):
+        result = runner.invoke(
+            app,
+            ["cliq", "mute", "--channel-id", "O2"],
+            env=_cfg_env(mock_config),
+        )
+
+    assert result.exit_code == 0, result.output
+    payload = json.loads(result.output)
+    assert payload["status"] == "ok"
+    assert payload["chatId"] == "C1"
+    assert payload["channelId"] == "O2"
+    assert payload["muted"] is True
+    mock_client.set_chat_mute.assert_called_once_with(
+        chat_id="C1",
+        channel_id="O2",
+        muted=True,
+    )
+
+
+def test_cliq_unmute_from_channel(
+    mock_config: Path,
+    mock_token_refresh: Any,
+) -> None:
+    mock_client = MagicMock()
+    mock_client.resolve_chat_id.return_value = "C1"
+    mock_client.set_chat_mute.return_value = {"data": {"muted": False}}
+
+    with patch("zoho_cli.cli._get_cliq_client", return_value=mock_client):
+        result = runner.invoke(
+            app,
+            ["cliq", "unmute", "--channel-id", "O2"],
+            env=_cfg_env(mock_config),
+        )
+
+    assert result.exit_code == 0, result.output
+    payload = json.loads(result.output)
+    assert payload["status"] == "ok"
+    assert payload["chatId"] == "C1"
+    assert payload["channelId"] == "O2"
+    assert payload["muted"] is False
+    mock_client.set_chat_mute.assert_called_once_with(
+        chat_id="C1",
+        channel_id="O2",
+        muted=False,
+    )
+
+
 def test_cliq_thread_followers(
     mock_config: Path,
     mock_token_refresh: Any,

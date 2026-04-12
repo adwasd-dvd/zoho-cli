@@ -2023,6 +2023,46 @@ class ZohoCliqClient:
             not_supported_message="Cliq leave endpoints are not available for this token/network endpoint. Run `zoho cliq capabilities --channel-id <id>` and confirm chat control operations for the target conversation.",
         )
 
+    def set_chat_mute(
+        self,
+        *,
+        chat_id: str | None = None,
+        channel_id: str | None = None,
+        muted: bool,
+    ) -> dict:
+        """Mute or unmute one chat/channel conversation."""
+        resolved_chat = self._resolve_chat_destination(
+            chat_id=chat_id,
+            channel_id=channel_id,
+        )
+
+        state = "mute" if muted else "unmute"
+        body = {"muted": muted}
+        candidates: list[tuple[str, str, dict[str, Any] | None]] = [
+            ("POST", f"/chats/{resolved_chat}/{state}", {}),
+            ("POST", f"/chats/{resolved_chat}/notifications/{state}", {}),
+            ("POST", f"/chats/{resolved_chat}/members/me/{state}", {}),
+            ("PATCH", f"/chats/{resolved_chat}/notifications", body),
+            ("PUT", f"/chats/{resolved_chat}/notifications", body),
+        ]
+
+        if channel_id:
+            candidates.extend(
+                [
+                    ("POST", f"/channels/{channel_id}/{state}", {}),
+                    ("POST", f"/channels/{channel_id}/notifications/{state}", {}),
+                    ("PATCH", f"/channels/{channel_id}/notifications", body),
+                    ("PUT", f"/channels/{channel_id}/notifications", body),
+                ]
+            )
+
+        return self._request_with_candidates_and_not_supported(
+            candidates,
+            scope_hint="ZohoCliq.Channels.UPDATE",
+            operation_label=state,
+            not_supported_message=f"Cliq {state} endpoints are not available for this token/network endpoint. Run `zoho cliq capabilities --channel-id <id>` and confirm chat control operations for the target conversation.",
+        )
+
     def post_to_bot(
         self,
         bot_id: str,

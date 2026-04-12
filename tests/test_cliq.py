@@ -2115,6 +2115,62 @@ def test_cliq_client_leave_chat_scope_invalid_reports_hint(
 
 
 @respx.mock
+def test_cliq_client_set_chat_mute_falls_back_to_notifications_endpoint(
+    client: cliq.ZohoCliqClient,
+) -> None:
+    primary = respx.post("https://cliq.zoho.com/api/v2/chats/C1/mute").mock(
+        return_value=httpx.Response(
+            404,
+            json={
+                "code": "request_url_invalid",
+                "message": "Not found",
+            },
+        )
+    )
+    fallback = respx.post(
+        "https://cliq.zoho.com/api/v2/chats/C1/notifications/mute"
+    ).mock(return_value=httpx.Response(200, json={"data": {"muted": True}}))
+
+    payload = client.set_chat_mute(chat_id="C1", muted=True)
+    assert primary.called
+    assert fallback.called
+    assert payload["data"]["muted"] is True
+
+
+@respx.mock
+def test_cliq_client_set_chat_unmute_scope_invalid_reports_hint(
+    client: cliq.ZohoCliqClient,
+    capsys: pytest.CaptureFixture[str],
+) -> None:
+    scope_error = {
+        "code": "oauthtoken_scope_invalid",
+        "message": "scope missing",
+    }
+    respx.post("https://cliq.zoho.com/api/v2/chats/C1/unmute").mock(
+        return_value=httpx.Response(401, json=scope_error)
+    )
+    respx.post("https://cliq.zoho.com/api/v2/chats/C1/notifications/unmute").mock(
+        return_value=httpx.Response(401, json=scope_error)
+    )
+    respx.post("https://cliq.zoho.com/api/v2/chats/C1/members/me/unmute").mock(
+        return_value=httpx.Response(401, json=scope_error)
+    )
+    respx.patch("https://cliq.zoho.com/api/v2/chats/C1/notifications").mock(
+        return_value=httpx.Response(401, json=scope_error)
+    )
+    respx.put("https://cliq.zoho.com/api/v2/chats/C1/notifications").mock(
+        return_value=httpx.Response(401, json=scope_error)
+    )
+
+    with pytest.raises(SystemExit):
+        client.set_chat_mute(chat_id="C1", muted=False)
+
+    err = capsys.readouterr().err
+    assert "oauth_scope_invalid" in err
+    assert "ZohoCliq.Channels.UPDATE" in err
+
+
+@respx.mock
 def test_cliq_client_list_thread_followers_scope_invalid_reports_hint(
     client: cliq.ZohoCliqClient,
     capsys: pytest.CaptureFixture[str],

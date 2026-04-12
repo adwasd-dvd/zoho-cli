@@ -1,5 +1,5 @@
 module: Cliq
-updated_at: '2026-04-12T15:37:07Z'
+updated_at: '2026-04-12T15:47:54Z'
 status: in_progress
 blockers:
 - 'cliq-180 live `trigger-bot` probe on happydistrouklimited now classifies bot trigger/call endpoints as unsupported (`error: not_supported`); capability snapshot still shows baseline read checks healthy (`tests/auto_pilot/reports/cliq180_trigger_bot_20260412_150542.json`, `tests/auto_pilot/reports/cliq180_capabilities_20260412_150542.json`)'
@@ -9,7 +9,6 @@ blockers:
 - 'cliq-172 live probe confirms attachment retrieval parity remains endpoint-limited: media-typed message `1775957550478_105215272334` returns `retrievalResult: media_visible_without_attachment_payload` and `count: 0` for both `cliq file` and `cliq voice` (`tests/auto_pilot/reports/cliq172_probe_summary_20260412_134514.json`)'
 - "maintenance export command surface (`cliq export-chats`) is implemented and response-shape normalization is hardened; live auth still reports missing maintenance export scopes (`ZohoCliq.OrganizationChats.READ`, `ZohoCliq.OrganizationMessages.READ`), and export verification remains blocked with `oauth_scope_invalid` on both list + explicit `--chat-id` probes (latest one-command evidence: `tests/auto_pilot/reports/cliq_status_export_scope_recheck_20260412_032238.json`, `tests/auto_pilot/reports/cliq_export_chats_list_scope_recheck_20260412_032238.json`, `tests/auto_pilot/reports/cliq_export_chat_scope_recheck_20260412_032238.json`; runner summary `tests/auto_pilot/reports/cliq_export_scope_recheck_summary_20260412_032238.json` reports `scopeBlocked: true` and `recommendedNext: interactive_reauth_then_rerun` from status `exportOauthReady`/`missingExportScopes` signals)"
 next_small_step: >-
-  cliq-181 first chat-control command slice (`leave`) is now landed with
-  targeted tests; continue with one small follow-up slice (recommend
-  `mute`/`unmute`) while keeping cliq-165 export scope verification blocked
-  for interactive re-auth
+  cliq-181 `mute`/`unmute` command slice is now landed with targeted tests;
+  continue with one small follow-up slice (recommend `pin`/`unpin`) while
+  keeping cliq-165 export scope verification blocked for interactive re-auth

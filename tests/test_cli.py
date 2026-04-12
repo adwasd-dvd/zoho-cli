@@ -2191,6 +2191,32 @@ def test_cliq_scheduled_cancel_from_channel(
     )
 
 
+def test_cliq_leave_from_channel(
+    mock_config: Path,
+    mock_token_refresh: Any,
+) -> None:
+    mock_client = MagicMock()
+    mock_client.resolve_chat_id.return_value = "C1"
+    mock_client.leave_chat.return_value = {"data": {"left": True}}
+
+    with patch("zoho_cli.cli._get_cliq_client", return_value=mock_client):
+        result = runner.invoke(
+            app,
+            ["cliq", "leave", "--channel-id", "O2"],
+            env=_cfg_env(mock_config),
+        )
+
+    assert result.exit_code == 0, result.output
+    payload = json.loads(result.output)
+    assert payload["status"] == "ok"
+    assert payload["chatId"] == "C1"
+    assert payload["channelId"] == "O2"
+    mock_client.leave_chat.assert_called_once_with(
+        chat_id="C1",
+        channel_id="O2",
+    )
+
+
 def test_cliq_thread_followers(
     mock_config: Path,
     mock_token_refresh: Any,

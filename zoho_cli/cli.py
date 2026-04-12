@@ -2334,6 +2334,38 @@ def cliq_scheduled_cancel(
     )
 
 
+@cliq_app.command("leave")
+def cliq_leave(
+    channel_id: Optional[str] = typer.Option(
+        None, "--channel-id", help="Destination channel id (resolved to chat_id)."
+    ),
+    chat_id: Optional[str] = typer.Option(None, "--chat-id", help="Chat id."),
+    network: Optional[str] = typer.Option(
+        None, "--network", help="Cliq network slug (e.g. happydistrouklimited)."
+    ),
+) -> None:
+    """Leave one chat/channel conversation."""
+    if not chat_id and not channel_id:
+        utils.error_exit("invalid_destination", "Provide --chat-id or --channel-id")
+
+    cfg = _cfg()
+    email = _require_account(cfg)
+    client = _get_cliq_client(cfg, email, network=network)
+
+    resolved_chat = (chat_id or "").strip() or client.resolve_chat_id(channel_id or "")
+    resp = client.leave_chat(chat_id=resolved_chat, channel_id=channel_id)
+    data = resp.get("data", resp)
+
+    utils.output_status(
+        "Cliq conversation left",
+        extra={
+            "chatId": resolved_chat or "",
+            "channelId": channel_id or "",
+            "result": data,
+        },
+    )
+
+
 @cliq_app.command("thread-followers")
 def cliq_thread_followers(
     thread_id: str = typer.Argument(..., help="Thread id."),

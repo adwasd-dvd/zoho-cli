@@ -1987,6 +1987,42 @@ class ZohoCliqClient:
             not_supported_message="Cliq scheduled-message cancel endpoints are not available for this token/network endpoint. Run `zoho cliq capabilities --channel-id <id>` and confirm scheduled-message operations for the target conversation.",
         )
 
+    def leave_chat(
+        self,
+        *,
+        chat_id: str | None = None,
+        channel_id: str | None = None,
+    ) -> dict:
+        """Leave one chat/channel conversation."""
+        resolved_chat = self._resolve_chat_destination(
+            chat_id=chat_id,
+            channel_id=channel_id,
+        )
+
+        candidates: list[tuple[str, str, dict[str, Any] | None]] = [
+            ("DELETE", f"/chats/{resolved_chat}/members/me", None),
+            ("POST", f"/chats/{resolved_chat}/leave", {}),
+            ("POST", f"/chats/{resolved_chat}/members/leave", {}),
+            ("DELETE", f"/chats/{resolved_chat}/member/me", None),
+            ("POST", f"/chats/{resolved_chat}/exit", {}),
+        ]
+
+        if channel_id:
+            candidates.extend(
+                [
+                    ("DELETE", f"/channels/{channel_id}/members/me", None),
+                    ("POST", f"/channels/{channel_id}/leave", {}),
+                    ("POST", f"/channels/{channel_id}/members/leave", {}),
+                ]
+            )
+
+        return self._request_with_candidates_and_not_supported(
+            candidates,
+            scope_hint="ZohoCliq.Channels.UPDATE",
+            operation_label="leave",
+            not_supported_message="Cliq leave endpoints are not available for this token/network endpoint. Run `zoho cliq capabilities --channel-id <id>` and confirm chat control operations for the target conversation.",
+        )
+
     def post_to_bot(
         self,
         bot_id: str,

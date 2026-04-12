@@ -1,5 +1,5 @@
 project: zoho-cli
-updated_at: '2026-04-12T15:06:43Z'
+updated_at: '2026-04-12T15:37:07Z'
 status: cliq-expansion
 canonical_workspace: /Users/adwasd/.openclaw/workspace-coder
 project_root: /Users/adwasd/.openclaw/workspace-coder/job/zoho-cli
@@ -7,7 +7,7 @@ module_order:
 - Mail
 - Cliq
 - CRM
-current_focus: cliq-180 live probe is archived and classifies bot trigger/call endpoints as `not_supported` on happydistrouklimited; move active execution to cliq-181 chat control plane slices while keeping cliq-165 export scopes blocked for interactive re-auth
+current_focus: cliq-181 first chat-control slice (`leave`) is now landed with targeted tests; continue cliq-181 with one small follow-up control-plane slice while keeping cliq-165 export scopes blocked for interactive re-auth
 primary_blockers:
 - crm live read-only verification remains blocked by account-level CRM org access
 - cliq search endpoint variants are not available on happydistrouklimited for current
@@ -22,8 +22,9 @@ primary_blockers:
   / `scheduled` / `scheduled-get` / `scheduled-cancel` report `not_supported`)
 - bot trigger/call endpoints are unsupported on current token/network (`cliq trigger-bot`
   returns `not_supported`)
-next_step: start cliq-181 with one small chat-control command slice (recommend `leave`) and targeted tests, while keeping cliq-165 export scope verification on blocker-skip loop for interactive re-auth
+next_step: continue cliq-181 with one small follow-up chat-control command slice (recommend `mute`/`unmute`) and targeted tests, while keeping cliq-165 export scope verification on blocker-skip loop for interactive re-auth
 additional_info:
+- '2026-04-12 unit delivery: added first cliq-181 chat-control slice with `zoho cliq leave` and `ZohoCliqClient.leave_chat` fallback routing; targeted tests passed (`tests/test_cliq.py::test_cliq_client_leave_chat_falls_back_to_leave_endpoint`, `tests/test_cliq.py::test_cliq_client_leave_chat_scope_invalid_reports_hint`, `tests/test_cli.py::test_cliq_leave_from_channel`) and format check is clean.'
 - '2026-04-12 live probe: ran one cliq-180 `trigger-bot` probe on happydistrouklimited using `/tmp/zoho-test-config.json`; command returns `error: not_supported` for bot trigger/call endpoints, and companion capabilities snapshot remains baseline-healthy (`channels.list` + `users.list` both ok), so cliq-180 implementation is treated as complete with endpoint-limitation classification (evidence: `tests/auto_pilot/reports/cliq180_status_20260412_150542.json`, `tests/auto_pilot/reports/cliq180_trigger_bot_20260412_150542.json`, `tests/auto_pilot/reports/cliq180_capabilities_20260412_150542.json`).'
 - '2026-04-12 unit delivery: added the third cliq-180 bot-operation slice with `zoho cliq trigger-bot` and `ZohoCliqClient.trigger_bot_call` fallback routing; targeted tests passed (`tests/test_cliq.py::test_cliq_client_trigger_bot_call_falls_back_to_call_endpoint`, `tests/test_cliq.py::test_cliq_client_trigger_bot_call_scope_invalid_reports_hint`, `tests/test_cli.py::test_cliq_trigger_bot`, `tests/test_cli.py::test_cliq_trigger_bot_rejects_invalid_inputs_json`), and format check is clean.'
 - '2026-04-12 nightly verify: broad verification rerun is green (`make release-gate && make ci`), with release-gate unit suite 321 passed + wheel smoke and ci fmt/lint + pytest 321 passed; no new unit/packaging regressions detected while cliq live blockers remain unchanged.'

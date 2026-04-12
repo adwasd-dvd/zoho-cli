@@ -2361,7 +2361,6 @@ class ZohoCliqClient:
             "invalid_data",
             "operation_failed",
             "extra_key_found",
-            "request_method_invalid",
             "request_url_invalid",
             "input_json_invalid",
         }
@@ -2461,6 +2460,10 @@ class ZohoCliqClient:
                         resp.status_code in (404, 405)
                         or "request_url_invalid" in lowered
                     ):
+                        skip_current_path = True
+                        break
+
+                    if code == "request_method_invalid":
                         skip_current_path = True
                         break
 

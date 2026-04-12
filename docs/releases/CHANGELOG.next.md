@@ -90,10 +90,12 @@
 - Local multipart upload fallback now also treats `operation_failed` as a path-level miss and advances to the next endpoint candidate, reducing repeated field retries and avoiding attempt-cap exhaustion on known-failing paths.
 - Local multipart upload now classifies all-candidate endpoint-miss outcomes as `not_supported` (instead of generic `api_error`) when every attempted path fails with unsupported-pattern signals, improving cliq-155 endpoint-limitation evidence quality.
 - Standard `zoho cliq send --channel-id ...` text/link sends now also probe `/channels/{channel_id}/message` in the channel-id fallback chain, reducing send-path mismatch risk when descriptor-derived chat/name paths are unavailable.
+- Channel-id send/upload candidate ordering now prioritizes resolved chat/name paths before raw id-shaped paths, reducing false-positive `204` accepts on non-delivering raw endpoints.
 - Cliq channel-id send fallback resolution now reuses a single `/channels/{id}` descriptor fetch when building chat/name path candidates, avoiding duplicate descriptor lookups per send attempt.
 - Cliq file retrieval now includes source endpoint metadata (`fetch.path` from `ZohoCliqClient.get_message_files`) and `zoho cliq file` surfaces it as `sourcePath` for live upload/download matrix logging.
 - `zoho cliq voice` now also surfaces retrieval endpoint metadata as `sourcePath`, so voice-only attachment probes capture the same download-path evidence as `zoho cliq file`.
 - Cliq typed message inference now treats scalar attachment URL fields (for example `file: "https://..."`) as media-bearing payloads, so `cliq messages` / `cliq message` / `cliq context` no longer drop type classification for string-shaped attachment fields.
+- Cliq typed message inference now also inspects card/unfurl payloads (`unfurled_details`, content URL/thumbnail fields), so card-style remote image messages are classified as `image` in typed context outputs.
 - Bumped package/runtime version metadata to `0.2.0` (`pyproject.toml` and `zoho_cli.__version__`) and made CLI `--version` prefer local package `__version__` first so source-checkout runs do not report stale installed metadata.
 - Updated Mail module status to in_progress and cleared blockers.
 - Prevented `mail download-attachment --parse` from crashing when parsing fails; it now returns a warning payload after saving the file.

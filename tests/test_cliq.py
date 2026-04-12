@@ -215,6 +215,21 @@ def test_cliq_client_infer_message_types_detects_scalar_attachment_string() -> N
     assert result == ["file"]
 
 
+def test_cliq_client_infer_message_types_detects_image_from_unfurled_details() -> None:
+    message = {
+        "id": "M_card",
+        "type": "card",
+        "content": {"text": "see image"},
+        "unfurled_details": {
+            "url": "https://upload.wikimedia.org/wikipedia/commons/3/3f/JPEG_example_flower.jpg"
+        },
+    }
+
+    result = cliq.ZohoCliqClient.infer_message_types(message)
+
+    assert "image" in result
+
+
 @respx.mock
 def test_cliq_client_resolve_users_email_exact_first(
     client: cliq.ZohoCliqClient,
@@ -793,6 +808,39 @@ def test_cliq_client_send_local_file_message_channel_id_tries_channels_endpoint(
 
 
 @respx.mock
+def test_cliq_client_send_local_file_message_channel_prefers_resolved_chat_path(
+    client: cliq.ZohoCliqClient,
+    tmp_path: Path,
+) -> None:
+    sample = tmp_path / "voice.m4a"
+    sample.write_bytes(b"voice-bytes")
+
+    respx.get("https://cliq.zoho.com/api/v2/channels/O1").mock(
+        return_value=httpx.Response(
+            200,
+            json={"data": {"chat_id": "CT_1", "unique_name": "channel-one"}},
+        )
+    )
+    resolved = respx.post("https://cliq.zoho.com/api/v2/chats/CT_1/message").mock(
+        return_value=httpx.Response(200, json={"data": {"status": "ok"}})
+    )
+    raw = respx.post("https://cliq.zoho.com/api/v2/chats/O1/message").mock(
+        return_value=httpx.Response(200, json={"data": {"status": "ok"}})
+    )
+
+    result = client.send_local_file_message(
+        str(sample),
+        channel_id="O1",
+        text="voice",
+        media_kind="voice",
+    )
+
+    assert resolved.called
+    assert not raw.called
+    assert result["data"]["upload"]["path"] == "/chats/CT_1/message"
+
+
+@respx.mock
 def test_cliq_client_send_local_file_message_channel_id_tries_plural_message_endpoint(
     client: cliq.ZohoCliqClient,
     tmp_path: Path,
@@ -820,6 +868,31 @@ def test_cliq_client_send_local_file_message_channel_id_tries_plural_message_end
     assert route.called
     assert result["data"]["status"] == "ok"
     assert result["data"]["upload"]["path"] == "/channelsbyname/O1/messages"
+
+
+@respx.mock
+def test_cliq_client_send_message_channel_prefers_resolved_chat_path(
+    client: cliq.ZohoCliqClient,
+) -> None:
+    respx.get("https://cliq.zoho.com/api/v2/channels/O1").mock(
+        return_value=httpx.Response(
+            200,
+            json={"data": {"chat_id": "CT_1", "unique_name": "channel-one"}},
+        )
+    )
+    resolved = respx.post("https://cliq.zoho.com/api/v2/chats/CT_1/message").mock(
+        return_value=httpx.Response(204, text="")
+    )
+    raw = respx.post("https://cliq.zoho.com/api/v2/chats/O1/message").mock(
+        return_value=httpx.Response(204, text="")
+    )
+
+    result = client.send_message("hello", channel_id="O1")
+
+    assert resolved.called
+    assert not raw.called
+    assert result["status"] == "ok"
+    assert result["httpStatus"] == 204
 
 
 @respx.mock

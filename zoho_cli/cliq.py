@@ -1392,8 +1392,29 @@ class ZohoCliqClient:
             "cards",
             "card",
             "media",
+            "unfurled_details",
+            "unfurledDetails",
+            "preview",
+            "previews",
         ):
             attachment_items.extend(_as_list(message.get(key)))
+
+        content_payload = message.get("content")
+        if isinstance(content_payload, dict):
+            for key in (
+                "attachments",
+                "attachment",
+                "files",
+                "file",
+                "image",
+                "images",
+                "audio",
+                "voice",
+                "thumbnail",
+                "preview",
+                "url",
+            ):
+                attachment_items.extend(_as_list(content_payload.get(key)))
 
         for item in attachment_items:
             blob = str(item).lower()
@@ -2331,12 +2352,13 @@ class ZohoCliqClient:
 
         paths: list[str]
         if channel_id:
-            candidates = [
+            resolved_candidates = self._resolve_channel_message_paths(channel_id)
+            raw_candidates = [
                 f"/channelsbyname/{channel_id}/message",
                 f"/chats/{channel_id}/message",
                 f"/channels/{channel_id}/message",
             ]
-            candidates.extend(self._resolve_channel_message_paths(channel_id))
+            candidates = resolved_candidates + raw_candidates
 
             seen: set[str] = set()
             paths = [p for p in candidates if not (p in seen or seen.add(p))]
@@ -2387,12 +2409,13 @@ class ZohoCliqClient:
 
         destination_paths: list[str]
         if channel_id:
-            candidates = [
+            resolved_candidates = self._resolve_channel_message_paths(channel_id)
+            raw_candidates = [
                 f"/channelsbyname/{channel_id}/message",
                 f"/chats/{channel_id}/message",
                 f"/channels/{channel_id}/message",
             ]
-            candidates.extend(self._resolve_channel_message_paths(channel_id))
+            candidates = resolved_candidates + raw_candidates
 
             expanded_candidates: list[str] = []
             for candidate in candidates:

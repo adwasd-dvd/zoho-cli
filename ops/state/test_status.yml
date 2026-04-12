@@ -1,10 +1,14 @@
-last_run_at: "2026-04-12T11:45:00Z"
+last_run_at: "2026-04-12T12:06:16Z"
 last_result: warning
 current_focus: cliq
 suites:
   unit:
     status: passing
     notes:
+      - "python3.11 -m pytest -q tests/test_cliq.py::test_cliq_client_list_scheduled_messages_falls_back_to_messages_scheduled tests/test_cli.py::test_cliq_scheduled_from_channel"
+      - "2 passed in 0.22s (cliq-171 scheduled list slice: new `zoho cliq scheduled` command + `ZohoCliqClient.list_scheduled_messages` fallback path coverage, 2026-04-12T12:06:16Z)"
+      - "./.venv/bin/ruff format --check zoho_cli/cliq.py zoho_cli/cli.py tests/test_cliq.py tests/test_cli.py"
+      - "4 files already formatted (2026-04-12T12:06:16Z)"
       - "python3.11 -m zoho_cli --config /tmp/zoho-test-config.json --account ai-dev@happy-distro.co.uk cliq status --check-auth --network happydistrouklimited"
       - "python3.11 -m zoho_cli --config /tmp/zoho-test-config.json --account ai-dev@happy-distro.co.uk cliq messages --network happydistrouklimited --channel-id O6576524000097556005 --limit 20"
       - "live thread probe bundle: `thread-create` + `threads` + synthetic-id `thread-reply`/`thread-followers`/`thread-state`/`thread-state --state resolved` archived at `tests/auto_pilot/reports/cliq_thread_probe_summary_20260412_044149.json`; create/reply/followers/state paths report `not_supported` and list returns `count: 0`"

@@ -1,5 +1,5 @@
 project: zoho-cli
-updated_at: '2026-04-12T11:45:00Z'
+updated_at: '2026-04-12T12:06:16Z'
 status: cliq-expansion
 canonical_workspace: /Users/adwasd/.openclaw/workspace-coder
 project_root: /Users/adwasd/.openclaw/workspace-coder/job/zoho-cli
@@ -18,10 +18,11 @@ primary_blockers:
   scopes on current live config (`oauth_scope_invalid`)
 - thread-plane endpoints remain unsupported on current token/network (`thread-create`
   / `thread-reply` / `thread-followers` / `thread-state` report `not_supported`)
-next_step: scaffold cliq-171 scheduled message lifecycle (`schedule`, `scheduled`,
-  `scheduled-get`, `scheduled-cancel`) with focused unit+CLI tests, then run one
-  live probe bundle on happydistrouklimited
+next_step: continue cliq-171 from the landed `scheduled` list slice by adding
+  `schedule`, `scheduled-get`, and `scheduled-cancel` with focused unit+CLI tests,
+  then run one live probe bundle on happydistrouklimited
 additional_info:
+- '2026-04-12 unit delivery: added the first cliq-171 scheduled-message lifecycle slice with `zoho cliq scheduled` plus `ZohoCliqClient.list_scheduled_messages` fallback routing for chat/channel targets; targeted tests passed (`tests/test_cliq.py::test_cliq_client_list_scheduled_messages_falls_back_to_messages_scheduled`, `tests/test_cli.py::test_cliq_scheduled_from_channel`).'
 - '2026-04-12 live probe: ran one thread-plane bundle (`thread-create`, `threads`, `thread-reply`, `thread-followers`, `thread-state`, plus state-update check) against happydistrouklimited; create/reply/followers/state all return `not_supported` and `threads` returns `count: 0`, so cliq-170 is now classified as endpoint limitation on current token/network (evidence: `tests/auto_pilot/reports/cliq_thread_probe_summary_20260412_044149.json`).'
 - '2026-04-12 unit delivery: implemented thread plane in code (`zoho cliq thread-create`, `thread-reply`, `threads`, `thread-followers`, `thread-state`) with capability-gated fallback helpers and targeted tests; thread slices pass locally.'
 - '2026-04-12 unit follow-up: `tests/auto_pilot/run_cliq_export_scope_recheck.sh` now emits `rateLimited` and returns `recommendedNext: wait_for_refresh_cooldown_then_rerun` when probes show `token_refresh_rate_limited`/"too many requests"; `tests/test_auto_pilot_scripts.py` now covers this branch.'

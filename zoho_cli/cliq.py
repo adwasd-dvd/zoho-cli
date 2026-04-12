@@ -1757,6 +1757,49 @@ class ZohoCliqClient:
             not_supported_message="Cliq thread-list endpoints are not available for this token/network endpoint. Run `zoho cliq capabilities --channel-id <id>` and confirm thread operations for the target conversation.",
         )
 
+    def list_scheduled_messages(
+        self,
+        *,
+        chat_id: str | None = None,
+        channel_id: str | None = None,
+        limit: int = 50,
+    ) -> dict:
+        """List scheduled messages for a chat/channel."""
+        resolved_chat = self._resolve_chat_destination(
+            chat_id=chat_id,
+            channel_id=channel_id,
+        )
+        limit_value = max(1, limit)
+
+        candidates: list[tuple[str, dict[str, Any] | None]] = [
+            (f"/chats/{resolved_chat}/scheduled", {"limit": limit_value}),
+            (f"/chats/{resolved_chat}/messages/scheduled", {"limit": limit_value}),
+            (f"/chats/{resolved_chat}/scheduled/messages", {"limit": limit_value}),
+            (f"/chats/{resolved_chat}/schedule", {"limit": limit_value}),
+        ]
+
+        if channel_id:
+            candidates.extend(
+                [
+                    (f"/channels/{channel_id}/scheduled", {"limit": limit_value}),
+                    (
+                        f"/channels/{channel_id}/messages/scheduled",
+                        {"limit": limit_value},
+                    ),
+                    (
+                        f"/channels/{channel_id}/scheduled/messages",
+                        {"limit": limit_value},
+                    ),
+                ]
+            )
+
+        return self._get_with_candidates_and_not_supported(
+            candidates,
+            scope_hint="ZohoCliq.Messages.READ",
+            operation_label="scheduled",
+            not_supported_message="Cliq scheduled-message list endpoints are not available for this token/network endpoint. Run `zoho cliq capabilities --channel-id <id>` and confirm scheduled-message operations for the target conversation.",
+        )
+
     def list_thread_followers(
         self,
         thread_id: str,

@@ -1957,6 +1957,35 @@ def test_cliq_threads_from_channel(
     assert payload["threads"][0]["id"] == "T1"
 
 
+def test_cliq_scheduled_from_channel(
+    mock_config: Path,
+    mock_token_refresh: Any,
+) -> None:
+    mock_client = MagicMock()
+    mock_client.resolve_chat_id.return_value = "C1"
+    mock_client.list_scheduled_messages.return_value = {
+        "data": [{"id": "S1"}, {"id": "S2"}]
+    }
+
+    with patch("zoho_cli.cli._get_cliq_client", return_value=mock_client):
+        result = runner.invoke(
+            app,
+            ["cliq", "scheduled", "--channel-id", "O2", "--limit", "2"],
+            env=_cfg_env(mock_config),
+        )
+
+    assert result.exit_code == 0, result.output
+    payload = json.loads(result.output)
+    assert payload["chatId"] == "C1"
+    assert payload["count"] == 2
+    assert payload["scheduled"][0]["id"] == "S1"
+    mock_client.list_scheduled_messages.assert_called_once_with(
+        chat_id="C1",
+        channel_id="O2",
+        limit=2,
+    )
+
+
 def test_cliq_thread_followers(
     mock_config: Path,
     mock_token_refresh: Any,

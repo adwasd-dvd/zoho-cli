@@ -86,6 +86,7 @@
 - Local multipart channel sends now also probe plural `/messages` endpoint variants (for example `/channelsbyname/{id}/messages`) after singular `/message` attempts, widening endpoint coverage for cliq-155 live upload matrix verification.
 - Local multipart upload fallback now treats `request_method_invalid` as a path-level miss and immediately advances to the next endpoint candidate, reducing wasted field permutations on unsupported paths.
 - Local multipart upload fallback now also treats `operation_failed` as a path-level miss and advances to the next endpoint candidate, reducing repeated field retries and avoiding attempt-cap exhaustion on known-failing paths.
+- Local multipart upload now classifies all-candidate endpoint-miss outcomes as `not_supported` (instead of generic `api_error`) when every attempted path fails with unsupported-pattern signals, improving cliq-155 endpoint-limitation evidence quality.
 - Standard `zoho cliq send --channel-id ...` text/link sends now also probe `/channels/{channel_id}/message` in the channel-id fallback chain, reducing send-path mismatch risk when descriptor-derived chat/name paths are unavailable.
 - Cliq channel-id send fallback resolution now reuses a single `/channels/{id}` descriptor fetch when building chat/name path candidates, avoiding duplicate descriptor lookups per send attempt.
 - Cliq file retrieval now includes source endpoint metadata (`fetch.path` from `ZohoCliqClient.get_message_files`) and `zoho cliq file` surfaces it as `sourcePath` for live upload/download matrix logging.

@@ -579,6 +579,42 @@ def test_cliq_client_send_local_file_message_error_reports_form_field(
 
 
 @respx.mock
+def test_cliq_client_send_local_file_message_all_endpoint_misses_report_not_supported(
+    client: cliq.ZohoCliqClient,
+    tmp_path: Path,
+    capsys: pytest.CaptureFixture[str],
+) -> None:
+    sample = tmp_path / "probe.txt"
+    sample.write_text("hello", encoding="utf-8")
+
+    respx.post("https://cliq.zoho.com/api/v2/buddies/U1/message").mock(
+        return_value=httpx.Response(400, json={"code": "operation_failed"})
+    )
+    respx.post("https://cliq.zoho.com/api/v2/buddies/U1/messages").mock(
+        return_value=httpx.Response(400, json={"code": "request_url_invalid"})
+    )
+    respx.post("https://cliq.zoho.com/api/v2/users/U1/message").mock(
+        return_value=httpx.Response(400, json={"code": "request_method_invalid"})
+    )
+    respx.post("https://cliq.zoho.com/api/v2/users/U1/messages").mock(
+        return_value=httpx.Response(404, text="request_url_invalid")
+    )
+
+    with pytest.raises(SystemExit):
+        client.send_local_file_message(
+            str(sample),
+            user_id="U1",
+            text="file",
+            media_kind="file",
+        )
+
+    err = capsys.readouterr().err
+    assert "not_supported" in err
+    assert "local multipart upload endpoints are not supported" in err
+    assert "attempts:" in err
+
+
+@respx.mock
 def test_cliq_client_send_local_file_message_resolves_email_user_id(
     client: cliq.ZohoCliqClient,
     tmp_path: Path,

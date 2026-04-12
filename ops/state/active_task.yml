@@ -4,7 +4,7 @@ module: cliq
 stage: in_progress
 status: in_progress
 owner: automation
-updated_at: '2026-04-12T01:05:47Z'
+updated_at: '2026-04-12T01:09:53Z'
 success_criteria:
   - provide chat discovery command surface (`cliq chats`) with explicit scope/not-supported diagnostics
   - stabilize dm/channel/group read paths with predictable history/context behavior on live token/network
@@ -13,4 +13,4 @@ success_criteria:
   - maintain channel/chat context extraction for agent loops (`messages`, `message`, `context`) with typed summaries
   - validate via focused tests and at least one live smoke path on current token/network
 next_if_done: cliq-156
-next_step: "continue bounded live cliq-155 batches with fresh user/channel local multipart probes (image/file/voice) and archive `attempts:` matrices; target first attachment-positive send/readback sample or finalize endpoint-limitation classification"
+next_step: "continue bounded live cliq-155 batches for remaining media kinds (image/voice) and retrieval (`cliq file`/`cliq voice`); user local-file path now reports explicit `not_supported` endpoint limitation with `attempts:` evidence"

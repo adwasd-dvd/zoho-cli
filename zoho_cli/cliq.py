@@ -2363,6 +2363,8 @@ class ZohoCliqClient:
 
         last_error: tuple[int, str, str, str] | None = None
         saw_scope_invalid = False
+        saw_endpoint_limitation = False
+        saw_non_limitation_failure = False
         attempt_summaries: list[str] = []
         seen_attempt_summaries: set[str] = set()
         retryable_codes = {
@@ -2429,6 +2431,7 @@ class ZohoCliqClient:
                     except httpx.TimeoutException as exc:
                         body = f"timeout: {exc.__class__.__name__}"
                         last_error = (599, send_path, field_name, body)
+                        saw_non_limitation_failure = True
                         _record_attempt(599, send_path, field_name, "timeout", body)
                         continue
 
@@ -2465,25 +2468,30 @@ class ZohoCliqClient:
                         saw_scope_invalid = True
                         continue
 
-                    if (
+                    endpoint_miss = (
                         resp.status_code in (404, 405)
                         or "request_url_invalid" in lowered
-                    ):
-                        skip_current_path = True
-                        break
+                        or code
+                        in {
+                            "request_method_invalid",
+                            "operation_failed",
+                            "operation_not_allowed",
+                            "not_supported",
+                            "unsupported",
+                        }
+                    )
 
-                    if code == "request_method_invalid":
-                        skip_current_path = True
-                        break
-
-                    if code == "operation_failed":
+                    if endpoint_miss:
+                        saw_endpoint_limitation = True
                         skip_current_path = True
                         break
 
                     if code in retryable_codes:
+                        saw_non_limitation_failure = True
                         continue
 
                     if resp.status_code == 408:
+                        saw_non_limitation_failure = True
                         continue
 
                     utils.error_exit(
@@ -2509,6 +2517,11 @@ class ZohoCliqClient:
                 if stop_early or attempts >= max_attempts
                 else ""
             )
+            if saw_endpoint_limitation and not saw_non_limitation_failure and not stop_early:
+                utils.error_exit(
+                    "not_supported",
+                    "Cliq local multipart upload endpoints are not supported for this token/network target. Text send can still succeed; collect `attempts:` evidence and treat this as endpoint limitation." + _attempt_suffix(),
+                )
             utils.error_exit(
                 "api_error",
                 f"HTTP {status} POST {send_path} (field={field_name}): {body}{capped_note}{_attempt_suffix()}",

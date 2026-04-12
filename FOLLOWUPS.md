@@ -8,4 +8,5 @@
 - [x] Run one interactive `zoho login --with-cliq` re-auth that includes chat-read scope, then verify `zoho cliq chats --network happydistrouklimited` succeeds.
 - [x] Re-run broad verification gate (`make release-gate && make ci`) after the latest cliq send fallback changes.
 - [x] Execute live native local-file upload probes (`cliq send` with voice/image/file local paths) and record endpoint matrix evidence to close cliq-155. (Latest evidence: `tests/auto_pilot/reports/cliq_local_media_matrix_live_20260411_185605.log` + `tests/auto_pilot/reports/cliq_retrieval_probe_20260411_185528.log`; still no attachment-positive success sample, currently classified as endpoint limitation.)
+- [ ] Re-run one cooldown-safe local upload probe against the new `/files` fallback path and confirm whether Cliq Chat File Sharing endpoints now produce an attachment-positive send evidence bundle (`cliq_files_endpoint_probe_*.log`).
 - [ ] Run `./tests/auto_pilot/run_cliq_deep_scan.sh` with real test account/network inputs and archive one full evidence bundle (users + DM history + channel history + text/media send).

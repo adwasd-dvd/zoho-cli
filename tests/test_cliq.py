@@ -630,6 +630,12 @@ def test_cliq_client_send_local_file_message_all_endpoint_misses_report_not_supp
     respx.post("https://cliq.zoho.com/api/v2/users/U1/messages").mock(
         return_value=httpx.Response(404, text="request_url_invalid")
     )
+    respx.post("https://cliq.zoho.com/api/v2/buddies/U1/files").mock(
+        return_value=httpx.Response(404, text="request_url_invalid")
+    )
+    respx.post("https://cliq.zoho.com/api/v2/users/U1/files").mock(
+        return_value=httpx.Response(404, text="request_url_invalid")
+    )
 
     with pytest.raises(SystemExit):
         client.send_local_file_message(
@@ -679,6 +685,12 @@ def test_cliq_client_send_local_file_message_resolves_email_user_id(
     respx.post(
         "https://cliq.zoho.com/api/v2/users/david@happy-distro.com/messages"
     ).mock(return_value=httpx.Response(400, json={"code": "request_url_invalid"}))
+    respx.post(
+        "https://cliq.zoho.com/api/v2/buddies/david@happy-distro.com/files"
+    ).mock(return_value=httpx.Response(400, json={"code": "request_url_invalid"}))
+    respx.post("https://cliq.zoho.com/api/v2/users/david@happy-distro.com/files").mock(
+        return_value=httpx.Response(400, json={"code": "request_url_invalid"})
+    )
     route = respx.post("https://cliq.zoho.com/api/v2/buddies/U1/message").mock(
         return_value=httpx.Response(200, json={"data": {"status": "ok"}})
     )
@@ -766,6 +778,95 @@ def test_cliq_client_send_local_image_message_prefers_image_field(
     assert result["data"]["upload"]["field"] == "image"
     assert result["data"]["upload"]["fileName"] == "image.png"
     assert result["data"]["upload"]["mimeType"] == "image/png"
+
+
+@respx.mock
+def test_cliq_client_send_local_file_message_user_falls_back_to_files_endpoint(
+    client: cliq.ZohoCliqClient,
+    tmp_path: Path,
+) -> None:
+    sample = tmp_path / "doc.txt"
+    sample.write_text("hello")
+
+    respx.post("https://cliq.zoho.com/api/v2/buddies/U1/message").mock(
+        return_value=httpx.Response(404, text="request_url_invalid")
+    )
+    respx.post("https://cliq.zoho.com/api/v2/buddies/U1/messages").mock(
+        return_value=httpx.Response(404, text="request_url_invalid")
+    )
+    respx.post("https://cliq.zoho.com/api/v2/users/U1/message").mock(
+        return_value=httpx.Response(404, text="request_url_invalid")
+    )
+    respx.post("https://cliq.zoho.com/api/v2/users/U1/messages").mock(
+        return_value=httpx.Response(404, text="request_url_invalid")
+    )
+    route = respx.post("https://cliq.zoho.com/api/v2/buddies/U1/files").mock(
+        return_value=httpx.Response(200, json={"data": {"status": "ok"}})
+    )
+
+    result = client.send_local_file_message(
+        str(sample),
+        user_id="U1",
+        text="file via files endpoint",
+        media_kind="file",
+    )
+
+    assert route.called
+    raw = route.calls.last.request.content
+    assert b'name="files"' in raw
+    assert b'name="comments"' in raw
+    assert result["data"]["status"] == "ok"
+    assert result["data"]["upload"]["path"] == "/buddies/U1/files"
+    assert result["data"]["upload"]["field"] == "files"
+
+
+@respx.mock
+def test_cliq_client_send_local_file_message_channel_falls_back_to_files_endpoint(
+    client: cliq.ZohoCliqClient,
+    tmp_path: Path,
+) -> None:
+    sample = tmp_path / "image.png"
+    sample.write_bytes(b"png-bytes")
+
+    respx.get("https://cliq.zoho.com/api/v2/channels/O1").mock(
+        return_value=httpx.Response(
+            200,
+            json={"data": {"chat_id": "CT_1", "unique_name": "channel-one"}},
+        )
+    )
+
+    for path in [
+        "https://cliq.zoho.com/api/v2/chats/CT_1/message",
+        "https://cliq.zoho.com/api/v2/chats/CT_1/messages",
+        "https://cliq.zoho.com/api/v2/channelsbyname/channel-one/message",
+        "https://cliq.zoho.com/api/v2/channelsbyname/channel-one/messages",
+        "https://cliq.zoho.com/api/v2/chats/O1/message",
+        "https://cliq.zoho.com/api/v2/chats/O1/messages",
+        "https://cliq.zoho.com/api/v2/channels/O1/message",
+        "https://cliq.zoho.com/api/v2/channels/O1/messages",
+    ]:
+        respx.post(path).mock(
+            return_value=httpx.Response(404, text="request_url_invalid")
+        )
+
+    route = respx.post("https://cliq.zoho.com/api/v2/chats/CT_1/files").mock(
+        return_value=httpx.Response(200, json={"data": {"status": "ok"}})
+    )
+
+    result = client.send_local_file_message(
+        str(sample),
+        channel_id="O1",
+        text="image via files endpoint",
+        media_kind="image",
+    )
+
+    assert route.called
+    raw = route.calls.last.request.content
+    assert b'name="files"' in raw
+    assert b'name="comments"' in raw
+    assert result["data"]["status"] == "ok"
+    assert result["data"]["upload"]["path"] == "/chats/CT_1/files"
+    assert result["data"]["upload"]["field"] == "files"
 
 
 @respx.mock

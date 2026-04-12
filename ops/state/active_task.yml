@@ -4,7 +4,7 @@ module: cliq
 stage: in_progress
 status: in_progress
 owner: automation
-updated_at: '2026-04-12T02:12:16Z'
+updated_at: '2026-04-12T02:15:24Z'
 success_criteria:
   - capture a cooldown-safe endpoint/field matrix for local image/voice/file sends across user and channel targets
   - preserve deterministic `not_supported` classification when all live candidates miss with endpoint-limitation patterns
@@ -12,4 +12,4 @@ success_criteria:
   - keep local multipart diagnostics compact and machine-readable (`attempts` path/field/status/code tuples)
   - validate with focused unit tests and one live matrix rerun on current token/network
 next_if_done: cliq-157
-next_step: "implement a cooldown-safe local-media matrix runner (image/voice/file, user+channel) that spaces live calls to avoid refresh throttling, then archive one evidence bundle for cliq-156"
+next_step: "after adding dedicated `/files` endpoint fallback for local uploads, run one cooldown-safe live image/file/voice matrix rerun and confirm whether attachment-positive sends appear on `/chats/.../files` or `/channelsbyname/.../files`; if still blocked, capture per-endpoint limitation evidence for cliq-157 handoff"

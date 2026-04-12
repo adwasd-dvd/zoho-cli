@@ -93,12 +93,16 @@
 - Standard `zoho cliq send --channel-id ...` text/link sends now also probe `/channels/{channel_id}/message` in the channel-id fallback chain, reducing send-path mismatch risk when descriptor-derived chat/name paths are unavailable.
 - Channel-id send/upload candidate ordering now prioritizes resolved chat/name paths before raw id-shaped paths, reducing false-positive `204` accepts on non-delivering raw endpoints.
 - Raw `--channel-id` fallback probing now skips `/channelsbyname/<channel_id>` for id-shaped values, reducing guaranteed-invalid local multipart attempts while keeping resolved unique-name paths in the candidate set.
+- Local multipart sends now also fall back to dedicated Cliq file-sharing endpoints (`/chats/{id}/files`, `/channelsbyname/{name}/files`, `/buddies/{target}/files`) after message endpoint misses, so local image/voice/file probes can reach the API family documented under Chat File Sharing.
+- File-sharing fallback payloads now encode `comments` as a JSON array string (with empty-payload fallback), preventing immediate `input_json_invalid` failures from endpoints that require `comments` to be a JSONArray.
 - Cliq channel-id send fallback resolution now reuses a single `/channels/{id}` descriptor fetch when building chat/name path candidates, avoiding duplicate descriptor lookups per send attempt.
 - Cliq file retrieval now includes source endpoint metadata (`fetch.path` from `ZohoCliqClient.get_message_files`) and `zoho cliq file` surfaces it as `sourcePath` for live upload/download matrix logging.
 - `zoho cliq voice` now also surfaces retrieval endpoint metadata as `sourcePath`, so voice-only attachment probes capture the same download-path evidence as `zoho cliq file`.
 - `zoho cliq file` / `zoho cliq voice` now include retrieval diagnostics (`messageTypes`, `retrievalResult`) so logs can distinguish empty non-media messages from media-visible-but-non-attachment payloads during endpoint-limitation closure.
 - Cliq typed message inference now treats scalar attachment URL fields (for example `file: "https://..."`) as media-bearing payloads, so `cliq messages` / `cliq message` / `cliq context` no longer drop type classification for string-shaped attachment fields.
 - Cliq typed message inference now also inspects card/unfurl payloads (`unfurled_details`, content URL/thumbnail fields), so card-style remote image messages are classified as `image` in typed context outputs.
+- Added single-token local media matrix probe runner (`tests/auto_pilot/cliq_local_media_matrix.py` + `run_cliq_local_media_matrix_cooldown.sh`) to reduce refresh churn during cliq-156 live upload evidence runs.
+- Local media matrix runner now surfaces refresh throttling as structured JSON errors (`token_refresh_rate_limited`) so automation loops can back off cleanly instead of failing with unstructured exits.
 - Bumped package/runtime version metadata to `0.2.0` (`pyproject.toml` and `zoho_cli.__version__`) and made CLI `--version` prefer local package `__version__` first so source-checkout runs do not report stale installed metadata.
 - Updated Mail module status to in_progress and cleared blockers.
 - Prevented `mail download-attachment --parse` from crashing when parsing fails; it now returns a warning payload after saving the file.

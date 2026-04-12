@@ -5,6 +5,10 @@ suites:
   unit:
     status: passing
     notes:
+      - "python3.11 -m pytest -q tests/test_cliq.py -k send_local_file_message"
+      - "12 passed (local multipart now covers new `/files` fallback candidates for user/channel sends, 2026-04-12T02:13:52Z)"
+      - "python3.11 -m pytest -q tests/test_cliq.py"
+      - "full cliq suite passed after files-endpoint fallback + JSONArray comments payload update (2026-04-12T02:14:31Z)"
       - python3.11 -m pytest -q tests/test_cliq.py::test_cliq_client_send_local_file_message_channel_id_tries_channels_endpoint tests/test_cliq.py::test_cliq_client_send_local_file_message_channel_id_tries_plural_message_endpoint tests/test_cliq.py::test_cliq_client_send_local_file_message_request_method_invalid_skips_path tests/test_cliq.py::test_cliq_client_send_local_file_message_operation_failed_skips_path tests/test_cliq.py::test_cliq_client_send_to_channel tests/test_cliq.py::test_cliq_client_send_to_channel_accepts_204_empty_body tests/test_cliq.py::test_cliq_client_send_scope_invalid_reports_reauth_hint
       - 7 passed in 0.15s (id-shaped `--channel-id` raw fallback no longer probes `/channelsbyname/<channel_id>`; local multipart/channel send fallback tests updated and green, 2026-04-12T01:57:39Z)
       - python3.11 -m pytest -q tests/test_cliq.py
@@ -203,6 +207,10 @@ suites:
   integration:
     status: warning
     notes:
+      - "python3.11 direct probe: POST /chats/CT_1424657670787261966_911174541/files with local image multipart"
+      - "direct files-endpoint probe returned `extra_param_found` for `text`, confirming `/files` endpoint family is reachable but expects file-share schema fields (2026-04-12T02:06:34Z)"
+      - "python3.11 -m zoho_cli ... cliq send --channel-id O6576524000097556005 --image-url /Users/adwasd/.openclaw/workspace-coder/test/test.png --text SCAP-files-endpoint-probe"
+      - "post-fallback live probe reached files-endpoint candidates and hit validation/retry path; latest rerun is currently blocked by `token_refresh_rate_limited` before final success confirmation (evidence: tests/auto_pilot/reports/cliq_files_endpoint_probe_20260411_190616.log)"
       - "python3.11 -m zoho_cli --config /tmp/zoho-test-config.json --account ai-dev@happy-distro.co.uk cliq status --check-auth --network happydistrouklimited"
       - "live auth check currently passes again (`oauthReady: true`, `missingScopes: []`) before media/retrieval probes (2026-04-12T01:54:34Z)"
       - "python3.11 -m zoho_cli --config /tmp/zoho-test-config.json --account ai-dev@happy-distro.co.uk cliq file 1775957731803_113805388251 --network happydistrouklimited --channel-id O6576524000097556005; python3.11 -m zoho_cli --config /tmp/zoho-test-config.json --account ai-dev@happy-distro.co.uk cliq voice 1775957731803_113805388251 --network happydistrouklimited --channel-id O6576524000097556005"

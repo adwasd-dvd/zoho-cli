@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import json
 import mimetypes
 import re
 from pathlib import Path
@@ -2438,17 +2439,23 @@ class ZohoCliqClient:
             ]
             if not self._looks_like_channel_id(channel_id):
                 raw_candidates.insert(0, f"/channelsbyname/{channel_id}/message")
-            candidates = resolved_candidates + raw_candidates
+            base_message_paths = resolved_candidates + raw_candidates
 
             expanded_candidates: list[str] = []
-            for candidate in candidates:
+            file_share_candidates: list[str] = []
+            for candidate in base_message_paths:
                 expanded_candidates.append(candidate)
                 if candidate.endswith("/message"):
                     expanded_candidates.append(f"{candidate}s")
+                    file_share_candidates.append(
+                        f"{candidate[: -len('/message')]}/files"
+                    )
 
             seen: set[str] = set()
             destination_paths = [
-                p for p in expanded_candidates if not (p in seen or seen.add(p))
+                p
+                for p in (expanded_candidates + file_share_candidates)
+                if not (p in seen or seen.add(p))
             ]
         else:
             destination_paths = []
@@ -2459,21 +2466,23 @@ class ZohoCliqClient:
                         f"/buddies/{target_user}/messages",
                         f"/users/{target_user}/message",
                         f"/users/{target_user}/messages",
+                        f"/buddies/{target_user}/files",
+                        f"/users/{target_user}/files",
                     ]
                 )
 
-        file_fields = ["file", "attachment", "files", "attachments"]
+        message_file_fields = ["file", "attachment", "files", "attachments"]
         if media_kind == "voice":
-            file_fields = ["voice", "audio", "file", "attachment"]
+            message_file_fields = ["voice", "audio", "file", "attachment"]
         elif media_kind == "image":
-            file_fields = ["image", "photo", "file", "attachment"]
+            message_file_fields = ["image", "photo", "file", "attachment"]
 
-        text_fields: list[dict[str, Any]] = []
+        message_form_data: list[dict[str, Any]] = []
         if msg_text:
-            text_fields.append({"text": msg_text})
+            message_form_data.append({"text": msg_text})
             if media_kind in {"image", "file"}:
-                text_fields.append({"caption": msg_text})
-        text_fields.append({})
+                message_form_data.append({"caption": msg_text})
+        message_form_data.append({})
 
         # Bound attempt fan-out to avoid long hangs on non-responsive endpoints.
         request_timeout = httpx.Timeout(20.0, connect=8.0, read=8.0, write=12.0)
@@ -2491,6 +2500,7 @@ class ZohoCliqClient:
             "invalid_data",
             "operation_failed",
             "extra_key_found",
+            "extra_param_found",
             "request_url_invalid",
             "input_json_invalid",
         }
@@ -2524,9 +2534,23 @@ class ZohoCliqClient:
 
         stop_early = False
         for send_path in destination_paths:
+            if send_path.endswith("/files"):
+                path_file_fields = ["files", "file"]
+                path_form_data = (
+                    [
+                        {"comments": json.dumps([msg_text], ensure_ascii=False)},
+                        {},
+                    ]
+                    if msg_text
+                    else [{}]
+                )
+            else:
+                path_file_fields = message_file_fields
+                path_form_data = message_form_data
+
             skip_current_path = False
-            for field_name in file_fields:
-                for form_data in text_fields:
+            for field_name in path_file_fields:
+                for form_data in path_form_data:
                     attempts += 1
                     if attempts > max_attempts:
                         stop_early = True

@@ -7,3 +7,4 @@
 - Cliq native local multipart sends (voice/image/file) still fail on tested user/channel targets with endpoint-level `request_url_invalid` / `operation_failed`; endpoint+field matrix evidence is still being collected for cliq-155 closure.
 - Zoho token refresh can still throttle (`Access Denied` too many requests) during bursty live probe batches; retrieval probes need cooldown-safe reruns.
 - Cliq maintenance export verification is blocked until token includes maintenance export scopes (`ZohoCliq.OrganizationChats.READ` + `ZohoCliq.OrganizationMessages.READ`); current `cliq export-chats` list + `--chat-id` probes return `oauth_scope_invalid`.
+- Nightly broad verification (2026-04-12T14:19:04Z) is green (`make release-gate && make ci`, 321 tests), but this does not clear the live Cliq endpoint/scope blockers above.

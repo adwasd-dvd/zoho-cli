@@ -1,10 +1,12 @@
-last_run_at: "2026-04-12T14:09:15Z"
+last_run_at: "2026-04-12T14:19:04Z"
 last_result: warning
 current_focus: cliq
 suites:
   unit:
     status: passing
     notes:
+      - "make release-gate && make ci"
+      - "broad verification gate is green: release-gate unit suite 321 passed in 6.61s, wheel smoke passed (0.2.0), and ci pytest run 321 passed in 5.91s with fmt/lint clean (2026-04-12T14:19:04Z)"
       - "python3.11 -m pytest -q tests/test_cliq.py::test_cliq_client_post_to_bot_falls_back_to_messages tests/test_cliq.py::test_cliq_client_post_to_bot_scope_invalid_reports_hint tests/test_cli.py::test_cliq_post_to_bot"
       - "3 passed in 0.24s (cliq-180 first slice: new `zoho cliq post-to-bot` command + `ZohoCliqClient.post_to_bot` fallback coverage, 2026-04-12T14:09:15Z)"
       - "python3.11 -m pytest -q tests/test_cliq.py::test_cliq_client_list_thread_followers_scope_invalid_reports_hint"
@@ -329,6 +331,7 @@ suites:
   integration:
     status: warning
     notes:
+      - "no new live probes in this nightly verify; integration warning state is unchanged (export scopes, retrieval parity, and endpoint support limits remain blockers) (2026-04-12T14:19:04Z)"
       - "python3.11 -m zoho_cli --config /tmp/zoho-test-config.json --account ai-dev@happy-distro.co.uk cliq status --check-auth --network happydistrouklimited"
       - "auth check remains healthy (`oauthReady: true`, `missingScopes: []`) while running cliq-171 scheduled lifecycle probes; evidence: `tests/auto_pilot/reports/cliq_scheduled_status_20260412_132412.json` (2026-04-12T13:24:12Z)"
       - "python3.11 live cliq-171 scheduled lifecycle bundle (`cliq schedule`, `cliq scheduled`, `cliq scheduled-get`, `cliq scheduled-cancel`) against channel `O6576524000097556005`"
@@ -469,6 +472,8 @@ suites:
     status: passing
     notes:
       - make ci
+      - fmt-check, lint, and full pytest gate passed (321 tests) (2026-04-12T14:19:04Z)
+      - make ci
       - fmt-check, lint, and full pytest gate passed (252 tests) (2026-04-10T04:39:44Z)
       - ./.venv/bin/ruff format --check zoho_cli/cli.py tests/test_cli.py
       - 2 files already formatted (2026-04-09T19:36:57Z)
@@ -511,6 +516,7 @@ suites:
   packaging:
     status: passing
     notes:
+      - make release-gate passed (321 tests + wheel smoke) (2026-04-12T14:19:04Z)
       - make release-gate passed (274 tests + wheel smoke) (2026-04-12T01:36:19Z)
       - make release-gate passed (252 tests + wheel smoke) (2026-04-10T04:39:44Z)
       - make release-gate passed (252 tests + wheel smoke) (2026-04-10T04:30:42Z)

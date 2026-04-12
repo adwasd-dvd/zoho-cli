@@ -2332,6 +2332,15 @@ def test_cliq_voice_handles_message_without_attachments(
             },
         )
     )
+    respx.get("https://cliq.zoho.com/api/v2/chats/CT_1/messages/M1/attachments").mock(
+        return_value=httpx.Response(
+            400,
+            json={
+                "code": "no_attachments_found",
+                "message": "No attachments.",
+            },
+        )
+    )
 
     result = runner.invoke(
         app,

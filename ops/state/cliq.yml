@@ -1,5 +1,5 @@
 module: Cliq
-updated_at: '2026-04-12T01:35:52Z'
+updated_at: '2026-04-12T01:45:33Z'
 status: in_progress
 blockers:
   - "live `/messages/search` APIs on happydistrouklimited still look unsupported for current endpoint variants (`extra_param_found` / `request_url_invalid`), so search remains limitation-documented"
@@ -9,5 +9,6 @@ blockers:
   - "local multipart send fallback now treats `request_method_invalid` as path-level unsupported and skips to the next endpoint immediately (instead of exhausting field permutations on the same path), reducing wasted attempts before fallback paths are tried"
   - "local multipart send fallback now also treats `operation_failed` as path-level unsupported and skips to the next endpoint immediately; latest live image send no longer hits attempt-cap exhaustion and now emits a compact endpoint matrix in one pass"
   - "`cliq file`/`cliq voice` attachment-positive retrieval evidence is still missing; bounded retrieval scan (`tests/auto_pilot/reports/cliq_retrieval_scan_20260411_182700.json`) checked 16 recent messages across 2 joined channels and found no non-empty attachment payloads"
+  - "`get_message_files` now falls back from `/files` to `/attachments` even when `/files` reports `message_attachment_not_found`; this needs one live rerun to confirm whether prior retrieval empties were false negatives or true endpoint limitation"
   - "channel send visibility was false-positive risk on raw id-shaped paths; candidate ordering now prefers resolved chat/name paths, and live marker probe (`tests/auto_pilot/reports/cliq_send_visibility_and_remote_image_20260411_183528.json`) confirms text and remote-image messages are now visible after `204` send responses"
-next_small_step: "after refresh-throttle cooldown, rerun retrieval probes around the new remote-image marker message id from `cliq_send_visibility_and_remote_image_20260411_183528.json`; if `cliq file`/`cliq voice` remains empty with stable sourcePath evidence, finalize endpoint-limitation closure for retrieval"
+next_small_step: "after refresh-throttle cooldown, rerun retrieval probes around the new remote-image marker message id from `cliq_send_visibility_and_remote_image_20260411_183528.json`; verify whether `/attachments` fallback now returns payloads after `/files` no-attachment responses, then finalize endpoint-limitation closure if still empty"

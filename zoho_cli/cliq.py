@@ -1041,6 +1041,7 @@ class ZohoCliqClient:
 
         saw_scope_invalid = False
         saw_not_supported = False
+        first_no_attachment_path: str | None = None
         last_error: tuple[int, str, str] | None = None
 
         for path in path_candidates:
@@ -1083,7 +1084,15 @@ class ZohoCliqClient:
                 "message_attachment_not_found",
                 "no_attachments_found",
             }:
-                return {"files": [], "fetch": {"path": path}}
+                if first_no_attachment_path is None:
+                    first_no_attachment_path = path
+                last_error = (resp.status_code, path, body)
+                if path.endswith("/attachments"):
+                    return {
+                        "files": [],
+                        "fetch": {"path": first_no_attachment_path},
+                    }
+                continue
 
             if "oauthtoken_scope_invalid" in lowered:
                 saw_scope_invalid = True
@@ -1104,6 +1113,12 @@ class ZohoCliqClient:
                 "api_error",
                 f"HTTP {resp.status_code} GET {path}: {body}",
             )
+
+        if first_no_attachment_path is not None:
+            return {
+                "files": [],
+                "fetch": {"path": first_no_attachment_path},
+            }
 
         if saw_scope_invalid:
             utils.error_exit(

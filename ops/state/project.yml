@@ -1,5 +1,5 @@
 project: zoho-cli
-updated_at: '2026-04-12T01:35:52Z'
+updated_at: '2026-04-12T01:45:33Z'
 status: cliq-expansion
 canonical_workspace: /Users/adwasd/.openclaw/workspace-coder
 project_root: /Users/adwasd/.openclaw/workspace-coder/job/zoho-cli
@@ -15,7 +15,7 @@ primary_blockers:
   - "current live config auth is healthy (`oauthReady: true`, no missing Cliq scopes); DM history fallback endpoint coverage (`/conversations`, `/buddies`, `/users`, `/chats`) now degrades to empty history (`count: 0`) on full candidate miss instead of hard-failing, improving live probe stability on happydistrouklimited"
   - "native local-file upload/download behavior now has local multipart scaffolding (with image-field fallback preference, upload endpoint/field metadata, file/voice retrieval sourcePath metadata, raw+resolved user-target fallback, direct `/channels/{channel_id}/message` probing, plural `/messages` channel-send fallback variants, single-fetch channel descriptor resolution for channel-id sends, multipart failure diagnostics that include attempted form field metadata `field=...`, and compact `attempts:` path/field/status/code tuples); live probes now confirm text send success (`204`) while local image/file/voice uploads still fail with `request_url_invalid` / `operation_failed` / `request_method_invalid` (evidence captured)"
   - "attachment-positive `cliq file`/`cliq voice` evidence is still missing; latest bounded retrieval scan (`tests/auto_pilot/reports/cliq_retrieval_scan_20260411_182700.json`) checked 16 messages across 2 joined channels and returned empty attachment payloads"
-next_step: "execute the stack-top Cliq route in order: (1) rerun live probes to verify DM history fallback parity and capture winning endpoint path (`dmHistory.sourcePath`), (2) keep local image/voice/file uploads classified with explicit endpoint-limitation evidence, (3) rerun retrieval around the newest remote-image marker message id and capture `sourcePath`+count results, and (4) finalize remaining failures as code defects vs endpoint limitations"
+next_step: "execute the stack-top Cliq route in order: (1) rerun live probes to verify DM history fallback parity and capture winning endpoint path (`dmHistory.sourcePath`), (2) keep local image/voice/file uploads classified with explicit endpoint-limitation evidence, (3) rerun retrieval around the newest remote-image marker message id and confirm whether `/files` -> `/attachments` fallback now yields payloads, and (4) finalize remaining failures as code defects vs endpoint limitations"
 additional_info:
   - Auto-pilot probe scripts now resolve repo root from script location and can be launched from either project root or workspace root without path drift.
   - "2026-04-12 live check: `cliq status --check-auth` now reports `oauthReady: true`, and text send probes (user + channel) return `httpStatus: 204`."
@@ -26,6 +26,7 @@ additional_info:
   - Channel send candidate ordering now prioritizes resolved chat/name paths before raw id paths; live marker verification (`tests/auto_pilot/reports/cliq_send_visibility_and_remote_image_20260411_183528.json`) confirms `204` sends are now visible in channel history for both plain text and remote-image marker messages.
   - Typed message inference now recognizes card/unfurl image URLs, so the same remote-image marker message classifies as `image` in typed outputs even though attachment retrieval remains empty.
   - DM history fallback metadata is now captured in probe output (`dmHistory.result`, `dmHistory.sourcePath`, `dmHistory.attemptedPaths`) via `ZohoCliqClient.get_last_dm_history_meta`, so cliq-155 evidence logs can show the exact winning read endpoint.
+  - File retrieval fallback now continues from `/files` to `/attachments` even when `/files` returns `message_attachment_not_found`, reducing false-empty retrieval risk before endpoint-limitation closure.
   - Token refresh failures now report explicit `invalid_client` guidance (check `client_id`/`client_secret` and re-run `zoho login`) instead of only emitting a generic missing `access_token` payload error.
   - OAuth login defaults are now aligned on `http://localhost:51821/callback` (including `--no-browser` fallback from legacy `example.com`), and callback success UI now renders scope-aware Mail/Cliq/CRM guidance.
   - "`zoho login` now normalizes repeatable `--scope` values via shared parsing, so comma-delimited scope strings no longer duplicate Cliq scopes in generated auth URLs when combined with `--with-cliq`."

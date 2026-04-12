@@ -1235,6 +1235,30 @@ def test_cliq_client_get_message_files_not_supported_reports_capability_hint(
 
 
 @respx.mock
+def test_cliq_client_get_message_files_falls_back_when_files_reports_no_attachment(
+    client: cliq.ZohoCliqClient,
+) -> None:
+    respx.get("https://cliq.zoho.com/api/v2/chats/CT_1/messages/M1/files").mock(
+        return_value=httpx.Response(
+            400,
+            json={
+                "code": "message_attachment_not_found",
+                "message": "No attachment found for this message.",
+            },
+        )
+    )
+    fallback = respx.get(
+        "https://cliq.zoho.com/api/v2/chats/CT_1/messages/M1/attachments"
+    ).mock(return_value=httpx.Response(200, json={"data": [{"id": "F2"}]}))
+
+    result = client.get_message_files("M1", chat_id="CT_1")
+
+    assert fallback.called
+    assert result["data"][0]["id"] == "F2"
+    assert result["fetch"]["path"] == "/chats/CT_1/messages/M1/attachments"
+
+
+@respx.mock
 def test_cliq_client_get_message_files_no_attachment_returns_empty(
     client: cliq.ZohoCliqClient,
 ) -> None:
@@ -1244,6 +1268,15 @@ def test_cliq_client_get_message_files_no_attachment_returns_empty(
             json={
                 "code": "message_attachment_not_found",
                 "message": "No attachment found for this message.",
+            },
+        )
+    )
+    respx.get("https://cliq.zoho.com/api/v2/chats/CT_1/messages/M1/attachments").mock(
+        return_value=httpx.Response(
+            400,
+            json={
+                "code": "no_attachments_found",
+                "message": "No attachments.",
             },
         )
     )

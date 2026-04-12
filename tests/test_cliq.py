@@ -490,6 +490,9 @@ def test_cliq_client_list_meetings_falls_back_to_admin_endpoint(
     meetings_route = respx.get("https://cliq.zoho.com/api/v2/meetings").mock(
         return_value=httpx.Response(404, text="request_url_invalid")
     )
+    calls_route = respx.get("https://cliq.zoho.com/api/v2/calls").mock(
+        return_value=httpx.Response(404, text="request_url_invalid")
+    )
     admin_route = respx.get("https://cliq.zoho.com/api/v2/admin/meetings").mock(
         return_value=httpx.Response(
             200,
@@ -507,9 +510,39 @@ def test_cliq_client_list_meetings_falls_back_to_admin_endpoint(
     result = client.list_meetings(limit=15)
 
     assert meetings_route.called
+    assert calls_route.called
     assert admin_route.called
     assert dict(admin_route.calls.last.request.url.params) == {"limit": "15"}
     assert result["data"][0]["meeting_id"] == "MT_1"
+
+
+@respx.mock
+def test_cliq_client_list_meetings_falls_back_to_calls_endpoint(
+    client: cliq.ZohoCliqClient,
+) -> None:
+    meetings_route = respx.get("https://cliq.zoho.com/api/v2/meetings").mock(
+        return_value=httpx.Response(404, text="request_url_invalid")
+    )
+    calls_route = respx.get("https://cliq.zoho.com/api/v2/calls").mock(
+        return_value=httpx.Response(
+            200,
+            json={
+                "data": [
+                    {
+                        "call_id": "CL_1",
+                        "title": "Ops Escalation",
+                    }
+                ]
+            },
+        )
+    )
+
+    result = client.list_meetings(limit=16)
+
+    assert meetings_route.called
+    assert calls_route.called
+    assert dict(calls_route.calls.last.request.url.params) == {"limit": "16"}
+    assert result["data"][0]["call_id"] == "CL_1"
 
 
 @respx.mock
@@ -520,7 +553,13 @@ def test_cliq_client_list_meetings_scope_invalid_reports_hint(
     respx.get("https://cliq.zoho.com/api/v2/meetings").mock(
         return_value=httpx.Response(401, json={"code": "oauth_scope_invalid"})
     )
+    respx.get("https://cliq.zoho.com/api/v2/calls").mock(
+        return_value=httpx.Response(401, json={"code": "oauth_scope_invalid"})
+    )
     respx.get("https://cliq.zoho.com/api/v2/admin/meetings").mock(
+        return_value=httpx.Response(401, json={"code": "oauth_scope_invalid"})
+    )
+    respx.get("https://cliq.zoho.com/api/v2/admin/calls").mock(
         return_value=httpx.Response(401, json={"code": "oauth_scope_invalid"})
     )
 

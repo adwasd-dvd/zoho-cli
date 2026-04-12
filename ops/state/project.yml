@@ -1,5 +1,5 @@
 project: zoho-cli
-updated_at: '2026-04-12T20:29:40Z'
+updated_at: '2026-04-12T20:46:30Z'
 status: cliq-expansion
 canonical_workspace: /Users/adwasd/.openclaw/workspace-coder
 project_root: /Users/adwasd/.openclaw/workspace-coder/job/zoho-cli
@@ -7,7 +7,7 @@ module_order:
 - Mail
 - Cliq
 - CRM
-current_focus: cliq-165 export verification remains externally blocked by API-side `inactive_appaccount_user`, so cliq-191 third collaboration slice (`cliq meetings`) is now in progress via blocker-skipping loop
+current_focus: cliq-165 export verification remains externally blocked by API-side `inactive_appaccount_user`, so cliq-191 fourth calls/meetings hardening follow-up (`list_meetings` now probes `/calls`) is in progress via blocker-skipping loop
 primary_blockers:
 - crm live read-only verification remains blocked by account-level CRM org access
 - cliq pinned-message endpoints are not available on happydistrouklimited for current
@@ -24,8 +24,9 @@ primary_blockers:
   / `scheduled` / `scheduled-get` / `scheduled-cancel` report `not_supported`)
 - bot trigger/call endpoints are unsupported on current token/network (`cliq trigger-bot`
   returns `not_supported`)
-next_step: keep cliq-165 as the highest-priority blocker by coordinating Cliq admin-side app-account activation and rerunning `cliq export-chats` list + `--chat-id`; while still externally blocked, continue cliq-191 with one next smallest calls/meetings follow-up slice (or focused live verification pass) and targeted tests
+next_step: keep cliq-165 as the highest-priority blocker by coordinating Cliq admin-side app-account activation and rerunning `cliq export-chats` list + `--chat-id`; while still externally blocked, run one focused live `cliq meetings` verification pass to classify current calls/meetings endpoint behavior after the latest fallback hardening
 additional_info:
+- '2026-04-12 unit hardening: extended `ZohoCliqClient.list_meetings` fallback routing to also probe `/calls` and `/admin/calls` before classifying calls/meetings listing support; targeted tests passed (`tests/test_cliq.py::test_cliq_client_list_meetings_falls_back_to_admin_endpoint`, `tests/test_cliq.py::test_cliq_client_list_meetings_falls_back_to_calls_endpoint`, `tests/test_cliq.py::test_cliq_client_list_meetings_scope_invalid_reports_hint`, `tests/test_cli.py::test_cliq_meetings`) and format check is clean.'
 - '2026-04-12 unit delivery: added third cliq-191 collaboration-productivity slice by adding `zoho cliq meetings` and `ZohoCliqClient.list_meetings` fallback routing; targeted tests passed (`tests/test_cliq.py::test_cliq_client_list_meetings_falls_back_to_admin_endpoint`, `tests/test_cliq.py::test_cliq_client_list_meetings_scope_invalid_reports_hint`, `tests/test_cli.py::test_cliq_meetings`) and format check is clean.'
 - '2026-04-12 unit delivery: added second cliq-191 collaboration-productivity slice by adding `zoho cliq reminders` and `ZohoCliqClient.list_reminders` fallback routing; targeted tests passed (`tests/test_cliq.py::test_cliq_client_list_reminders_falls_back_to_admin_endpoint`, `tests/test_cliq.py::test_cliq_client_list_reminders_scope_invalid_reports_hint`, `tests/test_cli.py::test_cliq_reminders`) and format check is clean.'
 - '2026-04-12 unit delivery: started cliq-191 with first collaboration-productivity slice by adding `zoho cliq events` and `ZohoCliqClient.list_events` fallback routing; targeted tests passed (`tests/test_cliq.py::test_cliq_client_list_events_falls_back_to_admin_endpoint`, `tests/test_cliq.py::test_cliq_client_list_events_scope_invalid_reports_hint`, `tests/test_cli.py::test_cliq_events`) and format check is clean.'

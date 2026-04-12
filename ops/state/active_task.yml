@@ -4,10 +4,10 @@ module: cliq
 stage: in_progress
 status: in_progress
 owner: automation
-updated_at: '2026-04-12T20:29:40Z'
+updated_at: '2026-04-12T20:46:30Z'
 success_criteria:
 - add one smallest collaboration productivity command/client slice with fallback routing and scope guidance
 - add targeted CLI/client coverage for the new slice
 - keep cliq-165 export blocker evidence fresh while app-account activation remains external
-next_if_done: continue cliq-191 with one next smallest calls/meetings follow-up slice (or live verification pass) while cliq-165 stays blocked externally
-next_step: third cliq-191 slice is now in place (`zoho cliq meetings` + `ZohoCliqClient.list_meetings` with fallback routing/tests); next is one follow-up calls/meetings slice or a focused live verification pass while cliq-165 app-account activation stays external
+next_if_done: run one focused cliq-191 live verification pass (`zoho cliq meetings`) and archive endpoint-behavior evidence while cliq-165 stays blocked externally
+next_step: fourth cliq-191 hardening follow-up is now in place (`ZohoCliqClient.list_meetings` also probes `/calls` + `/admin/calls` with targeted tests); next is one focused live `cliq meetings` verification pass while cliq-165 app-account activation stays external

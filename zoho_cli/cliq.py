@@ -2765,8 +2765,12 @@ class ZohoCliqClient:
             [
                 ("/meetings", {"limit": limit}),
                 ("/meetings", None),
+                ("/calls", {"limit": limit}),
+                ("/calls", None),
                 ("/admin/meetings", {"limit": limit}),
                 ("/admin/meetings", None),
+                ("/admin/calls", {"limit": limit}),
+                ("/admin/calls", None),
             ],
             scope_hint="ZohoCliq.Calls.READ",
             operation_label="meetings-list",

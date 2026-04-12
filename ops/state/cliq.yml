@@ -1,5 +1,5 @@
 module: Cliq
-updated_at: '2026-04-12T19:10:00Z'
+updated_at: '2026-04-12T19:24:46Z'
 status: in_progress
 blockers:
 - 'cliq-181 live `cliq pinned` probe on happydistrouklimited classifies pinned endpoints as unsupported (`error: not_supported`) while auth remains healthy (`oauthReady: true`) (evidence: `tests/auto_pilot/reports/cliq181_probe_summary_20260412_164540.json` plus `tests/auto_pilot/reports/cliq181_pinned_20260412_164540.json`)'
@@ -8,10 +8,9 @@ blockers:
 - 'live scheduled-message probe classifies schedule endpoints as unsupported on happydistrouklimited: `schedule`, `scheduled`, `scheduled-get`, and `scheduled-cancel` all return `not_supported` while auth remains healthy (`tests/auto_pilot/reports/cliq_scheduled_probe_summary_20260412_132412.json`)'
 - 'cliq-172 live probe confirms search endpoints remain unsupported on happydistrouklimited: `cliq search` returns `not_supported` in targeted pass (`tests/auto_pilot/reports/cliq172_search_20260412_134514.json`)'
 - 'cliq-172 live probe confirms attachment retrieval parity remains endpoint-limited: media-typed message `1775957550478_105215272334` returns `retrievalResult: media_visible_without_attachment_payload` and `count: 0` for both `cliq file` and `cliq voice` (`tests/auto_pilot/reports/cliq172_probe_summary_20260412_134514.json`)'
-- "maintenance export command surface (`cliq export-chats`) is implemented and maintenance scopes are now granted (`ZohoCliq.OrganizationChats.READ`, `ZohoCliq.OrganizationMessages.READ`), but export verification remains blocked by API-side `inactive_appaccount_user` on both list + explicit `--chat-id` probes (evidence: `tests/auto_pilot/reports/cliq_export_chats_list_inactive_recheck_20260412_105646.json`, `tests/auto_pilot/reports/cliq_export_chat_inactive_recheck_20260412_105646.json`)"
+- 'maintenance export command surface (`cliq export-chats`) is implemented and maintenance scopes are granted (`ZohoCliq.OrganizationChats.READ`, `ZohoCliq.OrganizationMessages.READ`), but export verification remains blocked by API-side `inactive_appaccount_user` on both list + explicit `--chat-id` probes (evidence: `tests/auto_pilot/reports/cliq_export_chats_list_inactive_recheck_20260412_105646.json`, `tests/auto_pilot/reports/cliq_export_chat_inactive_recheck_20260412_105646.json`)'
 next_small_step: >-
-  run one live `cliq userfields` verification pass on happydistrouklimited to
-  classify endpoint behavior for the final cliq-190 org-admin slice, then
-  continue cliq-165 unblock work by activating app-account export access for
-  this user in Cliq org admin and rerunning `cliq export-chats` list + explicit
-  `--chat-id` probes
+  keep cliq-165 as the highest-priority blocker: activate app-account export access
+  for this user in Cliq org admin, then rerun `cliq export-chats` list + explicit
+  `--chat-id` probes; while waiting, start cliq-191 with one smallest command/client
+  slice only if blocker progress is externally stalled

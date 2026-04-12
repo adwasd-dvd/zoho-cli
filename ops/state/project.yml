@@ -1,5 +1,5 @@
 project: zoho-cli
-updated_at: '2026-04-12T19:10:00Z'
+updated_at: '2026-04-12T19:24:46Z'
 status: cliq-expansion
 canonical_workspace: /Users/adwasd/.openclaw/workspace-coder
 project_root: /Users/adwasd/.openclaw/workspace-coder/job/zoho-cli
@@ -7,7 +7,7 @@ module_order:
 - Mail
 - Cliq
 - CRM
-current_focus: cliq-190 org-admin slice now includes userfields in code, while cliq-165 export verification remains blocked by API-side `inactive_appaccount_user` despite export scopes being granted
+current_focus: cliq-190 org-admin phase-1 is now closed with live `cliq userfields` verification evidence, while cliq-165 export verification remains blocked by API-side `inactive_appaccount_user` despite granted export scopes
 primary_blockers:
 - crm live read-only verification remains blocked by account-level CRM org access
 - cliq pinned-message endpoints are not available on happydistrouklimited for current
@@ -24,8 +24,9 @@ primary_blockers:
   / `scheduled` / `scheduled-get` / `scheduled-cancel` report `not_supported`)
 - bot trigger/call endpoints are unsupported on current token/network (`cliq trigger-bot`
   returns `not_supported`)
-next_step: run one live `cliq userfields` verification pass to classify endpoint behavior for cliq-190 closeout, while coordinating Cliq admin-side activation for app-account export access before rerunning cliq-165 export probes
+next_step: keep cliq-165 as the highest-priority blocker by coordinating Cliq admin-side app-account activation, then rerun `cliq export-chats` list + `--chat-id` probes; if still externally blocked, start cliq-191 with one smallest slice while keeping blocker evidence fresh
 additional_info:
+- '2026-04-12 live probe: ran cliq-190 closeout pass (`cliq status --check-auth` + `cliq userfields`) on happydistrouklimited; auth remains healthy (`oauthReady: true`) and `cliq userfields` succeeds with `count: 0`, so cliq-190 live verification is archived (`tests/auto_pilot/reports/cliq190_probe_summary_20260412_192446.json`).'
 - '2026-04-12 unit delivery: added sixth cliq-190 org-admin phase-1 slice with `zoho cliq userfields` and `ZohoCliqClient.list_user_fields` fallback routing; targeted tests passed (`tests/test_cliq.py::test_cliq_client_list_user_fields_falls_back_to_admin_endpoint`, `tests/test_cliq.py::test_cliq_client_list_user_fields_scope_invalid_reports_hint`, `tests/test_cli.py::test_cliq_userfields`) and format check is clean.'
 - '2026-04-12 unit delivery: added fifth cliq-190 org-admin phase-1 slice with `zoho cliq user-status` and `ZohoCliqClient.list_user_statuses` fallback routing; targeted tests passed (`tests/test_cliq.py::test_cliq_client_list_user_statuses_falls_back_to_admin_endpoint`, `tests/test_cliq.py::test_cliq_client_list_user_statuses_scope_invalid_reports_hint`, `tests/test_cli.py::test_cliq_user_status`) and format check is clean.'
 - '2026-04-12 unit delivery: added fourth cliq-190 org-admin phase-1 slice with `zoho cliq designations` and `ZohoCliqClient.list_designations` fallback routing; targeted tests passed (`tests/test_cliq.py::test_cliq_client_list_designations_falls_back_to_admin_endpoint`, `tests/test_cliq.py::test_cliq_client_list_designations_scope_invalid_reports_hint`, `tests/test_cli.py::test_cliq_designations`) and format check is clean.'

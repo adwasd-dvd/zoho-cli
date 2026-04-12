@@ -1,13 +1,13 @@
-id: cliq-190
-title: implement org admin phase 1 (teams/departments/roles/designation/user-status/userfields)
+id: cliq-165
+title: verify cliq export-chats live with organization export scopes and archive sample output
 module: cliq
-stage: in_progress
-status: in_progress
+stage: blocked
+status: blocked
 owner: automation
-updated_at: '2026-04-12T19:10:00Z'
+updated_at: '2026-04-12T19:24:46Z'
 success_criteria:
-- implement org-admin phase-1 command slices in client + CLI with fallback guidance parity
-- add targeted regression tests for each new org-admin slice
-- keep cliq-165 export-scope blocker loop and endpoint-limitation evidence documented while cliq-190 advances
-next_if_done: run live cliq-190 org-admin verification and decide phase-1 closeout
-next_step: cliq-190 now includes `zoho cliq teams` + `zoho cliq departments` + `zoho cliq roles` + `zoho cliq designations` + `zoho cliq user-status` + `zoho cliq userfields`; run one live `cliq userfields` verification pass, then keep cliq-165 on blocker-skip loop
+- verify `cliq export-chats` list succeeds on happydistrouklimited with export scopes granted
+- verify `cliq export-chats --chat-id ...` succeeds and archive one sample output JSON
+- keep blocker-skipping loop active when API-side app-account activation is still pending
+next_if_done: start cliq-191 with one smallest command/client slice while keeping cliq export verification evidence fresh
+next_step: cliq-190 live verification is now archived (`tests/auto_pilot/reports/cliq190_probe_summary_20260412_192446.json`); coordinate Cliq admin-side app-account activation and rerun `cliq export-chats` list + `--chat-id` on /tmp/zoho-test-config.json

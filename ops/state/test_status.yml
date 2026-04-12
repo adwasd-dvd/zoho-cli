@@ -1,4 +1,4 @@
-last_run_at: "2026-04-12T19:10:00Z"
+last_run_at: "2026-04-12T19:24:46Z"
 last_result: warning
 current_focus: cliq
 suites:
@@ -388,6 +388,10 @@ suites:
   integration:
     status: warning
     notes:
+      - "python3.11 -m zoho_cli --config /tmp/zoho-test-config.json --account ai-dev@happy-distro.co.uk cliq status --check-auth --network happydistrouklimited"
+      - "cliq-190 live closeout auth check remains healthy (`oauthReady: true`, `exportOauthReady: true`); evidence: `tests/auto_pilot/reports/cliq190_status_20260412_192446.json` (2026-04-12T19:24:46Z)"
+      - "python3.11 -m zoho_cli --config /tmp/zoho-test-config.json --account ai-dev@happy-distro.co.uk cliq userfields --network happydistrouklimited"
+      - "cliq-190 live `cliq userfields` verification succeeds (`count: 0`, no error); evidence: `tests/auto_pilot/reports/cliq190_userfields_20260412_192446.json` + `tests/auto_pilot/reports/cliq190_probe_summary_20260412_192446.json` (2026-04-12T19:24:46Z)"
       - "python3.11 -m zoho_cli --config /tmp/zoho-test-config.json --account ai-dev@happy-distro.co.uk cliq export-chats --network happydistrouklimited"
       - "list export now fails with `inactive_appaccount_user` after scope grant; evidence: `tests/auto_pilot/reports/cliq_export_chats_list_inactive_recheck_20260412_105646.json` (2026-04-12T17:56:46Z)"
       - "python3.11 -m zoho_cli --config /tmp/zoho-test-config.json --account ai-dev@happy-distro.co.uk cliq export-chats --network happydistrouklimited --chat-id CT_1424657670787261966_911174541"

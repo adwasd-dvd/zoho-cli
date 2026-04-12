@@ -2063,6 +2063,46 @@ class ZohoCliqClient:
             not_supported_message=f"Cliq {state} endpoints are not available for this token/network endpoint. Run `zoho cliq capabilities --channel-id <id>` and confirm chat control operations for the target conversation.",
         )
 
+    def set_chat_pin(
+        self,
+        *,
+        chat_id: str | None = None,
+        channel_id: str | None = None,
+        pinned: bool,
+    ) -> dict:
+        """Pin or unpin one chat/channel conversation."""
+        resolved_chat = self._resolve_chat_destination(
+            chat_id=chat_id,
+            channel_id=channel_id,
+        )
+
+        state = "pin" if pinned else "unpin"
+        body = {"pinned": pinned}
+        candidates: list[tuple[str, str, dict[str, Any] | None]] = [
+            ("POST", f"/chats/{resolved_chat}/{state}", {}),
+            ("POST", f"/chats/{resolved_chat}/messages/{state}", {}),
+            ("POST", f"/chats/{resolved_chat}/settings/{state}", {}),
+            ("PATCH", f"/chats/{resolved_chat}/settings", body),
+            ("PUT", f"/chats/{resolved_chat}/settings", body),
+        ]
+
+        if channel_id:
+            candidates.extend(
+                [
+                    ("POST", f"/channels/{channel_id}/{state}", {}),
+                    ("POST", f"/channels/{channel_id}/messages/{state}", {}),
+                    ("PATCH", f"/channels/{channel_id}/settings", body),
+                    ("PUT", f"/channels/{channel_id}/settings", body),
+                ]
+            )
+
+        return self._request_with_candidates_and_not_supported(
+            candidates,
+            scope_hint="ZohoCliq.Channels.UPDATE",
+            operation_label=state,
+            not_supported_message=f"Cliq {state} endpoints are not available for this token/network endpoint. Run `zoho cliq capabilities --channel-id <id>` and confirm chat control operations for the target conversation.",
+        )
+
     def post_to_bot(
         self,
         bot_id: str,

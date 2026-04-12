@@ -1,10 +1,13 @@
-last_run_at: "2026-04-12T10:22:38Z"
+last_run_at: "2026-04-12T11:20:25Z"
 last_result: warning
 current_focus: cliq
 suites:
   unit:
     status: passing
     notes:
+      - "bash -n tests/auto_pilot/run_cliq_export_scope_recheck.sh"
+      - "python3.11 -m pytest -q tests/test_auto_pilot_scripts.py"
+      - "4 passed in 1.61s (export scope recheck summary now emits `rateLimited` and `recommendedNext: wait_for_refresh_cooldown_then_rerun` for refresh-throttle output, 2026-04-12T11:20:25Z)"
       - "bash -n tests/auto_pilot/run_cliq_export_scope_recheck.sh"
       - "python3.11 -m pytest -q tests/test_auto_pilot_scripts.py"
       - "3 passed in 1.19s (scopeBlocked now also detects status payload readiness blockers via `exportOauthReady`/`missingExportScopes`, 2026-04-12T10:03:46Z)"

@@ -74,12 +74,13 @@ raise SystemExit(3)
     assert summary["listExit"] == 3
     assert summary["chatExit"] == 4
     assert summary["overallExit"] == 1
-    assert summary["summaryVersion"] == 2
+    assert summary["summaryVersion"] == 3
     assert summary["config"].endswith("config.json")
     assert summary["account"] == "test@example.com"
     assert summary["network"] == "example-network"
     assert summary["chatId"] == "CHAT-123"
     assert summary["scopeBlocked"] is False
+    assert summary["rateLimited"] is False
     assert summary["recommendedNext"] == "rerun_scope_recheck"
     assert "--with-cliq-export" in summary["nextCommands"]["reauth"]
     assert summary["statusReport"].endswith(status_reports[0].name)
@@ -133,6 +134,7 @@ raise SystemExit(1)
 
     summary = json.loads(summary_reports[0].read_text())
     assert summary["scopeBlocked"] is True
+    assert summary["rateLimited"] is False
     assert summary["recommendedNext"] == "interactive_reauth_then_rerun"
 
 
@@ -189,4 +191,58 @@ raise SystemExit(3)
 
     summary = json.loads(summary_reports[0].read_text())
     assert summary["scopeBlocked"] is True
+    assert summary["rateLimited"] is False
     assert summary["recommendedNext"] == "interactive_reauth_then_rerun"
+
+
+def test_export_scope_recheck_runner_marks_rate_limited_when_detected(
+    tmp_path: Path,
+) -> None:
+    fake_python = tmp_path / "fake_python_rate_limited.py"
+    fake_python.write_text(
+        """#!/usr/bin/env python3
+import json
+import sys
+
+args = sys.argv[1:]
+if "status" in args:
+    print(json.dumps({"status": "error", "error": "token_refresh_rate_limited"}))
+    raise SystemExit(1)
+if "--chat-id" in args:
+    print(json.dumps({"status": "error", "error": "chat_probe_failed"}))
+    raise SystemExit(4)
+print(json.dumps({"status": "error", "error": "list_probe_failed"}))
+raise SystemExit(3)
+"""
+    )
+    fake_python.chmod(fake_python.stat().st_mode | stat.S_IXUSR)
+
+    reports_dir = tmp_path / "reports"
+    result = subprocess.run(
+        [
+            "bash",
+            str(EXPORT_RECHECK_SCRIPT),
+            str(tmp_path / "config.json"),
+            "test@example.com",
+            "example-network",
+            "CHAT-123",
+        ],
+        cwd=REPO_ROOT,
+        env={
+            **os.environ,
+            "PYTHON_BIN": str(fake_python),
+            "SCAP_REPORT_DIR": str(reports_dir),
+        },
+        capture_output=True,
+        text=True,
+        check=False,
+    )
+
+    assert result.returncode == 1
+    summary_reports = list(reports_dir.glob("cliq_export_scope_recheck_summary_*.json"))
+    assert len(summary_reports) == 1
+
+    summary = json.loads(summary_reports[0].read_text())
+    assert summary["scopeBlocked"] is False
+    assert summary["rateLimited"] is True
+    assert summary["recommendedNext"] == "wait_for_refresh_cooldown_then_rerun"

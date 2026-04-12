@@ -4,7 +4,7 @@ module: cliq
 stage: blocked
 status: blocked
 owner: automation
-updated_at: '2026-04-12T10:22:38Z'
+updated_at: '2026-04-12T11:20:25Z'
 success_criteria:
 - run `zoho login --with-cliq --with-cliq-export` on the live test account
 - run `cliq export-chats` list + one `--chat-id` export on happydistrouklimited
@@ -13,10 +13,11 @@ next_if_done: resume crm-002 once Cliq export verification evidence is archived
 next_step: >-
   run `tests/auto_pilot/run_cliq_export_scope_recheck.sh` (now returns non-zero
   when any probe fails and writes `cliq_export_scope_recheck_summary_<ts>.json`
-  with per-probe exits/report paths plus `scopeBlocked`/`recommendedNext`
-  context, including status-driven scope-block detection from
-  `exportOauthReady`/`missingExportScopes`) for one-command status + list +
-  `--chat-id` blocker evidence capture, then complete interactive
+  with per-probe exits/report paths plus `scopeBlocked`/`rateLimited` and
+  `recommendedNext` context, including status-driven scope-block detection
+  from `exportOauthReady`/`missingExportScopes` and refresh-throttle
+  classification from `token_refresh_rate_limited`) for one-command status +
+  list + `--chat-id` blocker evidence capture, then complete interactive
   `zoho --config /tmp/zoho-test-config.json --account
   ai-dev@happy-distro.co.uk login --with-cliq --with-cliq-export` (or explicit
   `--scope` fallback) and rerun until list + chat export succeed

@@ -61,16 +61,23 @@ elif grep -Eiq 'exportOauthReady"?[[:space:]]*:[[:space:]]*false|missingExportSc
   SCOPE_BLOCKED=true
 fi
 
+RATE_LIMITED=false
+if grep -Eiq "token_refresh_rate_limited|too many requests|access denied" "$OUT_STATUS" "$OUT_LIST" "$OUT_CHAT"; then
+  RATE_LIMITED=true
+fi
+
 RECOMMENDED_NEXT="rerun_scope_recheck"
 if [ "$OVERALL_EXIT" -eq 0 ]; then
   RECOMMENDED_NEXT="archive_success_outputs"
 elif [ "$SCOPE_BLOCKED" = "true" ]; then
   RECOMMENDED_NEXT="interactive_reauth_then_rerun"
+elif [ "$RATE_LIMITED" = "true" ]; then
+  RECOMMENDED_NEXT="wait_for_refresh_cooldown_then_rerun"
 fi
 
 cat >"$OUT_SUMMARY" <<EOF
 {
-  "summaryVersion": 2,
+  "summaryVersion": 3,
   "config": "$CONFIG",
   "account": "$ACCOUNT",
   "network": "$NETWORK",
@@ -83,9 +90,11 @@ cat >"$OUT_SUMMARY" <<EOF
   "chatExit": $CHAT_EXIT,
   "overallExit": $OVERALL_EXIT,
   "scopeBlocked": $SCOPE_BLOCKED,
+  "rateLimited": $RATE_LIMITED,
   "recommendedNext": "$RECOMMENDED_NEXT",
   "nextCommands": {
     "reauth": "zoho --config <config> --account <account> login --with-cliq --with-cliq-export",
+    "cooldown": "wait_for_zoho_refresh_cooldown_then_rerun",
     "rerun": "tests/auto_pilot/run_cliq_export_scope_recheck.sh <config> <account> <network> <chat-id>"
   }
 }

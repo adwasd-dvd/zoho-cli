@@ -563,6 +563,194 @@ class ZohoCliqClient:
             return chat_id.strip()
         return None
 
+    def _request_with_candidates_and_not_supported(
+        self,
+        candidates: list[tuple[str, str, dict[str, Any] | None]],
+        *,
+        scope_hint: str,
+        operation_label: str,
+        not_supported_message: str,
+    ) -> dict:
+        """Try mutable candidates and emit `not_supported` for endpoint-level misses."""
+        last_error: tuple[int, str, str, str] | None = None
+        preferred_error: tuple[int, str, str, str] | None = None
+        saw_scope_invalid = False
+        saw_not_supported = False
+
+        retryable_error_codes = {
+            "param_missing",
+            "invalid_data",
+            "operation_failed",
+            "extra_key_found",
+            "request_method_invalid",
+            "extra_param_found",
+        }
+
+        for method, path, payload in candidates:
+            resp = httpx.request(
+                method,
+                f"{self.base_url}{path}",
+                headers=self._headers,
+                json=payload,
+                timeout=httpx.Timeout(30.0),
+            )
+            if resp.is_success:
+                return self._decode_success_response(resp)
+
+            body = resp.text or ""
+            lowered = body.lower()
+            scope_invalid = "oauthtoken_scope_invalid" in lowered
+            error_code = ""
+            try:
+                parsed = resp.json()
+                if isinstance(parsed, dict):
+                    error_code = str(
+                        parsed.get("code") or parsed.get("error") or ""
+                    ).lower()
+            except ValueError:
+                pass
+
+            if scope_invalid:
+                saw_scope_invalid = True
+
+            last_error = (resp.status_code, method, path, body)
+
+            if (
+                resp.status_code in (404, 405)
+                or "request_url_invalid" in lowered
+                or error_code
+                in {"operation_not_allowed", "not_supported", "unsupported"}
+                or error_code in {"request_method_invalid", "extra_param_found"}
+            ):
+                saw_not_supported = True
+                continue
+
+            if error_code in retryable_error_codes:
+                preferred_error = preferred_error or (
+                    resp.status_code,
+                    method,
+                    path,
+                    body,
+                )
+                continue
+
+            utils.error_exit(
+                "api_error",
+                f"HTTP {resp.status_code} {method} {path}: {resp.text}",
+            )
+
+        if saw_scope_invalid:
+            utils.error_exit(
+                "oauth_scope_invalid",
+                f"Cliq token is missing required scope for {operation_label}. Re-run `zoho login --with-cliq --scope {scope_hint}` and retry.",
+            )
+
+        if preferred_error is not None:
+            status, method, path, body = preferred_error
+            utils.error_exit(
+                "api_error",
+                f"HTTP {status} {method} {path}: {body}",
+            )
+
+        if saw_not_supported:
+            utils.error_exit("not_supported", not_supported_message)
+
+        if last_error is not None:
+            status, method, path, body = last_error
+            utils.error_exit(
+                "api_error",
+                f"HTTP {status} {method} {path}: {body}",
+            )
+
+        utils.error_exit(
+            "api_error", f"No candidate endpoint available for {operation_label}"
+        )
+        return {}
+
+    def _get_with_candidates_and_not_supported(
+        self,
+        candidates: list[tuple[str, dict[str, Any] | None]],
+        *,
+        scope_hint: str,
+        operation_label: str,
+        not_supported_message: str,
+    ) -> dict:
+        """Try read candidates and emit `not_supported` for endpoint-level misses."""
+        last_error: tuple[int, str, str] | None = None
+        saw_scope_invalid = False
+        saw_not_supported = False
+
+        for path, params in candidates:
+            resp = httpx.get(
+                f"{self.base_url}{path}",
+                headers=self._headers,
+                params=params or {},
+                timeout=httpx.Timeout(30.0),
+            )
+            if resp.is_success:
+                payload = resp.json()
+                if isinstance(payload, dict):
+                    return payload
+                return {"data": payload}
+
+            body = resp.text or ""
+            lowered = body.lower()
+            error_code = ""
+            try:
+                parsed = resp.json()
+                if isinstance(parsed, dict):
+                    error_code = str(
+                        parsed.get("code") or parsed.get("error") or ""
+                    ).lower()
+            except ValueError:
+                pass
+
+            if "oauthtoken_scope_invalid" in lowered or error_code in {
+                "oauthtoken_scope_invalid",
+                "oauth_scope_invalid",
+                "scope_mismatch",
+                "oauth_scope_mismatch",
+            }:
+                saw_scope_invalid = True
+                last_error = (resp.status_code, path, body)
+                continue
+
+            if (
+                resp.status_code in (404, 405)
+                or "request_url_invalid" in lowered
+                or error_code
+                in {
+                    "operation_not_allowed",
+                    "not_supported",
+                    "unsupported",
+                    "request_method_invalid",
+                    "extra_param_found",
+                }
+            ):
+                saw_not_supported = True
+                last_error = (resp.status_code, path, body)
+                continue
+
+            utils.error_exit("api_error", f"HTTP {resp.status_code} GET {path}: {body}")
+
+        if saw_scope_invalid:
+            utils.error_exit(
+                "oauth_scope_invalid",
+                f"Cliq token is missing required scope for {operation_label}. Re-run `zoho login --with-cliq --scope {scope_hint}` and retry.",
+            )
+
+        if saw_not_supported:
+            utils.error_exit("not_supported", not_supported_message)
+
+        if last_error is not None:
+            status, path, body = last_error
+            utils.error_exit("api_error", f"HTTP {status} GET {path}: {body}")
+
+        utils.error_exit(
+            "api_error", f"No candidate endpoint available for {operation_label}"
+        )
+        return {}
+
     def _resolve_channel_message_paths(self, channel_id: str) -> list[str]:
         """Resolve channel-id to sendable chat/unique-name message endpoints."""
         data = self._get_channel_descriptor(channel_id)
@@ -1338,6 +1526,412 @@ class ZohoCliqClient:
             candidates,
             scope_hint="ZohoCliq.messageactions.CREATE",
             operation_label="reaction",
+        )
+
+    def create_thread(
+        self,
+        message_id: str,
+        text: str,
+        *,
+        chat_id: str | None = None,
+        channel_id: str | None = None,
+    ) -> dict:
+        """Create/send a thread message anchored to one parent message."""
+        resolved_chat = self._resolve_chat_destination(
+            chat_id=chat_id,
+            channel_id=channel_id,
+        )
+        parent_message_id = message_id.strip()
+        if not parent_message_id:
+            utils.error_exit("invalid_message_id", "message_id cannot be empty")
+
+        body = text.strip()
+        if not body:
+            utils.error_exit("invalid_text", "text cannot be empty")
+
+        payloads = [
+            {"text": body},
+            {"message": body},
+            {"content": body},
+            {"text": body, "parent_message_id": parent_message_id},
+            {"text": body, "parentMessageId": parent_message_id},
+            {"text": body, "message_id": parent_message_id},
+        ]
+
+        candidates: list[tuple[str, str, dict[str, Any] | None]] = []
+        for payload in payloads:
+            candidates.extend(
+                [
+                    (
+                        "POST",
+                        f"/chats/{resolved_chat}/messages/{parent_message_id}/threads",
+                        payload,
+                    ),
+                    (
+                        "POST",
+                        f"/chats/{resolved_chat}/messages/{parent_message_id}/thread",
+                        payload,
+                    ),
+                    (
+                        "POST",
+                        f"/chats/{resolved_chat}/threads",
+                        payload,
+                    ),
+                ]
+            )
+
+            if channel_id:
+                candidates.extend(
+                    [
+                        (
+                            "POST",
+                            f"/channels/{channel_id}/messages/{parent_message_id}/threads",
+                            payload,
+                        ),
+                        (
+                            "POST",
+                            f"/channels/{channel_id}/messages/{parent_message_id}/thread",
+                            payload,
+                        ),
+                        (
+                            "POST",
+                            f"/channels/{channel_id}/threads",
+                            payload,
+                        ),
+                    ]
+                )
+
+        return self._request_with_candidates_and_not_supported(
+            candidates,
+            scope_hint="ZohoCliq.Messages.CREATE",
+            operation_label="thread-create",
+            not_supported_message="Cliq thread-create endpoints are not available for this token/network endpoint. Run `zoho cliq capabilities --channel-id <id>` and confirm thread operations for the target conversation.",
+        )
+
+    def reply_thread(
+        self,
+        thread_id: str,
+        text: str,
+        *,
+        chat_id: str | None = None,
+        channel_id: str | None = None,
+    ) -> dict:
+        """Reply to a thread."""
+        resolved_chat = self._resolve_chat_destination(
+            chat_id=chat_id,
+            channel_id=channel_id,
+        )
+        target_thread = thread_id.strip()
+        if not target_thread:
+            utils.error_exit("invalid_thread_id", "thread_id cannot be empty")
+
+        body = text.strip()
+        if not body:
+            utils.error_exit("invalid_text", "text cannot be empty")
+
+        payloads = [
+            {"text": body},
+            {"message": body},
+            {"content": body},
+            {"text": body, "thread_id": target_thread},
+            {"text": body, "threadId": target_thread},
+        ]
+
+        candidates: list[tuple[str, str, dict[str, Any] | None]] = []
+        for payload in payloads:
+            candidates.extend(
+                [
+                    (
+                        "POST",
+                        f"/chats/{resolved_chat}/threads/{target_thread}/messages",
+                        payload,
+                    ),
+                    (
+                        "POST",
+                        f"/chats/{resolved_chat}/threads/{target_thread}/reply",
+                        payload,
+                    ),
+                    (
+                        "POST",
+                        f"/chats/{resolved_chat}/messages/{target_thread}/reply",
+                        payload,
+                    ),
+                ]
+            )
+
+            if channel_id:
+                candidates.extend(
+                    [
+                        (
+                            "POST",
+                            f"/channels/{channel_id}/threads/{target_thread}/messages",
+                            payload,
+                        ),
+                        (
+                            "POST",
+                            f"/channels/{channel_id}/threads/{target_thread}/reply",
+                            payload,
+                        ),
+                        (
+                            "POST",
+                            f"/channels/{channel_id}/messages/{target_thread}/reply",
+                            payload,
+                        ),
+                    ]
+                )
+
+        return self._request_with_candidates_and_not_supported(
+            candidates,
+            scope_hint="ZohoCliq.Messages.CREATE",
+            operation_label="thread-reply",
+            not_supported_message="Cliq thread-reply endpoints are not available for this token/network endpoint. Run `zoho cliq capabilities --channel-id <id>` and confirm thread operations for the target conversation.",
+        )
+
+    def list_threads(
+        self,
+        *,
+        chat_id: str | None = None,
+        channel_id: str | None = None,
+        message_id: str | None = None,
+        limit: int = 50,
+    ) -> dict:
+        """List threads for a chat/channel, optionally scoped to one parent message."""
+        resolved_chat = self._resolve_chat_destination(
+            chat_id=chat_id,
+            channel_id=channel_id,
+        )
+        limit_value = max(1, limit)
+        anchor = (message_id or "").strip()
+
+        candidates: list[tuple[str, dict[str, Any] | None]] = []
+        if anchor:
+            candidates.extend(
+                [
+                    (
+                        f"/chats/{resolved_chat}/messages/{anchor}/threads",
+                        {"limit": limit_value},
+                    ),
+                    (
+                        f"/chats/{resolved_chat}/messages/{anchor}/thread",
+                        {"limit": limit_value},
+                    ),
+                    (
+                        f"/chats/{resolved_chat}/threads",
+                        {"message_id": anchor, "limit": limit_value},
+                    ),
+                ]
+            )
+
+            if channel_id:
+                candidates.extend(
+                    [
+                        (
+                            f"/channels/{channel_id}/messages/{anchor}/threads",
+                            {"limit": limit_value},
+                        ),
+                        (
+                            f"/channels/{channel_id}/messages/{anchor}/thread",
+                            {"limit": limit_value},
+                        ),
+                    ]
+                )
+        else:
+            candidates.extend(
+                [
+                    (f"/chats/{resolved_chat}/threads", {"limit": limit_value}),
+                    (f"/chats/{resolved_chat}/thread", {"limit": limit_value}),
+                ]
+            )
+            if channel_id:
+                candidates.extend(
+                    [
+                        (f"/channels/{channel_id}/threads", {"limit": limit_value}),
+                        (f"/channels/{channel_id}/thread", {"limit": limit_value}),
+                    ]
+                )
+
+        return self._get_with_candidates_and_not_supported(
+            candidates,
+            scope_hint="ZohoCliq.Messages.READ",
+            operation_label="threads",
+            not_supported_message="Cliq thread-list endpoints are not available for this token/network endpoint. Run `zoho cliq capabilities --channel-id <id>` and confirm thread operations for the target conversation.",
+        )
+
+    def list_thread_followers(
+        self,
+        thread_id: str,
+        *,
+        chat_id: str | None = None,
+        channel_id: str | None = None,
+        limit: int = 50,
+    ) -> dict:
+        """List followers/subscribers for one thread."""
+        resolved_chat = self._resolve_chat_destination(
+            chat_id=chat_id,
+            channel_id=channel_id,
+        )
+        target_thread = thread_id.strip()
+        if not target_thread:
+            utils.error_exit("invalid_thread_id", "thread_id cannot be empty")
+
+        limit_value = max(1, limit)
+        candidates: list[tuple[str, dict[str, Any] | None]] = [
+            (
+                f"/chats/{resolved_chat}/threads/{target_thread}/followers",
+                {"limit": limit_value},
+            ),
+            (
+                f"/chats/{resolved_chat}/threads/{target_thread}/subscribers",
+                {"limit": limit_value},
+            ),
+            (
+                f"/chats/{resolved_chat}/threads/{target_thread}/members",
+                {"limit": limit_value},
+            ),
+            (
+                f"/chats/{resolved_chat}/messages/{target_thread}/followers",
+                {"limit": limit_value},
+            ),
+        ]
+
+        if channel_id:
+            candidates.extend(
+                [
+                    (
+                        f"/channels/{channel_id}/threads/{target_thread}/followers",
+                        {"limit": limit_value},
+                    ),
+                    (
+                        f"/channels/{channel_id}/threads/{target_thread}/subscribers",
+                        {"limit": limit_value},
+                    ),
+                ]
+            )
+
+        return self._get_with_candidates_and_not_supported(
+            candidates,
+            scope_hint="ZohoCliq.Messages.READ",
+            operation_label="thread-followers",
+            not_supported_message="Cliq thread-follower endpoints are not available for this token/network endpoint. Run `zoho cliq capabilities --channel-id <id>` and confirm thread operations for the target conversation.",
+        )
+
+    def get_thread_state(
+        self,
+        thread_id: str,
+        *,
+        chat_id: str | None = None,
+        channel_id: str | None = None,
+    ) -> dict:
+        """Get one thread's state payload."""
+        resolved_chat = self._resolve_chat_destination(
+            chat_id=chat_id,
+            channel_id=channel_id,
+        )
+        target_thread = thread_id.strip()
+        if not target_thread:
+            utils.error_exit("invalid_thread_id", "thread_id cannot be empty")
+
+        candidates: list[tuple[str, dict[str, Any] | None]] = [
+            (f"/chats/{resolved_chat}/threads/{target_thread}/state", None),
+            (f"/chats/{resolved_chat}/threads/{target_thread}", None),
+            (f"/chats/{resolved_chat}/messages/{target_thread}/thread/state", None),
+        ]
+        if channel_id:
+            candidates.extend(
+                [
+                    (f"/channels/{channel_id}/threads/{target_thread}/state", None),
+                    (f"/channels/{channel_id}/threads/{target_thread}", None),
+                ]
+            )
+
+        return self._get_with_candidates_and_not_supported(
+            candidates,
+            scope_hint="ZohoCliq.Messages.READ",
+            operation_label="thread-state-get",
+            not_supported_message="Cliq thread-state read endpoints are not available for this token/network endpoint. Run `zoho cliq capabilities --channel-id <id>` and confirm thread operations for the target conversation.",
+        )
+
+    def update_thread_state(
+        self,
+        thread_id: str,
+        state: str,
+        *,
+        chat_id: str | None = None,
+        channel_id: str | None = None,
+    ) -> dict:
+        """Update one thread's state."""
+        resolved_chat = self._resolve_chat_destination(
+            chat_id=chat_id,
+            channel_id=channel_id,
+        )
+        target_thread = thread_id.strip()
+        if not target_thread:
+            utils.error_exit("invalid_thread_id", "thread_id cannot be empty")
+
+        next_state = state.strip()
+        if not next_state:
+            utils.error_exit("invalid_state", "state cannot be empty")
+
+        payloads = [
+            {"state": next_state},
+            {"thread_state": next_state},
+            {"status": next_state},
+            {"threadStatus": next_state},
+        ]
+
+        candidates: list[tuple[str, str, dict[str, Any] | None]] = []
+        for payload in payloads:
+            candidates.extend(
+                [
+                    (
+                        "POST",
+                        f"/chats/{resolved_chat}/threads/{target_thread}/state",
+                        payload,
+                    ),
+                    (
+                        "PUT",
+                        f"/chats/{resolved_chat}/threads/{target_thread}/state",
+                        payload,
+                    ),
+                    (
+                        "PATCH",
+                        f"/chats/{resolved_chat}/threads/{target_thread}/state",
+                        payload,
+                    ),
+                    (
+                        "POST",
+                        f"/chats/{resolved_chat}/threads/{target_thread}",
+                        payload,
+                    ),
+                ]
+            )
+
+            if channel_id:
+                candidates.extend(
+                    [
+                        (
+                            "POST",
+                            f"/channels/{channel_id}/threads/{target_thread}/state",
+                            payload,
+                        ),
+                        (
+                            "PUT",
+                            f"/channels/{channel_id}/threads/{target_thread}/state",
+                            payload,
+                        ),
+                        (
+                            "POST",
+                            f"/channels/{channel_id}/threads/{target_thread}",
+                            payload,
+                        ),
+                    ]
+                )
+
+        return self._request_with_candidates_and_not_supported(
+            candidates,
+            scope_hint="ZohoCliq.Messages.UPDATE",
+            operation_label="thread-state-update",
+            not_supported_message="Cliq thread-state update endpoints are not available for this token/network endpoint. Run `zoho cliq capabilities --channel-id <id>` and confirm thread operations for the target conversation.",
         )
 
     def channels(self, *, limit: int = 50) -> dict:

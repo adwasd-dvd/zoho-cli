@@ -1,5 +1,5 @@
 module: Cliq
-updated_at: '2026-04-12T11:20:25Z'
+updated_at: '2026-04-12T11:22:41Z'
 status: in_progress
 blockers:
 - live `/messages/search` APIs on happydistrouklimited remain unsupported for current
@@ -12,11 +12,8 @@ blockers:
 - 'export-scope recheck summary now emits explicit refresh-throttle classification (`rateLimited`) and `recommendedNext: wait_for_refresh_cooldown_then_rerun` when probes hit `token_refresh_rate_limited`/"too many requests", reducing blind retry loops during cliq-165 live runs'
 - "additional workspace test assets continue to validate local upload breadth: image (`test.png`), audio (`sample-3.m4a`), PDF (`2026-04-10-report.pdf`), and CSV (`lv1_capturable_report.csv`) all sent successfully to both channel and user targets in latest one-token matrix rerun (`tests/auto_pilot/reports/cliq_workspace_test_media_matrix_20260412_042955.json`)"
 next_small_step: >-
-  run `tests/auto_pilot/run_cliq_export_scope_recheck.sh` to refresh export
-  blocker evidence in one command (non-zero on failed probes + summary JSON
-  artifact including `scopeBlocked`/`rateLimited` + `recommendedNext`, now
-  including status readiness and refresh-throttle signals), then complete
-  interactive re-auth with
-  `zoho --config /tmp/zoho-test-config.json --account ai-dev@happy-distro.co.uk
-  login --with-cliq --with-cliq-export` (or explicit `--scope` fallback) and
-  rerun until list + `--chat-id` exports succeed with archived JSON
+  run live thread probes for the new command surface (`thread-create`,
+  `thread-reply`, `threads`, `thread-followers`, `thread-state`) and archive
+  evidence; if endpoints are unsupported, classify as endpoint limitation and
+  continue with cliq-171 while leaving cliq-165 blocked for human interactive
+  re-auth

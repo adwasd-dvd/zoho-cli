@@ -1879,6 +1879,264 @@ def cliq_channel_unarchive(
     cliq_channel_archive(channel_id=channel_id, unarchive=True, network=network)
 
 
+@cliq_app.command("thread-create")
+def cliq_thread_create(
+    message_id: str = typer.Argument(..., help="Parent message id to anchor thread."),
+    text: str = typer.Option(..., "--text", "-t", help="Thread message text."),
+    channel_id: Optional[str] = typer.Option(
+        None, "--channel-id", help="Destination channel id (resolved to chat_id)."
+    ),
+    chat_id: Optional[str] = typer.Option(
+        None, "--chat-id", help="Destination chat id."
+    ),
+    network: Optional[str] = typer.Option(
+        None, "--network", help="Cliq network slug (e.g. happydistrouklimited)."
+    ),
+) -> None:
+    """Create/send a thread message anchored to one parent message."""
+    if not chat_id and not channel_id:
+        utils.error_exit("invalid_destination", "Provide --chat-id or --channel-id")
+
+    cfg = _cfg()
+    email = _require_account(cfg)
+    client = _get_cliq_client(cfg, email, network=network)
+
+    resolved_chat = (chat_id or "").strip() or client.resolve_chat_id(channel_id or "")
+    resp = client.create_thread(
+        message_id,
+        text,
+        chat_id=resolved_chat,
+        channel_id=channel_id,
+    )
+    data = resp.get("data", resp)
+    utils.output_status(
+        "Cliq thread message sent",
+        extra={
+            "chatId": resolved_chat or "",
+            "channelId": channel_id or "",
+            "parentMessageId": message_id,
+            "result": data,
+        },
+    )
+
+
+@cliq_app.command("thread-reply")
+def cliq_thread_reply(
+    thread_id: str = typer.Argument(..., help="Thread id."),
+    text: str = typer.Option(..., "--text", "-t", help="Reply text."),
+    channel_id: Optional[str] = typer.Option(
+        None, "--channel-id", help="Destination channel id (resolved to chat_id)."
+    ),
+    chat_id: Optional[str] = typer.Option(
+        None, "--chat-id", help="Destination chat id."
+    ),
+    network: Optional[str] = typer.Option(
+        None, "--network", help="Cliq network slug (e.g. happydistrouklimited)."
+    ),
+) -> None:
+    """Reply to a Cliq thread."""
+    if not chat_id and not channel_id:
+        utils.error_exit("invalid_destination", "Provide --chat-id or --channel-id")
+
+    cfg = _cfg()
+    email = _require_account(cfg)
+    client = _get_cliq_client(cfg, email, network=network)
+
+    resolved_chat = (chat_id or "").strip() or client.resolve_chat_id(channel_id or "")
+    resp = client.reply_thread(
+        thread_id,
+        text,
+        chat_id=resolved_chat,
+        channel_id=channel_id,
+    )
+    data = resp.get("data", resp)
+    utils.output_status(
+        "Cliq thread reply sent",
+        extra={
+            "chatId": resolved_chat or "",
+            "channelId": channel_id or "",
+            "threadId": thread_id,
+            "result": data,
+        },
+    )
+
+
+@cliq_app.command("threads")
+def cliq_threads(
+    channel_id: Optional[str] = typer.Option(
+        None, "--channel-id", help="Destination channel id (resolved to chat_id)."
+    ),
+    chat_id: Optional[str] = typer.Option(None, "--chat-id", help="Chat id."),
+    message_id: Optional[str] = typer.Option(
+        None,
+        "--message-id",
+        help="Optional parent message id for one-thread family listing.",
+    ),
+    limit: int = typer.Option(50, "--limit", "-n", help="Max rows to return."),
+    network: Optional[str] = typer.Option(
+        None, "--network", help="Cliq network slug (e.g. happydistrouklimited)."
+    ),
+) -> None:
+    """List threads for one chat/channel, optionally scoped to one parent message."""
+    if not chat_id and not channel_id:
+        utils.error_exit("invalid_destination", "Provide --chat-id or --channel-id")
+
+    cfg = _cfg()
+    email = _require_account(cfg)
+    client = _get_cliq_client(cfg, email, network=network)
+
+    resolved_chat = (chat_id or "").strip() or client.resolve_chat_id(channel_id or "")
+    resp = client.list_threads(
+        chat_id=resolved_chat,
+        channel_id=channel_id,
+        message_id=message_id,
+        limit=limit,
+    )
+
+    data = resp.get("data", resp)
+    threads: list[dict[str, Any]] = []
+    if isinstance(data, list):
+        threads = [item for item in data if isinstance(item, dict)]
+    elif isinstance(data, dict):
+        for key in ("threads", "data", "list", "items", "messages"):
+            candidate = data.get(key)
+            if isinstance(candidate, list):
+                threads = [item for item in candidate if isinstance(item, dict)]
+                break
+
+    utils.output(
+        {
+            "chatId": resolved_chat or "",
+            "channelId": channel_id or "",
+            "messageId": (message_id or "").strip(),
+            "count": len(threads),
+            "threads": threads,
+        }
+    )
+
+
+@cliq_app.command("thread-followers")
+def cliq_thread_followers(
+    thread_id: str = typer.Argument(..., help="Thread id."),
+    channel_id: Optional[str] = typer.Option(
+        None, "--channel-id", help="Destination channel id (resolved to chat_id)."
+    ),
+    chat_id: Optional[str] = typer.Option(None, "--chat-id", help="Chat id."),
+    limit: int = typer.Option(50, "--limit", "-n", help="Max rows to return."),
+    network: Optional[str] = typer.Option(
+        None, "--network", help="Cliq network slug (e.g. happydistrouklimited)."
+    ),
+) -> None:
+    """List followers/subscribers for one thread."""
+    if not chat_id and not channel_id:
+        utils.error_exit("invalid_destination", "Provide --chat-id or --channel-id")
+
+    cfg = _cfg()
+    email = _require_account(cfg)
+    client = _get_cliq_client(cfg, email, network=network)
+
+    resolved_chat = (chat_id or "").strip() or client.resolve_chat_id(channel_id or "")
+    resp = client.list_thread_followers(
+        thread_id,
+        chat_id=resolved_chat,
+        channel_id=channel_id,
+        limit=limit,
+    )
+
+    data = resp.get("data", resp)
+    followers: list[dict[str, Any]] = []
+    if isinstance(data, list):
+        followers = [item for item in data if isinstance(item, dict)]
+    elif isinstance(data, dict):
+        for key in ("followers", "members", "subscribers", "data", "list", "items"):
+            candidate = data.get(key)
+            if isinstance(candidate, list):
+                followers = [item for item in candidate if isinstance(item, dict)]
+                break
+
+    utils.output(
+        {
+            "chatId": resolved_chat or "",
+            "channelId": channel_id or "",
+            "threadId": thread_id,
+            "count": len(followers),
+            "followers": followers,
+        }
+    )
+
+
+@cliq_app.command("thread-state")
+def cliq_thread_state(
+    thread_id: str = typer.Argument(..., help="Thread id."),
+    state: Optional[str] = typer.Option(
+        None,
+        "--state",
+        help="Target state to set (omit to read current state payload).",
+    ),
+    channel_id: Optional[str] = typer.Option(
+        None, "--channel-id", help="Destination channel id (resolved to chat_id)."
+    ),
+    chat_id: Optional[str] = typer.Option(None, "--chat-id", help="Chat id."),
+    network: Optional[str] = typer.Option(
+        None, "--network", help="Cliq network slug (e.g. happydistrouklimited)."
+    ),
+) -> None:
+    """Get or set thread state."""
+    if not chat_id and not channel_id:
+        utils.error_exit("invalid_destination", "Provide --chat-id or --channel-id")
+
+    cfg = _cfg()
+    email = _require_account(cfg)
+    client = _get_cliq_client(cfg, email, network=network)
+
+    resolved_chat = (chat_id or "").strip() or client.resolve_chat_id(channel_id or "")
+    if (state or "").strip():
+        resp = client.update_thread_state(
+            thread_id,
+            (state or "").strip(),
+            chat_id=resolved_chat,
+            channel_id=channel_id,
+        )
+        data = resp.get("data", resp)
+        utils.output_status(
+            "Cliq thread state updated",
+            extra={
+                "chatId": resolved_chat or "",
+                "channelId": channel_id or "",
+                "threadId": thread_id,
+                "state": (state or "").strip(),
+                "result": data,
+            },
+        )
+        return
+
+    resp = client.get_thread_state(
+        thread_id,
+        chat_id=resolved_chat,
+        channel_id=channel_id,
+    )
+    data = resp.get("data", resp)
+    state_view = ""
+    if isinstance(data, dict):
+        state_view = str(
+            data.get("state")
+            or data.get("thread_state")
+            or data.get("threadState")
+            or data.get("status")
+            or ""
+        )
+
+    utils.output(
+        {
+            "chatId": resolved_chat or "",
+            "channelId": channel_id or "",
+            "threadId": thread_id,
+            "state": state_view,
+            "thread": data,
+        }
+    )
+
+
 @cliq_app.command("search")
 def cliq_search(
     query: str = typer.Argument(..., help="Search query text."),

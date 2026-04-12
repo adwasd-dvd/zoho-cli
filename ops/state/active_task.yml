@@ -1,23 +1,13 @@
-id: cliq-165
-title: verify cliq export-chats live with organization export scopes and archive success evidence
+id: cliq-170
+title: implement thread plane (create/reply/list/followers/state) with capability-gated fallbacks
 module: cliq
-stage: blocked
-status: blocked
+stage: in_progress
+status: in_progress
 owner: automation
-updated_at: '2026-04-12T11:20:25Z'
+updated_at: '2026-04-12T11:22:41Z'
 success_criteria:
-- run `zoho login --with-cliq --with-cliq-export` on the live test account
-- run `cliq export-chats` list + one `--chat-id` export on happydistrouklimited
-- archive one successful JSON sample for each export mode under `tests/auto_pilot/reports/`
-next_if_done: resume crm-002 once Cliq export verification evidence is archived
-next_step: >-
-  run `tests/auto_pilot/run_cliq_export_scope_recheck.sh` (now returns non-zero
-  when any probe fails and writes `cliq_export_scope_recheck_summary_<ts>.json`
-  with per-probe exits/report paths plus `scopeBlocked`/`rateLimited` and
-  `recommendedNext` context, including status-driven scope-block detection
-  from `exportOauthReady`/`missingExportScopes` and refresh-throttle
-  classification from `token_refresh_rate_limited`) for one-command status +
-  list + `--chat-id` blocker evidence capture, then complete interactive
-  `zoho --config /tmp/zoho-test-config.json --account
-  ai-dev@happy-distro.co.uk login --with-cliq --with-cliq-export` (or explicit
-  `--scope` fallback) and rerun until list + chat export succeed
+- implement `zoho cliq thread-create`, `thread-reply`, `threads`, `thread-followers`, and `thread-state`
+- add thread client fallback methods that emit clear `not_supported` / scope-invalid guidance
+- add targeted unit + CLI test coverage for thread create/reply/list/followers/state and keep the thread slice green
+next_if_done: start cliq-171 scheduled message lifecycle (schedule/list/get/cancel)
+next_step: run one live thread probe bundle (create/reply/list/followers/state) on happydistrouklimited and archive evidence; if endpoints are unsupported, classify as endpoint limitation and continue with cliq-171 while leaving blocker notes for human follow-up

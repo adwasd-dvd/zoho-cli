@@ -121,7 +121,7 @@
 - id: cliq-170
   title: implement thread plane (create/reply/list/followers/state) with capability-gated fallbacks
   module: cliq
-  stage: queued
+  stage: in_progress
   priority: high
   depends_on:
   - cliq-160

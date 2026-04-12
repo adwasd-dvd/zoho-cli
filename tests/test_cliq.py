@@ -1789,6 +1789,83 @@ def test_cliq_client_delete_channel_success(client: cliq.ZohoCliqClient) -> None
 
 
 @respx.mock
+def test_cliq_client_create_thread(client: cliq.ZohoCliqClient) -> None:
+    route = respx.post(
+        "https://cliq.zoho.com/api/v2/chats/C1/messages/M1/threads"
+    ).mock(
+        return_value=httpx.Response(
+            200,
+            json={
+                "data": {
+                    "thread_id": "T1",
+                    "message_id": "TM1",
+                }
+            },
+        )
+    )
+
+    payload = client.create_thread("M1", "hello thread", chat_id="C1")
+    assert route.called
+    assert payload["data"]["thread_id"] == "T1"
+
+
+@respx.mock
+def test_cliq_client_list_threads_falls_back_to_thread_path(
+    client: cliq.ZohoCliqClient,
+) -> None:
+    respx.get("https://cliq.zoho.com/api/v2/chats/C1/threads").mock(
+        return_value=httpx.Response(
+            404,
+            json={
+                "code": "request_url_invalid",
+                "message": "Not found",
+            },
+        )
+    )
+    route = respx.get("https://cliq.zoho.com/api/v2/chats/C1/thread").mock(
+        return_value=httpx.Response(200, json={"data": [{"id": "T1"}]})
+    )
+
+    payload = client.list_threads(chat_id="C1", limit=5)
+    assert route.called
+    assert payload["data"][0]["id"] == "T1"
+
+
+@respx.mock
+def test_cliq_client_list_thread_followers_scope_invalid_reports_hint(
+    client: cliq.ZohoCliqClient,
+    capsys: pytest.CaptureFixture[str],
+) -> None:
+    respx.get(url__regex=r"https://cliq\.zoho\.com/api/v2/chats/C1/.*").mock(
+        return_value=httpx.Response(
+            401,
+            json={
+                "code": "oauthtoken_scope_invalid",
+                "message": "scope missing",
+            },
+        )
+    )
+
+    with pytest.raises(SystemExit):
+        client.list_thread_followers("T1", chat_id="C1")
+
+    err = capsys.readouterr().err
+    assert "oauth_scope_invalid" in err
+    assert "ZohoCliq.Messages.READ" in err
+
+
+@respx.mock
+def test_cliq_client_update_thread_state(client: cliq.ZohoCliqClient) -> None:
+    route = respx.post("https://cliq.zoho.com/api/v2/chats/C1/threads/T1/state").mock(
+        return_value=httpx.Response(200, json={"data": {"state": "closed"}})
+    )
+
+    payload = client.update_thread_state("T1", "closed", chat_id="C1")
+    assert route.called
+    assert payload["data"]["state"] == "closed"
+
+
+@respx.mock
 def test_cliq_client_probe_capabilities_baseline(client: cliq.ZohoCliqClient) -> None:
     respx.get("https://cliq.zoho.com/api/v2/channels").mock(
         return_value=httpx.Response(200, json={"data": []})

@@ -5,7 +5,7 @@ from __future__ import annotations
 import json
 from pathlib import Path
 from typing import Any
-from unittest.mock import patch
+from unittest.mock import MagicMock, patch
 
 import httpx
 import pytest
@@ -1898,6 +1898,151 @@ def test_cliq_channel_delete(mock_config: Path, mock_token_refresh: Any) -> None
     assert result.exit_code == 0, result.output
     payload = json.loads(result.output)
     assert payload["status"] == "ok"
+
+
+def test_cliq_thread_create_from_channel(
+    mock_config: Path,
+    mock_token_refresh: Any,
+) -> None:
+    mock_client = MagicMock()
+    mock_client.resolve_chat_id.return_value = "C1"
+    mock_client.create_thread.return_value = {"data": {"thread_id": "T1"}}
+
+    with patch("zoho_cli.cli._get_cliq_client", return_value=mock_client):
+        result = runner.invoke(
+            app,
+            [
+                "cliq",
+                "thread-create",
+                "M1",
+                "--channel-id",
+                "O2",
+                "--text",
+                "hello thread",
+            ],
+            env=_cfg_env(mock_config),
+        )
+
+    assert result.exit_code == 0, result.output
+    payload = json.loads(result.output)
+    assert payload["status"] == "ok"
+    assert payload["chatId"] == "C1"
+    mock_client.create_thread.assert_called_once_with(
+        "M1",
+        "hello thread",
+        chat_id="C1",
+        channel_id="O2",
+    )
+
+
+def test_cliq_threads_from_channel(
+    mock_config: Path,
+    mock_token_refresh: Any,
+) -> None:
+    mock_client = MagicMock()
+    mock_client.resolve_chat_id.return_value = "C1"
+    mock_client.list_threads.return_value = {"data": [{"id": "T1"}, {"id": "T2"}]}
+
+    with patch("zoho_cli.cli._get_cliq_client", return_value=mock_client):
+        result = runner.invoke(
+            app,
+            ["cliq", "threads", "--channel-id", "O2", "--limit", "2"],
+            env=_cfg_env(mock_config),
+        )
+
+    assert result.exit_code == 0, result.output
+    payload = json.loads(result.output)
+    assert payload["chatId"] == "C1"
+    assert payload["count"] == 2
+    assert payload["threads"][0]["id"] == "T1"
+
+
+def test_cliq_thread_followers(
+    mock_config: Path,
+    mock_token_refresh: Any,
+) -> None:
+    mock_client = MagicMock()
+    mock_client.resolve_chat_id.return_value = "C1"
+    mock_client.list_thread_followers.return_value = {
+        "data": [{"user_id": "U1"}, {"user_id": "U2"}]
+    }
+
+    with patch("zoho_cli.cli._get_cliq_client", return_value=mock_client):
+        result = runner.invoke(
+            app,
+            [
+                "cliq",
+                "thread-followers",
+                "T1",
+                "--channel-id",
+                "O2",
+                "--limit",
+                "10",
+            ],
+            env=_cfg_env(mock_config),
+        )
+
+    assert result.exit_code == 0, result.output
+    payload = json.loads(result.output)
+    assert payload["threadId"] == "T1"
+    assert payload["count"] == 2
+    mock_client.list_thread_followers.assert_called_once_with(
+        "T1",
+        chat_id="C1",
+        channel_id="O2",
+        limit=10,
+    )
+
+
+def test_cliq_thread_state_update(
+    mock_config: Path,
+    mock_token_refresh: Any,
+) -> None:
+    mock_client = MagicMock()
+    mock_client.resolve_chat_id.return_value = "C1"
+    mock_client.update_thread_state.return_value = {"data": {"state": "closed"}}
+
+    with patch("zoho_cli.cli._get_cliq_client", return_value=mock_client):
+        result = runner.invoke(
+            app,
+            [
+                "cliq",
+                "thread-state",
+                "T1",
+                "--channel-id",
+                "O2",
+                "--state",
+                "closed",
+            ],
+            env=_cfg_env(mock_config),
+        )
+
+    assert result.exit_code == 0, result.output
+    payload = json.loads(result.output)
+    assert payload["status"] == "ok"
+    assert payload["threadId"] == "T1"
+    assert payload["state"] == "closed"
+
+
+def test_cliq_thread_state_read(
+    mock_config: Path,
+    mock_token_refresh: Any,
+) -> None:
+    mock_client = MagicMock()
+    mock_client.resolve_chat_id.return_value = "C1"
+    mock_client.get_thread_state.return_value = {"data": {"state": "open"}}
+
+    with patch("zoho_cli.cli._get_cliq_client", return_value=mock_client):
+        result = runner.invoke(
+            app,
+            ["cliq", "thread-state", "T1", "--channel-id", "O2"],
+            env=_cfg_env(mock_config),
+        )
+
+    assert result.exit_code == 0, result.output
+    payload = json.loads(result.output)
+    assert payload["threadId"] == "T1"
+    assert payload["state"] == "open"
 
 
 # ---------------------------------------------------------------------------

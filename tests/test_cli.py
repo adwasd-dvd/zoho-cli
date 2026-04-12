@@ -959,6 +959,11 @@ def test_cliq_status_scaffold_info(mock_config: Path) -> None:
         "zoho --account test@example.com login --with-cliq --with-cliq-export"
         in payload["exportNext"][0]
     )
+    assert (
+        "zoho --account test@example.com login --with-cliq --scope"
+        " ZohoCliq.OrganizationChats.READ --scope"
+        " ZohoCliq.OrganizationMessages.READ"
+    ) in payload["exportNext"][0]
 
 
 def test_cliq_status_check_auth(mock_config: Path, mock_token_refresh: Any) -> None:

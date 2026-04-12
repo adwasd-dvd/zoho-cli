@@ -38,6 +38,7 @@
 - Expanded `zoho cliq status` scope diagnostics to include maintenance export readiness (`requiredExportScopes`, `missingExportScopes`, `exportOauthReady`) so `cliq-165` re-auth checks can confirm export scopes before running `cliq export-chats`.
 - `zoho cliq status` now includes `exportNext` action hints when export scopes are missing, with ready-to-run re-auth and probe commands (including `--network` when provided).
 - `zoho cliq status` now makes `exportNext` commands account-aware by including `--account <email>` in generated re-auth and export-probe command hints, reducing wrong-account rerun risk in multi-account environments.
+- `zoho cliq status` `exportNext` re-auth hint now includes an explicit `--scope` fallback command (`ZohoCliq.OrganizationChats.READ` + `ZohoCliq.OrganizationMessages.READ`) alongside `--with-cliq-export`, so blocked cliq-165 runs can recover even when bundled scope flags are unavailable.
 - Added deep Cliq history helpers (`get_all_users`, `get_dm_history`, `get_chat_history`) with bounded pagination handling for bulk-read test scenarios.
 - Added SCAP deep Cliq auto-pilot tests (`tests/auto_pilot/scenarios/test_social.py`, `test_messaging.py`) plus semi-manual runners (`tests/auto_pilot/run_cliq_deep_scan.sh`, `tests/auto_pilot/cliq_live_probe.py`) covering user list reads, DM/channel history reads, text send fallback, and local media send upload metadata.
 - Validated live `zoho cliq chats --network happydistrouklimited` positive path after `zoho login --with-cliq` re-auth (`count: 0`, no scope error).

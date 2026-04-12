@@ -1260,8 +1260,17 @@ def cliq_status(
         return "`" + " ".join(shlex.quote(p) for p in parts) + "`"
 
     def _export_next() -> list[str]:
+        bundled_login = _cmd("login", "--with-cliq", "--with-cliq-export")
+        explicit_scope_login = _cmd(
+            "login",
+            "--with-cliq",
+            "--scope",
+            _cliq.CLIQ_EXPORT_CHATS_SCOPE,
+            "--scope",
+            _cliq.CLIQ_EXPORT_MESSAGES_SCOPE,
+        )
         return [
-            f"re-auth with Cliq export scopes: {_cmd('login', '--with-cliq', '--with-cliq-export')}",
+            f"re-auth with Cliq export scopes: {bundled_login} (fallback: {explicit_scope_login})",
             f"verify export scope readiness: {_cmd('cliq', 'status', '--check-auth', include_network=True)}",
             f"rerun export probes: {_cmd('cliq', 'export-chats', include_network=True)} and {_cmd('cliq', 'export-chats', '--chat-id', '<chat_id>', include_network=True)}",
         ]

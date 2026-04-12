@@ -1771,6 +1771,23 @@ def cliq_file(
     client = _get_cliq_client(cfg, email, network=network)
 
     resolved_chat = (chat_id or "").strip() or client.resolve_chat_id(channel_id or "")
+    message_types: list[str] = []
+    try:
+        message_resp = client.get_message(
+            message_id,
+            chat_id=resolved_chat,
+            channel_id=channel_id,
+        )
+        message_data = (
+            message_resp.get("data", message_resp)
+            if isinstance(message_resp, dict)
+            else {}
+        )
+        if isinstance(message_data, dict):
+            message_types = client.infer_message_types(message_data)
+    except Exception:
+        message_types = []
+
     resp = client.get_message_files(
         message_id,
         chat_id=resolved_chat,
@@ -1791,11 +1808,22 @@ def cliq_file(
                 files = [item for item in candidate if isinstance(item, dict)]
                 break
 
+    media_types = {"image", "file", "voice"}
+    retrieval_result = "attachments_found"
+    if not files:
+        retrieval_result = (
+            "media_visible_without_attachment_payload"
+            if any(t in media_types for t in message_types)
+            else "no_attachment_payload"
+        )
+
     utils.output(
         {
             "chatId": resolved_chat or "",
             "channelId": channel_id or "",
             "messageId": message_id,
+            "messageTypes": message_types,
+            "retrievalResult": retrieval_result,
             "sourcePath": str(fetch_meta.get("path") or ""),
             "count": len(files),
             "files": files,
@@ -1823,6 +1851,23 @@ def cliq_voice(
     client = _get_cliq_client(cfg, email, network=network)
 
     resolved_chat = (chat_id or "").strip() or client.resolve_chat_id(channel_id or "")
+    message_types: list[str] = []
+    try:
+        message_resp = client.get_message(
+            message_id,
+            chat_id=resolved_chat,
+            channel_id=channel_id,
+        )
+        message_data = (
+            message_resp.get("data", message_resp)
+            if isinstance(message_resp, dict)
+            else {}
+        )
+        if isinstance(message_data, dict):
+            message_types = client.infer_message_types(message_data)
+    except Exception:
+        message_types = []
+
     resp = client.get_message_files(
         message_id,
         chat_id=resolved_chat,
@@ -1880,11 +1925,25 @@ def cliq_voice(
 
     voice_files = [item for item in files if _is_voice(item)]
 
+    media_types = {"image", "file", "voice"}
+    retrieval_result = "voice_found"
+    if not voice_files:
+        if files:
+            retrieval_result = "attachments_found_but_no_voice"
+        else:
+            retrieval_result = (
+                "media_visible_without_attachment_payload"
+                if any(t in media_types for t in message_types)
+                else "no_attachment_payload"
+            )
+
     utils.output(
         {
             "chatId": resolved_chat or "",
             "channelId": channel_id or "",
             "messageId": message_id,
+            "messageTypes": message_types,
+            "retrievalResult": retrieval_result,
             "sourcePath": str(fetch_meta.get("path") or ""),
             "count": len(voice_files),
             "voiceFiles": voice_files,

@@ -1052,6 +1052,64 @@ def test_cliq_file_from_channel(mock_config: Path, mock_token_refresh: Any) -> N
     assert payload["sourcePath"] == "/chats/CT_1/messages/M1/files"
     assert payload["count"] == 1
     assert payload["files"][0]["id"] == "F1"
+    assert payload["messageTypes"] == []
+    assert payload["retrievalResult"] == "attachments_found"
+
+
+@respx.mock
+def test_cliq_file_reports_media_visible_without_attachment_payload(
+    mock_config: Path, mock_token_refresh: Any
+) -> None:
+    respx.get("https://cliq.zoho.com/api/v2/channels/O1").mock(
+        return_value=httpx.Response(200, json={"data": {"chat_id": "CT_1"}})
+    )
+    respx.get("https://cliq.zoho.com/api/v2/chats/CT_1/messages/M1").mock(
+        return_value=httpx.Response(
+            200,
+            json={
+                "data": {
+                    "id": "M1",
+                    "type": "card",
+                    "content": {"text": "remote image"},
+                    "unfurled_details": {
+                        "url": "https://upload.wikimedia.org/wikipedia/commons/3/3f/JPEG_example_flower.jpg"
+                    },
+                }
+            },
+        )
+    )
+    respx.get("https://cliq.zoho.com/api/v2/chats/CT_1/messages/M1/files").mock(
+        return_value=httpx.Response(
+            400,
+            json={
+                "code": "message_attachment_not_found",
+                "message": "No attachment found for this message.",
+            },
+        )
+    )
+    respx.get(
+        "https://cliq.zoho.com/api/v2/chats/CT_1/messages/M1/attachments"
+    ).mock(
+        return_value=httpx.Response(
+            400,
+            json={
+                "code": "no_attachments_found",
+                "message": "No attachment found for this message.",
+            },
+        )
+    )
+
+    result = runner.invoke(
+        app,
+        ["cliq", "file", "M1", "--channel-id", "O1"],
+        env=_cfg_env(mock_config),
+    )
+    assert result.exit_code == 0, result.output
+    payload = json.loads(result.output)
+    assert payload["count"] == 0
+    assert "image" in payload["messageTypes"]
+    assert payload["retrievalResult"] == "media_visible_without_attachment_payload"
+    assert payload["sourcePath"] == "/chats/CT_1/messages/M1/files"
 
 
 def test_cliq_file_requires_destination(
@@ -2071,7 +2129,7 @@ def test_cliq_send_channel_accepts_204_empty_body(
 def test_cliq_send_channel_with_image_url(
     mock_config: Path, mock_token_refresh: Any
 ) -> None:
-    route = respx.post("https://cliq.zoho.com/api/v2/channelsbyname/C1/message").mock(
+    route = respx.post("https://cliq.zoho.com/api/v2/chats/C1/message").mock(
         return_value=httpx.Response(200, json={"data": {"message_id": "M2"}})
     )
     respx.get("https://cliq.zoho.com/api/v2/channels/C1").mock(
@@ -2109,7 +2167,7 @@ def test_cliq_send_channel_with_image_url(
 def test_cliq_send_channel_with_voice_url(
     mock_config: Path, mock_token_refresh: Any
 ) -> None:
-    route = respx.post("https://cliq.zoho.com/api/v2/channelsbyname/C1/message").mock(
+    route = respx.post("https://cliq.zoho.com/api/v2/chats/C1/message").mock(
         return_value=httpx.Response(200, json={"data": {"message_id": "M3"}})
     )
     respx.get("https://cliq.zoho.com/api/v2/channels/C1").mock(
@@ -2149,7 +2207,7 @@ def test_cliq_send_channel_with_local_voice_file(
     sample = tmp_path / "voice.m4a"
     sample.write_bytes(b"voice-bytes")
 
-    route = respx.post("https://cliq.zoho.com/api/v2/channelsbyname/C1/message").mock(
+    route = respx.post("https://cliq.zoho.com/api/v2/chats/C1/message").mock(
         return_value=httpx.Response(200, json={"data": {"message_id": "M3"}})
     )
     respx.get("https://cliq.zoho.com/api/v2/channels/C1").mock(
@@ -2179,7 +2237,7 @@ def test_cliq_send_channel_with_local_voice_file(
     payload = json.loads(result.output)
     assert payload["status"] == "ok"
     assert payload["media"]["localPath"] == str(sample)
-    assert payload["result"]["upload"]["path"] == "/channelsbyname/C1/message"
+    assert payload["result"]["upload"]["path"] == "/chats/C1/message"
     assert payload["result"]["upload"]["field"] == "voice"
 
 
@@ -2192,7 +2250,7 @@ def test_cliq_send_channel_with_local_image_file(
     sample = tmp_path / "image.png"
     sample.write_bytes(b"png-bytes")
 
-    route = respx.post("https://cliq.zoho.com/api/v2/channelsbyname/C1/message").mock(
+    route = respx.post("https://cliq.zoho.com/api/v2/chats/C1/message").mock(
         return_value=httpx.Response(200, json={"data": {"message_id": "M3"}})
     )
     respx.get("https://cliq.zoho.com/api/v2/channels/C1").mock(
@@ -2222,7 +2280,7 @@ def test_cliq_send_channel_with_local_image_file(
     payload = json.loads(result.output)
     assert payload["status"] == "ok"
     assert payload["media"]["localPath"] == str(sample)
-    assert payload["result"]["upload"]["path"] == "/channelsbyname/C1/message"
+    assert payload["result"]["upload"]["path"] == "/chats/C1/message"
     assert payload["result"]["upload"]["field"] == "image"
 
 
@@ -2249,7 +2307,7 @@ def test_cliq_send_rejects_missing_local_file(
 
 @respx.mock
 def test_cliq_voice_send_command(mock_config: Path, mock_token_refresh: Any) -> None:
-    route = respx.post("https://cliq.zoho.com/api/v2/channelsbyname/C1/message").mock(
+    route = respx.post("https://cliq.zoho.com/api/v2/chats/C1/message").mock(
         return_value=httpx.Response(200, json={"data": {"message_id": "M4"}})
     )
     respx.get("https://cliq.zoho.com/api/v2/channels/C1").mock(
@@ -2351,6 +2409,8 @@ def test_cliq_voice_handles_message_without_attachments(
     payload = json.loads(result.output)
     assert payload["count"] == 0
     assert payload["voiceFiles"] == []
+    assert payload["messageTypes"] == []
+    assert payload["retrievalResult"] == "no_attachment_payload"
     assert payload["sourcePath"] == "/chats/CT_1/messages/M1/files"
 
 

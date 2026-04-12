@@ -98,6 +98,7 @@
 - File-sharing fallback payloads now encode `comments` as a JSON array string (with empty-payload fallback), preventing immediate `input_json_invalid` failures from endpoints that require `comments` to be a JSONArray.
 - Cliq client now derives service-origin host from configured base URL and routes maintenance export APIs through `/maintenanceapi/v2/...` on that host, avoiding invalid `/network/.../api/v2/maintenanceapi/...` path composition.
 - `zoho cliq export-chats` now normalizes alternate maintenance export response shapes (`list`/`chats`/`data`, plus `messages` payloads), so list/message exports remain usable across endpoint payload variants.
+- Cliq maintenance export scope handling now also treats API code `oauth_scope_invalid` as an org-admin scope miss (in addition to `oauthtoken_scope_invalid`), so `cliq export-chats` list and `--chat-id` paths consistently return the re-auth hint for `ZohoCliq.Org.Admin`.
 - Cliq channel-id send fallback resolution now reuses a single `/channels/{id}` descriptor fetch when building chat/name path candidates, avoiding duplicate descriptor lookups per send attempt.
 - Cliq file retrieval now includes source endpoint metadata (`fetch.path` from `ZohoCliqClient.get_message_files`) and `zoho cliq file` surfaces it as `sourcePath` for live upload/download matrix logging.
 - `zoho cliq voice` now also surfaces retrieval endpoint metadata as `sourcePath`, so voice-only attachment probes capture the same download-path evidence as `zoho cliq file`.

@@ -1,5 +1,5 @@
 project: zoho-cli
-updated_at: '2026-04-12T03:40:00Z'
+updated_at: '2026-04-12T04:12:53Z'
 status: cliq-expansion
 canonical_workspace: /Users/adwasd/.openclaw/workspace-coder
 project_root: /Users/adwasd/.openclaw/workspace-coder/job/zoho-cli
@@ -24,6 +24,9 @@ additional_info:
   probes return `oauth_scope_invalid` until `ZohoCliq.Org.Admin` is granted (evidence:
   `tests/auto_pilot/reports/cliq_export_chats_list_scope_invalid_20260412_031212.json`,
   `tests/auto_pilot/reports/cliq_export_chat_scope_invalid_20260412_031212.json`).'
+- '2026-04-12 unit hardening: export scope detection now treats both `oauthtoken_scope_invalid`
+  and `oauth_scope_invalid` as Org.Admin misses for `cliq export-chats` list + `--chat-id`
+  paths, keeping re-auth guidance stable across maintenance API code variants.'
 - Auto-pilot probe scripts now resolve repo root from script location and can be launched
   from either project root or workspace root without path drift.
 - '2026-04-12 live check: `cliq status --check-auth` now reports `oauthReady: true`,

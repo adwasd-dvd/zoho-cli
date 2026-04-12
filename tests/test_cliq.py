@@ -130,6 +130,26 @@ def test_cliq_client_export_conversations_scope_invalid_reports_hint(
 
 
 @respx.mock
+def test_cliq_client_export_conversations_oauth_scope_invalid_code_reports_hint(
+    client: cliq.ZohoCliqClient,
+    capsys: pytest.CaptureFixture[str],
+) -> None:
+    respx.get("https://cliq.zoho.com/maintenanceapi/v2/chats").mock(
+        return_value=httpx.Response(401, json={"code": "oauth_scope_invalid"})
+    )
+    respx.get(
+        "https://cliq.zoho.com/maintenanceapi/v2/chats?fields=title,chat_id"
+    ).mock(return_value=httpx.Response(401, json={"code": "oauth_scope_invalid"}))
+
+    with pytest.raises(SystemExit):
+        client.export_conversations()
+
+    err = capsys.readouterr().err
+    assert "oauth_scope_invalid" in err
+    assert "ZohoCliq.Org.Admin" in err
+
+
+@respx.mock
 def test_cliq_client_export_chat_messages(client: cliq.ZohoCliqClient) -> None:
     route = respx.get(
         "https://cliq.zoho.com/maintenanceapi/v2/chats/CT_1/messages"
@@ -141,6 +161,23 @@ def test_cliq_client_export_chat_messages(client: cliq.ZohoCliqClient) -> None:
 
     assert route.called
     assert result["data"][0]["id"] == "M1"
+
+
+@respx.mock
+def test_cliq_client_export_chat_messages_scope_invalid_reports_hint(
+    client: cliq.ZohoCliqClient,
+    capsys: pytest.CaptureFixture[str],
+) -> None:
+    respx.get("https://cliq.zoho.com/maintenanceapi/v2/chats/CT_1/messages").mock(
+        return_value=httpx.Response(401, json={"code": "oauth_scope_invalid"})
+    )
+
+    with pytest.raises(SystemExit):
+        client.export_chat_messages("CT_1")
+
+    err = capsys.readouterr().err
+    assert "oauth_scope_invalid" in err
+    assert "ZohoCliq.Org.Admin" in err
 
 
 @respx.mock

@@ -1406,6 +1406,7 @@ class ZohoCliqClient:
 
             if "oauthtoken_scope_invalid" in lowered or code in {
                 "oauthtoken_scope_invalid",
+                "oauth_scope_invalid",
                 "scope_mismatch",
                 "oauth_scope_mismatch",
             }:
@@ -1474,6 +1475,7 @@ class ZohoCliqClient:
 
         if "oauthtoken_scope_invalid" in lowered or code in {
             "oauthtoken_scope_invalid",
+            "oauth_scope_invalid",
             "scope_mismatch",
             "oauth_scope_mismatch",
         }:

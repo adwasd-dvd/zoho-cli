@@ -435,6 +435,55 @@ def test_cliq_client_list_events_scope_invalid_reports_hint(
 
 
 @respx.mock
+def test_cliq_client_list_reminders_falls_back_to_admin_endpoint(
+    client: cliq.ZohoCliqClient,
+) -> None:
+    reminders_route = respx.get("https://cliq.zoho.com/api/v2/reminders").mock(
+        return_value=httpx.Response(404, text="request_url_invalid")
+    )
+    admin_route = respx.get("https://cliq.zoho.com/api/v2/admin/reminders").mock(
+        return_value=httpx.Response(
+            200,
+            json={
+                "data": [
+                    {
+                        "reminder_id": "RM_1",
+                        "title": "Standup Reminder",
+                    }
+                ]
+            },
+        )
+    )
+
+    result = client.list_reminders(limit=13)
+
+    assert reminders_route.called
+    assert admin_route.called
+    assert dict(admin_route.calls.last.request.url.params) == {"limit": "13"}
+    assert result["data"][0]["reminder_id"] == "RM_1"
+
+
+@respx.mock
+def test_cliq_client_list_reminders_scope_invalid_reports_hint(
+    client: cliq.ZohoCliqClient,
+    capsys: pytest.CaptureFixture[str],
+) -> None:
+    respx.get("https://cliq.zoho.com/api/v2/reminders").mock(
+        return_value=httpx.Response(401, json={"code": "oauth_scope_invalid"})
+    )
+    respx.get("https://cliq.zoho.com/api/v2/admin/reminders").mock(
+        return_value=httpx.Response(401, json={"code": "oauth_scope_invalid"})
+    )
+
+    with pytest.raises(SystemExit):
+        client.list_reminders(limit=13)
+
+    err = capsys.readouterr().err
+    assert "oauth_scope_invalid" in err
+    assert "ZohoCliq.Reminders.READ" in err
+
+
+@respx.mock
 def test_cliq_client_export_conversations(client: cliq.ZohoCliqClient) -> None:
     route = respx.get("https://cliq.zoho.com/maintenanceapi/v2/chats").mock(
         return_value=httpx.Response(

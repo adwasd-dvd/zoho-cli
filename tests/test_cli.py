@@ -2904,6 +2904,39 @@ def test_cliq_events(
     mock_client.list_events.assert_called_once_with(limit=8)
 
 
+def test_cliq_reminders(
+    mock_config: Path,
+    mock_token_refresh: Any,
+) -> None:
+    mock_client = MagicMock()
+    mock_client.list_reminders.return_value = {
+        "data": [
+            {
+                "reminder_id": "RM_1",
+                "title": "Submit status update",
+                "remind_at": "2026-04-12T21:00:00Z",
+                "status": "scheduled",
+            }
+        ]
+    }
+
+    with patch("zoho_cli.cli._get_cliq_client", return_value=mock_client):
+        result = runner.invoke(
+            app,
+            ["cliq", "reminders", "--limit", "6"],
+            env=_cfg_env(mock_config),
+        )
+
+    assert result.exit_code == 0, result.output
+    payload = json.loads(result.output)
+    assert payload["count"] == 1
+    assert payload["reminders"][0]["reminderId"] == "RM_1"
+    assert payload["reminders"][0]["title"] == "Submit status update"
+    assert payload["reminders"][0]["dueAt"] == "2026-04-12T21:00:00Z"
+    assert payload["reminders"][0]["status"] == "scheduled"
+    mock_client.list_reminders.assert_called_once_with(limit=6)
+
+
 @respx.mock
 def test_cliq_export_chats_list(mock_config: Path, mock_token_refresh: Any) -> None:
     respx.get("https://cliq.zoho.com/maintenanceapi/v2/chats").mock(

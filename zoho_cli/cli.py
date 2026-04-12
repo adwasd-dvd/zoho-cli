@@ -1828,6 +1828,65 @@ def cliq_events(
     )
 
 
+@cliq_app.command("reminders")
+def cliq_reminders(
+    limit: int = typer.Option(50, "--limit", "-n", help="Max reminders to return."),
+    network: Optional[str] = typer.Option(
+        None, "--network", help="Cliq network slug (e.g. happydistrouklimited)."
+    ),
+) -> None:
+    """List Cliq collaboration reminders (cliq-191 second slice)."""
+    cfg = _cfg()
+    email = _require_account(cfg)
+    client = _get_cliq_client(cfg, email, network=network)
+
+    resp = client.list_reminders(limit=limit)
+    data = resp.get("data", resp)
+    if not isinstance(data, list):
+        data = []
+
+    views: list[dict[str, Any]] = []
+    for row in data:
+        if not isinstance(row, dict):
+            continue
+        views.append(
+            {
+                "reminderId": str(
+                    row.get("reminder_id")
+                    or row.get("reminderId")
+                    or row.get("id")
+                    or row.get("zuid")
+                    or ""
+                ),
+                "title": str(
+                    row.get("title")
+                    or row.get("name")
+                    or row.get("message")
+                    or row.get("summary")
+                    or ""
+                ),
+                "dueAt": str(
+                    row.get("remind_at")
+                    or row.get("remindAt")
+                    or row.get("due_at")
+                    or row.get("dueAt")
+                    or row.get("scheduled_time")
+                    or row.get("scheduledTime")
+                    or ""
+                ),
+                "status": str(row.get("status") or row.get("reminder_status") or ""),
+                "raw": row,
+            }
+        )
+
+    utils.output(
+        {
+            "count": len(views),
+            "reminders": views,
+        }
+    )
+
+
 @cliq_app.command("export-chats")
 def cliq_export_chats(
     chat_id: Optional[str] = typer.Option(

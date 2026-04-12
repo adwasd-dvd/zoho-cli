@@ -1,10 +1,14 @@
-last_run_at: "2026-04-12T19:47:38Z"
+last_run_at: "2026-04-12T20:09:46Z"
 last_result: warning
 current_focus: cliq
 suites:
   unit:
     status: passing
     notes:
+      - "python3.11 -m pytest -q tests/test_cliq.py::test_cliq_client_list_reminders_falls_back_to_admin_endpoint tests/test_cliq.py::test_cliq_client_list_reminders_scope_invalid_reports_hint tests/test_cli.py::test_cliq_reminders"
+      - "3 passed in 0.17s (cliq-191 second slice: new `zoho cliq reminders` command + `ZohoCliqClient.list_reminders` fallback coverage, 2026-04-12T20:09:46Z)"
+      - "./.venv/bin/ruff format --check zoho_cli/cliq.py zoho_cli/cli.py tests/test_cliq.py tests/test_cli.py"
+      - "4 files already formatted (2026-04-12T20:09:46Z)"
       - "python3.11 -m pytest -q tests/test_cliq.py::test_cliq_client_list_events_falls_back_to_admin_endpoint tests/test_cliq.py::test_cliq_client_list_events_scope_invalid_reports_hint tests/test_cli.py::test_cliq_events"
       - "3 passed in 0.17s (cliq-191 first slice: new `zoho cliq events` command + `ZohoCliqClient.list_events` fallback coverage, 2026-04-12T19:47:38Z)"
       - "./.venv/bin/ruff format --check zoho_cli/cliq.py zoho_cli/cli.py tests/test_cliq.py tests/test_cli.py"

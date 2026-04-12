@@ -4,10 +4,10 @@ module: cliq
 stage: in_progress
 status: in_progress
 owner: automation
-updated_at: '2026-04-12T19:47:38Z'
+updated_at: '2026-04-12T20:09:46Z'
 success_criteria:
 - add one smallest collaboration productivity command/client slice with fallback routing and scope guidance
 - add targeted CLI/client coverage for the new slice
 - keep cliq-165 export blocker evidence fresh while app-account activation remains external
-next_if_done: continue cliq-191 with one next smallest slice (reminders or calls-and-meetings) while cliq-165 stays blocked externally
-next_step: first cliq-191 slice is now in place (`zoho cliq events` + `ZohoCliqClient.list_events` with fallback routing/tests); next is one reminders or calls/meetings slice while keeping cliq-165 app-account activation on blocker-skip loop
+next_if_done: continue cliq-191 with one next smallest slice (calls-and-meetings) while cliq-165 stays blocked externally
+next_step: second cliq-191 slice is now in place (`zoho cliq reminders` + `ZohoCliqClient.list_reminders` with fallback routing/tests); next is one calls/meetings slice while keeping cliq-165 app-account activation on blocker-skip loop

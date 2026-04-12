@@ -1707,6 +1707,63 @@ def cliq_user_status(
     )
 
 
+@cliq_app.command("userfields")
+def cliq_userfields(
+    limit: int = typer.Option(
+        50, "--limit", "-n", help="Max user-field rows to return."
+    ),
+    network: Optional[str] = typer.Option(
+        None, "--network", help="Cliq network slug (e.g. happydistrouklimited)."
+    ),
+) -> None:
+    """List Cliq org-admin userfields (cliq-190 phase-1 slice)."""
+    cfg = _cfg()
+    email = _require_account(cfg)
+    client = _get_cliq_client(cfg, email, network=network)
+
+    resp = client.list_user_fields(limit=limit)
+    data = resp.get("data", resp)
+    if not isinstance(data, list):
+        data = []
+
+    views: list[dict[str, Any]] = []
+    for row in data:
+        if not isinstance(row, dict):
+            continue
+        views.append(
+            {
+                "fieldId": str(
+                    row.get("field_id")
+                    or row.get("fieldId")
+                    or row.get("id")
+                    or row.get("zuid")
+                    or ""
+                ),
+                "label": str(
+                    row.get("label")
+                    or row.get("field_name")
+                    or row.get("display_name")
+                    or row.get("name")
+                    or ""
+                ),
+                "type": str(
+                    row.get("field_type")
+                    or row.get("type")
+                    or row.get("data_type")
+                    or ""
+                ),
+                "raw": row,
+            }
+        )
+
+    utils.output(
+        {
+            "count": len(views),
+            "userFields": views,
+        }
+    )
+
+
 @cliq_app.command("export-chats")
 def cliq_export_chats(
     chat_id: Optional[str] = typer.Option(

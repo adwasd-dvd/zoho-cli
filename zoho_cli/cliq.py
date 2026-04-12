@@ -2717,6 +2717,20 @@ class ZohoCliqClient:
             not_supported_message="Cliq org-admin user-status listing endpoints are not available for this token/network endpoint.",
         )
 
+    def list_user_fields(self, *, limit: int = 50) -> dict:
+        """List organization user-field definitions (cliq-190 sixth org-admin slice)."""
+        return self._get_with_candidates_and_not_supported(
+            [
+                ("/userfields", {"limit": limit}),
+                ("/userfields", None),
+                ("/admin/userfields", {"limit": limit}),
+                ("/admin/userfields", None),
+            ],
+            scope_hint="ZohoCliq.UserFields.READ",
+            operation_label="userfields-list",
+            not_supported_message="Cliq org-admin userfields listing endpoints are not available for this token/network endpoint.",
+        )
+
     @staticmethod
     def infer_message_types(message: dict[str, Any]) -> list[str]:
         """Infer coarse content types from a raw Cliq message payload."""

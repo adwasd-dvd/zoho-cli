@@ -4,10 +4,10 @@ module: cliq
 stage: in_progress
 status: in_progress
 owner: automation
-updated_at: '2026-04-12T18:43:00Z'
+updated_at: '2026-04-12T19:10:00Z'
 success_criteria:
 - implement org-admin phase-1 command slices in client + CLI with fallback guidance parity
 - add targeted regression tests for each new org-admin slice
 - keep cliq-165 export-scope blocker loop and endpoint-limitation evidence documented while cliq-190 advances
-next_if_done: continue to next cliq-190 org-admin slice
-next_step: cliq-190 now includes `zoho cliq teams` + `zoho cliq departments` + `zoho cliq roles` + `zoho cliq designations` + `zoho cliq user-status`; continue with the next small org-admin command/client slice (`userfields`) while keeping cliq-165 on blocker-skip loop
+next_if_done: run live cliq-190 org-admin verification and decide phase-1 closeout
+next_step: cliq-190 now includes `zoho cliq teams` + `zoho cliq departments` + `zoho cliq roles` + `zoho cliq designations` + `zoho cliq user-status` + `zoho cliq userfields`; run one live `cliq userfields` verification pass, then keep cliq-165 on blocker-skip loop

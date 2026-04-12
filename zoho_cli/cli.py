@@ -2062,6 +2062,53 @@ def cliq_scheduled(
     )
 
 
+@cliq_app.command("scheduled-get")
+def cliq_scheduled_get(
+    scheduled_id: str = typer.Argument(..., help="Scheduled message id."),
+    channel_id: Optional[str] = typer.Option(
+        None, "--channel-id", help="Destination channel id (resolved to chat_id)."
+    ),
+    chat_id: Optional[str] = typer.Option(None, "--chat-id", help="Chat id."),
+    network: Optional[str] = typer.Option(
+        None, "--network", help="Cliq network slug (e.g. happydistrouklimited)."
+    ),
+) -> None:
+    """Get one scheduled message by id."""
+    if not chat_id and not channel_id:
+        utils.error_exit("invalid_destination", "Provide --chat-id or --channel-id")
+
+    cfg = _cfg()
+    email = _require_account(cfg)
+    client = _get_cliq_client(cfg, email, network=network)
+
+    resolved_chat = (chat_id or "").strip() or client.resolve_chat_id(channel_id or "")
+    resp = client.get_scheduled_message(
+        scheduled_id,
+        chat_id=resolved_chat,
+        channel_id=channel_id,
+    )
+
+    data = resp.get("data", resp)
+    scheduled: dict[str, Any] | Any = data
+    if isinstance(data, dict):
+        for key in ("scheduled", "message", "item", "data"):
+            candidate = data.get(key)
+            if isinstance(candidate, dict):
+                scheduled = candidate
+                break
+    elif isinstance(data, list):
+        scheduled = next((item for item in data if isinstance(item, dict)), {})
+
+    utils.output(
+        {
+            "chatId": resolved_chat or "",
+            "channelId": channel_id or "",
+            "scheduledId": scheduled_id,
+            "scheduled": scheduled,
+        }
+    )
+
+
 @cliq_app.command("thread-followers")
 def cliq_thread_followers(
     thread_id: str = typer.Argument(..., help="Thread id."),

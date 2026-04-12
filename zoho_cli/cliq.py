@@ -1800,6 +1800,56 @@ class ZohoCliqClient:
             not_supported_message="Cliq scheduled-message list endpoints are not available for this token/network endpoint. Run `zoho cliq capabilities --channel-id <id>` and confirm scheduled-message operations for the target conversation.",
         )
 
+    def get_scheduled_message(
+        self,
+        scheduled_id: str,
+        *,
+        chat_id: str | None = None,
+        channel_id: str | None = None,
+    ) -> dict:
+        """Get one scheduled message by id for a chat/channel."""
+        resolved_chat = self._resolve_chat_destination(
+            chat_id=chat_id,
+            channel_id=channel_id,
+        )
+        target_scheduled_id = scheduled_id.strip()
+        if not target_scheduled_id:
+            utils.error_exit("invalid_scheduled_id", "scheduled_id cannot be empty")
+
+        candidates: list[tuple[str, dict[str, Any] | None]] = [
+            (f"/chats/{resolved_chat}/scheduled/{target_scheduled_id}", None),
+            (
+                f"/chats/{resolved_chat}/messages/scheduled/{target_scheduled_id}",
+                None,
+            ),
+            (
+                f"/chats/{resolved_chat}/scheduled/messages/{target_scheduled_id}",
+                None,
+            ),
+            (f"/chats/{resolved_chat}/schedule/{target_scheduled_id}", None),
+        ]
+
+        if channel_id:
+            candidates.extend(
+                [
+                    (
+                        f"/channels/{channel_id}/scheduled/{target_scheduled_id}",
+                        None,
+                    ),
+                    (
+                        f"/channels/{channel_id}/messages/scheduled/{target_scheduled_id}",
+                        None,
+                    ),
+                ]
+            )
+
+        return self._get_with_candidates_and_not_supported(
+            candidates,
+            scope_hint="ZohoCliq.Messages.READ",
+            operation_label="scheduled-get",
+            not_supported_message="Cliq scheduled-message get endpoints are not available for this token/network endpoint. Run `zoho cliq capabilities --channel-id <id>` and confirm scheduled-message operations for the target conversation.",
+        )
+
     def list_thread_followers(
         self,
         thread_id: str,

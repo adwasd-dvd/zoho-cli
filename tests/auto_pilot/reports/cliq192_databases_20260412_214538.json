@@ -1,0 +1,1 @@
+{"status": "error", "error": "oauth_scope_invalid", "details": "Cliq token is missing required scope for databases-list. Re-run `zoho login --with-cliq --scope ZohoCliq.Databases.READ` and retry."}

@@ -1,4 +1,4 @@
-last_run_at: "2026-04-12T21:26:31Z"
+last_run_at: "2026-04-12T21:45:38Z"
 last_result: warning
 current_focus: cliq
 suites:
@@ -408,6 +408,10 @@ suites:
   integration:
     status: warning
     notes:
+      - "python3.11 -m zoho_cli --config /tmp/zoho-test-config.json --account ai-dev@happy-distro.co.uk cliq status --check-auth --network happydistrouklimited"
+      - "cliq-192 focused live check keeps auth healthy (`oauthReady: true`, `exportOauthReady: true`); evidence: `tests/auto_pilot/reports/cliq192_status_20260412_214538.json` (2026-04-12T21:45:38Z)"
+      - "python3.11 -m zoho_cli --config /tmp/zoho-test-config.json --account ai-dev@happy-distro.co.uk cliq databases --network happydistrouklimited --limit 10"
+      - "cliq-192 focused live `cliq databases` verification currently returns `error: oauth_scope_invalid` with `ZohoCliq.Databases.READ` guidance; evidence: `tests/auto_pilot/reports/cliq192_databases_20260412_214538.json` + `tests/auto_pilot/reports/cliq192_probe_summary_20260412_214538.json` (2026-04-12T21:45:38Z)"
       - "python3.11 -m zoho_cli --config /tmp/zoho-test-config.json --account ai-dev@happy-distro.co.uk cliq status --check-auth --network happydistrouklimited"
       - "cliq-191 focused live check keeps auth healthy (`oauthReady: true`, `exportOauthReady: true`); evidence: `tests/auto_pilot/reports/cliq191_status_20260412_210519.json` (2026-04-12T21:05:19Z)"
       - "python3.11 -m zoho_cli --config /tmp/zoho-test-config.json --account ai-dev@happy-distro.co.uk cliq meetings --network happydistrouklimited --limit 10"

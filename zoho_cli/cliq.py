@@ -575,6 +575,7 @@ class ZohoCliqClient:
         last_error: tuple[int, str, str, str] | None = None
         preferred_error: tuple[int, str, str, str] | None = None
         saw_scope_invalid = False
+        saw_inactive_appaccount = False
         saw_not_supported = False
 
         retryable_error_codes = {
@@ -2540,6 +2541,13 @@ class ZohoCliqClient:
                 continue
 
             if (
+                "inactive_appaccount_user" in lowered
+                or code == "inactive_appaccount_user"
+            ):
+                saw_inactive_appaccount = True
+                continue
+
+            if (
                 resp.status_code in (404, 405)
                 or "request_url_invalid" in lowered
                 or code in {"operation_not_allowed", "not_supported", "unsupported"}
@@ -2552,7 +2560,13 @@ class ZohoCliqClient:
         if saw_scope_invalid:
             utils.error_exit(
                 "oauth_scope_invalid",
-                f"Cliq token is missing organization-chat export scope. Re-run `zoho login --with-cliq --with-cliq-export` (or add `--scope {CLIQ_EXPORT_CHATS_SCOPE}`) and retry.",
+                f"Cliq token is missing organization-chat export scope. Re-run `zoho login --with-cliq --scope {CLIQ_EXPORT_CHATS_SCOPE}` and retry.",
+            )
+
+        if saw_inactive_appaccount:
+            utils.error_exit(
+                "inactive_appaccount_user",
+                "Cliq maintenance export is blocked because this account is inactive for app-account export APIs. Activate the account in Cliq admin or use an active org account, then retry.",
             )
 
         if saw_not_supported:
@@ -2607,7 +2621,13 @@ class ZohoCliqClient:
         }:
             utils.error_exit(
                 "oauth_scope_invalid",
-                f"Cliq token is missing organization-message export scope. Re-run `zoho login --with-cliq --with-cliq-export` (or add `--scope {CLIQ_EXPORT_MESSAGES_SCOPE}`) and retry.",
+                f"Cliq token is missing organization-message export scope. Re-run `zoho login --with-cliq --scope {CLIQ_EXPORT_MESSAGES_SCOPE}` and retry.",
+            )
+
+        if "inactive_appaccount_user" in lowered or code == "inactive_appaccount_user":
+            utils.error_exit(
+                "inactive_appaccount_user",
+                "Cliq maintenance export is blocked because this account is inactive for app-account export APIs. Activate the account in Cliq admin or use an active org account, then retry.",
             )
 
         if (
@@ -2653,6 +2673,20 @@ class ZohoCliqClient:
             scope_hint="ZohoCliq.Departments.READ",
             operation_label="departments-list",
             not_supported_message="Cliq org-admin department listing endpoints are not available for this token/network endpoint.",
+        )
+
+    def list_roles(self, *, limit: int = 50) -> dict:
+        """List organization roles (cliq-190 third org-admin slice)."""
+        return self._get_with_candidates_and_not_supported(
+            [
+                ("/roles", {"limit": limit}),
+                ("/roles", None),
+                ("/admin/roles", {"limit": limit}),
+                ("/admin/roles", None),
+            ],
+            scope_hint="ZohoCliq.Roles.READ",
+            operation_label="roles-list",
+            not_supported_message="Cliq org-admin role listing endpoints are not available for this token/network endpoint.",
         )
 
     @staticmethod

@@ -1,5 +1,5 @@
 project: zoho-cli
-updated_at: '2026-04-12T17:27:12Z'
+updated_at: '2026-04-12T17:58:15Z'
 status: cliq-expansion
 canonical_workspace: /Users/adwasd/.openclaw/workspace-coder
 project_root: /Users/adwasd/.openclaw/workspace-coder/job/zoho-cli
@@ -7,7 +7,7 @@ module_order:
 - Mail
 - Cliq
 - CRM
-current_focus: cliq-190 now includes `zoho cliq teams` + `zoho cliq departments`; continue with the next small org-admin command/client slice (roles/designation/user-status/userfields) while keeping cliq-165 export scopes blocked for interactive re-auth
+current_focus: cliq-190 org-admin slice continues, while cliq-165 export verification is now blocked by API-side `inactive_appaccount_user` despite export scopes being granted
 primary_blockers:
 - crm live read-only verification remains blocked by account-level CRM org access
 - cliq pinned-message endpoints are not available on happydistrouklimited for current
@@ -16,16 +16,17 @@ primary_blockers:
   token/api combinations (`extra_param_found` / `request_url_invalid`)
 - cliq retrieval parity remains endpoint-limited on current token/network (`/attachments`
   returns zero payloads for media-visible messages)
-- cliq maintenance export verification is blocked by missing maintenance export
-  scopes on current live config (`oauth_scope_invalid`)
+- cliq maintenance export verification is blocked by API-side `inactive_appaccount_user`
+  on current live config even after maintenance scopes were granted
 - thread-plane endpoints remain unsupported on current token/network (`thread-create`
   / `thread-reply` / `thread-followers` / `thread-state` report `not_supported`)
 - scheduled-message endpoints remain unsupported on current token/network (`schedule`
   / `scheduled` / `scheduled-get` / `scheduled-cancel` report `not_supported`)
 - bot trigger/call endpoints are unsupported on current token/network (`cliq trigger-bot`
   returns `not_supported`)
-next_step: continue cliq-190 org-admin phase-1 with one next small command/client slice (roles/designation/user-status/userfields) and targeted tests, while keeping cliq-165 export scope verification on blocker-skip loop for interactive re-auth
+next_step: continue cliq-190 org-admin phase-1 with one next small command/client slice (roles/designation/user-status/userfields) and targeted tests, while coordinating Cliq admin-side activation for app-account export access before rerunning cliq-165 export probes
 additional_info:
+- '2026-04-12 live recheck: after successful re-auth with `ZohoCliq.OrganizationChats.READ` + `ZohoCliq.OrganizationMessages.READ`, both `cliq export-chats` list and `--chat-id` probes now fail with `inactive_appaccount_user` instead of `oauth_scope_invalid`, confirming scope grant succeeded and blocker moved to app-account activation (evidence: `tests/auto_pilot/reports/cliq_export_chats_list_inactive_recheck_20260412_105646.json`, `tests/auto_pilot/reports/cliq_export_chat_inactive_recheck_20260412_105646.json`).'
 - '2026-04-12 unit delivery: added second cliq-190 org-admin phase-1 slice with `zoho cliq departments` and `ZohoCliqClient.list_departments` fallback routing; targeted tests passed (`tests/test_cliq.py::test_cliq_client_list_departments_falls_back_to_admin_endpoint`, `tests/test_cliq.py::test_cliq_client_list_departments_scope_invalid_reports_hint`, `tests/test_cli.py::test_cliq_departments`) and format check is clean.'
 - '2026-04-12 unit delivery: added first cliq-190 org-admin phase-1 slice with `zoho cliq teams` and `ZohoCliqClient.list_teams` fallback routing; targeted tests passed (`tests/test_cliq.py::test_cliq_client_list_teams_falls_back_to_admin_endpoint`, `tests/test_cliq.py::test_cliq_client_list_teams_scope_invalid_reports_hint`, `tests/test_cli.py::test_cliq_teams`) and format check is clean.'
 - '2026-04-12 live probe: ran one cliq-181 `cliq pinned` verification pass on happydistrouklimited using `/tmp/zoho-test-config.json`; status auth remains healthy (`oauthReady: true`) and pinned command returns `error: not_supported`, so cliq-181 is treated as complete with endpoint-limitation classification (evidence: `tests/auto_pilot/reports/cliq181_status_20260412_164540.json`, `tests/auto_pilot/reports/cliq181_pinned_20260412_164540.json`, `tests/auto_pilot/reports/cliq181_probe_summary_20260412_164540.json`).'

@@ -2467,6 +2467,10 @@ class ZohoCliqClient:
                         skip_current_path = True
                         break
 
+                    if code == "operation_failed":
+                        skip_current_path = True
+                        break
+
                     if code in retryable_codes:
                         continue
 

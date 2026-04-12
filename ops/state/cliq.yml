@@ -1,10 +1,11 @@
 module: Cliq
-updated_at: '2026-04-12T00:54:03Z'
+updated_at: '2026-04-12T01:00:00Z'
 status: in_progress
 blockers:
   - "live `/messages/search` APIs on happydistrouklimited still look unsupported for current endpoint variants (`extra_param_found` / `request_url_invalid`), so search remains limitation-documented"
   - "`cliq chats` stays healthy (`count: 0`) and text sends return `httpStatus: 204`; DM history now has endpoint fallbacks (`/conversations`, `/buddies`, `/users`, `/chats`) but still needs one cooldown-safe live rerun to confirm which path works on happydistrouklimited"
   - "native local-file multipart sends still fail on live user/channel targets (image/file/voice) with endpoint-level `request_url_invalid` / `operation_failed` / `request_method_invalid` despite fallback fan-out; matrix evidence is now richer (`attempts:` path/field/status/code tuples) but no successful local upload yet"
   - "local multipart send fallback now treats `request_method_invalid` as path-level unsupported and skips to the next endpoint immediately (instead of exhausting field permutations on the same path), reducing wasted attempts before fallback paths are tried"
+  - "local multipart send fallback now also treats `operation_failed` as path-level unsupported and skips to the next endpoint immediately; latest live image send no longer hits attempt-cap exhaustion and now emits a compact endpoint matrix in one pass"
   - "`cliq file`/`cliq voice` attachment-positive retrieval evidence is still missing; latest retrieval retry hit Zoho refresh throttle (`Access Denied` too many requests) and needs cooldown"
 next_small_step: "after refresh-throttle cooldown, run one bounded cliq-155 verification batch: `run_cliq_live_probe.sh` (confirm DM history fallback path) + local image/file/voice sends + `cliq file`/`cliq voice` retrieval on a known media message id, then record success/failure matrix (`path`, `field`, `mimeType`, `sourcePath`, and `attempts:` tuples) and decide whether remaining failures are endpoint limitations vs code defects"

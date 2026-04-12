@@ -16,6 +16,7 @@ TS="$(date +%Y%m%d_%H%M%S)"
 OUT_STATUS="$REPORT_DIR/cliq_status_export_scope_recheck_${TS}.json"
 OUT_LIST="$REPORT_DIR/cliq_export_chats_list_scope_recheck_${TS}.json"
 OUT_CHAT="$REPORT_DIR/cliq_export_chat_scope_recheck_${TS}.json"
+OUT_SUMMARY="$REPORT_DIR/cliq_export_scope_recheck_summary_${TS}.json"
 
 echo "[SCAP] cliq status export-scope check -> ${OUT_STATUS}"
 "$PYTHON_BIN" -m zoho_cli \
@@ -53,9 +54,22 @@ if [ "$STATUS_EXIT" -ne 0 ] || [ "$LIST_EXIT" -ne 0 ] || [ "$CHAT_EXIT" -ne 0 ];
   OVERALL_EXIT=1
 fi
 
+cat >"$OUT_SUMMARY" <<EOF
+{
+  "statusReport": "$OUT_STATUS",
+  "listReport": "$OUT_LIST",
+  "chatReport": "$OUT_CHAT",
+  "statusExit": $STATUS_EXIT,
+  "listExit": $LIST_EXIT,
+  "chatExit": $CHAT_EXIT,
+  "overallExit": $OVERALL_EXIT
+}
+EOF
+
 echo
 echo "[SCAP] done"
 echo "[SCAP] status exit=${STATUS_EXIT} list exit=${LIST_EXIT} chat exit=${CHAT_EXIT}"
 echo "[SCAP] overall exit=${OVERALL_EXIT}"
+echo "[SCAP] summary -> ${OUT_SUMMARY}"
 
 exit "$OVERALL_EXIT"

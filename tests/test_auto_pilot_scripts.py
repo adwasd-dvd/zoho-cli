@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import os
+import json
 import stat
 import subprocess
 from pathlib import Path
@@ -62,6 +63,17 @@ raise SystemExit(3)
     status_reports = list(reports_dir.glob("cliq_status_export_scope_recheck_*.json"))
     list_reports = list(reports_dir.glob("cliq_export_chats_list_scope_recheck_*.json"))
     chat_reports = list(reports_dir.glob("cliq_export_chat_scope_recheck_*.json"))
+    summary_reports = list(reports_dir.glob("cliq_export_scope_recheck_summary_*.json"))
     assert len(status_reports) == 1
     assert len(list_reports) == 1
     assert len(chat_reports) == 1
+    assert len(summary_reports) == 1
+
+    summary = json.loads(summary_reports[0].read_text())
+    assert summary["statusExit"] == 0
+    assert summary["listExit"] == 3
+    assert summary["chatExit"] == 4
+    assert summary["overallExit"] == 1
+    assert summary["statusReport"].endswith(status_reports[0].name)
+    assert summary["listReport"].endswith(list_reports[0].name)
+    assert summary["chatReport"].endswith(chat_reports[0].name)

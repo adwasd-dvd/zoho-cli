@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import mimetypes
+import re
 from pathlib import Path
 from typing import Any, Optional
 from urllib.parse import urlparse
@@ -567,6 +568,11 @@ class ZohoCliqClient:
             paths.append(f"/channelsbyname/{unique_name.strip()}/message")
 
         return paths
+
+    @staticmethod
+    def _looks_like_channel_id(channel_id: str) -> bool:
+        text = (channel_id or "").strip()
+        return bool(re.fullmatch(r"[A-Z]\d+", text))
 
     @staticmethod
     def _extract_message_id(message: dict[str, Any]) -> str:
@@ -2369,10 +2375,11 @@ class ZohoCliqClient:
         if channel_id:
             resolved_candidates = self._resolve_channel_message_paths(channel_id)
             raw_candidates = [
-                f"/channelsbyname/{channel_id}/message",
                 f"/chats/{channel_id}/message",
                 f"/channels/{channel_id}/message",
             ]
+            if not self._looks_like_channel_id(channel_id):
+                raw_candidates.insert(0, f"/channelsbyname/{channel_id}/message")
             candidates = resolved_candidates + raw_candidates
 
             seen: set[str] = set()
@@ -2426,10 +2433,11 @@ class ZohoCliqClient:
         if channel_id:
             resolved_candidates = self._resolve_channel_message_paths(channel_id)
             raw_candidates = [
-                f"/channelsbyname/{channel_id}/message",
                 f"/chats/{channel_id}/message",
                 f"/channels/{channel_id}/message",
             ]
+            if not self._looks_like_channel_id(channel_id):
+                raw_candidates.insert(0, f"/channelsbyname/{channel_id}/message")
             candidates = resolved_candidates + raw_candidates
 
             expanded_candidates: list[str] = []

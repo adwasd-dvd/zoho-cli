@@ -1,10 +1,14 @@
-last_run_at: "2026-04-12T01:45:33Z"
+last_run_at: "2026-04-12T01:59:21Z"
 last_result: passed
 current_focus: cliq
 suites:
   unit:
     status: passing
     notes:
+      - python3.11 -m pytest -q tests/test_cliq.py::test_cliq_client_send_local_file_message_channel_id_tries_channels_endpoint tests/test_cliq.py::test_cliq_client_send_local_file_message_channel_id_tries_plural_message_endpoint tests/test_cliq.py::test_cliq_client_send_local_file_message_request_method_invalid_skips_path tests/test_cliq.py::test_cliq_client_send_local_file_message_operation_failed_skips_path tests/test_cliq.py::test_cliq_client_send_to_channel tests/test_cliq.py::test_cliq_client_send_to_channel_accepts_204_empty_body tests/test_cliq.py::test_cliq_client_send_scope_invalid_reports_reauth_hint
+      - 7 passed in 0.15s (id-shaped `--channel-id` raw fallback no longer probes `/channelsbyname/<channel_id>`; local multipart/channel send fallback tests updated and green, 2026-04-12T01:57:39Z)
+      - python3.11 -m pytest -q tests/test_cliq.py
+      - 77 passed in 0.75s (full cliq regression after channel-id fallback trim, 2026-04-12T01:58:07Z)
       - python3.11 -m pytest -q tests/test_cliq.py::test_cliq_client_get_message_files_with_fallback_endpoint tests/test_cliq.py::test_cliq_client_get_message_files_falls_back_when_files_reports_no_attachment tests/test_cliq.py::test_cliq_client_get_message_files_no_attachment_returns_empty tests/test_cli.py::test_cliq_voice_handles_message_without_attachments
       - 4 passed in 0.10s (`get_message_files` now continues from `/files` to `/attachments` after `message_attachment_not_found`, preventing false-empty retrievals when attachment data only exists on the attachment endpoint, 2026-04-12T01:45:33Z)
       - make release-gate
@@ -72,7 +76,7 @@ suites:
       - ./.venv/bin/pytest -q tests/test_cliq.py::test_cliq_client_get_message_files_with_fallback_endpoint tests/test_cliq.py::test_cliq_client_get_message_files_no_attachment_returns_empty tests/test_cli.py::test_cliq_file_from_channel
       - 3 passed in 0.21s (cliq file retrieval now surfaces endpoint metadata as `fetch.path` and CLI `sourcePath` for live matrix logging, 2026-04-09T18:49:01Z)
       - ./.venv/bin/pytest -q tests/test_cliq.py::test_cliq_client_send_local_file_message_to_user tests/test_cliq.py::test_cliq_client_send_local_image_message_prefers_image_field tests/test_cli.py::test_cliq_send_channel_with_local_voice_file tests/test_cli.py::test_cliq_send_channel_with_local_image_file
-      - 4 passed in 0.12s (local multipart send success payload now includes upload metadata: endpoint path + form field + mime type, 2026-04-09T18:04:36Z)
+      - "4 passed in 0.12s (local multipart send success payload now includes upload metadata: endpoint path + form field + mime type, 2026-04-09T18:04:36Z)"
       - ./.venv/bin/pytest -q tests/test_cliq.py::test_cliq_client_infer_message_types_detects_voice_sticker_and_text tests/test_cliq.py::test_cliq_client_infer_message_types_detects_scalar_attachment_string
       - 2 passed in 0.05s (typed message inference now treats scalar attachment URL fields as media-bearing content instead of dropping them, 2026-04-09T17:18:54Z)
       - ./.venv/bin/pytest -q tests/test_cliq.py::test_cliq_client_list_messages_from_channel_id tests/test_cliq.py::test_cliq_client_get_message_from_channel_id
@@ -200,6 +204,13 @@ suites:
     status: warning
     notes:
       - "python3.11 -m zoho_cli --config /tmp/zoho-test-config.json --account ai-dev@happy-distro.co.uk cliq status --check-auth --network happydistrouklimited"
+      - "live auth check currently passes again (`oauthReady: true`, `missingScopes: []`) before media/retrieval probes (2026-04-12T01:54:34Z)"
+      - "python3.11 -m zoho_cli --config /tmp/zoho-test-config.json --account ai-dev@happy-distro.co.uk cliq file 1775957731803_113805388251 --network happydistrouklimited --channel-id O6576524000097556005; python3.11 -m zoho_cli --config /tmp/zoho-test-config.json --account ai-dev@happy-distro.co.uk cliq voice 1775957731803_113805388251 --network happydistrouklimited --channel-id O6576524000097556005"
+      - "retrieval rerun now confirms `/files` -> `/attachments` fallback is exercised, but payload remains attachment-empty (`retrievalResult: media_visible_without_attachment_payload`, `count: 0`); evidence: `tests/auto_pilot/reports/cliq_retrieval_probe_20260411_185528.log` (2026-04-12T01:55:28Z)"
+      - "python3.11 -m zoho_cli --config /tmp/zoho-test-config.json --account ai-dev@happy-distro.co.uk cliq send --network happydistrouklimited --channel-id O6576524000097556005 --image-url /Users/adwasd/.openclaw/workspace-coder/test/test.png ...; --voice-url /Users/adwasd/.openclaw/workspace-coder/test/sample-3.m4a ...; user image/voice variants with the same absolute paths"
+      - "absolute-path local image/voice matrix still returns `not_supported` for channel+user targets; evidence: `tests/auto_pilot/reports/cliq_local_media_matrix_live_20260411_185605.log` (2026-04-12T01:56:05Z)"
+      - "post-fix rerun (`tests/auto_pilot/reports/cliq_local_media_matrix_live_20260411_185843.log`) shows cleaned channel attempt tuples (no `/channelsbyname/<channel_id>` probe for id-shaped channel-id), but burst commands then hit `token_refresh_rate_limited` again"
+      - "python3.11 -m zoho_cli --config /tmp/zoho-test-config.json --account ai-dev@happy-distro.co.uk cliq status --check-auth --network happydistrouklimited"
       - "cliq auth is currently healthy again (`oauthReady: true`, `missingScopes: []`) on live config (2026-04-12T00:29:41Z)"
       - "bash tests/auto_pilot/run_cliq_live_probe.sh"
       - "live probe now confirms user/channel text send success (`httpStatus: 204`) plus users/channel-history reads, but DM history probe still fails with `request_url_invalid` on `/conversations/{user}/messages` (2026-04-12T00:29:55Z)"
@@ -209,7 +220,7 @@ suites:
       - "local file/voice probes still fail live with `request_url_invalid` / `operation_failed` patterns; evidence archived at `tests/auto_pilot/reports/cliq_local_media_matrix_20260411_173036.log` (2026-04-12T00:30:53Z)"
       - ./.venv/bin/python -m zoho_cli --config /tmp/zoho-test-config.json --account ai-dev@happy-distro.co.uk login --with-cliq
       - ./.venv/bin/python -m zoho_cli --config /tmp/zoho-test-config.json --account ai-dev@happy-distro.co.uk cliq chats --network happydistrouklimited
-      - live `cliq chats` positive path now succeeds after re-auth (`count: 0`, no `oauth_scope_invalid`) (2026-04-10T01:39:14Z)
+      - "live `cliq chats` positive path now succeeds after re-auth (`count: 0`, no `oauth_scope_invalid`) (2026-04-10T01:39:14Z)"
       - ./.venv/bin/python -m zoho_cli --config /tmp/zoho-test-config.json --account ai-dev@happy-distro.co.uk cliq send --network happydistrouklimited --user-id david@happy-distro.com --text "local image probe <utc-time>" --image-url /Users/adwasd/.openclaw/workspace-coder/job/zoho-cli/.tmp/live-probes/probe-image.png --title "Local image probe <utc-time>"
       - ./.venv/bin/python -m zoho_cli --config /tmp/zoho-test-config.json --account ai-dev@happy-distro.co.uk cliq send --network happydistrouklimited --channel-id O6576524000097556005 --text "local image probe <utc-time>" --image-url /Users/adwasd/.openclaw/workspace-coder/job/zoho-cli/.tmp/live-probes/probe-image.png --title "Local image probe <utc-time>"
       - ./.venv/bin/python -m zoho_cli --config /tmp/zoho-test-config.json --account ai-dev@happy-distro.co.uk cliq send --network happydistrouklimited --user-id david@happy-distro.com --text "local file probe <utc-time>" --file-url /Users/adwasd/.openclaw/workspace-coder/job/zoho-cli/.tmp/live-probes/probe-file.txt --title "Local file probe <utc-time>"
@@ -218,7 +229,7 @@ suites:
       - local multipart media probes still fail live on tested user/channel targets (`request_url_invalid` on `/users/<target>/message`, `operation_failed` on `/channelsbyname/<name>/message`); failure diagnostics now include attempted field metadata (`field=attachments[]`) (2026-04-10T01:39:14Z)
       - ./.venv/bin/python -m zoho_cli --config /tmp/zoho-test-config.json --account ai-dev@happy-distro.co.uk cliq file 1775672331710_74865282494 --network happydistrouklimited --channel-id O6576524000097556005
       - ./.venv/bin/python -m zoho_cli --config /tmp/zoho-test-config.json --account ai-dev@happy-distro.co.uk cliq voice 1775672331710_74865282494 --network happydistrouklimited --channel-id O6576524000097556005
-      - file/voice retrieval probes now return structured `sourcePath` on live reads, but sampled message is still attachment-empty (`count: 0`) (2026-04-10T01:39:14Z)
+      - "file/voice retrieval probes now return structured `sourcePath` on live reads, but sampled message is still attachment-empty (`count: 0`) (2026-04-10T01:39:14Z)"
       - ./.venv/bin/python -m zoho_cli --config /tmp/zoho-test-config.json --account ai-dev@happy-distro.co.uk cliq whoami --network happydistrouklimited
       - whoami command now returns structured best-effort/unknown identity diagnostics instead of hard-failing when direct self endpoints are unavailable on current network base (2026-04-09T05:40:00Z)
       - ./.venv/bin/python -m zoho_cli --config /tmp/zoho-test-config.json --account ai-dev@happy-distro.co.uk cliq send --network happydistrouklimited --user-id david@happy-distro.com --text "media link smoke" --image-url https://picsum.photos/200 --title "Smoke image"
@@ -229,13 +240,13 @@ suites:
       - ./.venv/bin/python -m zoho_cli --config /tmp/zoho-test-config.json --account ai-dev@happy-distro.co.uk cliq voice 1775672331710_74865282494 --network happydistrouklimited --channel-id O6576524000097556005
       - ./.venv/bin/python -m zoho_cli --config /tmp/zoho-test-config.json --account ai-dev@happy-distro.co.uk cliq voice-send --network happydistrouklimited --user-id david@happy-distro.com --voice-url /Users/adwasd/.openclaw/workspace-coder/test/sample-3.m4a --text "local voice file smoke 2"
       - ./.venv/bin/python -m zoho_cli --config /tmp/zoho-test-config.json --account ai-dev@happy-distro.co.uk cliq chats --network happydistrouklimited
-      - rich-media send baseline (image/file/audio/voice link cards + sticker shortcode append) returned `httpStatus: 204` in live DM smoke against david@happy-distro.com, including local-path voice-url pass-through; at that point `cliq chats` returned `oauth_scope_invalid` on active token/network (later re-auth cleared this); voice receive path returned empty list (not hard error) when a message had no attachments (2026-04-09T06:05:00Z)
+      - "rich-media send baseline (image/file/audio/voice link cards + sticker shortcode append) returned `httpStatus: 204` in live DM smoke against david@happy-distro.com, including local-path voice-url pass-through; at that point `cliq chats` returned `oauth_scope_invalid` on active token/network (later re-auth cleared this); voice receive path returned empty list (not hard error) when a message had no attachments (2026-04-09T06:05:00Z)"
       - ./.venv/bin/python -m zoho_cli --config /tmp/zoho-test-config.json --account ai-dev@happy-distro.co.uk cliq search "cliq" --network happydistrouklimited --channel-id O6576524000097556005 --limit 5
       - live search now falls through endpoint/query variants and exits with documented `not_supported` (no hard api_error on first `extra_param_found`) (2026-04-09T01:49:18Z)
       - ./.venv/bin/python -m zoho_cli --config /tmp/zoho-test-config.json --account ai-dev@happy-distro.co.uk cliq file 1775672331710_74865282494 --network happydistrouklimited --channel-id O6576524000097556005
       - live file endpoint reached but selected message has no attachments (`message_attachment_not_found`), so command behavior is verified while attachment-positive sample is still pending (2026-04-09T01:49:18Z)
       - ./.venv/bin/python -m zoho_cli --config /tmp/zoho-test-config.json --account ai-dev@happy-distro.co.uk cliq status --network happydistrouklimited --check-auth
-      - cliq auth is currently healthy (`oauthReady: true`, no missing scopes) for live cliq checks (2026-04-09T00:46:57Z)
+      - "cliq auth is currently healthy (`oauthReady: true`, no missing scopes) for live cliq checks (2026-04-09T00:46:57Z)"
       - ./.venv/bin/python -m zoho_cli --config /tmp/zoho-test-config.json --account ai-dev@happy-distro.co.uk cliq user-resolve "david@happy-distro.com" --by email --network happydistrouklimited
       - live user lookup now resolves email/display-name to stable user id for DM/member workflows (2026-04-09T00:46:57Z)
       - ./.venv/bin/python -m zoho_cli --config /tmp/zoho-test-config.json --account ai-dev@happy-distro.co.uk cliq channel-create --network happydistrouklimited --name oc-admin-20260408211524 --level organization; cliq channel-rename O6576524000097774005 --network happydistrouklimited --name oc-admin-renamed-20260408; cliq channel-topic O6576524000097774005 --network happydistrouklimited --topic "cliq-130 live sweep 2026-04-08"
@@ -264,7 +275,7 @@ suites:
       - ./.venv/bin/python -m zoho_cli --config /tmp/zoho-test-config.json --account ai-dev@happy-distro.co.uk cliq delete 1775672331710_74865282494 --network happydistrouklimited --channel-id O6576524000097556005
       - live delete command succeeded via endpoint fallback chain (2026-04-08T18:21:53Z)
       - ./.venv/bin/python -m zoho_cli --config /tmp/zoho-test-config.json --account ai-dev@happy-distro.co.uk crm status --check-auth
-      - live refresh scopes show only Mail scopes; CRM scopes are missing (`oauthReady: false`) even after `login --with-crm` because account lacks CRM org access (2026-04-08T15:46:57Z)
+      - "live refresh scopes show only Mail scopes; CRM scopes are missing (`oauthReady: false`) even after `login --with-crm` because account lacks CRM org access (2026-04-08T15:46:57Z)"
       - ./.venv/bin/python -m zoho_cli --config /tmp/zoho-test-config.json --account ai-dev@happy-distro.co.uk crm list --module Leads --limit 1
       - live crm list still fails with `HTTP 401 ... OAUTH_SCOPE_MISMATCH` (2026-04-08T15:47:19Z)
       - ./.venv/bin/python -m zoho_cli --config /tmp/zoho-test-config.json --account ai-dev@happy-distro.co.uk crm status --check-auth
@@ -272,19 +283,19 @@ suites:
       - ./.venv/bin/python -m zoho_cli --config /tmp/zoho-test-config.json --account ai-dev@happy-distro.co.uk crm list --module Leads --limit 1
       - live crm list currently fails with `HTTP 401 ... OAUTH_SCOPE_MISMATCH`; rerun after `zoho login --with-crm` (2026-04-08T15:37:14Z)
       - ./.venv/bin/python -m zoho_cli --config /tmp/zoho-test-config.json --account ai-dev@happy-distro.co.uk cliq status --check-auth --network happydistrouklimited
-      - auth check now succeeds with `oauthReady: true` and `missingScopes: []` after re-auth (2026-04-08T13:41:33Z)
+      - "auth check now succeeds with `oauthReady: true` and `missingScopes: []` after re-auth (2026-04-08T13:41:33Z)"
       - ./.venv/bin/python -m zoho_cli --config /tmp/zoho-test-config.json --account ai-dev@happy-distro.co.uk cliq send --network happydistrouklimited --channel-id O6576524000097556005 --text "zoho-cli cliq send smoke <utc-time>"
-      - live send now returns status ok (`httpStatus: 204`) after handling success-with-empty-body responses (2026-04-08T13:41:33Z)
+      - "live send now returns status ok (`httpStatus: 204`) after handling success-with-empty-body responses (2026-04-08T13:41:33Z)"
       - ./.venv/bin/python -m zoho_cli --config /tmp/zoho-test-config.json --account ai-dev@happy-distro.co.uk cliq notify-mail 1775620829752152900 --folder-id 2857786000000008014 --network happydistrouklimited --channel-id O6576524000097556005 --include-body
-      - live notify-mail now returns status ok (`httpStatus: 204`) and cliq-003 live verification is complete (2026-04-08T13:41:33Z)
+      - "live notify-mail now returns status ok (`httpStatus: 204`) and cliq-003 live verification is complete (2026-04-08T13:41:33Z)"
       - ./.venv/bin/python -m zoho_cli --config /tmp/zoho-test-config.json --account ai-dev@happy-distro.co.uk cliq status --check-auth --network happydistrouklimited
-      - auth check succeeds, but `missingScopes` still reports `ZohoCliq.Webhooks.CREATE` (`oauthReady: false`) (2026-04-08T13:25:55Z)
+      - "auth check succeeds, but `missingScopes` still reports `ZohoCliq.Webhooks.CREATE` (`oauthReady: false`) (2026-04-08T13:25:55Z)"
       - ./.venv/bin/python -m zoho_cli --config /tmp/zoho-test-config.json --account ai-dev@happy-distro.co.uk cliq send --network happydistrouklimited --channel-id O6576524000097556005 --text "zoho-cli nightly verify <utc-time>"
       - ./.venv/bin/python -m zoho_cli --config /tmp/zoho-test-config.json --account ai-dev@happy-distro.co.uk cliq notify-mail 1775620829752152900 --folder-id 2857786000000008014 --network happydistrouklimited --channel-id O6576524000097556005 --include-body
       - both live send/notify checks still fail with `oauth_scope_invalid`; rerun after `zoho login --with-cliq` grants `ZohoCliq.Webhooks.CREATE` (2026-04-08T13:25:55Z)
       - cliq send/notify now fail fast with `oauth_scope_invalid` and an explicit re-auth hint when token lacks message scope (`ZohoCliq.Webhooks.CREATE`) (2026-04-08T08:35:28Z)
       - ./.venv/bin/python -m zoho_cli --config /tmp/zoho-test-config.json --account ai-dev@happy-distro.co.uk cliq status --check-auth --network happydistrouklimited
-      - auth refresh now succeeds, but `missingScopes` still reports `ZohoCliq.Webhooks.CREATE` (`oauthReady: false`) (2026-04-08T08:31:52Z)
+      - "auth refresh now succeeds, but `missingScopes` still reports `ZohoCliq.Webhooks.CREATE` (`oauthReady: false`) (2026-04-08T08:31:52Z)"
       - ./.venv/bin/python -m zoho_cli --config /tmp/zoho-test-config.json --account ai-dev@happy-distro.co.uk cliq send --network happydistrouklimited --channel-id O6576524000097556005 --text "zoho-cli cliq send smoke <utc-time>"
       - ./.venv/bin/python -m zoho_cli --config /tmp/zoho-test-config.json --account ai-dev@happy-distro.co.uk cliq notify-mail 1775620829752152900 --folder-id 2857786000000008014 --network happydistrouklimited --channel-id O6576524000097556005 --include-body
       - both live send/notify calls still fail until `ZohoCliq.Webhooks.CREATE` is granted; next step remains `zoho login --with-cliq` then rerun smoke checks

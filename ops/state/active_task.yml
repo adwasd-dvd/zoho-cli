@@ -4,7 +4,7 @@ module: cliq
 stage: in_progress
 status: in_progress
 owner: automation
-updated_at: '2026-04-12T01:45:33Z'
+updated_at: '2026-04-12T02:01:36Z'
 success_criteria:
   - provide chat discovery command surface (`cliq chats`) with explicit scope/not-supported diagnostics
   - stabilize dm/channel/group read paths with predictable history/context behavior on live token/network
@@ -13,4 +13,4 @@ success_criteria:
   - maintain channel/chat context extraction for agent loops (`messages`, `message`, `context`) with typed summaries
   - validate via focused tests and at least one live smoke path on current token/network
 next_if_done: cliq-156
-next_step: "rerun one cooldown-safe live retrieval probe around the remote-image marker message id and confirm whether `/files` -> `/attachments` fallback now yields attachment data before finalizing endpoint-limitation closure"
+next_step: "marker retrieval recheck (`tests/auto_pilot/reports/cliq_retrieval_marker_recheck_20260411_185944.log`) still returns empty payloads (`retrievalResult: media_visible_without_attachment_payload`) even with `/files` -> `/attachments` fallback; run one final spaced matrix+retrieval pass and then close cliq-155 as endpoint-limitation if unchanged"

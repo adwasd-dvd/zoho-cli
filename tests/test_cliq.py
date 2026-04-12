@@ -851,7 +851,13 @@ def test_cliq_client_send_local_file_message_channel_id_tries_plural_message_end
     respx.post("https://cliq.zoho.com/api/v2/channelsbyname/O1/message").mock(
         return_value=httpx.Response(404, text="request_url_invalid")
     )
-    route = respx.post("https://cliq.zoho.com/api/v2/channelsbyname/O1/messages").mock(
+    respx.post("https://cliq.zoho.com/api/v2/channelsbyname/O1/messages").mock(
+        return_value=httpx.Response(404, text="request_url_invalid")
+    )
+    respx.post("https://cliq.zoho.com/api/v2/chats/O1/message").mock(
+        return_value=httpx.Response(404, text="request_url_invalid")
+    )
+    route = respx.post("https://cliq.zoho.com/api/v2/chats/O1/messages").mock(
         return_value=httpx.Response(200, json={"data": {"status": "ok"}})
     )
     respx.get("https://cliq.zoho.com/api/v2/channels/O1").mock(
@@ -867,7 +873,7 @@ def test_cliq_client_send_local_file_message_channel_id_tries_plural_message_end
 
     assert route.called
     assert result["data"]["status"] == "ok"
-    assert result["data"]["upload"]["path"] == "/channelsbyname/O1/messages"
+    assert result["data"]["upload"]["path"] == "/chats/O1/messages"
 
 
 @respx.mock
@@ -903,10 +909,16 @@ def test_cliq_client_send_local_file_message_request_method_invalid_skips_path(
     sample = tmp_path / "voice.m4a"
     sample.write_bytes(b"voice-bytes")
 
-    first = respx.post("https://cliq.zoho.com/api/v2/channelsbyname/O1/message").mock(
+    respx.post("https://cliq.zoho.com/api/v2/channelsbyname/O1/message").mock(
+        return_value=httpx.Response(404, text="request_url_invalid")
+    )
+    respx.post("https://cliq.zoho.com/api/v2/channelsbyname/O1/messages").mock(
+        return_value=httpx.Response(404, text="request_url_invalid")
+    )
+    first = respx.post("https://cliq.zoho.com/api/v2/chats/O1/message").mock(
         return_value=httpx.Response(400, json={"code": "request_method_invalid"})
     )
-    second = respx.post("https://cliq.zoho.com/api/v2/channelsbyname/O1/messages").mock(
+    second = respx.post("https://cliq.zoho.com/api/v2/chats/O1/messages").mock(
         return_value=httpx.Response(200, json={"data": {"status": "ok"}})
     )
     respx.get("https://cliq.zoho.com/api/v2/channels/O1").mock(
@@ -924,7 +936,7 @@ def test_cliq_client_send_local_file_message_request_method_invalid_skips_path(
     assert len(first.calls) == 1
     assert second.called
     assert result["data"]["status"] == "ok"
-    assert result["data"]["upload"]["path"] == "/channelsbyname/O1/messages"
+    assert result["data"]["upload"]["path"] == "/chats/O1/messages"
 
 
 @respx.mock
@@ -935,10 +947,16 @@ def test_cliq_client_send_local_file_message_operation_failed_skips_path(
     sample = tmp_path / "voice.m4a"
     sample.write_bytes(b"voice-bytes")
 
-    first = respx.post("https://cliq.zoho.com/api/v2/channelsbyname/O1/message").mock(
+    respx.post("https://cliq.zoho.com/api/v2/channelsbyname/O1/message").mock(
+        return_value=httpx.Response(404, text="request_url_invalid")
+    )
+    respx.post("https://cliq.zoho.com/api/v2/channelsbyname/O1/messages").mock(
+        return_value=httpx.Response(404, text="request_url_invalid")
+    )
+    first = respx.post("https://cliq.zoho.com/api/v2/chats/O1/message").mock(
         return_value=httpx.Response(400, json={"code": "operation_failed"})
     )
-    second = respx.post("https://cliq.zoho.com/api/v2/channelsbyname/O1/messages").mock(
+    second = respx.post("https://cliq.zoho.com/api/v2/chats/O1/messages").mock(
         return_value=httpx.Response(200, json={"data": {"status": "ok"}})
     )
     respx.get("https://cliq.zoho.com/api/v2/channels/O1").mock(
@@ -956,7 +974,7 @@ def test_cliq_client_send_local_file_message_operation_failed_skips_path(
     assert len(first.calls) == 1
     assert second.called
     assert result["data"]["status"] == "ok"
-    assert result["data"]["upload"]["path"] == "/channelsbyname/O1/messages"
+    assert result["data"]["upload"]["path"] == "/chats/O1/messages"
 
 
 @respx.mock

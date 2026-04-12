@@ -4,11 +4,13 @@ module: cliq
 stage: in_progress
 status: in_progress
 owner: automation
-updated_at: '2026-04-12T00:31:30Z'
+updated_at: '2026-04-12T00:44:10Z'
 success_criteria:
   - provide chat discovery command surface (`cliq chats`) with explicit scope/not-supported diagnostics
+  - stabilize dm/channel/group read paths with predictable history/context behavior on live token/network
   - keep per-conversation context outputs machine-readable with inferred message content types (`text`, `image`, `file`, `voice`, `sticker`, `reaction`)
+  - ensure local media send primitives (image/voice/file) have at least one verified live success path or explicit endpoint-limitation classification
   - maintain channel/chat context extraction for agent loops (`messages`, `message`, `context`) with typed summaries
   - validate via focused tests and at least one live smoke path on current token/network
-next_if_done: cliq-160
-next_step: "Cliq auth now reports `oauthReady: true`; use cooldown-safe batches to finish cliq-155 matrix closure: (1) rerun local media probes after refresh-throttle cooldown, (2) collect at least one attachment-positive retrieval sample via `cliq file`/`cliq voice`, and (3) classify persistent DM/local-upload endpoint failures (`request_url_invalid` / `operation_failed` / `request_method_invalid`) by path+field from `attempts:` evidence"
+next_if_done: cliq-156
+next_step: "treat cliq read+media as stack-top delivery: (1) close DM/channel/group read parity gaps, (2) capture attachment-positive retrieval evidence, and (3) harden local image/voice/file send behavior with endpoint/method/field matrix-backed fallbacks"

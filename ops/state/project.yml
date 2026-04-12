@@ -1,5 +1,5 @@
 project: zoho-cli
-updated_at: '2026-04-12T00:31:30Z'
+updated_at: '2026-04-12T00:44:10Z'
 status: cliq-expansion
 canonical_workspace: /Users/adwasd/.openclaw/workspace-coder
 project_root: /Users/adwasd/.openclaw/workspace-coder/job/zoho-cli
@@ -15,7 +15,7 @@ primary_blockers:
   - "current live config auth is healthy (`oauthReady: true`, no missing Cliq scopes), but DM history probe still hits `request_url_invalid` on `/conversations/{user}/messages`"
   - "native local-file upload/download behavior now has local multipart scaffolding (with image-field fallback preference, upload endpoint/field metadata, file/voice retrieval sourcePath metadata, raw+resolved user-target fallback, direct `/channels/{channel_id}/message` probing, plural `/messages` channel-send fallback variants, single-fetch channel descriptor resolution for channel-id sends, multipart failure diagnostics that include attempted form field metadata `field=...`, and compact `attempts:` path/field/status/code tuples); live probes now confirm text send success (`204`) while local image/file/voice uploads still fail with `request_url_invalid` / `operation_failed` / `request_method_invalid` (evidence captured)"
   - "latest retrieval rerun hit Zoho refresh throttle (`Access Denied` too many requests), so attachment-positive `cliq file`/`cliq voice` evidence still needs a cooldown rerun"
-next_step: "after cooldown, rerun one bounded cliq-155 live batch (`run_cliq_live_probe.sh` + local image/file/voice sends + `cliq file`/`cliq voice` retrieval), then classify remaining endpoint failures vs code defects using captured `attempts:` tuples and close or split follow-on tasks"
+next_step: "execute the stack-top Cliq route in order: (1) close DM/channel/group read parity gaps, (2) make image/voice/file local send reliable across user/channel targets, (3) capture attachment-positive retrieval evidence, and (4) classify any remaining failures as code defects vs Zoho endpoint limitations using `attempts:` tuples"
 additional_info:
   - Auto-pilot probe scripts now resolve repo root from script location and can be launched from either project root or workspace root without path drift.
   - "2026-04-12 live check: `cliq status --check-auth` now reports `oauthReady: true`, and text send probes (user + channel) return `httpStatus: 204`."

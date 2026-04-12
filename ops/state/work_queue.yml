@@ -96,6 +96,23 @@
   depends_on:
     - cliq-150
 
+- id: cliq-156
+  title: implement reliable local media send (image/voice/file) for user/channel targets
+  module: cliq
+  stage: queued
+  priority: high
+  depends_on:
+    - cliq-155
+
+- id: cliq-157
+  title: finalize cliq read parity for dm/channel/group history with attachment-positive retrieval evidence
+  module: cliq
+  stage: queued
+  priority: high
+  depends_on:
+    - cliq-155
+    - cliq-156
+
 - id: cliq-160
   title: cliq hardening live matrix and release gate
   module: cliq
@@ -105,6 +122,8 @@
     - cliq-120
     - cliq-140
     - cliq-150
+    - cliq-156
+    - cliq-157
 
 - id: crm-001
   title: scaffold crm product module and client shell

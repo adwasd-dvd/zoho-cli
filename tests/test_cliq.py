@@ -39,6 +39,11 @@ def test_missing_cliq_scopes_reports_missing_values() -> None:
     ]
 
 
+def test_missing_cliq_export_scopes_reports_missing_values() -> None:
+    missing = cliq.missing_cliq_export_scopes(["ZohoCliq.OrganizationChats.READ"])
+    assert missing == ["ZohoCliq.OrganizationMessages.READ"]
+
+
 @pytest.fixture
 def client() -> cliq.ZohoCliqClient:
     return cliq.ZohoCliqClient("fake-token", base_url="https://cliq.zoho.com/api/v2")

@@ -1260,6 +1260,7 @@ def cliq_status(
             network=network or account_cfg.get("cliq_network"),
         ),
         "requiredScopes": _cliq.DEFAULT_CLIQ_SCOPES,
+        "requiredExportScopes": _cliq.DEFAULT_CLIQ_EXPORT_SCOPES,
         "grantedScopes": account_cfg.get("scopes", []),
         "next": [
             "discover capability matrix",
@@ -1272,6 +1273,10 @@ def cliq_status(
         payload.get("grantedScopes", [])
     )
     payload["oauthReady"] = len(payload["missingScopes"]) == 0
+    payload["missingExportScopes"] = _cliq.missing_cliq_export_scopes(
+        payload.get("grantedScopes", [])
+    )
+    payload["exportOauthReady"] = len(payload["missingExportScopes"]) == 0
 
     if check_auth and email:
         cid, csec = _require_credentials(cfg)
@@ -1287,6 +1292,10 @@ def cliq_status(
             payload["grantedScopes"] = live_scopes
             payload["missingScopes"] = _cliq.missing_cliq_scopes(live_scopes)
             payload["oauthReady"] = len(payload["missingScopes"]) == 0
+            payload["missingExportScopes"] = _cliq.missing_cliq_export_scopes(
+                live_scopes
+            )
+            payload["exportOauthReady"] = len(payload["missingExportScopes"]) == 0
 
     utils.output(payload)
 

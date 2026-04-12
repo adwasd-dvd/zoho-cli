@@ -4,15 +4,14 @@ module: cliq
 stage: blocked
 status: blocked
 owner: automation
-updated_at: '2026-04-12T05:24:46Z'
+updated_at: '2026-04-12T05:44:10Z'
 success_criteria:
 - run `zoho login --with-cliq --with-cliq-export` on the live test account
 - run `cliq export-chats` list + one `--chat-id` export on happydistrouklimited
 - archive one successful JSON sample for each export mode under `tests/auto_pilot/reports/`
 next_if_done: resume crm-002 once Cliq export verification evidence is archived
 next_step: >-
-  added `zoho login --with-cliq --with-cliq-export` scope bundling and updated
-  export-scope error hints to point to that one-step re-auth flow (explicit
-  `--scope` fallback still shown); next live probe should re-auth
-  `/tmp/zoho-test-config.json` with the new flag and rerun export list +
-  message checks
+  run `zoho cliq status --check-auth --network happydistrouklimited` first and
+  confirm `exportOauthReady: true` (`missingExportScopes: []`), then run
+  `zoho login --with-cliq --with-cliq-export` if needed and rerun
+  `cliq export-chats` list + `--chat-id` probes to capture success JSON

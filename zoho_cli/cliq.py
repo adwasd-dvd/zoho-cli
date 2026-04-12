@@ -35,6 +35,11 @@ def missing_cliq_scopes(granted_scopes: list[str] | None) -> list[str]:
     return [s for s in DEFAULT_CLIQ_SCOPES if s not in granted]
 
 
+def missing_cliq_export_scopes(granted_scopes: list[str] | None) -> list[str]:
+    granted = set(granted_scopes or [])
+    return [s for s in DEFAULT_CLIQ_EXPORT_SCOPES if s not in granted]
+
+
 def infer_cliq_base_url(
     *,
     mail_base_url: str | None = None,

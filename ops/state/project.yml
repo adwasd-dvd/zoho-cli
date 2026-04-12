@@ -1,5 +1,5 @@
 project: zoho-cli
-updated_at: '2026-04-12T05:24:46Z'
+updated_at: '2026-04-12T05:44:10Z'
 status: cliq-expansion
 canonical_workspace: /Users/adwasd/.openclaw/workspace-coder
 project_root: /Users/adwasd/.openclaw/workspace-coder/job/zoho-cli
@@ -16,10 +16,12 @@ primary_blockers:
   returns zero payloads for media-visible messages)
 - cliq maintenance export verification is blocked by missing maintenance export
   scopes on current live config (`oauth_scope_invalid`)
-next_step: re-auth once with `zoho login --with-cliq --with-cliq-export` to close
-  `cliq-165`, archive successful export JSON evidence, then resume waiting for
-  CRM-enabled org access to unblock crm-002
+next_step: run `zoho cliq status --check-auth --network happydistrouklimited` and
+  verify `exportOauthReady`; if export scopes are still missing, re-auth once with
+  `zoho login --with-cliq --with-cliq-export`, then rerun `cliq export-chats`
+  list + `--chat-id` and archive success evidence to close `cliq-165`
 additional_info:
+- '2026-04-12 unit follow-up: `zoho cliq status` now reports maintenance export readiness fields (`requiredExportScopes`, `missingExportScopes`, `exportOauthReady`) so cliq-165 checks can confirm scope readiness before live export probes.'
 - '2026-04-12 unit follow-up: `zoho login` now supports `--with-cliq-export` to bundle `ZohoCliq.OrganizationChats.READ` + `ZohoCliq.OrganizationMessages.READ`, and export scope-invalid hints now point to `--with-cliq --with-cliq-export` with explicit `--scope` fallback text.'
 - '2026-04-12 live recheck: both `cliq export-chats` list and explicit `--chat-id` probes still return `oauth_scope_invalid`; login-time checks indicate `ZohoCliq.Org.Admin` is invalid and retries should target `ZohoCliq.OrganizationChats.READ` + `ZohoCliq.OrganizationMessages.READ` (evidence: `tests/auto_pilot/reports/cliq_export_chats_list_scope_recheck_20260412_044316.json`, `tests/auto_pilot/reports/cliq_export_chat_scope_recheck_20260412_044323.json`).'
 - '2026-04-12 live recheck: user-added workspace fixtures now verify cleanly in cooldown matrix for both channel+user destinations, including `2026-04-10-report.pdf` and `lv1_capturable_report.csv` file sends (`tests/auto_pilot/reports/cliq_local_media_matrix_cooldown_20260411_212355.json`, `tests/auto_pilot/reports/cliq_local_media_matrix_cooldown_20260411_212455.json`, each ok=6/errors=0).'

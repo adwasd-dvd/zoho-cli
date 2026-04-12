@@ -19,6 +19,7 @@
 - Added the first cliq-190 org-admin phase-1 slice: `zoho cliq teams` plus fallback client routing (`list_teams`) for organization team listing.
 - Added the second cliq-190 org-admin phase-1 slice: `zoho cliq departments` plus fallback client routing (`list_departments`) for organization department listing.
 - Added the third cliq-190 org-admin phase-1 slice: `zoho cliq roles` plus fallback client routing (`list_roles`) for organization role listing.
+- Added the fourth cliq-190 org-admin phase-1 slice: `zoho cliq designations` plus fallback client routing (`list_designations`) for organization designation listing.
 - Scaffolded Cliq phase-1 shell with `zoho cliq status`, regional Cliq base URL inference, and a minimal `ZohoCliqClient` skeleton.
 - Added Cliq OAuth preparation: `zoho login --with-cliq` scope bundling, generic `--scope` extension, and `zoho cliq status` scope readiness (`oauthReady` / `missingScopes`).
 - Updated default Cliq OAuth scope bundle to endpoint-specific scopes (`ZohoCliq.Channels.READ`, `ZohoCliq.Users.READ`, `ZohoCliq.Webhooks.CREATE`) to match live send/notify API requirements.

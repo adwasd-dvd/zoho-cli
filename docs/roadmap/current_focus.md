@@ -6,6 +6,6 @@
 3. **Keep blocker-skipping loop active**: do not stall on `cliq-165` export-scope interactive re-auth or known endpoint limitations.
 
 ## Next
-1. `cliq-190`: continue with the next org-admin phase-1 command/client slice (designation/user-status/userfields)
+1. `cliq-190`: continue with the next org-admin phase-1 command/client slice (user-status/userfields)
 2. `cliq-165`: rerun export verification after interactive re-auth with maintenance export scopes
 3. `crm-002`: remain blocked until CRM-enabled org access is available

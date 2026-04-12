@@ -1608,6 +1608,54 @@ def cliq_roles(
     )
 
 
+@cliq_app.command("designations")
+def cliq_designations(
+    limit: int = typer.Option(50, "--limit", "-n", help="Max designations to return."),
+    network: Optional[str] = typer.Option(
+        None, "--network", help="Cliq network slug (e.g. happydistrouklimited)."
+    ),
+) -> None:
+    """List Cliq org-admin designations (cliq-190 phase-1 slice)."""
+    cfg = _cfg()
+    email = _require_account(cfg)
+    client = _get_cliq_client(cfg, email, network=network)
+
+    resp = client.list_designations(limit=limit)
+    data = resp.get("data", resp)
+    if not isinstance(data, list):
+        data = []
+
+    views: list[dict[str, Any]] = []
+    for row in data:
+        if not isinstance(row, dict):
+            continue
+        views.append(
+            {
+                "designationId": str(
+                    row.get("designation_id")
+                    or row.get("designationId")
+                    or row.get("id")
+                    or row.get("zuid")
+                    or ""
+                ),
+                "name": str(
+                    row.get("name")
+                    or row.get("designation_name")
+                    or row.get("display_name")
+                    or ""
+                ),
+                "raw": row,
+            }
+        )
+
+    utils.output(
+        {
+            "count": len(views),
+            "designations": views,
+        }
+    )
+
+
 @cliq_app.command("export-chats")
 def cliq_export_chats(
     chat_id: Optional[str] = typer.Option(

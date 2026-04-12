@@ -2689,6 +2689,20 @@ class ZohoCliqClient:
             not_supported_message="Cliq org-admin role listing endpoints are not available for this token/network endpoint.",
         )
 
+    def list_designations(self, *, limit: int = 50) -> dict:
+        """List organization designations (cliq-190 fourth org-admin slice)."""
+        return self._get_with_candidates_and_not_supported(
+            [
+                ("/designations", {"limit": limit}),
+                ("/designations", None),
+                ("/admin/designations", {"limit": limit}),
+                ("/admin/designations", None),
+            ],
+            scope_hint="ZohoCliq.Designations.READ",
+            operation_label="designations-list",
+            not_supported_message="Cliq org-admin designation listing endpoints are not available for this token/network endpoint.",
+        )
+
     @staticmethod
     def infer_message_types(message: dict[str, Any]) -> list[str]:
         """Infer coarse content types from a raw Cliq message payload."""

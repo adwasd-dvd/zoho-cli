@@ -238,6 +238,55 @@ def test_cliq_client_list_roles_scope_invalid_reports_hint(
 
 
 @respx.mock
+def test_cliq_client_list_designations_falls_back_to_admin_endpoint(
+    client: cliq.ZohoCliqClient,
+) -> None:
+    designations_route = respx.get("https://cliq.zoho.com/api/v2/designations").mock(
+        return_value=httpx.Response(404, text="request_url_invalid")
+    )
+    admin_route = respx.get("https://cliq.zoho.com/api/v2/admin/designations").mock(
+        return_value=httpx.Response(
+            200,
+            json={
+                "data": [
+                    {
+                        "designation_id": "DG_1",
+                        "name": "Shift Lead",
+                    }
+                ]
+            },
+        )
+    )
+
+    result = client.list_designations(limit=7)
+
+    assert designations_route.called
+    assert admin_route.called
+    assert dict(admin_route.calls.last.request.url.params) == {"limit": "7"}
+    assert result["data"][0]["designation_id"] == "DG_1"
+
+
+@respx.mock
+def test_cliq_client_list_designations_scope_invalid_reports_hint(
+    client: cliq.ZohoCliqClient,
+    capsys: pytest.CaptureFixture[str],
+) -> None:
+    respx.get("https://cliq.zoho.com/api/v2/designations").mock(
+        return_value=httpx.Response(401, json={"code": "oauth_scope_invalid"})
+    )
+    respx.get("https://cliq.zoho.com/api/v2/admin/designations").mock(
+        return_value=httpx.Response(401, json={"code": "oauth_scope_invalid"})
+    )
+
+    with pytest.raises(SystemExit):
+        client.list_designations(limit=7)
+
+    err = capsys.readouterr().err
+    assert "oauth_scope_invalid" in err
+    assert "ZohoCliq.Designations.READ" in err
+
+
+@respx.mock
 def test_cliq_client_export_conversations(client: cliq.ZohoCliqClient) -> None:
     route = respx.get("https://cliq.zoho.com/maintenanceapi/v2/chats").mock(
         return_value=httpx.Response(

@@ -325,10 +325,35 @@ def build_auth_url(client_id: str, redirect_uri: str, scopes: list[str]) -> str:
 
 
 def parse_redirect(raw_url: str) -> tuple[str, Optional[str]]:
-    """Parse code and optional regional accounts-server from a redirect URL."""
+    """Parse code and optional regional accounts-server from redirect input.
+
+    Accepted inputs:
+    - Full redirect URL (standard flow)
+    - Query-string fragment like ``code=...&accounts-server=...``
+    - Bare authorization code
+    """
     try:
-        parsed = urlparse(raw_url.strip())
+        cleaned = raw_url.strip()
+        if not cleaned:
+            utils.error_exit("invalid_redirect_url", "Redirect input is empty.")
+
+        # Convenience: allow directly pasting only the code.
+        if (
+            "://" not in cleaned
+            and "code=" not in cleaned
+            and "&" not in cleaned
+            and "=" not in cleaned
+        ):
+            return cleaned, None
+
+        # Convenience: allow query-string style paste without a full URL.
+        if "://" not in cleaned and "code=" in cleaned:
+            cleaned = "https://callback.invalid/?" + cleaned.lstrip("?")
+
+        parsed = urlparse(cleaned)
         params = parse_qs(parsed.query)
+        if "code" not in params and parsed.fragment:
+            params = parse_qs(parsed.fragment)
         codes = params.get("code", [])
         if not codes:
             utils.error_exit(
@@ -341,6 +366,23 @@ def parse_redirect(raw_url: str) -> tuple[str, Optional[str]]:
     except Exception as exc:
         utils.error_exit("invalid_redirect_url", str(exc))
     return "", None  # unreachable
+
+
+def extract_redirect_uri(raw_url: str) -> Optional[str]:
+    """Best-effort extraction of redirect URI from a pasted full redirect URL."""
+    try:
+        parsed = urlparse(raw_url.strip())
+        if not parsed.scheme or not parsed.netloc:
+            return None
+        params = parse_qs(parsed.query)
+        if "code" not in params and parsed.fragment:
+            params = parse_qs(parsed.fragment)
+        if "code" not in params:
+            return None
+        path = parsed.path or ""
+        return f"{parsed.scheme}://{parsed.netloc}{path}"
+    except Exception:
+        return None
 
 
 def exchange_code(

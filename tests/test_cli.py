@@ -98,6 +98,77 @@ def _cfg_env(cfg_path: Path) -> dict[str, str]:
     return {"ZOHO_CONFIG": str(cfg_path)}
 
 
+def test_login_no_browser_prints_dual_urls_when_redirect_unset(
+    mock_config: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """When redirect_uri is unset, --no-browser should print both legacy and localhost auth URLs."""
+
+    monkeypatch.setattr(auth, "discover_accounts_server", lambda _cid: ACCOUNTS_BASE)
+    monkeypatch.setattr("click.prompt", lambda *_a, **_kw: "abc123")
+    monkeypatch.setattr(
+        auth,
+        "exchange_code",
+        lambda *_a, **_kw: {
+            "access_token": "token123",
+            "refresh_token": "refresh123",
+            "scope": "ZohoMail.messages.ALL",
+        },
+    )
+    monkeypatch.setattr(auth, "discover_account_id", lambda *_a, **_kw: ACCOUNT_ID)
+    monkeypatch.setattr("zoho_cli.storage.store_token", lambda *_a, **_kw: None)
+
+    result = runner.invoke(
+        app,
+        ["--config", str(mock_config), "--account", ACCOUNT_EMAIL, "login", "--no-browser"],
+    )
+
+    assert result.exit_code == 0, result.output
+    assert "[1] https://accounts.zoho.com/oauth/v2/auth?" in result.output
+    assert "redirect_uri=https%3A%2F%2Fexample.com%2Fzoho%2Foauth%2Fcallback" in result.output
+    assert "[2] https://accounts.zoho.com/oauth/v2/auth?" in result.output
+    assert "redirect_uri=http%3A%2F%2Flocalhost%3A51821%2Fcallback" in result.output
+
+
+def test_login_no_browser_uses_redirect_from_pasted_url_for_exchange(
+    mock_config: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """Manual flow should exchange code with the redirect URI extracted from pasted redirect URL."""
+
+    pasted = "https://example.com/zoho/oauth/callback?code=abc123"
+    seen: dict[str, str] = {}
+
+    monkeypatch.setattr(auth, "discover_accounts_server", lambda _cid: ACCOUNTS_BASE)
+    monkeypatch.setattr("click.prompt", lambda *_a, **_kw: pasted)
+
+    def _exchange_code(
+        code: str,
+        client_id: str,
+        client_secret: str,
+        redirect_uri: str,
+        accounts_base_url: str | None = None,
+    ) -> dict[str, str]:
+        seen["code"] = code
+        seen["redirect_uri"] = redirect_uri
+        return {
+            "access_token": "token123",
+            "refresh_token": "refresh123",
+            "scope": "ZohoMail.messages.ALL",
+        }
+
+    monkeypatch.setattr(auth, "exchange_code", _exchange_code)
+    monkeypatch.setattr(auth, "discover_account_id", lambda *_a, **_kw: ACCOUNT_ID)
+    monkeypatch.setattr("zoho_cli.storage.store_token", lambda *_a, **_kw: None)
+
+    result = runner.invoke(
+        app,
+        ["--config", str(mock_config), "--account", ACCOUNT_EMAIL, "login", "--no-browser"],
+    )
+
+    assert result.exit_code == 0, result.output
+    assert seen["code"] == "abc123"
+    assert seen["redirect_uri"] == "https://example.com/zoho/oauth/callback"
+
+
 # ---------------------------------------------------------------------------
 # mail search
 # ---------------------------------------------------------------------------

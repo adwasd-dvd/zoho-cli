@@ -481,6 +481,11 @@ def login(
         "--scope",
         help="Additional OAuth scope(s) to include (repeatable).",
     ),
+    redirect_uri: Optional[str] = typer.Option(
+        None,
+        "--redirect-uri",
+        help="Override OAuth redirect URI (useful with --no-browser).",
+    ),
 ) -> None:
     """Authenticate via Zoho OAuth 2.0."""
     cfg = _cfg()
@@ -519,23 +524,37 @@ def login(
             _stderr(f"Detected: {forced_accounts_url}")
         os.environ["ZOHO_ACCOUNTS_BASE_URL"] = forced_accounts_url
 
-        default_redirect_uri = f"http://localhost:{port}/callback"
         configured_redirect = str(cfg.get("redirect_uri") or "").strip()
-        if configured_redirect in {
-            "",
-            "https://example.com/zoho/oauth/callback",  # legacy default
-        }:
-            redirect_uri = default_redirect_uri
+        manual_override = (redirect_uri or "").strip()
+        localhost_redirect = f"http://localhost:{port}/callback"
+        legacy_redirect = "https://example.com/zoho/oauth/callback"
+
+        manual_redirect_candidates: list[str]
+        if manual_override:
+            manual_redirect_candidates = [manual_override]
+        elif configured_redirect:
+            manual_redirect_candidates = [configured_redirect]
         else:
-            redirect_uri = configured_redirect
-        auth_url = auth.build_auth_url(client_id, redirect_uri, scopes)
+            # In headless/manual mode, show both common choices.
+            # Legacy hosted callback is often still what users registered,
+            # while localhost remains useful for local copy/paste workflows.
+            manual_redirect_candidates = [legacy_redirect, localhost_redirect]
+
+        redirect_uri = manual_redirect_candidates[0]
+
         _stderr("\n── Zoho OAuth Login (manual) ──────────────────────────────")
-        _stderr("1. Open this URL in your browser:\n")
-        _stderr(f"   {auth_url}\n")
+        _stderr("1. Open one URL below in your browser (must match a registered redirect URI):\n")
+        for idx, candidate_redirect_uri in enumerate(manual_redirect_candidates, start=1):
+            auth_url = auth.build_auth_url(client_id, candidate_redirect_uri, scopes)
+            _stderr(f"   [{idx}] {auth_url}")
+        _stderr("")
         _stderr("2. Approve access.")
-        _stderr("3. Copy the full redirect URL and paste it below.")
+        _stderr("3. Copy the full redirect URL (or just the code) and paste it below.")
         _stderr("────────────────────────────────────────────────────────────\n")
         raw_url = click.prompt("Paste the full redirect URL here", err=True)
+        parsed_redirect_uri = auth.extract_redirect_uri(raw_url)
+        if parsed_redirect_uri:
+            redirect_uri = parsed_redirect_uri
         code, accounts_server = auth.parse_redirect(raw_url)
     else:
         # ── browser flow with local callback server ────────────────────────

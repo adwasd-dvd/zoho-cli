@@ -1,10 +1,12 @@
-last_run_at: "2026-04-12T04:43:51Z"
+last_run_at: "2026-04-12T04:53:22Z"
 last_result: warning
 current_focus: cliq
 suites:
   unit:
     status: passing
     notes:
+      - "python3.11 -m pytest -q tests/test_cli.py::test_login_no_browser_prints_dual_urls_when_redirect_unset tests/test_cli.py::test_login_no_browser_uses_redirect_from_pasted_url_for_exchange tests/test_auth.py::test_parse_redirect_accepts_query_string_without_full_url tests/test_auth.py::test_parse_redirect_accepts_bare_code tests/test_auth.py::test_extract_redirect_uri_from_full_redirect_url tests/test_auth.py::test_extract_redirect_uri_returns_none_for_non_url_input"
+      - "6 passed in 0.15s (`zoho login --no-browser` now prints dual redirect candidates when config redirect is unset, accepts pasted bare code/query-string input, and derives redirect_uri from pasted callback URL for exchange parity, 2026-04-12T04:53:22Z)"
       - "python3.11 -m pytest -q tests/test_cliq.py::test_cliq_client_export_conversations_scope_invalid_reports_hint tests/test_cliq.py::test_cliq_client_export_conversations_oauth_scope_invalid_code_reports_hint tests/test_cliq.py::test_cliq_client_export_chat_messages tests/test_cliq.py::test_cliq_client_export_chat_messages_scope_invalid_reports_hint"
       - "4 passed in 0.10s (export scope-invalid handling now accepts both `oauthtoken_scope_invalid` and `oauth_scope_invalid` for list + `--chat-id` maintenance endpoints, 2026-04-12T04:12:53Z)"
       - "python3.11 -m pytest -q tests/test_cli.py -k export_chats"

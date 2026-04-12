@@ -44,6 +44,33 @@ def test_parse_redirect_strips_whitespace() -> None:
     assert code == "trimmed"
 
 
+def test_parse_redirect_accepts_query_string_without_full_url() -> None:
+    """Query-string-only paste is accepted for headless/manual workflows."""
+    code, server = auth.parse_redirect(
+        "code=abc123&accounts-server=https%3A%2F%2Faccounts.zoho.eu"
+    )
+    assert code == "abc123"
+    assert server == "https://accounts.zoho.eu"
+
+
+def test_parse_redirect_accepts_bare_code() -> None:
+    """Bare authorization code paste is accepted."""
+    code, server = auth.parse_redirect("abc123")
+    assert code == "abc123"
+    assert server is None
+
+
+def test_extract_redirect_uri_from_full_redirect_url() -> None:
+    redirect_uri = auth.extract_redirect_uri(
+        "https://example.com/zoho/oauth/callback?code=abc123&state=xyz"
+    )
+    assert redirect_uri == "https://example.com/zoho/oauth/callback"
+
+
+def test_extract_redirect_uri_returns_none_for_non_url_input() -> None:
+    assert auth.extract_redirect_uri("abc123") is None
+
+
 # ---------------------------------------------------------------------------
 # build_auth_url
 # ---------------------------------------------------------------------------

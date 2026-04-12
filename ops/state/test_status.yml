@@ -1,4 +1,4 @@
-last_run_at: "2026-04-12T08:47:12Z"
+last_run_at: "2026-04-12T09:02:34Z"
 last_result: warning
 current_focus: cliq
 suites:
@@ -273,9 +273,9 @@ suites:
     status: warning
     notes:
       - "bash tests/auto_pilot/run_cliq_export_scope_recheck.sh"
-      - "one-command recheck still reports `exportOauthReady: false` with missing export scopes (`ZohoCliq.OrganizationChats.READ`, `ZohoCliq.OrganizationMessages.READ`); evidence: `tests/auto_pilot/reports/cliq_status_export_scope_recheck_20260412_012636.json` (2026-04-12T08:26:36Z)"
-      - "same one-command run confirms list export still returns `oauth_scope_invalid`; evidence: `tests/auto_pilot/reports/cliq_export_chats_list_scope_recheck_20260412_012636.json` (2026-04-12T08:26:36Z)"
-      - "same one-command run confirms explicit `--chat-id` export still returns `oauth_scope_invalid`; evidence: `tests/auto_pilot/reports/cliq_export_chat_scope_recheck_20260412_012636.json` (2026-04-12T08:26:36Z)"
+      - "one-command recheck still reports `exportOauthReady: false` with missing export scopes (`ZohoCliq.OrganizationChats.READ`, `ZohoCliq.OrganizationMessages.READ`); evidence: `tests/auto_pilot/reports/cliq_status_export_scope_recheck_20260412_020234.json` (2026-04-12T09:02:34Z)"
+      - "same one-command run confirms list export still returns `oauth_scope_invalid`; evidence: `tests/auto_pilot/reports/cliq_export_chats_list_scope_recheck_20260412_020234.json` (2026-04-12T09:02:34Z)"
+      - "same one-command run confirms explicit `--chat-id` export still returns `oauth_scope_invalid`; evidence: `tests/auto_pilot/reports/cliq_export_chat_scope_recheck_20260412_020234.json` (2026-04-12T09:02:34Z)"
       - "python3.11 one-token workspace matrix rerun across all current local test assets (`test.png`, `sample-3.m4a`, `2026-04-10-report.pdf`, `lv1_capturable_report.csv`)"
       - "8/8 sends succeeded (channel+user targets for image/voice/pdf/csv) with zero errors; evidence: `tests/auto_pilot/reports/cliq_workspace_test_media_matrix_20260412_042955.json` (2026-04-12T04:29:55Z)"
       - "bash tests/auto_pilot/run_cliq_local_media_matrix_cooldown.sh /tmp/zoho-test-config.json ai-dev@happy-distro.co.uk happydistrouklimited O6576524000097556005 david@happy-distro.com /Users/adwasd/.openclaw/workspace-coder/test/test.png /Users/adwasd/.openclaw/workspace-coder/test/sample-3.m4a /Users/adwasd/.openclaw/workspace-coder/test/2026-04-10-report.pdf"

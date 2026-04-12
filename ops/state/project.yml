@@ -1,5 +1,5 @@
 project: zoho-cli
-updated_at: '2026-04-12T08:47:12Z'
+updated_at: '2026-04-12T09:02:34Z'
 status: cliq-expansion
 canonical_workspace: /Users/adwasd/.openclaw/workspace-coder
 project_root: /Users/adwasd/.openclaw/workspace-coder/job/zoho-cli
@@ -23,7 +23,7 @@ next_step: run `tests/auto_pilot/run_cliq_export_scope_recheck.sh` to refresh
   the same script until list + `--chat-id` exports succeed and close `cliq-165`
 additional_info:
 - '2026-04-12 unit follow-up: `tests/auto_pilot/run_cliq_export_scope_recheck.sh` now uses `pipefail`, captures real per-probe `zoho_cli` exit codes via `PIPESTATUS`, supports `PYTHON_BIN`/`SCAP_REPORT_DIR` overrides, and exits non-zero when any probe fails so automation can gate on blocker state without parsing logs.'
-- '2026-04-12 live follow-up: added `tests/auto_pilot/run_cliq_export_scope_recheck.sh` to capture `cliq status --check-auth` + `cliq export-chats` list + `--chat-id` blocker evidence in one command; latest run still reports `exportOauthReady: false` and `oauth_scope_invalid` on both export probes (evidence: `tests/auto_pilot/reports/cliq_status_export_scope_recheck_20260412_012636.json`, `tests/auto_pilot/reports/cliq_export_chats_list_scope_recheck_20260412_012636.json`, `tests/auto_pilot/reports/cliq_export_chat_scope_recheck_20260412_012636.json`).'
+- '2026-04-12 live recheck: reran `tests/auto_pilot/run_cliq_export_scope_recheck.sh`; `cliq status --check-auth` still reports `exportOauthReady: false` with missing `ZohoCliq.OrganizationChats.READ` + `ZohoCliq.OrganizationMessages.READ`, and both export probes still return `oauth_scope_invalid` (evidence: `tests/auto_pilot/reports/cliq_status_export_scope_recheck_20260412_020234.json`, `tests/auto_pilot/reports/cliq_export_chats_list_scope_recheck_20260412_020234.json`, `tests/auto_pilot/reports/cliq_export_chat_scope_recheck_20260412_020234.json`).'
 - '2026-04-12 live recheck: `cliq status --check-auth` still reports `exportOauthReady: false` with missing `ZohoCliq.OrganizationChats.READ` + `ZohoCliq.OrganizationMessages.READ`; `cliq export-chats` list and `--chat-id` probes both still return `oauth_scope_invalid` (evidence: `tests/auto_pilot/reports/cliq_status_export_scope_recheck_20260412_080646.json`, `tests/auto_pilot/reports/cliq_export_chats_list_scope_recheck_20260412_080646.json`, `tests/auto_pilot/reports/cliq_export_chat_scope_recheck_20260412_080646.json`).'
 - '2026-04-12 unit follow-up: `zoho cliq status` `exportNext` hints now include `--config <path>` when a config override is active, so blocked cliq-165 re-auth/probe command snippets stay pinned to the same credentials file.'
 - '2026-04-12 live recheck: `cliq status --check-auth` still reports `exportOauthReady: false` with missing `ZohoCliq.OrganizationChats.READ` + `ZohoCliq.OrganizationMessages.READ`; `cliq export-chats` list and `--chat-id` probes both still return `oauth_scope_invalid` (evidence: `tests/auto_pilot/reports/cliq_status_export_scope_recheck_20260412_072240.json`, `tests/auto_pilot/reports/cliq_export_chats_list_scope_recheck_20260412_072240.json`, `tests/auto_pilot/reports/cliq_export_chat_scope_recheck_20260412_072240.json`).'

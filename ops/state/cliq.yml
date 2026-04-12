@@ -1,7 +1,8 @@
 module: Cliq
-updated_at: '2026-04-12T16:26:49Z'
+updated_at: '2026-04-12T16:45:43Z'
 status: in_progress
 blockers:
+- 'cliq-181 live `cliq pinned` probe on happydistrouklimited classifies pinned endpoints as unsupported (`error: not_supported`) while auth remains healthy (`oauthReady: true`) (evidence: `tests/auto_pilot/reports/cliq181_probe_summary_20260412_164540.json` plus `tests/auto_pilot/reports/cliq181_pinned_20260412_164540.json`)'
 - 'cliq-180 live `trigger-bot` probe on happydistrouklimited now classifies bot trigger/call endpoints as unsupported (`error: not_supported`); capability snapshot still shows baseline read checks healthy (`tests/auto_pilot/reports/cliq180_trigger_bot_20260412_150542.json`, `tests/auto_pilot/reports/cliq180_capabilities_20260412_150542.json`)'
 - 'live thread-plane probe classifies thread endpoints as unsupported on happydistrouklimited: `thread-create`, `thread-reply`, `thread-followers`, `thread-state` all return `not_supported`, and `threads` currently returns `count: 0` (`tests/auto_pilot/reports/cliq_thread_probe_summary_20260412_044149.json`)'
 - 'live scheduled-message probe classifies schedule endpoints as unsupported on happydistrouklimited: `schedule`, `scheduled`, `scheduled-get`, and `scheduled-cancel` all return `not_supported` while auth remains healthy (`tests/auto_pilot/reports/cliq_scheduled_probe_summary_20260412_132412.json`)'
@@ -9,7 +10,6 @@ blockers:
 - 'cliq-172 live probe confirms attachment retrieval parity remains endpoint-limited: media-typed message `1775957550478_105215272334` returns `retrievalResult: media_visible_without_attachment_payload` and `count: 0` for both `cliq file` and `cliq voice` (`tests/auto_pilot/reports/cliq172_probe_summary_20260412_134514.json`)'
 - "maintenance export command surface (`cliq export-chats`) is implemented and response-shape normalization is hardened; live auth still reports missing maintenance export scopes (`ZohoCliq.OrganizationChats.READ`, `ZohoCliq.OrganizationMessages.READ`), and export verification remains blocked with `oauth_scope_invalid` on both list + explicit `--chat-id` probes (latest one-command evidence: `tests/auto_pilot/reports/cliq_status_export_scope_recheck_20260412_032238.json`, `tests/auto_pilot/reports/cliq_export_chats_list_scope_recheck_20260412_032238.json`, `tests/auto_pilot/reports/cliq_export_chat_scope_recheck_20260412_032238.json`; runner summary `tests/auto_pilot/reports/cliq_export_scope_recheck_summary_20260412_032238.json` reports `scopeBlocked: true` and `recommendedNext: interactive_reauth_then_rerun` from status `exportOauthReady`/`missingExportScopes` signals)"
 next_small_step: >-
-  cliq-181 `pinned` retrieval command slice is now landed with targeted tests;
-  run one live `cliq pinned` verification pass next, then pivot to cliq-190
-  while keeping cliq-165 export scope verification blocked for interactive
-  re-auth
+  cliq-181 live pinned verification is archived and classified as endpoint-limited;
+  begin cliq-190 org admin phase 1 with one small command/client slice while
+  keeping cliq-165 export scope verification blocked for interactive re-auth

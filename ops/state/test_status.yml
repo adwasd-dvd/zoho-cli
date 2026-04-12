@@ -1,16 +1,20 @@
-last_run_at: "2026-04-12T08:28:33Z"
+last_run_at: "2026-04-12T08:47:12Z"
 last_result: warning
 current_focus: cliq
 suites:
   unit:
     status: passing
     notes:
+      - "./.venv/bin/ruff format tests/test_auto_pilot_scripts.py"
+      - "1 file reformatted (2026-04-12T08:47:12Z)"
+      - "python3.11 -m pytest -q tests/test_auto_pilot_scripts.py"
+      - "1 passed in 0.44s (new runner test confirms cliq export-scope recheck now propagates real probe exit codes and exits non-zero when list/chat probes fail, 2026-04-12T08:47:12Z)"
+      - "bash -n tests/auto_pilot/run_cliq_export_scope_recheck.sh"
       - "python3.11 tests/auto_pilot/state_validator.py ops/state/active_task.yml '{\"id\":\"cliq-165\",\"status\":\"blocked\"}'"
       - "python3.11 tests/auto_pilot/state_validator.py ops/state/cliq.yml '{\"module\":\"Cliq\",\"status\":\"in_progress\"}'"
       - "python3.11 tests/auto_pilot/state_validator.py ops/state/project.yml '{\"status\":\"cliq-expansion\"}'"
-      - "python3.11 tests/auto_pilot/state_validator.py ops/state/bug_backlog.yml '{}'"
       - "python3.11 tests/auto_pilot/state_validator.py ops/state/test_status.yml '{}'"
-      - "5x VALIDATION_SUCCESS after adding cliq export-scope one-command runner and refreshing blocker state (2026-04-12T08:28:33Z)"
+      - "4x VALIDATION_SUCCESS after cliq export-scope runner exit-code hardening state refresh (2026-04-12T08:47:12Z)"
       - "bash -n tests/auto_pilot/run_cliq_export_scope_recheck.sh"
       - "syntax check passed for new one-command cliq export scope recheck runner with stdout+stderr capture (2026-04-12T08:26:30Z)"
       - "python3.11 tests/auto_pilot/state_validator.py ops/state/active_task.yml '{\"id\":\"cliq-165\",\"status\":\"blocked\"}'"

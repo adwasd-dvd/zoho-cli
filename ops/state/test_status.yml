@@ -1,4 +1,4 @@
-last_run_at: "2026-04-12T00:28:17Z"
+last_run_at: "2026-04-12T00:31:30Z"
 last_result: passed
 current_focus: cliq
 suites:
@@ -191,6 +191,14 @@ suites:
   integration:
     status: warning
     notes:
+      - "python3.11 -m zoho_cli --config /tmp/zoho-test-config.json --account ai-dev@happy-distro.co.uk cliq status --check-auth --network happydistrouklimited"
+      - "cliq auth is currently healthy again (`oauthReady: true`, `missingScopes: []`) on live config (2026-04-12T00:29:41Z)"
+      - "bash tests/auto_pilot/run_cliq_live_probe.sh"
+      - "live probe now confirms user/channel text send success (`httpStatus: 204`) plus users/channel-history reads, but DM history probe still fails with `request_url_invalid` on `/conversations/{user}/messages` (2026-04-12T00:29:55Z)"
+      - "bash tests/auto_pilot/run_cliq_alt_probe.sh"
+      - "live alt probe confirms `cliq chats` + `cliq messages` + text sends are healthy; local image upload still fails with endpoint-level `request_url_invalid` / `operation_failed` / `request_method_invalid` and rich `attempts:` tuples (2026-04-12T00:30:19Z)"
+      - "python3.11 -m zoho_cli --config /tmp/zoho-test-config.json --account ai-dev@happy-distro.co.uk cliq send --network happydistrouklimited --user-id david@happy-distro.com --file-url /Users/adwasd/.openclaw/workspace-coder/job/zoho-cli/.tmp/live-probes/probe-file.txt --text 'SCAP local file probe <utc-time>' --title 'SCAP local file'; python3.11 -m zoho_cli --config /tmp/zoho-test-config.json --account ai-dev@happy-distro.co.uk cliq send --network happydistrouklimited --channel-id O6576524000097556005 --file-url /Users/adwasd/.openclaw/workspace-coder/job/zoho-cli/.tmp/live-probes/probe-file.txt --text 'SCAP local file channel probe <utc-time>' --title 'SCAP local file'; python3.11 -m zoho_cli --config /tmp/zoho-test-config.json --account ai-dev@happy-distro.co.uk cliq voice-send --network happydistrouklimited --user-id david@happy-distro.com --voice-url /Users/adwasd/.openclaw/workspace-coder/test/sample-3.m4a --text 'SCAP local voice probe <utc-time>'"
+      - "local file/voice probes still fail live with `request_url_invalid` / `operation_failed` patterns; evidence archived at `tests/auto_pilot/reports/cliq_local_media_matrix_20260411_173036.log` (2026-04-12T00:30:53Z)"
       - ./.venv/bin/python -m zoho_cli --config /tmp/zoho-test-config.json --account ai-dev@happy-distro.co.uk login --with-cliq
       - ./.venv/bin/python -m zoho_cli --config /tmp/zoho-test-config.json --account ai-dev@happy-distro.co.uk cliq chats --network happydistrouklimited
       - live `cliq chats` positive path now succeeds after re-auth (`count: 0`, no `oauth_scope_invalid`) (2026-04-10T01:39:14Z)

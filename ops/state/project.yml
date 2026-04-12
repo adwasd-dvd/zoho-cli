@@ -1,5 +1,5 @@
 project: zoho-cli
-updated_at: '2026-04-12T00:24:23Z'
+updated_at: '2026-04-12T00:31:30Z'
 status: cliq-expansion
 canonical_workspace: /Users/adwasd/.openclaw/workspace-coder
 project_root: /Users/adwasd/.openclaw/workspace-coder/job/zoho-cli
@@ -12,11 +12,13 @@ primary_blockers:
   - crm live read-only verification remains blocked by account-level CRM org access
   - cliq search endpoint variants are not available on happydistrouklimited for current token/api combinations (`extra_param_found` / `request_url_invalid`)
   - "`cliq chats` now validates on live token/network after re-auth (`count: 0`), but DM/group attachment-positive evidence is still pending"
-  - "current shared live config (`/tmp/zoho-test-config.json`) refreshes tokens again, but current grants are Mail-only, so cliq-155 matrix probes remain blocked until Cliq scopes are re-authorized"
-  - native local-file upload/download behavior now has local multipart scaffolding (with image-field fallback preference, upload endpoint/field metadata, file/voice retrieval sourcePath metadata, raw+resolved user-target fallback, direct `/channels/{channel_id}/message` probing, plural `/messages` channel-send fallback variants, single-fetch channel descriptor resolution for channel-id sends, multipart failure diagnostics that include attempted form field metadata `field=...`, and compact `attempts:` path/field/status/code tuples); standard channel-id sends now also probe direct `/channels/{channel_id}/message`, but live endpoint matrix hardening is still pending because tested multipart sends continue to return `request_url_invalid` / `operation_failed` (evidence pending)
-next_step: "re-run `zoho login --with-cliq` against `/tmp/zoho-test-config.json` to restore Cliq chat/message/write scopes (repeatable `--scope` and comma-delimited `--scope` inputs now both normalize cleanly), then rerun cliq-155 native local-file upload/download verification (`cliq send`/`cliq file`/`cliq voice`) through `tests/auto_pilot/run_cliq_live_probe.sh` and capture endpoint evidence (`path`, `field`, `mimeType`, `sourcePath`, plus failing endpoint+field+status/code tuples from `attempts:`) until one attachment-positive retrieval sample is recorded"
+  - "current live config auth is healthy (`oauthReady: true`, no missing Cliq scopes), but DM history probe still hits `request_url_invalid` on `/conversations/{user}/messages`"
+  - "native local-file upload/download behavior now has local multipart scaffolding (with image-field fallback preference, upload endpoint/field metadata, file/voice retrieval sourcePath metadata, raw+resolved user-target fallback, direct `/channels/{channel_id}/message` probing, plural `/messages` channel-send fallback variants, single-fetch channel descriptor resolution for channel-id sends, multipart failure diagnostics that include attempted form field metadata `field=...`, and compact `attempts:` path/field/status/code tuples); live probes now confirm text send success (`204`) while local image/file/voice uploads still fail with `request_url_invalid` / `operation_failed` / `request_method_invalid` (evidence captured)"
+  - "latest retrieval rerun hit Zoho refresh throttle (`Access Denied` too many requests), so attachment-positive `cliq file`/`cliq voice` evidence still needs a cooldown rerun"
+next_step: "after cooldown, rerun one bounded cliq-155 live batch (`run_cliq_live_probe.sh` + local image/file/voice sends + `cliq file`/`cliq voice` retrieval), then classify remaining endpoint failures vs code defects using captured `attempts:` tuples and close or split follow-on tasks"
 additional_info:
   - Auto-pilot probe scripts now resolve repo root from script location and can be launched from either project root or workspace root without path drift.
+  - "2026-04-12 live check: `cliq status --check-auth` now reports `oauthReady: true`, and text send probes (user + channel) return `httpStatus: 204`."
   - Token refresh failures now report explicit `invalid_client` guidance (check `client_id`/`client_secret` and re-run `zoho login`) instead of only emitting a generic missing `access_token` payload error.
   - OAuth login defaults are now aligned on `http://localhost:51821/callback` (including `--no-browser` fallback from legacy `example.com`), and callback success UI now renders scope-aware Mail/Cliq/CRM guidance.
-  - `zoho login` now normalizes repeatable `--scope` values via shared parsing, so comma-delimited scope strings no longer duplicate Cliq scopes in generated auth URLs when combined with `--with-cliq`.
+  - "`zoho login` now normalizes repeatable `--scope` values via shared parsing, so comma-delimited scope strings no longer duplicate Cliq scopes in generated auth URLs when combined with `--with-cliq`."

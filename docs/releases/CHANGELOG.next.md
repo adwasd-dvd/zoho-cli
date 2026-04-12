@@ -5,6 +5,7 @@
 ### Added
 - Initialized repo control files, anchors, and memory scaffolding for the zoho coder loop.
 - Added first `cliq-180` bot-operation slice: `zoho cliq post-to-bot` plus `ZohoCliqClient.post_to_bot` fallback routing and targeted CLI/client regression tests.
+- Added second `cliq-180` bot-operation slice: `zoho cliq bot-subscribers` plus `ZohoCliqClient.list_bot_subscribers` fallback routing and targeted CLI/client regression tests.
 - Added Cliq thread-plane command surface (`zoho cliq thread-create`, `thread-reply`, `threads`, `thread-followers`, `thread-state`) with capability-gated fallback routing in `ZohoCliqClient` and targeted thread command/client tests.
 - Added the cliq-171 `schedule` slice: `zoho cliq schedule` plus fallback client routing (`schedule_message`) for chat/channel targets.
 - Added the first cliq-171 scheduled-message command slice: `zoho cliq scheduled` plus fallback client routing (`list_scheduled_messages`) for chat/channel targets.

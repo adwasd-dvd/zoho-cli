@@ -1969,6 +1969,51 @@ def test_cliq_client_post_to_bot_scope_invalid_reports_hint(
 
 
 @respx.mock
+def test_cliq_client_list_bot_subscribers_falls_back_to_followers(
+    client: cliq.ZohoCliqClient,
+) -> None:
+    respx.get("https://cliq.zoho.com/api/v2/bots/B1/subscribers").mock(
+        return_value=httpx.Response(
+            404,
+            json={
+                "code": "request_url_invalid",
+                "message": "Not found",
+            },
+        )
+    )
+    route = respx.get("https://cliq.zoho.com/api/v2/bots/B1/followers").mock(
+        return_value=httpx.Response(200, json={"data": [{"id": "U1"}]})
+    )
+
+    payload = client.list_bot_subscribers("B1", limit=2)
+    assert route.called
+    assert payload["data"][0]["id"] == "U1"
+
+
+@respx.mock
+def test_cliq_client_list_bot_subscribers_scope_invalid_reports_hint(
+    client: cliq.ZohoCliqClient,
+    capsys: pytest.CaptureFixture[str],
+) -> None:
+    respx.get(url__regex=r"https://cliq\.zoho\.com/api/v2/bot[s]?/B1/.*").mock(
+        return_value=httpx.Response(
+            401,
+            json={
+                "code": "oauthtoken_scope_invalid",
+                "message": "scope missing",
+            },
+        )
+    )
+
+    with pytest.raises(SystemExit):
+        client.list_bot_subscribers("B1")
+
+    err = capsys.readouterr().err
+    assert "oauth_scope_invalid" in err
+    assert "ZohoCliq.Bots.READ" in err
+
+
+@respx.mock
 def test_cliq_client_list_thread_followers_scope_invalid_reports_hint(
     client: cliq.ZohoCliqClient,
     capsys: pytest.CaptureFixture[str],

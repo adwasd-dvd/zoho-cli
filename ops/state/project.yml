@@ -1,5 +1,5 @@
 project: zoho-cli
-updated_at: '2026-04-12T14:19:04Z'
+updated_at: '2026-04-12T14:27:55Z'
 status: cliq-expansion
 canonical_workspace: /Users/adwasd/.openclaw/workspace-coder
 project_root: /Users/adwasd/.openclaw/workspace-coder/job/zoho-cli
@@ -7,7 +7,7 @@ module_order:
 - Mail
 - Cliq
 - CRM
-current_focus: cliq-180 first slice (`post-to-bot`) is landed with targeted tests; continue bot operations while keeping cliq-165 export scopes blocked for interactive re-auth
+current_focus: cliq-180 bot-operation expansion now has `post-to-bot` + `bot-subscribers` slices landed with targeted tests; continue with trigger bot calls while keeping cliq-165 export scopes blocked for interactive re-auth
 primary_blockers:
 - crm live read-only verification remains blocked by account-level CRM org access
 - cliq search endpoint variants are not available on happydistrouklimited for current
@@ -20,9 +20,10 @@ primary_blockers:
   / `thread-reply` / `thread-followers` / `thread-state` report `not_supported`)
 - scheduled-message endpoints remain unsupported on current token/network (`schedule`
   / `scheduled` / `scheduled-get` / `scheduled-cancel` report `not_supported`)
-next_step: extend cliq-180 beyond `post-to-bot` with bot subscribers/trigger slices and targeted tests, then continue cliq-181 while keeping cliq-165 on blocker-skip loop
+next_step: extend cliq-180 beyond `post-to-bot`/`bot-subscribers` with trigger-bot call slices and targeted tests, then continue cliq-181 while keeping cliq-165 on blocker-skip loop
 additional_info:
 - '2026-04-12 nightly verify: broad verification rerun is green (`make release-gate && make ci`), with release-gate unit suite 321 passed + wheel smoke and ci fmt/lint + pytest 321 passed; no new unit/packaging regressions detected while cliq live blockers remain unchanged.'
+- '2026-04-12 unit delivery: added the second cliq-180 bot-operation slice with `zoho cliq bot-subscribers` and `ZohoCliqClient.list_bot_subscribers` fallback routing; targeted tests passed (`tests/test_cliq.py::test_cliq_client_list_bot_subscribers_falls_back_to_followers`, `tests/test_cliq.py::test_cliq_client_list_bot_subscribers_scope_invalid_reports_hint`, `tests/test_cli.py::test_cliq_bot_subscribers`), and format check is clean.'
 - '2026-04-12 unit delivery: added the first cliq-180 bot-operation slice with `zoho cliq post-to-bot` and `ZohoCliqClient.post_to_bot` fallback routing, plus a helper fix so mutable fallback flows now classify `oauthtoken_scope_invalid` as `oauth_scope_invalid` guidance instead of generic `api_error`; targeted tests passed (`tests/test_cliq.py::test_cliq_client_post_to_bot_falls_back_to_messages`, `tests/test_cliq.py::test_cliq_client_post_to_bot_scope_invalid_reports_hint`, `tests/test_cli.py::test_cliq_post_to_bot`, `tests/test_cliq.py::test_cliq_client_list_thread_followers_scope_invalid_reports_hint`).'
 - '2026-04-12 live probe: ran a targeted cliq-172 search + retrieval pass on happydistrouklimited; `cliq search SCAP` returns `not_supported`, and media-typed message `1775957550478_105215272334` still yields `retrievalResult: media_visible_without_attachment_payload` (`count: 0`) for both `cliq file` and `cliq voice` (evidence: `tests/auto_pilot/reports/cliq172_probe_summary_20260412_134514.json` plus per-command artifacts `cliq172_{status,search,messages,file,voice}_20260412_134514.json`).'
 - '2026-04-12 live probe: ran one cliq-171 scheduled-message lifecycle bundle (`schedule`, `scheduled`, `scheduled-get`, `scheduled-cancel`) against happydistrouklimited; all four command paths return `not_supported` while status auth remains healthy (`oauthReady: true`), so scheduled plane is now classified as endpoint limitation on current token/network (evidence: `tests/auto_pilot/reports/cliq_scheduled_probe_summary_20260412_132412.json`).'

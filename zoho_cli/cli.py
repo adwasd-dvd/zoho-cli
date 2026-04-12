@@ -2108,6 +2108,42 @@ def cliq_post_to_bot(
     )
 
 
+@cliq_app.command("bot-subscribers")
+def cliq_bot_subscribers(
+    bot_id: str = typer.Argument(..., help="Bot id or unique name."),
+    limit: int = typer.Option(50, "--limit", "-n", help="Max rows to return."),
+    network: Optional[str] = typer.Option(
+        None, "--network", help="Cliq network slug (e.g. happydistrouklimited)."
+    ),
+) -> None:
+    """List subscribers/followers for one bot."""
+    cfg = _cfg()
+    email = _require_account(cfg)
+    client = _get_cliq_client(cfg, email, network=network)
+
+    target_bot = bot_id.strip()
+    resp = client.list_bot_subscribers(target_bot, limit=limit)
+    data = resp.get("data", resp)
+
+    subscribers: list[dict[str, Any]] = []
+    if isinstance(data, list):
+        subscribers = [item for item in data if isinstance(item, dict)]
+    elif isinstance(data, dict):
+        for key in ("subscribers", "followers", "members", "data", "list", "items"):
+            candidate = data.get(key)
+            if isinstance(candidate, list):
+                subscribers = [item for item in candidate if isinstance(item, dict)]
+                break
+
+    utils.output(
+        {
+            "botId": target_bot,
+            "count": len(subscribers),
+            "subscribers": subscribers,
+        }
+    )
+
+
 @cliq_app.command("scheduled")
 def cliq_scheduled(
     channel_id: Optional[str] = typer.Option(

@@ -2057,6 +2057,29 @@ def test_cliq_post_to_bot(
     )
 
 
+def test_cliq_bot_subscribers(
+    mock_config: Path,
+    mock_token_refresh: Any,
+) -> None:
+    mock_client = MagicMock()
+    mock_client.list_bot_subscribers.return_value = {
+        "data": [{"id": "U1"}, {"id": "U2"}]
+    }
+
+    with patch("zoho_cli.cli._get_cliq_client", return_value=mock_client):
+        result = runner.invoke(
+            app,
+            ["cliq", "bot-subscribers", "bot-123", "--limit", "2"],
+            env=_cfg_env(mock_config),
+        )
+
+    assert result.exit_code == 0, result.output
+    payload = json.loads(result.output)
+    assert payload["botId"] == "bot-123"
+    assert payload["count"] == 2
+    mock_client.list_bot_subscribers.assert_called_once_with("bot-123", limit=2)
+
+
 def test_cliq_scheduled_get_from_channel(
     mock_config: Path,
     mock_token_refresh: Any,

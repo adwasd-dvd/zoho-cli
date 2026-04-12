@@ -2036,6 +2036,32 @@ class ZohoCliqClient:
             not_supported_message="Cliq bot post endpoints are not available for this token/network endpoint. Capture one capabilities snapshot and continue with non-bot operations for this network.",
         )
 
+    def list_bot_subscribers(
+        self,
+        bot_id: str,
+        *,
+        limit: int = 50,
+    ) -> dict:
+        """List subscribers/followers for one bot."""
+        target_bot = bot_id.strip()
+        if not target_bot:
+            utils.error_exit("invalid_bot_id", "bot_id cannot be empty")
+
+        limit_value = max(1, limit)
+        candidates: list[tuple[str, dict[str, Any] | None]] = [
+            (f"/bots/{target_bot}/subscribers", {"limit": limit_value}),
+            (f"/bots/{target_bot}/followers", {"limit": limit_value}),
+            (f"/bots/{target_bot}/members", {"limit": limit_value}),
+            (f"/bot/{target_bot}/subscribers", {"limit": limit_value}),
+        ]
+
+        return self._get_with_candidates_and_not_supported(
+            candidates,
+            scope_hint="ZohoCliq.Bots.READ",
+            operation_label="bot-subscribers",
+            not_supported_message="Cliq bot-subscriber endpoints are not available for this token/network endpoint. Capture one capabilities snapshot and continue with non-bot operations for this network.",
+        )
+
     def list_thread_followers(
         self,
         thread_id: str,

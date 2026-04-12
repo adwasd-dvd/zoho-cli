@@ -1,6 +1,7 @@
 # FOLLOWUPS
 
-- [ ] Stabilize repo root and confirm the agent always starts in the canonical workspace.
+- [x] Stabilize auto-pilot repo-root handling (`scenario_runner.py`, `run_cliq_live_probe.sh`, `run_cliq_alt_probe.sh`) so they run from either repo root or workspace root.
+- [ ] Confirm the broader coder-agent startup path always lands on the canonical workspace.
 - [ ] Replace any exact-text markdown update flow with section-based rewrite logic.
 - [ ] Confirm mail path handling preserves absolute `/Volumes/...` inputs.
 - [ ] Keep coding loop changes small enough to finish comfortably within the run timeout.

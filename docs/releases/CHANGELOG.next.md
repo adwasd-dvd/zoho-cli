@@ -45,6 +45,7 @@
 - Callback success page now adapts to OAuth scopes and displays Mail/Cliq/CRM-specific guidance instead of a Mail-only static success page.
 
 ### Fixed
+- Auto-pilot state/probe scripts now resolve project paths from script location instead of assuming a specific current working directory: `tests/auto_pilot/scenario_runner.py`, `run_cliq_live_probe.sh`, and `run_cliq_alt_probe.sh` now run correctly from either repo root or workspace root, and SCAP report table rows now escape multi-line/pipe-heavy validator messages.
 - `zoho login --no-browser` now defaults to `http://localhost:{port}/callback` and automatically falls back from legacy `https://example.com/zoho/oauth/callback` config values.
 - `zoho config init` now defaults the advanced `redirect_uri` prompt to `http://localhost:51821/callback` for headless/manual OAuth parity.
 - `zoho login` now normalizes repeatable `--scope` inputs with comma/space parsing before merge, so combining `--with-cliq` with comma-delimited scope values no longer duplicates requested scopes in the OAuth URL.

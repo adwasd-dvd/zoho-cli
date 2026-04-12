@@ -1,15 +1,18 @@
 #!/usr/bin/env bash
 set -u
 
+ROOT_DIR="$(cd "$(dirname "$0")/../.." && pwd)"
+cd "$ROOT_DIR"
+
 CONFIG="${1:-/tmp/zoho-test-config.json}"
 ACCOUNT="${2:-ai-dev@happy-distro.co.uk}"
 NETWORK="${3:-happydistrouklimited}"
 CHANNEL_ID="${4:-O6576524000097556005}"
-IMAGE_PATH="${5:-/Users/adwasd/.openclaw/workspace-coder/test/test.png}"
+IMAGE_PATH="${5:-$ROOT_DIR/.tmp/live-probes/probe-image.png}"
 
-mkdir -p tests/auto_pilot/reports
+mkdir -p "$ROOT_DIR/tests/auto_pilot/reports"
 TS="$(date +%Y%m%d_%H%M%S)"
-LOG="tests/auto_pilot/reports/cliq_alt_probe_${TS}.log"
+LOG="$ROOT_DIR/tests/auto_pilot/reports/cliq_alt_probe_${TS}.log"
 
 echo "[SCAP] alt probe log: ${LOG}"
 

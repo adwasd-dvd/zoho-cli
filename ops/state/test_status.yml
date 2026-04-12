@@ -1,10 +1,16 @@
-last_run_at: "2026-04-11T23:32:27Z"
+last_run_at: "2026-04-12T00:28:17Z"
 last_result: passed
 current_focus: cliq
 suites:
   unit:
     status: passing
     notes:
+      - python3.11 tests/auto_pilot/scenario_runner.py
+      - 3 passed (SCAP runner now resolves repo root from script location and writes stable report tables even when validator messages include newlines/pipes, 2026-04-12T00:23:46Z)
+      - python3.11 job/zoho-cli/tests/auto_pilot/scenario_runner.py
+      - 3 passed (same SCAP suite now succeeds when launched from workspace root, confirming root-stable state paths, 2026-04-12T00:23:51Z)
+      - python3.11 tests/auto_pilot/state_validator.py ops/state/module_status.yml '{"mail":{"status":"completed"}}'
+      - VALIDATION_SUCCESS (validator now returns structured failures instead of traceback-only crashes on malformed YAML, 2026-04-12T00:24:12Z)
       - python3.11 -m pytest -q tests/test_cliq.py::test_cliq_client_send_local_file_message_user_tries_plural_message_endpoint tests/test_cliq.py::test_cliq_client_send_local_file_message_resolves_email_user_id tests/test_cliq.py::test_cliq_client_send_message_resolves_email_user_id tests/test_cliq.py
       - user-target plural `/messages` fallback added for send + local multipart; targeted + full cliq suite passing (2026-04-11T23:32:27Z)
       - python3.11 -m pytest -q tests/test_cliq.py::test_cliq_client_send_local_file_message_to_user tests/test_cliq.py::test_cliq_client_send_local_file_message_error_reports_form_field tests/test_cliq.py::test_cliq_client_send_local_image_message_prefers_image_field tests/test_cliq.py::test_cliq_client_send_local_file_message_channel_id_tries_channels_endpoint tests/test_cliq.py::test_cliq_client_send_local_file_message_channel_id_tries_plural_message_endpoint tests/test_cli.py::test_cliq_send_channel_with_image_url

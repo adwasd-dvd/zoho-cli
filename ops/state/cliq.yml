@@ -1,5 +1,5 @@
 module: Cliq
-updated_at: '2026-04-12T21:45:38Z'
+updated_at: '2026-04-12T22:08:30Z'
 status: in_progress
 blockers:
 - 'cliq-192 focused live `cliq databases` verification on happydistrouklimited currently returns `oauth_scope_invalid` (`ZohoCliq.Databases.READ`) while auth remains healthy (`oauthReady: true`, `exportOauthReady: true`) (evidence: `tests/auto_pilot/reports/cliq192_probe_summary_20260412_214538.json`, `tests/auto_pilot/reports/cliq192_databases_20260412_214538.json`)'
@@ -12,8 +12,8 @@ blockers:
 - 'cliq-172 live probe confirms attachment retrieval parity remains endpoint-limited: media-typed message `1775957550478_105215272334` returns `retrievalResult: media_visible_without_attachment_payload` and `count: 0` for both `cliq file` and `cliq voice` (`tests/auto_pilot/reports/cliq172_probe_summary_20260412_134514.json`)'
 - 'maintenance export command surface (`cliq export-chats`) is implemented and maintenance scopes are granted (`ZohoCliq.OrganizationChats.READ`, `ZohoCliq.OrganizationMessages.READ`), but export verification remains blocked by API-side `inactive_appaccount_user` on both list + explicit `--chat-id` probes (evidence: `tests/auto_pilot/reports/cliq_export_chats_list_inactive_recheck_20260412_105646.json`, `tests/auto_pilot/reports/cliq_export_chat_inactive_recheck_20260412_105646.json`)'
 next_small_step: >-
-  focused cliq-192 live verification is now archived and currently shows
-  `oauth_scope_invalid` for `ZohoCliq.Databases.READ`; keep blocker-skipping
-  active by taking the next smallest platform-extension slice (`widget` or
-  `map tickers`) with targeted tests while cliq-165 app-account activation
-  remains externally blocked
+  second cliq-192 code slice is now in place (`zoho cliq widgets` +
+  `ZohoCliqClient.list_widgets`) and targeted tests are green; keep
+  blocker-skipping active by taking the next smallest platform-extension slice
+  (`map tickers`) and then run one focused live `cliq widgets` verification
+  pass while cliq-165 app-account activation remains externally blocked

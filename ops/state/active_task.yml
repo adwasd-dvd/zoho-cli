@@ -4,18 +4,18 @@ module: cliq
 stage: in_progress
 status: in_progress
 owner: automation
-updated_at: '2026-04-12T21:45:38Z'
+updated_at: '2026-04-12T22:08:30Z'
 success_criteria:
 - run one focused live verification pass for `zoho cliq databases` and archive endpoint behavior evidence
 - keep cliq-165 export blocker evidence fresh while app-account activation remains external
 - continue cliq-192 with one next smallest platform-extension slice and targeted tests
 next_if_done: >-
-  take the next cliq-192 platform-extension slice (`widget` or `map tickers`)
-  with targeted CLI/client coverage while cliq-165 remains externally blocked
+  take the next cliq-192 platform-extension slice (`map tickers`) with
+  targeted CLI/client coverage while cliq-165 remains externally blocked
 next_step: >-
-  focused live `cliq databases` verification is now archived
-  (`tests/auto_pilot/reports/cliq192_probe_summary_20260412_214538.json`);
-  status auth is healthy (`oauthReady: true`, `exportOauthReady: true`) but
-  databases listing returns `oauth_scope_invalid` with
-  `ZohoCliq.Databases.READ` guidance, so continue blocker-skipping with the
-  next smallest cliq-192 code slice
+  second cliq-192 code slice is now in place (`zoho cliq widgets` +
+  `ZohoCliqClient.list_widgets`) with targeted tests green; focused live
+  `cliq databases` evidence remains scope-blocked
+  (`tests/auto_pilot/reports/cliq192_probe_summary_20260412_214538.json`), so
+  continue blocker-skipping with the next smallest cliq-192 slice (`map
+  tickers`)

@@ -2793,6 +2793,22 @@ class ZohoCliqClient:
             not_supported_message="Cliq platform database listing endpoints are not available for this token/network endpoint.",
         )
 
+    def list_widgets(self, *, limit: int = 50) -> dict:
+        """List platform-extension widgets (cliq-192 second slice)."""
+        return self._get_with_candidates_and_not_supported(
+            [
+                ("/widgets", {"limit": limit}),
+                ("/widgets", None),
+                ("/widget", {"limit": limit}),
+                ("/widget", None),
+                ("/admin/widgets", {"limit": limit}),
+                ("/admin/widgets", None),
+            ],
+            scope_hint="ZohoCliq.Widgets.READ",
+            operation_label="widgets-list",
+            not_supported_message="Cliq platform widget listing endpoints are not available for this token/network endpoint.",
+        )
+
     @staticmethod
     def infer_message_types(message: dict[str, Any]) -> list[str]:
         """Infer coarse content types from a raw Cliq message payload."""

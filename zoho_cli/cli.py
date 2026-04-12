@@ -2017,6 +2017,67 @@ def cliq_databases(
     )
 
 
+@cliq_app.command("widgets")
+def cliq_widgets(
+    limit: int = typer.Option(50, "--limit", "-n", help="Max widgets to return."),
+    network: Optional[str] = typer.Option(
+        None, "--network", help="Cliq network slug (e.g. happydistrouklimited)."
+    ),
+) -> None:
+    """List Cliq platform-extension widgets (cliq-192 second slice)."""
+    cfg = _cfg()
+    email = _require_account(cfg)
+    client = _get_cliq_client(cfg, email, network=network)
+
+    resp = client.list_widgets(limit=limit)
+    data = resp.get("data", resp)
+    if not isinstance(data, list):
+        data = []
+
+    views: list[dict[str, Any]] = []
+    for row in data:
+        if not isinstance(row, dict):
+            continue
+        views.append(
+            {
+                "widgetId": str(
+                    row.get("widget_id")
+                    or row.get("widgetId")
+                    or row.get("id")
+                    or row.get("zuid")
+                    or ""
+                ),
+                "name": str(
+                    row.get("name")
+                    or row.get("widget_name")
+                    or row.get("title")
+                    or row.get("display_name")
+                    or ""
+                ),
+                "type": str(
+                    row.get("widget_type")
+                    or row.get("type")
+                    or row.get("category")
+                    or ""
+                ),
+                "status": str(
+                    row.get("status")
+                    or row.get("state")
+                    or row.get("widget_status")
+                    or ""
+                ),
+                "raw": row,
+            }
+        )
+
+    utils.output(
+        {
+            "count": len(views),
+            "widgets": views,
+        }
+    )
+
+
 @cliq_app.command("export-chats")
 def cliq_export_chats(
     chat_id: Optional[str] = typer.Option(

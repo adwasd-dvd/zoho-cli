@@ -2759,6 +2759,20 @@ class ZohoCliqClient:
             not_supported_message="Cliq collaboration reminder listing endpoints are not available for this token/network endpoint.",
         )
 
+    def list_meetings(self, *, limit: int = 50) -> dict:
+        """List collaboration calls/meetings (cliq-191 calls-and-meetings slice)."""
+        return self._get_with_candidates_and_not_supported(
+            [
+                ("/meetings", {"limit": limit}),
+                ("/meetings", None),
+                ("/admin/meetings", {"limit": limit}),
+                ("/admin/meetings", None),
+            ],
+            scope_hint="ZohoCliq.Calls.READ",
+            operation_label="meetings-list",
+            not_supported_message="Cliq collaboration calls/meetings listing endpoints are not available for this token/network endpoint.",
+        )
+
     @staticmethod
     def infer_message_types(message: dict[str, Any]) -> list[str]:
         """Infer coarse content types from a raw Cliq message payload."""

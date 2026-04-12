@@ -484,6 +484,55 @@ def test_cliq_client_list_reminders_scope_invalid_reports_hint(
 
 
 @respx.mock
+def test_cliq_client_list_meetings_falls_back_to_admin_endpoint(
+    client: cliq.ZohoCliqClient,
+) -> None:
+    meetings_route = respx.get("https://cliq.zoho.com/api/v2/meetings").mock(
+        return_value=httpx.Response(404, text="request_url_invalid")
+    )
+    admin_route = respx.get("https://cliq.zoho.com/api/v2/admin/meetings").mock(
+        return_value=httpx.Response(
+            200,
+            json={
+                "data": [
+                    {
+                        "meeting_id": "MT_1",
+                        "title": "Sprint Sync",
+                    }
+                ]
+            },
+        )
+    )
+
+    result = client.list_meetings(limit=15)
+
+    assert meetings_route.called
+    assert admin_route.called
+    assert dict(admin_route.calls.last.request.url.params) == {"limit": "15"}
+    assert result["data"][0]["meeting_id"] == "MT_1"
+
+
+@respx.mock
+def test_cliq_client_list_meetings_scope_invalid_reports_hint(
+    client: cliq.ZohoCliqClient,
+    capsys: pytest.CaptureFixture[str],
+) -> None:
+    respx.get("https://cliq.zoho.com/api/v2/meetings").mock(
+        return_value=httpx.Response(401, json={"code": "oauth_scope_invalid"})
+    )
+    respx.get("https://cliq.zoho.com/api/v2/admin/meetings").mock(
+        return_value=httpx.Response(401, json={"code": "oauth_scope_invalid"})
+    )
+
+    with pytest.raises(SystemExit):
+        client.list_meetings(limit=15)
+
+    err = capsys.readouterr().err
+    assert "oauth_scope_invalid" in err
+    assert "ZohoCliq.Calls.READ" in err
+
+
+@respx.mock
 def test_cliq_client_export_conversations(client: cliq.ZohoCliqClient) -> None:
     route = respx.get("https://cliq.zoho.com/maintenanceapi/v2/chats").mock(
         return_value=httpx.Response(

@@ -22,6 +22,8 @@ DEFAULT_CLIQ_SCOPES = [
     "ZohoCliq.Webhooks.CREATE",
 ]
 
+CLIQ_EXPORT_SCOPE = "ZohoCliq.Org.Admin"
+
 
 def missing_cliq_scopes(granted_scopes: list[str] | None) -> list[str]:
     granted = set(granted_scopes or [])
@@ -1426,7 +1428,7 @@ class ZohoCliqClient:
         if saw_scope_invalid:
             utils.error_exit(
                 "oauth_scope_invalid",
-                "Cliq token is missing org-admin export scope. Re-run `zoho login --with-cliq --scope ZohoCliq.Org.Admin` and retry.",
+                f"Cliq token is missing export scope. Re-run `zoho login --with-cliq --scope {CLIQ_EXPORT_SCOPE}` and retry.",
             )
 
         if saw_not_supported:
@@ -1481,7 +1483,7 @@ class ZohoCliqClient:
         }:
             utils.error_exit(
                 "oauth_scope_invalid",
-                "Cliq token is missing org-admin export scope. Re-run `zoho login --with-cliq --scope ZohoCliq.Org.Admin` and retry.",
+                f"Cliq token is missing export scope. Re-run `zoho login --with-cliq --scope {CLIQ_EXPORT_SCOPE}` and retry.",
             )
 
         if (

@@ -2703,6 +2703,20 @@ class ZohoCliqClient:
             not_supported_message="Cliq org-admin designation listing endpoints are not available for this token/network endpoint.",
         )
 
+    def list_user_statuses(self, *, limit: int = 50) -> dict:
+        """List organization user-status values (cliq-190 fifth org-admin slice)."""
+        return self._get_with_candidates_and_not_supported(
+            [
+                ("/userstatus", {"limit": limit}),
+                ("/userstatus", None),
+                ("/admin/userstatus", {"limit": limit}),
+                ("/admin/userstatus", None),
+            ],
+            scope_hint="ZohoCliq.Statuses.READ",
+            operation_label="user-status-list",
+            not_supported_message="Cliq org-admin user-status listing endpoints are not available for this token/network endpoint.",
+        )
+
     @staticmethod
     def infer_message_types(message: dict[str, Any]) -> list[str]:
         """Infer coarse content types from a raw Cliq message payload."""

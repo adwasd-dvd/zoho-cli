@@ -1656,6 +1656,57 @@ def cliq_designations(
     )
 
 
+@cliq_app.command("user-status")
+def cliq_user_status(
+    limit: int = typer.Option(
+        50, "--limit", "-n", help="Max user-status rows to return."
+    ),
+    network: Optional[str] = typer.Option(
+        None, "--network", help="Cliq network slug (e.g. happydistrouklimited)."
+    ),
+) -> None:
+    """List Cliq org-admin user-status values (cliq-190 phase-1 slice)."""
+    cfg = _cfg()
+    email = _require_account(cfg)
+    client = _get_cliq_client(cfg, email, network=network)
+
+    resp = client.list_user_statuses(limit=limit)
+    data = resp.get("data", resp)
+    if not isinstance(data, list):
+        data = []
+
+    views: list[dict[str, Any]] = []
+    for row in data:
+        if not isinstance(row, dict):
+            continue
+        views.append(
+            {
+                "statusId": str(
+                    row.get("status_id")
+                    or row.get("statusId")
+                    or row.get("id")
+                    or row.get("zuid")
+                    or ""
+                ),
+                "name": str(
+                    row.get("name")
+                    or row.get("status")
+                    or row.get("label")
+                    or row.get("display_name")
+                    or ""
+                ),
+                "raw": row,
+            }
+        )
+
+    utils.output(
+        {
+            "count": len(views),
+            "statuses": views,
+        }
+    )
+
+
 @cliq_app.command("export-chats")
 def cliq_export_chats(
     chat_id: Optional[str] = typer.Option(

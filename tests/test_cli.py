@@ -2814,6 +2814,30 @@ def test_cliq_designations(
     mock_client.list_designations.assert_called_once_with(limit=6)
 
 
+def test_cliq_user_status(
+    mock_config: Path,
+    mock_token_refresh: Any,
+) -> None:
+    mock_client = MagicMock()
+    mock_client.list_user_statuses.return_value = {
+        "data": [{"status_id": "ST_1", "name": "Available"}]
+    }
+
+    with patch("zoho_cli.cli._get_cliq_client", return_value=mock_client):
+        result = runner.invoke(
+            app,
+            ["cliq", "user-status", "--limit", "7"],
+            env=_cfg_env(mock_config),
+        )
+
+    assert result.exit_code == 0, result.output
+    payload = json.loads(result.output)
+    assert payload["count"] == 1
+    assert payload["statuses"][0]["statusId"] == "ST_1"
+    assert payload["statuses"][0]["name"] == "Available"
+    mock_client.list_user_statuses.assert_called_once_with(limit=7)
+
+
 @respx.mock
 def test_cliq_export_chats_list(mock_config: Path, mock_token_refresh: Any) -> None:
     respx.get("https://cliq.zoho.com/maintenanceapi/v2/chats").mock(

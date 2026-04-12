@@ -1,4 +1,4 @@
-last_run_at: "2026-04-12T04:21:00Z"
+last_run_at: "2026-04-12T04:24:55Z"
 last_result: warning
 current_focus: cliq
 suites:
@@ -215,10 +215,10 @@ suites:
   integration:
     status: warning
     notes:
-      - "python3.11 one-token live matrix over workspace test files (`test.png`, `sample-3.m4a`, `2026-04-10-report.pdf`, `lv1_capturable_report.csv`) via ZohoCliqClient.send_local_file_message to both channel and user targets"
-      - "8/8 local media/file probes succeeded with zero errors; evidence: `tests/auto_pilot/reports/cliq_workspace_test_media_matrix_20260412_042345.json` (2026-04-12T04:23:45Z)"
-      - "python3.11 one-token live export probe using `client.export_conversations()` on happydistrouklimited"
-      - "export live check still fails with `oauth_scope_invalid` (`ZohoCliq.Org.Admin` missing); evidence: `tests/auto_pilot/reports/cliq_export_chats_live_20260412_042453.json` (2026-04-12T04:24:53Z)"
+      - "bash tests/auto_pilot/run_cliq_local_media_matrix_cooldown.sh /tmp/zoho-test-config.json ai-dev@happy-distro.co.uk happydistrouklimited O6576524000097556005 david@happy-distro.com /Users/adwasd/.openclaw/workspace-coder/test/test.png /Users/adwasd/.openclaw/workspace-coder/test/sample-3.m4a /Users/adwasd/.openclaw/workspace-coder/test/2026-04-10-report.pdf"
+      - "workspace extra fixture probe (PDF file slot) is fully green: ok=6, errors=0; evidence: `tests/auto_pilot/reports/cliq_local_media_matrix_cooldown_20260411_212355.json` (2026-04-12T04:23:55Z)"
+      - "bash tests/auto_pilot/run_cliq_local_media_matrix_cooldown.sh /tmp/zoho-test-config.json ai-dev@happy-distro.co.uk happydistrouklimited O6576524000097556005 david@happy-distro.com /Users/adwasd/.openclaw/workspace-coder/test/test.png /Users/adwasd/.openclaw/workspace-coder/test/sample-3.m4a /Users/adwasd/.openclaw/workspace-coder/test/lv1_capturable_report.csv"
+      - "workspace extra fixture probe (CSV file slot) is fully green: ok=6, errors=0; evidence: `tests/auto_pilot/reports/cliq_local_media_matrix_cooldown_20260411_212455.json` (2026-04-12T04:24:55Z)"
       - "python3.11 -m zoho_cli --config /tmp/zoho-test-config.json --account ai-dev@happy-distro.co.uk cliq export-chats --network happydistrouklimited"
       - "live export list probe currently returns `oauth_scope_invalid` (missing `ZohoCliq.Org.Admin`); evidence: `tests/auto_pilot/reports/cliq_export_chats_list_scope_invalid_20260412_031212.json` (2026-04-12T03:12:12Z)"
       - "python3.11 -m zoho_cli --config /tmp/zoho-test-config.json --account ai-dev@happy-distro.co.uk cliq export-chats --network happydistrouklimited --chat-id CT_1424657670787261966_911174541"

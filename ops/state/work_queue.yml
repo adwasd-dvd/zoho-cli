@@ -118,6 +118,62 @@
   priority: high
   depends_on:
   - cliq-160
+- id: cliq-170
+  title: implement thread plane (create/reply/list/followers/state) with capability-gated fallbacks
+  module: cliq
+  stage: queued
+  priority: high
+  depends_on:
+  - cliq-160
+- id: cliq-171
+  title: implement scheduled message lifecycle (schedule/list/get/cancel) for chat/channel targets
+  module: cliq
+  stage: queued
+  priority: high
+  depends_on:
+  - cliq-160
+- id: cliq-172
+  title: close search and attachment retrieval parity with endpoint taxonomy and blocker-skip handoff logs
+  module: cliq
+  stage: queued
+  priority: high
+  depends_on:
+  - cliq-160
+- id: cliq-180
+  title: implement bot operations (post-to-bot, subscribers, trigger bot calls) for automation loops
+  module: cliq
+  stage: queued
+  priority: medium
+  depends_on:
+  - cliq-170
+- id: cliq-181
+  title: expand chat control plane (mute/unmute/pin/unpin/retrieve pinned/leave)
+  module: cliq
+  stage: queued
+  priority: medium
+  depends_on:
+  - cliq-170
+- id: cliq-190
+  title: implement org admin phase 1 (teams/departments/roles/designation/user-status/userfields)
+  module: cliq
+  stage: queued
+  priority: low
+  depends_on:
+  - cliq-181
+- id: cliq-191
+  title: implement collaboration productivity plane (events/reminders/calls-and-meetings)
+  module: cliq
+  stage: queued
+  priority: low
+  depends_on:
+  - cliq-181
+- id: cliq-192
+  title: implement platform extension plane (cliq database/widget map tickers/custom domain/custom email)
+  module: cliq
+  stage: queued
+  priority: low
+  depends_on:
+  - cliq-190
 - id: crm-001
   title: scaffold crm product module and client shell
   module: crm

@@ -2641,6 +2641,20 @@ class ZohoCliqClient:
             not_supported_message="Cliq org-admin team listing endpoints are not available for this token/network endpoint.",
         )
 
+    def list_departments(self, *, limit: int = 50) -> dict:
+        """List organization departments (cliq-190 second org-admin slice)."""
+        return self._get_with_candidates_and_not_supported(
+            [
+                ("/departments", {"limit": limit}),
+                ("/departments", None),
+                ("/admin/departments", {"limit": limit}),
+                ("/admin/departments", None),
+            ],
+            scope_hint="ZohoCliq.Departments.READ",
+            operation_label="departments-list",
+            not_supported_message="Cliq org-admin department listing endpoints are not available for this token/network endpoint.",
+        )
+
     @staticmethod
     def infer_message_types(message: dict[str, Any]) -> list[str]:
         """Infer coarse content types from a raw Cliq message payload."""

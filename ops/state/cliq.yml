@@ -1,5 +1,5 @@
 module: Cliq
-updated_at: '2026-04-12T17:08:22Z'
+updated_at: '2026-04-12T17:27:12Z'
 status: in_progress
 blockers:
 - 'cliq-181 live `cliq pinned` probe on happydistrouklimited classifies pinned endpoints as unsupported (`error: not_supported`) while auth remains healthy (`oauthReady: true`) (evidence: `tests/auto_pilot/reports/cliq181_probe_summary_20260412_164540.json` plus `tests/auto_pilot/reports/cliq181_pinned_20260412_164540.json`)'
@@ -10,7 +10,7 @@ blockers:
 - 'cliq-172 live probe confirms attachment retrieval parity remains endpoint-limited: media-typed message `1775957550478_105215272334` returns `retrievalResult: media_visible_without_attachment_payload` and `count: 0` for both `cliq file` and `cliq voice` (`tests/auto_pilot/reports/cliq172_probe_summary_20260412_134514.json`)'
 - "maintenance export command surface (`cliq export-chats`) is implemented and response-shape normalization is hardened; live auth still reports missing maintenance export scopes (`ZohoCliq.OrganizationChats.READ`, `ZohoCliq.OrganizationMessages.READ`), and export verification remains blocked with `oauth_scope_invalid` on both list + explicit `--chat-id` probes (latest one-command evidence: `tests/auto_pilot/reports/cliq_status_export_scope_recheck_20260412_032238.json`, `tests/auto_pilot/reports/cliq_export_chats_list_scope_recheck_20260412_032238.json`, `tests/auto_pilot/reports/cliq_export_chat_scope_recheck_20260412_032238.json`; runner summary `tests/auto_pilot/reports/cliq_export_scope_recheck_summary_20260412_032238.json` reports `scopeBlocked: true` and `recommendedNext: interactive_reauth_then_rerun` from status `exportOauthReady`/`missingExportScopes` signals)"
 next_small_step: >-
-  cliq-190 first org-admin slice is landed (`zoho cliq teams` +
-  `ZohoCliqClient.list_teams` with endpoint fallback guidance); continue with the
-  next small org-admin command/client slice while keeping cliq-165 export scope
-  verification blocked for interactive re-auth
+  cliq-190 now includes `zoho cliq teams` and `zoho cliq departments` with
+  endpoint fallback guidance; continue with the next small org-admin
+  command/client slice (roles/designation/user-status/userfields) while keeping
+  cliq-165 export scope verification blocked for interactive re-auth

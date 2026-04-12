@@ -47,6 +47,7 @@
 ### Fixed
 - Auto-pilot state/probe scripts now resolve project paths from script location instead of assuming a specific current working directory: `tests/auto_pilot/scenario_runner.py`, `run_cliq_live_probe.sh`, and `run_cliq_alt_probe.sh` now run correctly from either repo root or workspace root, and SCAP report table rows now escape multi-line/pipe-heavy validator messages.
 - `ZohoCliqClient.get_dm_history` now falls back across DM history endpoint variants (`/conversations/{user}/messages`, `/buddies/{user}/messages`, `/users/{user}/messages`, `/chats/{id}/messages`) and keeps pagination on the first supported route, so live probes no longer hard-fail on the first `request_url_invalid` path mismatch.
+- `ZohoCliqClient.get_dm_history` now returns an empty history when all DM endpoint candidates miss with endpoint-level unsupported patterns (`request_url_invalid` / 404 / 405 / `operation_failed` / `request_method_invalid`), so live probes stay stable instead of terminating with a hard `api_error`.
 - `zoho login --no-browser` now defaults to `http://localhost:{port}/callback` and automatically falls back from legacy `https://example.com/zoho/oauth/callback` config values.
 - `zoho config init` now defaults the advanced `redirect_uri` prompt to `http://localhost:51821/callback` for headless/manual OAuth parity.
 - `zoho login` now normalizes repeatable `--scope` inputs with comma/space parsing before merge, so combining `--with-cliq` with comma-delimited scope values no longer duplicates requested scopes in the OAuth URL.

@@ -105,7 +105,11 @@ class ZohoCliqClient:
         limit: int = 100,
         token_param: str = "next_page_token",
     ) -> list[dict[str, Any]]:
-        """Collect paginated GET data from the first supported endpoint candidate."""
+        """Collect paginated GET data from the first supported endpoint candidate.
+
+        Returns an empty list when every candidate path is endpoint-miss style
+        (`request_url_invalid`, 404/405, or retryable not-supported codes).
+        """
         unique_paths: list[str] = []
         seen_paths: set[str] = set()
         for path in paths:
@@ -117,6 +121,7 @@ class ZohoCliqClient:
 
         last_error: tuple[int, str, str] | None = None
         saw_scope_invalid = False
+        saw_candidate_miss = False
         retryable_error_codes = {
             "request_method_invalid",
             "operation_not_allowed",
@@ -173,6 +178,7 @@ class ZohoCliqClient:
                         or "request_url_invalid" in lowered
                         or error_code in retryable_error_codes
                     ):
+                        saw_candidate_miss = True
                         break
 
                     utils.error_exit(
@@ -210,6 +216,9 @@ class ZohoCliqClient:
                 "oauth_scope_invalid",
                 "Cliq token is missing message-read scope for DM history. Re-run `zoho login --with-cliq --scope ZohoCliq.Messages.READ` and retry.",
             )
+
+        if saw_candidate_miss:
+            return []
 
         if last_error is not None:
             status, path, body = last_error

@@ -147,6 +147,28 @@ def test_cliq_client_get_dm_history_scope_invalid_reports_hint(
     assert "ZohoCliq.Messages.READ" in err
 
 
+@respx.mock
+def test_cliq_client_get_dm_history_all_candidate_misses_returns_empty(
+    client: cliq.ZohoCliqClient,
+) -> None:
+    respx.get("https://cliq.zoho.com/api/v2/conversations/U1/messages").mock(
+        return_value=httpx.Response(404, text="request_url_invalid")
+    )
+    respx.get("https://cliq.zoho.com/api/v2/buddies/U1/messages").mock(
+        return_value=httpx.Response(404, text="request_url_invalid")
+    )
+    respx.get("https://cliq.zoho.com/api/v2/users/U1/messages").mock(
+        return_value=httpx.Response(404, text="request_url_invalid")
+    )
+    respx.get("https://cliq.zoho.com/api/v2/chats/U1/messages").mock(
+        return_value=httpx.Response(400, json={"code": "operation_failed"})
+    )
+
+    history = client.get_dm_history("U1", limit=3)
+
+    assert history == []
+
+
 def test_cliq_client_infer_message_types_detects_voice_sticker_and_text() -> None:
     message = {
         "text": "hello :thumbsup:",

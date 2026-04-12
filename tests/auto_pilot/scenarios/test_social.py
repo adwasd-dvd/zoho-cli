@@ -79,9 +79,12 @@ def test_get_dm_history_full_pagination(monkeypatch) -> None:
     monkeypatch.setattr(cliq_module.httpx, "get", fake_httpx_get)
 
     history = client.get_dm_history("user-123", limit=25)
+    meta = client.get_last_dm_history_meta()
 
     assert [m["id"] for m in history] == ["m1", "m2", "m3"]
     assert calls[0]["url"].endswith("/conversations/user-123/messages")
+    assert meta["result"] == "ok"
+    assert meta["selectedPath"] == "/conversations/user-123/messages"
 
 
 def test_get_channel_history_via_channel_resolution(monkeypatch) -> None:

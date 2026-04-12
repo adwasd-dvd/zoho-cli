@@ -57,6 +57,12 @@ class ZohoCliqClient:
     def __init__(self, access_token: str, base_url: str | None = None) -> None:
         self.base_url = (base_url or infer_cliq_base_url()).rstrip("/")
         self._headers = {"Authorization": f"Zoho-oauthtoken {access_token}"}
+        self._last_dm_history_meta: dict[str, Any] = {
+            "result": "not_run",
+            "candidatePaths": [],
+            "attemptedPaths": [],
+            "selectedPath": None,
+        }
 
     def _collect_paginated_get(
         self,
@@ -104,6 +110,7 @@ class ZohoCliqClient:
         *,
         limit: int = 100,
         token_param: str = "next_page_token",
+        meta: dict[str, Any] | None = None,
     ) -> list[dict[str, Any]]:
         """Collect paginated GET data from the first supported endpoint candidate.
 
@@ -119,6 +126,8 @@ class ZohoCliqClient:
             seen_paths.add(text)
             unique_paths.append(text)
 
+        attempted_paths: list[str] = []
+
         last_error: tuple[int, str, str] | None = None
         saw_scope_invalid = False
         saw_candidate_miss = False
@@ -131,6 +140,7 @@ class ZohoCliqClient:
         }
 
         for path in unique_paths:
+            attempted_paths.append(path)
             items: list[dict[str, Any]] = []
             next_token: str | None = None
             seen_tokens: set[str] = set()
@@ -209,21 +219,71 @@ class ZohoCliqClient:
                 next_token = token_text
 
             if saw_success:
+                if meta is not None:
+                    meta.clear()
+                    meta.update(
+                        {
+                            "result": "ok",
+                            "candidatePaths": list(unique_paths),
+                            "attemptedPaths": list(attempted_paths),
+                            "selectedPath": path,
+                        }
+                    )
                 return items
 
         if saw_scope_invalid:
+            if meta is not None:
+                meta.clear()
+                meta.update(
+                    {
+                        "result": "scope_invalid",
+                        "candidatePaths": list(unique_paths),
+                        "attemptedPaths": list(attempted_paths),
+                        "selectedPath": None,
+                    }
+                )
             utils.error_exit(
                 "oauth_scope_invalid",
                 "Cliq token is missing message-read scope for DM history. Re-run `zoho login --with-cliq --scope ZohoCliq.Messages.READ` and retry.",
             )
 
         if saw_candidate_miss:
+            if meta is not None:
+                meta.clear()
+                meta.update(
+                    {
+                        "result": "not_supported",
+                        "candidatePaths": list(unique_paths),
+                        "attemptedPaths": list(attempted_paths),
+                        "selectedPath": None,
+                    }
+                )
             return []
 
         if last_error is not None:
+            if meta is not None:
+                meta.clear()
+                meta.update(
+                    {
+                        "result": "api_error",
+                        "candidatePaths": list(unique_paths),
+                        "attemptedPaths": list(attempted_paths),
+                        "selectedPath": None,
+                    }
+                )
             status, path, body = last_error
             utils.error_exit("api_error", f"HTTP {status} GET {path}: {body}")
 
+        if meta is not None:
+            meta.clear()
+            meta.update(
+                {
+                    "result": "api_error",
+                    "candidatePaths": list(unique_paths),
+                    "attemptedPaths": list(attempted_paths),
+                    "selectedPath": None,
+                }
+            )
         utils.error_exit("api_error", "No candidate endpoint available for DM history")
         return []
 
@@ -236,7 +296,8 @@ class ZohoCliqClient:
         target = user_id.strip()
         if not target:
             utils.error_exit("invalid_user_id", "user_id cannot be empty")
-        return self._collect_paginated_get_candidates(
+        history_meta: dict[str, Any] = {}
+        history = self._collect_paginated_get_candidates(
             [
                 f"/conversations/{target}/messages",
                 f"/buddies/{target}/messages",
@@ -244,7 +305,19 @@ class ZohoCliqClient:
                 f"/chats/{target}/messages",
             ],
             limit=limit,
+            meta=history_meta,
         )
+        self._last_dm_history_meta = history_meta
+        return history
+
+    def get_last_dm_history_meta(self) -> dict[str, Any]:
+        """Return metadata for the most recent `get_dm_history` call."""
+        payload = dict(self._last_dm_history_meta)
+        for key in ("candidatePaths", "attemptedPaths"):
+            values = payload.get(key)
+            if isinstance(values, list):
+                payload[key] = list(values)
+        return payload
 
     def get_chat_history(
         self,
@@ -2517,10 +2590,15 @@ class ZohoCliqClient:
                 if stop_early or attempts >= max_attempts
                 else ""
             )
-            if saw_endpoint_limitation and not saw_non_limitation_failure and not stop_early:
+            if (
+                saw_endpoint_limitation
+                and not saw_non_limitation_failure
+                and not stop_early
+            ):
                 utils.error_exit(
                     "not_supported",
-                    "Cliq local multipart upload endpoints are not supported for this token/network target. Text send can still succeed; collect `attempts:` evidence and treat this as endpoint limitation." + _attempt_suffix(),
+                    "Cliq local multipart upload endpoints are not supported for this token/network target. Text send can still succeed; collect `attempts:` evidence and treat this as endpoint limitation."
+                    + _attempt_suffix(),
                 )
             utils.error_exit(
                 "api_error",

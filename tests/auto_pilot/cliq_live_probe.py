@@ -29,7 +29,9 @@ def main() -> None:
 
     parser.add_argument("--send-text", default=None)
     parser.add_argument("--send-media", default=None)
-    parser.add_argument("--media-kind", default="file", choices=["file", "image", "voice"])
+    parser.add_argument(
+        "--media-kind", default="file", choices=["file", "image", "voice"]
+    )
     parser.add_argument("--send-user-id", default=None)
 
     args = parser.parse_args()
@@ -39,7 +41,9 @@ def main() -> None:
         cfg = config.load(args.config_path)
         account = (args.account or cfg.get("default_account") or "").strip()
         if not account:
-            raise SystemExit("Missing account. Use --account or set default_account in config.")
+            raise SystemExit(
+                "Missing account. Use --account or set default_account in config."
+            )
         client_id = (cfg.get("client_id") or "").strip()
         client_secret = (cfg.get("client_secret") or "").strip()
         if not client_id or not client_secret:
@@ -74,9 +78,13 @@ def main() -> None:
 
     if args.dm_user_id:
         dm = client.get_dm_history(args.dm_user_id, limit=200)
+        dm_meta = client.get_last_dm_history_meta()
         result["dmHistory"] = {
             "targetUserId": args.dm_user_id,
             "count": len(dm),
+            "result": dm_meta.get("result"),
+            "sourcePath": dm_meta.get("selectedPath"),
+            "attemptedPaths": dm_meta.get("attemptedPaths", []),
             "latestSample": dm[:3],
         }
 

@@ -113,8 +113,15 @@ def test_cliq_client_get_dm_history_falls_back_from_conversations_to_buddies(
     )
 
     history = client.get_dm_history("U1", limit=25)
+    meta = client.get_last_dm_history_meta()
 
     assert [entry["id"] for entry in history] == ["m1", "m2", "m3"]
+    assert meta["result"] == "ok"
+    assert meta["selectedPath"] == "/buddies/U1/messages"
+    assert meta["attemptedPaths"] == [
+        "/conversations/U1/messages",
+        "/buddies/U1/messages",
+    ]
     assert conversations.called
     assert buddies.call_count == 2
     assert dict(buddies.calls[0].request.url.params) == {"limit": "25"}
@@ -165,8 +172,17 @@ def test_cliq_client_get_dm_history_all_candidate_misses_returns_empty(
     )
 
     history = client.get_dm_history("U1", limit=3)
+    meta = client.get_last_dm_history_meta()
 
     assert history == []
+    assert meta["result"] == "not_supported"
+    assert meta["selectedPath"] is None
+    assert meta["attemptedPaths"] == [
+        "/conversations/U1/messages",
+        "/buddies/U1/messages",
+        "/users/U1/messages",
+        "/chats/U1/messages",
+    ]
 
 
 def test_cliq_client_infer_message_types_detects_voice_sticker_and_text() -> None:
@@ -817,9 +833,9 @@ def test_cliq_client_send_local_file_message_request_method_invalid_skips_path(
     first = respx.post("https://cliq.zoho.com/api/v2/channelsbyname/O1/message").mock(
         return_value=httpx.Response(400, json={"code": "request_method_invalid"})
     )
-    second = respx.post(
-        "https://cliq.zoho.com/api/v2/channelsbyname/O1/messages"
-    ).mock(return_value=httpx.Response(200, json={"data": {"status": "ok"}}))
+    second = respx.post("https://cliq.zoho.com/api/v2/channelsbyname/O1/messages").mock(
+        return_value=httpx.Response(200, json={"data": {"status": "ok"}})
+    )
     respx.get("https://cliq.zoho.com/api/v2/channels/O1").mock(
         return_value=httpx.Response(404, text="not_found")
     )
@@ -849,9 +865,9 @@ def test_cliq_client_send_local_file_message_operation_failed_skips_path(
     first = respx.post("https://cliq.zoho.com/api/v2/channelsbyname/O1/message").mock(
         return_value=httpx.Response(400, json={"code": "operation_failed"})
     )
-    second = respx.post(
-        "https://cliq.zoho.com/api/v2/channelsbyname/O1/messages"
-    ).mock(return_value=httpx.Response(200, json={"data": {"status": "ok"}}))
+    second = respx.post("https://cliq.zoho.com/api/v2/channelsbyname/O1/messages").mock(
+        return_value=httpx.Response(200, json={"data": {"status": "ok"}})
+    )
     respx.get("https://cliq.zoho.com/api/v2/channels/O1").mock(
         return_value=httpx.Response(404, text="not_found")
     )

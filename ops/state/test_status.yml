@@ -1,10 +1,14 @@
-last_run_at: "2026-04-12T14:48:22Z"
+last_run_at: "2026-04-12T15:06:43Z"
 last_result: warning
 current_focus: cliq
 suites:
   unit:
     status: passing
     notes:
+      - "python3.11 -m zoho_cli --config /tmp/zoho-test-config.json --account ai-dev@happy-distro.co.uk cliq status --check-auth --network happydistrouklimited"
+      - "python3.11 -m zoho_cli --config /tmp/zoho-test-config.json --account ai-dev@happy-distro.co.uk cliq trigger-bot BOT_PROBE_FAKE_20260412_150542 daily_digest --inputs-json '{\"source\":\"scap\",\"run\":\"20260412_150542\"}' --network happydistrouklimited"
+      - "python3.11 -m zoho_cli --config /tmp/zoho-test-config.json --account ai-dev@happy-distro.co.uk cliq capabilities --network happydistrouklimited"
+      - "cliq-180 live probe archived at `tests/auto_pilot/reports/cliq180_trigger_bot_20260412_150542.json`: trigger-bot returns `not_supported` while status remains `oauthReady: true` and baseline capabilities are healthy (`tests/auto_pilot/reports/cliq180_capabilities_20260412_150542.json`) (2026-04-12T15:05:42Z)"
       - "python3.11 -m pytest -q tests/test_cliq.py::test_cliq_client_trigger_bot_call_falls_back_to_call_endpoint tests/test_cliq.py::test_cliq_client_trigger_bot_call_scope_invalid_reports_hint tests/test_cli.py::test_cliq_trigger_bot tests/test_cli.py::test_cliq_trigger_bot_rejects_invalid_inputs_json"
       - "4 passed in 0.15s (cliq-180 third slice: new `zoho cliq trigger-bot` command + `ZohoCliqClient.trigger_bot_call` fallback coverage, 2026-04-12T14:48:22Z)"
       - "./.venv/bin/ruff format --check zoho_cli/cliq.py zoho_cli/cli.py tests/test_cliq.py tests/test_cli.py"

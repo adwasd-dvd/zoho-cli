@@ -142,14 +142,14 @@
 - id: cliq-180
   title: implement bot operations (post-to-bot, subscribers, trigger bot calls) for automation loops
   module: cliq
-  stage: in_progress
+  stage: completed
   priority: medium
   depends_on:
   - cliq-170
 - id: cliq-181
   title: expand chat control plane (mute/unmute/pin/unpin/retrieve pinned/leave)
   module: cliq
-  stage: queued
+  stage: in_progress
   priority: medium
   depends_on:
   - cliq-170

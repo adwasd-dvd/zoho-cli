@@ -1,13 +1,13 @@
-id: cliq-180
-title: implement bot operations (post-to-bot, subscribers, trigger bot calls) for automation loops
+id: cliq-181
+title: expand chat control plane (mute/unmute/pin/unpin/retrieve pinned/leave)
 module: cliq
 stage: in_progress
 status: in_progress
 owner: automation
-updated_at: '2026-04-12T14:48:22Z'
+updated_at: '2026-04-12T15:06:43Z'
 success_criteria:
-- implement cliq-180 bot-operation slices in client + CLI with fallback guidance parity
-- add targeted regression tests for new bot operation command surface
-- keep cliq-165 export-scope blocker loop documented while bot-plane work proceeds
-next_if_done: continue to cliq-181 chat control plane expansion
-next_step: all three `cliq-180` code slices (`post-to-bot`, `bot-subscribers`, `trigger-bot`) are now in place with targeted tests; run one live `trigger-bot` probe and either close cliq-180 or land one follow-up fallback tweak while keeping cliq-165 on blocker-skip loop
+- implement cliq-181 chat-control commands in client + CLI with fallback guidance parity
+- add targeted regression tests for each new chat control command slice
+- keep cliq-165 export-scope blocker loop and endpoint-limitation evidence documented while cliq-181 advances
+next_if_done: continue to cliq-190 org admin phase 1 expansion
+next_step: cliq-180 live probe now classifies `trigger-bot` endpoints as `not_supported` on happydistrouklimited; start cliq-181 with one small chat-control slice (recommend `leave`) and targeted tests while keeping cliq-165 on blocker-skip loop

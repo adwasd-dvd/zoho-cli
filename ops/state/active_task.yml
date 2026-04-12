@@ -4,7 +4,7 @@ module: cliq
 stage: in_progress
 status: in_progress
 owner: automation
-updated_at: '2026-04-12T02:09:37Z'
+updated_at: '2026-04-12T02:11:03Z'
 success_criteria:
   - provide chat discovery command surface (`cliq chats`) with explicit scope/not-supported diagnostics
   - stabilize dm/channel/group read paths with predictable history/context behavior on live token/network
@@ -13,4 +13,4 @@ success_criteria:
   - maintain channel/chat context extraction for agent loops (`messages`, `message`, `context`) with typed summaries
   - validate via focused tests and at least one live smoke path on current token/network
 next_if_done: cliq-156
-next_step: "workspace `/Users/adwasd/.openclaw/workspace-coder/test` local media rerun (`tests/auto_pilot/reports/cliq_local_media_from_workspace_test_20260411_190816.log`) remains unchanged (`not_supported` across user+channel image/voice); run one final retrieval recheck and then close cliq-155 as endpoint limitation if still empty"
+next_step: "final retrieval recheck (`tests/auto_pilot/reports/cliq_final_retrieval_recheck_20260411_191103.log`) confirms media-visible message types (`image`,`text`) with stable attachments sourcePath but zero payload; proceed to close cliq-155 remaining media send/retrieval gaps as endpoint limitations"

@@ -1,5 +1,5 @@
 project: zoho-cli
-updated_at: '2026-04-12T02:09:37Z'
+updated_at: '2026-04-12T02:11:03Z'
 status: cliq-expansion
 canonical_workspace: /Users/adwasd/.openclaw/workspace-coder
 project_root: /Users/adwasd/.openclaw/workspace-coder/job/zoho-cli
@@ -15,7 +15,7 @@ primary_blockers:
   - "current live config auth is healthy (`oauthReady: true`, no missing Cliq scopes); DM history fallback endpoint coverage (`/conversations`, `/buddies`, `/users`, `/chats`) now degrades to empty history (`count: 0`) on full candidate miss instead of hard-failing, improving live probe stability on happydistrouklimited"
   - "native local-file upload/download behavior now has local multipart scaffolding (with image-field fallback preference, upload endpoint/field metadata, file/voice retrieval sourcePath metadata, raw+resolved user-target fallback, direct `/channels/{channel_id}/message` probing, plural `/messages` channel-send fallback variants, single-fetch channel descriptor resolution for channel-id sends, multipart failure diagnostics that include attempted form field metadata `field=...`, and compact `attempts:` path/field/status/code tuples); live probes now confirm text send success (`204`) while local image/file/voice uploads still fail with `request_url_invalid` / `operation_failed` / `request_method_invalid` (evidence captured)"
   - "attachment-positive `cliq file`/`cliq voice` evidence is still missing; latest marker recheck (`tests/auto_pilot/reports/cliq_retrieval_marker_recheck_20260411_185944.log`) still returns empty payloads (`retrievalResult: media_visible_without_attachment_payload`, `count: 0`) after `/files` -> `/attachments` fallback"
-next_step: "run one final spaced retrieval recheck on recent remote-image marker messages; if payloads remain empty while `messageTypes` reports media and `sourcePath` is stable, close cliq-155 local media send/retrieval gaps as endpoint limitations"
+next_step: "close cliq-155 media send/retrieval tail as endpoint limitations using final evidence set (`cliq_local_media_from_workspace_test_20260411_190816.log` + `cliq_final_retrieval_recheck_20260411_191103.log`), then advance to cliq-156/160 hardening"
 additional_info:
   - Auto-pilot probe scripts now resolve repo root from script location and can be launched from either project root or workspace root without path drift.
   - "2026-04-12 live check: `cliq status --check-auth` now reports `oauthReady: true`, and text send probes (user + channel) return `httpStatus: 204`."

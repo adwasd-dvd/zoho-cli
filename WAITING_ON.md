@@ -6,3 +6,4 @@
 - CRM live verification remains blocked until a CRM-enabled org account is available.
 - Cliq native local multipart sends (voice/image/file) still fail on tested user/channel targets with endpoint-level `request_url_invalid` / `operation_failed`; endpoint+field matrix evidence is still being collected for cliq-155 closure.
 - Zoho token refresh can still throttle (`Access Denied` too many requests) during bursty live probe batches; retrieval probes need cooldown-safe reruns.
+- Cliq maintenance export verification is blocked until token includes `ZohoCliq.Org.Admin`; current `cliq export-chats` list + `--chat-id` probes return `oauth_scope_invalid`.

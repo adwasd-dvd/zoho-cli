@@ -1,5 +1,5 @@
 module: Cliq
-updated_at: '2026-04-12T02:43:29Z'
+updated_at: '2026-04-12T03:12:12Z'
 status: completed
 blockers:
 - live `/messages/search` APIs on happydistrouklimited remain unsupported for current
@@ -8,7 +8,7 @@ blockers:
 - 'attachment retrieval parity remains endpoint-limited: post-upload media-visible
   messages still return zero payloads on `/attachments` (`cliq_single_token_retrieval_after_upload_20260411_192343.json`,
   `cliq_retrieval_recheck_after_success_20260411_192603.log`)'
-- "maintenance export command surface (`cliq export-chats`) is implemented and response-shape normalization is hardened, but live Org.Admin-scope verification (`list` + `--chat-id`) still needs one archived probe sample"
-next_small_step: run one live Org.Admin export verification (`cliq export-chats` list
-  + `--chat-id`) and archive sample JSON; otherwise hold cliq train as completed for
-  current endpoint limits
+- "maintenance export command surface (`cliq export-chats`) is implemented and response-shape normalization is hardened, but live verification is currently blocked by missing `ZohoCliq.Org.Admin` scope (`oauth_scope_invalid` on both list + `--chat-id` probes; evidence: `tests/auto_pilot/reports/cliq_export_chats_list_scope_invalid_20260412_031212.json`, `tests/auto_pilot/reports/cliq_export_chat_scope_invalid_20260412_031212.json`)"
+next_small_step: re-auth with Org.Admin scope (`zoho login --with-cliq --scope ZohoCliq.Org.Admin`),
+  then rerun `cliq export-chats` list + one `--chat-id` export and archive successful
+  JSON samples

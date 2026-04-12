@@ -1,5 +1,5 @@
-last_run_at: "2026-04-12T02:43:29Z"
-last_result: passed
+last_run_at: "2026-04-12T03:12:12Z"
+last_result: warning
 current_focus: cliq
 suites:
   unit:
@@ -213,6 +213,10 @@ suites:
   integration:
     status: warning
     notes:
+      - "python3.11 -m zoho_cli --config /tmp/zoho-test-config.json --account ai-dev@happy-distro.co.uk cliq export-chats --network happydistrouklimited"
+      - "live export list probe currently returns `oauth_scope_invalid` (missing `ZohoCliq.Org.Admin`); evidence: `tests/auto_pilot/reports/cliq_export_chats_list_scope_invalid_20260412_031212.json` (2026-04-12T03:12:12Z)"
+      - "python3.11 -m zoho_cli --config /tmp/zoho-test-config.json --account ai-dev@happy-distro.co.uk cliq export-chats --network happydistrouklimited --chat-id CT_1424657670787261966_911174541"
+      - "explicit `--chat-id` export probe returns the same scope blocker (`oauth_scope_invalid`); evidence: `tests/auto_pilot/reports/cliq_export_chat_scope_invalid_20260412_031212.json` (2026-04-12T03:12:12Z)"
       - "python3.11 direct probe: POST /chats/CT_1424657670787261966_911174541/files with local image multipart"
       - "direct files-endpoint probe returned `extra_param_found` for `text`, confirming `/files` endpoint family is reachable but expects file-share schema fields (2026-04-12T02:06:34Z)"
       - "python3.11 -m zoho_cli ... cliq send --channel-id O6576524000097556005 --image-url /Users/adwasd/.openclaw/workspace-coder/test/test.png --text SCAP-files-endpoint-probe"

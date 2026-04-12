@@ -1,5 +1,5 @@
 project: zoho-cli
-updated_at: '2026-04-12T02:30:53Z'
+updated_at: '2026-04-12T03:12:12Z'
 status: cliq-expansion
 canonical_workspace: /Users/adwasd/.openclaw/workspace-coder
 project_root: /Users/adwasd/.openclaw/workspace-coder/job/zoho-cli
@@ -14,9 +14,16 @@ primary_blockers:
   token/api combinations (`extra_param_found` / `request_url_invalid`)
 - cliq retrieval parity remains endpoint-limited on current token/network (`/attachments`
   returns zero payloads for media-visible messages)
-next_step: wait for CRM-enabled org access to unblock crm-002; keep current Cliq endpoint-limitation
-  evidence as release context
+- cliq maintenance export verification is blocked by missing `ZohoCliq.Org.Admin`
+  scope on current live config (`oauth_scope_invalid`)
+next_step: re-auth once with `ZohoCliq.Org.Admin` scope to close the pending `cliq
+  export-chats` live verification, then continue waiting for CRM-enabled org access
+  to unblock crm-002
 additional_info:
+- '2026-04-12 live check: both `cliq export-chats` list and explicit `--chat-id`
+  probes return `oauth_scope_invalid` until `ZohoCliq.Org.Admin` is granted (evidence:
+  `tests/auto_pilot/reports/cliq_export_chats_list_scope_invalid_20260412_031212.json`,
+  `tests/auto_pilot/reports/cliq_export_chat_scope_invalid_20260412_031212.json`).'
 - Auto-pilot probe scripts now resolve repo root from script location and can be launched
   from either project root or workspace root without path drift.
 - '2026-04-12 live check: `cliq status --check-auth` now reports `oauthReady: true`,

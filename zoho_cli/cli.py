@@ -1252,6 +1252,8 @@ def cliq_status(
 
     def _cmd(*args: str, include_network: bool = False) -> str:
         parts: list[str] = ["zoho"]
+        if _S.config_path:
+            parts.extend(["--config", _S.config_path])
         if email:
             parts.extend(["--account", email])
         parts.extend(args)

@@ -7,6 +7,7 @@
 - Added Cliq thread-plane command surface (`zoho cliq thread-create`, `thread-reply`, `threads`, `thread-followers`, `thread-state`) with capability-gated fallback routing in `ZohoCliqClient` and targeted thread command/client tests.
 - Added the first cliq-171 scheduled-message command slice: `zoho cliq scheduled` plus fallback client routing (`list_scheduled_messages`) for chat/channel targets.
 - Added the cliq-171 `scheduled-get` slice: `zoho cliq scheduled-get` plus fallback client routing (`get_scheduled_message`) for chat/channel targets.
+- Added the cliq-171 `scheduled-cancel` slice: `zoho cliq scheduled-cancel` plus fallback client routing (`cancel_scheduled_message`) for chat/channel targets.
 - Scaffolded Cliq phase-1 shell with `zoho cliq status`, regional Cliq base URL inference, and a minimal `ZohoCliqClient` skeleton.
 - Added Cliq OAuth preparation: `zoho login --with-cliq` scope bundling, generic `--scope` extension, and `zoho cliq status` scope readiness (`oauthReady` / `missingScopes`).
 - Updated default Cliq OAuth scope bundle to endpoint-specific scopes (`ZohoCliq.Channels.READ`, `ZohoCliq.Users.READ`, `ZohoCliq.Webhooks.CREATE`) to match live send/notify API requirements.

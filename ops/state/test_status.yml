@@ -1,10 +1,14 @@
-last_run_at: "2026-04-12T12:27:02Z"
+last_run_at: "2026-04-12T12:46:13Z"
 last_result: warning
 current_focus: cliq
 suites:
   unit:
     status: passing
     notes:
+      - "python3.11 -m pytest -q tests/test_cliq.py::test_cliq_client_list_scheduled_messages_falls_back_to_messages_scheduled tests/test_cliq.py::test_cliq_client_get_scheduled_message_falls_back_to_messages_scheduled tests/test_cliq.py::test_cliq_client_cancel_scheduled_message_falls_back_to_messages_scheduled tests/test_cli.py::test_cliq_scheduled_from_channel tests/test_cli.py::test_cliq_scheduled_get_from_channel tests/test_cli.py::test_cliq_scheduled_cancel_from_channel"
+      - "6 passed in 0.28s (cliq-171 scheduled-cancel slice: new `zoho cliq scheduled-cancel` command + `ZohoCliqClient.cancel_scheduled_message` fallback path coverage, 2026-04-12T12:46:13Z)"
+      - "./.venv/bin/ruff format --check zoho_cli/cliq.py zoho_cli/cli.py tests/test_cliq.py tests/test_cli.py"
+      - "4 files already formatted (2026-04-12T12:46:13Z)"
       - "python3.11 -m pytest -q tests/test_cliq.py::test_cliq_client_get_scheduled_message_falls_back_to_messages_scheduled tests/test_cli.py::test_cliq_scheduled_get_from_channel"
       - "2 passed in 0.24s (cliq-171 scheduled-get slice: new `zoho cliq scheduled-get` command + `ZohoCliqClient.get_scheduled_message` fallback path coverage, 2026-04-12T12:27:02Z)"
       - "./.venv/bin/ruff format --check zoho_cli/cliq.py zoho_cli/cli.py tests/test_cliq.py tests/test_cli.py"

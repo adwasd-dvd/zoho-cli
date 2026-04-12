@@ -4,10 +4,10 @@ module: cliq
 stage: in_progress
 status: in_progress
 owner: automation
-updated_at: '2026-04-12T12:27:02Z'
+updated_at: '2026-04-12T12:46:13Z'
 success_criteria:
 - implement `zoho cliq schedule`, `scheduled`, `scheduled-get`, and `scheduled-cancel`
 - add scheduled-message client fallbacks that emit clear `not_supported` / scope-invalid guidance
 - add targeted unit + CLI test coverage for schedule/list/get/cancel command paths
 next_if_done: continue to cliq-172 search + attachment retrieval parity closeout
-next_step: extend cliq-171 from the landed `scheduled` + `scheduled-get` slices by adding `schedule` and `scheduled-cancel` command/client paths with focused tests before one live scheduled-message probe bundle on happydistrouklimited
+next_step: continue cliq-171 from the landed `scheduled` + `scheduled-get` + `scheduled-cancel` slices by adding the remaining `schedule` command/client path with focused tests before one live scheduled-message probe bundle on happydistrouklimited

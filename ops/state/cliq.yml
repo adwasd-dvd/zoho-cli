@@ -1,5 +1,5 @@
 module: Cliq
-updated_at: '2026-04-12T12:27:02Z'
+updated_at: '2026-04-12T12:46:13Z'
 status: in_progress
 blockers:
 - 'live thread-plane probe now classifies thread endpoints as unsupported on happydistrouklimited: `thread-create`, `thread-reply`, `thread-followers`, `thread-state` all return `not_supported`, and `threads` currently returns `count: 0` (`tests/auto_pilot/reports/cliq_thread_probe_summary_20260412_044149.json`)'
@@ -13,6 +13,7 @@ blockers:
 - 'export-scope recheck summary now emits explicit refresh-throttle classification (`rateLimited`) and `recommendedNext: wait_for_refresh_cooldown_then_rerun` when probes hit `token_refresh_rate_limited`/"too many requests", reducing blind retry loops during cliq-165 live runs'
 - "additional workspace test assets continue to validate local upload breadth: image (`test.png`), audio (`sample-3.m4a`), PDF (`2026-04-10-report.pdf`), and CSV (`lv1_capturable_report.csv`) all sent successfully to both channel and user targets in latest one-token matrix rerun (`tests/auto_pilot/reports/cliq_workspace_test_media_matrix_20260412_042955.json`)"
 next_small_step: >-
-  continue cliq-171 after landing the `scheduled` + `scheduled-get` slices by adding
-  `schedule` and `scheduled-cancel` command/client paths with focused unit+CLI
-  coverage; keep cliq-165 blocked for human interactive re-auth
+  continue cliq-171 after landing the `scheduled` + `scheduled-get` +
+  `scheduled-cancel` slices by adding the remaining `schedule` command/client path
+  with focused unit+CLI coverage; keep cliq-165 blocked for human interactive
+  re-auth

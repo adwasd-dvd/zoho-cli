@@ -1876,6 +1876,28 @@ def test_cliq_client_get_scheduled_message_falls_back_to_messages_scheduled(
 
 
 @respx.mock
+def test_cliq_client_cancel_scheduled_message_falls_back_to_messages_scheduled(
+    client: cliq.ZohoCliqClient,
+) -> None:
+    respx.delete("https://cliq.zoho.com/api/v2/chats/C1/scheduled/S1").mock(
+        return_value=httpx.Response(
+            404,
+            json={
+                "code": "request_url_invalid",
+                "message": "Not found",
+            },
+        )
+    )
+    route = respx.delete(
+        "https://cliq.zoho.com/api/v2/chats/C1/messages/scheduled/S1"
+    ).mock(return_value=httpx.Response(204, text=""))
+
+    payload = client.cancel_scheduled_message("S1", chat_id="C1")
+    assert route.called
+    assert payload["status"] == "ok"
+
+
+@respx.mock
 def test_cliq_client_list_thread_followers_scope_invalid_reports_hint(
     client: cliq.ZohoCliqClient,
     capsys: pytest.CaptureFixture[str],

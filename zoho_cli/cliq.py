@@ -1850,6 +1850,75 @@ class ZohoCliqClient:
             not_supported_message="Cliq scheduled-message get endpoints are not available for this token/network endpoint. Run `zoho cliq capabilities --channel-id <id>` and confirm scheduled-message operations for the target conversation.",
         )
 
+    def cancel_scheduled_message(
+        self,
+        scheduled_id: str,
+        *,
+        chat_id: str | None = None,
+        channel_id: str | None = None,
+    ) -> dict:
+        """Cancel one scheduled message by id for a chat/channel."""
+        resolved_chat = self._resolve_chat_destination(
+            chat_id=chat_id,
+            channel_id=channel_id,
+        )
+        target_scheduled_id = scheduled_id.strip()
+        if not target_scheduled_id:
+            utils.error_exit("invalid_scheduled_id", "scheduled_id cannot be empty")
+
+        candidates: list[tuple[str, str, dict[str, Any] | None]] = [
+            ("DELETE", f"/chats/{resolved_chat}/scheduled/{target_scheduled_id}", None),
+            (
+                "DELETE",
+                f"/chats/{resolved_chat}/messages/scheduled/{target_scheduled_id}",
+                None,
+            ),
+            (
+                "DELETE",
+                f"/chats/{resolved_chat}/scheduled/messages/{target_scheduled_id}",
+                None,
+            ),
+            ("DELETE", f"/chats/{resolved_chat}/schedule/{target_scheduled_id}", None),
+            (
+                "POST",
+                f"/chats/{resolved_chat}/scheduled/{target_scheduled_id}/cancel",
+                {},
+            ),
+            (
+                "POST",
+                f"/chats/{resolved_chat}/messages/scheduled/{target_scheduled_id}/cancel",
+                {},
+            ),
+        ]
+
+        if channel_id:
+            candidates.extend(
+                [
+                    (
+                        "DELETE",
+                        f"/channels/{channel_id}/scheduled/{target_scheduled_id}",
+                        None,
+                    ),
+                    (
+                        "DELETE",
+                        f"/channels/{channel_id}/messages/scheduled/{target_scheduled_id}",
+                        None,
+                    ),
+                    (
+                        "POST",
+                        f"/channels/{channel_id}/scheduled/{target_scheduled_id}/cancel",
+                        {},
+                    ),
+                ]
+            )
+
+        return self._request_with_candidates_and_not_supported(
+            candidates,
+            scope_hint="ZohoCliq.Messages.DELETE",
+            operation_label="scheduled-cancel",
+            not_supported_message="Cliq scheduled-message cancel endpoints are not available for this token/network endpoint. Run `zoho cliq capabilities --channel-id <id>` and confirm scheduled-message operations for the target conversation.",
+        )
+
     def list_thread_followers(
         self,
         thread_id: str,

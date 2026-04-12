@@ -71,7 +71,7 @@
 - id: cliq-150
   title: implement cliq media/watch integration primitives for openclaw loops
   module: cliq
-  stage: in_progress
+  stage: completed
   priority: high
   depends_on:
   - cliq-145
@@ -111,6 +111,13 @@
   - cliq-150
   - cliq-156
   - cliq-157
+- id: cliq-165
+  title: verify cliq export-chats live with Org.Admin scope and archive sample output
+  module: cliq
+  stage: blocked
+  priority: high
+  depends_on:
+  - cliq-160
 - id: crm-001
   title: scaffold crm product module and client shell
   module: crm

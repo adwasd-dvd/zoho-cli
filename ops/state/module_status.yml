@@ -14,8 +14,8 @@ cliq:
   current_milestone: cliq-expansion-phase
   blockers:
     - "live search endpoint variants are currently unsupported on happydistrouklimited (`extra_param_found` / `request_url_invalid`)"
-    - "`cliq chats` positive-path now succeeds on live token/network (`count: 0`), but DM/group discovery still needs attachment-positive evidence to close cliq-155"
-    - "native local-file upload/download endpoint variants still need a stable cross-network matrix; multipart baseline now returns upload endpoint/field metadata and `cliq file` reports retrieval `sourcePath`, user-target sends now fallback across raw email + resolved user id, and standard channel-id sends now also probe `/channels/{channel_id}/message`, but live verification evidence is still pending because current multipart probes return `request_url_invalid` / `operation_failed`"
+    - "attachment retrieval parity remains endpoint-limited on current token/network (`/attachments` returns empty payloads for media-visible messages)"
+    - "`cliq export-chats` live verification is blocked until token includes `ZohoCliq.Org.Admin` (current probes return `oauth_scope_invalid`)"
 
 crm:
   priority: 3

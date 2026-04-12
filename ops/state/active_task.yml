@@ -1,14 +1,14 @@
-id: crm-002
-title: implement crm modules list fields list get list and search
-module: crm
+id: cliq-165
+title: verify cliq export-chats live with Org.Admin scope and archive success evidence
+module: cliq
 stage: blocked
 status: blocked
 owner: automation
-updated_at: '2026-04-12T02:30:53Z'
+updated_at: '2026-04-12T03:40:00Z'
 success_criteria:
-- obtain CRM-enabled org access for live verification scopes
-- run focused CRM command smoke checks on the enabled org account
-- confirm read-only CRM parity remains green after cliq-160 hardening train
-next_if_done: none
-next_step: CRM live verification remains blocked by org access; maintain Cliq hardening
-  evidence and proceed when CRM-enabled account is available
+- run `zoho login --with-cliq --scope ZohoCliq.Org.Admin` on the live test account
+- run `cliq export-chats` list + one `--chat-id` export on happydistrouklimited
+- archive one successful JSON sample for each export mode under `tests/auto_pilot/reports/`
+next_if_done: resume crm-002 once Cliq export verification evidence is archived
+next_step: pending live re-auth with `ZohoCliq.Org.Admin`; current token returns
+  `oauth_scope_invalid` for both export list and `--chat-id` probes

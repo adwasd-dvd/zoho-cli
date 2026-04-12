@@ -2,6 +2,9 @@ from __future__ import annotations
 
 from typing import Any
 
+import httpx
+
+from zoho_cli import cliq as cliq_module
 from zoho_cli.cliq import ZohoCliqClient
 
 
@@ -38,25 +41,47 @@ def test_get_all_users_full_pagination(monkeypatch) -> None:
 def test_get_dm_history_full_pagination(monkeypatch) -> None:
     client = ZohoCliqClient("test-token", base_url="https://cliq.zoho.com/api/v2")
 
-    def fake_get(path: str, params: dict | None = None) -> dict:
+    calls: list[dict[str, Any]] = []
+
+    def fake_httpx_get(
+        url: str,
+        *,
+        headers: dict | None = None,
+        params: dict | None = None,
+        timeout: httpx.Timeout | None = None,
+    ) -> httpx.Response:
+        del headers, timeout
         params = params or {}
+        calls.append({"url": url, "params": dict(params)})
         token = params.get("next_page_token")
         if token == "dm-page-2":
-            return {
-                "data": [{"id": "m3", "text": "page2"}],
-                "has_more": False,
-            }
-        return {
-            "data": [{"id": "m1", "text": "hello"}, {"id": "m2", "text": "world"}],
-            "has_more": True,
-            "next_page_token": "dm-page-2",
-        }
+            return httpx.Response(
+                200,
+                json={
+                    "data": [{"id": "m3", "text": "page2"}],
+                    "has_more": False,
+                },
+                request=httpx.Request("GET", url, params=params),
+            )
+        return httpx.Response(
+            200,
+            json={
+                "data": [
+                    {"id": "m1", "text": "hello"},
+                    {"id": "m2", "text": "world"},
+                ],
+                "has_more": True,
+                "next_page_token": "dm-page-2",
+            },
+            request=httpx.Request("GET", url, params=params),
+        )
 
-    monkeypatch.setattr(client, "_get", fake_get)
+    monkeypatch.setattr(cliq_module.httpx, "get", fake_httpx_get)
 
     history = client.get_dm_history("user-123", limit=25)
 
     assert [m["id"] for m in history] == ["m1", "m2", "m3"]
+    assert calls[0]["url"].endswith("/conversations/user-123/messages")
 
 
 def test_get_channel_history_via_channel_resolution(monkeypatch) -> None:

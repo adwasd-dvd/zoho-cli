@@ -98,6 +98,126 @@ class ZohoCliqClient:
 
         return items
 
+    def _collect_paginated_get_candidates(
+        self,
+        paths: list[str],
+        *,
+        limit: int = 100,
+        token_param: str = "next_page_token",
+    ) -> list[dict[str, Any]]:
+        """Collect paginated GET data from the first supported endpoint candidate."""
+        unique_paths: list[str] = []
+        seen_paths: set[str] = set()
+        for path in paths:
+            text = path.strip()
+            if not text or text in seen_paths:
+                continue
+            seen_paths.add(text)
+            unique_paths.append(text)
+
+        last_error: tuple[int, str, str] | None = None
+        saw_scope_invalid = False
+        retryable_error_codes = {
+            "request_method_invalid",
+            "operation_not_allowed",
+            "not_supported",
+            "unsupported",
+            "operation_failed",
+        }
+
+        for path in unique_paths:
+            items: list[dict[str, Any]] = []
+            next_token: str | None = None
+            seen_tokens: set[str] = set()
+            saw_success = False
+
+            while True:
+                params: dict[str, Any] = {"limit": limit}
+                if next_token:
+                    params[token_param] = next_token
+
+                resp = httpx.get(
+                    f"{self.base_url}{path}",
+                    headers=self._headers,
+                    params=params,
+                    timeout=httpx.Timeout(30.0),
+                )
+
+                if not resp.is_success:
+                    body = resp.text or ""
+                    lowered = body.lower()
+                    last_error = (resp.status_code, path, body)
+
+                    if saw_success:
+                        utils.error_exit(
+                            "api_error",
+                            f"HTTP {resp.status_code} GET {path}: {body}",
+                        )
+
+                    if "oauthtoken_scope_invalid" in lowered:
+                        saw_scope_invalid = True
+                        break
+
+                    error_code = ""
+                    try:
+                        parsed = resp.json()
+                        if isinstance(parsed, dict):
+                            error_code = str(
+                                parsed.get("code") or parsed.get("error") or ""
+                            ).lower()
+                    except ValueError:
+                        pass
+
+                    if (
+                        resp.status_code in (404, 405)
+                        or "request_url_invalid" in lowered
+                        or error_code in retryable_error_codes
+                    ):
+                        break
+
+                    utils.error_exit(
+                        "api_error",
+                        f"HTTP {resp.status_code} GET {path}: {body}",
+                    )
+
+                saw_success = True
+                payload = resp.json()
+                batch = payload.get("data", [])
+                if isinstance(batch, list):
+                    items.extend([entry for entry in batch if isinstance(entry, dict)])
+
+                has_more = bool(payload.get("has_more") or payload.get("hasMore"))
+                candidate_token = payload.get("next_page_token") or payload.get(
+                    "nextPageToken"
+                )
+                token_text = str(candidate_token).strip() if candidate_token else ""
+
+                if not has_more:
+                    break
+                if not token_text:
+                    break
+                if token_text in seen_tokens:
+                    break
+
+                seen_tokens.add(token_text)
+                next_token = token_text
+
+            if saw_success:
+                return items
+
+        if saw_scope_invalid:
+            utils.error_exit(
+                "oauth_scope_invalid",
+                "Cliq token is missing message-read scope for DM history. Re-run `zoho login --with-cliq --scope ZohoCliq.Messages.READ` and retry.",
+            )
+
+        if last_error is not None:
+            status, path, body = last_error
+            utils.error_exit("api_error", f"HTTP {status} GET {path}: {body}")
+
+        utils.error_exit("api_error", "No candidate endpoint available for DM history")
+        return []
+
     def get_all_users(self, *, limit: int = 100) -> list[dict[str, Any]]:
         """Fetch the full user list with pagination."""
         return self._collect_paginated_get("/users", limit=limit)
@@ -107,8 +227,13 @@ class ZohoCliqClient:
         target = user_id.strip()
         if not target:
             utils.error_exit("invalid_user_id", "user_id cannot be empty")
-        return self._collect_paginated_get(
-            f"/conversations/{target}/messages",
+        return self._collect_paginated_get_candidates(
+            [
+                f"/conversations/{target}/messages",
+                f"/buddies/{target}/messages",
+                f"/users/{target}/messages",
+                f"/chats/{target}/messages",
+            ],
             limit=limit,
         )
 

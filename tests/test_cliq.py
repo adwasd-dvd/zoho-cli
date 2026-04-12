@@ -85,6 +85,68 @@ def test_cliq_client_chats_scope_invalid_reports_hint(
     assert "ZohoCliq.Chats.ALL" in err
 
 
+@respx.mock
+def test_cliq_client_get_dm_history_falls_back_from_conversations_to_buddies(
+    client: cliq.ZohoCliqClient,
+) -> None:
+    conversations = respx.get(
+        "https://cliq.zoho.com/api/v2/conversations/U1/messages"
+    ).mock(return_value=httpx.Response(404, text="request_url_invalid"))
+    buddies = respx.get("https://cliq.zoho.com/api/v2/buddies/U1/messages").mock(
+        side_effect=[
+            httpx.Response(
+                200,
+                json={
+                    "data": [{"id": "m1"}, {"id": "m2"}],
+                    "has_more": True,
+                    "next_page_token": "dm-page-2",
+                },
+            ),
+            httpx.Response(
+                200,
+                json={
+                    "data": [{"id": "m3"}],
+                    "has_more": False,
+                },
+            ),
+        ]
+    )
+
+    history = client.get_dm_history("U1", limit=25)
+
+    assert [entry["id"] for entry in history] == ["m1", "m2", "m3"]
+    assert conversations.called
+    assert buddies.call_count == 2
+    assert dict(buddies.calls[0].request.url.params) == {"limit": "25"}
+    assert dict(buddies.calls[1].request.url.params) == {
+        "limit": "25",
+        "next_page_token": "dm-page-2",
+    }
+
+
+@respx.mock
+def test_cliq_client_get_dm_history_scope_invalid_reports_hint(
+    client: cliq.ZohoCliqClient,
+    capsys: pytest.CaptureFixture[str],
+) -> None:
+    for path in (
+        "/conversations/U1/messages",
+        "/buddies/U1/messages",
+        "/users/U1/messages",
+        "/chats/U1/messages",
+    ):
+        respx.get(f"https://cliq.zoho.com/api/v2{path}").mock(
+            return_value=httpx.Response(401, json={"code": "oauthtoken_scope_invalid"})
+        )
+
+    with pytest.raises(SystemExit):
+        client.get_dm_history("U1", limit=3)
+
+    err = capsys.readouterr().err
+    assert "oauth_scope_invalid" in err
+    assert "ZohoCliq.Messages.READ" in err
+
+
 def test_cliq_client_infer_message_types_detects_voice_sticker_and_text() -> None:
     message = {
         "text": "hello :thumbsup:",

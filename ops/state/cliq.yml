@@ -1,5 +1,5 @@
 module: Cliq
-updated_at: '2026-04-12T02:11:03Z'
+updated_at: '2026-04-12T02:12:16Z'
 status: in_progress
 blockers:
   - "live `/messages/search` APIs on happydistrouklimited still look unsupported for current endpoint variants (`extra_param_found` / `request_url_invalid`), so search remains limitation-documented"
@@ -10,9 +10,9 @@ blockers:
   - "local multipart send fallback now also treats `operation_failed` as path-level unsupported and skips to the next endpoint immediately; latest live image send no longer hits attempt-cap exhaustion and now emits a compact endpoint matrix in one pass"
   - "`cliq file`/`cliq voice` attachment-positive retrieval evidence is still missing; bounded retrieval scan (`tests/auto_pilot/reports/cliq_retrieval_scan_20260411_182700.json`) checked 16 recent messages across 2 joined channels and found no non-empty attachment payloads"
   - "marker retrieval recheck (`tests/auto_pilot/reports/cliq_retrieval_marker_recheck_20260411_185944.log`) still shows remote-image marker retrieval empty after `/files` -> `/attachments` fallback (`retrievalResult: media_visible_without_attachment_payload`, `count: 0`, `sourcePath` on attachments endpoint), so attachment-positive evidence is still missing"
-  - "final retrieval recheck (`tests/auto_pilot/reports/cliq_final_retrieval_recheck_20260411_191103.log`) reproduces the same result: `messageTypes` includes media (`image`) and sourcePath resolves to attachments endpoint, but `count: 0` for both `cliq file` and `cliq voice`"
+  - "final retrieval recheck (`tests/auto_pilot/reports/cliq_retrieval_recheck_20260412_021122.log`) reproduces the same result: `messageTypes` includes media (`image`) and sourcePath resolves to attachments endpoint, but `count: 0` for both `cliq file` and `cliq voice`; cliq-155 is now closed as endpoint-limitation evidence complete"
   - "channel send visibility was false-positive risk on raw id-shaped paths; candidate ordering now prefers resolved chat/name paths, and live marker probe (`tests/auto_pilot/reports/cliq_send_visibility_and_remote_image_20260411_183528.json`) confirms text and remote-image messages are now visible after `204` send responses"
   - "raw channel-id fallback noise has been reduced: local multipart send paths no longer probe `/channelsbyname/<channel_id>` for id-shaped channel ids, keeping attempt matrices focused on resolved chat/name + chat/channel id paths"
   - "bursty live matrix rerun still triggered Zoho refresh throttle (`token_refresh_rate_limited`) after the first command (`tests/auto_pilot/reports/cliq_local_media_matrix_live_20260411_185843.log`), so cooldown spacing is still required for full probe batches"
   - "workspace test-file rerun (`tests/auto_pilot/reports/cliq_local_media_from_workspace_test_20260411_190816.log`) confirms file source is not the blocker: local image/voice uploads still classify as `not_supported` endpoint limitations on both user and channel targets"
-next_small_step: "after refresh cooldown, rerun a spaced local media matrix (image/voice/file) and one retrieval probe; if results remain `not_supported` + attachment-empty, finalize cliq-155 local-media/retrieval behavior as endpoint limitation and move to cliq-156"
+next_small_step: "start cliq-156 with a cooldown-safe local media matrix rerun (image/voice/file, user+channel) and archive one full evidence bundle without refresh-throttle interruption"

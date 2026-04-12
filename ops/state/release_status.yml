@@ -3,15 +3,15 @@ next_version: 0.2.1
 release_candidate: false
 last_release_tag: v0.1.9
 current_train: cliq-expansion
-assessed_at: '2026-04-12T00:31:30Z'
+assessed_at: '2026-04-12T02:12:16Z'
 current_milestone: cliq-expansion-phase
 current_milestone_complete: false
 missing_requirements:
   - 'blocker backlog not clear: crm-002 live smoke is blocked by account-level CRM org access (`OAUTH_SCOPE_MISMATCH`)'
   - 'current focus milestone is incomplete: cliq-expansion-phase still has pending local multipart upload/download matrix verification and follow-on cliq-160 gate work'
-  - 'shared live probe config auth is healthy (`oauthReady: true`), but cliq-155 integration is still blocked by live endpoint behavior (`request_url_invalid` / `operation_failed` / `request_method_invalid`) on local multipart sends and DM history probe path mismatch'
-  - 'integration evidence remains partial for cliq-155: native local-file upload/download matrix still needs live token/network confirmation (voice/image/file sends still returning `request_url_invalid` / `operation_failed` on tested targets, even after adding plural `/messages` channel-send fallback variants)'
-  - 'release readiness remains blocked by integration scope: latest nightly broad verification (`make release-gate && make ci`) is green (252 passed + wheel smoke + fmt/lint), but cliq-155 still lacks one attachment-positive live retrieval sample'
+  - 'shared live probe config auth is healthy (`oauthReady: true`), but cliq-156 integration remains unresolved: native local multipart sends still classify as endpoint-limited (`not_supported` / `request_url_invalid` / `operation_failed`) on tested targets'
+  - 'integration evidence remains partial for cliq-156: run one uninterrupted cooldown-safe local media matrix (image/voice/file across user+channel) to finalize endpoint taxonomy before cliq-160'
+  - 'release readiness remains blocked by Cliq integration scope: latest release gate rerun is green (`make release-gate`: 274 passed + wheel smoke), but local multipart reliability is not yet demonstrated on live targets'
 release_gate:
   blocker_bugs_cleared: false
   unit_tests_passed: true

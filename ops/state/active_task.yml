@@ -1,16 +1,15 @@
-id: cliq-155
-title: implement dm/group/channel conversation visibility and typed context matrix
+id: cliq-156
+title: implement reliable local media send (image/voice/file) for user/channel targets
 module: cliq
 stage: in_progress
 status: in_progress
 owner: automation
-updated_at: '2026-04-12T02:11:03Z'
+updated_at: '2026-04-12T02:12:16Z'
 success_criteria:
-  - provide chat discovery command surface (`cliq chats`) with explicit scope/not-supported diagnostics
-  - stabilize dm/channel/group read paths with predictable history/context behavior on live token/network
-  - keep per-conversation context outputs machine-readable with inferred message content types (`text`, `image`, `file`, `voice`, `sticker`, `reaction`)
-  - ensure local media send primitives (image/voice/file) have at least one verified live success path or explicit endpoint-limitation classification
-  - maintain channel/chat context extraction for agent loops (`messages`, `message`, `context`) with typed summaries
-  - validate via focused tests and at least one live smoke path on current token/network
-next_if_done: cliq-156
-next_step: "final retrieval recheck (`tests/auto_pilot/reports/cliq_final_retrieval_recheck_20260411_191103.log`) confirms media-visible message types (`image`,`text`) with stable attachments sourcePath but zero payload; proceed to close cliq-155 remaining media send/retrieval gaps as endpoint limitations"
+  - capture a cooldown-safe endpoint/field matrix for local image/voice/file sends across user and channel targets
+  - preserve deterministic `not_supported` classification when all live candidates miss with endpoint-limitation patterns
+  - obtain at least one attachment-positive live send+retrieval sample, or document per-endpoint limitation evidence sufficient for cliq-157 handoff
+  - keep local multipart diagnostics compact and machine-readable (`attempts` path/field/status/code tuples)
+  - validate with focused unit tests and one live matrix rerun on current token/network
+next_if_done: cliq-157
+next_step: "implement a cooldown-safe local-media matrix runner (image/voice/file, user+channel) that spaces live calls to avoid refresh throttling, then archive one evidence bundle for cliq-156"

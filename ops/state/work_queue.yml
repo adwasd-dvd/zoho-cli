@@ -91,7 +91,7 @@
 - id: cliq-155
   title: implement dm/group/channel conversation visibility and typed context matrix
   module: cliq
-  stage: in_progress
+  stage: completed
   priority: high
   depends_on:
     - cliq-150
@@ -99,7 +99,7 @@
 - id: cliq-156
   title: implement reliable local media send (image/voice/file) for user/channel targets
   module: cliq
-  stage: queued
+  stage: in_progress
   priority: high
   depends_on:
     - cliq-155

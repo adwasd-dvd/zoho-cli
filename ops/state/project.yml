@@ -1,5 +1,5 @@
 project: zoho-cli
-updated_at: '2026-04-12T02:11:03Z'
+updated_at: '2026-04-12T02:12:16Z'
 status: cliq-expansion
 canonical_workspace: /Users/adwasd/.openclaw/workspace-coder
 project_root: /Users/adwasd/.openclaw/workspace-coder/job/zoho-cli
@@ -7,25 +7,26 @@ module_order:
   - Mail
   - Cliq
   - CRM
-current_focus: cliq-155 dm/group/channel visibility and typed context matrix
+current_focus: cliq-156 reliable local media send (image/voice/file) for user/channel targets
 primary_blockers:
   - crm live read-only verification remains blocked by account-level CRM org access
   - cliq search endpoint variants are not available on happydistrouklimited for current token/api combinations (`extra_param_found` / `request_url_invalid`)
-  - "`cliq chats` now validates on live token/network after re-auth (`count: 0`), but DM/group attachment-positive evidence is still pending"
+  - "`cliq chats` now validates on live token/network after re-auth (`count: 0`); cliq-155 is closed as endpoint-limitation evidence-complete after repeated attachment-empty retrieval confirmations"
   - "current live config auth is healthy (`oauthReady: true`, no missing Cliq scopes); DM history fallback endpoint coverage (`/conversations`, `/buddies`, `/users`, `/chats`) now degrades to empty history (`count: 0`) on full candidate miss instead of hard-failing, improving live probe stability on happydistrouklimited"
   - "native local-file upload/download behavior now has local multipart scaffolding (with image-field fallback preference, upload endpoint/field metadata, file/voice retrieval sourcePath metadata, raw+resolved user-target fallback, direct `/channels/{channel_id}/message` probing, plural `/messages` channel-send fallback variants, single-fetch channel descriptor resolution for channel-id sends, multipart failure diagnostics that include attempted form field metadata `field=...`, and compact `attempts:` path/field/status/code tuples); live probes now confirm text send success (`204`) while local image/file/voice uploads still fail with `request_url_invalid` / `operation_failed` / `request_method_invalid` (evidence captured)"
-  - "attachment-positive `cliq file`/`cliq voice` evidence is still missing; latest marker recheck (`tests/auto_pilot/reports/cliq_retrieval_marker_recheck_20260411_185944.log`) still returns empty payloads (`retrievalResult: media_visible_without_attachment_payload`, `count: 0`) after `/files` -> `/attachments` fallback"
-next_step: "close cliq-155 media send/retrieval tail as endpoint limitations using final evidence set (`cliq_local_media_from_workspace_test_20260411_190816.log` + `cliq_final_retrieval_recheck_20260411_191103.log`), then advance to cliq-156/160 hardening"
+  - "cliq-156 remains open: native local image/file/voice multipart sends still return endpoint-level `not_supported`/unsupported patterns on tested live targets, so reliability work now focuses on cooldown-safe matrix hardening and endpoint taxonomy"
+next_step: "execute a cooldown-safe cliq-156 local media matrix rerun (image/voice/file across user+channel) and archive one uninterrupted evidence bundle to drive endpoint-hardening decisions for cliq-160"
 additional_info:
   - Auto-pilot probe scripts now resolve repo root from script location and can be launched from either project root or workspace root without path drift.
   - "2026-04-12 live check: `cliq status --check-auth` now reports `oauthReady: true`, and text send probes (user + channel) return `httpStatus: 204`."
-  - Multipart local-upload fallback now treats `request_method_invalid` as path-level unsupported and skips that endpoint immediately, reducing wasted retries before probing the next fallback path.
-  - Multipart local-upload fallback now also treats `operation_failed` as path-level unsupported; latest live local-image probe still fails, but exits without attempt-cap exhaustion and preserves compact `attempts:` evidence for endpoint classification.
+  - "Final retrieval recheck (`tests/auto_pilot/reports/cliq_retrieval_recheck_20260412_021122.log`) still returns `retrievalResult: media_visible_without_attachment_payload` with `count: 0` on `/attachments`; cliq-155 tail is now classified as endpoint limitation."
+  - "Multipart local-upload fallback now treats `request_method_invalid` as path-level unsupported and skips that endpoint immediately, reducing wasted retries before probing the next fallback path."
+  - "Multipart local-upload fallback now also treats `operation_failed` as path-level unsupported; latest live local-image probe still fails, but exits without attempt-cap exhaustion and preserves compact `attempts:` evidence for endpoint classification."
   - Fresh live media matrix now returns explicit `not_supported` classification for user+channel local image/voice paths with archived attempt evidence (`tests/auto_pilot/reports/cliq_local_media_matrix_live_20260411_181438.log`), improving endpoint-limitation closure evidence while attachment-positive media send/readback remains pending.
   - Refresh-throttle handling now surfaces explicit `token_refresh_rate_limited` guidance (instead of generic refresh failure), and the latest retrieval probe batch (`tests/auto_pilot/reports/cliq_retrieval_probe_20260411_181620.log`) confirms cooldown is still required before retrieval reruns.
   - Channel send candidate ordering now prioritizes resolved chat/name paths before raw id paths; live marker verification (`tests/auto_pilot/reports/cliq_send_visibility_and_remote_image_20260411_183528.json`) confirms `204` sends are now visible in channel history for both plain text and remote-image marker messages.
   - Typed message inference now recognizes card/unfurl image URLs, so the same remote-image marker message classifies as `image` in typed outputs even though attachment retrieval remains empty.
-  - `zoho cliq file` / `zoho cliq voice` now emit `messageTypes` and `retrievalResult` for each retrieval probe, making endpoint-limitation closure evidence explicit in command output logs.
+  - "`zoho cliq file` / `zoho cliq voice` now emit `messageTypes` and `retrievalResult` for each retrieval probe, making endpoint-limitation closure evidence explicit in command output logs."
   - Workspace media files provided by user (`/Users/adwasd/.openclaw/workspace-coder/test/test.png`, `/Users/adwasd/.openclaw/workspace-coder/test/sample-3.m4a`) were re-tested live (`tests/auto_pilot/reports/cliq_local_media_from_workspace_test_20260411_190816.log`) and still produce `not_supported`, confirming this is endpoint behavior rather than bad local fixture files.
   - DM history fallback metadata is now captured in probe output (`dmHistory.result`, `dmHistory.sourcePath`, `dmHistory.attemptedPaths`) via `ZohoCliqClient.get_last_dm_history_meta`, so cliq-155 evidence logs can show the exact winning read endpoint.
   - File retrieval fallback now continues from `/files` to `/attachments` even when `/files` returns `message_attachment_not_found`, reducing false-empty retrieval risk before endpoint-limitation closure.

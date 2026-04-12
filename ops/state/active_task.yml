@@ -1,13 +1,13 @@
-id: cliq-165
-title: verify cliq export-chats live with organization export scopes and archive sample output
+id: cliq-191
+title: implement collaboration productivity plane (events/reminders/calls-and-meetings)
 module: cliq
-stage: blocked
-status: blocked
+stage: in_progress
+status: in_progress
 owner: automation
-updated_at: '2026-04-12T19:24:46Z'
+updated_at: '2026-04-12T19:47:38Z'
 success_criteria:
-- verify `cliq export-chats` list succeeds on happydistrouklimited with export scopes granted
-- verify `cliq export-chats --chat-id ...` succeeds and archive one sample output JSON
-- keep blocker-skipping loop active when API-side app-account activation is still pending
-next_if_done: start cliq-191 with one smallest command/client slice while keeping cliq export verification evidence fresh
-next_step: cliq-190 live verification is now archived (`tests/auto_pilot/reports/cliq190_probe_summary_20260412_192446.json`); coordinate Cliq admin-side app-account activation and rerun `cliq export-chats` list + `--chat-id` on /tmp/zoho-test-config.json
+- add one smallest collaboration productivity command/client slice with fallback routing and scope guidance
+- add targeted CLI/client coverage for the new slice
+- keep cliq-165 export blocker evidence fresh while app-account activation remains external
+next_if_done: continue cliq-191 with one next smallest slice (reminders or calls-and-meetings) while cliq-165 stays blocked externally
+next_step: first cliq-191 slice is now in place (`zoho cliq events` + `ZohoCliqClient.list_events` with fallback routing/tests); next is one reminders or calls/meetings slice while keeping cliq-165 app-account activation on blocker-skip loop

@@ -1764,6 +1764,70 @@ def cliq_userfields(
     )
 
 
+@cliq_app.command("events")
+def cliq_events(
+    limit: int = typer.Option(50, "--limit", "-n", help="Max events to return."),
+    network: Optional[str] = typer.Option(
+        None, "--network", help="Cliq network slug (e.g. happydistrouklimited)."
+    ),
+) -> None:
+    """List Cliq collaboration events (cliq-191 first slice)."""
+    cfg = _cfg()
+    email = _require_account(cfg)
+    client = _get_cliq_client(cfg, email, network=network)
+
+    resp = client.list_events(limit=limit)
+    data = resp.get("data", resp)
+    if not isinstance(data, list):
+        data = []
+
+    views: list[dict[str, Any]] = []
+    for row in data:
+        if not isinstance(row, dict):
+            continue
+        views.append(
+            {
+                "eventId": str(
+                    row.get("event_id")
+                    or row.get("eventId")
+                    or row.get("id")
+                    or row.get("zuid")
+                    or ""
+                ),
+                "title": str(
+                    row.get("title")
+                    or row.get("name")
+                    or row.get("event_name")
+                    or row.get("summary")
+                    or ""
+                ),
+                "startsAt": str(
+                    row.get("start_time")
+                    or row.get("startTime")
+                    or row.get("starts_at")
+                    or row.get("startsAt")
+                    or ""
+                ),
+                "endsAt": str(
+                    row.get("end_time")
+                    or row.get("endTime")
+                    or row.get("ends_at")
+                    or row.get("endsAt")
+                    or ""
+                ),
+                "status": str(row.get("status") or row.get("event_status") or ""),
+                "raw": row,
+            }
+        )
+
+    utils.output(
+        {
+            "count": len(views),
+            "events": views,
+        }
+    )
+
+
 @cliq_app.command("export-chats")
 def cliq_export_chats(
     chat_id: Optional[str] = typer.Option(

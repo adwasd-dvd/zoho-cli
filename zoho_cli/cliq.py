@@ -2731,6 +2731,20 @@ class ZohoCliqClient:
             not_supported_message="Cliq org-admin userfields listing endpoints are not available for this token/network endpoint.",
         )
 
+    def list_events(self, *, limit: int = 50) -> dict:
+        """List collaboration events (cliq-191 first collaboration slice)."""
+        return self._get_with_candidates_and_not_supported(
+            [
+                ("/events", {"limit": limit}),
+                ("/events", None),
+                ("/admin/events", {"limit": limit}),
+                ("/admin/events", None),
+            ],
+            scope_hint="ZohoCliq.Events.READ",
+            operation_label="events-list",
+            not_supported_message="Cliq collaboration event listing endpoints are not available for this token/network endpoint.",
+        )
+
     @staticmethod
     def infer_message_types(message: dict[str, Any]) -> list[str]:
         """Infer coarse content types from a raw Cliq message payload."""

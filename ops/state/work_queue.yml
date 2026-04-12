@@ -163,7 +163,7 @@
 - id: cliq-191
   title: implement collaboration productivity plane (events/reminders/calls-and-meetings)
   module: cliq
-  stage: queued
+  stage: in_progress
   priority: low
   depends_on:
   - cliq-181

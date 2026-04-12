@@ -1,5 +1,5 @@
 project: zoho-cli
-updated_at: '2026-04-12T07:00:00Z'
+updated_at: '2026-04-12T07:22:40Z'
 status: cliq-expansion
 canonical_workspace: /Users/adwasd/.openclaw/workspace-coder
 project_root: /Users/adwasd/.openclaw/workspace-coder/job/zoho-cli
@@ -22,6 +22,7 @@ next_step: run `zoho cliq status --check-auth --network happydistrouklimited`; i
   export-chats` list + `--chat-id` and archive success evidence to close
   `cliq-165`
 additional_info:
+- '2026-04-12 live recheck: `cliq status --check-auth` still reports `exportOauthReady: false` with missing `ZohoCliq.OrganizationChats.READ` + `ZohoCliq.OrganizationMessages.READ`; `cliq export-chats` list and `--chat-id` probes both still return `oauth_scope_invalid` (evidence: `tests/auto_pilot/reports/cliq_status_export_scope_recheck_20260412_072240.json`, `tests/auto_pilot/reports/cliq_export_chats_list_scope_recheck_20260412_072240.json`, `tests/auto_pilot/reports/cliq_export_chat_scope_recheck_20260412_072240.json`).'
 - '2026-04-12 unit follow-up: `zoho cliq status` exportNext re-auth guidance now includes an explicit `--scope ZohoCliq.OrganizationChats.READ --scope ZohoCliq.OrganizationMessages.READ` fallback command alongside `--with-cliq-export` for cliq-165 unblock attempts.'
 - '2026-04-12 unit follow-up: `zoho cliq status` exportNext command hints are now account-aware (`zoho --account <email> ...`) so cliq-165 re-auth/export reruns can be copied safely in multi-account setups.'
 - '2026-04-12 unit follow-up: `zoho cliq status` now includes `exportNext` command hints when export scopes are missing, including network-aware re-auth/probe command strings for cliq-165 live loops.'

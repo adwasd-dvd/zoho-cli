@@ -4,7 +4,7 @@ module: cliq
 stage: blocked
 status: blocked
 owner: automation
-updated_at: '2026-04-12T07:00:00Z'
+updated_at: '2026-04-12T07:22:40Z'
 success_criteria:
 - run `zoho login --with-cliq --with-cliq-export` on the live test account
 - run `cliq export-chats` list + one `--chat-id` export on happydistrouklimited

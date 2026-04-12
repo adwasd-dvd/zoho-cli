@@ -1,5 +1,5 @@
 module: Cliq
-updated_at: '2026-04-12T07:00:00Z'
+updated_at: '2026-04-12T07:22:40Z'
 status: in_progress
 blockers:
 - live `/messages/search` APIs on happydistrouklimited remain unsupported for current
@@ -8,7 +8,7 @@ blockers:
 - 'attachment retrieval parity remains endpoint-limited: post-upload media-visible
   messages still return zero payloads on `/attachments` (`cliq_single_token_retrieval_after_upload_20260411_192343.json`,
   `cliq_retrieval_recheck_after_success_20260411_192603.log`)'
-- "maintenance export command surface (`cliq export-chats`) is implemented and response-shape normalization is hardened; live auth still reports missing maintenance export scopes (`ZohoCliq.OrganizationChats.READ`, `ZohoCliq.OrganizationMessages.READ`), and export verification remains blocked with `oauth_scope_invalid` on both list + explicit `--chat-id` probes (latest evidence: `tests/auto_pilot/reports/cliq_status_export_scope_recheck_20260412_062324.json`, `tests/auto_pilot/reports/cliq_export_chats_list_scope_recheck_20260412_062324.json`, `tests/auto_pilot/reports/cliq_export_chat_scope_recheck_20260412_062324.json`)"
+- "maintenance export command surface (`cliq export-chats`) is implemented and response-shape normalization is hardened; live auth still reports missing maintenance export scopes (`ZohoCliq.OrganizationChats.READ`, `ZohoCliq.OrganizationMessages.READ`), and export verification remains blocked with `oauth_scope_invalid` on both list + explicit `--chat-id` probes (latest evidence: `tests/auto_pilot/reports/cliq_status_export_scope_recheck_20260412_072240.json`, `tests/auto_pilot/reports/cliq_export_chats_list_scope_recheck_20260412_072240.json`, `tests/auto_pilot/reports/cliq_export_chat_scope_recheck_20260412_072240.json`)"
 - "additional workspace test assets continue to validate local upload breadth: image (`test.png`), audio (`sample-3.m4a`), PDF (`2026-04-10-report.pdf`), and CSV (`lv1_capturable_report.csv`) all sent successfully to both channel and user targets in latest one-token matrix rerun (`tests/auto_pilot/reports/cliq_workspace_test_media_matrix_20260412_042955.json`)"
 next_small_step: >-
   run `zoho cliq status --check-auth --network happydistrouklimited` and follow

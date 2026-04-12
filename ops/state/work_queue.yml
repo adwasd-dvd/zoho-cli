@@ -112,7 +112,7 @@
   - cliq-156
   - cliq-157
 - id: cliq-165
-  title: verify cliq export-chats live with Org.Admin scope and archive sample output
+  title: verify cliq export-chats live with organization export scopes and archive sample output
   module: cliq
   stage: blocked
   priority: high

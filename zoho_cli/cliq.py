@@ -22,7 +22,8 @@ DEFAULT_CLIQ_SCOPES = [
     "ZohoCliq.Webhooks.CREATE",
 ]
 
-CLIQ_EXPORT_SCOPE = "ZohoCliq.Org.Admin"
+CLIQ_EXPORT_CHATS_SCOPE = "ZohoCliq.OrganizationChats.READ"
+CLIQ_EXPORT_MESSAGES_SCOPE = "ZohoCliq.OrganizationMessages.READ"
 
 
 def missing_cliq_scopes(granted_scopes: list[str] | None) -> list[str]:
@@ -1428,7 +1429,7 @@ class ZohoCliqClient:
         if saw_scope_invalid:
             utils.error_exit(
                 "oauth_scope_invalid",
-                f"Cliq token is missing export scope. Re-run `zoho login --with-cliq --scope {CLIQ_EXPORT_SCOPE}` and retry.",
+                f"Cliq token is missing organization-chat export scope. Re-run `zoho login --with-cliq --scope {CLIQ_EXPORT_CHATS_SCOPE}` and retry.",
             )
 
         if saw_not_supported:
@@ -1483,7 +1484,7 @@ class ZohoCliqClient:
         }:
             utils.error_exit(
                 "oauth_scope_invalid",
-                f"Cliq token is missing export scope. Re-run `zoho login --with-cliq --scope {CLIQ_EXPORT_SCOPE}` and retry.",
+                f"Cliq token is missing organization-message export scope. Re-run `zoho login --with-cliq --scope {CLIQ_EXPORT_MESSAGES_SCOPE}` and retry.",
             )
 
         if (

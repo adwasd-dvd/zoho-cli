@@ -15,7 +15,7 @@ cliq:
   blockers:
     - "live search endpoint variants are currently unsupported on happydistrouklimited (`extra_param_found` / `request_url_invalid`)"
     - "attachment retrieval parity remains endpoint-limited on current token/network (`/attachments` returns empty payloads for media-visible messages)"
-    - "`cliq export-chats` live verification is blocked until token includes `ZohoCliq.Org.Admin` (current probes return `oauth_scope_invalid`)"
+    - "`cliq export-chats` live verification is blocked until token includes maintenance export scopes (`ZohoCliq.OrganizationChats.READ` + `ZohoCliq.OrganizationMessages.READ`) (current probes return `oauth_scope_invalid`)"
 
 crm:
   priority: 3

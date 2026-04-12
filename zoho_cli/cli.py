@@ -529,25 +529,24 @@ def login(
         localhost_redirect = f"http://localhost:{port}/callback"
         legacy_redirect = "https://example.com/zoho/oauth/callback"
 
-        manual_redirect_candidates: list[str]
         if manual_override:
-            manual_redirect_candidates = [manual_override]
+            redirect_uri = manual_override
         elif configured_redirect:
-            manual_redirect_candidates = [configured_redirect]
+            if configured_redirect == legacy_redirect:
+                # Legacy default from early bootstrap should not leak into
+                # no-browser auth URLs when user didn't explicitly set it.
+                redirect_uri = localhost_redirect
+            else:
+                redirect_uri = configured_redirect
         else:
-            # In headless/manual mode, show both common choices.
-            # Legacy hosted callback is often still what users registered,
-            # while localhost remains useful for local copy/paste workflows.
-            manual_redirect_candidates = [legacy_redirect, localhost_redirect]
+            # Unset redirect in no-browser mode must default to localhost.
+            redirect_uri = localhost_redirect
 
-        redirect_uri = manual_redirect_candidates[0]
+        auth_url = auth.build_auth_url(client_id, redirect_uri, scopes)
 
         _stderr("\n── Zoho OAuth Login (manual) ──────────────────────────────")
-        _stderr("1. Open one URL below in your browser (must match a registered redirect URI):\n")
-        for idx, candidate_redirect_uri in enumerate(manual_redirect_candidates, start=1):
-            auth_url = auth.build_auth_url(client_id, candidate_redirect_uri, scopes)
-            _stderr(f"   [{idx}] {auth_url}")
-        _stderr("")
+        _stderr("1. Open this URL in your browser:\n")
+        _stderr(f"   {auth_url}\n")
         _stderr("2. Approve access.")
         _stderr("3. Copy the full redirect URL (or just the code) and paste it below.")
         _stderr("────────────────────────────────────────────────────────────\n")

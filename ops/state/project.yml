@@ -1,5 +1,5 @@
 project: zoho-cli
-updated_at: '2026-04-12T04:43:51Z'
+updated_at: '2026-04-12T05:12:51Z'
 status: cliq-expansion
 canonical_workspace: /Users/adwasd/.openclaw/workspace-coder
 project_root: /Users/adwasd/.openclaw/workspace-coder/job/zoho-cli
@@ -7,28 +7,29 @@ module_order:
 - Mail
 - Cliq
 - CRM
-current_focus: cliq-165 blocked pending Org.Admin re-auth for export-chats live verification
+current_focus: cliq-165 blocked pending maintenance export-scope re-auth for export-chats live verification
 primary_blockers:
 - crm live read-only verification remains blocked by account-level CRM org access
 - cliq search endpoint variants are not available on happydistrouklimited for current
   token/api combinations (`extra_param_found` / `request_url_invalid`)
 - cliq retrieval parity remains endpoint-limited on current token/network (`/attachments`
   returns zero payloads for media-visible messages)
-- cliq maintenance export verification is blocked by missing `ZohoCliq.Org.Admin`
-  scope on current live config (`oauth_scope_invalid`)
-next_step: re-auth once with `ZohoCliq.Org.Admin` scope to close `cliq-165`, archive
+- cliq maintenance export verification is blocked by missing maintenance export
+  scopes on current live config (`oauth_scope_invalid`)
+next_step: re-auth once with `ZohoCliq.OrganizationChats.READ` + `ZohoCliq.OrganizationMessages.READ`
+  scopes to close `cliq-165`, archive
   successful export JSON evidence, then resume waiting for CRM-enabled org access
   to unblock crm-002
 additional_info:
-- '2026-04-12 live recheck: both `cliq export-chats` list and explicit `--chat-id` probes still return `oauth_scope_invalid` until `ZohoCliq.Org.Admin` is granted (evidence: `tests/auto_pilot/reports/cliq_export_chats_list_scope_recheck_20260412_044316.json`, `tests/auto_pilot/reports/cliq_export_chat_scope_recheck_20260412_044323.json`).'
+- '2026-04-12 live recheck: both `cliq export-chats` list and explicit `--chat-id` probes still return `oauth_scope_invalid`; login-time checks indicate `ZohoCliq.Org.Admin` is invalid and retries should target `ZohoCliq.OrganizationChats.READ` + `ZohoCliq.OrganizationMessages.READ` (evidence: `tests/auto_pilot/reports/cliq_export_chats_list_scope_recheck_20260412_044316.json`, `tests/auto_pilot/reports/cliq_export_chat_scope_recheck_20260412_044323.json`).'
 - '2026-04-12 live recheck: user-added workspace fixtures now verify cleanly in cooldown matrix for both channel+user destinations, including `2026-04-10-report.pdf` and `lv1_capturable_report.csv` file sends (`tests/auto_pilot/reports/cliq_local_media_matrix_cooldown_20260411_212355.json`, `tests/auto_pilot/reports/cliq_local_media_matrix_cooldown_20260411_212455.json`, each ok=6/errors=0).'
 - '2026-04-12 live check: both `cliq export-chats` list and explicit `--chat-id`
-  probes return `oauth_scope_invalid` until `ZohoCliq.Org.Admin` is granted (evidence:
+  probes return `oauth_scope_invalid` under current token scopes (evidence:
   `tests/auto_pilot/reports/cliq_export_chats_list_scope_invalid_20260412_031212.json`,
   `tests/auto_pilot/reports/cliq_export_chat_scope_invalid_20260412_031212.json`).'
 - '2026-04-12 unit hardening: export scope detection now treats both `oauthtoken_scope_invalid`
-  and `oauth_scope_invalid` as Org.Admin misses for `cliq export-chats` list + `--chat-id`
-  paths, keeping re-auth guidance stable across maintenance API code variants.'
+  and `oauth_scope_invalid` as maintenance export-scope misses for `cliq export-chats`
+  list + `--chat-id` paths, keeping re-auth guidance stable across maintenance API code variants.'
 - Auto-pilot probe scripts now resolve repo root from script location and can be launched
   from either project root or workspace root without path drift.
 - '2026-04-12 live check: `cliq status --check-auth` now reports `oauthReady: true`,

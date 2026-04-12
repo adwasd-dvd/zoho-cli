@@ -98,10 +98,10 @@ def _cfg_env(cfg_path: Path) -> dict[str, str]:
     return {"ZOHO_CONFIG": str(cfg_path)}
 
 
-def test_login_no_browser_prints_dual_urls_when_redirect_unset(
+def test_login_no_browser_defaults_to_localhost_redirect_when_unset(
     mock_config: Path, monkeypatch: pytest.MonkeyPatch
 ) -> None:
-    """When redirect_uri is unset, --no-browser should print both legacy and localhost auth URLs."""
+    """When redirect_uri is unset, --no-browser should print a localhost-based auth URL."""
 
     monkeypatch.setattr(auth, "discover_accounts_server", lambda _cid: ACCOUNTS_BASE)
     monkeypatch.setattr("click.prompt", lambda *_a, **_kw: "abc123")
@@ -123,10 +123,9 @@ def test_login_no_browser_prints_dual_urls_when_redirect_unset(
     )
 
     assert result.exit_code == 0, result.output
-    assert "[1] https://accounts.zoho.com/oauth/v2/auth?" in result.output
-    assert "redirect_uri=https%3A%2F%2Fexample.com%2Fzoho%2Foauth%2Fcallback" in result.output
-    assert "[2] https://accounts.zoho.com/oauth/v2/auth?" in result.output
+    assert "https://accounts.zoho.com/oauth/v2/auth?" in result.output
     assert "redirect_uri=http%3A%2F%2Flocalhost%3A51821%2Fcallback" in result.output
+    assert "example.com%2Fzoho%2Foauth%2Fcallback" not in result.output
 
 
 def test_login_no_browser_uses_redirect_from_pasted_url_for_exchange(

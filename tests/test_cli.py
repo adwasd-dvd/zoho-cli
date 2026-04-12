@@ -955,7 +955,10 @@ def test_cliq_status_scaffold_info(mock_config: Path) -> None:
     assert payload["exportOauthReady"] is False
     assert "ZohoCliq.OrganizationChats.READ" in payload["missingExportScopes"]
     assert payload["exportNext"][0].startswith("re-auth with Cliq export scopes")
-    assert "zoho login --with-cliq --with-cliq-export" in payload["exportNext"][0]
+    assert (
+        "zoho --account test@example.com login --with-cliq --with-cliq-export"
+        in payload["exportNext"][0]
+    )
 
 
 def test_cliq_status_check_auth(mock_config: Path, mock_token_refresh: Any) -> None:
@@ -1005,7 +1008,7 @@ def test_cliq_status_oauth_ready_when_scopes_present(tmp_path: Path) -> None:
     ]
     assert (
         payload["exportNext"][1]
-        == "verify export scope readiness: `zoho cliq status --check-auth`"
+        == "verify export scope readiness: `zoho --account test@example.com cliq status --check-auth`"
     )
 
 
@@ -1076,7 +1079,7 @@ def test_cliq_status_export_next_includes_network_hint(tmp_path: Path) -> None:
     payload = json.loads(result.output)
     assert payload["exportOauthReady"] is False
     assert payload["exportNext"][1].endswith(
-        "`zoho cliq status --check-auth --network happydistrouklimited`"
+        "`zoho --account test@example.com cliq status --check-auth --network happydistrouklimited`"
     )
 
 

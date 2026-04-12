@@ -11,6 +11,7 @@ Output:
 from __future__ import annotations
 
 import json
+import shlex
 import sys
 
 # Fail fast with a clear message if any runtime dependency is missing
@@ -1249,6 +1250,22 @@ def cliq_status(
     account_cfg = cfg.get("accounts", {}).get(email, {}) if email else {}
     resolved_network = network or account_cfg.get("cliq_network")
 
+    def _cmd(*args: str, include_network: bool = False) -> str:
+        parts: list[str] = ["zoho"]
+        if email:
+            parts.extend(["--account", email])
+        parts.extend(args)
+        if include_network and resolved_network:
+            parts.extend(["--network", str(resolved_network)])
+        return "`" + " ".join(shlex.quote(p) for p in parts) + "`"
+
+    def _export_next() -> list[str]:
+        return [
+            f"re-auth with Cliq export scopes: {_cmd('login', '--with-cliq', '--with-cliq-export')}",
+            f"verify export scope readiness: {_cmd('cliq', 'status', '--check-auth', include_network=True)}",
+            f"rerun export probes: {_cmd('cliq', 'export-chats', include_network=True)} and {_cmd('cliq', 'export-chats', '--chat-id', '<chat_id>', include_network=True)}",
+        ]
+
     payload: dict = {
         "module": "cliq",
         "scaffold": "ready",
@@ -1279,12 +1296,7 @@ def cliq_status(
     )
     payload["exportOauthReady"] = len(payload["missingExportScopes"]) == 0
     if not payload["exportOauthReady"]:
-        network_hint = f" --network {resolved_network}" if resolved_network else ""
-        payload["exportNext"] = [
-            "re-auth with Cliq export scopes: `zoho login --with-cliq --with-cliq-export`",
-            f"verify export scope readiness: `zoho cliq status --check-auth{network_hint}`",
-            f"rerun export probes: `zoho cliq export-chats{network_hint}` and `zoho cliq export-chats{network_hint} --chat-id <chat_id>`",
-        ]
+        payload["exportNext"] = _export_next()
 
     if check_auth and email:
         cid, csec = _require_credentials(cfg)
@@ -1307,14 +1319,7 @@ def cliq_status(
             if payload["exportOauthReady"]:
                 payload.pop("exportNext", None)
             else:
-                network_hint = (
-                    f" --network {resolved_network}" if resolved_network else ""
-                )
-                payload["exportNext"] = [
-                    "re-auth with Cliq export scopes: `zoho login --with-cliq --with-cliq-export`",
-                    f"verify export scope readiness: `zoho cliq status --check-auth{network_hint}`",
-                    f"rerun export probes: `zoho cliq export-chats{network_hint}` and `zoho cliq export-chats{network_hint} --chat-id <chat_id>`",
-                ]
+                payload["exportNext"] = _export_next()
 
     utils.output(payload)
 

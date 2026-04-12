@@ -1,5 +1,5 @@
 module: Cliq
-updated_at: '2026-04-12T06:23:24Z'
+updated_at: '2026-04-12T06:40:00Z'
 status: in_progress
 blockers:
 - live `/messages/search` APIs on happydistrouklimited remain unsupported for current
@@ -12,6 +12,6 @@ blockers:
 - "additional workspace test assets continue to validate local upload breadth: image (`test.png`), audio (`sample-3.m4a`), PDF (`2026-04-10-report.pdf`), and CSV (`lv1_capturable_report.csv`) all sent successfully to both channel and user targets in latest one-token matrix rerun (`tests/auto_pilot/reports/cliq_workspace_test_media_matrix_20260412_042955.json`)"
 next_small_step: >-
   run `zoho cliq status --check-auth --network happydistrouklimited` and follow
-  `exportNext` if `exportOauthReady` is false; after re-auth
+  account-aware `exportNext` if `exportOauthReady` is false; after re-auth
   (`zoho login --with-cliq --with-cliq-export`), rerun `cliq export-chats` list
   + one `--chat-id` export and archive successful JSON samples

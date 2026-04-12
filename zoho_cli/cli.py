@@ -2144,6 +2144,64 @@ def cliq_bot_subscribers(
     )
 
 
+@cliq_app.command("trigger-bot")
+def cliq_trigger_bot(
+    bot_id: str = typer.Argument(..., help="Bot id or unique name."),
+    call_name: str = typer.Argument(..., help="Bot call/action name."),
+    inputs_json: Optional[str] = typer.Option(
+        None,
+        "--inputs-json",
+        help="Optional JSON object payload for bot call inputs.",
+    ),
+    network: Optional[str] = typer.Option(
+        None, "--network", help="Cliq network slug (e.g. happydistrouklimited)."
+    ),
+) -> None:
+    """Trigger one named bot call/action."""
+    cfg = _cfg()
+    email = _require_account(cfg)
+    client = _get_cliq_client(cfg, email, network=network)
+
+    payload_inputs: dict[str, Any] = {}
+    raw_inputs = (inputs_json or "").strip()
+    if raw_inputs:
+        try:
+            parsed = json.loads(raw_inputs)
+        except ValueError as exc:
+            utils.error_exit(
+                "invalid_inputs_json", f"inputs-json must be valid JSON: {exc}"
+            )
+        if not isinstance(parsed, dict):
+            utils.error_exit(
+                "invalid_inputs_json",
+                "inputs-json must decode to a JSON object",
+            )
+        payload_inputs = parsed
+
+    target_bot = bot_id.strip()
+    target_call = call_name.strip()
+    resp = client.trigger_bot_call(target_bot, target_call, inputs=payload_inputs)
+    data = resp.get("data", resp)
+
+    call_id = ""
+    if isinstance(data, dict):
+        for key in ("call_id", "callId", "id"):
+            value = data.get(key)
+            if isinstance(value, str) and value.strip():
+                call_id = value.strip()
+                break
+
+    utils.output_status(
+        "Cliq bot call triggered",
+        extra={
+            "botId": target_bot,
+            "callName": target_call,
+            "callId": call_id,
+            "result": data,
+        },
+    )
+
+
 @cliq_app.command("scheduled")
 def cliq_scheduled(
     channel_id: Optional[str] = typer.Option(

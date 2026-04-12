@@ -1,5 +1,5 @@
 module: Cliq
-updated_at: '2026-04-12T14:27:55Z'
+updated_at: '2026-04-12T14:48:22Z'
 status: in_progress
 blockers:
 - 'live thread-plane probe classifies thread endpoints as unsupported on happydistrouklimited: `thread-create`, `thread-reply`, `thread-followers`, `thread-state` all return `not_supported`, and `threads` currently returns `count: 0` (`tests/auto_pilot/reports/cliq_thread_probe_summary_20260412_044149.json`)'
@@ -8,7 +8,7 @@ blockers:
 - 'cliq-172 live probe confirms attachment retrieval parity remains endpoint-limited: media-typed message `1775957550478_105215272334` returns `retrievalResult: media_visible_without_attachment_payload` and `count: 0` for both `cliq file` and `cliq voice` (`tests/auto_pilot/reports/cliq172_probe_summary_20260412_134514.json`)'
 - "maintenance export command surface (`cliq export-chats`) is implemented and response-shape normalization is hardened; live auth still reports missing maintenance export scopes (`ZohoCliq.OrganizationChats.READ`, `ZohoCliq.OrganizationMessages.READ`), and export verification remains blocked with `oauth_scope_invalid` on both list + explicit `--chat-id` probes (latest one-command evidence: `tests/auto_pilot/reports/cliq_status_export_scope_recheck_20260412_032238.json`, `tests/auto_pilot/reports/cliq_export_chats_list_scope_recheck_20260412_032238.json`, `tests/auto_pilot/reports/cliq_export_chat_scope_recheck_20260412_032238.json`; runner summary `tests/auto_pilot/reports/cliq_export_scope_recheck_summary_20260412_032238.json` reports `scopeBlocked: true` and `recommendedNext: interactive_reauth_then_rerun` from status `exportOauthReady`/`missingExportScopes` signals)"
 next_small_step: >-
-  continue cliq-180 bot operations by adding trigger-bot call support now that
-  `post-to-bot` and `bot-subscribers` slices are in place with targeted tests,
-  while keeping cliq-165 export scope verification blocked for interactive
-  re-auth
+  run one live `trigger-bot` probe now that cliq-180 has
+  `post-to-bot` + `bot-subscribers` + `trigger-bot` code slices with targeted
+  tests, then decide cliq-180 closeout while keeping cliq-165 export scope
+  verification blocked for interactive re-auth

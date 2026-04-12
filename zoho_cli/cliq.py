@@ -2062,6 +2062,61 @@ class ZohoCliqClient:
             not_supported_message="Cliq bot-subscriber endpoints are not available for this token/network endpoint. Capture one capabilities snapshot and continue with non-bot operations for this network.",
         )
 
+    def trigger_bot_call(
+        self,
+        bot_id: str,
+        call_name: str,
+        *,
+        inputs: dict[str, Any] | None = None,
+    ) -> dict:
+        """Trigger one named bot call/action using endpoint/payload fallbacks."""
+        target_bot = bot_id.strip()
+        if not target_bot:
+            utils.error_exit("invalid_bot_id", "bot_id cannot be empty")
+
+        target_call = call_name.strip()
+        if not target_call:
+            utils.error_exit("invalid_call_name", "call_name cannot be empty")
+
+        payload_inputs: dict[str, Any] = {}
+        if isinstance(inputs, dict):
+            payload_inputs = dict(inputs)
+
+        payloads: list[dict[str, Any]] = [
+            {
+                "call_name": target_call,
+                "inputs": payload_inputs,
+            },
+            {
+                "name": target_call,
+                "arguments": payload_inputs,
+            },
+            {
+                "action": target_call,
+                "params": payload_inputs,
+            },
+        ]
+
+        candidates: list[tuple[str, str, dict[str, Any] | None]] = []
+        for payload in payloads:
+            candidates.extend(
+                [
+                    ("POST", f"/bots/{target_bot}/calls", payload),
+                    ("POST", f"/bots/{target_bot}/call", payload),
+                    ("POST", f"/bots/{target_bot}/trigger", payload),
+                    ("POST", f"/bots/{target_bot}/actions/{target_call}", payload),
+                    ("POST", f"/bots/{target_bot}/execute", payload),
+                    ("POST", f"/bot/{target_bot}/call", payload),
+                ]
+            )
+
+        return self._request_with_candidates_and_not_supported(
+            candidates,
+            scope_hint="ZohoCliq.Webhooks.CREATE",
+            operation_label="trigger-bot",
+            not_supported_message="Cliq bot trigger/call endpoints are not available for this token/network endpoint. Capture one capabilities snapshot and continue with non-bot operations for this network.",
+        )
+
     def list_thread_followers(
         self,
         thread_id: str,

@@ -1,10 +1,14 @@
-last_run_at: "2026-04-12T14:27:55Z"
+last_run_at: "2026-04-12T14:48:22Z"
 last_result: warning
 current_focus: cliq
 suites:
   unit:
     status: passing
     notes:
+      - "python3.11 -m pytest -q tests/test_cliq.py::test_cliq_client_trigger_bot_call_falls_back_to_call_endpoint tests/test_cliq.py::test_cliq_client_trigger_bot_call_scope_invalid_reports_hint tests/test_cli.py::test_cliq_trigger_bot tests/test_cli.py::test_cliq_trigger_bot_rejects_invalid_inputs_json"
+      - "4 passed in 0.15s (cliq-180 third slice: new `zoho cliq trigger-bot` command + `ZohoCliqClient.trigger_bot_call` fallback coverage, 2026-04-12T14:48:22Z)"
+      - "./.venv/bin/ruff format --check zoho_cli/cliq.py zoho_cli/cli.py tests/test_cliq.py tests/test_cli.py"
+      - "4 files already formatted (2026-04-12T14:48:22Z)"
       - "make release-gate && make ci"
       - "broad verification gate is green: release-gate unit suite 321 passed in 6.61s, wheel smoke passed (0.2.0), and ci pytest run 321 passed in 5.91s with fmt/lint clean (2026-04-12T14:19:04Z)"
       - "python3.11 -m pytest -q tests/test_cliq.py::test_cliq_client_list_bot_subscribers_falls_back_to_followers tests/test_cliq.py::test_cliq_client_list_bot_subscribers_scope_invalid_reports_hint tests/test_cli.py::test_cliq_bot_subscribers"

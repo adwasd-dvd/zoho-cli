@@ -2080,6 +2080,61 @@ def test_cliq_bot_subscribers(
     mock_client.list_bot_subscribers.assert_called_once_with("bot-123", limit=2)
 
 
+def test_cliq_trigger_bot(
+    mock_config: Path,
+    mock_token_refresh: Any,
+) -> None:
+    mock_client = MagicMock()
+    mock_client.trigger_bot_call.return_value = {"data": {"id": "BC1"}}
+
+    with patch("zoho_cli.cli._get_cliq_client", return_value=mock_client):
+        result = runner.invoke(
+            app,
+            [
+                "cliq",
+                "trigger-bot",
+                "bot-123",
+                "daily_digest",
+                "--inputs-json",
+                '{"limit": 5}',
+            ],
+            env=_cfg_env(mock_config),
+        )
+
+    assert result.exit_code == 0, result.output
+    payload = json.loads(result.output)
+    assert payload["status"] == "ok"
+    assert payload["botId"] == "bot-123"
+    assert payload["callName"] == "daily_digest"
+    assert payload["callId"] == "BC1"
+    mock_client.trigger_bot_call.assert_called_once_with(
+        "bot-123",
+        "daily_digest",
+        inputs={"limit": 5},
+    )
+
+
+def test_cliq_trigger_bot_rejects_invalid_inputs_json(
+    mock_config: Path,
+    mock_token_refresh: Any,
+) -> None:
+    result = runner.invoke(
+        app,
+        [
+            "cliq",
+            "trigger-bot",
+            "bot-123",
+            "daily_digest",
+            "--inputs-json",
+            "{not-json}",
+        ],
+        env=_cfg_env(mock_config),
+    )
+
+    assert result.exit_code != 0
+    assert "invalid_inputs_json" in result.output
+
+
 def test_cliq_scheduled_get_from_channel(
     mock_config: Path,
     mock_token_refresh: Any,

@@ -1,10 +1,14 @@
-last_run_at: "2026-04-12T16:45:43Z"
+last_run_at: "2026-04-12T17:08:22Z"
 last_result: warning
 current_focus: cliq
 suites:
   unit:
     status: passing
     notes:
+      - "python3.11 -m pytest -q tests/test_cliq.py::test_cliq_client_list_teams_falls_back_to_admin_endpoint tests/test_cliq.py::test_cliq_client_list_teams_scope_invalid_reports_hint tests/test_cli.py::test_cliq_teams"
+      - "3 passed in 0.18s (cliq-190 first slice: new `zoho cliq teams` command + `ZohoCliqClient.list_teams` fallback coverage, 2026-04-12T17:08:22Z)"
+      - "./.venv/bin/ruff format --check zoho_cli/cliq.py zoho_cli/cli.py tests/test_cliq.py tests/test_cli.py"
+      - "4 files already formatted (2026-04-12T17:08:22Z)"
       - "python3.11 -m zoho_cli --config /tmp/zoho-test-config.json --account ai-dev@happy-distro.co.uk cliq status --check-auth --network happydistrouklimited"
       - "python3.11 -m zoho_cli --config /tmp/zoho-test-config.json --account ai-dev@happy-distro.co.uk cliq pinned --channel-id O6576524000097556005 --limit 10 --network happydistrouklimited"
       - "cliq-181 live pinned probe archived at `tests/auto_pilot/reports/cliq181_probe_summary_20260412_164540.json`: auth remains healthy (`oauthReady: true`) and pinned endpoints return `not_supported` on happydistrouklimited (`tests/auto_pilot/reports/cliq181_pinned_20260412_164540.json`) (2026-04-12T16:45:43Z)"

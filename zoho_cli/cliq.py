@@ -2627,6 +2627,20 @@ class ZohoCliqClient:
         """List users."""
         return self._get("/users", {"limit": limit})
 
+    def list_teams(self, *, limit: int = 50) -> dict:
+        """List organization teams (cliq-190 first org-admin slice)."""
+        return self._get_with_candidates_and_not_supported(
+            [
+                ("/teams", {"limit": limit}),
+                ("/teams", None),
+                ("/admin/teams", {"limit": limit}),
+                ("/admin/teams", None),
+            ],
+            scope_hint="ZohoCliq.Teams.READ",
+            operation_label="teams-list",
+            not_supported_message="Cliq org-admin team listing endpoints are not available for this token/network endpoint.",
+        )
+
     @staticmethod
     def infer_message_types(message: dict[str, Any]) -> list[str]:
         """Infer coarse content types from a raw Cliq message payload."""

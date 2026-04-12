@@ -5,6 +5,7 @@
 ### Added
 - Initialized repo control files, anchors, and memory scaffolding for the zoho coder loop.
 - Added Cliq thread-plane command surface (`zoho cliq thread-create`, `thread-reply`, `threads`, `thread-followers`, `thread-state`) with capability-gated fallback routing in `ZohoCliqClient` and targeted thread command/client tests.
+- Added the cliq-171 `schedule` slice: `zoho cliq schedule` plus fallback client routing (`schedule_message`) for chat/channel targets.
 - Added the first cliq-171 scheduled-message command slice: `zoho cliq scheduled` plus fallback client routing (`list_scheduled_messages`) for chat/channel targets.
 - Added the cliq-171 `scheduled-get` slice: `zoho cliq scheduled-get` plus fallback client routing (`get_scheduled_message`) for chat/channel targets.
 - Added the cliq-171 `scheduled-cancel` slice: `zoho cliq scheduled-cancel` plus fallback client routing (`cancel_scheduled_message`) for chat/channel targets.

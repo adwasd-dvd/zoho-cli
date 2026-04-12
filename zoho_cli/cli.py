@@ -2015,6 +2015,59 @@ def cliq_threads(
     )
 
 
+@cliq_app.command("schedule")
+def cliq_schedule(
+    text: str = typer.Option(..., "--text", "-t", help="Message text."),
+    when: str = typer.Option(
+        ...,
+        "--when",
+        help="Scheduled send time (ISO-8601 or provider-accepted timestamp).",
+    ),
+    channel_id: Optional[str] = typer.Option(
+        None, "--channel-id", help="Destination channel id (resolved to chat_id)."
+    ),
+    chat_id: Optional[str] = typer.Option(None, "--chat-id", help="Chat id."),
+    network: Optional[str] = typer.Option(
+        None, "--network", help="Cliq network slug (e.g. happydistrouklimited)."
+    ),
+) -> None:
+    """Schedule one message for a chat/channel."""
+    if not chat_id and not channel_id:
+        utils.error_exit("invalid_destination", "Provide --chat-id or --channel-id")
+
+    cfg = _cfg()
+    email = _require_account(cfg)
+    client = _get_cliq_client(cfg, email, network=network)
+
+    resolved_chat = (chat_id or "").strip() or client.resolve_chat_id(channel_id or "")
+    resp = client.schedule_message(
+        text,
+        when,
+        chat_id=resolved_chat,
+        channel_id=channel_id,
+    )
+
+    data = resp.get("data", resp)
+    scheduled_id = ""
+    if isinstance(data, dict):
+        for key in ("scheduled_id", "scheduledId", "id", "message_id", "messageId"):
+            value = data.get(key)
+            if isinstance(value, str) and value.strip():
+                scheduled_id = value.strip()
+                break
+
+    utils.output_status(
+        "Cliq message scheduled",
+        extra={
+            "chatId": resolved_chat or "",
+            "channelId": channel_id or "",
+            "scheduledAt": when.strip(),
+            "scheduledId": scheduled_id,
+            "result": data,
+        },
+    )
+
+
 @cliq_app.command("scheduled")
 def cliq_scheduled(
     channel_id: Optional[str] = typer.Option(

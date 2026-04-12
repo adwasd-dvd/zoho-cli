@@ -1800,6 +1800,73 @@ class ZohoCliqClient:
             not_supported_message="Cliq scheduled-message list endpoints are not available for this token/network endpoint. Run `zoho cliq capabilities --channel-id <id>` and confirm scheduled-message operations for the target conversation.",
         )
 
+    def schedule_message(
+        self,
+        text: str,
+        schedule_at: str,
+        *,
+        chat_id: str | None = None,
+        channel_id: str | None = None,
+    ) -> dict:
+        """Schedule one message for a chat/channel."""
+        resolved_chat = self._resolve_chat_destination(
+            chat_id=chat_id,
+            channel_id=channel_id,
+        )
+
+        body = text.strip()
+        if not body:
+            utils.error_exit("invalid_text", "text cannot be empty")
+
+        scheduled_for = schedule_at.strip()
+        if not scheduled_for:
+            utils.error_exit("invalid_schedule_at", "schedule_at cannot be empty")
+
+        payloads = [
+            {"text": body, "time": scheduled_for},
+            {"text": body, "scheduled_time": scheduled_for},
+            {"text": body, "scheduled_at": scheduled_for},
+            {"text": body, "schedule_time": scheduled_for},
+            {"text": body, "send_at": scheduled_for},
+            {"message": body, "scheduled_time": scheduled_for},
+            {"content": body, "scheduled_time": scheduled_for},
+        ]
+
+        candidates: list[tuple[str, str, dict[str, Any] | None]] = []
+        for payload in payloads:
+            candidates.extend(
+                [
+                    ("POST", f"/chats/{resolved_chat}/scheduled", payload),
+                    ("POST", f"/chats/{resolved_chat}/messages/scheduled", payload),
+                    ("POST", f"/chats/{resolved_chat}/scheduled/messages", payload),
+                    ("POST", f"/chats/{resolved_chat}/schedule", payload),
+                ]
+            )
+
+            if channel_id:
+                candidates.extend(
+                    [
+                        ("POST", f"/channels/{channel_id}/scheduled", payload),
+                        (
+                            "POST",
+                            f"/channels/{channel_id}/messages/scheduled",
+                            payload,
+                        ),
+                        (
+                            "POST",
+                            f"/channels/{channel_id}/scheduled/messages",
+                            payload,
+                        ),
+                    ]
+                )
+
+        return self._request_with_candidates_and_not_supported(
+            candidates,
+            scope_hint="ZohoCliq.Messages.CREATE",
+            operation_label="schedule",
+            not_supported_message="Cliq scheduled-message create endpoints are not available for this token/network endpoint. Run `zoho cliq capabilities --channel-id <id>` and confirm scheduled-message operations for the target conversation.",
+        )
+
     def get_scheduled_message(
         self,
         scheduled_id: str,

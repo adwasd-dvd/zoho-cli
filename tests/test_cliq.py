@@ -1832,6 +1832,32 @@ def test_cliq_client_list_threads_falls_back_to_thread_path(
 
 
 @respx.mock
+def test_cliq_client_schedule_message_falls_back_to_messages_scheduled(
+    client: cliq.ZohoCliqClient,
+) -> None:
+    respx.post("https://cliq.zoho.com/api/v2/chats/C1/scheduled").mock(
+        return_value=httpx.Response(
+            404,
+            json={
+                "code": "request_url_invalid",
+                "message": "Not found",
+            },
+        )
+    )
+    route = respx.post("https://cliq.zoho.com/api/v2/chats/C1/messages/scheduled").mock(
+        return_value=httpx.Response(200, json={"data": {"id": "S1"}})
+    )
+
+    payload = client.schedule_message(
+        "hello schedule",
+        "2026-04-13T10:00:00Z",
+        chat_id="C1",
+    )
+    assert route.called
+    assert payload["data"]["id"] == "S1"
+
+
+@respx.mock
 def test_cliq_client_list_scheduled_messages_falls_back_to_messages_scheduled(
     client: cliq.ZohoCliqClient,
 ) -> None:

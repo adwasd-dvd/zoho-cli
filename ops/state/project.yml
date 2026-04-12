@@ -1,5 +1,5 @@
 project: zoho-cli
-updated_at: '2026-04-12T22:35:32Z'
+updated_at: '2026-04-12T22:47:21Z'
 status: cliq-expansion
 canonical_workspace: /Users/adwasd/.openclaw/workspace-coder
 project_root: /Users/adwasd/.openclaw/workspace-coder/job/zoho-cli
@@ -7,7 +7,7 @@ module_order:
 - Mail
 - Cliq
 - CRM
-current_focus: cliq-165 export verification remains externally blocked by API-side `inactive_appaccount_user`; cliq-192 fourth+fifth slices (`cliq custom-domains`/`cliq custom-emails`) are now in place with targeted tests green, so execution continues with blocker-skipping toward focused live platform-extension verification and then cliq-193
+current_focus: cliq-165 export verification remains externally blocked by API-side `inactive_appaccount_user`; cliq-192 fallback hardening now also covers singular admin custom endpoints (`/admin/customdomain`, `/admin/customemail`) with targeted tests green, so execution continues with blocker-skipping toward focused live platform-extension verification and then cliq-193
 primary_blockers:
 - crm live read-only verification remains blocked by account-level CRM org access
 - cliq databases live verification currently requires additional scope (`ZohoCliq.Databases.READ`) on the active token despite healthy baseline auth/export readiness
@@ -27,8 +27,9 @@ primary_blockers:
   returns `not_supported`)
 - calls/meetings endpoints are unsupported on current token/network (`cliq meetings`
   now returns `not_supported` in focused live verification)
-next_step: keep cliq-165 as the highest-priority blocker by coordinating Cliq admin-side app-account activation and rerunning `cliq export-chats` list + `--chat-id`; while still externally blocked, run focused live verification for `cliq databases`/`cliq widgets`/`cliq map-tickers`/`cliq custom-domains`/`cliq custom-emails`, then promote to cliq-193
+next_step: keep cliq-165 as the highest-priority blocker by coordinating Cliq admin-side app-account activation and rerunning `cliq export-chats` list + `--chat-id`; while still externally blocked, run focused live verification for `cliq databases`/`cliq widgets`/`cliq map-tickers`/`cliq custom-domains`/`cliq custom-emails` (with the latest admin-singular fallback hardening in place), then promote to cliq-193
 additional_info:
+- '2026-04-12 unit hardening: cliq-192 custom-domain/custom-email list fallbacks now also probe singular admin endpoints (`/admin/customdomain`, `/admin/customemail`) and include targeted regression coverage for singular-admin fallback plus scope-invalid guidance (`tests/test_cliq.py::test_cliq_client_list_custom_domains_falls_back_to_admin_singular_endpoint`, `tests/test_cliq.py::test_cliq_client_list_custom_domains_scope_invalid_reports_hint`, `tests/test_cliq.py::test_cliq_client_list_custom_emails_falls_back_to_admin_singular_endpoint`, `tests/test_cliq.py::test_cliq_client_list_custom_emails_scope_invalid_reports_hint`, `tests/test_cli.py::test_cliq_custom_domains`, `tests/test_cli.py::test_cliq_custom_emails`).'
 - '2026-04-12 unit delivery: completed cliq-192 fourth+fifth platform-extension slices by adding `zoho cliq custom-domains`/`zoho cliq custom-emails` and `ZohoCliqClient.list_custom_domains`/`ZohoCliqClient.list_custom_emails` fallback routing (`/customdomains` + `/customdomain` + `/admin/customdomains`, `/customemails` + `/customemail` + `/admin/customemails`); targeted tests passed (`tests/test_cliq.py::test_cliq_client_list_custom_domains_falls_back_to_admin_endpoint`, `tests/test_cliq.py::test_cliq_client_list_custom_emails_falls_back_to_admin_endpoint`, `tests/test_cli.py::test_cliq_custom_domains`, `tests/test_cli.py::test_cliq_custom_emails`) plus focused platform-extension regression slice (8 passed).'
 - '2026-04-12 unit delivery: added third cliq-192 platform-extension slice with `zoho cliq map-tickers` and `ZohoCliqClient.list_map_tickers` fallback routing (`/map/tickers` + `/map/ticker` + `/admin/map/tickers`); targeted tests passed (`tests/test_cliq.py::test_cliq_client_list_map_tickers_falls_back_to_admin_endpoint`, `tests/test_cliq.py::test_cliq_client_list_map_tickers_scope_invalid_reports_hint`, `tests/test_cli.py::test_cliq_map_tickers`) and format check is clean.'
 - '2026-04-12 unit delivery: added second cliq-192 platform-extension slice with `zoho cliq widgets` and `ZohoCliqClient.list_widgets` fallback routing (`/widgets` + `/widget` + `/admin/widgets`); targeted tests passed (`tests/test_cliq.py::test_cliq_client_list_widgets_falls_back_to_admin_endpoint`, `tests/test_cliq.py::test_cliq_client_list_widgets_scope_invalid_reports_hint`, `tests/test_cli.py::test_cliq_widgets`) and format check is clean.'

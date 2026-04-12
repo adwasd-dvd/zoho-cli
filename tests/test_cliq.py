@@ -746,6 +746,57 @@ def test_cliq_client_list_custom_domains_falls_back_to_admin_endpoint(
 
 
 @respx.mock
+def test_cliq_client_list_custom_domains_falls_back_to_admin_singular_endpoint(
+    client: cliq.ZohoCliqClient,
+) -> None:
+    respx.get("https://cliq.zoho.com/api/v2/customdomains").mock(
+        return_value=httpx.Response(404, text="request_url_invalid")
+    )
+    respx.get("https://cliq.zoho.com/api/v2/customdomain").mock(
+        return_value=httpx.Response(404, text="request_url_invalid")
+    )
+    admin_plural = respx.get("https://cliq.zoho.com/api/v2/admin/customdomains").mock(
+        return_value=httpx.Response(404, text="request_url_invalid")
+    )
+    admin_singular = respx.get("https://cliq.zoho.com/api/v2/admin/customdomain").mock(
+        return_value=httpx.Response(200, json={"data": [{"domain_id": "CD_2"}]})
+    )
+
+    result = client.list_custom_domains(limit=41)
+
+    assert admin_plural.called
+    assert admin_singular.called
+    assert dict(admin_singular.calls.last.request.url.params) == {"limit": "41"}
+    assert result["data"][0]["domain_id"] == "CD_2"
+
+
+@respx.mock
+def test_cliq_client_list_custom_domains_scope_invalid_reports_hint(
+    client: cliq.ZohoCliqClient,
+    capsys: pytest.CaptureFixture[str],
+) -> None:
+    respx.get("https://cliq.zoho.com/api/v2/customdomains").mock(
+        return_value=httpx.Response(401, json={"code": "oauth_scope_invalid"})
+    )
+    respx.get("https://cliq.zoho.com/api/v2/customdomain").mock(
+        return_value=httpx.Response(401, json={"code": "oauth_scope_invalid"})
+    )
+    respx.get("https://cliq.zoho.com/api/v2/admin/customdomains").mock(
+        return_value=httpx.Response(401, json={"code": "oauth_scope_invalid"})
+    )
+    respx.get("https://cliq.zoho.com/api/v2/admin/customdomain").mock(
+        return_value=httpx.Response(401, json={"code": "oauth_scope_invalid"})
+    )
+
+    with pytest.raises(SystemExit):
+        client.list_custom_domains(limit=29)
+
+    err = capsys.readouterr().err
+    assert "oauth_scope_invalid" in err
+    assert "ZohoCliq.CustomDomains.READ" in err
+
+
+@respx.mock
 def test_cliq_client_list_custom_emails_falls_back_to_admin_endpoint(
     client: cliq.ZohoCliqClient,
 ) -> None:
@@ -766,6 +817,57 @@ def test_cliq_client_list_custom_emails_falls_back_to_admin_endpoint(
     assert admin_route.called
     assert dict(admin_route.calls.last.request.url.params) == {"limit": "31"}
     assert result["data"][0]["email_id"] == "CE_1"
+
+
+@respx.mock
+def test_cliq_client_list_custom_emails_falls_back_to_admin_singular_endpoint(
+    client: cliq.ZohoCliqClient,
+) -> None:
+    respx.get("https://cliq.zoho.com/api/v2/customemails").mock(
+        return_value=httpx.Response(404, text="request_url_invalid")
+    )
+    respx.get("https://cliq.zoho.com/api/v2/customemail").mock(
+        return_value=httpx.Response(404, text="request_url_invalid")
+    )
+    admin_plural = respx.get("https://cliq.zoho.com/api/v2/admin/customemails").mock(
+        return_value=httpx.Response(404, text="request_url_invalid")
+    )
+    admin_singular = respx.get("https://cliq.zoho.com/api/v2/admin/customemail").mock(
+        return_value=httpx.Response(200, json={"data": [{"email_id": "CE_2"}]})
+    )
+
+    result = client.list_custom_emails(limit=43)
+
+    assert admin_plural.called
+    assert admin_singular.called
+    assert dict(admin_singular.calls.last.request.url.params) == {"limit": "43"}
+    assert result["data"][0]["email_id"] == "CE_2"
+
+
+@respx.mock
+def test_cliq_client_list_custom_emails_scope_invalid_reports_hint(
+    client: cliq.ZohoCliqClient,
+    capsys: pytest.CaptureFixture[str],
+) -> None:
+    respx.get("https://cliq.zoho.com/api/v2/customemails").mock(
+        return_value=httpx.Response(401, json={"code": "oauth_scope_invalid"})
+    )
+    respx.get("https://cliq.zoho.com/api/v2/customemail").mock(
+        return_value=httpx.Response(401, json={"code": "oauth_scope_invalid"})
+    )
+    respx.get("https://cliq.zoho.com/api/v2/admin/customemails").mock(
+        return_value=httpx.Response(401, json={"code": "oauth_scope_invalid"})
+    )
+    respx.get("https://cliq.zoho.com/api/v2/admin/customemail").mock(
+        return_value=httpx.Response(401, json={"code": "oauth_scope_invalid"})
+    )
+
+    with pytest.raises(SystemExit):
+        client.list_custom_emails(limit=31)
+
+    err = capsys.readouterr().err
+    assert "oauth_scope_invalid" in err
+    assert "ZohoCliq.CustomEmails.READ" in err
 
 
 @respx.mock

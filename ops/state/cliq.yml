@@ -1,5 +1,5 @@
 module: Cliq
-updated_at: '2026-04-12T02:15:24Z'
+updated_at: '2026-04-12T02:18:21Z'
 status: in_progress
 blockers:
   - "live `/messages/search` APIs on happydistrouklimited still look unsupported for current endpoint variants (`extra_param_found` / `request_url_invalid`), so search remains limitation-documented"
@@ -17,4 +17,5 @@ blockers:
   - "workspace test-file rerun (`tests/auto_pilot/reports/cliq_local_media_from_workspace_test_20260411_190816.log`) confirms file source is not the blocker: local image/voice uploads still classify as `not_supported` endpoint limitations on both user and channel targets"
   - "local multipart send now includes dedicated file-sharing endpoint fallbacks (`/chats/{id}/files`, `/channelsbyname/{name}/files`, `/buddies/{target}/files`); a direct probe reached these endpoints and returned field-validation errors (`extra_param_found` for `text`, then `input_json_invalid` requiring `comments` as JSONArray), confirming endpoint family availability but leaving live-success validation pending"
   - "post-fallback live CLI rerun (`tests/auto_pilot/reports/cliq_files_endpoint_probe_20260411_190616.log`) is currently blocked by refresh throttle (`token_refresh_rate_limited`) before confirming a successful attachment upload on files endpoints"
+  - "new single-token matrix runner (`tests/auto_pilot/cliq_local_media_matrix.py` + `run_cliq_local_media_matrix_cooldown.sh`) is in place to cut refresh churn; latest run returned structured `token_refresh_rate_limited`, so cooldown still gates the next cliq-156 evidence pass"
 next_small_step: "after cooldown, rerun one spaced local upload probe with the new `/files` fallback and JSONArray `comments` payload; if it succeeds, capture message-id + retrieval evidence, otherwise archive endpoint-specific limitation tuple and continue cliq-156 matrix"

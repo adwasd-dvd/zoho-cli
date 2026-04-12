@@ -1,4 +1,4 @@
-last_run_at: "2026-04-12T04:24:55Z"
+last_run_at: "2026-04-12T04:29:55Z"
 last_result: warning
 current_focus: cliq
 suites:
@@ -215,6 +215,8 @@ suites:
   integration:
     status: warning
     notes:
+      - "python3.11 one-token workspace matrix rerun across all current local test assets (`test.png`, `sample-3.m4a`, `2026-04-10-report.pdf`, `lv1_capturable_report.csv`)"
+      - "8/8 sends succeeded (channel+user targets for image/voice/pdf/csv) with zero errors; evidence: `tests/auto_pilot/reports/cliq_workspace_test_media_matrix_20260412_042955.json` (2026-04-12T04:29:55Z)"
       - "bash tests/auto_pilot/run_cliq_local_media_matrix_cooldown.sh /tmp/zoho-test-config.json ai-dev@happy-distro.co.uk happydistrouklimited O6576524000097556005 david@happy-distro.com /Users/adwasd/.openclaw/workspace-coder/test/test.png /Users/adwasd/.openclaw/workspace-coder/test/sample-3.m4a /Users/adwasd/.openclaw/workspace-coder/test/2026-04-10-report.pdf"
       - "workspace extra fixture probe (PDF file slot) is fully green: ok=6, errors=0; evidence: `tests/auto_pilot/reports/cliq_local_media_matrix_cooldown_20260411_212355.json` (2026-04-12T04:23:55Z)"
       - "bash tests/auto_pilot/run_cliq_local_media_matrix_cooldown.sh /tmp/zoho-test-config.json ai-dev@happy-distro.co.uk happydistrouklimited O6576524000097556005 david@happy-distro.com /Users/adwasd/.openclaw/workspace-coder/test/test.png /Users/adwasd/.openclaw/workspace-coder/test/sample-3.m4a /Users/adwasd/.openclaw/workspace-coder/test/lv1_capturable_report.csv"

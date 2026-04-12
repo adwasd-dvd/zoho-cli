@@ -1,0 +1,1 @@
+{"status": "error", "error": "oauth_scope_invalid", "details": "Cliq token is missing org-admin export scope. Re-run `zoho login --with-cliq --scope ZohoCliq.Org.Admin` and retry."}

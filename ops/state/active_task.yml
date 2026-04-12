@@ -4,13 +4,14 @@ module: cliq
 stage: blocked
 status: blocked
 owner: automation
-updated_at: '2026-04-12T04:29:55Z'
+updated_at: '2026-04-12T04:43:51Z'
 success_criteria:
 - run `zoho login --with-cliq --scope ZohoCliq.Org.Admin` on the live test account
 - run `cliq export-chats` list + one `--chat-id` export on happydistrouklimited
 - archive one successful JSON sample for each export mode under `tests/auto_pilot/reports/`
 next_if_done: resume crm-002 once Cliq export verification evidence is archived
-next_step: repeated one-token workspace matrix confirms 8/8 uploads still succeed across
-  image/voice/pdf/csv on user+channel targets (`tests/auto_pilot/reports/cliq_workspace_test_media_matrix_20260412_042955.json`);
-  remaining blocker is still Org.Admin scope for `cliq export-chats` live verification
-  (`tests/auto_pilot/reports/cliq_export_chats_live_20260412_042453.json`)
+next_step: >-
+  reran `cliq export-chats` list and explicit `--chat-id` probes; both still return
+  `oauth_scope_invalid` until `ZohoCliq.Org.Admin` is granted (latest evidence:
+  `tests/auto_pilot/reports/cliq_export_chats_list_scope_recheck_20260412_044316.json`,
+  `tests/auto_pilot/reports/cliq_export_chat_scope_recheck_20260412_044323.json`)

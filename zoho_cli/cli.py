@@ -1396,6 +1396,81 @@ def cliq_users(
     utils.output(data)
 
 
+@cliq_app.command("export-chats")
+def cliq_export_chats(
+    chat_id: Optional[str] = typer.Option(
+        None,
+        "--chat-id",
+        help="Export messages for one chat id; omit to export conversation descriptors.",
+    ),
+    out: Optional[Path] = typer.Option(
+        None,
+        "--out",
+        help="Optional output JSON file path.",
+    ),
+    network: Optional[str] = typer.Option(
+        None, "--network", help="Cliq network slug (e.g. happydistrouklimited)."
+    ),
+) -> None:
+    """Export Cliq chats or one chat's message history via maintenance API."""
+    cfg = _cfg()
+    email = _require_account(cfg)
+    client = _get_cliq_client(cfg, email, network=network)
+
+    payload: dict[str, Any]
+    if (chat_id or "").strip():
+        resolved_chat = (chat_id or "").strip()
+        resp = client.export_chat_messages(resolved_chat)
+        data = resp.get("data", resp)
+        messages = data if isinstance(data, list) else []
+        payload = {
+            "chatId": resolved_chat,
+            "count": len(messages),
+            "messages": messages,
+        }
+    else:
+        resp = client.export_conversations()
+        rows = resp.get("list", [])
+        if not isinstance(rows, list):
+            rows = []
+
+        chats: list[dict[str, Any]] = []
+        for row in rows:
+            if not isinstance(row, dict):
+                continue
+            chats.append(
+                {
+                    "chatId": str(
+                        row.get("chat_id") or row.get("chatId") or row.get("id") or ""
+                    ),
+                    "title": str(
+                        row.get("title")
+                        or row.get("name")
+                        or row.get("display_name")
+                        or ""
+                    ),
+                    "type": str(row.get("chat_type") or row.get("type") or ""),
+                    "raw": row,
+                }
+            )
+
+        payload = {
+            "count": len(chats),
+            "chats": chats,
+        }
+
+    if out is not None:
+        out_path = out.expanduser()
+        out_path.parent.mkdir(parents=True, exist_ok=True)
+        out_path.write_text(
+            json.dumps(payload, ensure_ascii=False, indent=2) + "\n",
+            encoding="utf-8",
+        )
+        payload["savedTo"] = str(out_path)
+
+    utils.output(payload)
+
+
 @cliq_app.command("whoami")
 def cliq_whoami(
     network: Optional[str] = typer.Option(

@@ -35,7 +35,19 @@ def test_send_media_message_local_file_to_channel(tmp_path) -> None:
     respx.get("https://cliq.zoho.com/api/v2/channels/C1").mock(
         return_value=httpx.Response(404, text="not_found")
     )
-    route = respx.post("https://cliq.zoho.com/api/v2/channelsbyname/C1/message").mock(
+    respx.post("https://cliq.zoho.com/api/v2/chats/C1/message").mock(
+        return_value=httpx.Response(404, text="request_url_invalid")
+    )
+    respx.post("https://cliq.zoho.com/api/v2/chats/C1/messages").mock(
+        return_value=httpx.Response(404, text="request_url_invalid")
+    )
+    respx.post("https://cliq.zoho.com/api/v2/channels/C1/message").mock(
+        return_value=httpx.Response(404, text="request_url_invalid")
+    )
+    respx.post("https://cliq.zoho.com/api/v2/channels/C1/messages").mock(
+        return_value=httpx.Response(404, text="request_url_invalid")
+    )
+    route = respx.post("https://cliq.zoho.com/api/v2/chats/C1/files").mock(
         return_value=httpx.Response(200, json={"data": {"status": "ok"}})
     )
 
@@ -48,5 +60,5 @@ def test_send_media_message_local_file_to_channel(tmp_path) -> None:
 
     assert route.called
     assert result["data"]["status"] == "ok"
-    assert result["data"]["upload"]["path"] == "/channelsbyname/C1/message"
+    assert result["data"]["upload"]["path"] == "/chats/C1/files"
     assert result["data"]["upload"]["fileName"] == "demo.png"

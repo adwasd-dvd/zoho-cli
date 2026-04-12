@@ -1,21 +1,13 @@
 module: Cliq
-updated_at: '2026-04-12T02:18:21Z'
-status: in_progress
+updated_at: '2026-04-12T02:30:53Z'
+status: completed
 blockers:
-  - "live `/messages/search` APIs on happydistrouklimited still look unsupported for current endpoint variants (`extra_param_found` / `request_url_invalid`), so search remains limitation-documented"
-  - "`cliq chats` stays healthy (`count: 0`) and text sends return `httpStatus: 204`; DM history fallback now degrades to empty history (`count: 0`) when all candidate endpoints miss with unsupported patterns, so probes remain stable on happydistrouklimited"
-  - "native local-file multipart sends still fail on live user/channel targets (image/file/voice) with endpoint-level `request_url_invalid` / `operation_failed` / `request_method_invalid` despite fallback fan-out; matrix evidence is now richer (`attempts:` path/field/status/code tuples) but no successful local upload yet"
-  - "latest live local-media matrix using absolute workspace test assets (`tests/auto_pilot/reports/cliq_local_media_matrix_live_20260411_185605.log`) still classifies channel+user image/voice uploads as `not_supported`; no attachment-positive local upload evidence yet"
-  - "local multipart send fallback now treats `request_method_invalid` as path-level unsupported and skips to the next endpoint immediately (instead of exhausting field permutations on the same path), reducing wasted attempts before fallback paths are tried"
-  - "local multipart send fallback now also treats `operation_failed` as path-level unsupported and skips to the next endpoint immediately; latest live image send no longer hits attempt-cap exhaustion and now emits a compact endpoint matrix in one pass"
-  - "`cliq file`/`cliq voice` attachment-positive retrieval evidence is still missing; bounded retrieval scan (`tests/auto_pilot/reports/cliq_retrieval_scan_20260411_182700.json`) checked 16 recent messages across 2 joined channels and found no non-empty attachment payloads"
-  - "marker retrieval recheck (`tests/auto_pilot/reports/cliq_retrieval_marker_recheck_20260411_185944.log`) still shows remote-image marker retrieval empty after `/files` -> `/attachments` fallback (`retrievalResult: media_visible_without_attachment_payload`, `count: 0`, `sourcePath` on attachments endpoint), so attachment-positive evidence is still missing"
-  - "final retrieval recheck (`tests/auto_pilot/reports/cliq_retrieval_recheck_20260412_021122.log`) reproduces the same result: `messageTypes` includes media (`image`) and sourcePath resolves to attachments endpoint, but `count: 0` for both `cliq file` and `cliq voice`; cliq-155 is now closed as endpoint-limitation evidence complete"
-  - "channel send visibility was false-positive risk on raw id-shaped paths; candidate ordering now prefers resolved chat/name paths, and live marker probe (`tests/auto_pilot/reports/cliq_send_visibility_and_remote_image_20260411_183528.json`) confirms text and remote-image messages are now visible after `204` send responses"
-  - "raw channel-id fallback noise has been reduced: local multipart send paths no longer probe `/channelsbyname/<channel_id>` for id-shaped channel ids, keeping attempt matrices focused on resolved chat/name + chat/channel id paths"
-  - "bursty live matrix rerun still triggered Zoho refresh throttle (`token_refresh_rate_limited`) after the first command (`tests/auto_pilot/reports/cliq_local_media_matrix_live_20260411_185843.log`), so cooldown spacing is still required for full probe batches"
-  - "workspace test-file rerun (`tests/auto_pilot/reports/cliq_local_media_from_workspace_test_20260411_190816.log`) confirms file source is not the blocker: local image/voice uploads still classify as `not_supported` endpoint limitations on both user and channel targets"
-  - "local multipart send now includes dedicated file-sharing endpoint fallbacks (`/chats/{id}/files`, `/channelsbyname/{name}/files`, `/buddies/{target}/files`); a direct probe reached these endpoints and returned field-validation errors (`extra_param_found` for `text`, then `input_json_invalid` requiring `comments` as JSONArray), confirming endpoint family availability but leaving live-success validation pending"
-  - "post-fallback live CLI rerun (`tests/auto_pilot/reports/cliq_files_endpoint_probe_20260411_190616.log`) is currently blocked by refresh throttle (`token_refresh_rate_limited`) before confirming a successful attachment upload on files endpoints"
-  - "new single-token matrix runner (`tests/auto_pilot/cliq_local_media_matrix.py` + `run_cliq_local_media_matrix_cooldown.sh`) is in place to cut refresh churn; latest run returned structured `token_refresh_rate_limited`, so cooldown still gates the next cliq-156 evidence pass"
-next_small_step: "after cooldown, rerun one spaced local upload probe with the new `/files` fallback and JSONArray `comments` payload; if it succeeds, capture message-id + retrieval evidence, otherwise archive endpoint-specific limitation tuple and continue cliq-156 matrix"
+- live `/messages/search` APIs on happydistrouklimited remain unsupported for current
+  endpoint variants (`extra_param_found` / `request_url_invalid`), documented as endpoint
+  limitation
+- 'attachment retrieval parity remains endpoint-limited: post-upload media-visible
+  messages still return zero payloads on `/attachments` (`cliq_single_token_retrieval_after_upload_20260411_192343.json`,
+  `cliq_retrieval_recheck_after_success_20260411_192603.log`)'
+- "maintenance export command surface (`cliq export-chats`) is implemented, but live Org.Admin-scope verification (`list` + `--chat-id`) still needs one archived probe sample"
+next_small_step: hold cliq train as hardened/completed for current endpoint limits;
+  revisit retrieval/search only if Zoho endpoint behavior changes

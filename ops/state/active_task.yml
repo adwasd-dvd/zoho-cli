@@ -1,15 +1,14 @@
-id: cliq-156
-title: implement reliable local media send (image/voice/file) for user/channel targets
-module: cliq
-stage: in_progress
-status: in_progress
+id: crm-002
+title: implement crm modules list fields list get list and search
+module: crm
+stage: blocked
+status: blocked
 owner: automation
-updated_at: '2026-04-12T02:18:21Z'
+updated_at: '2026-04-12T02:30:53Z'
 success_criteria:
-  - capture a cooldown-safe endpoint/field matrix for local image/voice/file sends across user and channel targets
-  - preserve deterministic `not_supported` classification when all live candidates miss with endpoint-limitation patterns
-  - obtain at least one attachment-positive live send+retrieval sample, or document per-endpoint limitation evidence sufficient for cliq-157 handoff
-  - keep local multipart diagnostics compact and machine-readable (`attempts` path/field/status/code tuples)
-  - validate with focused unit tests and one live matrix rerun on current token/network
-next_if_done: cliq-157
-next_step: "run `tests/auto_pilot/run_cliq_local_media_matrix_cooldown.sh` after refresh cooldown clears; new single-token runner avoids per-command token refresh and should improve cliq-156 evidence stability"
+- obtain CRM-enabled org access for live verification scopes
+- run focused CRM command smoke checks on the enabled org account
+- confirm read-only CRM parity remains green after cliq-160 hardening train
+next_if_done: none
+next_step: CRM live verification remains blocked by org access; maintain Cliq hardening
+  evidence and proceed when CRM-enabled account is available

@@ -86,6 +86,64 @@ def test_cliq_client_chats_scope_invalid_reports_hint(
 
 
 @respx.mock
+def test_cliq_client_export_conversations(client: cliq.ZohoCliqClient) -> None:
+    route = respx.get("https://cliq.zoho.com/maintenanceapi/v2/chats").mock(
+        return_value=httpx.Response(
+            200,
+            json={
+                "list": [
+                    {
+                        "chat_id": "CT_1",
+                        "title": "DM David",
+                        "chat_type": "direct",
+                    }
+                ]
+            },
+        )
+    )
+
+    result = client.export_conversations()
+
+    assert route.called
+    assert dict(route.calls.last.request.url.params).get("fields") == "title,chat_id"
+    assert result["list"][0]["chat_id"] == "CT_1"
+
+
+@respx.mock
+def test_cliq_client_export_conversations_scope_invalid_reports_hint(
+    client: cliq.ZohoCliqClient,
+    capsys: pytest.CaptureFixture[str],
+) -> None:
+    respx.get("https://cliq.zoho.com/maintenanceapi/v2/chats").mock(
+        return_value=httpx.Response(401, json={"code": "oauthtoken_scope_invalid"})
+    )
+    respx.get(
+        "https://cliq.zoho.com/maintenanceapi/v2/chats?fields=title,chat_id"
+    ).mock(return_value=httpx.Response(401, json={"code": "oauthtoken_scope_invalid"}))
+
+    with pytest.raises(SystemExit):
+        client.export_conversations()
+
+    err = capsys.readouterr().err
+    assert "oauth_scope_invalid" in err
+    assert "ZohoCliq.Org.Admin" in err
+
+
+@respx.mock
+def test_cliq_client_export_chat_messages(client: cliq.ZohoCliqClient) -> None:
+    route = respx.get(
+        "https://cliq.zoho.com/maintenanceapi/v2/chats/CT_1/messages"
+    ).mock(
+        return_value=httpx.Response(200, json={"data": [{"id": "M1", "text": "hi"}]})
+    )
+
+    result = client.export_chat_messages("CT_1")
+
+    assert route.called
+    assert result["data"][0]["id"] == "M1"
+
+
+@respx.mock
 def test_cliq_client_get_dm_history_falls_back_from_conversations_to_buddies(
     client: cliq.ZohoCliqClient,
 ) -> None:

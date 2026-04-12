@@ -58,6 +58,8 @@ class ZohoCliqClient:
 
     def __init__(self, access_token: str, base_url: str | None = None) -> None:
         self.base_url = (base_url or infer_cliq_base_url()).rstrip("/")
+        parsed_base = urlparse(self.base_url)
+        self._service_base_url = f"{parsed_base.scheme}://{parsed_base.netloc}"
         self._headers = {"Authorization": f"Zoho-oauthtoken {access_token}"}
         self._last_dm_history_meta: dict[str, Any] = {
             "result": "not_run",
@@ -1355,6 +1357,142 @@ class ZohoCliqClient:
             )
 
         utils.error_exit("api_error", f"HTTP {resp.status_code} GET /chats: {body}")
+        return {}
+
+    def export_conversations(self) -> dict:
+        """Export conversation descriptors via maintenance bulk-export API."""
+        candidates: list[tuple[str, dict[str, Any] | None]] = [
+            (
+                "/maintenanceapi/v2/chats",
+                {
+                    "fields": "title,chat_id",
+                },
+            ),
+            (
+                "/maintenanceapi/v2/chats?fields=title,chat_id",
+                None,
+            ),
+        ]
+
+        saw_scope_invalid = False
+        saw_not_supported = False
+        last_error: tuple[int, str, str] | None = None
+
+        for path, params in candidates:
+            resp = httpx.get(
+                f"{self._service_base_url}{path}",
+                headers=self._headers,
+                params=params,
+                timeout=httpx.Timeout(30.0),
+            )
+
+            if resp.is_success:
+                payload = resp.json()
+                if isinstance(payload, dict):
+                    return payload
+                return {"data": payload}
+
+            body = resp.text or ""
+            lowered = body.lower()
+            code = ""
+            try:
+                parsed = resp.json()
+                if isinstance(parsed, dict):
+                    code = str(parsed.get("code") or parsed.get("error") or "").lower()
+            except ValueError:
+                pass
+
+            last_error = (resp.status_code, path, body)
+
+            if "oauthtoken_scope_invalid" in lowered or code in {
+                "oauthtoken_scope_invalid",
+                "scope_mismatch",
+                "oauth_scope_mismatch",
+            }:
+                saw_scope_invalid = True
+                continue
+
+            if (
+                resp.status_code in (404, 405)
+                or "request_url_invalid" in lowered
+                or code in {"operation_not_allowed", "not_supported", "unsupported"}
+            ):
+                saw_not_supported = True
+                continue
+
+            utils.error_exit("api_error", f"HTTP {resp.status_code} GET {path}: {body}")
+
+        if saw_scope_invalid:
+            utils.error_exit(
+                "oauth_scope_invalid",
+                "Cliq token is missing org-admin export scope. Re-run `zoho login --with-cliq --scope ZohoCliq.Org.Admin` and retry.",
+            )
+
+        if saw_not_supported:
+            utils.error_exit(
+                "not_supported",
+                "Cliq export conversations endpoint is not available for this token/network endpoint.",
+            )
+
+        if last_error is not None:
+            status, path, body = last_error
+            utils.error_exit("api_error", f"HTTP {status} GET {path}: {body}")
+
+        utils.error_exit(
+            "api_error", "No candidate endpoint available for export conversations"
+        )
+        return {}
+
+    def export_chat_messages(self, chat_id: str) -> dict:
+        """Export one chat's messages via maintenance bulk-export API."""
+        resolved_chat = chat_id.strip()
+        if not resolved_chat:
+            utils.error_exit("invalid_destination", "chat_id cannot be empty")
+
+        path = f"/maintenanceapi/v2/chats/{resolved_chat}/messages"
+        resp = httpx.get(
+            f"{self._service_base_url}{path}",
+            headers=self._headers,
+            timeout=httpx.Timeout(30.0),
+        )
+
+        if resp.is_success:
+            payload = resp.json()
+            if isinstance(payload, dict):
+                return payload
+            return {"data": payload}
+
+        body = resp.text or ""
+        lowered = body.lower()
+        code = ""
+        try:
+            parsed = resp.json()
+            if isinstance(parsed, dict):
+                code = str(parsed.get("code") or parsed.get("error") or "").lower()
+        except ValueError:
+            pass
+
+        if "oauthtoken_scope_invalid" in lowered or code in {
+            "oauthtoken_scope_invalid",
+            "scope_mismatch",
+            "oauth_scope_mismatch",
+        }:
+            utils.error_exit(
+                "oauth_scope_invalid",
+                "Cliq token is missing org-admin export scope. Re-run `zoho login --with-cliq --scope ZohoCliq.Org.Admin` and retry.",
+            )
+
+        if (
+            resp.status_code in (404, 405)
+            or "request_url_invalid" in lowered
+            or code in {"operation_not_allowed", "not_supported", "unsupported"}
+        ):
+            utils.error_exit(
+                "not_supported",
+                "Cliq export chat-messages endpoint is not available for this token/network endpoint.",
+            )
+
+        utils.error_exit("api_error", f"HTTP {resp.status_code} GET {path}: {body}")
         return {}
 
     def users(self, *, limit: int = 50) -> dict:

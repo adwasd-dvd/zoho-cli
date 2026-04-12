@@ -42,7 +42,9 @@ def _refresh_token(config_path: str, account: str) -> tuple[str, dict[str, Any]]
 
 
 def main() -> None:
-    parser = argparse.ArgumentParser(description="Single-token Cliq local media matrix probe")
+    parser = argparse.ArgumentParser(
+        description="Single-token Cliq local media matrix probe"
+    )
     parser.add_argument("--config", required=True)
     parser.add_argument("--account", required=True)
     parser.add_argument("--network", default=None)

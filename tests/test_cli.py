@@ -1087,9 +1087,7 @@ def test_cliq_file_reports_media_visible_without_attachment_payload(
             },
         )
     )
-    respx.get(
-        "https://cliq.zoho.com/api/v2/chats/CT_1/messages/M1/attachments"
-    ).mock(
+    respx.get("https://cliq.zoho.com/api/v2/chats/CT_1/messages/M1/attachments").mock(
         return_value=httpx.Response(
             400,
             json={
@@ -1957,6 +1955,65 @@ def test_cliq_users(mock_config: Path, mock_token_refresh: Any) -> None:
     assert result.exit_code == 0, result.output
     payload = json.loads(result.output)
     assert payload[0]["id"] == "U1"
+
+
+@respx.mock
+def test_cliq_export_chats_list(mock_config: Path, mock_token_refresh: Any) -> None:
+    respx.get("https://cliq.zoho.com/maintenanceapi/v2/chats").mock(
+        return_value=httpx.Response(
+            200,
+            json={
+                "list": [
+                    {
+                        "chat_id": "CT_1",
+                        "title": "DM David",
+                        "chat_type": "direct",
+                    }
+                ]
+            },
+        )
+    )
+
+    result = runner.invoke(app, ["cliq", "export-chats"], env=_cfg_env(mock_config))
+    assert result.exit_code == 0, result.output
+    payload = json.loads(result.output)
+    assert payload["count"] == 1
+    assert payload["chats"][0]["chatId"] == "CT_1"
+
+
+@respx.mock
+def test_cliq_export_chats_messages_and_out(
+    mock_config: Path,
+    mock_token_refresh: Any,
+    tmp_path: Path,
+) -> None:
+    respx.get("https://cliq.zoho.com/maintenanceapi/v2/chats/CT_1/messages").mock(
+        return_value=httpx.Response(
+            200,
+            json={"data": [{"id": "M1", "text": "hello"}]},
+        )
+    )
+
+    out_file = tmp_path / "chat-export.json"
+    result = runner.invoke(
+        app,
+        [
+            "cliq",
+            "export-chats",
+            "--chat-id",
+            "CT_1",
+            "--out",
+            str(out_file),
+        ],
+        env=_cfg_env(mock_config),
+    )
+    assert result.exit_code == 0, result.output
+    payload = json.loads(result.output)
+    assert payload["chatId"] == "CT_1"
+    assert payload["count"] == 1
+    assert payload["savedTo"] == str(out_file)
+    file_payload = json.loads(out_file.read_text())
+    assert file_payload["messages"][0]["id"] == "M1"
 
 
 @respx.mock

@@ -4,139 +4,124 @@
   stage: completed
   priority: high
   depends_on: []
-
 - id: mail-002
   title: normalize mail output modes and formatter entry points
   module: mail
   stage: completed
   priority: high
   depends_on:
-    - mail-001
-
+  - mail-001
 - id: mail-003
   title: add retry and rate-limit handling around mail API client operations
   module: mail
   stage: completed
   priority: high
   depends_on:
-    - mail-001
-
+  - mail-001
 - id: mail-004
   title: add packaging smoke tests and release gate checks
   module: mail
   stage: completed
   priority: medium
   depends_on:
-    - mail-002
-    - mail-003
-
+  - mail-002
+  - mail-003
 - id: cliq-100
   title: capability discovery and operation matrix for Cliq
   module: cliq
   stage: completed
   priority: high
   depends_on:
-    - mail-004
-
+  - mail-004
 - id: cliq-110
   title: implement cliq read plane (messages list/get/context)
   module: cliq
   stage: completed
   priority: high
   depends_on:
-    - cliq-100
-
+  - cliq-100
 - id: cliq-120
   title: implement cliq write plane (reply edit delete react)
   module: cliq
   stage: completed
   priority: high
   depends_on:
-    - cliq-110
-
+  - cliq-110
 - id: cliq-130
   title: implement cliq admin plane (membership channel lifecycle)
   module: cliq
   stage: completed
   priority: medium
   depends_on:
-    - cliq-120
-
+  - cliq-120
 - id: cliq-140
   title: implement cliq files and search plane
   module: cliq
   stage: completed
   priority: medium
   depends_on:
-    - cliq-110
-
+  - cliq-110
 - id: cliq-145
   title: implement cliq identity check and rich media link messaging baseline
   module: cliq
   stage: completed
   priority: medium
   depends_on:
-    - cliq-140
-
+  - cliq-140
 - id: cliq-150
   title: implement cliq media/watch integration primitives for openclaw loops
   module: cliq
   stage: in_progress
   priority: high
   depends_on:
-    - cliq-145
-    - cliq-110
-    - cliq-120
-
+  - cliq-145
+  - cliq-110
+  - cliq-120
 - id: cliq-155
   title: implement dm/group/channel conversation visibility and typed context matrix
   module: cliq
   stage: completed
   priority: high
   depends_on:
-    - cliq-150
-
+  - cliq-150
 - id: cliq-156
   title: implement reliable local media send (image/voice/file) for user/channel targets
   module: cliq
-  stage: in_progress
+  stage: completed
   priority: high
   depends_on:
-    - cliq-155
-
+  - cliq-155
 - id: cliq-157
-  title: finalize cliq read parity for dm/channel/group history with attachment-positive retrieval evidence
+  title: finalize cliq read parity for dm/channel/group history with attachment-positive
+    retrieval evidence
   module: cliq
-  stage: queued
+  stage: completed
   priority: high
   depends_on:
-    - cliq-155
-    - cliq-156
-
+  - cliq-155
+  - cliq-156
 - id: cliq-160
   title: cliq hardening live matrix and release gate
   module: cliq
-  stage: queued
+  stage: completed
   priority: medium
   depends_on:
-    - cliq-120
-    - cliq-140
-    - cliq-150
-    - cliq-156
-    - cliq-157
-
+  - cliq-120
+  - cliq-140
+  - cliq-150
+  - cliq-156
+  - cliq-157
 - id: crm-001
   title: scaffold crm product module and client shell
   module: crm
   stage: completed
   priority: high
   depends_on:
-    - cliq-160
-
+  - cliq-160
 - id: crm-002
   title: implement crm modules list fields list get list and search
   module: crm
   stage: blocked
   priority: high
   depends_on:
-    - crm-001
+  - crm-001

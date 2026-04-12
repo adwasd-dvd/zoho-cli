@@ -33,6 +33,7 @@
 - Added local media-file send support to `zoho cliq send` when `--image-url`/`--file-url`/`--audio-url`/`--voice-url` points to an existing local file path; CLI now uploads multipart payloads instead of forcing URL-only link cards.
 - Added voice-specific Cliq primitives: `zoho cliq voice-send` (voice URL send wrapper) and `zoho cliq voice` (voice/audio attachment filtering for one message).
 - Added `zoho cliq chats` for DM/group conversation discovery where `/chats` is available for the current token/network.
+- Added Cliq maintenance export tooling: `zoho cliq export-chats` (conversation descriptor export) and `zoho cliq export-chats --chat-id <id>` (chat message export), with optional `--out` JSON file output.
 - Added deep Cliq history helpers (`get_all_users`, `get_dm_history`, `get_chat_history`) with bounded pagination handling for bulk-read test scenarios.
 - Added SCAP deep Cliq auto-pilot tests (`tests/auto_pilot/scenarios/test_social.py`, `test_messaging.py`) plus semi-manual runners (`tests/auto_pilot/run_cliq_deep_scan.sh`, `tests/auto_pilot/cliq_live_probe.py`) covering user list reads, DM/channel history reads, text send fallback, and local media send upload metadata.
 - Validated live `zoho cliq chats --network happydistrouklimited` positive path after `zoho login --with-cliq` re-auth (`count: 0`, no scope error).
@@ -95,6 +96,7 @@
 - Raw `--channel-id` fallback probing now skips `/channelsbyname/<channel_id>` for id-shaped values, reducing guaranteed-invalid local multipart attempts while keeping resolved unique-name paths in the candidate set.
 - Local multipart sends now also fall back to dedicated Cliq file-sharing endpoints (`/chats/{id}/files`, `/channelsbyname/{name}/files`, `/buddies/{target}/files`) after message endpoint misses, so local image/voice/file probes can reach the API family documented under Chat File Sharing.
 - File-sharing fallback payloads now encode `comments` as a JSON array string (with empty-payload fallback), preventing immediate `input_json_invalid` failures from endpoints that require `comments` to be a JSONArray.
+- Cliq client now derives service-origin host from configured base URL and routes maintenance export APIs through `/maintenanceapi/v2/...` on that host, avoiding invalid `/network/.../api/v2/maintenanceapi/...` path composition.
 - Cliq channel-id send fallback resolution now reuses a single `/channels/{id}` descriptor fetch when building chat/name path candidates, avoiding duplicate descriptor lookups per send attempt.
 - Cliq file retrieval now includes source endpoint metadata (`fetch.path` from `ZohoCliqClient.get_message_files`) and `zoho cliq file` surfaces it as `sourcePath` for live upload/download matrix logging.
 - `zoho cliq voice` now also surfaces retrieval endpoint metadata as `sourcePath`, so voice-only attachment probes capture the same download-path evidence as `zoho cliq file`.

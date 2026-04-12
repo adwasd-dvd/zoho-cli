@@ -436,9 +436,7 @@ def refresh_access_token_info(
                 )
             details = json.dumps(failure_payload, ensure_ascii=False)
 
-        utils.error_exit(
-            "token_refresh_failed", f"HTTP {resp.status_code}: {details}"
-        )
+        utils.error_exit("token_refresh_failed", f"HTTP {resp.status_code}: {details}")
     data = resp.json()
     if "access_token" not in data:
         error_code = str(data.get("error") or "").lower()

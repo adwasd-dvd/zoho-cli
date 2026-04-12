@@ -42,6 +42,7 @@
 - `zoho cliq status` `exportNext` re-auth hint now includes an explicit `--scope` fallback command (`ZohoCliq.OrganizationChats.READ` + `ZohoCliq.OrganizationMessages.READ`) alongside `--with-cliq-export`, so blocked cliq-165 runs can recover even when bundled scope flags are unavailable.
 - Added deep Cliq history helpers (`get_all_users`, `get_dm_history`, `get_chat_history`) with bounded pagination handling for bulk-read test scenarios.
 - Added SCAP deep Cliq auto-pilot tests (`tests/auto_pilot/scenarios/test_social.py`, `test_messaging.py`) plus semi-manual runners (`tests/auto_pilot/run_cliq_deep_scan.sh`, `tests/auto_pilot/cliq_live_probe.py`) covering user list reads, DM/channel history reads, text send fallback, and local media send upload metadata.
+- Added `tests/auto_pilot/run_cliq_export_scope_recheck.sh` to capture `cliq status --check-auth` plus `cliq export-chats` list and `--chat-id` blocker probes in one command with timestamped JSON evidence artifacts.
 - Validated live `zoho cliq chats --network happydistrouklimited` positive path after `zoho login --with-cliq` re-auth (`count: 0`, no scope error).
 - Added inferred message content typing (`text`/`image`/`file`/`voice`/`sticker`/`reaction`) to `cliq messages`, `cliq message`, and `cliq context` outputs.
 - Added first `cliq-150` OpenClaw watch primitive: `zoho cliq watch-context` plus `ZohoCliqClient.build_watch_context_seed` for cursor-based incremental context payloads.
@@ -53,6 +54,7 @@
 
 ### Fixed
 - Auto-pilot state/probe scripts now resolve project paths from script location instead of assuming a specific current working directory: `tests/auto_pilot/scenario_runner.py`, `run_cliq_live_probe.sh`, and `run_cliq_alt_probe.sh` now run correctly from either repo root or workspace root, and SCAP report table rows now escape multi-line/pipe-heavy validator messages.
+- `tests/auto_pilot/run_cliq_export_scope_recheck.sh` now captures both stdout and stderr into evidence artifacts, so scope-blocked `cliq export-chats` JSON errors are archived instead of producing empty logs.
 - `ZohoCliqClient.get_dm_history` now falls back across DM history endpoint variants (`/conversations/{user}/messages`, `/buddies/{user}/messages`, `/users/{user}/messages`, `/chats/{id}/messages`) and keeps pagination on the first supported route, so live probes no longer hard-fail on the first `request_url_invalid` path mismatch.
 - `ZohoCliqClient.get_dm_history` now returns an empty history when all DM endpoint candidates miss with endpoint-level unsupported patterns (`request_url_invalid` / 404 / 405 / `operation_failed` / `request_method_invalid`), so live probes stay stable instead of terminating with a hard `api_error`.
 - `ZohoCliqClient.get_dm_history` now records endpoint metadata (`result`, attempted paths, selected source path), and `tests/auto_pilot/cliq_live_probe.py` now surfaces that DM source-path evidence in probe output for cliq-155 matrix classification.

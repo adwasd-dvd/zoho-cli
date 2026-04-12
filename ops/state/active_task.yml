@@ -4,16 +4,15 @@ module: cliq
 stage: blocked
 status: blocked
 owner: automation
-updated_at: '2026-04-12T08:06:46Z'
+updated_at: '2026-04-12T08:26:36Z'
 success_criteria:
 - run `zoho login --with-cliq --with-cliq-export` on the live test account
 - run `cliq export-chats` list + one `--chat-id` export on happydistrouklimited
 - archive one successful JSON sample for each export mode under `tests/auto_pilot/reports/`
 next_if_done: resume crm-002 once Cliq export verification evidence is archived
 next_step: >-
-  run `zoho cliq status --check-auth --network happydistrouklimited` and use
-  config+account-aware `exportNext` guidance when `exportOauthReady: false`
-  (`missingExportScopes: [ZohoCliq.OrganizationChats.READ,
-  ZohoCliq.OrganizationMessages.READ]`, including the explicit `--scope`
-  fallback login command), then rerun `cliq export-chats` list + `--chat-id`
-  probes once re-auth is complete to capture success JSON
+  run `tests/auto_pilot/run_cliq_export_scope_recheck.sh` for one-command status
+  + list + `--chat-id` export blocker evidence capture, then complete interactive
+  `zoho --config /tmp/zoho-test-config.json --account ai-dev@happy-distro.co.uk
+  login --with-cliq --with-cliq-export` (or explicit `--scope` fallback) and
+  rerun the same script until list + chat export succeed

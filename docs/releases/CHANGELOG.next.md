@@ -34,6 +34,7 @@
 - Added voice-specific Cliq primitives: `zoho cliq voice-send` (voice URL send wrapper) and `zoho cliq voice` (voice/audio attachment filtering for one message).
 - Added `zoho cliq chats` for DM/group conversation discovery where `/chats` is available for the current token/network.
 - Added Cliq maintenance export tooling: `zoho cliq export-chats` (conversation descriptor export) and `zoho cliq export-chats --chat-id <id>` (chat message export), with optional `--out` JSON file output.
+- Added `zoho login --with-cliq-export` to bundle Cliq maintenance export scopes (`ZohoCliq.OrganizationChats.READ`, `ZohoCliq.OrganizationMessages.READ`) for `cliq export-chats` verification runs.
 - Added deep Cliq history helpers (`get_all_users`, `get_dm_history`, `get_chat_history`) with bounded pagination handling for bulk-read test scenarios.
 - Added SCAP deep Cliq auto-pilot tests (`tests/auto_pilot/scenarios/test_social.py`, `test_messaging.py`) plus semi-manual runners (`tests/auto_pilot/run_cliq_deep_scan.sh`, `tests/auto_pilot/cliq_live_probe.py`) covering user list reads, DM/channel history reads, text send fallback, and local media send upload metadata.
 - Validated live `zoho cliq chats --network happydistrouklimited` positive path after `zoho login --with-cliq` re-auth (`count: 0`, no scope error).
@@ -99,6 +100,7 @@
 - Cliq client now derives service-origin host from configured base URL and routes maintenance export APIs through `/maintenanceapi/v2/...` on that host, avoiding invalid `/network/.../api/v2/maintenanceapi/...` path composition.
 - `zoho cliq export-chats` now normalizes alternate maintenance export response shapes (`list`/`chats`/`data`, plus `messages` payloads), so list/message exports remain usable across endpoint payload variants.
 - Cliq maintenance export scope handling now also treats API code `oauth_scope_invalid` as export-scope miss (in addition to `oauthtoken_scope_invalid`), with operation-specific re-auth guidance: `ZohoCliq.OrganizationChats.READ` for list export and `ZohoCliq.OrganizationMessages.READ` for chat-message export.
+- Cliq export scope-invalid hints now point to `zoho login --with-cliq --with-cliq-export` (while still showing explicit `--scope ...` fallback) so maintenance export re-auth guidance is one-step and consistent.
 - Cliq channel-id send fallback resolution now reuses a single `/channels/{id}` descriptor fetch when building chat/name path candidates, avoiding duplicate descriptor lookups per send attempt.
 - Cliq file retrieval now includes source endpoint metadata (`fetch.path` from `ZohoCliqClient.get_message_files`) and `zoho cliq file` surfaces it as `sourcePath` for live upload/download matrix logging.
 - `zoho cliq voice` now also surfaces retrieval endpoint metadata as `sourcePath`, so voice-only attachment probes capture the same download-path evidence as `zoho cliq file`.

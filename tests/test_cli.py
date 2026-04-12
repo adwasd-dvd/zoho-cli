@@ -168,6 +168,44 @@ def test_login_no_browser_uses_redirect_from_pasted_url_for_exchange(
     assert seen["redirect_uri"] == "https://example.com/zoho/oauth/callback"
 
 
+def test_login_no_browser_with_cliq_export_includes_export_scopes(
+    mock_config: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """--with-cliq-export should include maintenance export scopes in auth URL."""
+
+    monkeypatch.setattr(auth, "discover_accounts_server", lambda _cid: ACCOUNTS_BASE)
+    monkeypatch.setattr("click.prompt", lambda *_a, **_kw: "abc123")
+    monkeypatch.setattr(
+        auth,
+        "exchange_code",
+        lambda *_a, **_kw: {
+            "access_token": "token123",
+            "refresh_token": "refresh123",
+            "scope": "ZohoMail.messages.ALL",
+        },
+    )
+    monkeypatch.setattr(auth, "discover_account_id", lambda *_a, **_kw: ACCOUNT_ID)
+    monkeypatch.setattr("zoho_cli.storage.store_token", lambda *_a, **_kw: None)
+
+    result = runner.invoke(
+        app,
+        [
+            "--config",
+            str(mock_config),
+            "--account",
+            ACCOUNT_EMAIL,
+            "login",
+            "--no-browser",
+            "--with-cliq",
+            "--with-cliq-export",
+        ],
+    )
+
+    assert result.exit_code == 0, result.output
+    assert "ZohoCliq.OrganizationChats.READ" in result.output
+    assert "ZohoCliq.OrganizationMessages.READ" in result.output
+
+
 # ---------------------------------------------------------------------------
 # mail search
 # ---------------------------------------------------------------------------

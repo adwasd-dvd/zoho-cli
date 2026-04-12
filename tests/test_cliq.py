@@ -126,6 +126,7 @@ def test_cliq_client_export_conversations_scope_invalid_reports_hint(
 
     err = capsys.readouterr().err
     assert "oauth_scope_invalid" in err
+    assert "--with-cliq-export" in err
     assert "ZohoCliq.OrganizationChats.READ" in err
 
 
@@ -177,6 +178,7 @@ def test_cliq_client_export_chat_messages_scope_invalid_reports_hint(
 
     err = capsys.readouterr().err
     assert "oauth_scope_invalid" in err
+    assert "--with-cliq-export" in err
     assert "ZohoCliq.OrganizationMessages.READ" in err
 
 

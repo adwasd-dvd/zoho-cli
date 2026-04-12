@@ -1,10 +1,14 @@
-last_run_at: "2026-04-12T05:12:51Z"
+last_run_at: "2026-04-12T05:24:46Z"
 last_result: warning
 current_focus: cliq
 suites:
   unit:
     status: passing
     notes:
+      - "python3.11 -m pytest -q tests/test_cli.py::test_login_no_browser_with_cliq_export_includes_export_scopes tests/test_cliq.py::test_cliq_client_export_conversations_scope_invalid_reports_hint tests/test_cliq.py::test_cliq_client_export_chat_messages_scope_invalid_reports_hint"
+      - "3 passed in 0.21s (`zoho login --with-cliq-export` now bundles maintenance export scopes, and export scope-invalid hints now point to `--with-cliq --with-cliq-export` while keeping explicit `--scope` fallback guidance, 2026-04-12T05:24:46Z)"
+      - "python3.11 tests/auto_pilot/state_validator.py ops/state/active_task.yml '{\"id\":\"cliq-165\",\"status\":\"blocked\"}' && python3.11 tests/auto_pilot/state_validator.py ops/state/project.yml '{\"status\":\"cliq-expansion\"}'"
+      - "VALIDATION_SUCCESS (active task + project state remain schema-valid after cliq export re-auth guidance update, 2026-04-12T05:24:46Z)"
       - "python3.11 -m pytest -q tests/test_cli.py::test_login_no_browser_defaults_to_localhost_redirect_when_unset tests/test_cli.py::test_login_no_browser_uses_redirect_from_pasted_url_for_exchange tests/test_auth.py::test_parse_redirect_accepts_query_string_without_full_url tests/test_auth.py::test_parse_redirect_accepts_bare_code tests/test_auth.py::test_extract_redirect_uri_from_full_redirect_url tests/test_auth.py::test_extract_redirect_uri_returns_none_for_non_url_input tests/test_cliq.py::test_cliq_client_export_conversations_scope_invalid_reports_hint tests/test_cliq.py::test_cliq_client_export_conversations_oauth_scope_invalid_code_reports_hint tests/test_cliq.py::test_cliq_client_export_chat_messages_scope_invalid_reports_hint"
       - "9 passed in 0.17s (`zoho login --no-browser` now defaults to localhost when redirect is unset/legacy, preserves pasted callback/code parsing, and export scope hints now point to `ZohoCliq.OrganizationChats.READ` / `ZohoCliq.OrganizationMessages.READ`, 2026-04-12T05:12:51Z)"
       - "python3.11 tests/auto_pilot/state_validator.py ops/state/active_task.yml '{\"id\":\"cliq-165\",\"status\":\"blocked\"}'"

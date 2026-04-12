@@ -471,6 +471,11 @@ def login(
         "--with-cliq",
         help="Include recommended Cliq OAuth scopes in this login flow.",
     ),
+    with_cliq_export: bool = typer.Option(
+        False,
+        "--with-cliq-export",
+        help="Include Cliq maintenance export OAuth scopes in this login flow.",
+    ),
     with_crm: bool = typer.Option(
         False,
         "--with-crm",
@@ -510,6 +515,7 @@ def login(
     scopes = auth.merge_scopes(
         auth.DEFAULT_SCOPES,
         _cliq.DEFAULT_CLIQ_SCOPES if with_cliq else [],
+        _cliq.DEFAULT_CLIQ_EXPORT_SCOPES if with_cliq_export else [],
         _crm.DEFAULT_CRM_SCOPES if with_crm else [],
         auth.parse_scope_values(list(scope)),
     )

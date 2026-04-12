@@ -1,5 +1,5 @@
 module: Cliq
-updated_at: '2026-04-12T05:12:51Z'
+updated_at: '2026-04-12T05:24:46Z'
 status: in_progress
 blockers:
 - live `/messages/search` APIs on happydistrouklimited remain unsupported for current
@@ -10,4 +10,4 @@ blockers:
   `cliq_retrieval_recheck_after_success_20260411_192603.log`)'
 - "maintenance export command surface (`cliq export-chats`) is implemented and response-shape normalization is hardened; login-time checks show `ZohoCliq.Org.Admin` is invalid, and live verification is still blocked by maintenance export scope misses (`oauth_scope_invalid`) on both list + explicit `--chat-id` probes (latest evidence: `tests/auto_pilot/reports/cliq_export_chats_list_scope_recheck_20260412_044316.json`, `tests/auto_pilot/reports/cliq_export_chat_scope_recheck_20260412_044323.json`)"
 - "additional workspace test assets continue to validate local upload breadth: image (`test.png`), audio (`sample-3.m4a`), PDF (`2026-04-10-report.pdf`), and CSV (`lv1_capturable_report.csv`) all sent successfully to both channel and user targets in latest one-token matrix rerun (`tests/auto_pilot/reports/cliq_workspace_test_media_matrix_20260412_042955.json`)"
-next_small_step: re-auth with maintenance export scopes (`zoho login --with-cliq --scope ZohoCliq.OrganizationChats.READ --scope ZohoCliq.OrganizationMessages.READ`), then rerun `cliq export-chats` list + one `--chat-id` export and archive successful JSON samples
+next_small_step: re-auth with maintenance export scopes (`zoho login --with-cliq --with-cliq-export`), then rerun `cliq export-chats` list + one `--chat-id` export and archive successful JSON samples

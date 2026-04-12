@@ -4,14 +4,15 @@ module: cliq
 stage: blocked
 status: blocked
 owner: automation
-updated_at: '2026-04-12T05:12:51Z'
+updated_at: '2026-04-12T05:24:46Z'
 success_criteria:
-- run `zoho login --with-cliq --scope ZohoCliq.OrganizationChats.READ --scope ZohoCliq.OrganizationMessages.READ` on the live test account
+- run `zoho login --with-cliq --with-cliq-export` on the live test account
 - run `cliq export-chats` list + one `--chat-id` export on happydistrouklimited
 - archive one successful JSON sample for each export mode under `tests/auto_pilot/reports/`
 next_if_done: resume crm-002 once Cliq export verification evidence is archived
 next_step: >-
-  export scope-invalid guidance now uses maintenance scope names (`ZohoCliq.OrganizationChats.READ`
-  for list and `ZohoCliq.OrganizationMessages.READ` for `--chat-id`) and unit
-  recheck is green; next live probe needs re-auth on `/tmp/zoho-test-config.json`
-  with those two scopes before rerunning export list + message checks
+  added `zoho login --with-cliq --with-cliq-export` scope bundling and updated
+  export-scope error hints to point to that one-step re-auth flow (explicit
+  `--scope` fallback still shown); next live probe should re-auth
+  `/tmp/zoho-test-config.json` with the new flag and rerun export list +
+  message checks

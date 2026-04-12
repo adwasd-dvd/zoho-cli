@@ -2972,6 +2972,37 @@ def test_cliq_meetings(
     mock_client.list_meetings.assert_called_once_with(limit=5)
 
 
+def test_cliq_databases(
+    mock_config: Path,
+    mock_token_refresh: Any,
+) -> None:
+    mock_client = MagicMock()
+    mock_client.list_databases.return_value = {
+        "data": [
+            {
+                "database_id": "DB_1",
+                "name": "Operations DB",
+                "database_type": "records",
+            }
+        ]
+    }
+
+    with patch("zoho_cli.cli._get_cliq_client", return_value=mock_client):
+        result = runner.invoke(
+            app,
+            ["cliq", "databases", "--limit", "7"],
+            env=_cfg_env(mock_config),
+        )
+
+    assert result.exit_code == 0, result.output
+    payload = json.loads(result.output)
+    assert payload["count"] == 1
+    assert payload["databases"][0]["databaseId"] == "DB_1"
+    assert payload["databases"][0]["name"] == "Operations DB"
+    assert payload["databases"][0]["type"] == "records"
+    mock_client.list_databases.assert_called_once_with(limit=7)
+
+
 @respx.mock
 def test_cliq_export_chats_list(mock_config: Path, mock_token_refresh: Any) -> None:
     respx.get("https://cliq.zoho.com/maintenanceapi/v2/chats").mock(

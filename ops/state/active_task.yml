@@ -4,10 +4,10 @@ module: cliq
 stage: in_progress
 status: in_progress
 owner: automation
-updated_at: '2026-04-12T21:05:22Z'
+updated_at: '2026-04-12T21:26:31Z'
 success_criteria:
 - add one smallest platform extension command/client slice with fallback routing and scope guidance
 - add targeted CLI/client coverage for the new slice
 - keep cliq-165 export blocker evidence fresh while app-account activation remains external
-next_if_done: run one focused live verification pass for the new cliq-192 slice and archive endpoint-behavior evidence while cliq-165 stays blocked externally
-next_step: cliq-191 focused live verification is archived (`tests/auto_pilot/reports/cliq191_probe_summary_20260412_210519.json`) and classifies `cliq meetings` as `not_supported` on current token/network; begin the first smallest cliq-192 code slice while cliq-165 app-account activation remains external
+next_if_done: run one focused live verification pass for the new `cliq databases` slice and archive endpoint-behavior evidence while cliq-165 stays blocked externally
+next_step: first cliq-192 code slice is now in place (`zoho cliq databases` + `ZohoCliqClient.list_databases` with fallback routing/tests); run one focused live `cliq databases` verification pass and archive endpoint behavior before taking the next cliq-192 slice while cliq-165 app-account activation remains external

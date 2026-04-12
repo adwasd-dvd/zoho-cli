@@ -2777,6 +2777,22 @@ class ZohoCliqClient:
             not_supported_message="Cliq collaboration calls/meetings listing endpoints are not available for this token/network endpoint.",
         )
 
+    def list_databases(self, *, limit: int = 50) -> dict:
+        """List platform-extension databases (cliq-192 first slice)."""
+        return self._get_with_candidates_and_not_supported(
+            [
+                ("/databases", {"limit": limit}),
+                ("/databases", None),
+                ("/database", {"limit": limit}),
+                ("/database", None),
+                ("/admin/databases", {"limit": limit}),
+                ("/admin/databases", None),
+            ],
+            scope_hint="ZohoCliq.Databases.READ",
+            operation_label="databases-list",
+            not_supported_message="Cliq platform database listing endpoints are not available for this token/network endpoint.",
+        )
+
     @staticmethod
     def infer_message_types(message: dict[str, Any]) -> list[str]:
         """Infer coarse content types from a raw Cliq message payload."""

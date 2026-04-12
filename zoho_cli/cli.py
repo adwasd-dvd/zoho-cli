@@ -1962,6 +1962,61 @@ def cliq_meetings(
     )
 
 
+@cliq_app.command("databases")
+def cliq_databases(
+    limit: int = typer.Option(50, "--limit", "-n", help="Max databases to return."),
+    network: Optional[str] = typer.Option(
+        None, "--network", help="Cliq network slug (e.g. happydistrouklimited)."
+    ),
+) -> None:
+    """List Cliq platform-extension databases (cliq-192 first slice)."""
+    cfg = _cfg()
+    email = _require_account(cfg)
+    client = _get_cliq_client(cfg, email, network=network)
+
+    resp = client.list_databases(limit=limit)
+    data = resp.get("data", resp)
+    if not isinstance(data, list):
+        data = []
+
+    views: list[dict[str, Any]] = []
+    for row in data:
+        if not isinstance(row, dict):
+            continue
+        views.append(
+            {
+                "databaseId": str(
+                    row.get("database_id")
+                    or row.get("databaseId")
+                    or row.get("id")
+                    or row.get("zuid")
+                    or ""
+                ),
+                "name": str(
+                    row.get("name")
+                    or row.get("database_name")
+                    or row.get("title")
+                    or row.get("display_name")
+                    or ""
+                ),
+                "type": str(
+                    row.get("database_type")
+                    or row.get("type")
+                    or row.get("category")
+                    or ""
+                ),
+                "raw": row,
+            }
+        )
+
+    utils.output(
+        {
+            "count": len(views),
+            "databases": views,
+        }
+    )
+
+
 @cliq_app.command("export-chats")
 def cliq_export_chats(
     chat_id: Optional[str] = typer.Option(

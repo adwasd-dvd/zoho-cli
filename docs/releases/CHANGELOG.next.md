@@ -26,6 +26,7 @@
 - Added the second cliq-191 collaboration-productivity slice: `zoho cliq reminders` plus fallback client routing (`list_reminders`) for organization reminder listing.
 - Added the third cliq-191 collaboration-productivity slice: `zoho cliq meetings` plus fallback client routing (`list_meetings`) for collaboration calls/meetings listing.
 - Added a cliq-191 meetings hardening follow-up: `ZohoCliqClient.list_meetings` now also probes `/calls` and `/admin/calls` fallback endpoints before classifying calls/meetings listing support.
+- Added the first cliq-192 platform-extension slice: `zoho cliq databases` plus fallback client routing (`list_databases`) across `/databases`, `/database`, and `/admin/databases` listing endpoints.
 - Scaffolded Cliq phase-1 shell with `zoho cliq status`, regional Cliq base URL inference, and a minimal `ZohoCliqClient` skeleton.
 - Added Cliq OAuth preparation: `zoho login --with-cliq` scope bundling, generic `--scope` extension, and `zoho cliq status` scope readiness (`oauthReady` / `missingScopes`).
 - Updated default Cliq OAuth scope bundle to endpoint-specific scopes (`ZohoCliq.Channels.READ`, `ZohoCliq.Users.READ`, `ZohoCliq.Webhooks.CREATE`) to match live send/notify API requirements.

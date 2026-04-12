@@ -1,5 +1,5 @@
 module: Cliq
-updated_at: '2026-04-12T21:05:22Z'
+updated_at: '2026-04-12T21:26:31Z'
 status: in_progress
 blockers:
 - 'cliq-191 focused live verification shows calls/meetings endpoints remain unsupported on happydistrouklimited: `cliq meetings --limit 10` returns `error: not_supported` while auth stays healthy (`oauthReady: true`, `exportOauthReady: true`) (evidence: `tests/auto_pilot/reports/cliq191_probe_summary_20260412_210519.json`, `tests/auto_pilot/reports/cliq191_meetings_20260412_210519.json`)'
@@ -11,8 +11,7 @@ blockers:
 - 'cliq-172 live probe confirms attachment retrieval parity remains endpoint-limited: media-typed message `1775957550478_105215272334` returns `retrievalResult: media_visible_without_attachment_payload` and `count: 0` for both `cliq file` and `cliq voice` (`tests/auto_pilot/reports/cliq172_probe_summary_20260412_134514.json`)'
 - 'maintenance export command surface (`cliq export-chats`) is implemented and maintenance scopes are granted (`ZohoCliq.OrganizationChats.READ`, `ZohoCliq.OrganizationMessages.READ`), but export verification remains blocked by API-side `inactive_appaccount_user` on both list + explicit `--chat-id` probes (evidence: `tests/auto_pilot/reports/cliq_export_chats_list_inactive_recheck_20260412_105646.json`, `tests/auto_pilot/reports/cliq_export_chat_inactive_recheck_20260412_105646.json`)'
 next_small_step: >-
-  cliq-191 focused live `cliq meetings` verification is now archived and
-  endpoint-limited (`not_supported`) on current token/network; keep cliq-165
-  as the top external blocker and, while app-account activation is pending,
-  begin the first smallest cliq-192 platform-extension code slice with
-  targeted tests
+  first cliq-192 platform-extension slice is now in code (`zoho cliq
+  databases` + `ZohoCliqClient.list_databases`); run one focused live
+  `cliq databases` verification pass and archive endpoint behavior while
+  cliq-165 app-account activation remains externally blocked

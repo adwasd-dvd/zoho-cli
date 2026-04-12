@@ -163,14 +163,14 @@
 - id: cliq-191
   title: implement collaboration productivity plane (events/reminders/calls-and-meetings)
   module: cliq
-  stage: in_progress
+  stage: completed
   priority: low
   depends_on:
   - cliq-181
 - id: cliq-192
   title: implement platform extension plane (cliq database/widget map tickers/custom domain/custom email)
   module: cliq
-  stage: queued
+  stage: in_progress
   priority: low
   depends_on:
   - cliq-190

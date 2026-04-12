@@ -1,13 +1,13 @@
-id: cliq-191
-title: implement collaboration productivity plane (events/reminders/calls-and-meetings)
+id: cliq-192
+title: implement platform extension plane (cliq database/widget map tickers/custom domain/custom email)
 module: cliq
 stage: in_progress
 status: in_progress
 owner: automation
-updated_at: '2026-04-12T20:46:30Z'
+updated_at: '2026-04-12T21:05:22Z'
 success_criteria:
-- add one smallest collaboration productivity command/client slice with fallback routing and scope guidance
+- add one smallest platform extension command/client slice with fallback routing and scope guidance
 - add targeted CLI/client coverage for the new slice
 - keep cliq-165 export blocker evidence fresh while app-account activation remains external
-next_if_done: run one focused cliq-191 live verification pass (`zoho cliq meetings`) and archive endpoint-behavior evidence while cliq-165 stays blocked externally
-next_step: fourth cliq-191 hardening follow-up is now in place (`ZohoCliqClient.list_meetings` also probes `/calls` + `/admin/calls` with targeted tests); next is one focused live `cliq meetings` verification pass while cliq-165 app-account activation stays external
+next_if_done: run one focused live verification pass for the new cliq-192 slice and archive endpoint-behavior evidence while cliq-165 stays blocked externally
+next_step: cliq-191 focused live verification is archived (`tests/auto_pilot/reports/cliq191_probe_summary_20260412_210519.json`) and classifies `cliq meetings` as `not_supported` on current token/network; begin the first smallest cliq-192 code slice while cliq-165 app-account activation remains external

@@ -1,0 +1,25 @@
+{
+  "task": "cliq-191",
+  "timestamp": "20260412_210519",
+  "generatedAt": "2026-04-12T21:05:22.156065+00:00",
+  "commands": {
+    "status": {
+      "exit": 0,
+      "report": "tests/auto_pilot/reports/cliq191_status_20260412_210519.json"
+    },
+    "meetings": {
+      "exit": 1,
+      "report": "tests/auto_pilot/reports/cliq191_meetings_20260412_210519.json"
+    }
+  },
+  "status": {
+    "oauthReady": true,
+    "exportOauthReady": true,
+    "missingScopes": []
+  },
+  "meetings": {
+    "count": null,
+    "error": "not_supported"
+  },
+  "ok": false
+}

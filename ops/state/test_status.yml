@@ -1,4 +1,4 @@
-last_run_at: "2026-04-12T20:46:30Z"
+last_run_at: "2026-04-12T21:05:22Z"
 last_result: warning
 current_focus: cliq
 suites:
@@ -404,6 +404,10 @@ suites:
   integration:
     status: warning
     notes:
+      - "python3.11 -m zoho_cli --config /tmp/zoho-test-config.json --account ai-dev@happy-distro.co.uk cliq status --check-auth --network happydistrouklimited"
+      - "cliq-191 focused live check keeps auth healthy (`oauthReady: true`, `exportOauthReady: true`); evidence: `tests/auto_pilot/reports/cliq191_status_20260412_210519.json` (2026-04-12T21:05:19Z)"
+      - "python3.11 -m zoho_cli --config /tmp/zoho-test-config.json --account ai-dev@happy-distro.co.uk cliq meetings --network happydistrouklimited --limit 10"
+      - "cliq-191 focused live `cliq meetings` verification returns `error: not_supported`; evidence: `tests/auto_pilot/reports/cliq191_meetings_20260412_210519.json` + `tests/auto_pilot/reports/cliq191_probe_summary_20260412_210519.json` (2026-04-12T21:05:19Z)"
       - "python3.11 -m zoho_cli --config /tmp/zoho-test-config.json --account ai-dev@happy-distro.co.uk cliq status --check-auth --network happydistrouklimited"
       - "cliq-190 live closeout auth check remains healthy (`oauthReady: true`, `exportOauthReady: true`); evidence: `tests/auto_pilot/reports/cliq190_status_20260412_192446.json` (2026-04-12T19:24:46Z)"
       - "python3.11 -m zoho_cli --config /tmp/zoho-test-config.json --account ai-dev@happy-distro.co.uk cliq userfields --network happydistrouklimited"

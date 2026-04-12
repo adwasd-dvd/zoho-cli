@@ -134,3 +134,59 @@ raise SystemExit(1)
     summary = json.loads(summary_reports[0].read_text())
     assert summary["scopeBlocked"] is True
     assert summary["recommendedNext"] == "interactive_reauth_then_rerun"
+
+
+def test_export_scope_recheck_runner_marks_scope_blocked_from_status_report(
+    tmp_path: Path,
+) -> None:
+    fake_python = tmp_path / "fake_python_status_scope.py"
+    fake_python.write_text(
+        """#!/usr/bin/env python3
+import json
+import sys
+
+args = sys.argv[1:]
+if "status" in args:
+    print(json.dumps({
+        "status": "ok",
+        "exportOauthReady": False,
+        "missingExportScopes": ["ZohoCliq.OrganizationChats.READ"],
+    }))
+    raise SystemExit(0)
+if "--chat-id" in args:
+    print(json.dumps({"status": "error", "error": "chat_probe_failed"}))
+    raise SystemExit(4)
+print(json.dumps({"status": "error", "error": "list_probe_failed"}))
+raise SystemExit(3)
+"""
+    )
+    fake_python.chmod(fake_python.stat().st_mode | stat.S_IXUSR)
+
+    reports_dir = tmp_path / "reports"
+    result = subprocess.run(
+        [
+            "bash",
+            str(EXPORT_RECHECK_SCRIPT),
+            str(tmp_path / "config.json"),
+            "test@example.com",
+            "example-network",
+            "CHAT-123",
+        ],
+        cwd=REPO_ROOT,
+        env={
+            **os.environ,
+            "PYTHON_BIN": str(fake_python),
+            "SCAP_REPORT_DIR": str(reports_dir),
+        },
+        capture_output=True,
+        text=True,
+        check=False,
+    )
+
+    assert result.returncode == 1
+    summary_reports = list(reports_dir.glob("cliq_export_scope_recheck_summary_*.json"))
+    assert len(summary_reports) == 1
+
+    summary = json.loads(summary_reports[0].read_text())
+    assert summary["scopeBlocked"] is True
+    assert summary["recommendedNext"] == "interactive_reauth_then_rerun"

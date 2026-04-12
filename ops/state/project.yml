@@ -1,5 +1,5 @@
 project: zoho-cli
-updated_at: '2026-04-12T09:44:02Z'
+updated_at: '2026-04-12T10:03:46Z'
 status: cliq-expansion
 canonical_workspace: /Users/adwasd/.openclaw/workspace-coder
 project_root: /Users/adwasd/.openclaw/workspace-coder/job/zoho-cli
@@ -19,11 +19,14 @@ primary_blockers:
 next_step: run `tests/auto_pilot/run_cliq_export_scope_recheck.sh` to refresh
   blocker evidence in one command and consume
   `cliq_export_scope_recheck_summary_<timestamp>.json` for per-probe exit
-  status + `scopeBlocked`/`recommendedNext`; after interactive re-auth via
-  `zoho --config /tmp/zoho-test-config.json --account ai-dev@happy-distro.co.uk
-  login --with-cliq --with-cliq-export` (or explicit `--scope` fallback), rerun
-  the same script until list + `--chat-id` exports succeed and close `cliq-165`
+  status + `scopeBlocked`/`recommendedNext` (including status-derived scope
+  blocker signals from `exportOauthReady`/`missingExportScopes`); after
+  interactive re-auth via `zoho --config /tmp/zoho-test-config.json --account
+  ai-dev@happy-distro.co.uk login --with-cliq --with-cliq-export` (or explicit
+  `--scope` fallback), rerun the same script until list + `--chat-id` exports
+  succeed and close `cliq-165`
 additional_info:
+- '2026-04-12 unit follow-up: `tests/auto_pilot/run_cliq_export_scope_recheck.sh` now marks `scopeBlocked` from status payload readiness signals (`exportOauthReady: false` / non-empty `missingExportScopes`) even when list/chat probes fail without explicit scope error codes; `tests/test_auto_pilot_scripts.py` now covers this status-driven branch.'
 - '2026-04-12 unit follow-up: `tests/auto_pilot/run_cliq_export_scope_recheck.sh` summary artifacts now include run context (`config/account/network/chatId`) plus `scopeBlocked` and `recommendedNext`, and `tests/test_auto_pilot_scripts.py` now covers both non-scope and scope-blocked branching.'
 - '2026-04-12 unit follow-up: `tests/auto_pilot/run_cliq_export_scope_recheck.sh` now also writes `cliq_export_scope_recheck_summary_<timestamp>.json` with report paths plus per-probe/overall exit codes, and `tests/test_auto_pilot_scripts.py` now validates that summary artifact so automation can consume blocker state without parsing stdout.'
 - '2026-04-12 unit follow-up: `tests/auto_pilot/run_cliq_export_scope_recheck.sh` now uses `pipefail`, captures real per-probe `zoho_cli` exit codes via `PIPESTATUS`, supports `PYTHON_BIN`/`SCAP_REPORT_DIR` overrides, and exits non-zero when any probe fails so automation can gate on blocker state without parsing logs.'

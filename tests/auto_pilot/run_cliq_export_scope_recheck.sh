@@ -57,6 +57,8 @@ fi
 SCOPE_BLOCKED=false
 if grep -Eiq "oauth_scope_invalid|oauthtoken_scope_invalid" "$OUT_LIST" "$OUT_CHAT"; then
   SCOPE_BLOCKED=true
+elif grep -Eiq 'exportOauthReady"?[[:space:]]*:[[:space:]]*false|missingExportScopes"?[[:space:]]*:[[:space:]]*\[[^]]*[^[:space:]\]]' "$OUT_STATUS"; then
+  SCOPE_BLOCKED=true
 fi
 
 RECOMMENDED_NEXT="rerun_scope_recheck"

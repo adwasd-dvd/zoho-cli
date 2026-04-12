@@ -54,15 +54,38 @@ if [ "$STATUS_EXIT" -ne 0 ] || [ "$LIST_EXIT" -ne 0 ] || [ "$CHAT_EXIT" -ne 0 ];
   OVERALL_EXIT=1
 fi
 
+SCOPE_BLOCKED=false
+if grep -Eiq "oauth_scope_invalid|oauthtoken_scope_invalid" "$OUT_LIST" "$OUT_CHAT"; then
+  SCOPE_BLOCKED=true
+fi
+
+RECOMMENDED_NEXT="rerun_scope_recheck"
+if [ "$OVERALL_EXIT" -eq 0 ]; then
+  RECOMMENDED_NEXT="archive_success_outputs"
+elif [ "$SCOPE_BLOCKED" = "true" ]; then
+  RECOMMENDED_NEXT="interactive_reauth_then_rerun"
+fi
+
 cat >"$OUT_SUMMARY" <<EOF
 {
+  "summaryVersion": 2,
+  "config": "$CONFIG",
+  "account": "$ACCOUNT",
+  "network": "$NETWORK",
+  "chatId": "$CHAT_ID",
   "statusReport": "$OUT_STATUS",
   "listReport": "$OUT_LIST",
   "chatReport": "$OUT_CHAT",
   "statusExit": $STATUS_EXIT,
   "listExit": $LIST_EXIT,
   "chatExit": $CHAT_EXIT,
-  "overallExit": $OVERALL_EXIT
+  "overallExit": $OVERALL_EXIT,
+  "scopeBlocked": $SCOPE_BLOCKED,
+  "recommendedNext": "$RECOMMENDED_NEXT",
+  "nextCommands": {
+    "reauth": "zoho --config <config> --account <account> login --with-cliq --with-cliq-export",
+    "rerun": "tests/auto_pilot/run_cliq_export_scope_recheck.sh <config> <account> <network> <chat-id>"
+  }
 }
 EOF
 

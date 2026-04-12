@@ -1,5 +1,5 @@
 module: Cliq
-updated_at: '2026-04-12T09:24:15Z'
+updated_at: '2026-04-12T09:44:02Z'
 status: in_progress
 blockers:
 - live `/messages/search` APIs on happydistrouklimited remain unsupported for current
@@ -8,12 +8,13 @@ blockers:
 - 'attachment retrieval parity remains endpoint-limited: post-upload media-visible
   messages still return zero payloads on `/attachments` (`cliq_single_token_retrieval_after_upload_20260411_192343.json`,
   `cliq_retrieval_recheck_after_success_20260411_192603.log`)'
-- "maintenance export command surface (`cliq export-chats`) is implemented and response-shape normalization is hardened; live auth still reports missing maintenance export scopes (`ZohoCliq.OrganizationChats.READ`, `ZohoCliq.OrganizationMessages.READ`), and export verification remains blocked with `oauth_scope_invalid` on both list + explicit `--chat-id` probes (latest one-command evidence: `tests/auto_pilot/reports/cliq_status_export_scope_recheck_20260412_020234.json`, `tests/auto_pilot/reports/cliq_export_chats_list_scope_recheck_20260412_020234.json`, `tests/auto_pilot/reports/cliq_export_chat_scope_recheck_20260412_020234.json`; runner now propagates non-zero probe exits and writes a summary artifact for automation loops: `tests/auto_pilot/reports/cliq_export_scope_recheck_summary_<timestamp>.json`)"
+- "maintenance export command surface (`cliq export-chats`) is implemented and response-shape normalization is hardened; live auth still reports missing maintenance export scopes (`ZohoCliq.OrganizationChats.READ`, `ZohoCliq.OrganizationMessages.READ`), and export verification remains blocked with `oauth_scope_invalid` on both list + explicit `--chat-id` probes (latest one-command evidence: `tests/auto_pilot/reports/cliq_status_export_scope_recheck_20260412_020234.json`, `tests/auto_pilot/reports/cliq_export_chats_list_scope_recheck_20260412_020234.json`, `tests/auto_pilot/reports/cliq_export_chat_scope_recheck_20260412_020234.json`; runner summary now includes per-probe exits/report paths plus `scopeBlocked` and `recommendedNext` for automation branching: `tests/auto_pilot/reports/cliq_export_scope_recheck_summary_<timestamp>.json`)"
 - "additional workspace test assets continue to validate local upload breadth: image (`test.png`), audio (`sample-3.m4a`), PDF (`2026-04-10-report.pdf`), and CSV (`lv1_capturable_report.csv`) all sent successfully to both channel and user targets in latest one-token matrix rerun (`tests/auto_pilot/reports/cliq_workspace_test_media_matrix_20260412_042955.json`)"
 next_small_step: >-
   run `tests/auto_pilot/run_cliq_export_scope_recheck.sh` to refresh export
   blocker evidence in one command (non-zero on failed probes + summary JSON
-  artifact), then complete interactive re-auth with
+  artifact including `scopeBlocked` + `recommendedNext`), then complete
+  interactive re-auth with
   `zoho --config /tmp/zoho-test-config.json --account ai-dev@happy-distro.co.uk
   login --with-cliq --with-cliq-export` (or explicit `--scope` fallback) and
   rerun until list + `--chat-id` exports succeed with archived JSON

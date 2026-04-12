@@ -1,6 +1,7 @@
 """OAuth 2.0 helpers: login flow, token exchange, token refresh."""
 
 import html
+import json
 import logging
 import sys
 from http.server import BaseHTTPRequestHandler, HTTPServer
@@ -417,8 +418,26 @@ def refresh_access_token_info(
         timeout=30,
     )
     if resp.status_code != 200:
+        details = resp.text
+        try:
+            failure_payload = resp.json()
+        except ValueError:
+            failure_payload = None
+
+        if isinstance(failure_payload, dict):
+            description = str(failure_payload.get("error_description") or "").strip()
+            error_name = str(failure_payload.get("error") or "").strip()
+            lowered = f"{error_name} {description}".lower()
+            if "too many requests" in lowered:
+                utils.error_exit(
+                    "token_refresh_rate_limited",
+                    "OAuth refresh is temporarily rate-limited by Zoho. Wait a few minutes and retry, and avoid bursty probe loops."
+                    + (f" Details: {description}" if description else ""),
+                )
+            details = json.dumps(failure_payload, ensure_ascii=False)
+
         utils.error_exit(
-            "token_refresh_failed", f"HTTP {resp.status_code}: {resp.text}"
+            "token_refresh_failed", f"HTTP {resp.status_code}: {details}"
         )
     data = resp.json()
     if "access_token" not in data:

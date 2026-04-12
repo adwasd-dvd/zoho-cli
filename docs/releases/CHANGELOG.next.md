@@ -61,6 +61,7 @@
 - Cliq reaction fallback now supports `emoji_code` payloads (plus legacy `emoji` fallback) for org endpoints that reject plain `emoji` payloads.
 - OAuth scope reporting now prefers live scope data from token refresh responses during `cliq status --check-auth` / `crm status --check-auth`, instead of trusting stale requested-scope config only.
 - Token refresh failures now report explicit `invalid_client` guidance (check `client_id`/`client_secret` and re-login) instead of only emitting a generic missing `access_token` payload error.
+- Token refresh throttle responses (`Access Denied` / "too many requests") are now classified as `token_refresh_rate_limited` with a cooldown hint, so live probe loops can distinguish refresh-rate limiting from generic auth/config failures.
 - `zoho login` now persists granted scopes from Zoho OAuth response scope payload when available, avoiding false-positive scope readiness after limited-consent flows.
 - Cliq send/notify now tolerate successful empty-body responses (`HTTP 204`) from live endpoints and return stable JSON status payloads instead of raising JSON decode errors.
 - Tightened `zoho cliq send` destination validation so only true destination mistakes map to `invalid_destination` (no longer swallows unrelated `ValueError` from response parsing).

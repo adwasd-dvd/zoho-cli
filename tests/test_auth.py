@@ -199,6 +199,45 @@ def test_refresh_access_token_info_invalid_client_reports_config_hint(
     assert "client_id/client_secret" in details
 
 
+@respx.mock
+def test_refresh_access_token_info_rate_limited_reports_wait_hint(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    monkeypatch.setattr(
+        auth.storage,
+        "load_token",
+        lambda _email: {
+            "refresh_token": "refresh-token",
+            "accounts_server": "https://accounts.zoho.com",
+        },
+    )
+    respx.post("https://accounts.zoho.com/oauth/v2/token").mock(
+        return_value=httpx.Response(
+            400,
+            json={
+                "error_description": "You have made too many requests continuously. Please try again after some time.",
+                "error": "Access Denied",
+                "status": "failure",
+            },
+        )
+    )
+
+    with patch(
+        "zoho_cli.auth.utils.error_exit", side_effect=SystemExit(1)
+    ) as mocked_error:
+        with pytest.raises(SystemExit):
+            auth.refresh_access_token_info(
+                "ai-dev@happy-distro.co.uk",
+                "client-id",
+                "client-secret",
+            )
+
+    mocked_error.assert_called_once()
+    code, details = mocked_error.call_args.args[:2]
+    assert code == "token_refresh_rate_limited"
+    assert "Wait a few minutes" in details
+
+
 # ---------------------------------------------------------------------------
 # discover_accounts_server
 # ---------------------------------------------------------------------------

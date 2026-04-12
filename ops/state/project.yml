@@ -1,5 +1,5 @@
 project: zoho-cli
-updated_at: '2026-04-12T01:14:39Z'
+updated_at: '2026-04-12T01:18:39Z'
 status: cliq-expansion
 canonical_workspace: /Users/adwasd/.openclaw/workspace-coder
 project_root: /Users/adwasd/.openclaw/workspace-coder/job/zoho-cli
@@ -21,7 +21,8 @@ additional_info:
   - "2026-04-12 live check: `cliq status --check-auth` now reports `oauthReady: true`, and text send probes (user + channel) return `httpStatus: 204`."
   - Multipart local-upload fallback now treats `request_method_invalid` as path-level unsupported and skips that endpoint immediately, reducing wasted retries before probing the next fallback path.
   - Multipart local-upload fallback now also treats `operation_failed` as path-level unsupported; latest live local-image probe still fails, but exits without attempt-cap exhaustion and preserves compact `attempts:` evidence for endpoint classification.
-  - Fresh user-target local-file probe now returns explicit `not_supported` classification with archived attempt matrix (`tests/auto_pilot/reports/cliq_local_user_file_classified_20260411_180947.log`), improving endpoint-limitation closure evidence while attachment-positive media send/readback remains pending.
+  - Fresh live media matrix now returns explicit `not_supported` classification for user+channel local image/voice paths with archived attempt evidence (`tests/auto_pilot/reports/cliq_local_media_matrix_live_20260411_181438.log`), improving endpoint-limitation closure evidence while attachment-positive media send/readback remains pending.
+  - Refresh-throttle handling now surfaces explicit `token_refresh_rate_limited` guidance (instead of generic refresh failure), and the latest retrieval probe batch (`tests/auto_pilot/reports/cliq_retrieval_probe_20260411_181620.log`) confirms cooldown is still required before retrieval reruns.
   - DM history fallback metadata is now captured in probe output (`dmHistory.result`, `dmHistory.sourcePath`, `dmHistory.attemptedPaths`) via `ZohoCliqClient.get_last_dm_history_meta`, so cliq-155 evidence logs can show the exact winning read endpoint.
   - Token refresh failures now report explicit `invalid_client` guidance (check `client_id`/`client_secret` and re-run `zoho login`) instead of only emitting a generic missing `access_token` payload error.
   - OAuth login defaults are now aligned on `http://localhost:51821/callback` (including `--no-browser` fallback from legacy `example.com`), and callback success UI now renders scope-aware Mail/Cliq/CRM guidance.

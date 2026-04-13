@@ -4,10 +4,10 @@ module: cliq
 stage: in_progress
 status: in_progress
 owner: automation
-updated_at: '2026-04-13T20:48:29Z'
+updated_at: '2026-04-13T21:03:43Z'
 success_criteria:
 - ship the next cliq-193 app-governance command/client slice with focused tests
 - run one focused live verification for that new slice and archive evidence
 - keep cliq-165 export blocker evidence current while app-account activation remains external
 next_if_done: take the next queued cliq-193 app-governance slice with focused coverage
-next_step: "Latest cliq-193 detail hardening now unwraps deeper `data.records.record[].item` nested wrappers for app-permission/app-install/app-command detail outputs; next step is one focused live verification rerun for this slice, then the next smallest app-governance output-hardening increment while cliq-165 remains externally blocked by `inactive_appaccount_user`."
+next_step: "Focused live verification rerun for the latest cliq-193 detail `record[].item` hardening is complete (tests/auto_pilot/reports/cliq193_app_command_get_probe_summary_20260413_210341.json); next step is the next smallest app-governance output-hardening increment with focused tests while cliq-165 remains externally blocked by `inactive_appaccount_user`."

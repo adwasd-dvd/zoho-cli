@@ -1,5 +1,5 @@
 project: zoho-cli
-updated_at: '2026-04-13T20:23:49Z'
+updated_at: '2026-04-13T20:48:29Z'
 status: cliq-expansion
 canonical_workspace: /Users/adwasd/.openclaw/workspace-coder
 project_root: /Users/adwasd/.openclaw/workspace-coder/job/zoho-cli
@@ -7,7 +7,7 @@ module_order:
 - Mail
 - Cliq
 - CRM
-current_focus: 'cliq-165 export verification remains externally blocked by API-side `inactive_appaccount_user`; focused live verification is now archived for the latest cliq-193 `app-permissions` list hardening slice, and the next step is the next smallest app-governance output-hardening increment'
+current_focus: 'cliq-165 export verification remains externally blocked by API-side `inactive_appaccount_user`; latest cliq-193 detail hardening now unwraps deeper `data.records.record[].item` nested wrappers for app-governance detail commands, and the next step is one focused live verification rerun before the next smallest output-hardening increment'
 primary_blockers:
 - crm live read-only verification remains blocked by account-level CRM org access
 - cliq databases live verification currently requires additional scope (`ZohoCliq.Databases.READ`) on the active token despite healthy baseline auth/export readiness
@@ -29,8 +29,9 @@ primary_blockers:
   returns `not_supported`)
 - calls/meetings endpoints are unsupported on current token/network (`cliq meetings`
   now returns `not_supported` in focused live verification)
-next_step: 'ship the next smallest cliq-193 app-governance output-hardening increment with focused tests, then run one focused live verification pass for that slice while keeping cliq-165 as the highest-priority external blocker (`inactive_appaccount_user`)'
+next_step: 'run one focused live verification pass for the latest cliq-193 detail `data.records.record[].item` nested-wrapper hardening, then ship the next smallest app-governance output-hardening increment with focused tests while keeping cliq-165 as the highest-priority external blocker (`inactive_appaccount_user`)'
 additional_info:
+- '2026-04-13 unit hardening: app-governance detail extraction now unwraps deeper `data.records.record[].item` nested wrappers for `zoho cliq app-permission-get`, `zoho cliq app-install-get`, and `zoho cliq app-command-get`; focused tests passed (`tests/test_cli.py::test_cliq_app_permission_get_accepts_data_records_record_item_nested_permission_shape`, `tests/test_cli.py::test_cliq_app_install_get_accepts_data_records_record_item_nested_install_shape`, `tests/test_cli.py::test_cliq_app_command_get_accepts_data_records_record_item_nested_command_shape`).'
 - '2026-04-13 live verification: focused cliq-193 app-permissions pass after latest list `record[].item` hardening (`cliq status --check-auth` + `cliq app-permissions APP_PROBE_FAKE_20260413_202213`) keeps auth/export readiness healthy (`oauthReady: true`, `exportOauthReady: true`) and classifies app-permissions endpoints as `not_supported`; evidence: `tests/auto_pilot/reports/cliq193_app_permissions_probe_summary_20260413_202213.json`, `tests/auto_pilot/reports/cliq193_status_20260413_202213.json`, `tests/auto_pilot/reports/cliq193_app_permissions_20260413_202213.json`.'
 - '2026-04-13 unit hardening: app-governance list extraction now unwraps `data.records.record[]` list rows carrying nested `item` wrappers for `zoho cliq app-permissions`, `zoho cliq app-installs`, and `zoho cliq app-commands`; focused tests passed (`tests/test_cli.py::test_cliq_app_permissions_accepts_data_records_record_row_shape`, `tests/test_cli.py::test_cliq_app_permissions_accepts_data_records_record_item_list_shape`, `tests/test_cli.py::test_cliq_app_installs_accepts_data_records_record_row_shape`, `tests/test_cli.py::test_cliq_app_installs_accepts_data_records_record_item_list_shape`, `tests/test_cli.py::test_cliq_app_commands_accepts_data_records_record_row_shape`, `tests/test_cli.py::test_cliq_app_commands_accepts_data_records_record_item_list_shape`).'
 - '2026-04-13 live verification: focused cliq-193 app-get pass after latest `data.records.record[].item` hardening (`cliq status --check-auth` + `cliq app-get APP_PROBE_FAKE_20260413_194359`) keeps auth/export readiness healthy (`oauthReady: true`, `exportOauthReady: true`) and classifies app-detail endpoints as `not_supported`; evidence: `tests/auto_pilot/reports/cliq193_app_get_probe_summary_20260413_194359.json`, `tests/auto_pilot/reports/cliq193_status_20260413_194359.json`, `tests/auto_pilot/reports/cliq193_app_get_20260413_194359.json`.'

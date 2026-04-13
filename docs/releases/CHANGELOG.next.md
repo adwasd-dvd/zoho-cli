@@ -3,6 +3,7 @@
 ## Unreleased
 
 ### Added
+- Hardened `cliq-193` app-governance detail output parsing so `zoho cliq app-permission-get`, `zoho cliq app-install-get`, and `zoho cliq app-command-get` now unwrap one deeper `data.records.record[].item` nested wrapper layer before field mapping; added focused regressions (`test_cliq_app_permission_get_accepts_data_records_record_item_nested_permission_shape`, `test_cliq_app_install_get_accepts_data_records_record_item_nested_install_shape`, `test_cliq_app_command_get_accepts_data_records_record_item_nested_command_shape`).
 - Initialized repo control files, anchors, and memory scaffolding for the zoho coder loop.
 - Added first `cliq-180` bot-operation slice: `zoho cliq post-to-bot` plus `ZohoCliqClient.post_to_bot` fallback routing and targeted CLI/client regression tests.
 - Added second `cliq-180` bot-operation slice: `zoho cliq bot-subscribers` plus `ZohoCliqClient.list_bot_subscribers` fallback routing and targeted CLI/client regression tests.

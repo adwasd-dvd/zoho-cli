@@ -2800,7 +2800,7 @@ def cliq_app_permission_get(
     def _extract_permission_row(payload: Any) -> dict[str, Any]:
         def _unwrap_permission_row(row: dict[str, Any]) -> dict[str, Any]:
             current = row
-            for _ in range(3):
+            for _ in range(4):
                 for key in (
                     "permission",
                     "scope",
@@ -3222,7 +3222,7 @@ def cliq_app_install_get(
     def _extract_install_row(payload: Any) -> dict[str, Any]:
         def _unwrap_install_row(row: dict[str, Any]) -> dict[str, Any]:
             current = row
-            for _ in range(3):
+            for _ in range(4):
                 for key in (
                     "install",
                     "item",
@@ -3666,7 +3666,7 @@ def cliq_app_command_get(
     def _extract_command_row(payload: Any) -> dict[str, Any]:
         def _unwrap_command_row(row: dict[str, Any]) -> dict[str, Any]:
             current = row
-            for _ in range(3):
+            for _ in range(4):
                 for key in (
                     "command",
                     "action",

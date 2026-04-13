@@ -4,10 +4,10 @@ module: cliq
 stage: in_progress
 status: in_progress
 owner: automation
-updated_at: '2026-04-13T19:02:26Z'
+updated_at: '2026-04-13T19:26:08Z'
 success_criteria:
 - ship the next cliq-193 app-governance command/client slice with focused tests
 - run one focused live verification for that new slice and archive evidence
 - keep cliq-165 export blocker evidence current while app-account activation remains external
 next_if_done: take the next queued cliq-193 app-governance slice with focused coverage
-next_step: "Focused live verification for the latest `data.records.record.item` list-wrapper hardening is now archived (`tests/auto_pilot/reports/cliq193_apps_probe_summary_20260413_190223.json`): `cliq status --check-auth` stayed healthy (`oauthReady: true`, `exportOauthReady: true`) and `cliq apps --limit 10` remains `not_supported`. Next step is the next smallest cliq-193 output-hardening increment with focused tests, then one focused live rerun while cliq-165 remains externally blocked by `inactive_appaccount_user`."
+next_step: "Unit hardening now covers `cliq app-get` payloads shaped as `data.records.record[].item` (`tests/test_cli.py::test_cliq_app_get_accepts_data_records_record_item_row_shape`): next step is one focused live verification pass (`cliq status --check-auth` + `cliq app-get`) for this slice, then continue the next smallest cliq-193 output-hardening increment while cliq-165 remains externally blocked by `inactive_appaccount_user`."

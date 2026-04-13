@@ -3502,6 +3502,42 @@ def test_cliq_app_get_accepts_data_records_shape(
     mock_client.get_app.assert_called_once_with("AP_12R")
 
 
+def test_cliq_app_get_accepts_data_records_record_item_row_shape(
+    mock_config: Path,
+    mock_token_refresh: Any,
+) -> None:
+    mock_client = MagicMock()
+    mock_client.get_app.return_value = {
+        "data": {
+            "records": {
+                "record": [
+                    {
+                        "item": {
+                            "id": "AP_12RRI",
+                            "name": "Ops Escalator Record Item",
+                            "state": "enabled",
+                        }
+                    }
+                ]
+            }
+        }
+    }
+
+    with patch("zoho_cli.cli._get_cliq_client", return_value=mock_client):
+        result = runner.invoke(
+            app,
+            ["cliq", "app-get", "AP_12RRI"],
+            env=_cfg_env(mock_config),
+        )
+
+    assert result.exit_code == 0, result.output
+    payload = json.loads(result.output)
+    assert payload["app"]["appId"] == "AP_12RRI"
+    assert payload["app"]["name"] == "Ops Escalator Record Item"
+    assert payload["app"]["status"] == "enabled"
+    mock_client.get_app.assert_called_once_with("AP_12RRI")
+
+
 def test_cliq_app_get_accepts_top_level_apps_dict_shape(
     mock_config: Path,
     mock_token_refresh: Any,

@@ -2,11 +2,11 @@
 
 ## Immediate
 1. **`cliq-165` remains the top blocker**: maintenance export scopes are granted, but both `cliq export-chats` list and `--chat-id` still return API-side `inactive_appaccount_user` until Cliq admin-side app-account activation is completed.
-2. **cliq-193 focused live verification is refreshed**: `cliq status --check-auth` + `cliq apps --limit 10` (20260413_190223) confirms auth/export readiness stays healthy while app-list endpoints remain `not_supported` (`tests/auto_pilot/reports/cliq193_apps_probe_summary_20260413_190223.json`).
-3. **Next step is the next smallest cliq-193 output-hardening increment** (then one focused live verification pass for that slice).
+2. **`cliq-193` app-get detail hardening advanced**: `zoho cliq app-get` now unwraps `data.records.record[]` rows carrying nested `item` wrappers (focused unit coverage green).
+3. **Next step is one focused live verification pass for this slice** (`cliq status --check-auth` + `cliq app-get`), then continue the next smallest cliq-193 output-hardening increment.
 
 ## Next
-1. `cliq-193`: ship the next smallest app-governance output-hardening increment with focused tests.
-2. `cliq-193`: run one focused live verification pass for that new slice and archive evidence.
+1. `cliq-193`: run one focused live `cliq app-get` verification for the new `data.records.record[].item` hardening and archive evidence.
+2. `cliq-193`: ship the next smallest app-governance output-hardening increment with focused tests.
 3. `cliq-165`: rerun export verification immediately after app-account activation (`list` + one `--chat-id` export) and archive first success JSON.
 4. `crm-002`: remain blocked until CRM-enabled org access is available.

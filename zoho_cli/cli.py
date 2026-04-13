@@ -2426,6 +2426,14 @@ def cliq_app_get(
                 if isinstance(nested, dict):
                     current = nested
                     break
+                if isinstance(nested, list):
+                    picked = next(
+                        (entry for entry in nested if isinstance(entry, dict)),
+                        None,
+                    )
+                    if picked:
+                        current = picked
+                        break
             else:
                 break
         return current
@@ -2461,6 +2469,13 @@ def cliq_app_get(
                 )
                 if isinstance(nested_candidate, dict):
                     return _unwrap_app_row(nested_candidate)
+                if isinstance(nested_candidate, list):
+                    picked = next(
+                        (row for row in nested_candidate if isinstance(row, dict)),
+                        None,
+                    )
+                    if picked:
+                        return _unwrap_app_row(picked)
                 if any(
                     app_key in candidate
                     for app_key in (
@@ -2483,6 +2498,13 @@ def cliq_app_get(
                 candidate = nested_data.get(key)
                 if isinstance(candidate, dict):
                     return _unwrap_app_row(candidate)
+                if isinstance(candidate, list):
+                    picked = next(
+                        (row for row in candidate if isinstance(row, dict)),
+                        None,
+                    )
+                    if picked:
+                        return _unwrap_app_row(picked)
             for key in ("apps", "list", "items", "results", "records", "data"):
                 candidate = nested_data.get(key)
                 if isinstance(candidate, list):

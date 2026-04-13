@@ -1,10 +1,14 @@
-last_run_at: "2026-04-13T12:24:35Z"
+last_run_at: "2026-04-13T13:10:12Z"
 last_result: warning
 current_focus: cliq
 suites:
   unit:
     status: passing
     notes:
+      - "python3.11 -m pytest -q tests/test_cli.py::test_cliq_apps tests/test_cli.py::test_cliq_apps_accepts_data_list_wrapped_app_shape tests/test_cli.py::test_cliq_app_permissions tests/test_cli.py::test_cliq_app_permissions_accepts_data_list_wrapped_permission_shape tests/test_cli.py::test_cliq_app_installs tests/test_cli.py::test_cliq_app_installs_accepts_data_list_wrapped_install_shape tests/test_cli.py::test_cliq_app_commands tests/test_cli.py::test_cliq_app_commands_accepts_data_list_wrapped_command_shape"
+      - "8 passed in 0.15s (cliq-193 list-output hardening: app-governance list commands now unwrap list-row singular wrappers `app`/`permission`/`install`/`command`, 2026-04-13T13:10:12Z)"
+      - "./.venv/bin/ruff format --check zoho_cli/cli.py tests/test_cli.py"
+      - "2 files already formatted (cliq-193 list-row wrapper hardening formatting check, 2026-04-13T13:10:12Z)"
       - "python3.11 -m zoho_cli --config /tmp/zoho-test-config.json --account ai-dev@happy-distro.co.uk cliq status --check-auth --network happydistrouklimited"
       - "python3.11 -m zoho_cli --config /tmp/zoho-test-config.json --account ai-dev@happy-distro.co.uk cliq app-command-get APP_PROBE_FAKE_20260413_122435 CMD_PROBE_FAKE_20260413_122435 --network happydistrouklimited"
       - "focused live cliq-193 app-command-get verification archived at `tests/auto_pilot/reports/cliq193_app_command_get_probe_summary_20260413_122435.json`: status remains healthy (`oauthReady: true`, `exportOauthReady: true`) and app-command detail endpoint is currently `error: not_supported` (2026-04-13T12:24:35Z)"

@@ -1,5 +1,5 @@
 project: zoho-cli
-updated_at: '2026-04-13T12:24:35Z'
+updated_at: '2026-04-13T13:10:12Z'
 status: cliq-expansion
 canonical_workspace: /Users/adwasd/.openclaw/workspace-coder
 project_root: /Users/adwasd/.openclaw/workspace-coder/job/zoho-cli
@@ -7,7 +7,7 @@ module_order:
 - Mail
 - Cliq
 - CRM
-current_focus: 'cliq-165 export verification remains externally blocked by API-side `inactive_appaccount_user`; cliq-193 action-wrapper hardening for `cliq app-commands`/`cliq app-command-get` is now live-verified and still endpoint-limited (`not_supported`) with healthy auth/export readiness, so the next step is the next smallest cliq-193 app-governance command/client/output-hardening slice'
+current_focus: 'cliq-165 export verification remains externally blocked by API-side `inactive_appaccount_user`; cliq-193 app-governance list-output hardening now unwraps list-row singular wrappers (`app`/`permission`/`install`/`command`) with focused unit coverage, so the next step is a focused live verification pass for that list-row hardening before the next smallest cliq-193 slice'
 primary_blockers:
 - crm live read-only verification remains blocked by account-level CRM org access
 - cliq databases live verification currently requires additional scope (`ZohoCliq.Databases.READ`) on the active token despite healthy baseline auth/export readiness
@@ -29,8 +29,9 @@ primary_blockers:
   returns `not_supported`)
 - calls/meetings endpoints are unsupported on current token/network (`cliq meetings`
   now returns `not_supported` in focused live verification)
-next_step: 'keep cliq-165 as the highest-priority blocker by coordinating Cliq admin-side app-account activation and rerunning `cliq export-chats` list + `--chat-id`; while still externally blocked, continue the next smallest cliq-193 app-governance command/client/output-hardening slice after the focused live `cliq app-command-get` verification confirmed endpoint limitation on this token/network'
+next_step: 'keep cliq-165 as the highest-priority blocker by coordinating Cliq admin-side app-account activation and rerunning `cliq export-chats` list + `--chat-id`; while still externally blocked, run one focused live cliq-193 app-governance list verification pass for the new list-row wrapper hardening, then continue the next smallest cliq-193 command/client/output-hardening slice if endpoints remain limited'
 additional_info:
+- '2026-04-13 unit hardening: app-governance list commands (`zoho cliq apps`, `zoho cliq app-permissions`, `zoho cliq app-installs`, `zoho cliq app-commands`) now unwrap list-row singular wrappers (`app`/`permission`/`install`/`command`) from maintenance-style list payloads, preventing wrapper rows from degrading output fields; focused CLI tests passed (`tests/test_cli.py::test_cliq_apps`, `tests/test_cli.py::test_cliq_apps_accepts_data_list_wrapped_app_shape`, `tests/test_cli.py::test_cliq_app_permissions`, `tests/test_cli.py::test_cliq_app_permissions_accepts_data_list_wrapped_permission_shape`, `tests/test_cli.py::test_cliq_app_installs`, `tests/test_cli.py::test_cliq_app_installs_accepts_data_list_wrapped_install_shape`, `tests/test_cli.py::test_cliq_app_commands`, `tests/test_cli.py::test_cliq_app_commands_accepts_data_list_wrapped_command_shape`).'
 - '2026-04-13 unit hardening: `zoho cliq app-commands` and `zoho cliq app-command-get` now unwrap nested singular `action` wrappers (including `data.action`) and map `action` string values into command names when canonical name fields are absent; focused CLI tests passed (`tests/test_cli.py::test_cliq_app_commands`, `tests/test_cli.py::test_cliq_app_commands_accepts_nested_action_wrapper_dict_shape`, `tests/test_cli.py::test_cliq_app_command_get`, `tests/test_cli.py::test_cliq_app_command_get_accepts_nested_action_wrapper_dict_shape`).'
 - '2026-04-13 unit hardening: app-governance detail commands (`zoho cliq app-get`, `zoho cliq app-permission-get`, `zoho cliq app-install-get`, `zoho cliq app-command-get`) now unwrap top-level singular wrapper list payloads (`app`, `permission`, `install`, `command`) instead of returning empty/fallback detail rows; focused CLI tests passed (`tests/test_cli.py::test_cliq_app_get_accepts_top_level_app_wrapper_list_shape`, `tests/test_cli.py::test_cliq_app_permission_get_accepts_top_level_permission_wrapper_list_shape`, `tests/test_cli.py::test_cliq_app_install_get_accepts_top_level_install_wrapper_list_shape`, `tests/test_cli.py::test_cliq_app_command_get_accepts_top_level_command_wrapper_list_shape`) plus companion top-level dict-shape regression checks.'
 - '2026-04-13 unit hardening: app-governance list commands (`zoho cliq apps`, `zoho cliq app-permissions`, `zoho cliq app-installs`, `zoho cliq app-commands`) now unwrap top-level singular wrapper payloads (`app`, `permission`, `install`, `command`) instead of returning empty/wrapper-shaped rows; focused CLI tests passed (`tests/test_cli.py::test_cliq_apps_accepts_top_level_app_wrapper_dict_shape`, `tests/test_cli.py::test_cliq_app_permissions_accepts_top_level_permission_wrapper_dict_shape`, `tests/test_cli.py::test_cliq_app_installs_accepts_top_level_install_wrapper_dict_shape`, `tests/test_cli.py::test_cliq_app_commands_accepts_top_level_command_wrapper_dict_shape`).'

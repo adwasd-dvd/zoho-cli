@@ -3428,6 +3428,38 @@ def test_cliq_app_get_accepts_top_level_app_wrapper_list_shape(
     mock_client.get_app.assert_called_once_with("AP_12")
 
 
+def test_cliq_app_get_accepts_top_level_app_wrapper_list_row_shape(
+    mock_config: Path,
+    mock_token_refresh: Any,
+) -> None:
+    mock_client = MagicMock()
+    mock_client.get_app.return_value = {
+        "app": [
+            {
+                "app": {
+                    "id": "AP_12B",
+                    "name": "Ops Escalator Wrapped",
+                    "status": "enabled",
+                }
+            }
+        ]
+    }
+
+    with patch("zoho_cli.cli._get_cliq_client", return_value=mock_client):
+        result = runner.invoke(
+            app,
+            ["cliq", "app-get", "AP_12B"],
+            env=_cfg_env(mock_config),
+        )
+
+    assert result.exit_code == 0, result.output
+    payload = json.loads(result.output)
+    assert payload["app"]["appId"] == "AP_12B"
+    assert payload["app"]["name"] == "Ops Escalator Wrapped"
+    assert payload["app"]["status"] == "enabled"
+    mock_client.get_app.assert_called_once_with("AP_12B")
+
+
 def test_cliq_app_permissions(
     mock_config: Path,
     mock_token_refresh: Any,

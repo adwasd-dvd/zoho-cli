@@ -3284,6 +3284,41 @@ def test_cliq_apps_accepts_data_records_shape(
     mock_client.list_apps.assert_called_once_with(limit=4)
 
 
+def test_cliq_apps_accepts_data_records_record_row_shape(
+    mock_config: Path,
+    mock_token_refresh: Any,
+) -> None:
+    mock_client = MagicMock()
+    mock_client.list_apps.return_value = {
+        "data": {
+            "records": {
+                "record": {
+                    "item": {
+                        "id": "AP_5RR",
+                        "name": "Ops Alerts Wrapped",
+                        "state": "active",
+                    }
+                }
+            }
+        }
+    }
+
+    with patch("zoho_cli.cli._get_cliq_client", return_value=mock_client):
+        result = runner.invoke(
+            app,
+            ["cliq", "apps", "--limit", "4"],
+            env=_cfg_env(mock_config),
+        )
+
+    assert result.exit_code == 0, result.output
+    payload = json.loads(result.output)
+    assert payload["count"] == 1
+    assert payload["apps"][0]["appId"] == "AP_5RR"
+    assert payload["apps"][0]["name"] == "Ops Alerts Wrapped"
+    assert payload["apps"][0]["status"] == "active"
+    mock_client.list_apps.assert_called_once_with(limit=4)
+
+
 def test_cliq_apps_accepts_top_level_app_wrapper_dict_shape(
     mock_config: Path,
     mock_token_refresh: Any,
@@ -3703,6 +3738,41 @@ def test_cliq_app_permissions_accepts_data_records_shape(
     assert payload["count"] == 1
     assert payload["permissions"][0]["permissionId"] == "P_4R"
     assert payload["permissions"][0]["scope"] == "ZohoCliq.Apps.READ"
+    assert payload["permissions"][0]["status"] == "enabled"
+    mock_client.list_app_permissions.assert_called_once_with("AP_3", limit=3)
+
+
+def test_cliq_app_permissions_accepts_data_records_record_row_shape(
+    mock_config: Path,
+    mock_token_refresh: Any,
+) -> None:
+    mock_client = MagicMock()
+    mock_client.list_app_permissions.return_value = {
+        "data": {
+            "records": {
+                "record": {
+                    "item": {
+                        "id": "P_4RR",
+                        "scope": "ZohoCliq.Apps.UPDATE",
+                        "status": "enabled",
+                    }
+                }
+            }
+        }
+    }
+
+    with patch("zoho_cli.cli._get_cliq_client", return_value=mock_client):
+        result = runner.invoke(
+            app,
+            ["cliq", "app-permissions", "AP_3", "--limit", "3"],
+            env=_cfg_env(mock_config),
+        )
+
+    assert result.exit_code == 0, result.output
+    payload = json.loads(result.output)
+    assert payload["count"] == 1
+    assert payload["permissions"][0]["permissionId"] == "P_4RR"
+    assert payload["permissions"][0]["scope"] == "ZohoCliq.Apps.UPDATE"
     assert payload["permissions"][0]["status"] == "enabled"
     mock_client.list_app_permissions.assert_called_once_with("AP_3", limit=3)
 
@@ -4239,6 +4309,41 @@ def test_cliq_app_installs_accepts_data_records_shape(
     assert payload["count"] == 1
     assert payload["installs"][0]["installId"] == "I_2R"
     assert payload["installs"][0]["name"] == "Nightly Bot"
+    assert payload["installs"][0]["status"] == "active"
+    mock_client.list_app_installs.assert_called_once_with("AP_6", limit=2)
+
+
+def test_cliq_app_installs_accepts_data_records_record_row_shape(
+    mock_config: Path,
+    mock_token_refresh: Any,
+) -> None:
+    mock_client = MagicMock()
+    mock_client.list_app_installs.return_value = {
+        "data": {
+            "records": {
+                "record": {
+                    "item": {
+                        "id": "I_2RR",
+                        "name": "Nightly Bot Wrapped",
+                        "state": "active",
+                    }
+                }
+            }
+        }
+    }
+
+    with patch("zoho_cli.cli._get_cliq_client", return_value=mock_client):
+        result = runner.invoke(
+            app,
+            ["cliq", "app-installs", "AP_6", "--limit", "2"],
+            env=_cfg_env(mock_config),
+        )
+
+    assert result.exit_code == 0, result.output
+    payload = json.loads(result.output)
+    assert payload["count"] == 1
+    assert payload["installs"][0]["installId"] == "I_2RR"
+    assert payload["installs"][0]["name"] == "Nightly Bot Wrapped"
     assert payload["installs"][0]["status"] == "active"
     mock_client.list_app_installs.assert_called_once_with("AP_6", limit=2)
 
@@ -4793,6 +4898,41 @@ def test_cliq_app_commands_accepts_data_records_shape(
     assert payload["count"] == 1
     assert payload["commands"][0]["commandId"] == "CMD_11R"
     assert payload["commands"][0]["name"] == "daily_digest"
+    assert payload["commands"][0]["status"] == "enabled"
+    mock_client.list_app_commands.assert_called_once_with("AP_7", limit=3)
+
+
+def test_cliq_app_commands_accepts_data_records_record_row_shape(
+    mock_config: Path,
+    mock_token_refresh: Any,
+) -> None:
+    mock_client = MagicMock()
+    mock_client.list_app_commands.return_value = {
+        "data": {
+            "records": {
+                "record": {
+                    "item": {
+                        "id": "CMD_11RR",
+                        "action": "daily_digest_wrapped",
+                        "state": "enabled",
+                    }
+                }
+            }
+        }
+    }
+
+    with patch("zoho_cli.cli._get_cliq_client", return_value=mock_client):
+        result = runner.invoke(
+            app,
+            ["cliq", "app-commands", "AP_7", "--limit", "3"],
+            env=_cfg_env(mock_config),
+        )
+
+    assert result.exit_code == 0, result.output
+    payload = json.loads(result.output)
+    assert payload["count"] == 1
+    assert payload["commands"][0]["commandId"] == "CMD_11RR"
+    assert payload["commands"][0]["name"] == "daily_digest_wrapped"
     assert payload["commands"][0]["status"] == "enabled"
     mock_client.list_app_commands.assert_called_once_with("AP_7", limit=3)
 

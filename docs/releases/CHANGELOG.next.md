@@ -95,6 +95,7 @@
 - Callback success page now adapts to OAuth scopes and displays Mail/Cliq/CRM-specific guidance instead of a Mail-only static success page.
 
 ### Fixed
+- Hardened cliq-193 app-governance list extraction so `zoho cliq apps`, `zoho cliq app-permissions`, `zoho cliq app-installs`, and `zoho cliq app-commands` now unwrap `data.records.record.item` wrapper rows before field mapping, preventing nested records wrappers from dropping list output fields.
 - Hardened `zoho cliq apps` list-row normalization so nested `item` wrappers (for example `data: [{item: {...}}]`) now unwrap before field mapping, preventing wrapper-shaped maintenance rows from dropping `appId`/`name`/`status` output fields.
 - Hardened cliq-193 app-governance list extraction so `zoho cliq app-permissions`, `zoho cliq app-installs`, and `zoho cliq app-commands` now unwrap nested list-row `item` wrappers in maintenance payloads, preventing wrapper-shaped rows from dropping key list output fields (`permissionId`/`scope`, `installId`/`subjectId`, `commandId`/`name`).
 - Hardened cliq-193 app-governance detail extraction so `cliq app-permission-get`, `cliq app-install-get`, and `cliq app-command-get` now unwrap nested `record` wrapper rows inside `data.records` payloads, preventing record-wrapped maintenance rows from degrading detail output.

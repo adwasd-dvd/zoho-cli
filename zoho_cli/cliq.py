@@ -2921,6 +2921,28 @@ class ZohoCliqClient:
             not_supported_message="Cliq app-governance app-permissions endpoints are not available for this token/network endpoint.",
         )
 
+    def list_app_installs(self, app_id: str, *, limit: int = 50) -> dict:
+        """List app-governance installs for one app (cliq-193 fourth slice)."""
+        resolved_app_id = app_id.strip()
+        if not resolved_app_id:
+            utils.error_exit("invalid_app_id", "app_id cannot be empty")
+
+        return self._get_with_candidates_and_not_supported(
+            [
+                (f"/apps/{resolved_app_id}/installs", {"limit": limit}),
+                (f"/apps/{resolved_app_id}/installs", None),
+                (f"/app/{resolved_app_id}/installs", {"limit": limit}),
+                (f"/app/{resolved_app_id}/installs", None),
+                (f"/admin/apps/{resolved_app_id}/installs", {"limit": limit}),
+                (f"/admin/apps/{resolved_app_id}/installs", None),
+                (f"/admin/app/{resolved_app_id}/installs", {"limit": limit}),
+                (f"/admin/app/{resolved_app_id}/installs", None),
+            ],
+            scope_hint="ZohoCliq.Apps.READ",
+            operation_label="app-installs-list",
+            not_supported_message="Cliq app-governance app-install endpoints are not available for this token/network endpoint.",
+        )
+
     @staticmethod
     def infer_message_types(message: dict[str, Any]) -> list[str]:
         """Infer coarse content types from a raw Cliq message payload."""

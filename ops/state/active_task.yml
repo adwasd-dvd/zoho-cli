@@ -1,13 +1,13 @@
 id: cliq-193
-title: implement app-governance plane (apps/app-get/app-permissions complete, continue next slice)
+title: implement app-governance plane (apps/app-get/app-permissions/app-installs complete, continue next slice)
 module: cliq
 stage: in_progress
 status: in_progress
 owner: automation
-updated_at: '2026-04-13T03:43:07Z'
+updated_at: '2026-04-13T04:05:55Z'
 success_criteria:
 - ship the next cliq-193 app-governance command/client slice with focused tests
 - run one focused live verification for that new slice and archive evidence
 - keep cliq-165 export blocker evidence current while app-account activation remains external
 next_if_done: take the next queued cliq-193 app-governance slice with focused coverage
-next_step: "focused live verification for `cliq app-permissions` is now archived (`cliq193_app_permissions_probe_summary_20260413_034304.json`) with healthy auth/export readiness and endpoint-limited `not_supported` classification; next step is the next smallest cliq-193 app-governance command/client slice with focused tests while cliq-165 remains externally blocked by inactive_appaccount_user"
+next_step: "shipped the cliq-193 fourth slice (`zoho cliq app-installs` + `ZohoCliqClient.list_app_installs`) with targeted tests; next step is one focused live verification pass for `cliq app-installs` and evidence archival while cliq-165 remains externally blocked by inactive_appaccount_user"

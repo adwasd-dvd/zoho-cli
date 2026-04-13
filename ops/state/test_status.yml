@@ -1,10 +1,13 @@
-last_run_at: "2026-04-13T03:43:07Z"
+last_run_at: "2026-04-13T04:05:55Z"
 last_result: warning
 current_focus: cliq
 suites:
   unit:
     status: passing
     notes:
+      - "python3.11 -m pytest -q tests/test_cliq.py::test_cliq_client_list_app_installs_falls_back_to_admin_endpoint tests/test_cliq.py::test_cliq_client_list_app_installs_falls_back_to_admin_singular_endpoint tests/test_cliq.py::test_cliq_client_list_app_installs_scope_invalid_reports_hint tests/test_cli.py::test_cliq_app_installs tests/test_cli.py::test_cliq_app_installs_accepts_nested_installs_shape"
+      - "5 passed (cliq-193 fourth slice: new `cliq app-installs` + `ZohoCliqClient.list_app_installs` fallback coverage, 2026-04-13T04:05:55Z)"
+      - "./.venv/bin/ruff format --check zoho_cli/cliq.py zoho_cli/cli.py tests/test_cliq.py tests/test_cli.py (4 files already formatted, 2026-04-13T04:05:55Z)"
       - "python3.11 -m zoho_cli --config /tmp/zoho-test-config.json --account ai-dev@happy-distro.co.uk cliq status --check-auth --network happydistrouklimited"
       - "python3.11 -m zoho_cli --config /tmp/zoho-test-config.json --account ai-dev@happy-distro.co.uk cliq app-permissions APP_PROBE_FAKE_20260413_034304 --network happydistrouklimited"
       - "cliq-193 focused live app-permissions verification archived at `tests/auto_pilot/reports/cliq193_app_permissions_probe_summary_20260413_034304.json`: status remains healthy (`oauthReady: true`, `exportOauthReady: true`) and app-permissions endpoint is currently `error: not_supported` (2026-04-13T03:43:07Z)"

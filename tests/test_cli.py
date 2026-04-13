@@ -3316,6 +3316,74 @@ def test_cliq_app_permissions_accepts_nested_permissions_shape(
     assert payload["permissions"][0]["status"] == "active"
 
 
+def test_cliq_app_installs(
+    mock_config: Path,
+    mock_token_refresh: Any,
+) -> None:
+    mock_client = MagicMock()
+    mock_client.list_app_installs.return_value = {
+        "data": [
+            {
+                "install_id": "I_1",
+                "user_id": "U_1",
+                "display_name": "Alice Ops",
+                "status": "active",
+            }
+        ]
+    }
+
+    with patch("zoho_cli.cli._get_cliq_client", return_value=mock_client):
+        result = runner.invoke(
+            app,
+            ["cliq", "app-installs", "AP_1", "--limit", "11"],
+            env=_cfg_env(mock_config),
+        )
+
+    assert result.exit_code == 0, result.output
+    payload = json.loads(result.output)
+    assert payload["appId"] == "AP_1"
+    assert payload["count"] == 1
+    assert payload["installs"][0]["installId"] == "I_1"
+    assert payload["installs"][0]["subjectId"] == "U_1"
+    assert payload["installs"][0]["name"] == "Alice Ops"
+    assert payload["installs"][0]["status"] == "active"
+    mock_client.list_app_installs.assert_called_once_with("AP_1", limit=11)
+
+
+def test_cliq_app_installs_accepts_nested_installs_shape(
+    mock_config: Path,
+    mock_token_refresh: Any,
+) -> None:
+    mock_client = MagicMock()
+    mock_client.list_app_installs.return_value = {
+        "data": {
+            "installs": [
+                {
+                    "id": "I_2",
+                    "memberId": "M_2",
+                    "name": "Bot Installer",
+                    "state": "enabled",
+                }
+            ]
+        }
+    }
+
+    with patch("zoho_cli.cli._get_cliq_client", return_value=mock_client):
+        result = runner.invoke(
+            app,
+            ["cliq", "app-installs", "AP_2"],
+            env=_cfg_env(mock_config),
+        )
+
+    assert result.exit_code == 0, result.output
+    payload = json.loads(result.output)
+    assert payload["installs"][0]["installId"] == "I_2"
+    assert payload["installs"][0]["subjectId"] == "M_2"
+    assert payload["installs"][0]["name"] == "Bot Installer"
+    assert payload["installs"][0]["status"] == "enabled"
+    mock_client.list_app_installs.assert_called_once_with("AP_2", limit=50)
+
+
 @respx.mock
 def test_cliq_export_chats_list(mock_config: Path, mock_token_refresh: Any) -> None:
     respx.get("https://cliq.zoho.com/maintenanceapi/v2/chats").mock(

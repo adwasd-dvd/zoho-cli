@@ -1,5 +1,5 @@
 project: zoho-cli
-updated_at: '2026-04-13T02:45:41Z'
+updated_at: '2026-04-13T03:02:56Z'
 status: cliq-expansion
 canonical_workspace: /Users/adwasd/.openclaw/workspace-coder
 project_root: /Users/adwasd/.openclaw/workspace-coder/job/zoho-cli
@@ -7,7 +7,7 @@ module_order:
 - Mail
 - Cliq
 - CRM
-current_focus: cliq-165 export verification remains externally blocked by API-side `inactive_appaccount_user`; cliq-193 now includes output-shape hardening for nested app wrappers in `cliq apps`/`cliq app-get`, so the next step is a focused live verification pass before the next smallest app-governance slice
+current_focus: cliq-165 export verification remains externally blocked by API-side `inactive_appaccount_user`; focused cliq-193 live rerun (`cliq status --check-auth` + `cliq apps` + `cliq app-get`) keeps auth healthy and reconfirms `not_supported` endpoint behavior, so the next step is the next smallest app-governance command/client slice with focused tests
 primary_blockers:
 - crm live read-only verification remains blocked by account-level CRM org access
 - cliq databases live verification currently requires additional scope (`ZohoCliq.Databases.READ`) on the active token despite healthy baseline auth/export readiness
@@ -29,8 +29,9 @@ primary_blockers:
   returns `not_supported`)
 - calls/meetings endpoints are unsupported on current token/network (`cliq meetings`
   now returns `not_supported` in focused live verification)
-next_step: keep cliq-165 as the highest-priority blocker by coordinating Cliq admin-side app-account activation and rerunning `cliq export-chats` list + `--chat-id`; while still externally blocked, run one focused live verification pass for the cliq-193 output-shape hardening (`cliq apps` + `cliq app-get`), then take the next smallest app-governance command/client slice with focused tests
+next_step: keep cliq-165 as the highest-priority blocker by coordinating Cliq admin-side app-account activation and rerunning `cliq export-chats` list + `--chat-id`; while still externally blocked, take the next smallest cliq-193 app-governance command/client slice with focused tests, then run one focused live verification pass for that new slice
 additional_info:
+- '2026-04-13 live probe: focused cliq-193 rerun (`cliq status --check-auth` + `cliq apps --limit 10` + `cliq app-get APP_PROBE_FAKE_20260413_030256`) on happydistrouklimited keeps auth/export readiness healthy and classifies both app-listing and app-detail endpoints as `not_supported` (`tests/auto_pilot/reports/cliq193_probe_summary_20260413_030256.json`, plus `cliq193_status_20260413_030256.json`, `cliq193_apps_20260413_030256.json`, and `cliq193_app_get_20260413_030256.json`).'
 - '2026-04-13 unit hardening: cliq-193 output normalization now accepts nested app list wrappers for `cliq apps`/`cliq app-get` responses (`data.apps`, `apps`, `list`, `items`, `results`); targeted tests passed (`tests/test_cli.py::test_cliq_apps`, `tests/test_cli.py::test_cliq_apps_accepts_nested_apps_shape`, `tests/test_cli.py::test_cliq_app_get`, `tests/test_cli.py::test_cliq_app_get_accepts_apps_list_shape`).'
 - '2026-04-13 live probe: focused cliq-193 verification (`cliq status --check-auth` + `cliq app-get APP_PROBE_FAKE_20260413_022220`) on happydistrouklimited keeps auth/export readiness healthy and classifies app-detail endpoints as `not_supported` (`tests/auto_pilot/reports/cliq193_app_get_probe_summary_20260413_022220.json`, plus `cliq193_status_20260413_022220.json` and `cliq193_app_get_20260413_022220.json`).'
 - '2026-04-13 unit delivery: added second cliq-193 app-governance slice with `zoho cliq app-get` and `ZohoCliqClient.get_app` fallback routing (`/apps/{id}`, `/app/{id}`, `/admin/apps/{id}`, `/admin/app/{id}`); targeted tests passed (`tests/test_cliq.py::test_cliq_client_get_app_falls_back_to_admin_endpoint`, `tests/test_cliq.py::test_cliq_client_get_app_falls_back_to_admin_singular_endpoint`, `tests/test_cliq.py::test_cliq_client_get_app_scope_invalid_reports_hint`, `tests/test_cli.py::test_cliq_app_get`).'

@@ -1,0 +1,26 @@
+{
+  "task": "cliq-193",
+  "runAtUtc": "20260413_030256",
+  "network": "happydistrouklimited",
+  "account": "ai-dev@happy-distro.co.uk",
+  "probeAppId": "APP_PROBE_FAKE_20260413_030256",
+  "status": {
+    "path": "tests/auto_pilot/reports/cliq193_status_20260413_030256.json",
+    "exit": 0,
+    "error": null,
+    "oauthReady": true,
+    "exportOauthReady": true
+  },
+  "apps": {
+    "path": "tests/auto_pilot/reports/cliq193_apps_20260413_030256.json",
+    "exit": 1,
+    "error": "not_supported",
+    "count": null
+  },
+  "appGet": {
+    "path": "tests/auto_pilot/reports/cliq193_app_get_20260413_030256.json",
+    "exit": 1,
+    "error": "not_supported"
+  },
+  "overallExit": 1
+}

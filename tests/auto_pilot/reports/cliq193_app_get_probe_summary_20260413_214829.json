@@ -1,0 +1,28 @@
+{
+  "task": "cliq-193",
+  "runAtUtc": "2026-04-13T21:48:31Z",
+  "network": "happydistrouklimited",
+  "account": "ai-dev@happy-distro.co.uk",
+  "commands": {
+    "status": "python3.11 -m zoho_cli --config /tmp/zoho-test-config.json --account ai-dev@happy-distro.co.uk cliq status --check-auth --network happydistrouklimited",
+    "probe": "python3.11 -m zoho_cli --config /tmp/zoho-test-config.json --account ai-dev@happy-distro.co.uk cliq app-get APP_PROBE_FAKE_20260413_214829 --network happydistrouklimited"
+  },
+  "artifacts": {
+    "status": "tests/auto_pilot/reports/cliq193_status_20260413_214829.json",
+    "probe": "tests/auto_pilot/reports/cliq193_app_get_20260413_214829.json"
+  },
+  "statusSnapshot": {
+    "oauthReady": true,
+    "exportOauthReady": true,
+    "missingScopes": [],
+    "missingExportScopes": []
+  },
+  "probeResult": {
+    "status": "error",
+    "error": "not_supported",
+    "details": "Cliq app-governance app-detail endpoints are not available for this token/network endpoint.",
+    "exitCode": 1
+  },
+  "classification": "endpoint_limited_not_supported",
+  "nextStep": "ship the next smallest cliq-193 app-governance output-hardening increment with focused tests while cliq-165 remains externally blocked by inactive_appaccount_user"
+}

@@ -2391,6 +2391,10 @@ def cliq_app_get(
             candidate = payload.get(key)
             if isinstance(candidate, dict):
                 return candidate
+            if isinstance(candidate, list):
+                picked = next((row for row in candidate if isinstance(row, dict)), None)
+                if picked:
+                    return picked
 
         for key in ("apps", "list", "items", "results"):
             candidate = payload.get(key)
@@ -2702,6 +2706,10 @@ def cliq_app_permission_get(
             candidate = payload.get(key)
             if isinstance(candidate, dict):
                 return _unwrap_permission_row(candidate)
+            if isinstance(candidate, list):
+                picked = next((row for row in candidate if isinstance(row, dict)), None)
+                if picked:
+                    return _unwrap_permission_row(picked)
 
         for key in ("permissions", "scopes", "list", "items", "results"):
             candidate = payload.get(key)
@@ -3042,6 +3050,10 @@ def cliq_app_install_get(
             candidate = payload.get(key)
             if isinstance(candidate, dict):
                 return _unwrap_install_row(candidate)
+            if isinstance(candidate, list):
+                picked = next((row for row in candidate if isinstance(row, dict)), None)
+                if picked:
+                    return _unwrap_install_row(picked)
 
         for key in ("installs", "installations", "users", "list", "items", "results"):
             candidate = payload.get(key)
@@ -3392,6 +3404,10 @@ def cliq_app_command_get(
             candidate = payload.get(key)
             if isinstance(candidate, dict):
                 return _unwrap_command_row(candidate)
+            if isinstance(candidate, list):
+                picked = next((row for row in candidate if isinstance(row, dict)), None)
+                if picked:
+                    return _unwrap_command_row(picked)
 
         for key in ("commands", "actions", "list", "items", "results"):
             candidate = payload.get(key)

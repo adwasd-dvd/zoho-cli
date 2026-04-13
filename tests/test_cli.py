@@ -3366,6 +3366,36 @@ def test_cliq_app_get_accepts_top_level_apps_dict_shape(
     mock_client.get_app.assert_called_once_with("AP_11")
 
 
+def test_cliq_app_get_accepts_top_level_app_wrapper_list_shape(
+    mock_config: Path,
+    mock_token_refresh: Any,
+) -> None:
+    mock_client = MagicMock()
+    mock_client.get_app.return_value = {
+        "app": [
+            {
+                "appId": "AP_12",
+                "name": "Ops Escalator",
+                "status": "enabled",
+            }
+        ]
+    }
+
+    with patch("zoho_cli.cli._get_cliq_client", return_value=mock_client):
+        result = runner.invoke(
+            app,
+            ["cliq", "app-get", "AP_12"],
+            env=_cfg_env(mock_config),
+        )
+
+    assert result.exit_code == 0, result.output
+    payload = json.loads(result.output)
+    assert payload["app"]["appId"] == "AP_12"
+    assert payload["app"]["name"] == "Ops Escalator"
+    assert payload["app"]["status"] == "enabled"
+    mock_client.get_app.assert_called_once_with("AP_12")
+
+
 def test_cliq_app_permissions(
     mock_config: Path,
     mock_token_refresh: Any,
@@ -3662,6 +3692,37 @@ def test_cliq_app_permission_get_accepts_top_level_permissions_dict_shape(
     assert payload["permission"]["scope"] == "ZohoCliq.Chats.ALL"
     assert payload["permission"]["status"] == "enabled"
     mock_client.get_app_permission.assert_called_once_with("AP_10", "P_13")
+
+
+def test_cliq_app_permission_get_accepts_top_level_permission_wrapper_list_shape(
+    mock_config: Path,
+    mock_token_refresh: Any,
+) -> None:
+    mock_client = MagicMock()
+    mock_client.get_app_permission.return_value = {
+        "permission": [
+            {
+                "permissionId": "P_14",
+                "scope": "ZohoCliq.Tasks.READ",
+                "state": "enabled",
+            }
+        ]
+    }
+
+    with patch("zoho_cli.cli._get_cliq_client", return_value=mock_client):
+        result = runner.invoke(
+            app,
+            ["cliq", "app-permission-get", "AP_11", "P_14"],
+            env=_cfg_env(mock_config),
+        )
+
+    assert result.exit_code == 0, result.output
+    payload = json.loads(result.output)
+    assert payload["appId"] == "AP_11"
+    assert payload["permission"]["permissionId"] == "P_14"
+    assert payload["permission"]["scope"] == "ZohoCliq.Tasks.READ"
+    assert payload["permission"]["status"] == "enabled"
+    mock_client.get_app_permission.assert_called_once_with("AP_11", "P_14")
 
 
 def test_cliq_app_installs(
@@ -3982,6 +4043,39 @@ def test_cliq_app_install_get_accepts_top_level_installs_dict_shape(
     mock_client.get_app_install.assert_called_once_with("AP_10", "INS_13")
 
 
+def test_cliq_app_install_get_accepts_top_level_install_wrapper_list_shape(
+    mock_config: Path,
+    mock_token_refresh: Any,
+) -> None:
+    mock_client = MagicMock()
+    mock_client.get_app_install.return_value = {
+        "install": [
+            {
+                "installId": "INS_15",
+                "chatId": "C_15",
+                "title": "Shift Handoff",
+                "mode": "enabled",
+            }
+        ]
+    }
+
+    with patch("zoho_cli.cli._get_cliq_client", return_value=mock_client):
+        result = runner.invoke(
+            app,
+            ["cliq", "app-install-get", "AP_12", "INS_15"],
+            env=_cfg_env(mock_config),
+        )
+
+    assert result.exit_code == 0, result.output
+    payload = json.loads(result.output)
+    assert payload["appId"] == "AP_12"
+    assert payload["install"]["installId"] == "INS_15"
+    assert payload["install"]["subjectId"] == "C_15"
+    assert payload["install"]["name"] == "Shift Handoff"
+    assert payload["install"]["status"] == "enabled"
+    mock_client.get_app_install.assert_called_once_with("AP_12", "INS_15")
+
+
 def test_cliq_app_commands(mock_config: Path, mock_token_refresh: Any) -> None:
     mock_client = MagicMock()
     mock_client.list_app_commands.return_value = {
@@ -4295,6 +4389,39 @@ def test_cliq_app_command_get_accepts_top_level_commands_dict_shape(
     assert payload["command"]["description"] == "Send a daily digest"
     assert payload["command"]["status"] == "enabled"
     mock_client.get_app_command.assert_called_once_with("AP_10", "CMD_13")
+
+
+def test_cliq_app_command_get_accepts_top_level_command_wrapper_list_shape(
+    mock_config: Path,
+    mock_token_refresh: Any,
+) -> None:
+    mock_client = MagicMock()
+    mock_client.get_app_command.return_value = {
+        "command": [
+            {
+                "commandId": "CMD_15",
+                "name": "incident_close",
+                "summary": "Close active incident",
+                "mode": "enabled",
+            }
+        ]
+    }
+
+    with patch("zoho_cli.cli._get_cliq_client", return_value=mock_client):
+        result = runner.invoke(
+            app,
+            ["cliq", "app-command-get", "AP_12", "CMD_15"],
+            env=_cfg_env(mock_config),
+        )
+
+    assert result.exit_code == 0, result.output
+    payload = json.loads(result.output)
+    assert payload["appId"] == "AP_12"
+    assert payload["command"]["commandId"] == "CMD_15"
+    assert payload["command"]["name"] == "incident_close"
+    assert payload["command"]["description"] == "Close active incident"
+    assert payload["command"]["status"] == "enabled"
+    mock_client.get_app_command.assert_called_once_with("AP_12", "CMD_15")
 
 
 @respx.mock

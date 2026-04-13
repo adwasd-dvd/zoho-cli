@@ -4229,6 +4229,38 @@ def test_cliq_app_commands_accepts_top_level_command_wrapper_dict_shape(
     assert payload["commands"][0]["status"] == "enabled"
 
 
+def test_cliq_app_commands_accepts_nested_action_wrapper_dict_shape(
+    mock_config: Path,
+    mock_token_refresh: Any,
+) -> None:
+    mock_client = MagicMock()
+    mock_client.list_app_commands.return_value = {
+        "data": {
+            "action": {
+                "commandId": "CMD_6",
+                "action": "triage_incident",
+                "summary": "Triage a new incident",
+                "mode": "active",
+            }
+        }
+    }
+
+    with patch("zoho_cli.cli._get_cliq_client", return_value=mock_client):
+        result = runner.invoke(
+            app,
+            ["cliq", "app-commands", "AP_6"],
+            env=_cfg_env(mock_config),
+        )
+
+    assert result.exit_code == 0, result.output
+    payload = json.loads(result.output)
+    assert payload["count"] == 1
+    assert payload["commands"][0]["commandId"] == "CMD_6"
+    assert payload["commands"][0]["name"] == "triage_incident"
+    assert payload["commands"][0]["description"] == "Triage a new incident"
+    assert payload["commands"][0]["status"] == "active"
+
+
 def test_cliq_app_command_get(mock_config: Path, mock_token_refresh: Any) -> None:
     mock_client = MagicMock()
     mock_client.get_app_command.return_value = {
@@ -4422,6 +4454,39 @@ def test_cliq_app_command_get_accepts_top_level_command_wrapper_list_shape(
     assert payload["command"]["description"] == "Close active incident"
     assert payload["command"]["status"] == "enabled"
     mock_client.get_app_command.assert_called_once_with("AP_12", "CMD_15")
+
+
+def test_cliq_app_command_get_accepts_nested_action_wrapper_dict_shape(
+    mock_config: Path,
+    mock_token_refresh: Any,
+) -> None:
+    mock_client = MagicMock()
+    mock_client.get_app_command.return_value = {
+        "data": {
+            "action": {
+                "commandId": "CMD_16",
+                "action": "sync_status",
+                "summary": "Sync incident status",
+                "mode": "enabled",
+            }
+        }
+    }
+
+    with patch("zoho_cli.cli._get_cliq_client", return_value=mock_client):
+        result = runner.invoke(
+            app,
+            ["cliq", "app-command-get", "AP_13", "CMD_16"],
+            env=_cfg_env(mock_config),
+        )
+
+    assert result.exit_code == 0, result.output
+    payload = json.loads(result.output)
+    assert payload["appId"] == "AP_13"
+    assert payload["command"]["commandId"] == "CMD_16"
+    assert payload["command"]["name"] == "sync_status"
+    assert payload["command"]["description"] == "Sync incident status"
+    assert payload["command"]["status"] == "enabled"
+    mock_client.get_app_command.assert_called_once_with("AP_13", "CMD_16")
 
 
 @respx.mock

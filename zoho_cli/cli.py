@@ -3259,7 +3259,11 @@ def cliq_app_commands(
                 return [row for row in candidate if isinstance(row, dict)]
 
             if isinstance(candidate, dict):
-                nested_command = candidate.get("command") or candidate.get("item")
+                nested_command = (
+                    candidate.get("command")
+                    or candidate.get("action")
+                    or candidate.get("item")
+                )
                 if isinstance(nested_command, dict):
                     return [nested_command]
 
@@ -3272,6 +3276,7 @@ def cliq_app_commands(
                         "zuid",
                         "name",
                         "command",
+                        "action",
                         "title",
                         "description",
                         "summary",
@@ -3326,7 +3331,11 @@ def cliq_app_commands(
                     or ""
                 ),
                 "name": str(
-                    row.get("name") or row.get("command") or row.get("title") or ""
+                    row.get("name")
+                    or row.get("command")
+                    or row.get("action")
+                    or row.get("title")
+                    or ""
                 ),
                 "description": str(
                     row.get("description")
@@ -3365,6 +3374,7 @@ def cliq_app_command_get(
         def _unwrap_command_row(row: dict[str, Any]) -> dict[str, Any]:
             for key in (
                 "command",
+                "action",
                 "item",
                 "commands",
                 "actions",
@@ -3400,7 +3410,7 @@ def cliq_app_command_get(
             if isinstance(candidate, dict):
                 return _unwrap_command_row(candidate)
 
-        for key in ("command", "item"):
+        for key in ("command", "action", "item"):
             candidate = payload.get(key)
             if isinstance(candidate, dict):
                 return _unwrap_command_row(candidate)
@@ -3420,7 +3430,7 @@ def cliq_app_command_get(
 
         nested_data = raw_data
         if isinstance(nested_data, dict):
-            for key in ("command", "item"):
+            for key in ("command", "action", "item"):
                 candidate = nested_data.get(key)
                 if isinstance(candidate, dict):
                     return _unwrap_command_row(candidate)
@@ -3444,6 +3454,7 @@ def cliq_app_command_get(
                     "zuid",
                     "name",
                     "command",
+                    "action",
                     "title",
                     "description",
                     "summary",
@@ -3465,6 +3476,7 @@ def cliq_app_command_get(
                 "zuid",
                 "name",
                 "command",
+                "action",
                 "title",
                 "description",
                 "summary",
@@ -3496,7 +3508,13 @@ def cliq_app_command_get(
             or row.get("zuid")
             or resolved_command_id
         ),
-        "name": str(row.get("name") or row.get("command") or row.get("title") or ""),
+        "name": str(
+            row.get("name")
+            or row.get("command")
+            or row.get("action")
+            or row.get("title")
+            or ""
+        ),
         "description": str(
             row.get("description")
             or row.get("summary")

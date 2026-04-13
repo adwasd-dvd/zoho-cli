@@ -2645,6 +2645,175 @@ def cliq_app_installs(
     )
 
 
+@cliq_app.command("app-install-get")
+def cliq_app_install_get(
+    app_id: str = typer.Argument(..., help="Cliq app id."),
+    install_id: str = typer.Argument(..., help="Cliq app install id."),
+    network: Optional[str] = typer.Option(
+        None, "--network", help="Cliq network slug (e.g. happydistrouklimited)."
+    ),
+) -> None:
+    """Get one app-governance install by id (cliq-193 seventh slice)."""
+
+    def _extract_install_row(payload: Any) -> dict[str, Any]:
+        if isinstance(payload, list):
+            return next((row for row in payload if isinstance(row, dict)), {})
+
+        if not isinstance(payload, dict):
+            return {}
+
+        for key in ("install", "item"):
+            candidate = payload.get(key)
+            if isinstance(candidate, dict):
+                return candidate
+
+        for key in ("installs", "installations", "users", "list", "items", "results"):
+            candidate = payload.get(key)
+            if isinstance(candidate, list):
+                picked = next((row for row in candidate if isinstance(row, dict)), None)
+                if picked:
+                    return picked
+
+        nested_data = payload.get("data")
+        if isinstance(nested_data, dict):
+            for key in ("install", "item"):
+                candidate = nested_data.get(key)
+                if isinstance(candidate, dict):
+                    return candidate
+            for key in (
+                "installs",
+                "installations",
+                "users",
+                "list",
+                "items",
+                "results",
+                "data",
+            ):
+                candidate = nested_data.get(key)
+                if isinstance(candidate, list):
+                    picked = next(
+                        (row for row in candidate if isinstance(row, dict)),
+                        None,
+                    )
+                    if picked:
+                        return picked
+                if isinstance(candidate, dict):
+                    return candidate
+            if any(
+                key in nested_data
+                for key in (
+                    "install_id",
+                    "installId",
+                    "id",
+                    "zuid",
+                    "user_id",
+                    "userId",
+                    "member_id",
+                    "memberId",
+                    "target_id",
+                    "targetId",
+                    "chat_id",
+                    "chatId",
+                    "bot_id",
+                    "botId",
+                    "display_name",
+                    "name",
+                    "title",
+                    "user_name",
+                    "status",
+                    "state",
+                    "install_status",
+                    "mode",
+                )
+            ):
+                return nested_data
+
+        if any(
+            key in payload
+            for key in (
+                "install_id",
+                "installId",
+                "id",
+                "zuid",
+                "user_id",
+                "userId",
+                "member_id",
+                "memberId",
+                "target_id",
+                "targetId",
+                "chat_id",
+                "chatId",
+                "bot_id",
+                "botId",
+                "display_name",
+                "name",
+                "title",
+                "user_name",
+                "status",
+                "state",
+                "install_status",
+                "mode",
+            )
+        ):
+            return payload
+
+        return {}
+
+    cfg = _cfg()
+    email = _require_account(cfg)
+    client = _get_cliq_client(cfg, email, network=network)
+
+    resolved_app_id = app_id.strip()
+    resolved_install_id = install_id.strip()
+    resp = client.get_app_install(resolved_app_id, resolved_install_id)
+    row = _extract_install_row(resp)
+
+    view = {
+        "installId": str(
+            row.get("install_id")
+            or row.get("installId")
+            or row.get("id")
+            or row.get("zuid")
+            or resolved_install_id
+        ),
+        "subjectId": str(
+            row.get("user_id")
+            or row.get("userId")
+            or row.get("member_id")
+            or row.get("memberId")
+            or row.get("target_id")
+            or row.get("targetId")
+            or row.get("chat_id")
+            or row.get("chatId")
+            or row.get("bot_id")
+            or row.get("botId")
+            or ""
+        ),
+        "name": str(
+            row.get("display_name")
+            or row.get("name")
+            or row.get("title")
+            or row.get("user_name")
+            or ""
+        ),
+        "status": str(
+            row.get("status")
+            or row.get("state")
+            or row.get("install_status")
+            or row.get("mode")
+            or ""
+        ),
+        "raw": row,
+    }
+
+    utils.output(
+        {
+            "appId": resolved_app_id,
+            "install": view,
+        }
+    )
+
+
 @cliq_app.command("app-commands")
 def cliq_app_commands(
     app_id: str = typer.Argument(..., help="Cliq app id."),

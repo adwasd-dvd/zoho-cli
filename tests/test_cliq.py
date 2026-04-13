@@ -1165,6 +1165,100 @@ def test_cliq_client_list_app_installs_scope_invalid_reports_hint(
 
 
 @respx.mock
+def test_cliq_client_get_app_install_falls_back_to_admin_endpoint(
+    client: cliq.ZohoCliqClient,
+) -> None:
+    first = respx.get("https://cliq.zoho.com/api/v2/apps/AP_1/installs/INS_1").mock(
+        return_value=httpx.Response(404, text="request_url_invalid")
+    )
+    second = respx.get("https://cliq.zoho.com/api/v2/app/AP_1/installs/INS_1").mock(
+        return_value=httpx.Response(404, text="request_url_invalid")
+    )
+    admin_plural = respx.get(
+        "https://cliq.zoho.com/api/v2/admin/apps/AP_1/installs/INS_1"
+    ).mock(
+        return_value=httpx.Response(
+            200,
+            json={
+                "data": {
+                    "id": "INS_1",
+                    "name": "Ops Relay",
+                    "status": "enabled",
+                }
+            },
+        )
+    )
+
+    result = client.get_app_install("AP_1", "INS_1")
+
+    assert first.called
+    assert second.called
+    assert admin_plural.called
+    assert result["data"]["id"] == "INS_1"
+
+
+@respx.mock
+def test_cliq_client_get_app_install_falls_back_to_admin_singular_endpoint(
+    client: cliq.ZohoCliqClient,
+) -> None:
+    respx.get("https://cliq.zoho.com/api/v2/apps/AP_2/installs/INS_2").mock(
+        return_value=httpx.Response(404, text="request_url_invalid")
+    )
+    respx.get("https://cliq.zoho.com/api/v2/app/AP_2/installs/INS_2").mock(
+        return_value=httpx.Response(404, text="request_url_invalid")
+    )
+    admin_plural = respx.get(
+        "https://cliq.zoho.com/api/v2/admin/apps/AP_2/installs/INS_2"
+    ).mock(return_value=httpx.Response(404, text="request_url_invalid"))
+    admin_singular = respx.get(
+        "https://cliq.zoho.com/api/v2/admin/app/AP_2/installs/INS_2"
+    ).mock(
+        return_value=httpx.Response(
+            200,
+            json={
+                "data": {
+                    "install_id": "INS_2",
+                    "display_name": "Support Bot",
+                    "state": "active",
+                }
+            },
+        )
+    )
+
+    result = client.get_app_install("AP_2", "INS_2")
+
+    assert admin_plural.called
+    assert admin_singular.called
+    assert result["data"]["install_id"] == "INS_2"
+
+
+@respx.mock
+def test_cliq_client_get_app_install_scope_invalid_reports_hint(
+    client: cliq.ZohoCliqClient,
+    capsys: pytest.CaptureFixture[str],
+) -> None:
+    respx.get("https://cliq.zoho.com/api/v2/apps/AP_3/installs/INS_3").mock(
+        return_value=httpx.Response(401, json={"code": "oauth_scope_invalid"})
+    )
+    respx.get("https://cliq.zoho.com/api/v2/app/AP_3/installs/INS_3").mock(
+        return_value=httpx.Response(401, json={"code": "oauth_scope_invalid"})
+    )
+    respx.get("https://cliq.zoho.com/api/v2/admin/apps/AP_3/installs/INS_3").mock(
+        return_value=httpx.Response(401, json={"code": "oauth_scope_invalid"})
+    )
+    respx.get("https://cliq.zoho.com/api/v2/admin/app/AP_3/installs/INS_3").mock(
+        return_value=httpx.Response(401, json={"code": "oauth_scope_invalid"})
+    )
+
+    with pytest.raises(SystemExit):
+        client.get_app_install("AP_3", "INS_3")
+
+    err = capsys.readouterr().err
+    assert "oauth_scope_invalid" in err
+    assert "ZohoCliq.Apps.READ" in err
+
+
+@respx.mock
 def test_cliq_client_list_app_commands_falls_back_to_admin_endpoint(
     client: cliq.ZohoCliqClient,
 ) -> None:

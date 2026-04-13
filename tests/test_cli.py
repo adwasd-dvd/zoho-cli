@@ -3384,6 +3384,69 @@ def test_cliq_app_installs_accepts_nested_installs_shape(
     mock_client.list_app_installs.assert_called_once_with("AP_2", limit=50)
 
 
+def test_cliq_app_install_get(mock_config: Path, mock_token_refresh: Any) -> None:
+    mock_client = MagicMock()
+    mock_client.get_app_install.return_value = {
+        "data": {
+            "install_id": "INS_10",
+            "member_id": "M_1",
+            "name": "Deploy Bot",
+            "status": "enabled",
+        }
+    }
+
+    with patch("zoho_cli.cli._get_cliq_client", return_value=mock_client):
+        result = runner.invoke(
+            app,
+            ["cliq", "app-install-get", "AP_7", "INS_10"],
+            env=_cfg_env(mock_config),
+        )
+
+    assert result.exit_code == 0, result.output
+    payload = json.loads(result.output)
+    assert payload["appId"] == "AP_7"
+    assert payload["install"]["installId"] == "INS_10"
+    assert payload["install"]["subjectId"] == "M_1"
+    assert payload["install"]["name"] == "Deploy Bot"
+    assert payload["install"]["status"] == "enabled"
+    mock_client.get_app_install.assert_called_once_with("AP_7", "INS_10")
+
+
+def test_cliq_app_install_get_accepts_nested_installs_shape(
+    mock_config: Path,
+    mock_token_refresh: Any,
+) -> None:
+    mock_client = MagicMock()
+    mock_client.get_app_install.return_value = {
+        "data": {
+            "installs": [
+                {
+                    "id": "INS_11",
+                    "userId": "U_2",
+                    "title": "Ops Workflow",
+                    "state": "active",
+                }
+            ]
+        }
+    }
+
+    with patch("zoho_cli.cli._get_cliq_client", return_value=mock_client):
+        result = runner.invoke(
+            app,
+            ["cliq", "app-install-get", "AP_8", "INS_11"],
+            env=_cfg_env(mock_config),
+        )
+
+    assert result.exit_code == 0, result.output
+    payload = json.loads(result.output)
+    assert payload["appId"] == "AP_8"
+    assert payload["install"]["installId"] == "INS_11"
+    assert payload["install"]["subjectId"] == "U_2"
+    assert payload["install"]["name"] == "Ops Workflow"
+    assert payload["install"]["status"] == "active"
+    mock_client.get_app_install.assert_called_once_with("AP_8", "INS_11")
+
+
 def test_cliq_app_commands(mock_config: Path, mock_token_refresh: Any) -> None:
     mock_client = MagicMock()
     mock_client.list_app_commands.return_value = {

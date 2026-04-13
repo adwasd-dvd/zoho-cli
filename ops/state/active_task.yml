@@ -1,13 +1,13 @@
 id: cliq-193
-title: implement app-governance plane (apps and app-get slices)
+title: implement app-governance plane (apps/app-get complete, continue next slice)
 module: cliq
 stage: in_progress
 status: in_progress
 owner: automation
-updated_at: '2026-04-13T02:05:57Z'
+updated_at: '2026-04-13T02:22:22Z'
 success_criteria:
-- ship the next cliq-193 app-governance command/client slice (`cliq app-get`) with focused tests
-- run one focused live verification for the new `cliq app-get` path and archive evidence
+- ship the next cliq-193 app-governance command/client slice with focused tests
+- run one focused live verification for that new slice and archive evidence
 - keep cliq-165 export blocker evidence current while app-account activation remains external
 next_if_done: take the next queued cliq-193 app-governance slice with focused coverage
-next_step: 'cliq app-get is now in code with focused unit coverage; run one focused live probe to classify app-detail endpoints on happydistrouklimited while cliq-165 remains externally blocked by inactive_appaccount_user'
+next_step: 'focused live `cliq app-get` probe now classifies app-detail endpoints as `not_supported` on happydistrouklimited with healthy auth/export readiness; continue to the next smallest cliq-193 app-governance slice while cliq-165 remains externally blocked by inactive_appaccount_user'

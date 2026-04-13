@@ -1,0 +1,15 @@
+{
+  "probe": "cliq-193-app-get",
+  "timestampUtc": "2026-04-13T02:22:22.151647+00:00",
+  "network": "happydistrouklimited",
+  "account": "ai-dev@happy-distro.co.uk",
+  "reports": {
+    "status": "tests/auto_pilot/reports/cliq193_status_20260413_022220.json",
+    "appGet": "tests/auto_pilot/reports/cliq193_app_get_20260413_022220.json"
+  },
+  "statusOauthReady": true,
+  "statusExportOauthReady": true,
+  "appGetError": "not_supported",
+  "appGetCode": null,
+  "appGetMessage": null
+}

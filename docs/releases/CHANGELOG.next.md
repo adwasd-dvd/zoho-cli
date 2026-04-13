@@ -3,6 +3,7 @@
 ## Unreleased
 
 ### Added
+- Hardened `cliq-193` app-governance permission list/detail output parsing so `zoho cliq app-permissions` and `zoho cliq app-permission-get` now unwrap top-level `response` / `result` envelope payloads (including nested `data.records.record.item` rows) instead of dropping to empty/fallback permission output.
 - Hardened `cliq-193` app-governance app list/detail output parsing so `zoho cliq apps` and `zoho cliq app-get` now unwrap top-level `response` / `result` envelope payloads (including nested `data.records.record.item` rows) instead of dropping to empty/fallback output.
 - Hardened `cliq-193` app-governance detail output parsing so `zoho cliq app-permission-get`, `zoho cliq app-install-get`, and `zoho cliq app-command-get` now unwrap one deeper `data.records.record[].item` nested wrapper layer before field mapping; added focused regressions (`test_cliq_app_permission_get_accepts_data_records_record_item_nested_permission_shape`, `test_cliq_app_install_get_accepts_data_records_record_item_nested_install_shape`, `test_cliq_app_command_get_accepts_data_records_record_item_nested_command_shape`).
 - Initialized repo control files, anchors, and memory scaffolding for the zoho coder loop.

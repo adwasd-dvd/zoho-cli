@@ -1,10 +1,14 @@
-last_run_at: "2026-04-13T09:25:18Z"
+last_run_at: "2026-04-13T09:45:36Z"
 last_result: warning
 current_focus: cliq
 suites:
   unit:
     status: passing
     notes:
+      - "python3.11 -m pytest -q tests/test_cli.py::test_cliq_app_permission_get tests/test_cli.py::test_cliq_app_permission_get_accepts_nested_permissions_shape tests/test_cli.py::test_cliq_app_permission_get_accepts_data_list_shape tests/test_cli.py::test_cliq_app_permission_get_accepts_top_level_permissions_dict_shape tests/test_cli.py::test_cliq_app_install_get tests/test_cli.py::test_cliq_app_install_get_accepts_nested_installs_shape tests/test_cli.py::test_cliq_app_install_get_accepts_data_list_shape tests/test_cli.py::test_cliq_app_install_get_accepts_top_level_installs_dict_shape tests/test_cli.py::test_cliq_app_command_get tests/test_cli.py::test_cliq_app_command_get_accepts_nested_commands_shape tests/test_cli.py::test_cliq_app_command_get_accepts_data_list_shape tests/test_cli.py::test_cliq_app_command_get_accepts_top_level_commands_dict_shape"
+      - "12 passed in 0.22s (cliq-193 detail-output hardening: app-governance detail commands now accept top-level plural wrapper dict payloads, 2026-04-13T09:45:36Z)"
+      - "./.venv/bin/ruff format --check zoho_cli/cli.py tests/test_cli.py"
+      - "2 files already formatted (cliq-193 top-level plural detail-wrapper hardening formatting check, 2026-04-13T09:45:36Z)"
       - "python3.11 -m pytest -q tests/test_cli.py::test_cliq_apps_accepts_single_app_dict_shape tests/test_cli.py::test_cliq_apps_accepts_top_level_single_app_dict_shape tests/test_cli.py::test_cliq_app_permissions_accepts_single_permission_dict_shape tests/test_cli.py::test_cliq_app_permissions_accepts_top_level_single_permission_dict_shape tests/test_cli.py::test_cliq_app_installs_accepts_single_install_dict_shape tests/test_cli.py::test_cliq_app_installs_accepts_top_level_single_install_dict_shape tests/test_cli.py::test_cliq_app_commands_accepts_single_command_dict_shape tests/test_cli.py::test_cliq_app_commands_accepts_top_level_single_command_dict_shape"
       - "8 passed in 0.33s (cliq-193 output-shape hardening: app-governance list commands now accept top-level singleton dict payloads, 2026-04-13T09:25:18Z)"
       - "./.venv/bin/ruff format --check zoho_cli/cli.py tests/test_cli.py"

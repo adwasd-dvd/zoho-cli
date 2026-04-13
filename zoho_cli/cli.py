@@ -2645,6 +2645,8 @@ def cliq_app_permission_get(
                 picked = next((row for row in candidate if isinstance(row, dict)), None)
                 if picked:
                     return picked
+            if isinstance(candidate, dict):
+                return candidate
 
         nested_data = raw_data
         if isinstance(nested_data, dict):
@@ -2949,6 +2951,8 @@ def cliq_app_install_get(
                 picked = next((row for row in candidate if isinstance(row, dict)), None)
                 if picked:
                     return picked
+            if isinstance(candidate, dict):
+                return candidate
 
         nested_data = raw_data
         if isinstance(nested_data, dict):
@@ -3264,6 +3268,8 @@ def cliq_app_command_get(
                 picked = next((row for row in candidate if isinstance(row, dict)), None)
                 if picked:
                     return picked
+            if isinstance(candidate, dict):
+                return candidate
 
         nested_data = raw_data
         if isinstance(nested_data, dict):

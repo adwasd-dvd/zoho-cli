@@ -1,5 +1,5 @@
 project: zoho-cli
-updated_at: '2026-04-13T01:03:21Z'
+updated_at: '2026-04-13T01:22:30Z'
 status: cliq-expansion
 canonical_workspace: /Users/adwasd/.openclaw/workspace-coder
 project_root: /Users/adwasd/.openclaw/workspace-coder/job/zoho-cli
@@ -7,7 +7,7 @@ module_order:
 - Mail
 - Cliq
 - CRM
-current_focus: cliq-165 export verification remains externally blocked by API-side `inactive_appaccount_user`; cliq-192 platform-extension bundle is archived, and the first cliq-193 app-governance slice (`cliq apps`) now includes `/admin/app` fallback hardening with targeted tests
+current_focus: cliq-165 export verification remains externally blocked by API-side `inactive_appaccount_user`; focused live cliq-193 `cliq apps --limit 10` verification is now archived and classifies app-listing endpoints as `not_supported` on happydistrouklimited while auth remains healthy
 primary_blockers:
 - crm live read-only verification remains blocked by account-level CRM org access
 - cliq databases live verification currently requires additional scope (`ZohoCliq.Databases.READ`) on the active token despite healthy baseline auth/export readiness
@@ -29,8 +29,9 @@ primary_blockers:
   returns `not_supported`)
 - calls/meetings endpoints are unsupported on current token/network (`cliq meetings`
   now returns `not_supported` in focused live verification)
-next_step: keep cliq-165 as the highest-priority blocker by coordinating Cliq admin-side app-account activation and rerunning `cliq export-chats` list + `--chat-id`; while still externally blocked, run one focused live `cliq apps` verification pass on the hardened fallback chain and continue the next smallest cliq-193 app-governance slice
+next_step: keep cliq-165 as the highest-priority blocker by coordinating Cliq admin-side app-account activation and rerunning `cliq export-chats` list + `--chat-id`; while still externally blocked, continue to the next smallest cliq-193 app-governance slice with targeted tests after the focused live `cliq apps` `not_supported` classification
 additional_info:
+- '2026-04-13 live probe: focused cliq-193 verification (`cliq status --check-auth` + `cliq apps --limit 10`) on happydistrouklimited keeps auth/export readiness healthy and classifies app-listing endpoints as `not_supported` (`tests/auto_pilot/reports/cliq193_probe_summary_20260413_012230.json`, plus `cliq193_status_20260413_012230.json` and `cliq193_apps_20260413_012230.json`).'
 - '2026-04-13 unit hardening: `ZohoCliqClient.list_apps` now also probes singular admin endpoint `/admin/app` after `/admin/apps`; targeted tests passed (`tests/test_cliq.py::test_cliq_client_list_apps_falls_back_to_admin_endpoint`, `tests/test_cliq.py::test_cliq_client_list_apps_falls_back_to_admin_singular_endpoint`, `tests/test_cliq.py::test_cliq_client_list_apps_scope_invalid_reports_hint`).'
 - '2026-04-13 live probe: focused cliq-192 platform-extension bundle (`cliq status --check-auth`, `cliq databases/widgets/map-tickers/custom-domains/custom-emails`) keeps auth healthy but splits into scope vs endpoint blockers: `databases` + `custom-domains` return `oauth_scope_invalid` while `widgets`/`map-tickers`/`custom-emails` return `not_supported` (evidence: `tests/auto_pilot/reports/cliq192_platform_extension_bundle_summary_20260413_002232.json` plus per-command artifacts).'
 - '2026-04-12 unit hardening: cliq-192 custom-domain/custom-email list fallbacks now also probe singular admin endpoints (`/admin/customdomain`, `/admin/customemail`) and include targeted regression coverage for singular-admin fallback plus scope-invalid guidance (`tests/test_cliq.py::test_cliq_client_list_custom_domains_falls_back_to_admin_singular_endpoint`, `tests/test_cliq.py::test_cliq_client_list_custom_domains_scope_invalid_reports_hint`, `tests/test_cliq.py::test_cliq_client_list_custom_emails_falls_back_to_admin_singular_endpoint`, `tests/test_cliq.py::test_cliq_client_list_custom_emails_scope_invalid_reports_hint`, `tests/test_cli.py::test_cliq_custom_domains`, `tests/test_cli.py::test_cliq_custom_emails`).'

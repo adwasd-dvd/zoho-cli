@@ -81,6 +81,7 @@
 - Callback success page now adapts to OAuth scopes and displays Mail/Cliq/CRM-specific guidance instead of a Mail-only static success page.
 
 ### Fixed
+- Hardened `ZohoCliqClient.list_apps` fallback routing to also probe the singular admin endpoint (`/admin/app`) after `/admin/apps`, reducing false `not_supported` classifications on networks exposing only the singular app-governance variant.
 - Cliq mutable fallback helper (`_request_with_candidates_and_not_supported`) now correctly treats `oauthtoken_scope_invalid` as a retryable candidate miss and returns the expected `oauth_scope_invalid` guidance instead of an early generic `api_error`.
 - Auto-pilot state/probe scripts now resolve project paths from script location instead of assuming a specific current working directory: `tests/auto_pilot/scenario_runner.py`, `run_cliq_live_probe.sh`, and `run_cliq_alt_probe.sh` now run correctly from either repo root or workspace root, and SCAP report table rows now escape multi-line/pipe-heavy validator messages.
 - `tests/auto_pilot/run_cliq_export_scope_recheck.sh` now captures both stdout and stderr into evidence artifacts, so scope-blocked `cliq export-chats` JSON errors are archived instead of producing empty logs.

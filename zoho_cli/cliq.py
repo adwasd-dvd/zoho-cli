@@ -2873,6 +2873,8 @@ class ZohoCliqClient:
                 ("/app", None),
                 ("/admin/apps", {"limit": limit}),
                 ("/admin/apps", None),
+                ("/admin/app", {"limit": limit}),
+                ("/admin/app", None),
             ],
             scope_hint="ZohoCliq.Apps.READ",
             operation_label="apps-list",

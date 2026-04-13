@@ -4,10 +4,10 @@ module: cliq
 stage: in_progress
 status: in_progress
 owner: automation
-updated_at: '2026-04-13T00:48:07Z'
+updated_at: '2026-04-13T01:03:21Z'
 success_criteria:
 - ship the first cliq-193 app-governance command/client slice (`cliq apps`) with focused tests
 - keep cliq-165 export blocker evidence current while app-account activation remains external
 - keep cliq app-governance fallback coverage hardened with targeted tests
 next_if_done: take the next queued cliq-193 app-governance slice with focused coverage
-next_step: first cliq-193 app-governance slice is now in code (`zoho cliq apps` + `ZohoCliqClient.list_apps`); run one focused live verification pass for `cliq apps` and continue to the next smallest app-governance slice while cliq-165 remains externally blocked
+next_step: cliq-193 app listing fallback hardening now also probes singular admin endpoint (`/admin/app`); run one focused live verification pass for `cliq apps` and continue to the next smallest app-governance slice while cliq-165 remains externally blocked

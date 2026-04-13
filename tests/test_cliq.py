@@ -894,6 +894,31 @@ def test_cliq_client_list_apps_falls_back_to_admin_endpoint(
 
 
 @respx.mock
+def test_cliq_client_list_apps_falls_back_to_admin_singular_endpoint(
+    client: cliq.ZohoCliqClient,
+) -> None:
+    respx.get("https://cliq.zoho.com/api/v2/apps").mock(
+        return_value=httpx.Response(404, text="request_url_invalid")
+    )
+    respx.get("https://cliq.zoho.com/api/v2/app").mock(
+        return_value=httpx.Response(404, text="request_url_invalid")
+    )
+    admin_plural = respx.get("https://cliq.zoho.com/api/v2/admin/apps").mock(
+        return_value=httpx.Response(404, text="request_url_invalid")
+    )
+    admin_singular = respx.get("https://cliq.zoho.com/api/v2/admin/app").mock(
+        return_value=httpx.Response(200, json={"data": [{"app_id": "AP_2"}]})
+    )
+
+    result = client.list_apps(limit=41)
+
+    assert admin_plural.called
+    assert admin_singular.called
+    assert dict(admin_singular.calls.last.request.url.params) == {"limit": "41"}
+    assert result["data"][0]["app_id"] == "AP_2"
+
+
+@respx.mock
 def test_cliq_client_list_apps_scope_invalid_reports_hint(
     client: cliq.ZohoCliqClient,
     capsys: pytest.CaptureFixture[str],
@@ -905,6 +930,9 @@ def test_cliq_client_list_apps_scope_invalid_reports_hint(
         return_value=httpx.Response(401, json={"code": "oauth_scope_invalid"})
     )
     respx.get("https://cliq.zoho.com/api/v2/admin/apps").mock(
+        return_value=httpx.Response(401, json={"code": "oauth_scope_invalid"})
+    )
+    respx.get("https://cliq.zoho.com/api/v2/admin/app").mock(
         return_value=httpx.Response(401, json={"code": "oauth_scope_invalid"})
     )
 

@@ -1,4 +1,4 @@
-last_run_at: "2026-04-12T22:47:21Z"
+last_run_at: "2026-04-13T00:22:32Z"
 last_result: warning
 current_focus: cliq
 suites:
@@ -426,6 +426,14 @@ suites:
   integration:
     status: warning
     notes:
+      - "python3.11 -m zoho_cli --config /tmp/zoho-test-config.json --account ai-dev@happy-distro.co.uk cliq status --check-auth --network happydistrouklimited"
+      - "focused cliq-192 platform-extension bundle keeps auth/export readiness healthy (`oauthReady: true`, `exportOauthReady: true`); evidence: `tests/auto_pilot/reports/cliq192_status_bundle_20260413_002232.json` (2026-04-13T00:22:32Z)"
+      - "python3.11 -m zoho_cli --config /tmp/zoho-test-config.json --account ai-dev@happy-distro.co.uk cliq databases --network happydistrouklimited --limit 10"
+      - "cliq-192 bundle: `cliq databases` returns `error: oauth_scope_invalid` with `ZohoCliq.Databases.READ` hint (`tests/auto_pilot/reports/cliq192_databases_bundle_20260413_002232.json`)"
+      - "python3.11 -m zoho_cli --config /tmp/zoho-test-config.json --account ai-dev@happy-distro.co.uk cliq widgets --network happydistrouklimited --limit 10; python3.11 -m zoho_cli --config /tmp/zoho-test-config.json --account ai-dev@happy-distro.co.uk cliq map-tickers --network happydistrouklimited --limit 10; python3.11 -m zoho_cli --config /tmp/zoho-test-config.json --account ai-dev@happy-distro.co.uk cliq custom-emails --network happydistrouklimited --limit 10"
+      - "cliq-192 bundle: `cliq widgets`/`cliq map-tickers`/`cliq custom-emails` return `error: not_supported`; evidence: `tests/auto_pilot/reports/cliq192_widgets_bundle_20260413_002232.json`, `tests/auto_pilot/reports/cliq192_map_tickers_bundle_20260413_002232.json`, `tests/auto_pilot/reports/cliq192_custom_emails_bundle_20260413_002232.json`"
+      - "python3.11 -m zoho_cli --config /tmp/zoho-test-config.json --account ai-dev@happy-distro.co.uk cliq custom-domains --network happydistrouklimited --limit 10"
+      - "cliq-192 bundle: `cliq custom-domains` returns `error: oauth_scope_invalid` with `ZohoCliq.CustomDomains.READ` hint; summary: `tests/auto_pilot/reports/cliq192_platform_extension_bundle_summary_20260413_002232.json`"
       - "python3.11 -m zoho_cli --config /tmp/zoho-test-config.json --account ai-dev@happy-distro.co.uk cliq status --check-auth --network happydistrouklimited"
       - "cliq-192 focused live check keeps auth healthy (`oauthReady: true`, `exportOauthReady: true`); evidence: `tests/auto_pilot/reports/cliq192_status_20260412_214538.json` (2026-04-12T21:45:38Z)"
       - "python3.11 -m zoho_cli --config /tmp/zoho-test-config.json --account ai-dev@happy-distro.co.uk cliq databases --network happydistrouklimited --limit 10"

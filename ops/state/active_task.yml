@@ -4,7 +4,7 @@ module: cliq
 stage: in_progress
 status: in_progress
 owner: automation
-updated_at: '2026-04-12T22:47:21Z'
+updated_at: '2026-04-13T00:22:32Z'
 success_criteria:
 - run one focused live verification bundle for `zoho cliq databases/widgets/map-tickers/custom-domains/custom-emails` and archive endpoint behavior evidence
 - keep cliq-165 export blocker evidence fresh while app-account activation remains external
@@ -13,8 +13,10 @@ next_if_done: >-
   advance to the next queued Cliq slice after cliq-192 by taking one smallest
   cliq-193 app-governance command/client slice with focused coverage
 next_step: >-
-  cliq-192 fallback hardening now also covers singular admin custom endpoints
-  (`/admin/customdomain`, `/admin/customemail`) with targeted tests green; run
-  one focused live platform-extension verification bundle
-  (databases/widgets/map/custom), then promote to cliq-193 while keeping
-  cliq-165 export blocker tracking fresh
+  focused live cliq-192 platform-extension bundle is now archived
+  (`tests/auto_pilot/reports/cliq192_platform_extension_bundle_summary_20260413_002232.json`):
+  `databases` + `custom-domains` return `oauth_scope_invalid`
+  (`ZohoCliq.Databases.READ`, `ZohoCliq.CustomDomains.READ`) while
+  `widgets`/`map-tickers`/`custom-emails` return `not_supported`; keep
+  cliq-165 blocker tracking fresh and take the first cliq-193
+  app-governance slice

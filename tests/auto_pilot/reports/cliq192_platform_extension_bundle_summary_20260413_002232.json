@@ -1,0 +1,42 @@
+{
+  "task": "cliq-192",
+  "network": "happydistrouklimited",
+  "commands": {
+    "status": {
+      "path": "tests/auto_pilot/reports/cliq192_status_bundle_20260413_002232.json",
+      "status": null,
+      "error": null,
+      "missingScopes": []
+    },
+    "databases": {
+      "path": "tests/auto_pilot/reports/cliq192_databases_bundle_20260413_002232.json",
+      "status": "error",
+      "error": "oauth_scope_invalid",
+      "missingScopes": null
+    },
+    "widgets": {
+      "path": "tests/auto_pilot/reports/cliq192_widgets_bundle_20260413_002232.json",
+      "status": "error",
+      "error": "not_supported",
+      "missingScopes": null
+    },
+    "mapTickers": {
+      "path": "tests/auto_pilot/reports/cliq192_map_tickers_bundle_20260413_002232.json",
+      "status": "error",
+      "error": "not_supported",
+      "missingScopes": null
+    },
+    "customDomains": {
+      "path": "tests/auto_pilot/reports/cliq192_custom_domains_bundle_20260413_002232.json",
+      "status": "error",
+      "error": "oauth_scope_invalid",
+      "missingScopes": null
+    },
+    "customEmails": {
+      "path": "tests/auto_pilot/reports/cliq192_custom_emails_bundle_20260413_002232.json",
+      "status": "error",
+      "error": "not_supported",
+      "missingScopes": null
+    }
+  }
+}

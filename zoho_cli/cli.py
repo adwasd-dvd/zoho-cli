@@ -2566,6 +2566,7 @@ def cliq_app_permissions(
             for key in (
                 "permission",
                 "scope",
+                "item",
                 "record",
                 "permissions",
                 "records",
@@ -2919,6 +2920,7 @@ def cliq_app_installs(
         for _ in range(3):
             for key in (
                 "install",
+                "item",
                 "installs",
                 "installation",
                 "installations",
@@ -3361,6 +3363,7 @@ def cliq_app_commands(
                 "commands",
                 "action",
                 "actions",
+                "item",
                 "record",
                 "records",
                 "data",

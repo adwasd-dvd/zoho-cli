@@ -1,10 +1,14 @@
-last_run_at: "2026-04-13T09:04:21Z"
+last_run_at: "2026-04-13T09:25:18Z"
 last_result: warning
 current_focus: cliq
 suites:
   unit:
     status: passing
     notes:
+      - "python3.11 -m pytest -q tests/test_cli.py::test_cliq_apps_accepts_single_app_dict_shape tests/test_cli.py::test_cliq_apps_accepts_top_level_single_app_dict_shape tests/test_cli.py::test_cliq_app_permissions_accepts_single_permission_dict_shape tests/test_cli.py::test_cliq_app_permissions_accepts_top_level_single_permission_dict_shape tests/test_cli.py::test_cliq_app_installs_accepts_single_install_dict_shape tests/test_cli.py::test_cliq_app_installs_accepts_top_level_single_install_dict_shape tests/test_cli.py::test_cliq_app_commands_accepts_single_command_dict_shape tests/test_cli.py::test_cliq_app_commands_accepts_top_level_single_command_dict_shape"
+      - "8 passed in 0.33s (cliq-193 output-shape hardening: app-governance list commands now accept top-level singleton dict payloads, 2026-04-13T09:25:18Z)"
+      - "./.venv/bin/ruff format --check zoho_cli/cli.py tests/test_cli.py"
+      - "2 files already formatted (cliq-193 top-level singleton output-shape hardening formatting check, 2026-04-13T09:25:18Z)"
       - "python3.11 -m pytest -q tests/test_cli.py::test_cliq_apps tests/test_cli.py::test_cliq_apps_accepts_nested_apps_shape tests/test_cli.py::test_cliq_apps_accepts_single_app_dict_shape"
       - "3 passed (cliq-193 output-shape hardening: `cliq apps` now accepts singleton app dicts in `data`, 2026-04-13T09:04:21Z)"
       - "./.venv/bin/ruff format --check zoho_cli/cli.py tests/test_cli.py"

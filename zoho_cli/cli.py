@@ -2310,6 +2310,20 @@ def cliq_apps(
                 ):
                     return [candidate]
 
+        if any(
+            key in payload
+            for key in (
+                "app_id",
+                "appId",
+                "id",
+                "zuid",
+                "name",
+                "app_name",
+                "title",
+            )
+        ):
+            return [payload]
+
         return []
 
     cfg = _cfg()
@@ -2535,6 +2549,21 @@ def cliq_app_permissions(
                     )
                 ):
                     return [candidate]
+
+        if any(
+            key in payload
+            for key in (
+                "permission_id",
+                "permissionId",
+                "id",
+                "zuid",
+                "scope",
+                "permission",
+                "name",
+                "value",
+            )
+        ):
+            return [payload]
 
         return []
 
@@ -2797,6 +2826,31 @@ def cliq_app_installs(
                     )
                 ):
                     return [candidate]
+
+        if any(
+            key in payload
+            for key in (
+                "install_id",
+                "installId",
+                "id",
+                "zuid",
+                "user_id",
+                "userId",
+                "member_id",
+                "memberId",
+                "target_id",
+                "targetId",
+                "chat_id",
+                "chatId",
+                "bot_id",
+                "botId",
+                "display_name",
+                "name",
+                "title",
+                "user_name",
+            )
+        ):
+            return [payload]
 
         return []
 
@@ -3108,6 +3162,24 @@ def cliq_app_commands(
                     )
                 ):
                     return [candidate]
+
+        if any(
+            key in payload
+            for key in (
+                "command_id",
+                "commandId",
+                "id",
+                "zuid",
+                "name",
+                "command",
+                "title",
+                "description",
+                "summary",
+                "help_text",
+                "helpText",
+            )
+        ):
+            return [payload]
 
         return []
 

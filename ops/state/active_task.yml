@@ -4,10 +4,10 @@ module: cliq
 stage: in_progress
 status: in_progress
 owner: automation
-updated_at: '2026-04-13T03:27:49Z'
+updated_at: '2026-04-13T03:43:07Z'
 success_criteria:
 - ship the next cliq-193 app-governance command/client slice with focused tests
 - run one focused live verification for that new slice and archive evidence
 - keep cliq-165 export blocker evidence current while app-account activation remains external
 next_if_done: take the next queued cliq-193 app-governance slice with focused coverage
-next_step: "cliq-193 third slice is now in code (`cliq app-permissions` + `list_app_permissions`) with focused tests passing; next step is one focused live verification (`cliq status --check-auth` + `cliq app-permissions APP_PROBE_FAKE_<timestamp>`) and evidence archival, then the next smallest app-governance command/client slice while cliq-165 remains externally blocked by inactive_appaccount_user"
+next_step: "focused live verification for `cliq app-permissions` is now archived (`cliq193_app_permissions_probe_summary_20260413_034304.json`) with healthy auth/export readiness and endpoint-limited `not_supported` classification; next step is the next smallest cliq-193 app-governance command/client slice with focused tests while cliq-165 remains externally blocked by inactive_appaccount_user"

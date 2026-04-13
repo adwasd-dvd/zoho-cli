@@ -1,10 +1,13 @@
-last_run_at: "2026-04-13T03:27:49Z"
+last_run_at: "2026-04-13T03:43:07Z"
 last_result: warning
 current_focus: cliq
 suites:
   unit:
     status: passing
     notes:
+      - "python3.11 -m zoho_cli --config /tmp/zoho-test-config.json --account ai-dev@happy-distro.co.uk cliq status --check-auth --network happydistrouklimited"
+      - "python3.11 -m zoho_cli --config /tmp/zoho-test-config.json --account ai-dev@happy-distro.co.uk cliq app-permissions APP_PROBE_FAKE_20260413_034304 --network happydistrouklimited"
+      - "cliq-193 focused live app-permissions verification archived at `tests/auto_pilot/reports/cliq193_app_permissions_probe_summary_20260413_034304.json`: status remains healthy (`oauthReady: true`, `exportOauthReady: true`) and app-permissions endpoint is currently `error: not_supported` (2026-04-13T03:43:07Z)"
       - "python3.11 -m pytest -q tests/test_cliq.py::test_cliq_client_list_app_permissions_falls_back_to_admin_endpoint tests/test_cliq.py::test_cliq_client_list_app_permissions_falls_back_to_admin_singular_endpoint tests/test_cliq.py::test_cliq_client_list_app_permissions_scope_invalid_reports_hint tests/test_cli.py::test_cliq_app_permissions tests/test_cli.py::test_cliq_app_permissions_accepts_nested_permissions_shape"
       - "5 passed in 0.15s (cliq-193 third slice: new `cliq app-permissions` + `ZohoCliqClient.list_app_permissions` fallback coverage, 2026-04-13T03:27:49Z)"
       - "python3.11 -m pytest -q tests/test_cliq.py::test_cliq_client_list_apps_falls_back_to_admin_endpoint tests/test_cliq.py::test_cliq_client_list_apps_falls_back_to_admin_singular_endpoint tests/test_cliq.py::test_cliq_client_list_apps_scope_invalid_reports_hint tests/test_cliq.py::test_cliq_client_get_app_falls_back_to_admin_endpoint tests/test_cliq.py::test_cliq_client_get_app_falls_back_to_admin_singular_endpoint tests/test_cliq.py::test_cliq_client_get_app_scope_invalid_reports_hint tests/test_cliq.py::test_cliq_client_list_app_permissions_falls_back_to_admin_endpoint tests/test_cliq.py::test_cliq_client_list_app_permissions_falls_back_to_admin_singular_endpoint tests/test_cliq.py::test_cliq_client_list_app_permissions_scope_invalid_reports_hint tests/test_cli.py::test_cliq_apps tests/test_cli.py::test_cliq_apps_accepts_nested_apps_shape tests/test_cli.py::test_cliq_app_get tests/test_cli.py::test_cliq_app_get_accepts_apps_list_shape tests/test_cli.py::test_cliq_app_permissions tests/test_cli.py::test_cliq_app_permissions_accepts_nested_permissions_shape"
@@ -446,6 +449,10 @@ suites:
   integration:
     status: warning
     notes:
+      - "python3.11 -m zoho_cli --config /tmp/zoho-test-config.json --account ai-dev@happy-distro.co.uk cliq status --check-auth --network happydistrouklimited"
+      - "focused cliq-193 live app-permissions check keeps auth/export readiness healthy (`oauthReady: true`, `exportOauthReady: true`); evidence: `tests/auto_pilot/reports/cliq193_status_20260413_034304.json` (2026-04-13T03:43:07Z)"
+      - "python3.11 -m zoho_cli --config /tmp/zoho-test-config.json --account ai-dev@happy-distro.co.uk cliq app-permissions APP_PROBE_FAKE_20260413_034304 --network happydistrouklimited"
+      - "focused cliq-193 live `cliq app-permissions` verification returns `error: not_supported`; evidence: `tests/auto_pilot/reports/cliq193_app_permissions_20260413_034304.json` + `tests/auto_pilot/reports/cliq193_app_permissions_probe_summary_20260413_034304.json` (2026-04-13T03:43:07Z)"
       - "python3.11 -m zoho_cli --config /tmp/zoho-test-config.json --account ai-dev@happy-distro.co.uk cliq status --check-auth --network happydistrouklimited"
       - "focused cliq-193 live app-get check keeps auth/export readiness healthy (`oauthReady: true`, `exportOauthReady: true`); evidence: `tests/auto_pilot/reports/cliq193_status_20260413_022220.json` (2026-04-13T02:22:22Z)"
       - "python3.11 -m zoho_cli --config /tmp/zoho-test-config.json --account ai-dev@happy-distro.co.uk cliq app-get APP_PROBE_FAKE_20260413_022220 --network happydistrouklimited"

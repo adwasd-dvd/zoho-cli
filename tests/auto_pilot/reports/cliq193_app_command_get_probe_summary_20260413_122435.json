@@ -1,0 +1,22 @@
+{
+  "task": "cliq-193 focused live app-command-get verification after action-wrapper hardening",
+  "timestamp": "20260413_122435",
+  "statusExitCode": 0,
+  "appCommandGetExitCode": 1,
+  "statusReport": "tests/auto_pilot/reports/cliq193_status_20260413_122435.json",
+  "appCommandGetReport": "tests/auto_pilot/reports/cliq193_app_command_get_20260413_122435.json",
+  "status": {
+    "oauthReady": true,
+    "exportOauthReady": true,
+    "missingScopes": [],
+    "missingExportScopes": [],
+    "auth": "ok"
+  },
+  "appCommandGet": {
+    "status": "error",
+    "error": "not_supported",
+    "details": "Cliq app-governance app-command detail endpoints are not available for this token/network endpoint.",
+    "errorCode": null,
+    "message": null
+  }
+}

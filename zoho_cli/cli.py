@@ -2741,6 +2741,133 @@ def cliq_app_commands(
     )
 
 
+@cliq_app.command("app-command-get")
+def cliq_app_command_get(
+    app_id: str = typer.Argument(..., help="Cliq app id."),
+    command_id: str = typer.Argument(..., help="Cliq app command id."),
+    network: Optional[str] = typer.Option(
+        None, "--network", help="Cliq network slug (e.g. happydistrouklimited)."
+    ),
+) -> None:
+    """Get one app's governance command by id (cliq-193 sixth slice)."""
+
+    def _extract_command_row(payload: Any) -> dict[str, Any]:
+        if isinstance(payload, list):
+            return next((row for row in payload if isinstance(row, dict)), {})
+
+        if not isinstance(payload, dict):
+            return {}
+
+        for key in ("command", "item"):
+            candidate = payload.get(key)
+            if isinstance(candidate, dict):
+                return candidate
+
+        for key in ("commands", "actions", "list", "items", "results"):
+            candidate = payload.get(key)
+            if isinstance(candidate, list):
+                picked = next((row for row in candidate if isinstance(row, dict)), None)
+                if picked:
+                    return picked
+
+        nested_data = payload.get("data")
+        if isinstance(nested_data, dict):
+            for key in ("command", "item"):
+                candidate = nested_data.get(key)
+                if isinstance(candidate, dict):
+                    return candidate
+            for key in ("commands", "actions", "list", "items", "results", "data"):
+                candidate = nested_data.get(key)
+                if isinstance(candidate, list):
+                    picked = next(
+                        (row for row in candidate if isinstance(row, dict)),
+                        None,
+                    )
+                    if picked:
+                        return picked
+                if isinstance(candidate, dict):
+                    return candidate
+            if any(
+                key in nested_data
+                for key in (
+                    "command_id",
+                    "commandId",
+                    "id",
+                    "zuid",
+                    "name",
+                    "command",
+                    "title",
+                    "description",
+                    "summary",
+                    "help_text",
+                    "helpText",
+                    "status",
+                    "state",
+                    "mode",
+                )
+            ):
+                return nested_data
+
+        if any(
+            key in payload
+            for key in (
+                "command_id",
+                "commandId",
+                "id",
+                "zuid",
+                "name",
+                "command",
+                "title",
+                "description",
+                "summary",
+                "help_text",
+                "helpText",
+                "status",
+                "state",
+                "mode",
+            )
+        ):
+            return payload
+
+        return {}
+
+    cfg = _cfg()
+    email = _require_account(cfg)
+    client = _get_cliq_client(cfg, email, network=network)
+
+    resolved_app_id = app_id.strip()
+    resolved_command_id = command_id.strip()
+    resp = client.get_app_command(resolved_app_id, resolved_command_id)
+    row = _extract_command_row(resp)
+
+    view = {
+        "commandId": str(
+            row.get("command_id")
+            or row.get("commandId")
+            or row.get("id")
+            or row.get("zuid")
+            or resolved_command_id
+        ),
+        "name": str(row.get("name") or row.get("command") or row.get("title") or ""),
+        "description": str(
+            row.get("description")
+            or row.get("summary")
+            or row.get("help_text")
+            or row.get("helpText")
+            or ""
+        ),
+        "status": str(row.get("status") or row.get("state") or row.get("mode") or ""),
+        "raw": row,
+    }
+
+    utils.output(
+        {
+            "appId": resolved_app_id,
+            "command": view,
+        }
+    )
+
+
 @cliq_app.command("export-chats")
 def cliq_export_chats(
     chat_id: Optional[str] = typer.Option(

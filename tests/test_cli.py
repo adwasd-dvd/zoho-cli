@@ -3449,6 +3449,69 @@ def test_cliq_app_commands_accepts_nested_commands_shape(
     mock_client.list_app_commands.assert_called_once_with("AP_2", limit=50)
 
 
+def test_cliq_app_command_get(mock_config: Path, mock_token_refresh: Any) -> None:
+    mock_client = MagicMock()
+    mock_client.get_app_command.return_value = {
+        "data": {
+            "command_id": "CMD_10",
+            "name": "deploy",
+            "description": "Trigger deployment",
+            "status": "enabled",
+        }
+    }
+
+    with patch("zoho_cli.cli._get_cliq_client", return_value=mock_client):
+        result = runner.invoke(
+            app,
+            ["cliq", "app-command-get", "AP_7", "CMD_10"],
+            env=_cfg_env(mock_config),
+        )
+
+    assert result.exit_code == 0, result.output
+    payload = json.loads(result.output)
+    assert payload["appId"] == "AP_7"
+    assert payload["command"]["commandId"] == "CMD_10"
+    assert payload["command"]["name"] == "deploy"
+    assert payload["command"]["description"] == "Trigger deployment"
+    assert payload["command"]["status"] == "enabled"
+    mock_client.get_app_command.assert_called_once_with("AP_7", "CMD_10")
+
+
+def test_cliq_app_command_get_accepts_nested_commands_shape(
+    mock_config: Path,
+    mock_token_refresh: Any,
+) -> None:
+    mock_client = MagicMock()
+    mock_client.get_app_command.return_value = {
+        "data": {
+            "commands": [
+                {
+                    "id": "CMD_11",
+                    "title": "triage",
+                    "helpText": "Open triage workflow",
+                    "state": "active",
+                }
+            ]
+        }
+    }
+
+    with patch("zoho_cli.cli._get_cliq_client", return_value=mock_client):
+        result = runner.invoke(
+            app,
+            ["cliq", "app-command-get", "AP_8", "CMD_11"],
+            env=_cfg_env(mock_config),
+        )
+
+    assert result.exit_code == 0, result.output
+    payload = json.loads(result.output)
+    assert payload["appId"] == "AP_8"
+    assert payload["command"]["commandId"] == "CMD_11"
+    assert payload["command"]["name"] == "triage"
+    assert payload["command"]["description"] == "Open triage workflow"
+    assert payload["command"]["status"] == "active"
+    mock_client.get_app_command.assert_called_once_with("AP_8", "CMD_11")
+
+
 @respx.mock
 def test_cliq_export_chats_list(mock_config: Path, mock_token_refresh: Any) -> None:
     respx.get("https://cliq.zoho.com/maintenanceapi/v2/chats").mock(

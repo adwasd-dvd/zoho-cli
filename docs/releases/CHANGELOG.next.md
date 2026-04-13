@@ -36,6 +36,7 @@
 - Added the third cliq-193 app-governance slice: `zoho cliq app-permissions` plus fallback client routing (`list_app_permissions`) across `/apps/{id}/permissions`, `/app/{id}/permissions`, `/admin/apps/{id}/permissions`, and `/admin/app/{id}/permissions` endpoints.
 - Added the fourth cliq-193 app-governance slice: `zoho cliq app-installs` plus fallback client routing (`list_app_installs`) across `/apps/{id}/installs`, `/app/{id}/installs`, `/admin/apps/{id}/installs`, and `/admin/app/{id}/installs` endpoints.
 - Added the fifth cliq-193 app-governance slice: `zoho cliq app-commands` plus fallback client routing (`list_app_commands`) across `/apps/{id}/commands`, `/app/{id}/commands`, `/admin/apps/{id}/commands`, and `/admin/app/{id}/commands` endpoints.
+- Added the sixth cliq-193 app-governance slice: `zoho cliq app-command-get` plus fallback client routing (`get_app_command`) across `/apps/{id}/commands/{command_id}`, `/app/{id}/commands/{command_id}`, `/admin/apps/{id}/commands/{command_id}`, and `/admin/app/{id}/commands/{command_id}` endpoints.
 - Scaffolded Cliq phase-1 shell with `zoho cliq status`, regional Cliq base URL inference, and a minimal `ZohoCliqClient` skeleton.
 - Added Cliq OAuth preparation: `zoho login --with-cliq` scope bundling, generic `--scope` extension, and `zoho cliq status` scope readiness (`oauthReady` / `missingScopes`).
 - Updated default Cliq OAuth scope bundle to endpoint-specific scopes (`ZohoCliq.Channels.READ`, `ZohoCliq.Users.READ`, `ZohoCliq.Webhooks.CREATE`) to match live send/notify API requirements.
@@ -178,12 +179,12 @@
 - Removed duplicate CRM `fields` command/client definitions so the CRM read-only surface now has one canonical `fields` implementation.
 
 ### Release readiness
-- Assessed at 2026-04-10T04:30:42Z: release is **not ready**.
+- Assessed at 2026-04-13T01:35:00Z: release is **not ready**.
 - Fresh gate evidence:
-  - `make release-gate` passed (`252 passed in 4.46s`, wheel smoke passed for `0.2.0`).
-  - Targeted regression coverage remains green for `test_cliq_client_send_scope_invalid_reports_reauth_hint` after adding `/channels/{id}/message` mock coverage.
-  - Changelog draft remains current for the Cliq/CRM train work.
+  - `make release-gate && make ci` remains green (`321` tests + wheel smoke + fmt/lint, 2026-04-12T14:19:04Z).
+  - Focused live checks are current through `2026-04-13T01:22:30Z`; latest `cliq apps --limit 10` probe (`cliq-193`) classifies the endpoint as `not_supported` while auth/export readiness is healthy.
+  - Changelog draft and release state have been refreshed for this assessment.
 - Remaining release blockers:
-  - blocker bugs are **not** clear (`crm-002` live smoke remains blocked by missing CRM org access and returns `OAUTH_SCOPE_MISMATCH`)
-  - current focus milestone `cliq-expansion-phase` is **not complete** (local multipart upload/download matrix evidence is still pending)
-  - integration evidence is still partial for `cliq-155` (no attachment-positive live retrieval sample yet)
+  - blocker bugs are **not** clear (`crm-002` live smoke remains blocked by account-level CRM org access and returns `OAUTH_SCOPE_MISMATCH`).
+  - current focus milestone `cliq-expansion-phase` is **not complete** (`cliq-165` export verification is externally blocked by `inactive_appaccount_user`, and `cliq-193` is still in progress).
+  - relevant integration checks are **not** clean (`ops/state/test_status.yml` remains `integration: warning` because live Cliq scope/endpoint blockers are unresolved).

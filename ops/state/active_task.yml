@@ -1,13 +1,13 @@
 id: cliq-193
-title: implement app-governance plane (apps/app-get/app-permissions/app-installs/app-commands complete, continue next slice)
+title: implement app-governance plane (apps/app-get/app-permissions/app-installs/app-commands/app-command-get complete, continue next slice)
 module: cliq
 stage: in_progress
 status: in_progress
 owner: automation
-updated_at: '2026-04-13T05:04:24Z'
+updated_at: '2026-04-13T05:29:30Z'
 success_criteria:
 - ship the next cliq-193 app-governance command/client slice with focused tests
 - run one focused live verification for that new slice and archive evidence
 - keep cliq-165 export blocker evidence current while app-account activation remains external
 next_if_done: take the next queued cliq-193 app-governance slice with focused coverage
-next_step: "focused live verification for the fifth cliq-193 app-governance slice is now archived (`cliq status --check-auth` + `cliq app-commands APP_PROBE_FAKE_20260413_050402`): auth/export readiness stayed healthy (`oauthReady: true`, `exportOauthReady: true`) and app-command endpoints classified as `not_supported`; next step is to ship the next smallest cliq-193 app-governance command/client slice with focused tests while cliq-165 remains externally blocked by inactive_appaccount_user"
+next_step: "added the sixth cliq-193 app-governance slice (`zoho cliq app-command-get` + `ZohoCliqClient.get_app_command`) with fallback routing and focused tests; next step is one focused live verification pass (`cliq status --check-auth` + `cliq app-command-get APP_PROBE_FAKE_<timestamp> CMD_PROBE_FAKE_<timestamp>`) while cliq-165 remains externally blocked by inactive_appaccount_user"

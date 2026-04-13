@@ -4,10 +4,10 @@ module: cliq
 stage: in_progress
 status: in_progress
 owner: automation
-updated_at: '2026-04-13T16:24:43Z'
+updated_at: '2026-04-13T16:47:06Z'
 success_criteria:
 - ship the next cliq-193 app-governance command/client slice with focused tests
 - run one focused live verification for that new slice and archive evidence
 - keep cliq-165 export blocker evidence current while app-account activation remains external
 next_if_done: take the next queued cliq-193 app-governance slice with focused coverage
-next_step: "cliq-193 focused live verification (`cliq status --check-auth` + `cliq app-permission-get APP_PROBE_FAKE_20260413_162443 PERMISSION_PROBE_FAKE_20260413_162443`) on happydistrouklimited keeps auth/export readiness healthy (`oauthReady: true`, `exportOauthReady: true`) while app-permission detail endpoints still classify as unsupported (`error: not_supported`) (evidence: `tests/auto_pilot/reports/cliq193_app_permission_get_probe_summary_20260413_162443.json`, `tests/auto_pilot/reports/cliq193_status_20260413_162443.json`, `tests/auto_pilot/reports/cliq193_app_permission_get_20260413_162443.json`); next step is the next smallest cliq-193 app-governance output-hardening slice with focused tests while cliq-165 remains externally blocked by `inactive_appaccount_user`"
+next_step: "cliq-193 detail-output hardening now unwraps nested `record` wrapper rows inside `data.records` payloads for `cliq app-permission-get`, `cliq app-install-get`, and `cliq app-command-get`; focused CLI tests passed (`tests/test_cli.py::test_cliq_app_permission_get_accepts_data_records_record_row_shape`, `tests/test_cli.py::test_cliq_app_install_get_accepts_data_records_record_row_shape`, `tests/test_cli.py::test_cliq_app_command_get_accepts_data_records_record_row_shape`). Next step is one focused live verification pass for this slice (`cliq status --check-auth` + one app-governance detail command) while cliq-165 remains externally blocked by `inactive_appaccount_user`."

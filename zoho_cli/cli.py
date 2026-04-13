@@ -2738,6 +2738,7 @@ def cliq_app_permission_get(
                     "permission",
                     "scope",
                     "item",
+                    "record",
                     "permissions",
                     "scopes",
                     "list",
@@ -3129,6 +3130,7 @@ def cliq_app_install_get(
                 for key in (
                     "install",
                     "item",
+                    "record",
                     "installs",
                     "installations",
                     "users",
@@ -3543,6 +3545,7 @@ def cliq_app_command_get(
                     "command",
                     "action",
                     "item",
+                    "record",
                     "commands",
                     "actions",
                     "list",

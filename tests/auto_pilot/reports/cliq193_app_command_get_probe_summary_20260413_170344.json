@@ -1,0 +1,29 @@
+{
+  "task": "cliq-193",
+  "probe": "app-command-get",
+  "timestamp": "20260413_170344",
+  "capturedAtUtc": "2026-04-13T17:03:46.364908Z",
+  "network": "happydistrouklimited",
+  "account": "ai-dev@happy-distro.co.uk",
+  "statusCommand": {
+    "path": "tests/auto_pilot/reports/cliq193_status_20260413_170344.json",
+    "exitCode": 0,
+    "oauthReady": true,
+    "exportOauthReady": true,
+    "missingScopes": [],
+    "missingExportScopes": [],
+    "error": null,
+    "code": null
+  },
+  "appCommandGetCommand": {
+    "path": "tests/auto_pilot/reports/cliq193_app_command_get_20260413_170344.json",
+    "exitCode": 1,
+    "status": "error",
+    "error": "not_supported",
+    "details": "Cliq app-governance app-command detail endpoints are not available for this token/network endpoint.",
+    "hint": null,
+    "code": null,
+    "message": null
+  },
+  "result": "warning"
+}

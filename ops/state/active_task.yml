@@ -4,10 +4,10 @@ module: cliq
 stage: in_progress
 status: in_progress
 owner: automation
-updated_at: '2026-04-13T16:47:06Z'
+updated_at: '2026-04-13T17:03:44Z'
 success_criteria:
 - ship the next cliq-193 app-governance command/client slice with focused tests
 - run one focused live verification for that new slice and archive evidence
 - keep cliq-165 export blocker evidence current while app-account activation remains external
 next_if_done: take the next queued cliq-193 app-governance slice with focused coverage
-next_step: "cliq-193 detail-output hardening now unwraps nested `record` wrapper rows inside `data.records` payloads for `cliq app-permission-get`, `cliq app-install-get`, and `cliq app-command-get`; focused CLI tests passed (`tests/test_cli.py::test_cliq_app_permission_get_accepts_data_records_record_row_shape`, `tests/test_cli.py::test_cliq_app_install_get_accepts_data_records_record_row_shape`, `tests/test_cli.py::test_cliq_app_command_get_accepts_data_records_record_row_shape`). Next step is one focused live verification pass for this slice (`cliq status --check-auth` + one app-governance detail command) while cliq-165 remains externally blocked by `inactive_appaccount_user`."
+next_step: "Focused live verification for the latest detail `record`-wrapper hardening is now archived (`tests/auto_pilot/reports/cliq193_app_command_get_probe_summary_20260413_170344.json` plus status/detail reports). Auth/export readiness stays healthy and app-command detail endpoints remain `not_supported`; next step is the next smallest cliq-193 output-hardening slice with focused tests while cliq-165 remains externally blocked by `inactive_appaccount_user`."

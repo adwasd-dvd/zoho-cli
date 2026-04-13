@@ -3517,6 +3517,39 @@ def test_cliq_app_permission_get_accepts_data_list_shape(
     mock_client.get_app_permission.assert_called_once_with("AP_9", "P_12")
 
 
+def test_cliq_app_permission_get_accepts_data_list_wrapped_permissions_shape(
+    mock_config: Path,
+    mock_token_refresh: Any,
+) -> None:
+    mock_client = MagicMock()
+    mock_client.get_app_permission.return_value = {
+        "data": [
+            {
+                "permissions": {
+                    "permissionId": "P_14",
+                    "permission": "ZohoCliq.Chats.ALL",
+                    "state": "enabled",
+                }
+            }
+        ]
+    }
+
+    with patch("zoho_cli.cli._get_cliq_client", return_value=mock_client):
+        result = runner.invoke(
+            app,
+            ["cliq", "app-permission-get", "AP_11", "P_14"],
+            env=_cfg_env(mock_config),
+        )
+
+    assert result.exit_code == 0, result.output
+    payload = json.loads(result.output)
+    assert payload["appId"] == "AP_11"
+    assert payload["permission"]["permissionId"] == "P_14"
+    assert payload["permission"]["scope"] == "ZohoCliq.Chats.ALL"
+    assert payload["permission"]["status"] == "enabled"
+    mock_client.get_app_permission.assert_called_once_with("AP_11", "P_14")
+
+
 def test_cliq_app_permission_get_accepts_top_level_permissions_dict_shape(
     mock_config: Path,
     mock_token_refresh: Any,
@@ -3768,6 +3801,41 @@ def test_cliq_app_install_get_accepts_data_list_shape(
     mock_client.get_app_install.assert_called_once_with("AP_9", "INS_12")
 
 
+def test_cliq_app_install_get_accepts_data_list_wrapped_installs_shape(
+    mock_config: Path,
+    mock_token_refresh: Any,
+) -> None:
+    mock_client = MagicMock()
+    mock_client.get_app_install.return_value = {
+        "data": [
+            {
+                "installs": {
+                    "installId": "INS_14",
+                    "chatId": "C_14",
+                    "title": "Incident Flow",
+                    "mode": "active",
+                }
+            }
+        ]
+    }
+
+    with patch("zoho_cli.cli._get_cliq_client", return_value=mock_client):
+        result = runner.invoke(
+            app,
+            ["cliq", "app-install-get", "AP_11", "INS_14"],
+            env=_cfg_env(mock_config),
+        )
+
+    assert result.exit_code == 0, result.output
+    payload = json.loads(result.output)
+    assert payload["appId"] == "AP_11"
+    assert payload["install"]["installId"] == "INS_14"
+    assert payload["install"]["subjectId"] == "C_14"
+    assert payload["install"]["name"] == "Incident Flow"
+    assert payload["install"]["status"] == "active"
+    mock_client.get_app_install.assert_called_once_with("AP_11", "INS_14")
+
+
 def test_cliq_app_install_get_accepts_top_level_installs_dict_shape(
     mock_config: Path,
     mock_token_refresh: Any,
@@ -4016,6 +4084,41 @@ def test_cliq_app_command_get_accepts_data_list_shape(
     assert payload["command"]["description"] == "Notify the on-call engineer"
     assert payload["command"]["status"] == "enabled"
     mock_client.get_app_command.assert_called_once_with("AP_9", "CMD_12")
+
+
+def test_cliq_app_command_get_accepts_data_list_wrapped_commands_shape(
+    mock_config: Path,
+    mock_token_refresh: Any,
+) -> None:
+    mock_client = MagicMock()
+    mock_client.get_app_command.return_value = {
+        "data": [
+            {
+                "commands": {
+                    "commandId": "CMD_14",
+                    "name": "incident_ack",
+                    "summary": "Acknowledge incident",
+                    "mode": "active",
+                }
+            }
+        ]
+    }
+
+    with patch("zoho_cli.cli._get_cliq_client", return_value=mock_client):
+        result = runner.invoke(
+            app,
+            ["cliq", "app-command-get", "AP_11", "CMD_14"],
+            env=_cfg_env(mock_config),
+        )
+
+    assert result.exit_code == 0, result.output
+    payload = json.loads(result.output)
+    assert payload["appId"] == "AP_11"
+    assert payload["command"]["commandId"] == "CMD_14"
+    assert payload["command"]["name"] == "incident_ack"
+    assert payload["command"]["description"] == "Acknowledge incident"
+    assert payload["command"]["status"] == "active"
+    mock_client.get_app_command.assert_called_once_with("AP_11", "CMD_14")
 
 
 def test_cliq_app_command_get_accepts_top_level_commands_dict_shape(

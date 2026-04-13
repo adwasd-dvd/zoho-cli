@@ -4,10 +4,10 @@ module: cliq
 stage: in_progress
 status: in_progress
 owner: automation
-updated_at: '2026-04-13T17:03:44Z'
+updated_at: '2026-04-13T17:24:35Z'
 success_criteria:
 - ship the next cliq-193 app-governance command/client slice with focused tests
 - run one focused live verification for that new slice and archive evidence
 - keep cliq-165 export blocker evidence current while app-account activation remains external
 next_if_done: take the next queued cliq-193 app-governance slice with focused coverage
-next_step: "Focused live verification for the latest detail `record`-wrapper hardening is now archived (`tests/auto_pilot/reports/cliq193_app_command_get_probe_summary_20260413_170344.json` plus status/detail reports). Auth/export readiness stays healthy and app-command detail endpoints remain `not_supported`; next step is the next smallest cliq-193 output-hardening slice with focused tests while cliq-165 remains externally blocked by `inactive_appaccount_user`."
+next_step: "Latest cliq-193 unit hardening is in: `zoho cliq apps` now unwraps list-row `item` wrappers (covered by `tests/test_cli.py::test_cliq_apps_accepts_data_list_wrapped_app_shape` and `tests/test_cli.py::test_cliq_apps_accepts_data_list_wrapped_item_shape`, 2 passed). Next step is one focused live verification pass for `cliq apps` (`cliq status --check-auth` + `cliq apps --limit 10`) while cliq-165 remains externally blocked by `inactive_appaccount_user`."

@@ -2,6 +2,7 @@ blockers:
   - "crm-002 live smoke remains blocked: current test account is not in a CRM org, so CRM scopes are not granted and live calls return `OAUTH_SCOPE_MISMATCH` (verified 2026-04-08T15:49:49Z)"
 high: []
 normal:
+  - "cliq-193 unit hardening: `cliq apps` now unwraps list-row `item` wrappers in maintenance payloads, preventing wrapper-shaped rows from dropping app fields (`appId`/`name`/`status`); focused tests are green (`tests/test_cli.py::test_cliq_apps_accepts_data_list_wrapped_app_shape`, `tests/test_cli.py::test_cliq_apps_accepts_data_list_wrapped_item_shape`)."
   - "cliq-193 focused live verification (`cliq status --check-auth` + `cliq app-command-get APP_PROBE_FAKE_20260413_170344 CMD_PROBE_FAKE_20260413_170344`) keeps auth/export readiness healthy (`oauthReady: true`, `exportOauthReady: true`) and app-command detail endpoints remain `not_supported` (evidence: `tests/auto_pilot/reports/cliq193_app_command_get_probe_summary_20260413_170344.json`, `tests/auto_pilot/reports/cliq193_status_20260413_170344.json`, `tests/auto_pilot/reports/cliq193_app_command_get_20260413_170344.json`)"
   - "nightly broad verification rerun is green (`make release-gate && make ci`: 462 tests + wheel smoke + fmt/lint, 2026-04-13T14:20:17Z), so no new unit/packaging regressions were found; remaining Cliq risk is live endpoint behavior"
   - "small safe fix applied after broad gate discovery: removed unused local variable `saw_inactive_appaccount` from `ZohoCliqClient._request_with_candidates_and_not_supported`, clearing Ruff `F841` and restoring lint pass"

@@ -3345,6 +3345,38 @@ def test_cliq_apps_accepts_data_list_wrapped_app_shape(
     assert payload["apps"][0]["status"] == "active"
 
 
+def test_cliq_apps_accepts_data_list_wrapped_item_shape(
+    mock_config: Path,
+    mock_token_refresh: Any,
+) -> None:
+    mock_client = MagicMock()
+    mock_client.list_apps.return_value = {
+        "data": [
+            {
+                "item": {
+                    "appId": "AP_6I",
+                    "name": "Escalations Item Wrapper",
+                    "status": "active",
+                }
+            }
+        ]
+    }
+
+    with patch("zoho_cli.cli._get_cliq_client", return_value=mock_client):
+        result = runner.invoke(
+            app,
+            ["cliq", "apps", "--limit", "4"],
+            env=_cfg_env(mock_config),
+        )
+
+    assert result.exit_code == 0, result.output
+    payload = json.loads(result.output)
+    assert payload["count"] == 1
+    assert payload["apps"][0]["appId"] == "AP_6I"
+    assert payload["apps"][0]["name"] == "Escalations Item Wrapper"
+    assert payload["apps"][0]["status"] == "active"
+
+
 def test_cliq_app_get(
     mock_config: Path,
     mock_token_refresh: Any,

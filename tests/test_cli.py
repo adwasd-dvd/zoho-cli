@@ -3253,6 +3253,69 @@ def test_cliq_app_get_accepts_apps_list_shape(
     mock_client.get_app.assert_called_once_with("AP_10")
 
 
+def test_cliq_app_permissions(
+    mock_config: Path,
+    mock_token_refresh: Any,
+) -> None:
+    mock_client = MagicMock()
+    mock_client.list_app_permissions.return_value = {
+        "data": [
+            {
+                "permission_id": "P_1",
+                "scope": "ZohoCliq.Messages.READ",
+                "status": "granted",
+            }
+        ]
+    }
+
+    with patch("zoho_cli.cli._get_cliq_client", return_value=mock_client):
+        result = runner.invoke(
+            app,
+            ["cliq", "app-permissions", "AP_1", "--limit", "7"],
+            env=_cfg_env(mock_config),
+        )
+
+    assert result.exit_code == 0, result.output
+    payload = json.loads(result.output)
+    assert payload["appId"] == "AP_1"
+    assert payload["count"] == 1
+    assert payload["permissions"][0]["permissionId"] == "P_1"
+    assert payload["permissions"][0]["scope"] == "ZohoCliq.Messages.READ"
+    assert payload["permissions"][0]["status"] == "granted"
+    mock_client.list_app_permissions.assert_called_once_with("AP_1", limit=7)
+
+
+def test_cliq_app_permissions_accepts_nested_permissions_shape(
+    mock_config: Path,
+    mock_token_refresh: Any,
+) -> None:
+    mock_client = MagicMock()
+    mock_client.list_app_permissions.return_value = {
+        "data": {
+            "permissions": [
+                {
+                    "id": "P_2",
+                    "name": "ZohoCliq.Apps.READ",
+                    "state": "active",
+                }
+            ]
+        }
+    }
+
+    with patch("zoho_cli.cli._get_cliq_client", return_value=mock_client):
+        result = runner.invoke(
+            app,
+            ["cliq", "app-permissions", "AP_2"],
+            env=_cfg_env(mock_config),
+        )
+
+    assert result.exit_code == 0, result.output
+    payload = json.loads(result.output)
+    assert payload["permissions"][0]["permissionId"] == "P_2"
+    assert payload["permissions"][0]["scope"] == "ZohoCliq.Apps.READ"
+    assert payload["permissions"][0]["status"] == "active"
+
+
 @respx.mock
 def test_cliq_export_chats_list(mock_config: Path, mock_token_refresh: Any) -> None:
     respx.get("https://cliq.zoho.com/maintenanceapi/v2/chats").mock(

@@ -33,6 +33,7 @@
 - Hardened cliq-192 custom-domain/custom-email listing fallbacks to also probe singular admin endpoints (`/admin/customdomain`, `/admin/customemail`) and added targeted regression coverage for singular-admin fallback plus scope-invalid guidance.
 - Added the first cliq-193 app-governance slice: `zoho cliq apps` plus fallback client routing (`list_apps`) across `/apps`, `/app`, and `/admin/apps` listing endpoints.
 - Added the second cliq-193 app-governance slice: `zoho cliq app-get` plus fallback client routing (`get_app`) across `/apps/{id}`, `/app/{id}`, `/admin/apps/{id}`, and `/admin/app/{id}` read endpoints.
+- Added the third cliq-193 app-governance slice: `zoho cliq app-permissions` plus fallback client routing (`list_app_permissions`) across `/apps/{id}/permissions`, `/app/{id}/permissions`, `/admin/apps/{id}/permissions`, and `/admin/app/{id}/permissions` endpoints.
 - Scaffolded Cliq phase-1 shell with `zoho cliq status`, regional Cliq base URL inference, and a minimal `ZohoCliqClient` skeleton.
 - Added Cliq OAuth preparation: `zoho login --with-cliq` scope bundling, generic `--scope` extension, and `zoho cliq status` scope readiness (`oauthReady` / `missingScopes`).
 - Updated default Cliq OAuth scope bundle to endpoint-specific scopes (`ZohoCliq.Channels.READ`, `ZohoCliq.Users.READ`, `ZohoCliq.Webhooks.CREATE`) to match live send/notify API requirements.

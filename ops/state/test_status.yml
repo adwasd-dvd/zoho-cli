@@ -1,10 +1,13 @@
-last_run_at: "2026-04-13T06:03:06Z"
+last_run_at: "2026-04-13T06:22:30Z"
 last_result: warning
 current_focus: cliq
 suites:
   unit:
     status: passing
     notes:
+      - "python3.11 -m zoho_cli --config /tmp/zoho-test-config.json --account ai-dev@happy-distro.co.uk cliq status --check-auth --network happydistrouklimited"
+      - "python3.11 -m zoho_cli --config /tmp/zoho-test-config.json --account ai-dev@happy-distro.co.uk cliq app-install-get APP_PROBE_FAKE_20260413_062230 INSTALL_PROBE_FAKE_20260413_062230 --network happydistrouklimited"
+      - "cliq-193 focused live app-install-get verification archived at `tests/auto_pilot/reports/cliq193_app_install_get_probe_summary_20260413_062230.json`: status remains healthy (`oauthReady: true`, `exportOauthReady: true`) and app-install detail endpoint is currently `error: not_supported` (2026-04-13T06:22:30Z)"
       - "./.venv/bin/ruff format --check zoho_cli/cliq.py zoho_cli/cli.py tests/test_cliq.py tests/test_cli.py"
       - "4 files already formatted (cliq-193 sixth slice: app-command-get formatting pass, 2026-04-13T05:29:30Z)"
       - "python3.11 -m pytest -q tests/test_cliq.py::test_cliq_client_get_app_command_falls_back_to_admin_endpoint tests/test_cliq.py::test_cliq_client_get_app_command_falls_back_to_admin_singular_endpoint tests/test_cliq.py::test_cliq_client_get_app_command_scope_invalid_reports_hint tests/test_cli.py::test_cliq_app_command_get tests/test_cli.py::test_cliq_app_command_get_accepts_nested_commands_shape"

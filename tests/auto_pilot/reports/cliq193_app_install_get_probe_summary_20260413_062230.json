@@ -1,0 +1,13 @@
+{
+  "timestamp": "20260413_062230",
+  "statusReport": "tests/auto_pilot/reports/cliq193_status_20260413_062230.json",
+  "appInstallGetReport": "tests/auto_pilot/reports/cliq193_app_install_get_20260413_062230.json",
+  "statusExitCode": 0,
+  "appInstallGetExitCode": 1,
+  "oauthReady": true,
+  "exportOauthReady": true,
+  "appInstallGetError": "not_supported",
+  "appInstallGetCode": null,
+  "appInstallGetHint": null,
+  "result": "warning"
+}

@@ -2577,6 +2577,12 @@ def cliq_app_permission_get(
         if not isinstance(payload, dict):
             return {}
 
+        raw_data = payload.get("data")
+        if isinstance(raw_data, list):
+            candidate = next((row for row in raw_data if isinstance(row, dict)), None)
+            if isinstance(candidate, dict):
+                return candidate
+
         for key in ("permission", "scope", "item"):
             candidate = payload.get(key)
             if isinstance(candidate, dict):
@@ -2589,7 +2595,7 @@ def cliq_app_permission_get(
                 if picked:
                     return picked
 
-        nested_data = payload.get("data")
+        nested_data = raw_data
         if isinstance(nested_data, dict):
             for key in ("permission", "scope", "item"):
                 candidate = nested_data.get(key)
@@ -2850,6 +2856,12 @@ def cliq_app_install_get(
         if not isinstance(payload, dict):
             return {}
 
+        raw_data = payload.get("data")
+        if isinstance(raw_data, list):
+            candidate = next((row for row in raw_data if isinstance(row, dict)), None)
+            if isinstance(candidate, dict):
+                return candidate
+
         for key in ("install", "item"):
             candidate = payload.get(key)
             if isinstance(candidate, dict):
@@ -2862,7 +2874,7 @@ def cliq_app_install_get(
                 if picked:
                     return picked
 
-        nested_data = payload.get("data")
+        nested_data = raw_data
         if isinstance(nested_data, dict):
             for key in ("install", "item"):
                 candidate = nested_data.get(key)
@@ -3141,6 +3153,12 @@ def cliq_app_command_get(
         if not isinstance(payload, dict):
             return {}
 
+        raw_data = payload.get("data")
+        if isinstance(raw_data, list):
+            candidate = next((row for row in raw_data if isinstance(row, dict)), None)
+            if isinstance(candidate, dict):
+                return candidate
+
         for key in ("command", "item"):
             candidate = payload.get(key)
             if isinstance(candidate, dict):
@@ -3153,7 +3171,7 @@ def cliq_app_command_get(
                 if picked:
                     return picked
 
-        nested_data = payload.get("data")
+        nested_data = raw_data
         if isinstance(nested_data, dict):
             for key in ("command", "item"):
                 candidate = nested_data.get(key)

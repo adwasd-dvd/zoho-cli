@@ -3404,6 +3404,37 @@ def test_cliq_app_permission_get_accepts_nested_permissions_shape(
     assert payload["permission"]["status"] == "enabled"
 
 
+def test_cliq_app_permission_get_accepts_data_list_shape(
+    mock_config: Path,
+    mock_token_refresh: Any,
+) -> None:
+    mock_client = MagicMock()
+    mock_client.get_app_permission.return_value = {
+        "data": [
+            {
+                "id": "P_12",
+                "scope": "ZohoCliq.Files.READ",
+                "mode": "active",
+            }
+        ]
+    }
+
+    with patch("zoho_cli.cli._get_cliq_client", return_value=mock_client):
+        result = runner.invoke(
+            app,
+            ["cliq", "app-permission-get", "AP_9", "P_12"],
+            env=_cfg_env(mock_config),
+        )
+
+    assert result.exit_code == 0, result.output
+    payload = json.loads(result.output)
+    assert payload["appId"] == "AP_9"
+    assert payload["permission"]["permissionId"] == "P_12"
+    assert payload["permission"]["scope"] == "ZohoCliq.Files.READ"
+    assert payload["permission"]["status"] == "active"
+    mock_client.get_app_permission.assert_called_once_with("AP_9", "P_12")
+
+
 def test_cliq_app_installs(
     mock_config: Path,
     mock_token_refresh: Any,
@@ -3565,6 +3596,39 @@ def test_cliq_app_install_get_accepts_nested_installs_shape(
     mock_client.get_app_install.assert_called_once_with("AP_8", "INS_11")
 
 
+def test_cliq_app_install_get_accepts_data_list_shape(
+    mock_config: Path,
+    mock_token_refresh: Any,
+) -> None:
+    mock_client = MagicMock()
+    mock_client.get_app_install.return_value = {
+        "data": [
+            {
+                "id": "INS_12",
+                "target_id": "U_3",
+                "display_name": "Support Bot",
+                "state": "enabled",
+            }
+        ]
+    }
+
+    with patch("zoho_cli.cli._get_cliq_client", return_value=mock_client):
+        result = runner.invoke(
+            app,
+            ["cliq", "app-install-get", "AP_9", "INS_12"],
+            env=_cfg_env(mock_config),
+        )
+
+    assert result.exit_code == 0, result.output
+    payload = json.loads(result.output)
+    assert payload["appId"] == "AP_9"
+    assert payload["install"]["installId"] == "INS_12"
+    assert payload["install"]["subjectId"] == "U_3"
+    assert payload["install"]["name"] == "Support Bot"
+    assert payload["install"]["status"] == "enabled"
+    mock_client.get_app_install.assert_called_once_with("AP_9", "INS_12")
+
+
 def test_cliq_app_commands(mock_config: Path, mock_token_refresh: Any) -> None:
     mock_client = MagicMock()
     mock_client.list_app_commands.return_value = {
@@ -3721,6 +3785,39 @@ def test_cliq_app_command_get_accepts_nested_commands_shape(
     assert payload["command"]["description"] == "Open triage workflow"
     assert payload["command"]["status"] == "active"
     mock_client.get_app_command.assert_called_once_with("AP_8", "CMD_11")
+
+
+def test_cliq_app_command_get_accepts_data_list_shape(
+    mock_config: Path,
+    mock_token_refresh: Any,
+) -> None:
+    mock_client = MagicMock()
+    mock_client.get_app_command.return_value = {
+        "data": [
+            {
+                "id": "CMD_12",
+                "command": "notify_oncall",
+                "summary": "Notify the on-call engineer",
+                "mode": "enabled",
+            }
+        ]
+    }
+
+    with patch("zoho_cli.cli._get_cliq_client", return_value=mock_client):
+        result = runner.invoke(
+            app,
+            ["cliq", "app-command-get", "AP_9", "CMD_12"],
+            env=_cfg_env(mock_config),
+        )
+
+    assert result.exit_code == 0, result.output
+    payload = json.loads(result.output)
+    assert payload["appId"] == "AP_9"
+    assert payload["command"]["commandId"] == "CMD_12"
+    assert payload["command"]["name"] == "notify_oncall"
+    assert payload["command"]["description"] == "Notify the on-call engineer"
+    assert payload["command"]["status"] == "enabled"
+    mock_client.get_app_command.assert_called_once_with("AP_9", "CMD_12")
 
 
 @respx.mock

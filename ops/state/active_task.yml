@@ -4,10 +4,10 @@ module: cliq
 stage: in_progress
 status: in_progress
 owner: automation
-updated_at: '2026-04-13T18:10:23Z'
+updated_at: '2026-04-13T18:23:15Z'
 success_criteria:
 - ship the next cliq-193 app-governance command/client slice with focused tests
 - run one focused live verification for that new slice and archive evidence
 - keep cliq-165 export blocker evidence current while app-account activation remains external
 next_if_done: take the next queued cliq-193 app-governance slice with focused coverage
-next_step: "cliq-193 app-governance list extraction now unwraps list-row `item` wrappers for `cliq app-permissions`, `cliq app-installs`, and `cliq app-commands` (focused tests passed: `tests/test_cli.py::test_cliq_app_permissions_accepts_data_list_wrapped_item_shape`, `tests/test_cli.py::test_cliq_app_installs_accepts_data_list_wrapped_item_shape`, `tests/test_cli.py::test_cliq_app_commands_accepts_data_list_wrapped_item_shape`). Next step is one focused live verification pass for this slice (`cliq status --check-auth` + one app-governance list command) while cliq-165 remains externally blocked by `inactive_appaccount_user`."
+next_step: "focused live cliq-193 verification (`cliq status --check-auth` + `cliq app-permissions APP_PROBE_FAKE_20260413_182315`) keeps auth/export readiness healthy (`oauthReady: true`, `exportOauthReady: true`) while app-governance permissions endpoints remain `not_supported` (evidence: `tests/auto_pilot/reports/cliq193_status_20260413_182315.json`, `tests/auto_pilot/reports/cliq193_app_permissions_20260413_182315.json`, `tests/auto_pilot/reports/cliq193_app_permissions_probe_summary_20260413_182315.json`). Next step is shipping the next smallest cliq-193 output-hardening increment with focused tests while cliq-165 remains externally blocked by `inactive_appaccount_user`."

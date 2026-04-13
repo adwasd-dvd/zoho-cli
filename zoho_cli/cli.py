@@ -2679,6 +2679,12 @@ def cliq_app_permissions(
                 )
                 if isinstance(nested_permission, dict):
                     return [_unwrap_permission_row(nested_permission)]
+                if isinstance(nested_permission, list):
+                    return [
+                        _unwrap_permission_row(row)
+                        for row in nested_permission
+                        if isinstance(row, dict)
+                    ]
 
                 nested_records = candidate.get("records")
                 if isinstance(nested_records, list):
@@ -2695,6 +2701,12 @@ def cliq_app_permissions(
                     )
                     if isinstance(nested_record, dict):
                         return [_unwrap_permission_row(nested_record)]
+                    if isinstance(nested_record, list):
+                        return [
+                            _unwrap_permission_row(row)
+                            for row in nested_record
+                            if isinstance(row, dict)
+                        ]
 
                 if any(
                     key in candidate
@@ -3051,6 +3063,12 @@ def cliq_app_installs(
                 )
                 if isinstance(nested_install, dict):
                     return [_unwrap_install_row(nested_install)]
+                if isinstance(nested_install, list):
+                    return [
+                        _unwrap_install_row(row)
+                        for row in nested_install
+                        if isinstance(row, dict)
+                    ]
 
                 nested_records = candidate.get("records")
                 if isinstance(nested_records, list):
@@ -3067,6 +3085,12 @@ def cliq_app_installs(
                     )
                     if isinstance(nested_record, dict):
                         return [_unwrap_install_row(nested_record)]
+                    if isinstance(nested_record, list):
+                        return [
+                            _unwrap_install_row(row)
+                            for row in nested_record
+                            if isinstance(row, dict)
+                        ]
 
                 if any(
                     key in candidate
@@ -3506,6 +3530,12 @@ def cliq_app_commands(
                 )
                 if isinstance(nested_command, dict):
                     return [_unwrap_command_row(nested_command)]
+                if isinstance(nested_command, list):
+                    return [
+                        _unwrap_command_row(row)
+                        for row in nested_command
+                        if isinstance(row, dict)
+                    ]
 
                 nested_records = candidate.get("records")
                 if isinstance(nested_records, list):
@@ -3523,6 +3553,12 @@ def cliq_app_commands(
                     )
                     if isinstance(nested_record, dict):
                         return [_unwrap_command_row(nested_record)]
+                    if isinstance(nested_record, list):
+                        return [
+                            _unwrap_command_row(row)
+                            for row in nested_record
+                            if isinstance(row, dict)
+                        ]
 
                 if any(
                     key in candidate

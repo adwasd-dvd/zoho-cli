@@ -3309,6 +3309,34 @@ def test_cliq_app_get_accepts_apps_list_shape(
     mock_client.get_app.assert_called_once_with("AP_10")
 
 
+def test_cliq_app_get_accepts_top_level_apps_dict_shape(
+    mock_config: Path,
+    mock_token_refresh: Any,
+) -> None:
+    mock_client = MagicMock()
+    mock_client.get_app.return_value = {
+        "apps": {
+            "appId": "AP_11",
+            "name": "Ops Triage",
+            "state": "active",
+        }
+    }
+
+    with patch("zoho_cli.cli._get_cliq_client", return_value=mock_client):
+        result = runner.invoke(
+            app,
+            ["cliq", "app-get", "AP_11"],
+            env=_cfg_env(mock_config),
+        )
+
+    assert result.exit_code == 0, result.output
+    payload = json.loads(result.output)
+    assert payload["app"]["appId"] == "AP_11"
+    assert payload["app"]["name"] == "Ops Triage"
+    assert payload["app"]["status"] == "active"
+    mock_client.get_app.assert_called_once_with("AP_11")
+
+
 def test_cliq_app_permissions(
     mock_config: Path,
     mock_token_refresh: Any,

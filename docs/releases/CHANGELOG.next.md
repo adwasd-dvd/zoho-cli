@@ -42,6 +42,7 @@
 - Hardened cliq-193 app-governance list output shaping so `cliq apps`, `cliq app-permissions`, `cliq app-installs`, and `cliq app-commands` now also accept top-level singleton dict payloads (not only nested `data` objects), preventing false empty-list output on maintenance endpoints that return a single object directly.
 - Hardened cliq-193 app-governance detail output shaping so `cliq app-permission-get`, `cliq app-install-get`, and `cliq app-command-get` now also accept top-level plural wrapper dict payloads (`permissions`, `installs`, `commands`) instead of falling back to empty detail rows.
 - Hardened cliq-193 app-governance detail extraction so `cliq app-permission-get`, `cliq app-install-get`, and `cliq app-command-get` now unwrap list rows that carry nested wrapper objects (`permissions`, `installs`, `commands`) instead of returning wrapper objects directly.
+- Hardened cliq-193 app-detail output shaping so `cliq app-get` now accepts top-level `apps` wrapper dict payloads for singleton responses instead of falling back to empty/default app output.
 - Scaffolded Cliq phase-1 shell with `zoho cliq status`, regional Cliq base URL inference, and a minimal `ZohoCliqClient` skeleton.
 - Added Cliq OAuth preparation: `zoho login --with-cliq` scope bundling, generic `--scope` extension, and `zoho cliq status` scope readiness (`oauthReady` / `missingScopes`).
 - Updated default Cliq OAuth scope bundle to endpoint-specific scopes (`ZohoCliq.Channels.READ`, `ZohoCliq.Users.READ`, `ZohoCliq.Webhooks.CREATE`) to match live send/notify API requirements.

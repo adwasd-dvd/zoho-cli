@@ -2,7 +2,7 @@
 
 ## Immediate
 1. **`cliq-165` remains the top blocker**: maintenance export scopes are granted, but both `cliq export-chats` list and `--chat-id` still return API-side `inactive_appaccount_user` until Cliq admin-side app-account activation is completed.
-2. **`cliq-193` output-shape hardening remains active while app-account activation is blocked**: app-governance list commands (`cliq apps`, `cliq app-permissions`, `cliq app-installs`, `cliq app-commands`) accept singleton dict payloads in nested `data` and top-level response objects, and app-governance detail commands (`cliq app-permission-get`, `cliq app-install-get`, `cliq app-command-get`) now accept top-level plural wrapper dict payloads (`permissions`/`installs`/`commands`) plus list-row nested wrapper objects in `data`. Latest focused regression slice is green (9 passed).
+2. **`cliq-193` output-shape hardening remains active while app-account activation is blocked**: app-governance list commands (`cliq apps`, `cliq app-permissions`, `cliq app-installs`, `cliq app-commands`) accept singleton dict payloads in nested `data` and top-level response objects, app-governance detail commands (`cliq app-permission-get`, `cliq app-install-get`, `cliq app-command-get`) accept top-level plural wrapper dict payloads (`permissions`/`installs`/`commands`) plus list-row nested wrapper objects in `data`, and `cliq app-get` now accepts top-level wrapper dict payloads under `apps` for singleton detail responses. Latest focused regression slice is green (3 passed).
 3. **Keep blocker-skipping active**: continue moving on testable Cliq app-governance slices while app-account activation remains external.
 
 ## Next

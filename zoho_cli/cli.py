@@ -2391,6 +2391,25 @@ def cliq_app_get(
                 picked = next((row for row in candidate if isinstance(row, dict)), None)
                 if picked:
                     return picked
+            if isinstance(candidate, dict):
+                nested_candidate = candidate.get("app") or candidate.get("item")
+                if isinstance(nested_candidate, dict):
+                    return nested_candidate
+                if any(
+                    app_key in candidate
+                    for app_key in (
+                        "app_id",
+                        "appId",
+                        "id",
+                        "zuid",
+                        "name",
+                        "app_name",
+                        "status",
+                        "state",
+                        "app_status",
+                    )
+                ):
+                    return candidate
 
         nested_data = payload.get("data")
         if isinstance(nested_data, dict):

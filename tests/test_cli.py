@@ -4760,6 +4760,49 @@ def test_cliq_app_installs_accepts_data_list_wrapped_item_shape(
     assert payload["installs"][0]["status"] == "active"
 
 
+def test_cliq_app_installs_accepts_top_level_response_wrapper_shape(
+    mock_config: Path,
+    mock_token_refresh: Any,
+) -> None:
+    mock_client = MagicMock()
+    mock_client.list_app_installs.return_value = {
+        "response": {
+            "result": {
+                "data": {
+                    "records": {
+                        "record": {
+                            "item": {
+                                "install": {
+                                    "installId": "I_5R",
+                                    "memberId": "M_5R",
+                                    "name": "Ops Pager Wrapped",
+                                    "status": "active",
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    with patch("zoho_cli.cli._get_cliq_client", return_value=mock_client):
+        result = runner.invoke(
+            app,
+            ["cliq", "app-installs", "AP_5", "--limit", "2"],
+            env=_cfg_env(mock_config),
+        )
+
+    assert result.exit_code == 0, result.output
+    payload = json.loads(result.output)
+    assert payload["count"] == 1
+    assert payload["installs"][0]["installId"] == "I_5R"
+    assert payload["installs"][0]["subjectId"] == "M_5R"
+    assert payload["installs"][0]["name"] == "Ops Pager Wrapped"
+    assert payload["installs"][0]["status"] == "active"
+    mock_client.list_app_installs.assert_called_once_with("AP_5", limit=2)
+
+
 def test_cliq_app_install_get(mock_config: Path, mock_token_refresh: Any) -> None:
     mock_client = MagicMock()
     mock_client.get_app_install.return_value = {
@@ -4889,6 +4932,49 @@ def test_cliq_app_install_get_accepts_data_list_wrapped_installs_shape(
     assert payload["install"]["name"] == "Incident Flow"
     assert payload["install"]["status"] == "active"
     mock_client.get_app_install.assert_called_once_with("AP_11", "INS_14")
+
+
+def test_cliq_app_install_get_accepts_top_level_response_wrapper_shape(
+    mock_config: Path,
+    mock_token_refresh: Any,
+) -> None:
+    mock_client = MagicMock()
+    mock_client.get_app_install.return_value = {
+        "response": {
+            "result": {
+                "data": {
+                    "records": {
+                        "record": {
+                            "item": {
+                                "install": {
+                                    "installId": "INS_14R",
+                                    "chatId": "C_14R",
+                                    "title": "Incident Flow Wrapped",
+                                    "mode": "active",
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    with patch("zoho_cli.cli._get_cliq_client", return_value=mock_client):
+        result = runner.invoke(
+            app,
+            ["cliq", "app-install-get", "AP_11", "INS_14R"],
+            env=_cfg_env(mock_config),
+        )
+
+    assert result.exit_code == 0, result.output
+    payload = json.loads(result.output)
+    assert payload["appId"] == "AP_11"
+    assert payload["install"]["installId"] == "INS_14R"
+    assert payload["install"]["subjectId"] == "C_14R"
+    assert payload["install"]["name"] == "Incident Flow Wrapped"
+    assert payload["install"]["status"] == "active"
+    mock_client.get_app_install.assert_called_once_with("AP_11", "INS_14R")
 
 
 def test_cliq_app_install_get_accepts_data_records_shape(

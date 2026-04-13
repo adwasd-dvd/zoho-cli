@@ -1,0 +1,10 @@
+{
+  "statusReport": "tests/auto_pilot/reports/cliq193_status_20260413_132254.json",
+  "appsReport": "tests/auto_pilot/reports/cliq193_apps_20260413_132254.json",
+  "statusExit": 0,
+  "appsExit": 1,
+  "oauthReady": true,
+  "exportOauthReady": true,
+  "appsError": "not_supported",
+  "appsCount": null
+}

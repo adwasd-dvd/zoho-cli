@@ -2297,6 +2297,58 @@ def cliq_apps(
     )
 
 
+@cliq_app.command("app-get")
+def cliq_app_get(
+    app_id: str = typer.Argument(..., help="Cliq app id."),
+    network: Optional[str] = typer.Option(
+        None, "--network", help="Cliq network slug (e.g. happydistrouklimited)."
+    ),
+) -> None:
+    """Get one Cliq app-governance app by id (cliq-193 second slice)."""
+    cfg = _cfg()
+    email = _require_account(cfg)
+    client = _get_cliq_client(cfg, email, network=network)
+
+    resolved_app_id = app_id.strip()
+    resp = client.get_app(resolved_app_id)
+    data: Any = resp.get("data", resp)
+
+    app_row: dict[str, Any] = {}
+    if isinstance(data, dict):
+        app_row = data
+        for key in ("app", "item", "data"):
+            candidate = data.get(key)
+            if isinstance(candidate, dict):
+                app_row = candidate
+                break
+    elif isinstance(data, list):
+        app_row = next((row for row in data if isinstance(row, dict)), {})
+
+    view = {
+        "appId": str(
+            app_row.get("app_id")
+            or app_row.get("appId")
+            or app_row.get("id")
+            or app_row.get("zuid")
+            or resolved_app_id
+        ),
+        "name": str(app_row.get("name") or app_row.get("app_name") or ""),
+        "status": str(
+            app_row.get("status")
+            or app_row.get("state")
+            or app_row.get("app_status")
+            or ""
+        ),
+        "raw": app_row,
+    }
+
+    utils.output(
+        {
+            "app": view,
+        }
+    )
+
+
 @cliq_app.command("export-chats")
 def cliq_export_chats(
     chat_id: Optional[str] = typer.Option(

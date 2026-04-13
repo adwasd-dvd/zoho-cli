@@ -1,5 +1,5 @@
 project: zoho-cli
-updated_at: '2026-04-13T04:05:55Z'
+updated_at: '2026-04-13T04:22:52Z'
 status: cliq-expansion
 canonical_workspace: /Users/adwasd/.openclaw/workspace-coder
 project_root: /Users/adwasd/.openclaw/workspace-coder/job/zoho-cli
@@ -7,7 +7,7 @@ module_order:
 - Mail
 - Cliq
 - CRM
-current_focus: cliq-165 export verification remains externally blocked by API-side `inactive_appaccount_user`; cliq-193 fourth code slice (`cliq app-installs`) is now delivered with focused tests, so the next step is one focused live verification pass for app-installs before taking the next smallest app-governance slice
+current_focus: 'cliq-165 export verification remains externally blocked by API-side `inactive_appaccount_user`; focused cliq-193 live `app-installs` verification is now archived (`error: not_supported` with healthy auth/export readiness), so the next step is taking the next smallest app-governance command/client slice with targeted tests'
 primary_blockers:
 - crm live read-only verification remains blocked by account-level CRM org access
 - cliq databases live verification currently requires additional scope (`ZohoCliq.Databases.READ`) on the active token despite healthy baseline auth/export readiness
@@ -29,8 +29,9 @@ primary_blockers:
   returns `not_supported`)
 - calls/meetings endpoints are unsupported on current token/network (`cliq meetings`
   now returns `not_supported` in focused live verification)
-next_step: keep cliq-165 as the highest-priority blocker by coordinating Cliq admin-side app-account activation and rerunning `cliq export-chats` list + `--chat-id`; while still externally blocked, run one focused live verification pass for `cliq app-installs`, then take the next smallest cliq-193 app-governance command/client slice with focused tests
+next_step: 'keep cliq-165 as the highest-priority blocker by coordinating Cliq admin-side app-account activation and rerunning `cliq export-chats` list + `--chat-id`; while still externally blocked, take the next smallest cliq-193 app-governance command/client slice with focused tests, then run one focused live verification pass for that new slice'
 additional_info:
+- '2026-04-13 live probe: focused cliq-193 verification (`cliq status --check-auth` + `cliq app-installs APP_PROBE_FAKE_20260413_042249`) on happydistrouklimited keeps auth/export readiness healthy and classifies app-install endpoints as `not_supported` (`tests/auto_pilot/reports/cliq193_app_installs_probe_summary_20260413_042249.json`, plus `cliq193_status_20260413_042249.json` and `cliq193_app_installs_20260413_042249.json`).'
 - '2026-04-13 unit delivery: added fourth cliq-193 app-governance slice with `zoho cliq app-installs` and `ZohoCliqClient.list_app_installs` fallback routing (`/apps/{id}/installs`, `/app/{id}/installs`, `/admin/apps/{id}/installs`, `/admin/app/{id}/installs`); targeted tests passed (`tests/test_cliq.py::test_cliq_client_list_app_installs_falls_back_to_admin_endpoint`, `tests/test_cliq.py::test_cliq_client_list_app_installs_falls_back_to_admin_singular_endpoint`, `tests/test_cliq.py::test_cliq_client_list_app_installs_scope_invalid_reports_hint`, `tests/test_cli.py::test_cliq_app_installs`, `tests/test_cli.py::test_cliq_app_installs_accepts_nested_installs_shape`).'
 - '2026-04-13 live probe: focused cliq-193 verification (`cliq status --check-auth` + `cliq app-permissions APP_PROBE_FAKE_20260413_034304`) on happydistrouklimited keeps auth/export readiness healthy and classifies app-permissions endpoints as `not_supported` (`tests/auto_pilot/reports/cliq193_app_permissions_probe_summary_20260413_034304.json`, plus `cliq193_status_20260413_034304.json` and `cliq193_app_permissions_20260413_034304.json`).'
 - '2026-04-13 unit delivery: added third cliq-193 app-governance slice with `zoho cliq app-permissions` and `ZohoCliqClient.list_app_permissions` fallback routing (`/apps/{id}/permissions`, `/app/{id}/permissions`, `/admin/apps/{id}/permissions`, `/admin/app/{id}/permissions`); targeted tests passed (`tests/test_cliq.py::test_cliq_client_list_app_permissions_falls_back_to_admin_endpoint`, `tests/test_cliq.py::test_cliq_client_list_app_permissions_falls_back_to_admin_singular_endpoint`, `tests/test_cliq.py::test_cliq_client_list_app_permissions_scope_invalid_reports_hint`, `tests/test_cli.py::test_cliq_app_permissions`, `tests/test_cli.py::test_cliq_app_permissions_accepts_nested_permissions_shape`).'

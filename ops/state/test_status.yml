@@ -1,10 +1,13 @@
-last_run_at: "2026-04-13T18:40:00Z"
+last_run_at: "2026-04-13T19:02:26Z"
 last_result: warning
 current_focus: cliq
 suites:
   unit:
     status: passing
     notes:
+      - "python3.11 -m zoho_cli --config /tmp/zoho-test-config.json --account ai-dev@happy-distro.co.uk cliq status --check-auth --network happydistrouklimited"
+      - "python3.11 -m zoho_cli --config /tmp/zoho-test-config.json --account ai-dev@happy-distro.co.uk cliq apps --network happydistrouklimited --limit 10"
+      - "focused live cliq-193 verification archived at `tests/auto_pilot/reports/cliq193_apps_probe_summary_20260413_190223.json`: status remains healthy (`oauthReady: true`, `exportOauthReady: true`) and app-list endpoint remains `error: not_supported` (2026-04-13T19:02:26Z)"
       - "python3.11 -m pytest -q tests/test_cli.py::test_cliq_apps_accepts_data_records_shape tests/test_cli.py::test_cliq_apps_accepts_data_records_record_row_shape tests/test_cli.py::test_cliq_app_permissions_accepts_data_records_shape tests/test_cli.py::test_cliq_app_permissions_accepts_data_records_record_row_shape tests/test_cli.py::test_cliq_app_installs_accepts_data_records_shape tests/test_cli.py::test_cliq_app_installs_accepts_data_records_record_row_shape tests/test_cli.py::test_cliq_app_commands_accepts_data_records_shape tests/test_cli.py::test_cliq_app_commands_accepts_data_records_record_row_shape"
       - "8 passed in 0.18s (cliq-193 list-output hardening: app-governance list commands now unwrap `data.records.record.item` wrapper rows, 2026-04-13T18:40:00Z)"
       - "./.venv/bin/ruff format --check zoho_cli/cli.py tests/test_cli.py"

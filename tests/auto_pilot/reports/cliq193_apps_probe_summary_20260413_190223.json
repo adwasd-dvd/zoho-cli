@@ -1,0 +1,24 @@
+{
+  "task": "cliq-193",
+  "probe": "cliq apps records.record.item hardening live verification",
+  "timestampUtc": "2026-04-13T19:02:26Z",
+  "commands": {
+    "status": {
+      "exitCode": 0,
+      "path": "tests/auto_pilot/reports/cliq193_status_20260413_190223.json"
+    },
+    "apps": {
+      "exitCode": 1,
+      "path": "tests/auto_pilot/reports/cliq193_apps_20260413_190223.json"
+    }
+  },
+  "status": {
+    "oauthReady": true,
+    "exportOauthReady": true,
+    "error": null
+  },
+  "apps": {
+    "error": "not_supported",
+    "count": null
+  }
+}

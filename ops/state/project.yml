@@ -1,5 +1,5 @@
 project: zoho-cli
-updated_at: '2026-04-13T07:06:07Z'
+updated_at: '2026-04-13T07:23:44Z'
 status: cliq-expansion
 canonical_workspace: /Users/adwasd/.openclaw/workspace-coder
 project_root: /Users/adwasd/.openclaw/workspace-coder/job/zoho-cli
@@ -7,7 +7,7 @@ module_order:
 - Mail
 - Cliq
 - CRM
-current_focus: 'cliq-165 export verification remains externally blocked by API-side `inactive_appaccount_user`; cliq-193 eighth slice (`cliq app-permission-get`) is now delivered with focused tests green, so the next step is one focused live verification pass for that command before moving to the next smallest app-governance slice'
+current_focus: 'cliq-165 export verification remains externally blocked by API-side `inactive_appaccount_user`; focused live verification for the cliq-193 eighth slice (`cliq app-permission-get`) now classifies app-permission detail endpoints as `not_supported` with auth/export readiness still healthy, so the next step is the next smallest app-governance command/client slice'
 primary_blockers:
 - crm live read-only verification remains blocked by account-level CRM org access
 - cliq databases live verification currently requires additional scope (`ZohoCliq.Databases.READ`) on the active token despite healthy baseline auth/export readiness
@@ -29,8 +29,9 @@ primary_blockers:
   returns `not_supported`)
 - calls/meetings endpoints are unsupported on current token/network (`cliq meetings`
   now returns `not_supported` in focused live verification)
-next_step: 'keep cliq-165 as the highest-priority blocker by coordinating Cliq admin-side app-account activation and rerunning `cliq export-chats` list + `--chat-id`; while still externally blocked, run one focused live verification pass for `cliq app-permission-get` (`cliq status --check-auth` + `cliq app-permission-get APP_PROBE_FAKE_20260413_070607 PERMISSION_PROBE_FAKE_20260413_070607`) and archive evidence, then continue the next smallest cliq-193 slice'
+next_step: 'keep cliq-165 as the highest-priority blocker by coordinating Cliq admin-side app-account activation and rerunning `cliq export-chats` list + `--chat-id`; while still externally blocked, continue with the next smallest cliq-193 app-governance command/client slice and then run one focused live verification pass for that new slice'
 additional_info:
+- '2026-04-13 live probe: focused cliq-193 verification (`cliq status --check-auth` + `cliq app-permission-get APP_PROBE_FAKE_20260413_072343 PERMISSION_PROBE_FAKE_20260413_072343`) on happydistrouklimited keeps auth/export readiness healthy and classifies app-permission detail endpoints as `not_supported` (`tests/auto_pilot/reports/cliq193_app_permission_get_probe_summary_20260413_072343.json`, plus `cliq193_status_20260413_072343.json` and `cliq193_app_permission_get_20260413_072343.json`).'
 - '2026-04-13 unit delivery: added eighth cliq-193 app-governance slice with `zoho cliq app-permission-get` and `ZohoCliqClient.get_app_permission` fallback routing (`/apps/{id}/permissions/{permission_id}`, `/app/{id}/permissions/{permission_id}`, `/admin/apps/{id}/permissions/{permission_id}`, `/admin/app/{id}/permissions/{permission_id}`); focused tests passed (`tests/test_cliq.py::test_cliq_client_get_app_permission_falls_back_to_admin_endpoint`, `tests/test_cliq.py::test_cliq_client_get_app_permission_falls_back_to_admin_singular_endpoint`, `tests/test_cliq.py::test_cliq_client_get_app_permission_scope_invalid_reports_hint`, `tests/test_cli.py::test_cliq_app_permission_get`, `tests/test_cli.py::test_cliq_app_permission_get_accepts_nested_permissions_shape`).'
 - '2026-04-13 live probe: focused cliq-193 verification (`cliq status --check-auth` + `cliq app-install-get APP_PROBE_FAKE_20260413_062230 INSTALL_PROBE_FAKE_20260413_062230`) on happydistrouklimited keeps auth/export readiness healthy and classifies app-install detail endpoints as `not_supported` (`tests/auto_pilot/reports/cliq193_app_install_get_probe_summary_20260413_062230.json`, plus `cliq193_status_20260413_062230.json` and `cliq193_app_install_get_20260413_062230.json`).'
 - '2026-04-13 unit delivery: added seventh cliq-193 app-governance slice with `zoho cliq app-install-get` and `ZohoCliqClient.get_app_install` fallback routing (`/apps/{id}/installs/{install_id}`, `/app/{id}/installs/{install_id}`, `/admin/apps/{id}/installs/{install_id}`, `/admin/app/{id}/installs/{install_id}`); focused app-governance regression tests passed (`tests/test_cliq.py::test_cliq_client_get_app_install_falls_back_to_admin_endpoint`, `tests/test_cliq.py::test_cliq_client_get_app_install_falls_back_to_admin_singular_endpoint`, `tests/test_cliq.py::test_cliq_client_get_app_install_scope_invalid_reports_hint`, `tests/test_cli.py::test_cliq_app_install_get`, `tests/test_cli.py::test_cliq_app_install_get_accepts_nested_installs_shape`) plus expanded cliq-193 regression slice (35 passed).'

@@ -2732,29 +2732,35 @@ def cliq_app_permission_get(
 
     def _extract_permission_row(payload: Any) -> dict[str, Any]:
         def _unwrap_permission_row(row: dict[str, Any]) -> dict[str, Any]:
-            for key in (
-                "permission",
-                "scope",
-                "item",
-                "permissions",
-                "scopes",
-                "list",
-                "items",
-                "results",
-                "records",
-                "data",
-            ):
-                nested = row.get(key)
-                if isinstance(nested, dict):
-                    return nested
-                if isinstance(nested, list):
-                    picked = next(
-                        (entry for entry in nested if isinstance(entry, dict)),
-                        None,
-                    )
-                    if picked:
-                        return picked
-            return row
+            current = row
+            for _ in range(3):
+                for key in (
+                    "permission",
+                    "scope",
+                    "item",
+                    "permissions",
+                    "scopes",
+                    "list",
+                    "items",
+                    "results",
+                    "records",
+                    "data",
+                ):
+                    nested = current.get(key)
+                    if isinstance(nested, dict):
+                        current = nested
+                        break
+                    if isinstance(nested, list):
+                        picked = next(
+                            (entry for entry in nested if isinstance(entry, dict)),
+                            None,
+                        )
+                        if picked:
+                            current = picked
+                            break
+                else:
+                    break
+            return current
 
         if isinstance(payload, list):
             return next(
@@ -3118,29 +3124,35 @@ def cliq_app_install_get(
 
     def _extract_install_row(payload: Any) -> dict[str, Any]:
         def _unwrap_install_row(row: dict[str, Any]) -> dict[str, Any]:
-            for key in (
-                "install",
-                "item",
-                "installs",
-                "installations",
-                "users",
-                "list",
-                "items",
-                "results",
-                "records",
-                "data",
-            ):
-                nested = row.get(key)
-                if isinstance(nested, dict):
-                    return nested
-                if isinstance(nested, list):
-                    picked = next(
-                        (entry for entry in nested if isinstance(entry, dict)),
-                        None,
-                    )
-                    if picked:
-                        return picked
-            return row
+            current = row
+            for _ in range(3):
+                for key in (
+                    "install",
+                    "item",
+                    "installs",
+                    "installations",
+                    "users",
+                    "list",
+                    "items",
+                    "results",
+                    "records",
+                    "data",
+                ):
+                    nested = current.get(key)
+                    if isinstance(nested, dict):
+                        current = nested
+                        break
+                    if isinstance(nested, list):
+                        picked = next(
+                            (entry for entry in nested if isinstance(entry, dict)),
+                            None,
+                        )
+                        if picked:
+                            current = picked
+                            break
+                else:
+                    break
+            return current
 
         if isinstance(payload, list):
             return next(
@@ -3525,29 +3537,35 @@ def cliq_app_command_get(
 
     def _extract_command_row(payload: Any) -> dict[str, Any]:
         def _unwrap_command_row(row: dict[str, Any]) -> dict[str, Any]:
-            for key in (
-                "command",
-                "action",
-                "item",
-                "commands",
-                "actions",
-                "list",
-                "items",
-                "results",
-                "records",
-                "data",
-            ):
-                nested = row.get(key)
-                if isinstance(nested, dict):
-                    return nested
-                if isinstance(nested, list):
-                    picked = next(
-                        (entry for entry in nested if isinstance(entry, dict)),
-                        None,
-                    )
-                    if picked:
-                        return picked
-            return row
+            current = row
+            for _ in range(3):
+                for key in (
+                    "command",
+                    "action",
+                    "item",
+                    "commands",
+                    "actions",
+                    "list",
+                    "items",
+                    "results",
+                    "records",
+                    "data",
+                ):
+                    nested = current.get(key)
+                    if isinstance(nested, dict):
+                        current = nested
+                        break
+                    if isinstance(nested, list):
+                        picked = next(
+                            (entry for entry in nested if isinstance(entry, dict)),
+                            None,
+                        )
+                        if picked:
+                            current = picked
+                            break
+                else:
+                    break
+            return current
 
         if isinstance(payload, list):
             return next(

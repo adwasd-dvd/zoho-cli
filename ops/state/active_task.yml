@@ -4,10 +4,10 @@ module: cliq
 stage: in_progress
 status: in_progress
 owner: automation
-updated_at: '2026-04-13T15:43:54Z'
+updated_at: '2026-04-13T16:09:55Z'
 success_criteria:
 - ship the next cliq-193 app-governance command/client slice with focused tests
 - run one focused live verification for that new slice and archive evidence
 - keep cliq-165 export blocker evidence current while app-account activation remains external
 next_if_done: take the next queued cliq-193 app-governance slice with focused coverage
-next_step: "cliq-193 focused live verification for the new `data.records` output hardening is now archived (`cliq status --check-auth` + `cliq app-get APP_PROBE_FAKE_20260413_154354`, evidence: `tests/auto_pilot/reports/cliq193_app_get_probe_summary_20260413_154354.json`); auth/export readiness remains healthy while app-detail endpoints stay `not_supported`, so the next step is the next smallest app-governance output-hardening slice with focused tests while cliq-165 remains externally blocked by `inactive_appaccount_user`"
+next_step: "cliq-193 nested wrapper-row detail hardening is now in place for `cliq app-permission-get`, `cliq app-install-get`, and `cliq app-command-get` (detail parsers now recursively unwrap top-level wrapper list rows like `[{permission:{permission:{...}}}]`/`[{install:{install:{...}}}]`/`[{command:{command:{...}}}]`); focused CLI tests are green (`tests/test_cli.py::{test_cliq_app_permission_get_accepts_top_level_permission_wrapper_list_shape,test_cliq_app_permission_get_accepts_top_level_permission_wrapper_list_row_shape,test_cliq_app_install_get_accepts_top_level_install_wrapper_list_shape,test_cliq_app_install_get_accepts_top_level_install_wrapper_list_row_shape,test_cliq_app_command_get_accepts_top_level_command_wrapper_list_shape,test_cliq_app_command_get_accepts_top_level_command_wrapper_list_row_shape}`), so the next step is one focused live verification pass for one of these detail commands while cliq-165 remains externally blocked by `inactive_appaccount_user`"

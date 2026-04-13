@@ -2261,7 +2261,7 @@ def cliq_apps(
     def _unwrap_app_row(row: dict[str, Any]) -> dict[str, Any]:
         current = row
         for _ in range(3):
-            for key in ("app", "apps", "data"):
+            for key in ("app", "apps", "record", "records", "data"):
                 nested = current.get(key)
                 if isinstance(nested, dict):
                     current = nested
@@ -2277,7 +2277,7 @@ def cliq_apps(
         if not isinstance(payload, dict):
             return []
 
-        for key in ("app", "item"):
+        for key in ("app", "item", "record"):
             candidate = payload.get(key)
             if isinstance(candidate, dict):
                 return [_unwrap_app_row(candidate)]
@@ -2292,6 +2292,7 @@ def cliq_apps(
             payload.get("list"),
             payload.get("items"),
             payload.get("results"),
+            payload.get("records"),
         ]
         nested_data = payload.get("data")
         if isinstance(nested_data, dict):
@@ -2301,6 +2302,7 @@ def cliq_apps(
                     nested_data.get("list"),
                     nested_data.get("items"),
                     nested_data.get("results"),
+                    nested_data.get("records"),
                     nested_data.get("data"),
                 ]
             )
@@ -2312,7 +2314,11 @@ def cliq_apps(
                 ]
 
             if isinstance(candidate, dict):
-                nested_app = candidate.get("app") or candidate.get("item")
+                nested_app = (
+                    candidate.get("app")
+                    or candidate.get("item")
+                    or candidate.get("record")
+                )
                 if isinstance(nested_app, dict):
                     return [_unwrap_app_row(nested_app)]
 
@@ -2399,7 +2405,7 @@ def cliq_app_get(
     def _unwrap_app_row(row: dict[str, Any]) -> dict[str, Any]:
         current = row
         for _ in range(4):
-            for key in ("app", "apps", "item", "data"):
+            for key in ("app", "apps", "item", "record", "records", "data"):
                 nested = current.get(key)
                 if isinstance(nested, dict):
                     current = nested
@@ -2416,7 +2422,7 @@ def cliq_app_get(
         if not isinstance(payload, dict):
             return {}
 
-        for key in ("app", "item"):
+        for key in ("app", "item", "record"):
             candidate = payload.get(key)
             if isinstance(candidate, dict):
                 return _unwrap_app_row(candidate)
@@ -2425,14 +2431,18 @@ def cliq_app_get(
                 if picked:
                     return _unwrap_app_row(picked)
 
-        for key in ("apps", "list", "items", "results"):
+        for key in ("apps", "list", "items", "results", "records"):
             candidate = payload.get(key)
             if isinstance(candidate, list):
                 picked = next((row for row in candidate if isinstance(row, dict)), None)
                 if picked:
-                    return picked
+                    return _unwrap_app_row(picked)
             if isinstance(candidate, dict):
-                nested_candidate = candidate.get("app") or candidate.get("item")
+                nested_candidate = (
+                    candidate.get("app")
+                    or candidate.get("item")
+                    or candidate.get("record")
+                )
                 if isinstance(nested_candidate, dict):
                     return _unwrap_app_row(nested_candidate)
                 if any(
@@ -2453,11 +2463,11 @@ def cliq_app_get(
 
         nested_data = payload.get("data")
         if isinstance(nested_data, dict):
-            for key in ("app", "item"):
+            for key in ("app", "item", "record"):
                 candidate = nested_data.get(key)
                 if isinstance(candidate, dict):
                     return _unwrap_app_row(candidate)
-            for key in ("apps", "list", "items", "results", "data"):
+            for key in ("apps", "list", "items", "results", "records", "data"):
                 candidate = nested_data.get(key)
                 if isinstance(candidate, list):
                     picked = next(
@@ -2553,7 +2563,15 @@ def cliq_app_permissions(
     def _unwrap_permission_row(row: dict[str, Any]) -> dict[str, Any]:
         current = row
         for _ in range(3):
-            for key in ("permission", "scope", "permissions", "scopes", "data"):
+            for key in (
+                "permission",
+                "scope",
+                "record",
+                "permissions",
+                "records",
+                "scopes",
+                "data",
+            ):
                 nested = current.get(key)
                 if isinstance(nested, dict):
                     current = nested
@@ -2571,7 +2589,7 @@ def cliq_app_permissions(
         if not isinstance(payload, dict):
             return []
 
-        for key in ("permission", "scope", "item"):
+        for key in ("permission", "scope", "item", "record"):
             candidate = payload.get(key)
             if isinstance(candidate, dict):
                 return [_unwrap_permission_row(candidate)]
@@ -2589,6 +2607,7 @@ def cliq_app_permissions(
             payload.get("list"),
             payload.get("items"),
             payload.get("results"),
+            payload.get("records"),
         ]
         nested_data = payload.get("data")
         if isinstance(nested_data, dict):
@@ -2599,6 +2618,7 @@ def cliq_app_permissions(
                     nested_data.get("list"),
                     nested_data.get("items"),
                     nested_data.get("results"),
+                    nested_data.get("records"),
                     nested_data.get("data"),
                 ]
             )
@@ -2616,6 +2636,7 @@ def cliq_app_permissions(
                     candidate.get("permission")
                     or candidate.get("scope")
                     or candidate.get("item")
+                    or candidate.get("record")
                 )
                 if isinstance(nested_permission, dict):
                     return [_unwrap_permission_row(nested_permission)]
@@ -2720,6 +2741,7 @@ def cliq_app_permission_get(
                 "list",
                 "items",
                 "results",
+                "records",
                 "data",
             ):
                 nested = row.get(key)
@@ -2753,7 +2775,7 @@ def cliq_app_permission_get(
             if isinstance(candidate, dict):
                 return _unwrap_permission_row(candidate)
 
-        for key in ("permission", "scope", "item"):
+        for key in ("permission", "scope", "item", "record"):
             candidate = payload.get(key)
             if isinstance(candidate, dict):
                 return _unwrap_permission_row(candidate)
@@ -2762,7 +2784,7 @@ def cliq_app_permission_get(
                 if picked:
                     return _unwrap_permission_row(picked)
 
-        for key in ("permissions", "scopes", "list", "items", "results"):
+        for key in ("permissions", "scopes", "list", "items", "results", "records"):
             candidate = payload.get(key)
             if isinstance(candidate, list):
                 picked = next((row for row in candidate if isinstance(row, dict)), None)
@@ -2773,7 +2795,7 @@ def cliq_app_permission_get(
 
         nested_data = raw_data
         if isinstance(nested_data, dict):
-            for key in ("permission", "scope", "item"):
+            for key in ("permission", "scope", "item", "record"):
                 candidate = nested_data.get(key)
                 if isinstance(candidate, dict):
                     return _unwrap_permission_row(candidate)
@@ -2783,6 +2805,7 @@ def cliq_app_permission_get(
                 "list",
                 "items",
                 "results",
+                "records",
                 "data",
             ):
                 candidate = nested_data.get(key)
@@ -2887,7 +2910,15 @@ def cliq_app_installs(
     def _unwrap_install_row(row: dict[str, Any]) -> dict[str, Any]:
         current = row
         for _ in range(3):
-            for key in ("install", "installs", "installation", "installations", "data"):
+            for key in (
+                "install",
+                "installs",
+                "installation",
+                "installations",
+                "record",
+                "records",
+                "data",
+            ):
                 nested = current.get(key)
                 if isinstance(nested, dict):
                     current = nested
@@ -2905,7 +2936,7 @@ def cliq_app_installs(
         if not isinstance(payload, dict):
             return []
 
-        for key in ("install", "item"):
+        for key in ("install", "item", "record"):
             candidate = payload.get(key)
             if isinstance(candidate, dict):
                 return [_unwrap_install_row(candidate)]
@@ -2924,6 +2955,7 @@ def cliq_app_installs(
             payload.get("list"),
             payload.get("items"),
             payload.get("results"),
+            payload.get("records"),
         ]
         nested_data = payload.get("data")
         if isinstance(nested_data, dict):
@@ -2935,6 +2967,7 @@ def cliq_app_installs(
                     nested_data.get("list"),
                     nested_data.get("items"),
                     nested_data.get("results"),
+                    nested_data.get("records"),
                     nested_data.get("data"),
                 ]
             )
@@ -2948,7 +2981,11 @@ def cliq_app_installs(
                 ]
 
             if isinstance(candidate, dict):
-                nested_install = candidate.get("install") or candidate.get("item")
+                nested_install = (
+                    candidate.get("install")
+                    or candidate.get("item")
+                    or candidate.get("record")
+                )
                 if isinstance(nested_install, dict):
                     return [_unwrap_install_row(nested_install)]
 
@@ -3090,6 +3127,7 @@ def cliq_app_install_get(
                 "list",
                 "items",
                 "results",
+                "records",
                 "data",
             ):
                 nested = row.get(key)
@@ -3119,7 +3157,7 @@ def cliq_app_install_get(
             if isinstance(candidate, dict):
                 return _unwrap_install_row(candidate)
 
-        for key in ("install", "item"):
+        for key in ("install", "item", "record"):
             candidate = payload.get(key)
             if isinstance(candidate, dict):
                 return _unwrap_install_row(candidate)
@@ -3128,7 +3166,15 @@ def cliq_app_install_get(
                 if picked:
                     return _unwrap_install_row(picked)
 
-        for key in ("installs", "installations", "users", "list", "items", "results"):
+        for key in (
+            "installs",
+            "installations",
+            "users",
+            "list",
+            "items",
+            "results",
+            "records",
+        ):
             candidate = payload.get(key)
             if isinstance(candidate, list):
                 picked = next((row for row in candidate if isinstance(row, dict)), None)
@@ -3139,7 +3185,7 @@ def cliq_app_install_get(
 
         nested_data = raw_data
         if isinstance(nested_data, dict):
-            for key in ("install", "item"):
+            for key in ("install", "item", "record"):
                 candidate = nested_data.get(key)
                 if isinstance(candidate, dict):
                     return _unwrap_install_row(candidate)
@@ -3150,6 +3196,7 @@ def cliq_app_install_get(
                 "list",
                 "items",
                 "results",
+                "records",
                 "data",
             ):
                 candidate = nested_data.get(key)
@@ -3295,7 +3342,15 @@ def cliq_app_commands(
     def _unwrap_command_row(row: dict[str, Any]) -> dict[str, Any]:
         current = row
         for _ in range(3):
-            for key in ("command", "commands", "action", "actions", "data"):
+            for key in (
+                "command",
+                "commands",
+                "action",
+                "actions",
+                "record",
+                "records",
+                "data",
+            ):
                 nested = current.get(key)
                 if isinstance(nested, dict):
                     current = nested
@@ -3313,7 +3368,7 @@ def cliq_app_commands(
         if not isinstance(payload, dict):
             return []
 
-        for key in ("command", "action", "item"):
+        for key in ("command", "action", "item", "record"):
             candidate = payload.get(key)
             if isinstance(candidate, dict):
                 return [_unwrap_command_row(candidate)]
@@ -3331,6 +3386,7 @@ def cliq_app_commands(
             payload.get("list"),
             payload.get("items"),
             payload.get("results"),
+            payload.get("records"),
         ]
         nested_data = payload.get("data")
         if isinstance(nested_data, dict):
@@ -3341,6 +3397,7 @@ def cliq_app_commands(
                     nested_data.get("list"),
                     nested_data.get("items"),
                     nested_data.get("results"),
+                    nested_data.get("records"),
                     nested_data.get("data"),
                 ]
             )
@@ -3358,6 +3415,7 @@ def cliq_app_commands(
                     candidate.get("command")
                     or candidate.get("action")
                     or candidate.get("item")
+                    or candidate.get("record")
                 )
                 if isinstance(nested_command, dict):
                     return [_unwrap_command_row(nested_command)]
@@ -3476,6 +3534,7 @@ def cliq_app_command_get(
                 "list",
                 "items",
                 "results",
+                "records",
                 "data",
             ):
                 nested = row.get(key)
@@ -3505,7 +3564,7 @@ def cliq_app_command_get(
             if isinstance(candidate, dict):
                 return _unwrap_command_row(candidate)
 
-        for key in ("command", "action", "item"):
+        for key in ("command", "action", "item", "record"):
             candidate = payload.get(key)
             if isinstance(candidate, dict):
                 return _unwrap_command_row(candidate)
@@ -3514,7 +3573,7 @@ def cliq_app_command_get(
                 if picked:
                     return _unwrap_command_row(picked)
 
-        for key in ("commands", "actions", "list", "items", "results"):
+        for key in ("commands", "actions", "list", "items", "results", "records"):
             candidate = payload.get(key)
             if isinstance(candidate, list):
                 picked = next((row for row in candidate if isinstance(row, dict)), None)
@@ -3525,11 +3584,19 @@ def cliq_app_command_get(
 
         nested_data = raw_data
         if isinstance(nested_data, dict):
-            for key in ("command", "action", "item"):
+            for key in ("command", "action", "item", "record"):
                 candidate = nested_data.get(key)
                 if isinstance(candidate, dict):
                     return _unwrap_command_row(candidate)
-            for key in ("commands", "actions", "list", "items", "results", "data"):
+            for key in (
+                "commands",
+                "actions",
+                "list",
+                "items",
+                "results",
+                "records",
+                "data",
+            ):
                 candidate = nested_data.get(key)
                 if isinstance(candidate, list):
                     picked = next(

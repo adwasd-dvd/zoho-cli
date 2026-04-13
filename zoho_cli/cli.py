@@ -2533,6 +2533,133 @@ def cliq_app_permissions(
     )
 
 
+@cliq_app.command("app-permission-get")
+def cliq_app_permission_get(
+    app_id: str = typer.Argument(..., help="Cliq app id."),
+    permission_id: str = typer.Argument(..., help="Cliq app permission id."),
+    network: Optional[str] = typer.Option(
+        None, "--network", help="Cliq network slug (e.g. happydistrouklimited)."
+    ),
+) -> None:
+    """Get one app-governance permission by id (cliq-193 eighth slice)."""
+
+    def _extract_permission_row(payload: Any) -> dict[str, Any]:
+        if isinstance(payload, list):
+            return next((row for row in payload if isinstance(row, dict)), {})
+
+        if not isinstance(payload, dict):
+            return {}
+
+        for key in ("permission", "scope", "item"):
+            candidate = payload.get(key)
+            if isinstance(candidate, dict):
+                return candidate
+
+        for key in ("permissions", "scopes", "list", "items", "results"):
+            candidate = payload.get(key)
+            if isinstance(candidate, list):
+                picked = next((row for row in candidate if isinstance(row, dict)), None)
+                if picked:
+                    return picked
+
+        nested_data = payload.get("data")
+        if isinstance(nested_data, dict):
+            for key in ("permission", "scope", "item"):
+                candidate = nested_data.get(key)
+                if isinstance(candidate, dict):
+                    return candidate
+            for key in (
+                "permissions",
+                "scopes",
+                "list",
+                "items",
+                "results",
+                "data",
+            ):
+                candidate = nested_data.get(key)
+                if isinstance(candidate, list):
+                    picked = next(
+                        (row for row in candidate if isinstance(row, dict)),
+                        None,
+                    )
+                    if picked:
+                        return picked
+                if isinstance(candidate, dict):
+                    return candidate
+            if any(
+                key in nested_data
+                for key in (
+                    "permission_id",
+                    "permissionId",
+                    "id",
+                    "zuid",
+                    "scope",
+                    "permission",
+                    "name",
+                    "value",
+                    "status",
+                    "state",
+                    "mode",
+                )
+            ):
+                return nested_data
+
+        if any(
+            key in payload
+            for key in (
+                "permission_id",
+                "permissionId",
+                "id",
+                "zuid",
+                "scope",
+                "permission",
+                "name",
+                "value",
+                "status",
+                "state",
+                "mode",
+            )
+        ):
+            return payload
+
+        return {}
+
+    cfg = _cfg()
+    email = _require_account(cfg)
+    client = _get_cliq_client(cfg, email, network=network)
+
+    resolved_app_id = app_id.strip()
+    resolved_permission_id = permission_id.strip()
+    resp = client.get_app_permission(resolved_app_id, resolved_permission_id)
+    row = _extract_permission_row(resp)
+
+    view = {
+        "permissionId": str(
+            row.get("permission_id")
+            or row.get("permissionId")
+            or row.get("id")
+            or row.get("zuid")
+            or resolved_permission_id
+        ),
+        "scope": str(
+            row.get("scope")
+            or row.get("permission")
+            or row.get("name")
+            or row.get("value")
+            or ""
+        ),
+        "status": str(row.get("status") or row.get("state") or row.get("mode") or ""),
+        "raw": row,
+    }
+
+    utils.output(
+        {
+            "appId": resolved_app_id,
+            "permission": view,
+        }
+    )
+
+
 @cliq_app.command("app-installs")
 def cliq_app_installs(
     app_id: str = typer.Argument(..., help="Cliq app id."),

@@ -1091,6 +1091,89 @@ def test_cliq_client_list_app_permissions_scope_invalid_reports_hint(
 
 
 @respx.mock
+def test_cliq_client_get_app_permission_falls_back_to_admin_endpoint(
+    client: cliq.ZohoCliqClient,
+) -> None:
+    respx.get("https://cliq.zoho.com/api/v2/apps/AP_4/permissions/P_1").mock(
+        return_value=httpx.Response(404, text="request_url_invalid")
+    )
+    respx.get("https://cliq.zoho.com/api/v2/app/AP_4/permissions/P_1").mock(
+        return_value=httpx.Response(404, text="request_url_invalid")
+    )
+    route = respx.get(
+        "https://cliq.zoho.com/api/v2/admin/apps/AP_4/permissions/P_1"
+    ).mock(
+        return_value=httpx.Response(
+            200,
+            json={"data": {"permission_id": "P_1", "scope": "ZohoCliq.Apps.READ"}},
+        )
+    )
+
+    payload = client.get_app_permission("AP_4", "P_1")
+
+    assert route.called
+    assert payload["data"]["permission_id"] == "P_1"
+
+
+@respx.mock
+def test_cliq_client_get_app_permission_falls_back_to_admin_singular_endpoint(
+    client: cliq.ZohoCliqClient,
+) -> None:
+    respx.get("https://cliq.zoho.com/api/v2/apps/AP_4/permissions/P_2").mock(
+        return_value=httpx.Response(404, text="request_url_invalid")
+    )
+    respx.get("https://cliq.zoho.com/api/v2/app/AP_4/permissions/P_2").mock(
+        return_value=httpx.Response(404, text="request_url_invalid")
+    )
+    respx.get("https://cliq.zoho.com/api/v2/admin/apps/AP_4/permissions/P_2").mock(
+        return_value=httpx.Response(404, text="request_url_invalid")
+    )
+    route = respx.get(
+        "https://cliq.zoho.com/api/v2/admin/app/AP_4/permissions/P_2"
+    ).mock(
+        return_value=httpx.Response(
+            200,
+            json={"data": {"permissionId": "P_2", "scope": "ZohoCliq.Messages.READ"}},
+        )
+    )
+
+    payload = client.get_app_permission("AP_4", "P_2")
+
+    assert route.called
+    assert payload["data"]["permissionId"] == "P_2"
+
+
+@respx.mock
+def test_cliq_client_get_app_permission_scope_invalid_reports_hint(
+    client: cliq.ZohoCliqClient,
+    capsys: pytest.CaptureFixture[str],
+) -> None:
+    scope_error = {
+        "code": "oauthtoken_scope_invalid",
+        "message": "scope missing",
+    }
+    respx.get("https://cliq.zoho.com/api/v2/apps/AP_4/permissions/P_3").mock(
+        return_value=httpx.Response(401, json=scope_error)
+    )
+    respx.get("https://cliq.zoho.com/api/v2/app/AP_4/permissions/P_3").mock(
+        return_value=httpx.Response(401, json=scope_error)
+    )
+    respx.get("https://cliq.zoho.com/api/v2/admin/apps/AP_4/permissions/P_3").mock(
+        return_value=httpx.Response(401, json=scope_error)
+    )
+    respx.get("https://cliq.zoho.com/api/v2/admin/app/AP_4/permissions/P_3").mock(
+        return_value=httpx.Response(401, json=scope_error)
+    )
+
+    with pytest.raises(SystemExit):
+        client.get_app_permission("AP_4", "P_3")
+
+    err = capsys.readouterr().err
+    assert "oauth_scope_invalid" in err
+    assert "ZohoCliq.Apps.READ" in err
+
+
+@respx.mock
 def test_cliq_client_list_app_installs_falls_back_to_admin_endpoint(
     client: cliq.ZohoCliqClient,
 ) -> None:

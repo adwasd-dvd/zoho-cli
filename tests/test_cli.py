@@ -3316,6 +3316,66 @@ def test_cliq_app_permissions_accepts_nested_permissions_shape(
     assert payload["permissions"][0]["status"] == "active"
 
 
+def test_cliq_app_permission_get(
+    mock_config: Path,
+    mock_token_refresh: Any,
+) -> None:
+    mock_client = MagicMock()
+    mock_client.get_app_permission.return_value = {
+        "data": {
+            "permission_id": "P_10",
+            "scope": "ZohoCliq.Apps.READ",
+            "status": "active",
+        }
+    }
+
+    with patch("zoho_cli.cli._get_cliq_client", return_value=mock_client):
+        result = runner.invoke(
+            app,
+            ["cliq", "app-permission-get", "AP_7", "P_10"],
+            env=_cfg_env(mock_config),
+        )
+
+    assert result.exit_code == 0, result.output
+    payload = json.loads(result.output)
+    assert payload["appId"] == "AP_7"
+    assert payload["permission"]["permissionId"] == "P_10"
+    assert payload["permission"]["scope"] == "ZohoCliq.Apps.READ"
+    assert payload["permission"]["status"] == "active"
+    mock_client.get_app_permission.assert_called_once_with("AP_7", "P_10")
+
+
+def test_cliq_app_permission_get_accepts_nested_permissions_shape(
+    mock_config: Path,
+    mock_token_refresh: Any,
+) -> None:
+    mock_client = MagicMock()
+    mock_client.get_app_permission.return_value = {
+        "data": {
+            "permissions": [
+                {
+                    "permissionId": "P_11",
+                    "permission": "ZohoCliq.Messages.READ",
+                    "state": "enabled",
+                }
+            ]
+        }
+    }
+
+    with patch("zoho_cli.cli._get_cliq_client", return_value=mock_client):
+        result = runner.invoke(
+            app,
+            ["cliq", "app-permission-get", "AP_8", "P_11"],
+            env=_cfg_env(mock_config),
+        )
+
+    assert result.exit_code == 0, result.output
+    payload = json.loads(result.output)
+    assert payload["permission"]["permissionId"] == "P_11"
+    assert payload["permission"]["scope"] == "ZohoCliq.Messages.READ"
+    assert payload["permission"]["status"] == "enabled"
+
+
 def test_cliq_app_installs(
     mock_config: Path,
     mock_token_refresh: Any,

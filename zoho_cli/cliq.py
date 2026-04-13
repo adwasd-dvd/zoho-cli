@@ -2921,6 +2921,37 @@ class ZohoCliqClient:
             not_supported_message="Cliq app-governance app-permissions endpoints are not available for this token/network endpoint.",
         )
 
+    def get_app_permission(self, app_id: str, permission_id: str) -> dict:
+        """Fetch one app-governance permission by id (cliq-193 eighth slice)."""
+        resolved_app_id = app_id.strip()
+        if not resolved_app_id:
+            utils.error_exit("invalid_app_id", "app_id cannot be empty")
+
+        resolved_permission_id = permission_id.strip()
+        if not resolved_permission_id:
+            utils.error_exit("invalid_permission_id", "permission_id cannot be empty")
+
+        return self._get_with_candidates_and_not_supported(
+            [
+                (
+                    f"/apps/{resolved_app_id}/permissions/{resolved_permission_id}",
+                    None,
+                ),
+                (f"/app/{resolved_app_id}/permissions/{resolved_permission_id}", None),
+                (
+                    f"/admin/apps/{resolved_app_id}/permissions/{resolved_permission_id}",
+                    None,
+                ),
+                (
+                    f"/admin/app/{resolved_app_id}/permissions/{resolved_permission_id}",
+                    None,
+                ),
+            ],
+            scope_hint="ZohoCliq.Apps.READ",
+            operation_label="app-permission-get",
+            not_supported_message="Cliq app-governance app-permission detail endpoints are not available for this token/network endpoint.",
+        )
+
     def list_app_installs(self, app_id: str, *, limit: int = 50) -> dict:
         """List app-governance installs for one app (cliq-193 fourth slice)."""
         resolved_app_id = app_id.strip()

@@ -1,10 +1,14 @@
-last_run_at: "2026-04-13T04:22:52Z"
+last_run_at: "2026-04-13T04:50:08Z"
 last_result: warning
 current_focus: cliq
 suites:
   unit:
     status: passing
     notes:
+      - "./.venv/bin/ruff format zoho_cli/cli.py && ./.venv/bin/ruff format --check zoho_cli/cliq.py zoho_cli/cli.py tests/test_cliq.py tests/test_cli.py"
+      - "1 file reformatted, then 4 files already formatted (cliq-193 fifth slice formatting pass, 2026-04-13T04:49:17Z)"
+      - "python3.11 -m pytest -q tests/test_cliq.py::test_cliq_client_list_apps_falls_back_to_admin_endpoint tests/test_cliq.py::test_cliq_client_list_apps_falls_back_to_admin_singular_endpoint tests/test_cliq.py::test_cliq_client_list_apps_scope_invalid_reports_hint tests/test_cliq.py::test_cliq_client_get_app_falls_back_to_admin_endpoint tests/test_cliq.py::test_cliq_client_get_app_falls_back_to_admin_singular_endpoint tests/test_cliq.py::test_cliq_client_get_app_scope_invalid_reports_hint tests/test_cliq.py::test_cliq_client_list_app_permissions_falls_back_to_admin_endpoint tests/test_cliq.py::test_cliq_client_list_app_permissions_falls_back_to_admin_singular_endpoint tests/test_cliq.py::test_cliq_client_list_app_permissions_scope_invalid_reports_hint tests/test_cliq.py::test_cliq_client_list_app_installs_falls_back_to_admin_endpoint tests/test_cliq.py::test_cliq_client_list_app_installs_falls_back_to_admin_singular_endpoint tests/test_cliq.py::test_cliq_client_list_app_installs_scope_invalid_reports_hint tests/test_cliq.py::test_cliq_client_list_app_commands_falls_back_to_admin_endpoint tests/test_cliq.py::test_cliq_client_list_app_commands_falls_back_to_admin_singular_endpoint tests/test_cliq.py::test_cliq_client_list_app_commands_scope_invalid_reports_hint tests/test_cli.py::test_cliq_apps tests/test_cli.py::test_cliq_apps_accepts_nested_apps_shape tests/test_cli.py::test_cliq_app_get tests/test_cli.py::test_cliq_app_get_accepts_apps_list_shape tests/test_cli.py::test_cliq_app_permissions tests/test_cli.py::test_cliq_app_permissions_accepts_nested_permissions_shape tests/test_cli.py::test_cliq_app_installs tests/test_cli.py::test_cliq_app_installs_accepts_nested_installs_shape tests/test_cli.py::test_cliq_app_commands tests/test_cli.py::test_cliq_app_commands_accepts_nested_commands_shape"
+      - "25 passed in 0.41s (focused cliq-193 app-governance regression after adding `cliq app-commands`, 2026-04-13T04:49:53Z)"
       - "python3.11 -m pytest -q tests/test_cliq.py::test_cliq_client_list_app_installs_falls_back_to_admin_endpoint tests/test_cliq.py::test_cliq_client_list_app_installs_falls_back_to_admin_singular_endpoint tests/test_cliq.py::test_cliq_client_list_app_installs_scope_invalid_reports_hint tests/test_cli.py::test_cliq_app_installs tests/test_cli.py::test_cliq_app_installs_accepts_nested_installs_shape"
       - "5 passed (cliq-193 fourth slice: new `cliq app-installs` + `ZohoCliqClient.list_app_installs` fallback coverage, 2026-04-13T04:05:55Z)"
       - "./.venv/bin/ruff format --check zoho_cli/cliq.py zoho_cli/cli.py tests/test_cliq.py tests/test_cli.py (4 files already formatted, 2026-04-13T04:05:55Z)"

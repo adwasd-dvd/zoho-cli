@@ -2645,6 +2645,102 @@ def cliq_app_installs(
     )
 
 
+@cliq_app.command("app-commands")
+def cliq_app_commands(
+    app_id: str = typer.Argument(..., help="Cliq app id."),
+    limit: int = typer.Option(
+        50,
+        "--limit",
+        "-n",
+        help="Max app commands to return.",
+    ),
+    network: Optional[str] = typer.Option(
+        None, "--network", help="Cliq network slug (e.g. happydistrouklimited)."
+    ),
+) -> None:
+    """List one app's governance commands (cliq-193 fifth slice)."""
+
+    def _extract_command_rows(payload: Any) -> list[dict[str, Any]]:
+        if isinstance(payload, list):
+            return [row for row in payload if isinstance(row, dict)]
+
+        if not isinstance(payload, dict):
+            return []
+
+        candidates: list[Any] = [
+            payload.get("data"),
+            payload.get("commands"),
+            payload.get("actions"),
+            payload.get("list"),
+            payload.get("items"),
+            payload.get("results"),
+        ]
+        nested_data = payload.get("data")
+        if isinstance(nested_data, dict):
+            candidates.extend(
+                [
+                    nested_data.get("commands"),
+                    nested_data.get("actions"),
+                    nested_data.get("list"),
+                    nested_data.get("items"),
+                    nested_data.get("results"),
+                    nested_data.get("data"),
+                ]
+            )
+
+        for candidate in candidates:
+            if isinstance(candidate, list):
+                return [row for row in candidate if isinstance(row, dict)]
+
+        return []
+
+    cfg = _cfg()
+    email = _require_account(cfg)
+    client = _get_cliq_client(cfg, email, network=network)
+
+    resolved_app_id = app_id.strip()
+    resp = client.list_app_commands(resolved_app_id, limit=limit)
+    rows = _extract_command_rows(resp)
+
+    views: list[dict[str, Any]] = []
+    for row in rows:
+        if not isinstance(row, dict):
+            continue
+        views.append(
+            {
+                "commandId": str(
+                    row.get("command_id")
+                    or row.get("commandId")
+                    or row.get("id")
+                    or row.get("zuid")
+                    or ""
+                ),
+                "name": str(
+                    row.get("name") or row.get("command") or row.get("title") or ""
+                ),
+                "description": str(
+                    row.get("description")
+                    or row.get("summary")
+                    or row.get("help_text")
+                    or row.get("helpText")
+                    or ""
+                ),
+                "status": str(
+                    row.get("status") or row.get("state") or row.get("mode") or ""
+                ),
+                "raw": row,
+            }
+        )
+
+    utils.output(
+        {
+            "appId": resolved_app_id,
+            "count": len(views),
+            "commands": views,
+        }
+    )
+
+
 @cliq_app.command("export-chats")
 def cliq_export_chats(
     chat_id: Optional[str] = typer.Option(

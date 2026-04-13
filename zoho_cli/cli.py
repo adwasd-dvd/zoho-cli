@@ -2265,6 +2265,13 @@ def cliq_apps(
         if not isinstance(payload, dict):
             return []
 
+        for key in ("app", "item"):
+            candidate = payload.get(key)
+            if isinstance(candidate, dict):
+                return [candidate]
+            if isinstance(candidate, list):
+                return [row for row in candidate if isinstance(row, dict)]
+
         candidates: list[Any] = [
             payload.get("data"),
             payload.get("apps"),
@@ -2516,6 +2523,13 @@ def cliq_app_permissions(
 
         if not isinstance(payload, dict):
             return []
+
+        for key in ("permission", "scope", "item"):
+            candidate = payload.get(key)
+            if isinstance(candidate, dict):
+                return [candidate]
+            if isinstance(candidate, list):
+                return [row for row in candidate if isinstance(row, dict)]
 
         candidates: list[Any] = [
             payload.get("data"),
@@ -2817,6 +2831,13 @@ def cliq_app_installs(
 
         if not isinstance(payload, dict):
             return []
+
+        for key in ("install", "item"):
+            candidate = payload.get(key)
+            if isinstance(candidate, dict):
+                return [candidate]
+            if isinstance(candidate, list):
+                return [row for row in candidate if isinstance(row, dict)]
 
         candidates: list[Any] = [
             payload.get("data"),
@@ -3192,6 +3213,13 @@ def cliq_app_commands(
 
         if not isinstance(payload, dict):
             return []
+
+        for key in ("command", "action", "item"):
+            candidate = payload.get(key)
+            if isinstance(candidate, dict):
+                return [candidate]
+            if isinstance(candidate, list):
+                return [row for row in candidate if isinstance(row, dict)]
 
         candidates: list[Any] = [
             payload.get("data"),

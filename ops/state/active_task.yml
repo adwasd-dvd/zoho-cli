@@ -4,10 +4,10 @@ module: cliq
 stage: in_progress
 status: in_progress
 owner: automation
-updated_at: '2026-04-13T10:24:20Z'
+updated_at: '2026-04-13T10:40:00Z'
 success_criteria:
 - ship the next cliq-193 app-governance command/client slice with focused tests
 - run one focused live verification for that new slice and archive evidence
 - keep cliq-165 export blocker evidence current while app-account activation remains external
 next_if_done: take the next queued cliq-193 app-governance slice with focused coverage
-next_step: "delivered a small cliq-193 app-detail output-shape hardening follow-up so `cliq app-get` now accepts top-level `apps` wrapper dict payloads for singleton responses instead of falling back to empty/default app output; focused CLI regression tests are green (3 passed), and the next step remains the next smallest cliq-193 app-governance command/client slice with focused tests while cliq-165 stays externally blocked by inactive_appaccount_user"
+next_step: "delivered a small cliq-193 output-shape hardening follow-up so app-governance list commands (`cliq apps`, `cliq app-permissions`, `cliq app-installs`, `cliq app-commands`) now unwrap top-level singular wrapper payloads (`app`, `permission`, `install`, `command`) instead of returning empty/wrapper-shaped rows; focused CLI regression tests are green (4 passed), and the next step remains the next smallest cliq-193 app-governance command/client slice with focused tests while cliq-165 stays externally blocked by inactive_appaccount_user"

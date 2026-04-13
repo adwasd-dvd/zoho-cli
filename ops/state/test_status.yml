@@ -1,10 +1,14 @@
-last_run_at: "2026-04-13T10:24:20Z"
+last_run_at: "2026-04-13T10:40:00Z"
 last_result: warning
 current_focus: cliq
 suites:
   unit:
     status: passing
     notes:
+      - "python3.11 -m pytest -q tests/test_cli.py::test_cliq_apps_accepts_top_level_app_wrapper_dict_shape tests/test_cli.py::test_cliq_app_permissions_accepts_top_level_permission_wrapper_dict_shape tests/test_cli.py::test_cliq_app_installs_accepts_top_level_install_wrapper_dict_shape tests/test_cli.py::test_cliq_app_commands_accepts_top_level_command_wrapper_dict_shape"
+      - "4 passed (cliq-193 list-output hardening: app-governance list commands now unwrap top-level singular wrapper payloads `app`/`permission`/`install`/`command`, 2026-04-13T10:40:00Z)"
+      - "./.venv/bin/ruff format --check zoho_cli/cli.py tests/test_cli.py"
+      - "2 files already formatted (cliq-193 top-level singular-wrapper list-output hardening formatting check, 2026-04-13T10:40:00Z)"
       - "python3.11 -m pytest -q tests/test_cli.py::test_cliq_app_get tests/test_cli.py::test_cliq_app_get_accepts_apps_list_shape tests/test_cli.py::test_cliq_app_get_accepts_top_level_apps_dict_shape"
       - "3 passed (cliq-193 app-detail output hardening: `cliq app-get` now accepts top-level `apps` wrapper dict payloads, 2026-04-13T10:24:20Z)"
       - "./.venv/bin/ruff format --check zoho_cli/cli.py tests/test_cli.py"

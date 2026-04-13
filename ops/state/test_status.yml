@@ -1,10 +1,13 @@
-last_run_at: "2026-04-13T13:47:39Z"
+last_run_at: "2026-04-13T14:03:24Z"
 last_result: warning
 current_focus: cliq
 suites:
   unit:
     status: passing
     notes:
+      - "python3.11 -m zoho_cli --config /tmp/zoho-test-config.json --account ai-dev@happy-distro.co.uk cliq status --check-auth --network happydistrouklimited"
+      - "python3.11 -m zoho_cli --config /tmp/zoho-test-config.json --account ai-dev@happy-distro.co.uk cliq app-get APP_PROBE_FAKE_20260413_140324 --network happydistrouklimited"
+      - "focused live cliq-193 app-get verification archived at `tests/auto_pilot/reports/cliq193_app_get_probe_summary_20260413_140324.json`: status remains healthy (`oauthReady: true`, `exportOauthReady: true`) and app-detail endpoint is currently `error: not_supported` (2026-04-13T14:03:24Z)"
       - "python3.11 -m pytest -q tests/test_cli.py::test_cliq_app_get tests/test_cli.py::test_cliq_app_get_accepts_top_level_app_wrapper_list_shape tests/test_cli.py::test_cliq_app_get_accepts_top_level_app_wrapper_list_row_shape"
       - "3 passed (cliq-193 app-get output hardening: top-level `app` list rows carrying nested singular `app` wrappers now unwrap correctly, 2026-04-13T13:47:39Z)"
       - "./.venv/bin/ruff format --check zoho_cli/cli.py tests/test_cli.py"

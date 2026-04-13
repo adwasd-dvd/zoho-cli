@@ -2487,6 +2487,33 @@ def cliq_app_permissions(
             if isinstance(candidate, list):
                 return [row for row in candidate if isinstance(row, dict)]
 
+            if isinstance(candidate, dict):
+                nested_permission = (
+                    candidate.get("permission")
+                    or candidate.get("scope")
+                    or candidate.get("item")
+                )
+                if isinstance(nested_permission, dict):
+                    return [nested_permission]
+
+                if any(
+                    key in candidate
+                    for key in (
+                        "permission_id",
+                        "permissionId",
+                        "id",
+                        "zuid",
+                        "scope",
+                        "permission",
+                        "name",
+                        "value",
+                        "status",
+                        "state",
+                        "mode",
+                    )
+                ):
+                    return [candidate]
+
         return []
 
     cfg = _cfg()
@@ -2708,6 +2735,40 @@ def cliq_app_installs(
         for candidate in candidates:
             if isinstance(candidate, list):
                 return [row for row in candidate if isinstance(row, dict)]
+
+            if isinstance(candidate, dict):
+                nested_install = candidate.get("install") or candidate.get("item")
+                if isinstance(nested_install, dict):
+                    return [nested_install]
+
+                if any(
+                    key in candidate
+                    for key in (
+                        "install_id",
+                        "installId",
+                        "id",
+                        "zuid",
+                        "user_id",
+                        "userId",
+                        "member_id",
+                        "memberId",
+                        "target_id",
+                        "targetId",
+                        "chat_id",
+                        "chatId",
+                        "bot_id",
+                        "botId",
+                        "display_name",
+                        "name",
+                        "title",
+                        "user_name",
+                        "status",
+                        "state",
+                        "install_status",
+                        "mode",
+                    )
+                ):
+                    return [candidate]
 
         return []
 
@@ -2987,6 +3048,32 @@ def cliq_app_commands(
         for candidate in candidates:
             if isinstance(candidate, list):
                 return [row for row in candidate if isinstance(row, dict)]
+
+            if isinstance(candidate, dict):
+                nested_command = candidate.get("command") or candidate.get("item")
+                if isinstance(nested_command, dict):
+                    return [nested_command]
+
+                if any(
+                    key in candidate
+                    for key in (
+                        "command_id",
+                        "commandId",
+                        "id",
+                        "zuid",
+                        "name",
+                        "command",
+                        "title",
+                        "description",
+                        "summary",
+                        "help_text",
+                        "helpText",
+                        "status",
+                        "state",
+                        "mode",
+                    )
+                ):
+                    return [candidate]
 
         return []
 

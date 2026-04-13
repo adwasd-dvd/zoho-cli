@@ -2,7 +2,7 @@
 
 ## Immediate
 1. **`cliq-165` remains the top blocker**: maintenance export scopes are granted, but both `cliq export-chats` list and `--chat-id` still return API-side `inactive_appaccount_user` until Cliq admin-side app-account activation is completed.
-2. **`cliq-193` focused live verification now includes `app-permission-get`**: latest pass keeps auth/export readiness healthy (`oauthReady: true`, `exportOauthReady: true`) and classifies app-permission detail endpoints as `not_supported` (`tests/auto_pilot/reports/cliq193_app_permission_get_probe_summary_20260413_072343.json`).
+2. **`cliq-193` now includes singleton-dict output-shape hardening for app-governance list commands**: `cliq app-permissions`, `cliq app-installs`, and `cliq app-commands` now accept one-object `data` payloads (focused CLI regression: 9 passed), and latest live app-permission-get verification still keeps auth/export readiness healthy while classifying detail endpoints as `not_supported` (`tests/auto_pilot/reports/cliq193_app_permission_get_probe_summary_20260413_072343.json`).
 3. **Keep blocker-skipping active**: continue moving on testable Cliq app-governance slices while app-account activation remains external.
 
 ## Next

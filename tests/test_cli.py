@@ -3162,6 +3162,39 @@ def test_cliq_apps(
     mock_client.list_apps.assert_called_once_with(limit=9)
 
 
+def test_cliq_apps_accepts_nested_apps_shape(
+    mock_config: Path,
+    mock_token_refresh: Any,
+) -> None:
+    mock_client = MagicMock()
+    mock_client.list_apps.return_value = {
+        "data": {
+            "apps": [
+                {
+                    "appId": "AP_2",
+                    "app_name": "Ops Relay",
+                    "state": "disabled",
+                }
+            ]
+        }
+    }
+
+    with patch("zoho_cli.cli._get_cliq_client", return_value=mock_client):
+        result = runner.invoke(
+            app,
+            ["cliq", "apps", "--limit", "7"],
+            env=_cfg_env(mock_config),
+        )
+
+    assert result.exit_code == 0, result.output
+    payload = json.loads(result.output)
+    assert payload["count"] == 1
+    assert payload["apps"][0]["appId"] == "AP_2"
+    assert payload["apps"][0]["name"] == "Ops Relay"
+    assert payload["apps"][0]["status"] == "disabled"
+    mock_client.list_apps.assert_called_once_with(limit=7)
+
+
 def test_cliq_app_get(
     mock_config: Path,
     mock_token_refresh: Any,
@@ -3188,6 +3221,36 @@ def test_cliq_app_get(
     assert payload["app"]["name"] == "Ops Assistant"
     assert payload["app"]["status"] == "enabled"
     mock_client.get_app.assert_called_once_with("AP_9")
+
+
+def test_cliq_app_get_accepts_apps_list_shape(
+    mock_config: Path,
+    mock_token_refresh: Any,
+) -> None:
+    mock_client = MagicMock()
+    mock_client.get_app.return_value = {
+        "apps": [
+            {
+                "appId": "AP_10",
+                "name": "Status Robot",
+                "app_status": "enabled",
+            }
+        ]
+    }
+
+    with patch("zoho_cli.cli._get_cliq_client", return_value=mock_client):
+        result = runner.invoke(
+            app,
+            ["cliq", "app-get", "AP_10"],
+            env=_cfg_env(mock_config),
+        )
+
+    assert result.exit_code == 0, result.output
+    payload = json.loads(result.output)
+    assert payload["app"]["appId"] == "AP_10"
+    assert payload["app"]["name"] == "Status Robot"
+    assert payload["app"]["status"] == "enabled"
+    mock_client.get_app.assert_called_once_with("AP_10")
 
 
 @respx.mock

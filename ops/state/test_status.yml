@@ -1,10 +1,14 @@
-last_run_at: "2026-04-13T02:22:22Z"
+last_run_at: "2026-04-13T02:45:41Z"
 last_result: warning
 current_focus: cliq
 suites:
   unit:
     status: passing
     notes:
+      - "python3.11 -m pytest -q tests/test_cli.py::test_cliq_apps tests/test_cli.py::test_cliq_apps_accepts_nested_apps_shape tests/test_cli.py::test_cliq_app_get tests/test_cli.py::test_cliq_app_get_accepts_apps_list_shape"
+      - "4 passed in 0.10s (cliq-193 output-shape hardening for nested app wrappers in `cliq apps`/`cliq app-get`, 2026-04-13T02:45:41Z)"
+      - "./.venv/bin/ruff format --check zoho_cli/cli.py tests/test_cli.py"
+      - "2 files already formatted (2026-04-13T02:45:41Z)"
       - "python3.11 -m pytest -q tests/test_cliq.py::test_cliq_client_list_apps_falls_back_to_admin_endpoint tests/test_cliq.py::test_cliq_client_list_apps_falls_back_to_admin_singular_endpoint tests/test_cliq.py::test_cliq_client_list_apps_scope_invalid_reports_hint tests/test_cliq.py::test_cliq_client_get_app_falls_back_to_admin_endpoint tests/test_cliq.py::test_cliq_client_get_app_falls_back_to_admin_singular_endpoint tests/test_cliq.py::test_cliq_client_get_app_scope_invalid_reports_hint tests/test_cli.py::test_cliq_apps tests/test_cli.py::test_cliq_app_get"
       - "8 passed in 0.21s (cliq-193 app-governance list/get regression slice after adding `cliq app-get`, 2026-04-13T02:05:57Z)"
       - "./.venv/bin/ruff format zoho_cli/cli.py && ./.venv/bin/ruff format --check zoho_cli/cliq.py zoho_cli/cli.py tests/test_cliq.py tests/test_cli.py"

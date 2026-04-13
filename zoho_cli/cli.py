@@ -2257,14 +2257,45 @@ def cliq_apps(
     ),
 ) -> None:
     """List Cliq app-governance apps (cliq-193 first slice)."""
+
+    def _extract_app_rows(payload: Any) -> list[dict[str, Any]]:
+        if isinstance(payload, list):
+            return [row for row in payload if isinstance(row, dict)]
+
+        if not isinstance(payload, dict):
+            return []
+
+        candidates: list[Any] = [
+            payload.get("data"),
+            payload.get("apps"),
+            payload.get("list"),
+            payload.get("items"),
+            payload.get("results"),
+        ]
+        nested_data = payload.get("data")
+        if isinstance(nested_data, dict):
+            candidates.extend(
+                [
+                    nested_data.get("apps"),
+                    nested_data.get("list"),
+                    nested_data.get("items"),
+                    nested_data.get("results"),
+                    nested_data.get("data"),
+                ]
+            )
+
+        for candidate in candidates:
+            if isinstance(candidate, list):
+                return [row for row in candidate if isinstance(row, dict)]
+
+        return []
+
     cfg = _cfg()
     email = _require_account(cfg)
     client = _get_cliq_client(cfg, email, network=network)
 
     resp = client.list_apps(limit=limit)
-    data = resp.get("data", resp)
-    if not isinstance(data, list):
-        data = []
+    data = _extract_app_rows(resp)
 
     views: list[dict[str, Any]] = []
     for row in data:
@@ -2305,24 +2336,84 @@ def cliq_app_get(
     ),
 ) -> None:
     """Get one Cliq app-governance app by id (cliq-193 second slice)."""
+
+    def _extract_app_row(payload: Any) -> dict[str, Any]:
+        if isinstance(payload, list):
+            return next((row for row in payload if isinstance(row, dict)), {})
+
+        if not isinstance(payload, dict):
+            return {}
+
+        for key in ("app", "item"):
+            candidate = payload.get(key)
+            if isinstance(candidate, dict):
+                return candidate
+
+        for key in ("apps", "list", "items", "results"):
+            candidate = payload.get(key)
+            if isinstance(candidate, list):
+                picked = next((row for row in candidate if isinstance(row, dict)), None)
+                if picked:
+                    return picked
+
+        nested_data = payload.get("data")
+        if isinstance(nested_data, dict):
+            for key in ("app", "item"):
+                candidate = nested_data.get(key)
+                if isinstance(candidate, dict):
+                    return candidate
+            for key in ("apps", "list", "items", "results", "data"):
+                candidate = nested_data.get(key)
+                if isinstance(candidate, list):
+                    picked = next(
+                        (row for row in candidate if isinstance(row, dict)),
+                        None,
+                    )
+                    if picked:
+                        return picked
+                if isinstance(candidate, dict):
+                    return candidate
+            if any(
+                key in nested_data
+                for key in (
+                    "app_id",
+                    "appId",
+                    "id",
+                    "zuid",
+                    "name",
+                    "app_name",
+                    "status",
+                    "state",
+                    "app_status",
+                )
+            ):
+                return nested_data
+
+        if any(
+            key in payload
+            for key in (
+                "app_id",
+                "appId",
+                "id",
+                "zuid",
+                "name",
+                "app_name",
+                "status",
+                "state",
+                "app_status",
+            )
+        ):
+            return payload
+
+        return {}
+
     cfg = _cfg()
     email = _require_account(cfg)
     client = _get_cliq_client(cfg, email, network=network)
 
     resolved_app_id = app_id.strip()
     resp = client.get_app(resolved_app_id)
-    data: Any = resp.get("data", resp)
-
-    app_row: dict[str, Any] = {}
-    if isinstance(data, dict):
-        app_row = data
-        for key in ("app", "item", "data"):
-            candidate = data.get(key)
-            if isinstance(candidate, dict):
-                app_row = candidate
-                break
-    elif isinstance(data, list):
-        app_row = next((row for row in data if isinstance(row, dict)), {})
+    app_row = _extract_app_row(resp)
 
     view = {
         "appId": str(

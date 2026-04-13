@@ -1,13 +1,13 @@
 id: cliq-193
-title: implement app-governance plane (apps/app-get complete, continue next slice)
+title: implement app-governance plane (apps/app-get + output-shape hardening complete, continue next slice)
 module: cliq
 stage: in_progress
 status: in_progress
 owner: automation
-updated_at: '2026-04-13T02:22:22Z'
+updated_at: '2026-04-13T02:45:41Z'
 success_criteria:
 - ship the next cliq-193 app-governance command/client slice with focused tests
 - run one focused live verification for that new slice and archive evidence
 - keep cliq-165 export blocker evidence current while app-account activation remains external
 next_if_done: take the next queued cliq-193 app-governance slice with focused coverage
-next_step: 'focused live `cliq app-get` probe now classifies app-detail endpoints as `not_supported` on happydistrouklimited with healthy auth/export readiness; continue to the next smallest cliq-193 app-governance slice while cliq-165 remains externally blocked by inactive_appaccount_user'
+next_step: "cliq app-governance CLI output normalization now handles nested list wrappers (`data.apps` / `apps` / `list` / `items` / `results`) for both `cliq apps` and `cliq app-get`; next step is one focused live verification pass for this hardening, then continue to the next smallest cliq-193 command/client slice while cliq-165 remains externally blocked by inactive_appaccount_user"

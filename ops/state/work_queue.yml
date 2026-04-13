@@ -92,8 +92,7 @@
   depends_on:
   - cliq-155
 - id: cliq-157
-  title: finalize cliq read parity for dm/channel/group history with attachment-positive
-    retrieval evidence
+  title: finalize cliq read parity for dm/channel/group history with attachment-positive retrieval evidence
   module: cliq
   stage: completed
   priority: high
@@ -170,7 +169,7 @@
 - id: cliq-192
   title: implement platform extension plane (cliq database/widget map tickers/custom domain/custom email)
   module: cliq
-  stage: in_progress
+  stage: completed
   priority: low
   depends_on:
   - cliq-190
@@ -188,3 +187,10 @@
   priority: high
   depends_on:
   - crm-001
+- id: cliq-193
+  title: implement app-governance plane (apps first slice + follow-on governance commands)
+  module: cliq
+  stage: in_progress
+  priority: low
+  depends_on:
+  - cliq-192

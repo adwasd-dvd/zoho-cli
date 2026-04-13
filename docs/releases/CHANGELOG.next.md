@@ -31,6 +31,7 @@
 - Added the third cliq-192 platform-extension slice: `zoho cliq map-tickers` plus fallback client routing (`list_map_tickers`) across `/map/tickers`, `/map/ticker`, and `/admin/map/tickers` listing endpoints.
 - Added the fourth+fifth cliq-192 platform-extension slices: `zoho cliq custom-domains` + `zoho cliq custom-emails` with fallback client routing (`list_custom_domains`, `list_custom_emails`) across `/customdomains|/customdomain|/admin/customdomains` and `/customemails|/customemail|/admin/customemails` listing endpoints.
 - Hardened cliq-192 custom-domain/custom-email listing fallbacks to also probe singular admin endpoints (`/admin/customdomain`, `/admin/customemail`) and added targeted regression coverage for singular-admin fallback plus scope-invalid guidance.
+- Added the first cliq-193 app-governance slice: `zoho cliq apps` plus fallback client routing (`list_apps`) across `/apps`, `/app`, and `/admin/apps` listing endpoints.
 - Scaffolded Cliq phase-1 shell with `zoho cliq status`, regional Cliq base URL inference, and a minimal `ZohoCliqClient` skeleton.
 - Added Cliq OAuth preparation: `zoho login --with-cliq` scope bundling, generic `--scope` extension, and `zoho cliq status` scope readiness (`oauthReady` / `missingScopes`).
 - Updated default Cliq OAuth scope bundle to endpoint-specific scopes (`ZohoCliq.Channels.READ`, `ZohoCliq.Users.READ`, `ZohoCliq.Webhooks.CREATE`) to match live send/notify API requirements.

@@ -2863,6 +2863,22 @@ class ZohoCliqClient:
             not_supported_message="Cliq platform custom email listing endpoints are not available for this token/network endpoint.",
         )
 
+    def list_apps(self, *, limit: int = 50) -> dict:
+        """List app-governance apps (cliq-193 first slice)."""
+        return self._get_with_candidates_and_not_supported(
+            [
+                ("/apps", {"limit": limit}),
+                ("/apps", None),
+                ("/app", {"limit": limit}),
+                ("/app", None),
+                ("/admin/apps", {"limit": limit}),
+                ("/admin/apps", None),
+            ],
+            scope_hint="ZohoCliq.Apps.READ",
+            operation_label="apps-list",
+            not_supported_message="Cliq app-governance app listing endpoints are not available for this token/network endpoint.",
+        )
+
     @staticmethod
     def infer_message_types(message: dict[str, Any]) -> list[str]:
         """Infer coarse content types from a raw Cliq message payload."""

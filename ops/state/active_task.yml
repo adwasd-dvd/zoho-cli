@@ -1,22 +1,13 @@
-id: cliq-192
-title: implement platform extension plane (cliq database/widget map tickers/custom domain/custom email)
+id: cliq-193
+title: implement app-governance plane (cliq apps first slice)
 module: cliq
 stage: in_progress
 status: in_progress
 owner: automation
-updated_at: '2026-04-13T00:22:32Z'
+updated_at: '2026-04-13T00:48:07Z'
 success_criteria:
-- run one focused live verification bundle for `zoho cliq databases/widgets/map-tickers/custom-domains/custom-emails` and archive endpoint behavior evidence
-- keep cliq-165 export blocker evidence fresh while app-account activation remains external
-- keep cliq-192 platform-extension fallback coverage hardened with targeted tests
-next_if_done: >-
-  advance to the next queued Cliq slice after cliq-192 by taking one smallest
-  cliq-193 app-governance command/client slice with focused coverage
-next_step: >-
-  focused live cliq-192 platform-extension bundle is now archived
-  (`tests/auto_pilot/reports/cliq192_platform_extension_bundle_summary_20260413_002232.json`):
-  `databases` + `custom-domains` return `oauth_scope_invalid`
-  (`ZohoCliq.Databases.READ`, `ZohoCliq.CustomDomains.READ`) while
-  `widgets`/`map-tickers`/`custom-emails` return `not_supported`; keep
-  cliq-165 blocker tracking fresh and take the first cliq-193
-  app-governance slice
+- ship the first cliq-193 app-governance command/client slice (`cliq apps`) with focused tests
+- keep cliq-165 export blocker evidence current while app-account activation remains external
+- keep cliq app-governance fallback coverage hardened with targeted tests
+next_if_done: take the next queued cliq-193 app-governance slice with focused coverage
+next_step: first cliq-193 app-governance slice is now in code (`zoho cliq apps` + `ZohoCliqClient.list_apps`); run one focused live verification pass for `cliq apps` and continue to the next smallest app-governance slice while cliq-165 remains externally blocked

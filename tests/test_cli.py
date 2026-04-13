@@ -3131,6 +3131,37 @@ def test_cliq_custom_emails(
     mock_client.list_custom_emails.assert_called_once_with(limit=19)
 
 
+def test_cliq_apps(
+    mock_config: Path,
+    mock_token_refresh: Any,
+) -> None:
+    mock_client = MagicMock()
+    mock_client.list_apps.return_value = {
+        "data": [
+            {
+                "app_id": "AP_1",
+                "name": "Helpdesk Bot",
+                "status": "enabled",
+            }
+        ]
+    }
+
+    with patch("zoho_cli.cli._get_cliq_client", return_value=mock_client):
+        result = runner.invoke(
+            app,
+            ["cliq", "apps", "--limit", "9"],
+            env=_cfg_env(mock_config),
+        )
+
+    assert result.exit_code == 0, result.output
+    payload = json.loads(result.output)
+    assert payload["count"] == 1
+    assert payload["apps"][0]["appId"] == "AP_1"
+    assert payload["apps"][0]["name"] == "Helpdesk Bot"
+    assert payload["apps"][0]["status"] == "enabled"
+    mock_client.list_apps.assert_called_once_with(limit=9)
+
+
 @respx.mock
 def test_cliq_export_chats_list(mock_config: Path, mock_token_refresh: Any) -> None:
     respx.get("https://cliq.zoho.com/maintenanceapi/v2/chats").mock(

@@ -2141,7 +2141,9 @@ def cliq_map_tickers(
 
 @cliq_app.command("custom-domains")
 def cliq_custom_domains(
-    limit: int = typer.Option(50, "--limit", "-n", help="Max custom domains to return."),
+    limit: int = typer.Option(
+        50, "--limit", "-n", help="Max custom domains to return."
+    ),
     network: Optional[str] = typer.Option(
         None, "--network", help="Cliq network slug (e.g. happydistrouklimited)."
     ),
@@ -2243,6 +2245,54 @@ def cliq_custom_emails(
         {
             "count": len(views),
             "customEmails": views,
+        }
+    )
+
+
+@cliq_app.command("apps")
+def cliq_apps(
+    limit: int = typer.Option(50, "--limit", "-n", help="Max apps to return."),
+    network: Optional[str] = typer.Option(
+        None, "--network", help="Cliq network slug (e.g. happydistrouklimited)."
+    ),
+) -> None:
+    """List Cliq app-governance apps (cliq-193 first slice)."""
+    cfg = _cfg()
+    email = _require_account(cfg)
+    client = _get_cliq_client(cfg, email, network=network)
+
+    resp = client.list_apps(limit=limit)
+    data = resp.get("data", resp)
+    if not isinstance(data, list):
+        data = []
+
+    views: list[dict[str, Any]] = []
+    for row in data:
+        if not isinstance(row, dict):
+            continue
+        views.append(
+            {
+                "appId": str(
+                    row.get("app_id")
+                    or row.get("appId")
+                    or row.get("id")
+                    or row.get("zuid")
+                    or ""
+                ),
+                "name": str(
+                    row.get("name") or row.get("app_name") or row.get("title") or ""
+                ),
+                "status": str(
+                    row.get("status") or row.get("state") or row.get("app_status") or ""
+                ),
+                "raw": row,
+            }
+        )
+
+    utils.output(
+        {
+            "count": len(views),
+            "apps": views,
         }
     )
 

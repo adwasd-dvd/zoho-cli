@@ -90,6 +90,7 @@
 ### Fixed
 - Hardened `ZohoCliqClient.list_apps` fallback routing to also probe the singular admin endpoint (`/admin/app`) after `/admin/apps`, reducing false `not_supported` classifications on networks exposing only the singular app-governance variant.
 - Hardened `zoho cliq apps` / `zoho cliq app-get` output normalization so app-governance responses using nested list wrappers (`data.apps`, `apps`, `list`, `items`, `results`) now resolve consistently instead of returning empty/default app payloads.
+- Hardened `zoho cliq apps` output normalization so singleton `data` app objects are now emitted as one list row instead of being dropped as an empty result.
 - Hardened `zoho cliq app-permissions`, `zoho cliq app-installs`, and `zoho cliq app-commands` output normalization so singleton dict payloads in `data` now map to one row instead of being dropped as empty list results.
 - Hardened `zoho cliq app-permission-get`, `zoho cliq app-install-get`, and `zoho cliq app-command-get` output normalization so list-wrapped `data` payloads now map to one detail row instead of returning empty detail objects.
 - Cliq mutable fallback helper (`_request_with_candidates_and_not_supported`) now correctly treats `oauthtoken_scope_invalid` as a retryable candidate miss and returns the expected `oauth_scope_invalid` guidance instead of an early generic `api_error`.

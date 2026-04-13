@@ -2288,6 +2288,28 @@ def cliq_apps(
             if isinstance(candidate, list):
                 return [row for row in candidate if isinstance(row, dict)]
 
+            if isinstance(candidate, dict):
+                nested_app = candidate.get("app") or candidate.get("item")
+                if isinstance(nested_app, dict):
+                    return [nested_app]
+
+                if any(
+                    key in candidate
+                    for key in (
+                        "app_id",
+                        "appId",
+                        "id",
+                        "zuid",
+                        "name",
+                        "app_name",
+                        "title",
+                        "status",
+                        "state",
+                        "app_status",
+                    )
+                ):
+                    return [candidate]
+
         return []
 
     cfg = _cfg()

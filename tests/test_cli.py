@@ -3195,6 +3195,35 @@ def test_cliq_apps_accepts_nested_apps_shape(
     mock_client.list_apps.assert_called_once_with(limit=7)
 
 
+def test_cliq_apps_accepts_single_app_dict_shape(
+    mock_config: Path,
+    mock_token_refresh: Any,
+) -> None:
+    mock_client = MagicMock()
+    mock_client.list_apps.return_value = {
+        "data": {
+            "appId": "AP_3",
+            "name": "Ops Bridge",
+            "state": "enabled",
+        }
+    }
+
+    with patch("zoho_cli.cli._get_cliq_client", return_value=mock_client):
+        result = runner.invoke(
+            app,
+            ["cliq", "apps", "--limit", "5"],
+            env=_cfg_env(mock_config),
+        )
+
+    assert result.exit_code == 0, result.output
+    payload = json.loads(result.output)
+    assert payload["count"] == 1
+    assert payload["apps"][0]["appId"] == "AP_3"
+    assert payload["apps"][0]["name"] == "Ops Bridge"
+    assert payload["apps"][0]["status"] == "enabled"
+    mock_client.list_apps.assert_called_once_with(limit=5)
+
+
 def test_cliq_app_get(
     mock_config: Path,
     mock_token_refresh: Any,

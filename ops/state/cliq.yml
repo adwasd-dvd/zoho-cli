@@ -1,5 +1,5 @@
 module: Cliq
-updated_at: '2026-04-13T08:36:14Z'
+updated_at: '2026-04-13T09:04:21Z'
 status: in_progress
 blockers:
 - 'cliq-193 focused live verification (`cliq status --check-auth` + `cliq app-permission-get APP_PROBE_FAKE_20260413_072343 PERMISSION_PROBE_FAKE_20260413_072343`) on happydistrouklimited keeps auth/export readiness healthy (`oauthReady: true`, `exportOauthReady: true`) and classifies app-permission detail endpoints as unsupported (`error: not_supported`) (evidence: `tests/auto_pilot/reports/cliq193_app_permission_get_probe_summary_20260413_072343.json`, `tests/auto_pilot/reports/cliq193_status_20260413_072343.json`, `tests/auto_pilot/reports/cliq193_app_permission_get_20260413_072343.json`)'
@@ -17,4 +17,4 @@ blockers:
 - 'cliq-172 live probe confirms search endpoints remain unsupported on happydistrouklimited: `cliq search` returns `not_supported` in targeted pass (`tests/auto_pilot/reports/cliq172_search_20260412_134514.json`)'
 - 'cliq-172 live probe confirms attachment retrieval parity remains endpoint-limited: media-typed message `1775957550478_105215272334` returns `retrievalResult: media_visible_without_attachment_payload` and `count: 0` for both `cliq file` and `cliq voice` (`tests/auto_pilot/reports/cliq172_probe_summary_20260412_134514.json`)'
 - 'maintenance export command surface (`cliq export-chats`) is implemented and maintenance scopes are granted (`ZohoCliq.OrganizationChats.READ`, `ZohoCliq.OrganizationMessages.READ`), but export verification remains blocked by API-side `inactive_appaccount_user` on both list + explicit `--chat-id` probes (evidence: `tests/auto_pilot/reports/cliq_export_chats_list_inactive_recheck_20260412_105646.json`, `tests/auto_pilot/reports/cliq_export_chat_inactive_recheck_20260412_105646.json`)'
-next_small_step: after list-wrapped-data detail-output hardening for app-permission-get/app-install-get/app-command-get, ship the next smallest cliq-193 app-governance command/client slice with focused tests, then run one focused live verification pass for that new slice while keeping cliq-165 app-account activation on blocker-skip
+next_small_step: after singleton-data-object output hardening for `cliq apps`, ship the next smallest cliq-193 app-governance command/client slice with focused tests, then run one focused live verification pass for that new slice while keeping cliq-165 app-account activation on blocker-skip

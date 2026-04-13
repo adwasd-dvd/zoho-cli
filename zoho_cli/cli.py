@@ -3550,7 +3550,7 @@ def cliq_app_commands(
 
     def _unwrap_command_row(row: dict[str, Any]) -> dict[str, Any]:
         current = row
-        for _ in range(3):
+        for _ in range(5):
             for key in (
                 "command",
                 "commands",
@@ -3565,6 +3565,13 @@ def cliq_app_commands(
                 if isinstance(nested, dict):
                     current = nested
                     break
+                if isinstance(nested, list):
+                    picked = next(
+                        (entry for entry in nested if isinstance(entry, dict)), None
+                    )
+                    if picked:
+                        current = picked
+                        break
             else:
                 break
         return current
@@ -3590,6 +3597,8 @@ def cliq_app_commands(
                 ]
 
         candidates: list[Any] = [
+            payload.get("response"),
+            payload.get("result"),
             payload.get("data"),
             payload.get("commands"),
             payload.get("actions"),
@@ -3621,6 +3630,25 @@ def cliq_app_commands(
                 ]
 
             if isinstance(candidate, dict):
+                for nested_key in (
+                    "response",
+                    "result",
+                    "data",
+                    "commands",
+                    "actions",
+                    "list",
+                    "items",
+                    "results",
+                    "records",
+                    "record",
+                    "item",
+                    "command",
+                    "action",
+                ):
+                    nested_rows = _extract_command_rows(candidate.get(nested_key))
+                    if nested_rows:
+                        return nested_rows
+
                 nested_command = (
                     candidate.get("command")
                     or candidate.get("action")
@@ -3765,8 +3793,10 @@ def cliq_app_command_get(
     def _extract_command_row(payload: Any) -> dict[str, Any]:
         def _unwrap_command_row(row: dict[str, Any]) -> dict[str, Any]:
             current = row
-            for _ in range(4):
+            for _ in range(6):
                 for key in (
+                    "response",
+                    "result",
                     "command",
                     "action",
                     "item",
@@ -3810,7 +3840,7 @@ def cliq_app_command_get(
             if isinstance(candidate, dict):
                 return _unwrap_command_row(candidate)
 
-        for key in ("command", "action", "item", "record"):
+        for key in ("response", "result", "command", "action", "item", "record"):
             candidate = payload.get(key)
             if isinstance(candidate, dict):
                 return _unwrap_command_row(candidate)
@@ -3819,7 +3849,16 @@ def cliq_app_command_get(
                 if picked:
                     return _unwrap_command_row(picked)
 
-        for key in ("commands", "actions", "list", "items", "results", "records"):
+        for key in (
+            "response",
+            "result",
+            "commands",
+            "actions",
+            "list",
+            "items",
+            "results",
+            "records",
+        ):
             candidate = payload.get(key)
             if isinstance(candidate, list):
                 picked = next((row for row in candidate if isinstance(row, dict)), None)
@@ -3830,11 +3869,13 @@ def cliq_app_command_get(
 
         nested_data = raw_data
         if isinstance(nested_data, dict):
-            for key in ("command", "action", "item", "record"):
+            for key in ("response", "result", "command", "action", "item", "record"):
                 candidate = nested_data.get(key)
                 if isinstance(candidate, dict):
                     return _unwrap_command_row(candidate)
             for key in (
+                "response",
+                "result",
                 "commands",
                 "actions",
                 "list",

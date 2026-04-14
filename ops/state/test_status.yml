@@ -1,10 +1,14 @@
-last_run_at: "2026-04-14T15:03:04Z"
+last_run_at: "2026-04-14T15:18:42Z"
 last_result: warning
 current_focus: cliq
 suites:
   unit:
     status: passing
     notes:
+      - "python3.11 -m zoho_cli --config /tmp/zoho-test-config.json --account ai-dev@happy-distro.co.uk cliq status --check-auth --network happydistrouklimited"
+      - "focused cliq-193 live app-commands rerun keeps auth/export readiness healthy (`oauthReady: true`, `exportOauthReady: true`); evidence: `tests/auto_pilot/reports/cliq193_status_20260414_151839.json` (2026-04-14T15:18:42Z)"
+      - "python3.11 -m zoho_cli --config /tmp/zoho-test-config.json --account ai-dev@happy-distro.co.uk cliq app-commands APP_PROBE_FAKE_20260414_151839 --network happydistrouklimited"
+      - "focused cliq-193 live `cliq app-commands` verification returns `error: not_supported`; evidence: `tests/auto_pilot/reports/cliq193_app_commands_20260414_151839.json` + `tests/auto_pilot/reports/cliq193_app_commands_probe_summary_20260414_151839.json` (2026-04-14T15:18:42Z)"
       - "python3.11 -m pytest -q tests/test_cli.py::test_cliq_app_commands_prefers_command_rows_over_metadata_in_data_list tests/test_cli.py::test_cliq_app_commands_accepts_top_level_payload_wrapper_shape"
       - "2 passed (cliq-193 app-command list hardening: app-commands now prefers command-shaped rows over metadata rows in metadata-first wrapper lists, 2026-04-14T15:03:04Z)"
       - "./.venv/bin/ruff format tests/test_cli.py && ./.venv/bin/ruff format --check zoho_cli/cli.py tests/test_cli.py"

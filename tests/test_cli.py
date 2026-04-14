@@ -4207,6 +4207,55 @@ def test_cliq_app_permissions_accepts_top_level_payload_wrapper_shape(
     assert payload["permissions"][0]["status"] == "enabled"
 
 
+def test_cliq_app_permissions_accepts_deep_data_records_record_item_wrapper_shape(
+    mock_config: Path,
+    mock_token_refresh: Any,
+) -> None:
+    mock_client = MagicMock()
+    mock_client.list_app_permissions.return_value = {
+        "payload": {
+            "response": {
+                "result": {
+                    "data": {
+                        "records": {
+                            "record": [
+                                {
+                                    "item": {
+                                        "item": {
+                                            "item": {
+                                                "permission": {
+                                                    "permission_id": "P_9D",
+                                                    "scope": "ZohoCliq.Messages.Deep",
+                                                    "status": "enabled",
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    with patch("zoho_cli.cli._get_cliq_client", return_value=mock_client):
+        result = runner.invoke(
+            app,
+            ["cliq", "app-permissions", "AP_9", "--limit", "5"],
+            env=_cfg_env(mock_config),
+        )
+
+    assert result.exit_code == 0, result.output
+    payload = json.loads(result.output)
+    assert payload["appId"] == "AP_9"
+    assert payload["count"] == 1
+    assert payload["permissions"][0]["permissionId"] == "P_9D"
+    assert payload["permissions"][0]["scope"] == "ZohoCliq.Messages.Deep"
+    assert payload["permissions"][0]["status"] == "enabled"
+
+
 def test_cliq_app_permissions_accepts_top_level_permission_wrapper_dict_shape(
     mock_config: Path,
     mock_token_refresh: Any,
@@ -4711,6 +4760,55 @@ def test_cliq_app_permission_get_accepts_top_level_payload_wrapper_shape(
     assert payload["permission"]["scope"] == "ZohoCliq.Messages.READ"
     assert payload["permission"]["status"] == "enabled"
     mock_client.get_app_permission.assert_called_once_with("AP_12", "P_15P")
+
+
+def test_cliq_app_permission_get_accepts_deep_data_records_record_item_wrapper_shape(
+    mock_config: Path,
+    mock_token_refresh: Any,
+) -> None:
+    mock_client = MagicMock()
+    mock_client.get_app_permission.return_value = {
+        "payload": {
+            "response": {
+                "result": {
+                    "data": {
+                        "records": {
+                            "record": [
+                                {
+                                    "item": {
+                                        "item": {
+                                            "item": {
+                                                "permission": {
+                                                    "permission_id": "P_15D",
+                                                    "scope": "ZohoCliq.Apps.Permission.Deep",
+                                                    "status": "enabled",
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    with patch("zoho_cli.cli._get_cliq_client", return_value=mock_client):
+        result = runner.invoke(
+            app,
+            ["cliq", "app-permission-get", "AP_12", "P_15D"],
+            env=_cfg_env(mock_config),
+        )
+
+    assert result.exit_code == 0, result.output
+    payload = json.loads(result.output)
+    assert payload["appId"] == "AP_12"
+    assert payload["permission"]["permissionId"] == "P_15D"
+    assert payload["permission"]["scope"] == "ZohoCliq.Apps.Permission.Deep"
+    assert payload["permission"]["status"] == "enabled"
+    mock_client.get_app_permission.assert_called_once_with("AP_12", "P_15D")
 
 
 def test_cliq_app_installs(

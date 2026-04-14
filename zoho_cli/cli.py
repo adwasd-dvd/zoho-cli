@@ -2675,7 +2675,7 @@ def cliq_app_permissions(
 
     def _unwrap_permission_row(row: dict[str, Any]) -> dict[str, Any]:
         current = row
-        for _ in range(8):
+        for _ in range(16):
             for key in (
                 "response",
                 "result",
@@ -2890,7 +2890,7 @@ def cliq_app_permission_get(
     def _extract_permission_row(payload: Any) -> dict[str, Any]:
         def _unwrap_permission_row(row: dict[str, Any]) -> dict[str, Any]:
             current = row
-            for _ in range(8):
+            for _ in range(16):
                 for key in (
                     "response",
                     "result",

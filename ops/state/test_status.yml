@@ -1,10 +1,14 @@
-last_run_at: "2026-04-14T05:42:45Z"
+last_run_at: "2026-04-14T06:17:32Z"
 last_result: warning
 current_focus: cliq
 suites:
   unit:
     status: passing
     notes:
+      - "python3.11 -m pytest -q tests/test_cli.py::test_cliq_app_permissions_accepts_top_level_payload_wrapper_shape tests/test_cli.py::test_cliq_app_permissions_accepts_deep_data_records_record_item_wrapper_shape tests/test_cli.py::test_cliq_app_permission_get_accepts_top_level_payload_wrapper_shape tests/test_cli.py::test_cliq_app_permission_get_accepts_deep_data_records_record_item_wrapper_shape"
+      - "4 passed in 0.23s (cliq-193 deep permission-wrapper hardening: `cliq app-permissions` + `cliq app-permission-get` now unwrap deeper `payload/response/result/data/records/record/item` stacks by extending permission-row unwrapping depth 8 -> 16, 2026-04-14T06:17:32Z)"
+      - "./.venv/bin/ruff format --check zoho_cli/cli.py tests/test_cli.py"
+      - "2 files already formatted (cliq-193 deep permission-wrapper hardening formatting check, 2026-04-14T06:17:32Z)"
       - "python3.11 -m zoho_cli --config /tmp/zoho-test-config.json --account ai-dev@happy-distro.co.uk cliq status --check-auth --network happydistrouklimited"
       - "python3.11 -m zoho_cli --config /tmp/zoho-test-config.json --account ai-dev@happy-distro.co.uk cliq apps --network happydistrouklimited --limit 10"
       - "focused live cliq-193 verification archived at `tests/auto_pilot/reports/cliq193_apps_probe_summary_20260414_054242.json`: status remains healthy (`oauthReady: true`, `exportOauthReady: true`) and app-list endpoint remains `error: not_supported` (2026-04-14T05:42:45Z)"

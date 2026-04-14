@@ -1,1 +1,0 @@
-{"status": "error", "error": "oauth_scope_invalid", "details": "Cliq token is missing required scope for custom-domains-list. Re-run `zoho login --with-cliq --scope ZohoCliq.CustomDomains.READ` and retry."}

@@ -1,1 +1,0 @@
-{"status": "error", "error": "not_supported", "details": "Cliq thread-create endpoints are not available for this token/network endpoint. Run `zoho cliq capabilities --channel-id <id>` and confirm thread operations for the target conversation."}

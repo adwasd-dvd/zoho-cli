@@ -1,1 +1,0 @@
-{"status": "error", "error": "oauth_scope_invalid", "details": "Cliq token is missing organization-message export scope. Re-run `zoho login --with-cliq --with-cliq-export` (or add `--scope ZohoCliq.OrganizationMessages.READ`) and retry."}

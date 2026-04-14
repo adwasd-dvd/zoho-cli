@@ -1,1 +1,0 @@
-{"status": "error", "error": "not_supported", "details": "Cliq scheduled-message get endpoints are not available for this token/network endpoint. Run `zoho cliq capabilities --channel-id <id>` and confirm scheduled-message operations for the target conversation."}

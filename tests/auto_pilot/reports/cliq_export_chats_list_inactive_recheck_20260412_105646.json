@@ -1,1 +1,0 @@
-{"status": "error", "error": "inactive_appaccount_user", "details": "Cliq maintenance export is blocked because this account is inactive for app-account export APIs. Activate the account in Cliq admin or use an active org account, then retry."}

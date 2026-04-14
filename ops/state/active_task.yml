@@ -4,10 +4,10 @@ module: cliq
 stage: in_progress
 status: in_progress
 owner: automation
-updated_at: '2026-04-14T18:19:53Z'
+updated_at: '2026-04-14T18:41:46Z'
 success_criteria:
 - ship the next cliq-193 app-governance command/client slice with focused tests
 - run one focused live verification for that new slice and archive evidence
 - keep cliq-165 export blocker evidence current while app-account activation remains external
 next_if_done: take the next queued cliq-193 app-governance slice with focused coverage
-next_step: "focused live rerun completed for the latest cliq-193 metadata-first action-id row-selection hardening (`cliq status --check-auth` + `cliq app-commands APP_PROBE_FAKE_20260414_181951`): auth/export readiness remains healthy (`oauthReady: true`, `exportOauthReady: true`) while app-command list endpoints stay `not_supported` (evidence: `tests/auto_pilot/reports/cliq193_app_commands_probe_summary_20260414_181951.json`); next take the next smallest cliq-193 output-hardening increment with focused tests, then run one matching focused live rerun while cliq-165 remains externally blocked by `inactive_appaccount_user`."
+next_step: "unit hardening completed for the latest cliq-193 increment: `zoho cliq app-commands` + `zoho cliq app-command-get` now accept Pascal/camel `commandId` aliases (`CommandId` / `CommandID` / `commandID`) with focused tests green (`tests/test_cli.py::test_cliq_app_commands_accepts_command_id_pascal_case_alias_shape`, `tests/test_cli.py::test_cliq_app_command_get_accepts_command_id_pascal_case_alias_shape`); next run one matching focused live rerun (`cliq status --check-auth` + `cliq app-commands APP_PROBE_FAKE_<stamp>`) and archive evidence while cliq-165 remains externally blocked by `inactive_appaccount_user`."

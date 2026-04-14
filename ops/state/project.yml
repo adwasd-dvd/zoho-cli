@@ -1,5 +1,5 @@
 project: zoho-cli
-updated_at: '2026-04-14T18:19:53Z'
+updated_at: '2026-04-14T18:41:46Z'
 status: cliq-expansion
 canonical_workspace: /Users/adwasd/.openclaw/workspace-coder
 project_root: /Users/adwasd/.openclaw/workspace-coder/job/zoho-cli
@@ -7,7 +7,7 @@ module_order:
 - Mail
 - Cliq
 - CRM
-current_focus: "cliq-165 export verification remains externally blocked by API-side `inactive_appaccount_user`; latest focused cliq-193 live rerun (`cliq status --check-auth` + `cliq app-commands APP_PROBE_FAKE_20260414_181951`) keeps auth/export readiness healthy while app-command list endpoints remain `not_supported`; next is the next smallest cliq-193 output-hardening increment with focused tests."
+current_focus: "cliq-165 export verification remains externally blocked by API-side `inactive_appaccount_user`; latest cliq-193 increment hardened Pascal/camel `commandId` aliases (`CommandId` / `CommandID` / `commandID`) for `cliq app-commands` + `cliq app-command-get` with focused tests green, and next is one matching focused live rerun."
 primary_blockers:
 - crm live read-only verification remains blocked by account-level CRM org access
 - cliq databases live verification currently requires additional scope (`ZohoCliq.Databases.READ`) on the active token despite healthy baseline auth/export readiness
@@ -29,8 +29,9 @@ primary_blockers:
   returns `not_supported`)
 - calls/meetings endpoints are unsupported on current token/network (`cliq meetings`
   now returns `not_supported` in focused live verification)
-next_step: "take the next smallest cliq-193 output-hardening increment with focused unit coverage, then run one matching focused live rerun and archive evidence while cliq-165 remains externally blocked by API-side `inactive_appaccount_user`."
+next_step: "run one matching focused live rerun for the latest cliq-193 command-id alias hardening (`cliq status --check-auth` + `cliq app-commands APP_PROBE_FAKE_<stamp>`) and archive evidence while cliq-165 remains externally blocked by API-side `inactive_appaccount_user`."
 additional_info:
+- '2026-04-14 unit hardening: `zoho cliq app-commands` + `zoho cliq app-command-get` now accept Pascal/camel `commandId` aliases (`CommandId` / `CommandID` / `commandID`) in row detection/output mapping so maintenance payloads without canonical `commandId` preserve command ids; focused tests passed (`tests/test_cli.py::test_cliq_app_commands_accepts_command_id_pascal_case_alias_shape`, `tests/test_cli.py::test_cliq_app_command_get_accepts_command_id_pascal_case_alias_shape`).'
 - '2026-04-14 focused live verification: reran cliq-193 app-command list probe (`cliq status --check-auth` + `cliq app-commands APP_PROBE_FAKE_20260414_181951`) and archived evidence at `tests/auto_pilot/reports/cliq193_app_commands_probe_summary_20260414_181951.json`; auth/export readiness remains healthy (`oauthReady: true`, `exportOauthReady: true`) while app-command list endpoints remain `not_supported`.'
 - '2026-04-14 unit hardening: `zoho cliq app-commands` + `zoho cliq app-command-get` now treat Pascal/camel action-id aliases (`ActionId` / `ActionID` / `actionID`) as command-shaped rows in metadata-first wrapper lists, preventing metadata rows from being selected when id-only command rows are present; focused tests passed (`tests/test_cli.py::test_cliq_app_commands_prefers_pascal_action_id_row_over_metadata_in_data_list`, `tests/test_cli.py::test_cliq_app_command_get_prefers_pascal_action_id_row_over_metadata_in_data_list`).'
 - '2026-04-14 focused live verification: reran cliq-193 app-command list probe (`cliq status --check-auth` + `cliq app-commands APP_PROBE_FAKE_20260414_173836`) and archived evidence at `tests/auto_pilot/reports/cliq193_app_commands_probe_summary_20260414_173836.json`; auth/export readiness remains healthy (`oauthReady: true`, `exportOauthReady: true`) while app-command list endpoints remain `not_supported`.'

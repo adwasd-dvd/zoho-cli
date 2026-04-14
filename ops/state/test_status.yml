@@ -1,10 +1,14 @@
-last_run_at: "2026-04-14T18:19:53Z"
+last_run_at: "2026-04-14T18:41:46Z"
 last_result: warning
 current_focus: cliq
 suites:
   unit:
     status: passing
     notes:
+      - "python3.11 -m pytest -q tests/test_cli.py::test_cliq_app_commands_accepts_command_id_pascal_case_alias_shape tests/test_cli.py::test_cliq_app_command_get_accepts_command_id_pascal_case_alias_shape"
+      - "2 passed (cliq-193 command-id alias hardening: app-command list/detail now accept Pascal/camel `commandId` aliases `CommandId` / `CommandID` / `commandID`, 2026-04-14T18:41:46Z)"
+      - "./.venv/bin/ruff format --check zoho_cli/cli.py tests/test_cli.py"
+      - "2 files already formatted (cliq-193 command-id alias hardening formatting check, 2026-04-14T18:41:46Z)"
       - "python3.11 -m zoho_cli --config /tmp/zoho-test-config.json --account ai-dev@happy-distro.co.uk cliq status --check-auth --network happydistrouklimited"
       - "focused cliq-193 live app-commands rerun keeps auth/export readiness healthy (`oauthReady: true`, `exportOauthReady: true`); evidence: `tests/auto_pilot/reports/cliq193_status_20260414_181951.json` (2026-04-14T18:19:53Z)"
       - "python3.11 -m zoho_cli --config /tmp/zoho-test-config.json --account ai-dev@happy-distro.co.uk cliq app-commands APP_PROBE_FAKE_20260414_181951 --network happydistrouklimited"

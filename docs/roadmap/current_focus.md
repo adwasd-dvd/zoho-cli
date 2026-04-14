@@ -2,7 +2,7 @@
 
 ## Immediate
 1. **`cliq-165` remains the top blocker**: maintenance export scopes are granted, but both `cliq export-chats` list and `--chat-id` still return API-side `inactive_appaccount_user` until Cliq admin-side app-account activation is completed.
-2. **Latest focused unit hardening is complete**: `cliq app-commands` + `cliq app-command-get` now accept PascalCase command-name aliases (`CommandName` / `ActionName` / `DisplayName`) with focused tests green (`tests/test_cli.py::test_cliq_app_commands_accepts_command_name_pascal_case_alias_shape`, `tests/test_cli.py::test_cliq_app_command_get_accepts_payload_data_action_name_pascal_case_alias_shape`, plus action-id alias guards).
+2. **Latest focused unit hardening is complete**: `cliq app-commands` + `cliq app-command-get` now treat Pascal/camel action-id aliases (`ActionId` / `ActionID` / `actionID`) as command-shaped rows in metadata-first wrapper lists, with focused tests green (`tests/test_cli.py::test_cliq_app_commands_prefers_pascal_action_id_row_over_metadata_in_data_list`, `tests/test_cli.py::test_cliq_app_command_get_prefers_pascal_action_id_row_over_metadata_in_data_list`).
 3. **Next smallest step**: run one matching focused live rerun (`cliq status --check-auth` + `cliq app-commands APP_PROBE_FAKE_<stamp>`) and archive evidence, then take the next cliq-193 output-hardening increment.
 
 ## Next

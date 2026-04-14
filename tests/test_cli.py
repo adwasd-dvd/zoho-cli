@@ -6963,6 +6963,52 @@ def test_cliq_app_command_get_accepts_deep_data_records_record_item_wrapper_shap
     mock_client.get_app_command.assert_called_once_with("AP_14RR", "CMD_17RR")
 
 
+def test_cliq_app_command_get_accepts_extra_deep_record_item_wrapper_shape(
+    mock_config: Path,
+    mock_token_refresh: Any,
+) -> None:
+    mock_client = MagicMock()
+
+    deep_row: dict[str, Any] = {
+        "commandId": "CMD_17DEEP",
+        "name": "incident_recover_deep",
+        "summary": "Recover incident from deep wrapper chain",
+        "mode": "enabled",
+    }
+    for _ in range(4):
+        deep_row = {"record": {"item": deep_row}}
+
+    mock_client.get_app_command.return_value = {
+        "data": {
+            "records": {
+                "record": [
+                    {
+                        "item": deep_row,
+                    }
+                ]
+            }
+        }
+    }
+
+    with patch("zoho_cli.cli._get_cliq_client", return_value=mock_client):
+        result = runner.invoke(
+            app,
+            ["cliq", "app-command-get", "AP_17DEEP", "CMD_17DEEP"],
+            env=_cfg_env(mock_config),
+        )
+
+    assert result.exit_code == 0, result.output
+    payload = json.loads(result.output)
+    assert payload["appId"] == "AP_17DEEP"
+    assert payload["command"]["commandId"] == "CMD_17DEEP"
+    assert payload["command"]["name"] == "incident_recover_deep"
+    assert (
+        payload["command"]["description"] == "Recover incident from deep wrapper chain"
+    )
+    assert payload["command"]["status"] == "enabled"
+    mock_client.get_app_command.assert_called_once_with("AP_17DEEP", "CMD_17DEEP")
+
+
 def test_cliq_app_command_get_accepts_command_name_alias_shape(
     mock_config: Path,
     mock_token_refresh: Any,

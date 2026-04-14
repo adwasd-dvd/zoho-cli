@@ -4,10 +4,10 @@ module: cliq
 stage: in_progress
 status: in_progress
 owner: automation
-updated_at: '2026-04-14T13:14:31Z'
+updated_at: '2026-04-14T13:41:52Z'
 success_criteria:
 - ship the next cliq-193 app-governance command/client slice with focused tests
 - run one focused live verification for that new slice and archive evidence
 - keep cliq-165 export blocker evidence current while app-account activation remains external
 next_if_done: take the next queued cliq-193 app-governance slice with focused coverage
-next_step: "completed the focused cliq-193 live rerun (`zoho cliq status --check-auth` + `zoho cliq app-command-get APP_PROBE_FAKE_20260414_131429 CMD_PROBE_FAKE_20260414_131429`) with fresh evidence; auth/export readiness remains healthy while app-command detail endpoints still return `not_supported`. next is the next smallest cliq-193 output-hardening increment with focused unit coverage while cliq-165 remains externally blocked by `inactive_appaccount_user`."
+next_step: "completed cliq-193 unit hardening for metadata-first wrapper lists in app-command detail extraction (`zoho cliq app-command-get` now prefers command-shaped rows over metadata rows); focused tests are green (`tests/test_cli.py::test_cliq_app_command_get_prefers_command_row_over_metadata_in_data_list`, `tests/test_cli.py::test_cliq_app_command_get_accepts_top_level_payload_wrapper_shape`). next is one matching focused live rerun (`zoho cliq status --check-auth` + `zoho cliq app-command-get APP_PROBE_FAKE_<stamp> CMD_PROBE_FAKE_<stamp>`) while cliq-165 remains externally blocked by `inactive_appaccount_user`."

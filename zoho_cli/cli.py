@@ -3884,9 +3884,51 @@ def cliq_app_command_get(
                         break
                     if isinstance(nested, list):
                         picked = next(
-                            (entry for entry in nested if isinstance(entry, dict)),
+                            (
+                                entry
+                                for entry in nested
+                                if isinstance(entry, dict)
+                                and any(
+                                    hint in entry
+                                    for hint in (
+                                        "command_id",
+                                        "commandId",
+                                        "id",
+                                        "zuid",
+                                        "name",
+                                        "commandName",
+                                        "actionName",
+                                        "command_name",
+                                        "command",
+                                        "action",
+                                        "action_name",
+                                        "display_name",
+                                        "displayName",
+                                        "title",
+                                        "help_text",
+                                        "helpText",
+                                        "payload",
+                                        "response",
+                                        "result",
+                                        "data",
+                                        "records",
+                                        "record",
+                                        "item",
+                                        "commands",
+                                        "actions",
+                                        "list",
+                                        "items",
+                                        "results",
+                                    )
+                                )
+                            ),
                             None,
                         )
+                        if not picked:
+                            picked = next(
+                                (entry for entry in nested if isinstance(entry, dict)),
+                                None,
+                            )
                         if picked:
                             current = picked
                             break
@@ -3894,18 +3936,65 @@ def cliq_app_command_get(
                     break
             return current
 
-        if isinstance(payload, list):
-            return next(
-                (_unwrap_command_row(row) for row in payload if isinstance(row, dict)),
-                {},
+        def _looks_like_command_row(candidate: dict[str, Any]) -> bool:
+            return any(
+                key in candidate
+                for key in (
+                    "command_id",
+                    "commandId",
+                    "id",
+                    "zuid",
+                    "name",
+                    "commandName",
+                    "actionName",
+                    "command_name",
+                    "command",
+                    "action",
+                    "action_name",
+                    "display_name",
+                    "displayName",
+                    "title",
+                    "help_text",
+                    "helpText",
+                    "payload",
+                    "response",
+                    "result",
+                    "data",
+                    "records",
+                    "record",
+                    "item",
+                    "commands",
+                    "actions",
+                    "list",
+                    "items",
+                    "results",
+                )
             )
+
+        def _pick_command_dict(values: list[Any]) -> dict[str, Any] | None:
+            first_dict = next((row for row in values if isinstance(row, dict)), None)
+            if not isinstance(first_dict, dict):
+                return None
+            preferred = next(
+                (
+                    row
+                    for row in values
+                    if isinstance(row, dict) and _looks_like_command_row(row)
+                ),
+                None,
+            )
+            return preferred or first_dict
+
+        if isinstance(payload, list):
+            picked = _pick_command_dict(payload)
+            return _unwrap_command_row(picked) if isinstance(picked, dict) else {}
 
         if not isinstance(payload, dict):
             return {}
 
         raw_data = payload.get("data") or payload.get("payload")
         if isinstance(raw_data, list):
-            candidate = next((row for row in raw_data if isinstance(row, dict)), None)
+            candidate = _pick_command_dict(raw_data)
             if isinstance(candidate, dict):
                 return _unwrap_command_row(candidate)
 
@@ -3922,7 +4011,7 @@ def cliq_app_command_get(
             if isinstance(candidate, dict):
                 return _unwrap_command_row(candidate)
             if isinstance(candidate, list):
-                picked = next((row for row in candidate if isinstance(row, dict)), None)
+                picked = _pick_command_dict(candidate)
                 if picked:
                     return _unwrap_command_row(picked)
 
@@ -3939,7 +4028,7 @@ def cliq_app_command_get(
         ):
             candidate = payload.get(key)
             if isinstance(candidate, list):
-                picked = next((row for row in candidate if isinstance(row, dict)), None)
+                picked = _pick_command_dict(candidate)
                 if picked:
                     return _unwrap_command_row(picked)
             if isinstance(candidate, dict):
@@ -3973,10 +4062,7 @@ def cliq_app_command_get(
             ):
                 candidate = nested_data.get(key)
                 if isinstance(candidate, list):
-                    picked = next(
-                        (row for row in candidate if isinstance(row, dict)),
-                        None,
-                    )
+                    picked = _pick_command_dict(candidate)
                     if picked:
                         return _unwrap_command_row(picked)
                 if isinstance(candidate, dict):

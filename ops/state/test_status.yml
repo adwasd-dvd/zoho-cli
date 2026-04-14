@@ -1,10 +1,14 @@
-last_run_at: "2026-04-14T13:14:31Z"
+last_run_at: "2026-04-14T13:41:52Z"
 last_result: warning
 current_focus: cliq
 suites:
   unit:
     status: passing
     notes:
+      - "python3.11 -m pytest -q tests/test_cli.py::test_cliq_app_command_get_prefers_command_row_over_metadata_in_data_list tests/test_cli.py::test_cliq_app_command_get_accepts_top_level_payload_wrapper_shape"
+      - "2 passed (cliq-193 app-command detail hardening: metadata-first wrapper lists now prefer command-shaped rows when valid command data appears after metadata, 2026-04-14T13:41:52Z)"
+      - "./.venv/bin/ruff format --check zoho_cli/cli.py tests/test_cli.py"
+      - "2 files already formatted (cliq-193 metadata-first wrapper hardening formatting check, 2026-04-14T13:41:52Z)"
       - "python3.11 -m zoho_cli --config /tmp/zoho-test-config.json --account ai-dev@happy-distro.co.uk cliq status --check-auth --network happydistrouklimited"
       - "focused cliq-193 live app-command-get rerun keeps auth/export readiness healthy (`oauthReady: true`, `exportOauthReady: true`); evidence: `tests/auto_pilot/reports/cliq193_status_20260414_131429.json` (2026-04-14T13:14:31Z)"
       - "python3.11 -m zoho_cli --config /tmp/zoho-test-config.json --account ai-dev@happy-distro.co.uk cliq app-command-get APP_PROBE_FAKE_20260414_131429 CMD_PROBE_FAKE_20260414_131429 --network happydistrouklimited"

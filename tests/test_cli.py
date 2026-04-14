@@ -6867,6 +6867,44 @@ def test_cliq_app_command_get_accepts_top_level_payload_wrapper_shape(
     mock_client.get_app_command.assert_called_once_with("AP_13", "CMD_16PW")
 
 
+def test_cliq_app_command_get_prefers_command_row_over_metadata_in_data_list(
+    mock_config: Path,
+    mock_token_refresh: Any,
+) -> None:
+    mock_client = MagicMock()
+    mock_client.get_app_command.return_value = {
+        "payload": {
+            "data": [
+                {"meta": {"page": 1, "has_more": False}},
+                {
+                    "command": {
+                        "commandId": "CMD_16ML",
+                        "name": "incident_sync",
+                        "summary": "Sync incident metadata",
+                        "mode": "enabled",
+                    }
+                },
+            ]
+        }
+    }
+
+    with patch("zoho_cli.cli._get_cliq_client", return_value=mock_client):
+        result = runner.invoke(
+            app,
+            ["cliq", "app-command-get", "AP_13", "CMD_16ML"],
+            env=_cfg_env(mock_config),
+        )
+
+    assert result.exit_code == 0, result.output
+    payload = json.loads(result.output)
+    assert payload["appId"] == "AP_13"
+    assert payload["command"]["commandId"] == "CMD_16ML"
+    assert payload["command"]["name"] == "incident_sync"
+    assert payload["command"]["description"] == "Sync incident metadata"
+    assert payload["command"]["status"] == "enabled"
+    mock_client.get_app_command.assert_called_once_with("AP_13", "CMD_16ML")
+
+
 def test_cliq_app_command_get_accepts_data_records_record_item_nested_command_shape(
     mock_config: Path,
     mock_token_refresh: Any,

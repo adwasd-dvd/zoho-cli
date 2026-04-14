@@ -6288,6 +6288,41 @@ def test_cliq_app_commands_accepts_deep_data_records_record_item_wrapper_shape(
     assert payload["commands"][0]["status"] == "enabled"
 
 
+def test_cliq_app_commands_accepts_command_name_alias_shape(
+    mock_config: Path,
+    mock_token_refresh: Any,
+) -> None:
+    mock_client = MagicMock()
+    mock_client.list_app_commands.return_value = {
+        "data": {
+            "commands": [
+                {
+                    "command_id": "CMD_8ALIAS",
+                    "command_name": "deploy_release_alias",
+                    "summary": "Deploy release from command_name",
+                    "mode": "enabled",
+                }
+            ]
+        }
+    }
+
+    with patch("zoho_cli.cli._get_cliq_client", return_value=mock_client):
+        result = runner.invoke(
+            app,
+            ["cliq", "app-commands", "AP_8"],
+            env=_cfg_env(mock_config),
+        )
+
+    assert result.exit_code == 0, result.output
+    payload = json.loads(result.output)
+    assert payload["appId"] == "AP_8"
+    assert payload["count"] == 1
+    assert payload["commands"][0]["commandId"] == "CMD_8ALIAS"
+    assert payload["commands"][0]["name"] == "deploy_release_alias"
+    assert payload["commands"][0]["description"] == "Deploy release from command_name"
+    assert payload["commands"][0]["status"] == "enabled"
+
+
 def test_cliq_app_command_get(mock_config: Path, mock_token_refresh: Any) -> None:
     mock_client = MagicMock()
     mock_client.get_app_command.return_value = {
@@ -6805,6 +6840,38 @@ def test_cliq_app_command_get_accepts_deep_data_records_record_item_wrapper_shap
     assert payload["command"]["description"] == "Refresh workflow"
     assert payload["command"]["status"] == "enabled"
     mock_client.get_app_command.assert_called_once_with("AP_14RR", "CMD_17RR")
+
+
+def test_cliq_app_command_get_accepts_command_name_alias_shape(
+    mock_config: Path,
+    mock_token_refresh: Any,
+) -> None:
+    mock_client = MagicMock()
+    mock_client.get_app_command.return_value = {
+        "data": {
+            "command": {
+                "command_id": "CMD_17ALIAS",
+                "command_name": "publish_release_alias",
+                "summary": "Publish release from command_name",
+                "mode": "enabled",
+            }
+        }
+    }
+
+    with patch("zoho_cli.cli._get_cliq_client", return_value=mock_client):
+        result = runner.invoke(
+            app,
+            ["cliq", "app-command-get", "AP_17", "CMD_17ALIAS"],
+            env=_cfg_env(mock_config),
+        )
+
+    assert result.exit_code == 0, result.output
+    payload = json.loads(result.output)
+    assert payload["appId"] == "AP_17"
+    assert payload["command"]["commandId"] == "CMD_17ALIAS"
+    assert payload["command"]["name"] == "publish_release_alias"
+    assert payload["command"]["description"] == "Publish release from command_name"
+    assert payload["command"]["status"] == "enabled"
 
 
 @respx.mock

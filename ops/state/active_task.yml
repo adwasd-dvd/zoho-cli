@@ -4,10 +4,10 @@ module: cliq
 stage: in_progress
 status: in_progress
 owner: automation
-updated_at: '2026-04-14T05:03:46Z'
+updated_at: '2026-04-14T05:27:18Z'
 success_criteria:
 - ship the next cliq-193 app-governance command/client slice with focused tests
 - run one focused live verification for that new slice and archive evidence
 - keep cliq-165 export blocker evidence current while app-account activation remains external
 next_if_done: take the next queued cliq-193 app-governance slice with focused coverage
-next_step: "latest focused live rerun for `cliq app-get` deep-wrapper hardening is archived (`tests/auto_pilot/reports/cliq193_app_get_probe_summary_20260414_050344.json`) with healthy auth/export readiness and endpoint result still `not_supported`; next step is the next smallest cliq-193 app-governance output-hardening increment with focused tests, then one matching live rerun while cliq-165 remains externally blocked."
+next_step: "latest cliq-193 unit hardening extends `zoho cliq apps` app-row unwrapping depth (3 -> 16) so deep `payload/response/result/data/records/record/item` wrappers no longer leak wrapper-shaped rows; focused tests passed (`tests/test_cli.py::test_cliq_apps_accepts_top_level_payload_wrapper_shape`, `tests/test_cli.py::test_cliq_apps_accepts_deep_data_records_record_item_wrapper_shape`). next step is one matching focused live rerun (`cliq status --check-auth` + `cliq apps --limit 10`) and evidence archival while cliq-165 remains externally blocked."

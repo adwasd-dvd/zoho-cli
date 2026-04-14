@@ -2260,7 +2260,7 @@ def cliq_apps(
 
     def _unwrap_app_row(row: dict[str, Any]) -> dict[str, Any]:
         current = row
-        for _ in range(3):
+        for _ in range(16):
             for key in (
                 "app",
                 "apps",

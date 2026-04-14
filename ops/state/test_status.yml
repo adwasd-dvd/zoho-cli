@@ -1,10 +1,14 @@
-last_run_at: "2026-04-14T05:03:46Z"
+last_run_at: "2026-04-14T05:27:18Z"
 last_result: warning
 current_focus: cliq
 suites:
   unit:
     status: passing
     notes:
+      - "python3.11 -m pytest -q tests/test_cli.py::test_cliq_apps_accepts_top_level_payload_wrapper_shape tests/test_cli.py::test_cliq_apps_accepts_deep_data_records_record_item_wrapper_shape"
+      - "2 passed in 0.30s (cliq-193 deep app-list wrapper hardening: `cliq apps` now unwraps deeper `payload/response/result/data/records/record/item` chains by extending app-row unwrapping depth 3 -> 16, 2026-04-14T05:27:18Z)"
+      - "./.venv/bin/ruff format --check zoho_cli/cli.py tests/test_cli.py"
+      - "2 files already formatted (cliq-193 deep app-list wrapper hardening formatting check, 2026-04-14T05:27:18Z)"
       - "python3.11 -m zoho_cli --config /tmp/zoho-test-config.json --account ai-dev@happy-distro.co.uk cliq status --check-auth --network happydistrouklimited"
       - "python3.11 -m zoho_cli --config /tmp/zoho-test-config.json --account ai-dev@happy-distro.co.uk cliq app-get APP_PROBE_FAKE_20260414_050344 --network happydistrouklimited"
       - "focused live cliq-193 verification archived at `tests/auto_pilot/reports/cliq193_app_get_probe_summary_20260414_050344.json`: status remains healthy (`oauthReady: true`, `exportOauthReady: true`) and app-detail endpoint remains `error: not_supported` (2026-04-14T05:03:46Z)"

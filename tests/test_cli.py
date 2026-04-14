@@ -3399,6 +3399,67 @@ def test_cliq_apps_accepts_top_level_payload_wrapper_shape(
     mock_client.list_apps.assert_called_once_with(limit=2)
 
 
+def test_cliq_apps_accepts_deep_data_records_record_item_wrapper_shape(
+    mock_config: Path,
+    mock_token_refresh: Any,
+) -> None:
+    mock_client = MagicMock()
+    mock_client.list_apps.return_value = {
+        "payload": {
+            "response": {
+                "result": {
+                    "data": {
+                        "records": {
+                            "record": [
+                                {
+                                    "item": {
+                                        "payload": {
+                                            "response": {
+                                                "result": {
+                                                    "data": {
+                                                        "records": {
+                                                            "record": {
+                                                                "item": {
+                                                                    "app": {
+                                                                        "item": {
+                                                                            "appId": "AP_DEEP_APPS",
+                                                                            "name": "Ops Deep Apps Wrapper",
+                                                                            "state": "active",
+                                                                        }
+                                                                    }
+                                                                }
+                                                            }
+                                                        }
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    with patch("zoho_cli.cli._get_cliq_client", return_value=mock_client):
+        result = runner.invoke(
+            app,
+            ["cliq", "apps", "--limit", "3"],
+            env=_cfg_env(mock_config),
+        )
+
+    assert result.exit_code == 0, result.output
+    payload = json.loads(result.output)
+    assert payload["count"] == 1
+    assert payload["apps"][0]["appId"] == "AP_DEEP_APPS"
+    assert payload["apps"][0]["name"] == "Ops Deep Apps Wrapper"
+    assert payload["apps"][0]["status"] == "active"
+    mock_client.list_apps.assert_called_once_with(limit=3)
+
+
 def test_cliq_apps_accepts_top_level_app_wrapper_dict_shape(
     mock_config: Path,
     mock_token_refresh: Any,

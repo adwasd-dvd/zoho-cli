@@ -1,0 +1,26 @@
+{
+  "task": "cliq-193-app-commands-live-probe",
+  "timestampUtc": "2026-04-14T04:22:35.664748Z",
+  "probeAppId": "APP_PROBE_FAKE_20260414_042232",
+  "reports": {
+    "status": "tests/auto_pilot/reports/cliq193_status_20260414_042232.json",
+    "appCommands": "tests/auto_pilot/reports/cliq193_app_commands_20260414_042232.json"
+  },
+  "exitCodes": {
+    "status": 0,
+    "appCommands": 1,
+    "overall": 1
+  },
+  "status": {
+    "oauthReady": true,
+    "exportOauthReady": true,
+    "error": null,
+    "parseFallback": null
+  },
+  "appCommands": {
+    "error": "not_supported",
+    "code": null,
+    "message": "Cliq app-governance app-command endpoints are not available for this token/network endpoint.",
+    "parseFallback": null
+  }
+}

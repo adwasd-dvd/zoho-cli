@@ -4,10 +4,10 @@ module: cliq
 stage: in_progress
 status: in_progress
 owner: automation
-updated_at: '2026-04-14T04:09:56Z'
+updated_at: '2026-04-14T04:22:35Z'
 success_criteria:
 - ship the next cliq-193 app-governance command/client slice with focused tests
 - run one focused live verification for that new slice and archive evidence
 - keep cliq-165 export blocker evidence current while app-account activation remains external
 next_if_done: take the next queued cliq-193 app-governance slice with focused coverage
-next_step: "extended `cliq app-commands` list-row wrapper unwrapping depth (10 -> 16) so deep `payload/result/data/records/record/item` maintenance stacks no longer emit wrapper-shaped command rows, with focused tests green (`tests/test_cli.py::test_cliq_app_commands_accepts_top_level_payload_wrapper_shape`, `tests/test_cli.py::test_cliq_app_commands_accepts_deep_data_records_record_item_wrapper_shape`); next step is one focused live rerun (`cliq status --check-auth` + `cliq app-commands APP_PROBE_FAKE_<timestamp>`) and evidence archival while cliq-165 remains externally blocked."
+next_step: "focused live rerun for the latest app-commands deep-wrapper hardening is now archived (`cliq status --check-auth` + `cliq app-commands APP_PROBE_FAKE_20260414_042232`; evidence: `tests/auto_pilot/reports/cliq193_app_commands_probe_summary_20260414_042232.json`) and still reports endpoint-level `not_supported` with auth/export readiness healthy; next step is the next smallest cliq-193 app-governance output-hardening increment with focused tests, then one matching live rerun while cliq-165 remains externally blocked."

@@ -3,6 +3,7 @@
 ## Unreleased
 
 ### Added
+- Hardened `cliq-193` command output parsing so `zoho cliq app-commands` and `zoho cliq app-command-get` now also treat PascalCase command-name aliases (`CommandName`, `ActionName`, `DisplayName`) as first-class name fields when canonical/camel/snake aliases are absent.
 - Hardened `cliq-193` command id normalization so `zoho cliq app-commands` and `zoho cliq app-command-get` now also treat Pascal/camel variants (`ActionId`, `ActionID`, `actionID`) as first-class id aliases, preserving command ids when maintenance payloads omit canonical `commandId` fields.
 - Hardened `cliq-193` command id normalization so `zoho cliq app-commands` and `zoho cliq app-command-get` now treat `actionId` and `action_id` as first-class id aliases, preserving command ids when maintenance payloads omit canonical `commandId` fields.
 - Hardened `cliq-193` app-command list extraction so `zoho cliq app-commands` now skips empty list wrappers (for example `payload.data: []`) and continues scanning alternate list keys like `payload.commands`, preventing false empty command output when valid command rows are present outside the first list wrapper.

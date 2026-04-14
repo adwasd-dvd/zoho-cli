@@ -3630,13 +3630,16 @@ def cliq_app_commands(
                 "id",
                 "zuid",
                 "name",
+                "CommandName",
                 "command_name",
                 "commandName",
+                "ActionName",
                 "command",
                 "action",
                 "action_name",
                 "actionName",
                 "display_name",
+                "DisplayName",
                 "displayName",
                 "title",
                 "description",
@@ -3768,13 +3771,16 @@ def cliq_app_commands(
                 ),
                 "name": str(
                     row.get("name")
+                    or row.get("CommandName")
                     or row.get("commandName")
+                    or row.get("ActionName")
                     or row.get("actionName")
                     or row.get("command_name")
                     or row.get("command")
                     or row.get("action")
                     or row.get("action_name")
                     or row.get("display_name")
+                    or row.get("DisplayName")
                     or row.get("displayName")
                     or row.get("title")
                     or ""
@@ -3850,13 +3856,16 @@ def cliq_app_command_get(
                                         "id",
                                         "zuid",
                                         "name",
+                                        "CommandName",
                                         "commandName",
+                                        "ActionName",
                                         "actionName",
                                         "command_name",
                                         "command",
                                         "action",
                                         "action_name",
                                         "display_name",
+                                        "DisplayName",
                                         "displayName",
                                         "title",
                                         "help_text",
@@ -3899,13 +3908,16 @@ def cliq_app_command_get(
                     "id",
                     "zuid",
                     "name",
+                    "CommandName",
                     "commandName",
+                    "ActionName",
                     "actionName",
                     "command_name",
                     "command",
                     "action",
                     "action_name",
                     "display_name",
+                    "DisplayName",
                     "displayName",
                     "title",
                     "help_text",
@@ -4029,13 +4041,16 @@ def cliq_app_command_get(
                     "id",
                     "zuid",
                     "name",
+                    "CommandName",
                     "commandName",
+                    "ActionName",
                     "actionName",
                     "command_name",
                     "command",
                     "action",
                     "action_name",
                     "display_name",
+                    "DisplayName",
                     "displayName",
                     "title",
                     "description",
@@ -4059,13 +4074,16 @@ def cliq_app_command_get(
                 "id",
                 "zuid",
                 "name",
+                "CommandName",
                 "commandName",
+                "ActionName",
                 "actionName",
                 "command_name",
                 "command",
                 "action",
                 "action_name",
                 "display_name",
+                "DisplayName",
                 "displayName",
                 "title",
                 "description",
@@ -4105,13 +4123,16 @@ def cliq_app_command_get(
         ),
         "name": str(
             row.get("name")
+            or row.get("CommandName")
             or row.get("commandName")
+            or row.get("ActionName")
             or row.get("actionName")
             or row.get("command_name")
             or row.get("command")
             or row.get("action")
             or row.get("action_name")
             or row.get("display_name")
+            or row.get("DisplayName")
             or row.get("displayName")
             or row.get("title")
             or ""

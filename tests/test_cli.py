@@ -6426,6 +6426,42 @@ def test_cliq_app_commands_accepts_action_id_pascal_case_alias_shape(
     assert payload["commands"][0]["status"] == "enabled"
 
 
+def test_cliq_app_commands_accepts_command_name_pascal_case_alias_shape(
+    mock_config: Path,
+    mock_token_refresh: Any,
+) -> None:
+    mock_client = MagicMock()
+    mock_client.list_app_commands.return_value = {
+        "data": {
+            "commands": [
+                {
+                    "commandId": "CMD_8PASCALNAME",
+                    "CommandName": "deploy_from_command_name_pascal_alias",
+                    "summary": "deploy via command-name pascal alias",
+                    "state": "enabled",
+                }
+            ]
+        }
+    }
+
+    with patch("zoho_cli.cli._get_cliq_client", return_value=mock_client):
+        result = runner.invoke(
+            app,
+            ["cliq", "app-commands", "AP_8"],
+            env=_cfg_env(mock_config),
+        )
+
+    assert result.exit_code == 0, result.output
+    payload = json.loads(result.output)
+    assert payload["appId"] == "AP_8"
+    assert payload["commands"][0]["commandId"] == "CMD_8PASCALNAME"
+    assert payload["commands"][0]["name"] == "deploy_from_command_name_pascal_alias"
+    assert (
+        payload["commands"][0]["description"] == "deploy via command-name pascal alias"
+    )
+    assert payload["commands"][0]["status"] == "enabled"
+
+
 def test_cliq_app_commands_accepts_top_level_command_name_camel_case_alias_shape(
     mock_config: Path,
     mock_token_refresh: Any,
@@ -7357,6 +7393,41 @@ def test_cliq_app_command_get_accepts_action_id_pascal_case_alias_shape(
     assert payload["command"]["commandId"] == "ACT_17PASCAL"
     assert payload["command"]["name"] == "deploy_from_action_id_pascal_alias"
     assert payload["command"]["description"] == "dispatch pascal alias"
+    assert payload["command"]["status"] == "enabled"
+
+
+def test_cliq_app_command_get_accepts_payload_data_action_name_pascal_case_alias_shape(
+    mock_config: Path,
+    mock_token_refresh: Any,
+) -> None:
+    mock_client = MagicMock()
+    mock_client.get_app_command.return_value = {
+        "payload": {
+            "data": {
+                "commandId": "CMD_17PASCALNAME",
+                "ActionName": "deploy_from_payload_data_action_name_pascal_alias",
+                "summary": "deploy via pascal action-name alias",
+                "state": "enabled",
+            }
+        }
+    }
+
+    with patch("zoho_cli.cli._get_cliq_client", return_value=mock_client):
+        result = runner.invoke(
+            app,
+            ["cliq", "app-command-get", "AP_17", "CMD_17PASCALNAME"],
+            env=_cfg_env(mock_config),
+        )
+
+    assert result.exit_code == 0, result.output
+    payload = json.loads(result.output)
+    assert payload["appId"] == "AP_17"
+    assert payload["command"]["commandId"] == "CMD_17PASCALNAME"
+    assert (
+        payload["command"]["name"]
+        == "deploy_from_payload_data_action_name_pascal_alias"
+    )
+    assert payload["command"]["description"] == "deploy via pascal action-name alias"
     assert payload["command"]["status"] == "enabled"
 
 

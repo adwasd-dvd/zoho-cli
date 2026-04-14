@@ -3759,6 +3759,9 @@ def cliq_app_commands(
                     or row.get("commandId")
                     or row.get("action_id")
                     or row.get("actionId")
+                    or row.get("ActionId")
+                    or row.get("ActionID")
+                    or row.get("actionID")
                     or row.get("id")
                     or row.get("zuid")
                     or ""
@@ -4093,6 +4096,9 @@ def cliq_app_command_get(
             or row.get("commandId")
             or row.get("action_id")
             or row.get("actionId")
+            or row.get("ActionId")
+            or row.get("ActionID")
+            or row.get("actionID")
             or row.get("id")
             or row.get("zuid")
             or resolved_command_id

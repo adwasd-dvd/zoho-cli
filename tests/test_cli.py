@@ -5593,6 +5593,51 @@ def test_cliq_app_commands_accepts_top_level_response_wrapper_shape(
     assert payload["commands"][0]["status"] == "active"
 
 
+def test_cliq_app_commands_accepts_top_level_payload_wrapper_shape(
+    mock_config: Path,
+    mock_token_refresh: Any,
+) -> None:
+    mock_client = MagicMock()
+    mock_client.list_app_commands.return_value = {
+        "payload": {
+            "result": {
+                "data": {
+                    "records": {
+                        "record": [
+                            {
+                                "item": {
+                                    "command": {
+                                        "commandId": "CMD_8PW",
+                                        "name": "deploy_release_payload",
+                                        "summary": "Deploy release payload wrapped",
+                                        "mode": "enabled",
+                                    }
+                                }
+                            }
+                        ]
+                    }
+                }
+            }
+        }
+    }
+
+    with patch("zoho_cli.cli._get_cliq_client", return_value=mock_client):
+        result = runner.invoke(
+            app,
+            ["cliq", "app-commands", "AP_8"],
+            env=_cfg_env(mock_config),
+        )
+
+    assert result.exit_code == 0, result.output
+    payload = json.loads(result.output)
+    assert payload["appId"] == "AP_8"
+    assert payload["count"] == 1
+    assert payload["commands"][0]["commandId"] == "CMD_8PW"
+    assert payload["commands"][0]["name"] == "deploy_release_payload"
+    assert payload["commands"][0]["description"] == "Deploy release payload wrapped"
+    assert payload["commands"][0]["status"] == "enabled"
+
+
 def test_cliq_app_command_get(mock_config: Path, mock_token_refresh: Any) -> None:
     mock_client = MagicMock()
     mock_client.get_app_command.return_value = {
@@ -5969,6 +6014,51 @@ def test_cliq_app_command_get_accepts_top_level_result_wrapper_shape(
     assert payload["command"]["description"] == "Sync incident status wrapped"
     assert payload["command"]["status"] == "enabled"
     mock_client.get_app_command.assert_called_once_with("AP_13", "CMD_16RW")
+
+
+def test_cliq_app_command_get_accepts_top_level_payload_wrapper_shape(
+    mock_config: Path,
+    mock_token_refresh: Any,
+) -> None:
+    mock_client = MagicMock()
+    mock_client.get_app_command.return_value = {
+        "payload": {
+            "response": {
+                "data": {
+                    "records": {
+                        "record": [
+                            {
+                                "item": {
+                                    "command": {
+                                        "commandId": "CMD_16PW",
+                                        "name": "sync_status_payload",
+                                        "summary": "Sync incident status payload wrapped",
+                                        "mode": "enabled",
+                                    }
+                                }
+                            }
+                        ]
+                    }
+                }
+            }
+        }
+    }
+
+    with patch("zoho_cli.cli._get_cliq_client", return_value=mock_client):
+        result = runner.invoke(
+            app,
+            ["cliq", "app-command-get", "AP_13", "CMD_16PW"],
+            env=_cfg_env(mock_config),
+        )
+
+    assert result.exit_code == 0, result.output
+    payload = json.loads(result.output)
+    assert payload["appId"] == "AP_13"
+    assert payload["command"]["commandId"] == "CMD_16PW"
+    assert payload["command"]["name"] == "sync_status_payload"
+    assert payload["command"]["description"] == "Sync incident status payload wrapped"
+    assert payload["command"]["status"] == "enabled"
+    mock_client.get_app_command.assert_called_once_with("AP_13", "CMD_16PW")
 
 
 def test_cliq_app_command_get_accepts_data_records_record_item_nested_command_shape(

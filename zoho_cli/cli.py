@@ -3550,8 +3550,11 @@ def cliq_app_commands(
 
     def _unwrap_command_row(row: dict[str, Any]) -> dict[str, Any]:
         current = row
-        for _ in range(5):
+        for _ in range(8):
             for key in (
+                "payload",
+                "response",
+                "result",
                 "command",
                 "commands",
                 "action",
@@ -3585,7 +3588,7 @@ def cliq_app_commands(
         if not isinstance(payload, dict):
             return []
 
-        for key in ("command", "action", "item", "record"):
+        for key in ("payload", "command", "action", "item", "record"):
             candidate = payload.get(key)
             if isinstance(candidate, dict):
                 return [_unwrap_command_row(candidate)]
@@ -3597,6 +3600,7 @@ def cliq_app_commands(
                 ]
 
         candidates: list[Any] = [
+            payload.get("payload"),
             payload.get("response"),
             payload.get("result"),
             payload.get("data"),
@@ -3611,6 +3615,7 @@ def cliq_app_commands(
         if isinstance(nested_data, dict):
             candidates.extend(
                 [
+                    nested_data.get("payload"),
                     nested_data.get("commands"),
                     nested_data.get("actions"),
                     nested_data.get("list"),
@@ -3631,6 +3636,7 @@ def cliq_app_commands(
 
             if isinstance(candidate, dict):
                 for nested_key in (
+                    "payload",
                     "response",
                     "result",
                     "data",
@@ -3795,6 +3801,7 @@ def cliq_app_command_get(
             current = row
             for _ in range(6):
                 for key in (
+                    "payload",
                     "response",
                     "result",
                     "command",
@@ -3834,13 +3841,21 @@ def cliq_app_command_get(
         if not isinstance(payload, dict):
             return {}
 
-        raw_data = payload.get("data")
+        raw_data = payload.get("data") or payload.get("payload")
         if isinstance(raw_data, list):
             candidate = next((row for row in raw_data if isinstance(row, dict)), None)
             if isinstance(candidate, dict):
                 return _unwrap_command_row(candidate)
 
-        for key in ("response", "result", "command", "action", "item", "record"):
+        for key in (
+            "payload",
+            "response",
+            "result",
+            "command",
+            "action",
+            "item",
+            "record",
+        ):
             candidate = payload.get(key)
             if isinstance(candidate, dict):
                 return _unwrap_command_row(candidate)
@@ -3850,6 +3865,7 @@ def cliq_app_command_get(
                     return _unwrap_command_row(picked)
 
         for key in (
+            "payload",
             "response",
             "result",
             "commands",
@@ -3869,11 +3885,20 @@ def cliq_app_command_get(
 
         nested_data = raw_data
         if isinstance(nested_data, dict):
-            for key in ("response", "result", "command", "action", "item", "record"):
+            for key in (
+                "payload",
+                "response",
+                "result",
+                "command",
+                "action",
+                "item",
+                "record",
+            ):
                 candidate = nested_data.get(key)
                 if isinstance(candidate, dict):
                     return _unwrap_command_row(candidate)
             for key in (
+                "payload",
                 "response",
                 "result",
                 "commands",

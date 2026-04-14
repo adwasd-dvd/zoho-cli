@@ -6358,6 +6358,60 @@ def test_cliq_app_commands_accepts_command_name_camel_case_alias_shape(
     assert payload["commands"][0]["status"] == "enabled"
 
 
+def test_cliq_app_commands_accepts_top_level_command_name_camel_case_alias_shape(
+    mock_config: Path,
+    mock_token_refresh: Any,
+) -> None:
+    mock_client = MagicMock()
+    mock_client.list_app_commands.return_value = {
+        "commandName": "deploy_top_level_camel_alias",
+        "summary": "Deploy from top-level camelCase alias.",
+        "commandId": "CMD_8TOPCAMEL",
+        "status": "enabled",
+    }
+
+    with patch("zoho_cli.cli._get_cliq_client", return_value=mock_client):
+        result = runner.invoke(
+            app,
+            ["cliq", "app-commands", "AP_8"],
+            env=_cfg_env(mock_config),
+        )
+
+    assert result.exit_code == 0, result.output
+    payload = json.loads(result.output)
+    assert payload["count"] == 1
+    assert payload["commands"][0]["commandId"] == "CMD_8TOPCAMEL"
+    assert payload["commands"][0]["name"] == "deploy_top_level_camel_alias"
+
+
+def test_cliq_app_commands_accepts_response_command_name_camel_case_alias_shape(
+    mock_config: Path,
+    mock_token_refresh: Any,
+) -> None:
+    mock_client = MagicMock()
+    mock_client.list_app_commands.return_value = {
+        "response": {
+            "commandName": "deploy_response_camel_alias",
+            "description": "Deploy from response camelCase alias.",
+            "commandId": "CMD_8RESPCAMEL",
+            "status": "enabled",
+        }
+    }
+
+    with patch("zoho_cli.cli._get_cliq_client", return_value=mock_client):
+        result = runner.invoke(
+            app,
+            ["cliq", "app-commands", "AP_8"],
+            env=_cfg_env(mock_config),
+        )
+
+    assert result.exit_code == 0, result.output
+    payload = json.loads(result.output)
+    assert payload["count"] == 1
+    assert payload["commands"][0]["commandId"] == "CMD_8RESPCAMEL"
+    assert payload["commands"][0]["name"] == "deploy_response_camel_alias"
+
+
 def test_cliq_app_command_get(mock_config: Path, mock_token_refresh: Any) -> None:
     mock_client = MagicMock()
     mock_client.get_app_command.return_value = {

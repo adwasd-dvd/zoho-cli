@@ -1,0 +1,42 @@
+{
+  "module": "cliq",
+  "scaffold": "ready",
+  "account": "ai-dev@happy-distro.co.uk",
+  "hasAccount": true,
+  "hasAccountId": true,
+  "baseUrl": "https://cliq.zoho.com/network/happydistrouklimited/api/v2",
+  "requiredScopes": [
+    "ZohoCliq.Channels.READ",
+    "ZohoCliq.Users.READ",
+    "ZohoCliq.Messages.READ",
+    "ZohoCliq.Chats.ALL",
+    "ZohoCliq.Webhooks.CREATE"
+  ],
+  "requiredExportScopes": [
+    "ZohoCliq.OrganizationChats.READ",
+    "ZohoCliq.OrganizationMessages.READ"
+  ],
+  "grantedScopes": [
+    "ZohoMail.messages.ALL",
+    "ZohoMail.folders.ALL",
+    "ZohoMail.accounts.READ",
+    "ZohoMail.tags.ALL",
+    "ZohoCliq.Channels.READ",
+    "ZohoCliq.Users.READ",
+    "ZohoCliq.Messages.READ",
+    "ZohoCliq.Chats.ALL",
+    "ZohoCliq.Webhooks.CREATE",
+    "ZohoCliq.OrganizationChats.READ",
+    "ZohoCliq.OrganizationMessages.READ"
+  ],
+  "next": [
+    "discover capability matrix",
+    "implement messages/context read plane",
+    "implement watch/reply/edit/delete operations"
+  ],
+  "missingScopes": [],
+  "oauthReady": true,
+  "missingExportScopes": [],
+  "exportOauthReady": true,
+  "auth": "ok"
+}

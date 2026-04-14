@@ -4,10 +4,10 @@ module: cliq
 stage: in_progress
 status: in_progress
 owner: automation
-updated_at: '2026-04-14T00:23:33Z'
+updated_at: '2026-04-14T00:43:27Z'
 success_criteria:
 - ship the next cliq-193 app-governance command/client slice with focused tests
 - run one focused live verification for that new slice and archive evidence
 - keep cliq-165 export blocker evidence current while app-account activation remains external
 next_if_done: take the next queued cliq-193 app-governance slice with focused coverage
-next_step: "cliq-193 output hardening now also unwraps top-level `payload` envelopes for `cliq app-commands` and `cliq app-command-get` (including deeper nested rows by extending command-row unwrapping depth); focused tests are green (`tests/test_cli.py::test_cliq_app_commands_accepts_top_level_response_wrapper_shape`, `tests/test_cli.py::test_cliq_app_commands_accepts_top_level_payload_wrapper_shape`, `tests/test_cli.py::test_cliq_app_command_get_accepts_top_level_result_wrapper_shape`, `tests/test_cli.py::test_cliq_app_command_get_accepts_top_level_payload_wrapper_shape`); next step is one focused live rerun (`cliq status --check-auth` + `cliq app-command-get`) and archive evidence."
+next_step: "focused live cliq-193 rerun (`cliq status --check-auth` + `cliq app-command-get APP_PROBE_FAKE_20260414_004327 CMD_PROBE_FAKE_20260414_004327`) is archived with healthy auth/export readiness and endpoint still `not_supported` (`tests/auto_pilot/reports/cliq193_app_command_get_probe_summary_20260414_004327.json`); next step is the next small cliq-193 app-governance output-hardening increment with focused tests."

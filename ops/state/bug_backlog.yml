@@ -1,5 +1,5 @@
 blockers:
-  - "cliq-193 focused live rerun (`cliq status --check-auth` + `cliq app-commands APP_PROBE_FAKE_20260414_185711`) confirms auth/export readiness remains healthy while app-command list endpoints stay `not_supported`; evidence: `tests/auto_pilot/reports/cliq193_app_commands_probe_summary_20260414_185711.json`"
+  - "cliq-193 focused live rerun (`cliq status --check-auth` + `cliq app-commands APP_PROBE_FAKE_20260414_194409`) confirms auth/export readiness remains healthy while app-command list endpoints stay `not_supported`; evidence: `tests/auto_pilot/reports/cliq193_app_commands_probe_summary_20260414_194409.json`"
   - "crm-002 live smoke remains blocked: current test account is not in a CRM org, so CRM scopes are not granted and live calls return `OAUTH_SCOPE_MISMATCH` (verified 2026-04-08T15:49:49Z)"
 high: []
 normal:

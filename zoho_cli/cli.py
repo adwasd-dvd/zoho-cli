@@ -3070,6 +3070,7 @@ def cliq_app_installs(
         current = row
         for _ in range(8):
             for key in (
+                "payload",
                 "install",
                 "item",
                 "installs",
@@ -3098,7 +3099,7 @@ def cliq_app_installs(
         if not isinstance(payload, dict):
             return []
 
-        for key in ("install", "item", "record", "response", "result"):
+        for key in ("payload", "install", "item", "record", "response", "result"):
             candidate = payload.get(key)
             if isinstance(candidate, dict):
                 return [_unwrap_install_row(candidate)]
@@ -3110,6 +3111,7 @@ def cliq_app_installs(
                 ]
 
         candidates: list[Any] = [
+            payload.get("payload"),
             payload.get("data"),
             payload.get("installs"),
             payload.get("installations"),
@@ -3125,6 +3127,7 @@ def cliq_app_installs(
         if isinstance(nested_data, dict):
             candidates.extend(
                 [
+                    nested_data.get("payload"),
                     nested_data.get("installs"),
                     nested_data.get("installations"),
                     nested_data.get("users"),
@@ -3148,7 +3151,9 @@ def cliq_app_installs(
 
             if isinstance(candidate, dict):
                 nested_install = (
-                    candidate.get("install")
+                    candidate.get("payload")
+                    or candidate.get("data")
+                    or candidate.get("install")
                     or candidate.get("item")
                     or candidate.get("record")
                     or candidate.get("response")
@@ -3317,6 +3322,7 @@ def cliq_app_install_get(
             current = row
             for _ in range(8):
                 for key in (
+                    "payload",
                     "install",
                     "item",
                     "record",
@@ -3356,13 +3362,13 @@ def cliq_app_install_get(
         if not isinstance(payload, dict):
             return {}
 
-        raw_data = payload.get("data")
+        raw_data = payload.get("data") or payload.get("payload")
         if isinstance(raw_data, list):
             candidate = next((row for row in raw_data if isinstance(row, dict)), None)
             if isinstance(candidate, dict):
                 return _unwrap_install_row(candidate)
 
-        for key in ("install", "item", "record", "response", "result"):
+        for key in ("payload", "install", "item", "record", "response", "result"):
             candidate = payload.get(key)
             if isinstance(candidate, dict):
                 return _unwrap_install_row(candidate)
@@ -3372,6 +3378,7 @@ def cliq_app_install_get(
                     return _unwrap_install_row(picked)
 
         for key in (
+            "payload",
             "installs",
             "installations",
             "users",
@@ -3392,11 +3399,12 @@ def cliq_app_install_get(
 
         nested_data = raw_data
         if isinstance(nested_data, dict):
-            for key in ("install", "item", "record", "response", "result"):
+            for key in ("payload", "install", "item", "record", "response", "result"):
                 candidate = nested_data.get(key)
                 if isinstance(candidate, dict):
                     return _unwrap_install_row(candidate)
             for key in (
+                "payload",
                 "installs",
                 "installations",
                 "users",

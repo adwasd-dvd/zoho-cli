@@ -3,6 +3,7 @@
 ## Unreleased
 
 ### Added
+- Hardened `cliq-193` app-governance install list/detail output parsing so `zoho cliq app-installs` and `zoho cliq app-install-get` now also unwrap top-level `payload` envelopes (including nested `response` / `result` / `data.records.record.item` wrappers) instead of degrading to empty/fallback install output.
 - Hardened `cliq-193` app-governance command list/detail output parsing so `zoho cliq app-commands` and `zoho cliq app-command-get` now also unwrap top-level `payload` envelopes; command-row unwrapping depth was increased so payload-wrapped maintenance responses no longer degrade to blank command output.
 - Hardened `cliq-193` app-governance command list/detail output parsing so `zoho cliq app-commands` and `zoho cliq app-command-get` now unwrap top-level `response` / `result` envelopes (including nested `data.records.record.item` rows) instead of degrading to wrapper-shaped fallback command output.
 - Hardened `cliq-193` app-governance install list/detail output parsing so `zoho cliq app-installs` and `zoho cliq app-install-get` now unwrap top-level `response` / `result` envelope payloads (including nested `data.records.record.item` rows) instead of degrading to wrapper-shaped fallback install output.

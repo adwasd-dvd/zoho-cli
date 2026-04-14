@@ -1,10 +1,14 @@
-last_run_at: "2026-04-14T00:43:27Z"
+last_run_at: "2026-04-14T01:05:06Z"
 last_result: warning
 current_focus: cliq
 suites:
   unit:
     status: passing
     notes:
+      - "python3.11 -m pytest -q tests/test_cli.py::test_cliq_app_installs_accepts_top_level_response_wrapper_shape tests/test_cli.py::test_cliq_app_installs_accepts_top_level_payload_wrapper_shape tests/test_cli.py::test_cliq_app_install_get_accepts_top_level_response_wrapper_shape tests/test_cli.py::test_cliq_app_install_get_accepts_top_level_payload_wrapper_shape"
+      - "4 passed in 0.16s (cliq-193 payload-envelope hardening: `cliq app-installs` + `cliq app-install-get` now unwrap top-level `payload` wrappers and avoid payload-induced empty/fallback install rows, 2026-04-14T01:05:06Z)"
+      - "./.venv/bin/ruff format zoho_cli/cli.py && ./.venv/bin/ruff format --check zoho_cli/cli.py tests/test_cli.py"
+      - "1 file reformatted, then 2 files already formatted (cliq-193 install payload-envelope hardening formatting check, 2026-04-14T01:05:06Z)"
       - "python3.11 -m zoho_cli --config /tmp/zoho-test-config.json --account ai-dev@happy-distro.co.uk cliq status --check-auth --network happydistrouklimited"
       - "python3.11 -m zoho_cli --config /tmp/zoho-test-config.json --account ai-dev@happy-distro.co.uk cliq app-command-get APP_PROBE_FAKE_20260414_004327 CMD_PROBE_FAKE_20260414_004327 --network happydistrouklimited"
       - "focused live cliq-193 verification archived at `tests/auto_pilot/reports/cliq193_app_command_get_probe_summary_20260414_004327.json`: status remains healthy (`oauthReady: true`, `exportOauthReady: true`) and app-command detail endpoint remains `error: not_supported` (2026-04-14T00:43:27Z)"

@@ -3673,7 +3673,9 @@ def cliq_app_commands(
                     if nested_rows:
                         return nested_rows
                 if isinstance(candidate, list):
-                    return _normalize_command_rows(candidate)
+                    rows = _normalize_command_rows(candidate)
+                    if rows:
+                        return rows
 
             candidates = [
                 payload.get("payload"),
@@ -3688,7 +3690,9 @@ def cliq_app_commands(
 
             for candidate in candidates:
                 if isinstance(candidate, list):
-                    return _normalize_command_rows(candidate)
+                    rows = _normalize_command_rows(candidate)
+                    if rows:
+                        return rows
                 if isinstance(candidate, dict):
                     nested_command = candidate.get("command")
                     if isinstance(nested_command, dict):
@@ -3698,7 +3702,9 @@ def cliq_app_commands(
 
                     nested_records = candidate.get("records")
                     if isinstance(nested_records, list):
-                        return _normalize_command_rows(nested_records)
+                        rows = _normalize_command_rows(nested_records)
+                        if rows:
+                            return rows
                     if isinstance(nested_records, dict):
                         nested_rows = _extract_command_rows(nested_records)
                         if nested_rows:
@@ -3706,7 +3712,9 @@ def cliq_app_commands(
 
                     nested_record = candidate.get("record")
                     if isinstance(nested_record, list):
-                        return _normalize_command_rows(nested_record)
+                        rows = _normalize_command_rows(nested_record)
+                        if rows:
+                            return rows
                     if isinstance(nested_record, dict):
                         nested_rows = _extract_command_rows(nested_record)
                         if nested_rows:
@@ -3714,7 +3722,9 @@ def cliq_app_commands(
 
                     nested_data = candidate.get("data")
                     if isinstance(nested_data, list):
-                        return _normalize_command_rows(nested_data)
+                        rows = _normalize_command_rows(nested_data)
+                        if rows:
+                            return rows
                     if isinstance(nested_data, dict):
                         nested_rows = _extract_command_rows(nested_data)
                         if nested_rows:

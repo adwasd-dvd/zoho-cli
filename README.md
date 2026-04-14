@@ -38,45 +38,26 @@ uv tool install .
 
 ## What works now
 
-### ✅ Zoho Mail (v0.2.0 stable)
+### ✅ Zoho Mail (stable)
 
-- `zoho mail list` — List messages with filtering
-- `zoho mail search "query"` — Full-text and field-based search
-- `zoho mail get <id>` — Get full message content
-- `zoho mail send --to ... --subject ... --text ...` — Send messages
-- `zoho mail attachments <id>` / `download-attachment` — Handle attachments
-- `zoho mail mark-read/unread`, `archive`, `delete`, `move` — Message operations
-- Folder management: `folders list/create/rename/delete`
+- Message read/search: `mail list`, `mail search`, `mail get`
+- Message write/actions: `mail send`, `reply`, `forward`, `mark-read/unread`, `archive/unarchive`, `move`, `delete`, `spam/not-spam`
+- Attachment + metadata: `mail attachments`, `download-attachment`, `flag`, `tag`, `untag`, `untag-all`
+- Folder + label management: `folders ...`, `labels ...`
 
-### ✅ Zoho Cliq (v0.4.0 in progress)
+### ✅ Zoho Cliq (broad command surface, active hardening)
 
-**Read plane:**
-- `cliq status --check-auth` — Auth and scope verification
-- `cliq capabilities` — Capability matrix for token/org/network
-- `cliq channels`, `chats`, `users`, `members` — List resources (`chats` may require extra read scope)
-- `cliq whoami` — Best-effort current-token identity diagnostic (direct endpoint first, directory fallback)
-- `cliq messages <channel-id>` / `message <id>` — Read messages (with inferred content types)
-- `cliq context` — Message thread context (with inferred content types)
-- `cliq file <message-id>` — Fetch message attachment/file metadata
-- `cliq voice <message-id>` — Filter voice/audio attachment metadata for one message
+- Read plane: `status`, `capabilities`, `channels/chats/users/members`, `messages/message/context`, `file`, `voice`, `search`, `whoami`
+- Write plane: `send`, `voice-send`, `reply/edit/delete/react`, `notify-mail`
+- Admin/ops planes: channel lifecycle + membership, thread/schedule/chat-control, bot operations, org-admin slices, platform-extension slices, app-governance slices
+- Export plane: `export-chats` implemented with explicit scope/status diagnostics
 
-**Write plane:**
-- `cliq send --text ...` — Send plain text
-- `cliq send --image-url/--file-url/--audio-url/--voice-url ...` — Send rich link-style media payloads
-- `cliq voice-send --voice-url ...` — Explicit voice-message send wrapper
-- `cliq send --sticker :thumbsup:` — Append sticker/emoji shortcode in outbound text
-- `cliq reply/edit/delete/react` — Message operations
+> Note: some live Cliq endpoints are org/token/network dependent. On `happydistrouklimited`, several endpoints currently return `not_supported`/scope errors and are tracked as external blockers.
 
-**Admin plane (active development):**
-- `cliq channel-create`, `channel-archive/unarchive`, `channel-delete --force`
-- `cliq member-add/remove`
-- `cliq channel-rename`, `channel-topic`
+### 🚧 Zoho CRM (read-only scaffold implemented)
 
-### ⏳ Zoho CRM (planned)
-
-- Module/field listing
-- Record CRUD operations
-- Search and advanced queries
+- Implemented commands: `crm status`, `crm modules`, `crm fields`, `crm list`, `crm get`, `crm search`
+- Current limitation: live verification is blocked because the test account is not in a CRM org.
 
 ---
 
@@ -147,15 +128,46 @@ Project state lives in `ops/state/*.yml`:
 
 ---
 
+## Development status and roadmap (from `ops/state`, updated 2026-04-14)
+
+### Current progress
+
+| Module | Status | Current phase | Notes |
+| --- | --- | --- | --- |
+| Mail | ✅ Completed | stabilization_complete | Shipping baseline is stable. |
+| Cliq | 🚧 In progress | cliq-expansion-phase | Active task is `cliq-193` app-governance hardening. |
+| CRM | ⛔ Blocked | phase_1_read_only_commands_implemented | Live org access is missing for the test account. |
+
+### Current release posture
+
+- Current version: `0.2.0`
+- Next version target: `0.2.1`
+- Release candidate: `false`
+- Broad automated gate: latest `make release-gate && make ci` is green, but release is still blocked by unresolved live integration blockers.
+
+### Active blockers (highest impact)
+
+- Cliq maintenance export verification (`cliq-165`) is blocked by API-side `inactive_appaccount_user`.
+- Several Cliq endpoints are still unsupported on the current org/network (`not_supported`) or require extra scopes.
+- CRM live verification remains blocked until CRM org access is granted to the test account.
+
+### Near-term plan
+
+1. Continue `cliq-193` with the next smallest output-hardening slice + focused tests.
+2. Re-run one matching focused live verification per slice and archive evidence.
+3. Recheck `cliq-165` export once app-account activation changes.
+4. Resume CRM live verification when CRM org access is available.
+
+---
+
 ## Release train
 
 | Version | Milestone | Status |
 | --- | --- | --- |
-| v0.2.0 | Mail stabilized + shared core extracted | ✅ Stable |
-| v0.3.0 | Cliq baseline (read/write) | ⏳ In progress |
-| v0.4.0 | Cliq admin plane + Mail×Cliq integration | 🚧 Active |
-| v0.5.0 | CRM read-only scaffolding | 📋 Planned |
-| v0.6.0 | CRM write baseline | 📋 Planned |
+| v0.2.0 | Mail stabilized + shared core extracted | ✅ Released |
+| v0.2.1 | Cliq expansion hardening + blocker burn-down | 🚧 Active |
+| v0.3.x | Cliq live parity and export unblock closure | ⏳ Pending external unblock |
+| v0.4.x | CRM live validation and follow-on CRM work | 📋 Planned |
 
 ---
 

@@ -41,9 +41,16 @@ htmlcov/
 .openclaw/
 .pdf-cache/
 workspace/
+.tmp/
 *.log
 *.tmp
 *.bak
+
+# Auto-pilot runtime artifacts (generated locally; do not commit by default)
+tests/auto_pilot/reports/*.json
+tests/auto_pilot/reports/*.md
+tests/auto_pilot/reports/*.xml
+tests/auto_pilot/reports/*.log
 
 # Archives / macOS zip noise
 __MACOSX/

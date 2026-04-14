@@ -1,4 +1,4 @@
-last_run_at: "2026-04-14T09:27:59Z"
+last_run_at: "2026-04-14T09:43:29Z"
 last_result: warning
 current_focus: cliq
 suites:
@@ -13,6 +13,10 @@ suites:
       - "4 passed in 0.10s (cliq-193 command output hardening: app-command list/detail now treat `command_name` / `action_name` as first-class name aliases, 2026-04-14T08:36:13Z)"
       - "./.venv/bin/ruff format tests/test_cli.py && ./.venv/bin/ruff format --check zoho_cli/cli.py tests/test_cli.py"
       - "1 file reformatted, then 2 files already formatted (cliq-193 command-name alias hardening formatting check, 2026-04-14T08:36:52Z)"
+      - "python3.11 -m zoho_cli --config /tmp/zoho-test-config.json --account ai-dev@happy-distro.co.uk cliq status --check-auth --network happydistrouklimited"
+      - "focused cliq-193 live app-command-get check keeps auth/export readiness healthy (`oauthReady: true`, `exportOauthReady: true`); evidence: `tests/auto_pilot/reports/cliq193_status_20260414_094329.json` (2026-04-14T09:43:29Z)"
+      - "python3.11 -m zoho_cli --config /tmp/zoho-test-config.json --account ai-dev@happy-distro.co.uk cliq app-command-get APP_PROBE_FAKE_20260414_094329 CMD_PROBE_FAKE_20260414_094329 --network happydistrouklimited"
+      - "focused cliq-193 live `cliq app-command-get` verification returns `error: not_supported`; evidence: `tests/auto_pilot/reports/cliq193_app_command_get_20260414_094329.json` + `tests/auto_pilot/reports/cliq193_app_command_get_probe_summary_20260414_094329.json` (2026-04-14T09:43:29Z)"
       - "python3.11 -m zoho_cli --config /tmp/zoho-test-config.json --account ai-dev@happy-distro.co.uk cliq status --check-auth --network happydistrouklimited"
       - "python3.11 -m zoho_cli --config /tmp/zoho-test-config.json --account ai-dev@happy-distro.co.uk cliq app-installs APP_PROBE_FAKE_20260414_080256 --network happydistrouklimited --limit 10"
       - "focused live cliq-193 verification archived at `tests/auto_pilot/reports/cliq193_app_installs_probe_summary_20260414_080256.json`: status remains healthy (`oauthReady: true`, `exportOauthReady: true`) and app-install list endpoint remains `error: not_supported` (2026-04-14T08:02:59Z)"

@@ -2660,10 +2660,11 @@ def cliq_app_permissions(
 
     def _unwrap_permission_row(row: dict[str, Any]) -> dict[str, Any]:
         current = row
-        for _ in range(6):
+        for _ in range(8):
             for key in (
                 "response",
                 "result",
+                "payload",
                 "permission",
                 "scope",
                 "item",
@@ -2716,6 +2717,7 @@ def cliq_app_permissions(
             payload.get("records"),
             payload.get("response"),
             payload.get("result"),
+            payload.get("payload"),
         ]
         nested_data = payload.get("data")
         if isinstance(nested_data, dict):
@@ -2730,6 +2732,7 @@ def cliq_app_permissions(
                     nested_data.get("data"),
                     nested_data.get("response"),
                     nested_data.get("result"),
+                    nested_data.get("payload"),
                 ]
             )
 
@@ -2872,10 +2875,11 @@ def cliq_app_permission_get(
     def _extract_permission_row(payload: Any) -> dict[str, Any]:
         def _unwrap_permission_row(row: dict[str, Any]) -> dict[str, Any]:
             current = row
-            for _ in range(6):
+            for _ in range(8):
                 for key in (
                     "response",
                     "result",
+                    "payload",
                     "permission",
                     "scope",
                     "item",
@@ -2941,6 +2945,7 @@ def cliq_app_permission_get(
             "records",
             "response",
             "result",
+            "payload",
         ):
             candidate = payload.get(key)
             if isinstance(candidate, list):
@@ -2966,6 +2971,7 @@ def cliq_app_permission_get(
                 "data",
                 "response",
                 "result",
+                "payload",
             ):
                 candidate = nested_data.get(key)
                 if isinstance(candidate, list):

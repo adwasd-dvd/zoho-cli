@@ -4,10 +4,10 @@ module: cliq
 stage: in_progress
 status: in_progress
 owner: automation
-updated_at: '2026-04-14T01:23:02Z'
+updated_at: '2026-04-14T02:09:29Z'
 success_criteria:
 - ship the next cliq-193 app-governance command/client slice with focused tests
 - run one focused live verification for that new slice and archive evidence
 - keep cliq-165 export blocker evidence current while app-account activation remains external
 next_if_done: take the next queued cliq-193 app-governance slice with focused coverage
-next_step: "focused live cliq-193 rerun completed (`cliq status --check-auth` + `cliq app-install-get APP_PROBE_FAKE_20260414_012300 INSTALL_PROBE_FAKE_20260414_012300`) with auth/export readiness still healthy and app-install detail endpoints still `not_supported`; next step is the next small app-governance output-hardening increment with focused tests, then one matching focused live rerun and evidence archive."
+next_step: "permission payload-envelope hardening is in for `cliq app-permissions` + `cliq app-permission-get` (deeper wrapper unwrapping via permission-row depth increase) with focused tests green; next step is one matching focused live rerun (`cliq status --check-auth` + `cliq app-permission-get ...`) and evidence archive, then the next small app-governance output-hardening increment."

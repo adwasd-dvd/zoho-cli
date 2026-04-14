@@ -3,6 +3,7 @@
 ## Unreleased
 
 ### Added
+- Hardened `cliq-193` app-governance permission list/detail output parsing so `zoho cliq app-permissions` and `zoho cliq app-permission-get` now unwrap deeper payload-envelope wrapper stacks by extending permission-row unwrapping depth, preventing top-level `payload` + nested `response` / `result` / `data.records.record.item` shapes from degrading `scope` output.
 - Hardened `cliq-193` app-governance install list/detail output parsing so `zoho cliq app-installs` and `zoho cliq app-install-get` now also unwrap top-level `payload` envelopes (including nested `response` / `result` / `data.records.record.item` wrappers) instead of degrading to empty/fallback install output.
 - Hardened `cliq-193` app-governance command list/detail output parsing so `zoho cliq app-commands` and `zoho cliq app-command-get` now also unwrap top-level `payload` envelopes; command-row unwrapping depth was increased so payload-wrapped maintenance responses no longer degrade to blank command output.
 - Hardened `cliq-193` app-governance command list/detail output parsing so `zoho cliq app-commands` and `zoho cliq app-command-get` now unwrap top-level `response` / `result` envelopes (including nested `data.records.record.item` rows) instead of degrading to wrapper-shaped fallback command output.
@@ -208,10 +209,10 @@
 - Removed duplicate CRM `fields` command/client definitions so the CRM read-only surface now has one canonical `fields` implementation.
 
 ### Release readiness
-- Assessed at 2026-04-13T01:35:00Z: release is **not ready**.
+- Assessed at 2026-04-14T01:37:08Z: release is **not ready**.
 - Fresh gate evidence:
-  - `make release-gate && make ci` remains green (`321` tests + wheel smoke + fmt/lint, 2026-04-12T14:19:04Z).
-  - Focused live checks are current through `2026-04-13T01:22:30Z`; latest `cliq apps --limit 10` probe (`cliq-193`) classifies the endpoint as `not_supported` while auth/export readiness is healthy.
+  - `make release-gate && make ci` remains green (`503` tests + wheel smoke + fmt/lint, 2026-04-14T01:37:08Z).
+  - Focused live checks are current through `2026-04-14T01:23:02Z`; latest `cliq app-install-get` probe (`cliq-193`) keeps auth/export readiness healthy (`oauthReady: true`, `exportOauthReady: true`) while classifying app-install detail endpoints as `not_supported`.
   - Changelog draft and release state have been refreshed for this assessment.
 - Remaining release blockers:
   - blocker bugs are **not** clear (`crm-002` live smoke remains blocked by account-level CRM org access and returns `OAUTH_SCOPE_MISMATCH`).

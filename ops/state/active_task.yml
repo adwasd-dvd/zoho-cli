@@ -4,10 +4,10 @@ module: cliq
 stage: in_progress
 status: in_progress
 owner: automation
-updated_at: '2026-04-14T07:09:21Z'
+updated_at: '2026-04-14T07:24:02Z'
 success_criteria:
 - ship the next cliq-193 app-governance command/client slice with focused tests
 - run one focused live verification for that new slice and archive evidence
 - keep cliq-165 export blocker evidence current while app-account activation remains external
 next_if_done: take the next queued cliq-193 app-governance slice with focused coverage
-next_step: "unit hardening complete: `zoho cliq app-install-get` now unwraps deeper `payload/response/result/data/records/record/item` wrapper stacks (unwrap depth 8 -> 16), and install list/detail output now treats `subjectId` / `subject_id` as first-class subject aliases; focused tests are green. next is one matching focused live rerun (`cliq status --check-auth` + `cliq app-install-get ...`) and evidence archive while cliq-165 remains externally blocked by `inactive_appaccount_user`."
+next_step: "focused live rerun complete: `cliq status --check-auth` + `cliq app-install-get APP_PROBE_FAKE_20260414_072400 INSTALL_PROBE_FAKE_20260414_072400` stays auth/export healthy (`oauthReady: true`, `exportOauthReady: true`) while app-install detail remains `not_supported`; evidence archived at `tests/auto_pilot/reports/cliq193_app_install_get_probe_summary_20260414_072400.json`. next is the next smallest cliq-193 output-hardening increment with focused unit coverage, then one matching focused live rerun while cliq-165 remains externally blocked by `inactive_appaccount_user`."

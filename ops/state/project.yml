@@ -1,5 +1,5 @@
 project: zoho-cli
-updated_at: '2026-04-14T07:09:21Z'
+updated_at: '2026-04-14T07:24:02Z'
 status: cliq-expansion
 canonical_workspace: /Users/adwasd/.openclaw/workspace-coder
 project_root: /Users/adwasd/.openclaw/workspace-coder/job/zoho-cli
@@ -7,7 +7,7 @@ module_order:
 - Mail
 - Cliq
 - CRM
-current_focus: 'cliq-165 export verification remains externally blocked by API-side `inactive_appaccount_user`; latest cliq-193 unit hardening extends `cliq app-install-get` deep wrapper unwrapping (8 -> 16) and adds `subjectId`/`subject_id` alias handling for install list/detail output, with focused tests green; next step is one matching focused live rerun (`cliq status --check-auth` + `cliq app-install-get ...`) and evidence archive'
+current_focus: 'cliq-165 export verification remains externally blocked by API-side `inactive_appaccount_user`; latest cliq-193 focused live rerun (`cliq status --check-auth` + `cliq app-install-get APP_PROBE_FAKE_20260414_072400 INSTALL_PROBE_FAKE_20260414_072400`) keeps auth/export readiness healthy (`oauthReady: true`, `exportOauthReady: true`) while app-install detail stays `not_supported`; next is the next smallest cliq-193 output-hardening increment with focused unit coverage'
 primary_blockers:
 - crm live read-only verification remains blocked by account-level CRM org access
 - cliq databases live verification currently requires additional scope (`ZohoCliq.Databases.READ`) on the active token despite healthy baseline auth/export readiness
@@ -29,8 +29,9 @@ primary_blockers:
   returns `not_supported`)
 - calls/meetings endpoints are unsupported on current token/network (`cliq meetings`
   now returns `not_supported` in focused live verification)
-next_step: 'run one focused live rerun for the latest cliq-193 install hardening (`cliq status --check-auth` + `cliq app-install-get ...`) and archive evidence, then take the next smallest cliq-193 output-hardening increment while keeping cliq-165 as the highest-priority external blocker (`inactive_appaccount_user`)'
+next_step: 'take the next smallest cliq-193 output-hardening increment with focused unit coverage, then run one matching focused live rerun and archive evidence while keeping cliq-165 as the highest-priority external blocker (`inactive_appaccount_user`)'
 additional_info:
+- '2026-04-14 focused live verification: reran cliq-193 install-detail probe (`cliq status --check-auth` + `cliq app-install-get APP_PROBE_FAKE_20260414_072400 INSTALL_PROBE_FAKE_20260414_072400`) and archived evidence at `tests/auto_pilot/reports/cliq193_app_install_get_probe_summary_20260414_072400.json`; auth/export readiness remains healthy (`oauthReady: true`, `exportOauthReady: true`) while app-install detail endpoints remain `not_supported`.'
 - '2026-04-14 unit hardening: `zoho cliq app-install-get` now unwraps deeper `payload/response/result/data/records/record/item` wrapper stacks by extending install-row unwrapping depth (8 -> 16), and install list/detail output now treats `subjectId` / `subject_id` as first-class subject aliases; focused tests passed (`tests/test_cli.py::test_cliq_app_installs_accepts_subject_id_alias`, `tests/test_cli.py::test_cliq_app_install_get_accepts_top_level_payload_wrapper_shape`, `tests/test_cli.py::test_cliq_app_install_get_accepts_deep_data_records_record_item_wrapper_shape`).'
 - '2026-04-14 focused live verification: reran cliq-193 permission list probe (`cliq status --check-auth` + `cliq app-permissions APP_PROBE_FAKE_20260414_064355`) and archived evidence at `tests/auto_pilot/reports/cliq193_app_permissions_probe_summary_20260414_064355.json`; auth/export readiness remains healthy (`oauthReady: true`, `exportOauthReady: true`) while app-permissions endpoints remain `not_supported`.'
 - '2026-04-14 unit hardening: `zoho cliq app-permissions` + `zoho cliq app-permission-get` now unwrap deeper `payload/response/result/data/records/record/item` wrapper chains by extending permission-row unwrapping depth (8 -> 16), preventing wrapper-shaped permission output on deep maintenance payloads; focused tests passed (`tests/test_cli.py::test_cliq_app_permissions_accepts_top_level_payload_wrapper_shape`, `tests/test_cli.py::test_cliq_app_permissions_accepts_deep_data_records_record_item_wrapper_shape`, `tests/test_cli.py::test_cliq_app_permission_get_accepts_top_level_payload_wrapper_shape`, `tests/test_cli.py::test_cliq_app_permission_get_accepts_deep_data_records_record_item_wrapper_shape`).'

@@ -1,10 +1,13 @@
-last_run_at: "2026-04-14T02:09:29Z"
+last_run_at: "2026-04-14T02:23:17Z"
 last_result: warning
 current_focus: cliq
 suites:
   unit:
     status: passing
     notes:
+      - "python3.11 -m zoho_cli --config /tmp/zoho-test-config.json --account ai-dev@happy-distro.co.uk cliq status --check-auth --network happydistrouklimited"
+      - "python3.11 -m zoho_cli --config /tmp/zoho-test-config.json --account ai-dev@happy-distro.co.uk cliq app-permission-get APP_PROBE_FAKE_20260414_022317 PERMISSION_PROBE_FAKE_20260414_022317 --network happydistrouklimited"
+      - "focused live cliq-193 verification archived at `tests/auto_pilot/reports/cliq193_app_permission_get_probe_summary_20260414_022317.json`: status remains healthy (`oauthReady: true`, `exportOauthReady: true`) and app-permission detail endpoint remains `error: not_supported` (2026-04-14T02:23:17Z)"
       - "python3.11 -m pytest -q tests/test_cli.py::test_cliq_app_permissions_accepts_top_level_response_wrapper_shape tests/test_cli.py::test_cliq_app_permissions_accepts_top_level_payload_wrapper_shape tests/test_cli.py::test_cliq_app_permission_get_accepts_top_level_response_wrapper_shape tests/test_cli.py::test_cliq_app_permission_get_accepts_top_level_payload_wrapper_shape"
       - "4 passed in 0.14s (cliq-193 permission payload-envelope hardening: permission row unwrapping depth increased so `cliq app-permissions` + `cliq app-permission-get` normalize top-level `payload` + nested `response`/`result`/`data.records.record.item` wrappers without wrapper-shaped `scope` output, 2026-04-14T02:09:29Z)"
       - "./.venv/bin/ruff format --check zoho_cli/cli.py tests/test_cli.py"
@@ -618,6 +621,10 @@ suites:
   integration:
     status: warning
     notes:
+      - "python3.11 -m zoho_cli --config /tmp/zoho-test-config.json --account ai-dev@happy-distro.co.uk cliq status --check-auth --network happydistrouklimited"
+      - "focused cliq-193 live app-permission-get check keeps auth/export readiness healthy (`oauthReady: true`, `exportOauthReady: true`); evidence: `tests/auto_pilot/reports/cliq193_status_20260414_022317.json` (2026-04-14T02:23:17Z)"
+      - "python3.11 -m zoho_cli --config /tmp/zoho-test-config.json --account ai-dev@happy-distro.co.uk cliq app-permission-get APP_PROBE_FAKE_20260414_022317 PERMISSION_PROBE_FAKE_20260414_022317 --network happydistrouklimited"
+      - "focused cliq-193 live `cliq app-permission-get` verification returns `error: not_supported`; evidence: `tests/auto_pilot/reports/cliq193_app_permission_get_20260414_022317.json` + `tests/auto_pilot/reports/cliq193_app_permission_get_probe_summary_20260414_022317.json` (2026-04-14T02:23:17Z)"
       - "python3.11 -m zoho_cli --config /tmp/zoho-test-config.json --account ai-dev@happy-distro.co.uk cliq status --check-auth --network happydistrouklimited"
       - "focused cliq-193 live app-install-get check keeps auth/export readiness healthy (`oauthReady: true`, `exportOauthReady: true`); evidence: `tests/auto_pilot/reports/cliq193_status_20260413_230917.json` (2026-04-13T23:09:19Z)"
       - "python3.11 -m zoho_cli --config /tmp/zoho-test-config.json --account ai-dev@happy-distro.co.uk cliq app-install-get APP_PROBE_FAKE_20260413_230917 INSTALL_PROBE_FAKE_20260413_230917 --network happydistrouklimited"

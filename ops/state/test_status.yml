@@ -1,10 +1,14 @@
-last_run_at: "2026-04-14T12:53:55Z"
+last_run_at: "2026-04-14T13:14:31Z"
 last_result: warning
 current_focus: cliq
 suites:
   unit:
     status: passing
     notes:
+      - "python3.11 -m zoho_cli --config /tmp/zoho-test-config.json --account ai-dev@happy-distro.co.uk cliq status --check-auth --network happydistrouklimited"
+      - "focused cliq-193 live app-command-get rerun keeps auth/export readiness healthy (`oauthReady: true`, `exportOauthReady: true`); evidence: `tests/auto_pilot/reports/cliq193_status_20260414_131429.json` (2026-04-14T13:14:31Z)"
+      - "python3.11 -m zoho_cli --config /tmp/zoho-test-config.json --account ai-dev@happy-distro.co.uk cliq app-command-get APP_PROBE_FAKE_20260414_131429 CMD_PROBE_FAKE_20260414_131429 --network happydistrouklimited"
+      - "focused cliq-193 live `cliq app-command-get` verification returns `error: not_supported`; evidence: `tests/auto_pilot/reports/cliq193_app_command_get_20260414_131429.json` + `tests/auto_pilot/reports/cliq193_app_command_get_probe_summary_20260414_131429.json` (2026-04-14T13:14:31Z)"
       - "python3.11 -m pytest -q tests/test_cli.py::test_cliq_app_command_get_accepts_deep_data_records_record_item_wrapper_shape tests/test_cli.py::test_cliq_app_command_get_accepts_extra_deep_record_item_wrapper_shape"
       - "2 passed (cliq-193 app-command detail hardening: deep record/item unwrap depth now 10 -> 16 for maintenance payloads with extra nested wrappers, 2026-04-14T12:53:55Z)"
       - "./.venv/bin/ruff format tests/test_cli.py && ./.venv/bin/ruff format --check zoho_cli/cli.py tests/test_cli.py"

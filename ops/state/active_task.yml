@@ -4,10 +4,10 @@ module: cliq
 stage: in_progress
 status: in_progress
 owner: automation
-updated_at: '2026-04-14T19:44:09Z'
+updated_at: '2026-04-14T20:10:40Z'
 success_criteria:
 - ship the next cliq-193 app-governance command/client slice with focused tests
 - run one focused live verification for that new slice and archive evidence
 - keep cliq-165 export blocker evidence current while app-account activation remains external
 next_if_done: take the next queued cliq-193 app-governance slice with focused coverage
-next_step: "focused live rerun is now archived for the PascalCase description/status alias hardening (`cliq status --check-auth` + `cliq app-commands APP_PROBE_FAKE_20260414_194409`); next implement the smallest follow-on cliq-193 output-hardening increment with focused tests, then run one matching live rerun while cliq-165 remains externally blocked by `inactive_appaccount_user`."
+next_step: "smallest follow-on cliq-193 output-hardening increment is complete: `zoho cliq app-commands` + `zoho cliq app-command-get` now normalize `help` / `Help` description aliases; next run one matching focused live rerun (`cliq status --check-auth` + `cliq app-commands APP_PROBE_FAKE_<stamp>`) and archive evidence while cliq-165 remains externally blocked by `inactive_appaccount_user`."

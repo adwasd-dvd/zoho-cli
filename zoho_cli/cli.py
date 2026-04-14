@@ -3655,6 +3655,14 @@ def cliq_app_commands(
                 "help_text",
                 "helpText",
                 "HelpText",
+                "help",
+                "Help",
+                "status",
+                "state",
+                "mode",
+                "Status",
+                "State",
+                "Mode",
             )
         )
 
@@ -3805,6 +3813,8 @@ def cliq_app_commands(
                     or row.get("help_text")
                     or row.get("helpText")
                     or row.get("HelpText")
+                    or row.get("help")
+                    or row.get("Help")
                     or ""
                 ),
                 "status": str(
@@ -4100,12 +4110,20 @@ def cliq_app_command_get(
                     "displayName",
                     "title",
                     "description",
+                    "Description",
                     "summary",
+                    "Summary",
                     "help_text",
                     "helpText",
+                    "HelpText",
+                    "help",
+                    "Help",
                     "status",
                     "state",
                     "mode",
+                    "Status",
+                    "State",
+                    "Mode",
                 )
             ):
                 return nested_data
@@ -4139,12 +4157,20 @@ def cliq_app_command_get(
                 "displayName",
                 "title",
                 "description",
+                "Description",
                 "summary",
+                "Summary",
                 "help_text",
                 "helpText",
+                "HelpText",
+                "help",
+                "Help",
                 "status",
                 "state",
                 "mode",
+                "Status",
+                "State",
+                "Mode",
             )
         ):
             return payload
@@ -4200,6 +4226,8 @@ def cliq_app_command_get(
             or row.get("help_text")
             or row.get("helpText")
             or row.get("HelpText")
+            or row.get("help")
+            or row.get("Help")
             or ""
         ),
         "status": str(

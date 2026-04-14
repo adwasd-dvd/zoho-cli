@@ -3692,6 +3692,62 @@ def test_cliq_app_get_accepts_top_level_payload_wrapper_shape(
     mock_client.get_app.assert_called_once_with("AP_PAYLOAD_GET")
 
 
+def test_cliq_app_get_accepts_deep_data_records_record_item_wrapper_shape(
+    mock_config: Path,
+    mock_token_refresh: Any,
+) -> None:
+    mock_client = MagicMock()
+    mock_client.get_app.return_value = {
+        "payload": {
+            "response": {
+                "result": {
+                    "data": {
+                        "records": {
+                            "record": {
+                                "item": {
+                                    "payload": {
+                                        "response": {
+                                            "result": {
+                                                "data": {
+                                                    "records": {
+                                                        "record": {
+                                                            "item": {
+                                                                "app": {
+                                                                    "app_id": "AP_DEEP_GET",
+                                                                    "name": "Ops Deep Payload Detail",
+                                                                    "state": "enabled",
+                                                                }
+                                                            }
+                                                        }
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    with patch("zoho_cli.cli._get_cliq_client", return_value=mock_client):
+        result = runner.invoke(
+            app,
+            ["cliq", "app-get", "AP_DEEP_GET"],
+            env=_cfg_env(mock_config),
+        )
+
+    assert result.exit_code == 0, result.output
+    payload = json.loads(result.output)
+    assert payload["app"]["appId"] == "AP_DEEP_GET"
+    assert payload["app"]["name"] == "Ops Deep Payload Detail"
+    assert payload["app"]["status"] == "enabled"
+    mock_client.get_app.assert_called_once_with("AP_DEEP_GET")
+
+
 def test_cliq_app_get_accepts_top_level_apps_dict_shape(
     mock_config: Path,
     mock_token_refresh: Any,

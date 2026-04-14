@@ -3,6 +3,7 @@
 ## Unreleased
 
 ### Added
+- Hardened `cliq-193` `zoho cliq app-get` detail extraction for deeper `payload/response/result/data/records/record/item` wrapper chains by extending app-row unwrapping depth (`8 -> 16`), preventing fallback `unknown` app output when maintenance payloads are nested behind repeated envelopes and row wrappers.
 - Hardened `cliq-193` `zoho cliq app-commands` list extraction for deep `payload/result/data/records/record/item` wrapper chains by extending command-row unwrapping depth (`10 -> 16`), preventing wrapper-shaped command rows when maintenance payloads are nested behind extra envelopes and row wrappers.
 - Hardened `cliq-193` `zoho cliq app-command-get` detail extraction for deep `data.records.record[].item` wrapper chains by extending command-row unwrapping depth (`8 -> 10`), preventing wrapper-shaped command-name output when maintenance payload rows are nested behind extra `record`/`item` layers.
 - Hardened `cliq-193` app-governance app list/detail output parsing so `zoho cliq apps` and `zoho cliq app-get` now unwrap top-level `payload` envelopes (including nested `response` / `result` / `data.record.item` and `data.records.record.item` wrappers); app-detail row unwrapping depth was extended so payload-wrapped responses no longer degrade to fallback app ids.

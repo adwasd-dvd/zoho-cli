@@ -4,10 +4,10 @@ module: cliq
 stage: in_progress
 status: in_progress
 owner: automation
-updated_at: '2026-04-14T11:28:00Z'
+updated_at: '2026-04-14T12:33:35Z'
 success_criteria:
 - ship the next cliq-193 app-governance command/client slice with focused tests
 - run one focused live verification for that new slice and archive evidence
 - keep cliq-165 export blocker evidence current while app-account activation remains external
 next_if_done: take the next queued cliq-193 app-governance slice with focused coverage
-next_step: "completed the next cliq-193 output-hardening increment: app-command list/detail parsing now accepts display-name aliases (`displayName` / `display_name`) when canonical command names are absent, with focused tests green (`tests/test_cli.py::test_cliq_app_commands_accepts_display_name_camel_case_alias_shape`, `tests/test_cli.py::test_cliq_app_command_get_accepts_payload_data_display_name_camel_case_alias_shape`). next is one matching focused live rerun (`zoho cliq status --check-auth` + `zoho cliq app-command-get APP_PROBE_FAKE_<stamp> CMD_PROBE_FAKE_<stamp>`) while cliq-165 remains externally blocked by `inactive_appaccount_user`."
+next_step: "completed the queued cliq-193 focused live rerun (`zoho cliq status --check-auth` + `zoho cliq app-command-get APP_PROBE_FAKE_20260414_123333 CMD_PROBE_FAKE_20260414_123333`), archived evidence at `tests/auto_pilot/reports/cliq193_app_command_get_probe_summary_20260414_123333.json`, and reconfirmed healthy auth/export readiness (`oauthReady: true`, `exportOauthReady: true`) while app-command detail endpoints remain `not_supported`. next is the next smallest cliq-193 output-hardening increment with focused unit coverage, then one matching focused live rerun while cliq-165 remains externally blocked by `inactive_appaccount_user`."

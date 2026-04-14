@@ -5261,6 +5261,51 @@ def test_cliq_app_installs_accepts_top_level_payload_wrapper_shape(
     mock_client.list_app_installs.assert_called_once_with("AP_5", limit=2)
 
 
+def test_cliq_app_installs_accepts_deep_data_records_record_item_wrapper_shape(
+    mock_config: Path,
+    mock_token_refresh: Any,
+) -> None:
+    mock_client = MagicMock()
+    nested_row: dict[str, Any] = {
+        "installId": "I_5D",
+        "subject_id": "M_5D",
+        "display_name": "Ops Pager Deep",
+        "state": "enabled",
+    }
+    for _ in range(10):
+        nested_row = {"item": nested_row}
+
+    mock_client.list_app_installs.return_value = {
+        "payload": {
+            "response": {
+                "result": {
+                    "data": {
+                        "records": {
+                            "record": [nested_row],
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    with patch("zoho_cli.cli._get_cliq_client", return_value=mock_client):
+        result = runner.invoke(
+            app,
+            ["cliq", "app-installs", "AP_5", "--limit", "2"],
+            env=_cfg_env(mock_config),
+        )
+
+    assert result.exit_code == 0, result.output
+    payload = json.loads(result.output)
+    assert payload["count"] == 1
+    assert payload["installs"][0]["installId"] == "I_5D"
+    assert payload["installs"][0]["subjectId"] == "M_5D"
+    assert payload["installs"][0]["name"] == "Ops Pager Deep"
+    assert payload["installs"][0]["status"] == "enabled"
+    mock_client.list_app_installs.assert_called_once_with("AP_5", limit=2)
+
+
 def test_cliq_app_install_get(mock_config: Path, mock_token_refresh: Any) -> None:
     mock_client = MagicMock()
     mock_client.get_app_install.return_value = {

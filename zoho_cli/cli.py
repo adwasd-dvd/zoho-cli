@@ -3089,7 +3089,7 @@ def cliq_app_installs(
 
     def _unwrap_install_row(row: dict[str, Any]) -> dict[str, Any]:
         current = row
-        for _ in range(8):
+        for _ in range(16):
             for key in (
                 "payload",
                 "install",
@@ -3107,6 +3107,13 @@ def cliq_app_installs(
                 if isinstance(nested, dict):
                     current = nested
                     break
+                if isinstance(nested, list):
+                    first_dict = next(
+                        (entry for entry in nested if isinstance(entry, dict)), None
+                    )
+                    if isinstance(first_dict, dict):
+                        current = first_dict
+                        break
             else:
                 break
         return current

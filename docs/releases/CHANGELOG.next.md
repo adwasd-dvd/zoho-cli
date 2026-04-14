@@ -3,6 +3,7 @@
 ## Unreleased
 
 ### Added
+- Hardened `cliq-193` app-governance app list/detail output parsing so `zoho cliq apps` and `zoho cliq app-get` now unwrap top-level `payload` envelopes (including nested `response` / `result` / `data.record.item` and `data.records.record.item` wrappers); app-detail row unwrapping depth was extended so payload-wrapped responses no longer degrade to fallback app ids.
 - Hardened `cliq-193` app-governance permission list/detail output parsing so `zoho cliq app-permissions` and `zoho cliq app-permission-get` now unwrap deeper payload-envelope wrapper stacks by extending permission-row unwrapping depth, preventing top-level `payload` + nested `response` / `result` / `data.records.record.item` shapes from degrading `scope` output.
 - Hardened `cliq-193` app-governance install list/detail output parsing so `zoho cliq app-installs` and `zoho cliq app-install-get` now also unwrap top-level `payload` envelopes (including nested `response` / `result` / `data.records.record.item` wrappers) instead of degrading to empty/fallback install output.
 - Hardened `cliq-193` app-governance command list/detail output parsing so `zoho cliq app-commands` and `zoho cliq app-command-get` now also unwrap top-level `payload` envelopes; command-row unwrapping depth was increased so payload-wrapped maintenance responses no longer degrade to blank command output.

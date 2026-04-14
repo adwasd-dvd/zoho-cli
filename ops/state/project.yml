@@ -1,5 +1,5 @@
 project: zoho-cli
-updated_at: '2026-04-14T02:23:17Z'
+updated_at: '2026-04-14T02:51:09Z'
 status: cliq-expansion
 canonical_workspace: /Users/adwasd/.openclaw/workspace-coder
 project_root: /Users/adwasd/.openclaw/workspace-coder/job/zoho-cli
@@ -7,7 +7,7 @@ module_order:
 - Mail
 - Cliq
 - CRM
-current_focus: 'cliq-165 export verification remains externally blocked by API-side `inactive_appaccount_user`; focused cliq-193 live rerun is now refreshed for `cliq app-permission-get` (auth/export readiness healthy, endpoint remains `not_supported`) and the next step is the next small app-governance output-hardening increment with focused tests'
+current_focus: 'cliq-165 export verification remains externally blocked by API-side `inactive_appaccount_user`; cliq-193 app payload-envelope hardening is now in for `cliq apps` + `cliq app-get` (focused tests green), and the next step is one matching focused live rerun before the next output-hardening increment'
 primary_blockers:
 - crm live read-only verification remains blocked by account-level CRM org access
 - cliq databases live verification currently requires additional scope (`ZohoCliq.Databases.READ`) on the active token despite healthy baseline auth/export readiness
@@ -29,8 +29,9 @@ primary_blockers:
   returns `not_supported`)
 - calls/meetings endpoints are unsupported on current token/network (`cliq meetings`
   now returns `not_supported` in focused live verification)
-next_step: 'take the next small cliq-193 app-governance output-hardening increment with focused tests, then run one focused live rerun and archive evidence while keeping cliq-165 as the highest-priority external blocker (`inactive_appaccount_user`)'
+next_step: 'run one focused live rerun for the latest cliq-193 app payload-envelope hardening (`cliq status --check-auth` + `cliq app-get APP_PROBE_FAKE_<timestamp>`) and archive evidence, then take the next small app-governance output-hardening increment while keeping cliq-165 as the highest-priority external blocker (`inactive_appaccount_user`)'
 additional_info:
+- '2026-04-14 unit hardening: `zoho cliq apps` + `zoho cliq app-get` now unwrap top-level `payload` envelopes, and app-detail row unwrapping depth is extended (4 -> 8) so payload-wrapped detail responses no longer degrade to fallback app ids; focused tests passed (`tests/test_cli.py::test_cliq_apps_accepts_top_level_response_wrapper_shape`, `tests/test_cli.py::test_cliq_apps_accepts_top_level_payload_wrapper_shape`, `tests/test_cli.py::test_cliq_app_get_accepts_top_level_response_wrapper_shape`, `tests/test_cli.py::test_cliq_app_get_accepts_top_level_payload_wrapper_shape`).'
 - '2026-04-14 focused live verification: reran cliq-193 (`cliq status --check-auth` + `cliq app-permission-get APP_PROBE_FAKE_20260414_022317 PERMISSION_PROBE_FAKE_20260414_022317`) and archived evidence at `tests/auto_pilot/reports/cliq193_app_permission_get_probe_summary_20260414_022317.json`; auth/export readiness remains healthy (`oauthReady: true`, `exportOauthReady: true`) while app-permission detail endpoints remain `not_supported`.'
 - '2026-04-14 unit hardening: `zoho cliq app-permissions` and `zoho cliq app-permission-get` now unwrap deeper payload-envelope wrapper stacks by extending permission-row unwrapping depth (8 iterations), preventing top-level `payload` + nested `response` / `result` / `data.records.record.item` wrappers from degrading `scope` output; focused tests passed (`tests/test_cli.py::test_cliq_app_permissions_accepts_top_level_response_wrapper_shape`, `tests/test_cli.py::test_cliq_app_permissions_accepts_top_level_payload_wrapper_shape`, `tests/test_cli.py::test_cliq_app_permission_get_accepts_top_level_response_wrapper_shape`, `tests/test_cli.py::test_cliq_app_permission_get_accepts_top_level_payload_wrapper_shape`).'
 - '2026-04-14 focused live verification: reran cliq-193 install-detail probe (`cliq status --check-auth` + `cliq app-install-get APP_PROBE_FAKE_20260414_012300 INSTALL_PROBE_FAKE_20260414_012300`) and archived evidence at `tests/auto_pilot/reports/cliq193_app_install_get_probe_summary_20260414_012300.json`; auth/export readiness remains healthy (`oauthReady: true`, `exportOauthReady: true`) while app-install detail endpoints remain `not_supported`.'

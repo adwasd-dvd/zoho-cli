@@ -6357,6 +6357,59 @@ def test_cliq_app_command_get_accepts_data_records_record_item_nested_command_sh
     mock_client.get_app_command.assert_called_once_with("AP_13", "CMD_16RI")
 
 
+def test_cliq_app_command_get_accepts_deep_data_records_record_item_wrapper_shape(
+    mock_config: Path,
+    mock_token_refresh: Any,
+) -> None:
+    mock_client = MagicMock()
+    mock_client.get_app_command.return_value = {
+        "data": {
+            "records": {
+                "record": [
+                    {
+                        "item": {
+                            "record": {
+                                "item": {
+                                    "record": {
+                                        "item": {
+                                            "record": {
+                                                "item": {
+                                                    "command": {
+                                                        "commandId": "CMD_17RR",
+                                                        "name": "workflow_refresh",
+                                                        "summary": "Refresh workflow",
+                                                        "mode": "enabled",
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                ]
+            }
+        }
+    }
+
+    with patch("zoho_cli.cli._get_cliq_client", return_value=mock_client):
+        result = runner.invoke(
+            app,
+            ["cliq", "app-command-get", "AP_14RR", "CMD_17RR"],
+            env=_cfg_env(mock_config),
+        )
+
+    assert result.exit_code == 0, result.output
+    payload = json.loads(result.output)
+    assert payload["appId"] == "AP_14RR"
+    assert payload["command"]["commandId"] == "CMD_17RR"
+    assert payload["command"]["name"] == "workflow_refresh"
+    assert payload["command"]["description"] == "Refresh workflow"
+    assert payload["command"]["status"] == "enabled"
+    mock_client.get_app_command.assert_called_once_with("AP_14RR", "CMD_17RR")
+
+
 @respx.mock
 def test_cliq_export_chats_list(mock_config: Path, mock_token_refresh: Any) -> None:
     respx.get("https://cliq.zoho.com/maintenanceapi/v2/chats").mock(

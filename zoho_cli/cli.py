@@ -3828,7 +3828,7 @@ def cliq_app_command_get(
     def _extract_command_row(payload: Any) -> dict[str, Any]:
         def _unwrap_command_row(row: dict[str, Any]) -> dict[str, Any]:
             current = row
-            for _ in range(6):
+            for _ in range(10):
                 for key in (
                     "payload",
                     "response",

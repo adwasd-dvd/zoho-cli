@@ -1,10 +1,14 @@
-last_run_at: "2026-04-14T03:03:10Z"
+last_run_at: "2026-04-14T03:34:16Z"
 last_result: warning
 current_focus: cliq
 suites:
   unit:
     status: passing
     notes:
+      - "python3.11 -m pytest -q tests/test_cli.py::test_cliq_app_command_get_accepts_top_level_payload_wrapper_shape tests/test_cli.py::test_cliq_app_command_get_accepts_deep_data_records_record_item_wrapper_shape"
+      - "2 passed in 0.15s (cliq-193 deep wrapper hardening: `cliq app-command-get` now unwraps deeper `data.records.record[].item` stacks by extending command-row unwrapping depth 8 -> 10, preventing wrapper-shaped command-name output, 2026-04-14T03:34:16Z)"
+      - "./.venv/bin/ruff format --check zoho_cli/cli.py tests/test_cli.py"
+      - "2 files already formatted (cliq-193 deep app-command-get wrapper hardening formatting check, 2026-04-14T03:34:16Z)"
       - "python3.11 -m pytest -q tests/test_cli.py::test_cliq_apps_accepts_top_level_response_wrapper_shape tests/test_cli.py::test_cliq_apps_accepts_top_level_payload_wrapper_shape tests/test_cli.py::test_cliq_app_get_accepts_top_level_response_wrapper_shape tests/test_cli.py::test_cliq_app_get_accepts_top_level_payload_wrapper_shape"
       - "4 passed in 0.17s (cliq-193 app payload-envelope hardening: `cliq apps` + `cliq app-get` now unwrap top-level `payload` wrappers, and app-detail unwrapping depth was increased to avoid id-only fallback output, 2026-04-14T02:51:09Z)"
       - "./.venv/bin/ruff format --check zoho_cli/cli.py tests/test_cli.py"

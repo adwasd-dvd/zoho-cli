@@ -6412,6 +6412,38 @@ def test_cliq_app_commands_accepts_response_command_name_camel_case_alias_shape(
     assert payload["commands"][0]["name"] == "deploy_response_camel_alias"
 
 
+def test_cliq_app_commands_accepts_display_name_camel_case_alias_shape(
+    mock_config: Path,
+    mock_token_refresh: Any,
+) -> None:
+    mock_client = MagicMock()
+    mock_client.list_app_commands.return_value = {
+        "response": {
+            "data": {
+                "commands": [
+                    {
+                        "command_id": "CMD_8DISPLAY",
+                        "displayName": "incident_resolved_display_alias",
+                    }
+                ]
+            }
+        }
+    }
+
+    with patch("zoho_cli.cli._get_cliq_client", return_value=mock_client):
+        result = runner.invoke(
+            app,
+            ["cliq", "app-commands", "AP_8"],
+            env=_cfg_env(mock_config),
+        )
+
+    assert result.exit_code == 0, result.output
+    payload = json.loads(result.output)
+    assert payload["count"] == 1
+    assert payload["commands"][0]["commandId"] == "CMD_8DISPLAY"
+    assert payload["commands"][0]["name"] == "incident_resolved_display_alias"
+
+
 def test_cliq_app_command_get(mock_config: Path, mock_token_refresh: Any) -> None:
     mock_client = MagicMock()
     mock_client.get_app_command.return_value = {
@@ -6987,6 +7019,34 @@ def test_cliq_app_command_get_accepts_payload_data_action_name_camel_case_alias_
     payload = json.loads(result.output)
     assert payload["appId"] == "AP_17"
     assert payload["command"]["name"] == "deploy_from_payload_data_camel_alias"
+
+
+def test_cliq_app_command_get_accepts_payload_data_display_name_camel_case_alias_shape(
+    mock_config: Path,
+    mock_token_refresh: Any,
+) -> None:
+    mock_client = MagicMock()
+    mock_client.get_app_command.return_value = {
+        "payload": {
+            "data": {
+                "command_id": "CMD_17DISPLAY",
+                "displayName": "deploy_from_payload_data_display_alias",
+            }
+        }
+    }
+
+    with patch("zoho_cli.cli._get_cliq_client", return_value=mock_client):
+        result = runner.invoke(
+            app,
+            ["cliq", "app-command-get", "AP_17", "CMD_17ALIAS"],
+            env=_cfg_env(mock_config),
+        )
+
+    assert result.exit_code == 0, result.output
+    payload = json.loads(result.output)
+    assert payload["appId"] == "AP_17"
+    assert payload["command"]["commandId"] == "CMD_17DISPLAY"
+    assert payload["command"]["name"] == "deploy_from_payload_data_display_alias"
 
 
 def test_cliq_app_command_get_accepts_payload_data_action_name_alias_shape(

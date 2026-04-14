@@ -1,10 +1,14 @@
-last_run_at: "2026-04-14T11:11:56Z"
+last_run_at: "2026-04-14T11:30:00Z"
 last_result: warning
 current_focus: cliq
 suites:
   unit:
     status: passing
     notes:
+      - "python3.11 -m pytest -q tests/test_cli.py::test_cliq_app_commands_accepts_command_name_camel_case_alias_shape tests/test_cli.py::test_cliq_app_commands_accepts_display_name_camel_case_alias_shape tests/test_cli.py::test_cliq_app_command_get_accepts_payload_data_action_name_camel_case_alias_shape tests/test_cli.py::test_cliq_app_command_get_accepts_payload_data_display_name_camel_case_alias_shape"
+      - "4 passed (cliq-193 command output hardening: app-commands + app-command-get now accept display-name aliases `displayName` / `display_name` when canonical command names are missing, 2026-04-14T11:30:00Z)"
+      - "./.venv/bin/ruff format --check zoho_cli/cli.py tests/test_cli.py"
+      - "2 files already formatted (cliq-193 display-name alias hardening formatting check, 2026-04-14T11:28:00Z)"
       - "python3.11 -m pytest -q tests/test_cli.py::test_cliq_app_commands_accepts_command_name_camel_case_alias_shape tests/test_cli.py::test_cliq_app_commands_accepts_top_level_command_name_camel_case_alias_shape tests/test_cli.py::test_cliq_app_commands_accepts_response_command_name_camel_case_alias_shape"
       - "3 passed (cliq-193 app-commands hardening: singleton camelCase alias payloads `commandName` / `actionName` now normalize from top-level and nested response shapes, 2026-04-14T10:51:39Z)"
       - "./.venv/bin/ruff format --check zoho_cli/cli.py tests/test_cli.py"

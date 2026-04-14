@@ -3,6 +3,7 @@
 ## Unreleased
 
 ### Added
+- Hardened `cliq-193` command output parsing so `zoho cliq app-commands` and `zoho cliq app-command-get` now accept display-name aliases (`displayName` / `display_name`) when canonical command name fields are absent in maintenance payloads.
 - Hardened `cliq-193` command list parsing so `zoho cliq app-commands` now recognizes top-level and nested camelCase command-name aliases (`commandName` / `actionName`) when maintenance payloads return singleton command objects outside canonical list wrappers.
 - Hardened `cliq-193` command output parsing so `zoho cliq app-commands` and `zoho cliq app-command-get` now accept camelCase command-name aliases (`commandName` / `actionName`) in list/detail payloads, preventing fallback `unknown` command names when maintenance payloads only expose camelCase fields.
 - Hardened `cliq-193` app-command detail parsing so `zoho cliq app-command-get` now accepts `payload.data.action_name` / `payload.data.command_name` alias-only responses instead of falling back to `unknown` command output.

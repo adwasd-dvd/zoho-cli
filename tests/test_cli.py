@@ -4845,6 +4845,39 @@ def test_cliq_app_installs(
     mock_client.list_app_installs.assert_called_once_with("AP_1", limit=11)
 
 
+def test_cliq_app_installs_accepts_subject_id_alias(
+    mock_config: Path,
+    mock_token_refresh: Any,
+) -> None:
+    mock_client = MagicMock()
+    mock_client.list_app_installs.return_value = {
+        "data": [
+            {
+                "installId": "I_1S",
+                "subjectId": "S_1S",
+                "name": "Subject Alias Install",
+                "state": "enabled",
+            }
+        ]
+    }
+
+    with patch("zoho_cli.cli._get_cliq_client", return_value=mock_client):
+        result = runner.invoke(
+            app,
+            ["cliq", "app-installs", "AP_1S"],
+            env=_cfg_env(mock_config),
+        )
+
+    assert result.exit_code == 0, result.output
+    payload = json.loads(result.output)
+    assert payload["count"] == 1
+    assert payload["installs"][0]["installId"] == "I_1S"
+    assert payload["installs"][0]["subjectId"] == "S_1S"
+    assert payload["installs"][0]["name"] == "Subject Alias Install"
+    assert payload["installs"][0]["status"] == "enabled"
+    mock_client.list_app_installs.assert_called_once_with("AP_1S", limit=50)
+
+
 def test_cliq_app_installs_accepts_nested_installs_shape(
     mock_config: Path,
     mock_token_refresh: Any,
@@ -5443,6 +5476,65 @@ def test_cliq_app_install_get_accepts_top_level_payload_wrapper_shape(
     assert payload["install"]["name"] == "Incident Flow Payload"
     assert payload["install"]["status"] == "active"
     mock_client.get_app_install.assert_called_once_with("AP_11", "INS_14P")
+
+
+def test_cliq_app_install_get_accepts_deep_data_records_record_item_wrapper_shape(
+    mock_config: Path,
+    mock_token_refresh: Any,
+) -> None:
+    mock_client = MagicMock()
+    mock_client.get_app_install.return_value = {
+        "payload": {
+            "response": {
+                "result": {
+                    "data": {
+                        "records": {
+                            "record": {
+                                "item": {
+                                    "payload": {
+                                        "response": {
+                                            "result": {
+                                                "data": {
+                                                    "records": {
+                                                        "record": {
+                                                            "item": {
+                                                                "install": {
+                                                                    "installId": "INS_14D",
+                                                                    "subjectId": "C_14D",
+                                                                    "title": "Deep Install Wrapper",
+                                                                    "state": "enabled",
+                                                                }
+                                                            }
+                                                        }
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    with patch("zoho_cli.cli._get_cliq_client", return_value=mock_client):
+        result = runner.invoke(
+            app,
+            ["cliq", "app-install-get", "AP_11", "INS_14D"],
+            env=_cfg_env(mock_config),
+        )
+
+    assert result.exit_code == 0, result.output
+    payload = json.loads(result.output)
+    assert payload["appId"] == "AP_11"
+    assert payload["install"]["installId"] == "INS_14D"
+    assert payload["install"]["subjectId"] == "C_14D"
+    assert payload["install"]["name"] == "Deep Install Wrapper"
+    assert payload["install"]["status"] == "enabled"
+    mock_client.get_app_install.assert_called_once_with("AP_11", "INS_14D")
 
 
 def test_cliq_app_install_get_accepts_data_records_shape(

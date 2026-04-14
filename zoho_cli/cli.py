@@ -3289,7 +3289,9 @@ def cliq_app_installs(
                     or ""
                 ),
                 "subjectId": str(
-                    row.get("user_id")
+                    row.get("subject_id")
+                    or row.get("subjectId")
+                    or row.get("user_id")
                     or row.get("userId")
                     or row.get("member_id")
                     or row.get("memberId")
@@ -3341,7 +3343,7 @@ def cliq_app_install_get(
     def _extract_install_row(payload: Any) -> dict[str, Any]:
         def _unwrap_install_row(row: dict[str, Any]) -> dict[str, Any]:
             current = row
-            for _ in range(8):
+            for _ in range(16):
                 for key in (
                     "payload",
                     "install",
@@ -3525,7 +3527,9 @@ def cliq_app_install_get(
             or resolved_install_id
         ),
         "subjectId": str(
-            row.get("user_id")
+            row.get("subject_id")
+            or row.get("subjectId")
+            or row.get("user_id")
             or row.get("userId")
             or row.get("member_id")
             or row.get("memberId")

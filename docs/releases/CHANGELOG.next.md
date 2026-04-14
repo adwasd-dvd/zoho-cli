@@ -3,6 +3,7 @@
 ## Unreleased
 
 ### Added
+- Hardened `cliq-193` install output parsing so `zoho cliq app-install-get` unwraps deeper `payload/response/result/data/records/record/item` wrapper stacks (unwrap depth `8 -> 16`), and install list/detail views now treat `subjectId`/`subject_id` as first-class subject aliases.
 - Hardened `cliq-193` permission output parsing so `zoho cliq app-permissions` and `zoho cliq app-permission-get` now unwrap deeper `payload/response/result/data/records/record/item` wrapper chains by extending permission-row unwrapping depth (`8 -> 16`), preventing wrapper-shaped permission output on deep maintenance payloads.
 - Hardened `cliq-193` `zoho cliq apps` list extraction for deep `payload/response/result/data/records/record/item` wrapper chains by extending app-row unwrapping depth (`3 -> 16`), preventing wrapper-shaped app rows when maintenance payloads are nested behind repeated envelopes.
 - Hardened `cliq-193` `zoho cliq app-get` detail extraction for deeper `payload/response/result/data/records/record/item` wrapper chains by extending app-row unwrapping depth (`8 -> 16`), preventing fallback `unknown` app output when maintenance payloads are nested behind repeated envelopes and row wrappers.

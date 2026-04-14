@@ -1,5 +1,5 @@
 project: zoho-cli
-updated_at: '2026-04-14T20:24:58Z'
+updated_at: '2026-04-14T20:45:34Z'
 status: cliq-expansion
 canonical_workspace: /Users/adwasd/.openclaw/workspace-coder
 project_root: /Users/adwasd/.openclaw/workspace-coder/job/zoho-cli
@@ -7,7 +7,7 @@ module_order:
 - Mail
 - Cliq
 - CRM
-current_focus: "cliq-165 export verification remains externally blocked by API-side `inactive_appaccount_user`; a fresh focused cliq-193 live rerun is now archived (`cliq status --check-auth` + `cliq app-commands APP_PROBE_FAKE_20260414_202435`) and still returns `not_supported` with auth/export readiness healthy, so next is the next smallest output-hardening increment with focused tests before another matching live rerun."
+current_focus: "cliq-165 export verification remains externally blocked by API-side `inactive_appaccount_user`; latest cliq-193 increment now normalizes lowercase `helptext` description aliases for app-command list/detail output (focused tests green), so next is one matching focused live rerun (`cliq status --check-auth` + `cliq app-commands APP_PROBE_FAKE_<stamp>`) before the next output-hardening increment."
 primary_blockers:
 - crm live read-only verification remains blocked by account-level CRM org access
 - cliq databases live verification currently requires additional scope (`ZohoCliq.Databases.READ`) on the active token despite healthy baseline auth/export readiness
@@ -29,8 +29,9 @@ primary_blockers:
   returns `not_supported`)
 - calls/meetings endpoints are unsupported on current token/network (`cliq meetings`
   now returns `not_supported` in focused live verification)
-next_step: "implement the next smallest cliq-193 output-hardening increment with focused tests, then run one matching focused live rerun (`cliq status --check-auth` + `cliq app-commands APP_PROBE_FAKE_<stamp>`) while cliq-165 remains externally blocked by API-side `inactive_appaccount_user`."
+next_step: "run one focused live cliq-193 rerun (`cliq status --check-auth` + `cliq app-commands APP_PROBE_FAKE_<stamp>`) to archive evidence for the latest lowercase `helptext` alias hardening, then take the next smallest output-hardening increment while cliq-165 remains externally blocked by API-side `inactive_appaccount_user`."
 additional_info:
+- '2026-04-14 unit hardening: `zoho cliq app-commands` + `zoho cliq app-command-get` now normalize lowercase `helptext` description aliases in addition to existing `help`/`Help`/`HelpText` keys, so maintenance payloads that emit lowercase helptext fields no longer produce blank command descriptions; focused tests passed (`tests/test_cli.py::test_cliq_app_commands_accepts_helptext_alias_shape`, `tests/test_cli.py::test_cliq_app_command_get_accepts_helptext_alias_shape`).'
 - '2026-04-14 unit hardening: `zoho cliq app-commands` + `zoho cliq app-command-get` now normalize `help` / `Help` description aliases alongside existing description keys, so help-only maintenance payloads no longer emit blank command descriptions; focused tests passed (`tests/test_cli.py::test_cliq_app_commands_accepts_help_alias_shape`, `tests/test_cli.py::test_cliq_app_command_get_accepts_help_alias_shape`).'
 - '2026-04-14 unit hardening: `zoho cliq app-commands` + `zoho cliq app-command-get` now normalize PascalCase description/status aliases (`Description` / `Summary` / `HelpText`, `Status` / `State` / `Mode`) alongside lowercase keys so maintenance payloads no longer emit blank description/status fields; focused tests passed (`tests/test_cli.py::test_cliq_app_commands_accepts_pascal_case_description_and_status_alias_shape`, `tests/test_cli.py::test_cliq_app_command_get_accepts_pascal_case_description_and_status_alias_shape`).'
 - '2026-04-14 focused live verification: reran cliq-193 app-command list probe (`cliq status --check-auth` + `cliq app-commands APP_PROBE_FAKE_20260414_202435`) and archived evidence at `tests/auto_pilot/reports/cliq193_app_commands_probe_summary_20260414_202435.json`; auth/export readiness remains healthy (`oauthReady: true`, `exportOauthReady: true`) while app-command list endpoints remain `not_supported`.'

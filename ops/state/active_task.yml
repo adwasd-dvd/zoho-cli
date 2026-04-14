@@ -4,10 +4,10 @@ module: cliq
 stage: in_progress
 status: in_progress
 owner: automation
-updated_at: '2026-04-14T20:24:58Z'
+updated_at: '2026-04-14T20:45:34Z'
 success_criteria:
 - ship the next cliq-193 app-governance command/client slice with focused tests
 - run one focused live verification for that new slice and archive evidence
 - keep cliq-165 export blocker evidence current while app-account activation remains external
 next_if_done: take the next queued cliq-193 app-governance slice with focused coverage
-next_step: "focused live rerun (`cliq status --check-auth` + `cliq app-commands APP_PROBE_FAKE_20260414_202435`) is archived with auth/export readiness still healthy and app-command list endpoints still `not_supported`; next implement the next smallest cliq-193 output-hardening increment with focused tests, then run one matching focused live rerun while cliq-165 remains externally blocked by `inactive_appaccount_user`."
+next_step: "latest cliq-193 output hardening now normalizes lowercase `helptext` description aliases for both `cliq app-commands` and `cliq app-command-get` (focused tests green); next run one focused live rerun (`cliq status --check-auth` + `cliq app-commands APP_PROBE_FAKE_<stamp>`) and archive evidence while cliq-165 remains externally blocked by `inactive_appaccount_user`."

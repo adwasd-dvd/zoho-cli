@@ -3,6 +3,7 @@
 ## Unreleased
 
 ### Added
+- Hardened `cliq-193` app-command output normalization so list/detail commands now also treat lowercase `helptext` as a description alias (alongside existing `help`/`Help`/`HelpText` keys), preventing blank description output on maintenance payloads that only expose lowercase helptext fields.
 - Hardened `cliq-193` app-command output normalization so list/detail commands now treat `help` / `Help` as description aliases (alongside existing description keys), preventing blank description output on help-only maintenance payloads.
 - Hardened `cliq-193` command output normalization so `zoho cliq app-commands` and `zoho cliq app-command-get` now accept PascalCase description/status aliases (`Description`, `Summary`, `HelpText`, `Status`, `State`, `Mode`) for command-shaped rows, preventing blank description/status fields when maintenance payloads omit lowercase keys.
 - Hardened `cliq-193` command id normalization so `zoho cliq app-commands` and `zoho cliq app-command-get` now also accept Pascal/camel `commandId` aliases (`CommandId`, `CommandID`, `commandID`) in row detection and output mapping, preserving command ids when maintenance payloads omit canonical `commandId` keys.

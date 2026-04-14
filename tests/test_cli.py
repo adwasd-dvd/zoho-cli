@@ -6526,6 +6526,38 @@ def test_cliq_app_commands_accepts_help_alias_shape(
     assert payload["commands"][0]["status"] == "enabled"
 
 
+def test_cliq_app_commands_accepts_helptext_alias_shape(
+    mock_config: Path,
+    mock_token_refresh: Any,
+) -> None:
+    mock_client = MagicMock()
+    mock_client.list_app_commands.return_value = {
+        "payload": {
+            "data": [
+                {
+                    "ActionID": "CMD_13HELPTEXTALIAS",
+                    "helptext": "dispatch helptext alias",
+                    "Mode": "enabled",
+                }
+            ]
+        }
+    }
+
+    with patch("zoho_cli.cli._get_cliq_client", return_value=mock_client):
+        result = runner.invoke(
+            app,
+            ["cliq", "app-commands", "AP_13"],
+            env=_cfg_env(mock_config),
+        )
+
+    assert result.exit_code == 0, result.output
+    payload = json.loads(result.output)
+    assert payload["appId"] == "AP_13"
+    assert payload["commands"][0]["commandId"] == "CMD_13HELPTEXTALIAS"
+    assert payload["commands"][0]["description"] == "dispatch helptext alias"
+    assert payload["commands"][0]["status"] == "enabled"
+
+
 def test_cliq_app_commands_accepts_command_name_pascal_case_alias_shape(
     mock_config: Path,
     mock_token_refresh: Any,
@@ -7647,6 +7679,36 @@ def test_cliq_app_command_get_accepts_help_alias_shape(
     assert payload["appId"] == "AP_17"
     assert payload["command"]["commandId"] == "CMD_17HELPALIAS"
     assert payload["command"]["description"] == "dispatch get help alias"
+    assert payload["command"]["status"] == "enabled"
+
+
+def test_cliq_app_command_get_accepts_helptext_alias_shape(
+    mock_config: Path,
+    mock_token_refresh: Any,
+) -> None:
+    mock_client = MagicMock()
+    mock_client.get_app_command.return_value = {
+        "payload": {
+            "data": {
+                "ActionID": "CMD_17HELPTEXTALIAS",
+                "helptext": "dispatch get helptext alias",
+                "Mode": "enabled",
+            }
+        }
+    }
+
+    with patch("zoho_cli.cli._get_cliq_client", return_value=mock_client):
+        result = runner.invoke(
+            app,
+            ["cliq", "app-command-get", "AP_17", "CMD_17ALIAS"],
+            env=_cfg_env(mock_config),
+        )
+
+    assert result.exit_code == 0, result.output
+    payload = json.loads(result.output)
+    assert payload["appId"] == "AP_17"
+    assert payload["command"]["commandId"] == "CMD_17HELPTEXTALIAS"
+    assert payload["command"]["description"] == "dispatch get helptext alias"
     assert payload["command"]["status"] == "enabled"
 
 

@@ -1,10 +1,14 @@
-last_run_at: "2026-04-14T20:24:58Z"
+last_run_at: "2026-04-14T20:45:34Z"
 last_result: warning
 current_focus: cliq
 suites:
   unit:
     status: passing
     notes:
+      - "python3.11 -m pytest -q tests/test_cli.py::test_cliq_app_commands_accepts_help_alias_shape tests/test_cli.py::test_cliq_app_commands_accepts_helptext_alias_shape tests/test_cli.py::test_cliq_app_command_get_accepts_help_alias_shape tests/test_cli.py::test_cliq_app_command_get_accepts_helptext_alias_shape"
+      - "4 passed (cliq-193 output hardening: app-command list/detail now normalize lowercase `helptext` description aliases in addition to existing help aliases, 2026-04-14T20:45:34Z)"
+      - "./.venv/bin/ruff format --check zoho_cli/cli.py tests/test_cli.py"
+      - "2 files already formatted (cliq-193 helptext-alias hardening formatting check, 2026-04-14T20:45:34Z)"
       - "python3.11 -m zoho_cli --config /tmp/zoho-test-config.json --account ai-dev@happy-distro.co.uk cliq status --check-auth --network happydistrouklimited"
       - "focused cliq-193 live app-commands rerun keeps auth/export readiness healthy (`oauthReady: true`, `exportOauthReady: true`); evidence: `tests/auto_pilot/reports/cliq193_status_20260414_202435.json` (2026-04-14T20:24:35Z)"
       - "python3.11 -m zoho_cli --config /tmp/zoho-test-config.json --account ai-dev@happy-distro.co.uk cliq app-commands APP_PROBE_FAKE_20260414_202435 --network happydistrouklimited"

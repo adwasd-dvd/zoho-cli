@@ -3803,6 +3803,8 @@ def cliq_app_commands(
                 ),
                 "name": str(
                     row.get("name")
+                    or row.get("commandName")
+                    or row.get("actionName")
                     or row.get("command_name")
                     or row.get("command")
                     or row.get("action")
@@ -3974,6 +3976,8 @@ def cliq_app_command_get(
                     "id",
                     "zuid",
                     "name",
+                    "commandName",
+                    "actionName",
                     "command_name",
                     "command",
                     "action",
@@ -3998,6 +4002,8 @@ def cliq_app_command_get(
                 "id",
                 "zuid",
                 "name",
+                "commandName",
+                "actionName",
                 "command_name",
                 "command",
                 "action",
@@ -4035,6 +4041,8 @@ def cliq_app_command_get(
         ),
         "name": str(
             row.get("name")
+            or row.get("commandName")
+            or row.get("actionName")
             or row.get("command_name")
             or row.get("command")
             or row.get("action")

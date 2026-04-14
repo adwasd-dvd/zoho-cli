@@ -1,10 +1,14 @@
-last_run_at: "2026-04-14T09:43:29Z"
+last_run_at: "2026-04-14T10:05:02Z"
 last_result: warning
 current_focus: cliq
 suites:
   unit:
     status: passing
     notes:
+      - "python3.11 -m pytest -q tests/test_cli.py::test_cliq_app_commands_accepts_command_name_alias_shape tests/test_cli.py::test_cliq_app_commands_accepts_command_name_camel_case_alias_shape tests/test_cli.py::test_cliq_app_command_get_accepts_command_name_alias_shape tests/test_cli.py::test_cliq_app_command_get_accepts_payload_data_action_name_camel_case_alias_shape tests/test_cli.py::test_cliq_app_command_get_accepts_payload_data_action_name_alias_shape"
+      - "5 passed (cliq-193 command output hardening: app-command list/detail now accept camelCase command-name aliases `commandName` / `actionName` in addition to snake_case aliases, 2026-04-14T10:05:02Z)"
+      - "./.venv/bin/ruff format --check zoho_cli/cli.py tests/test_cli.py"
+      - "2 files already formatted (cliq-193 command-name camelCase alias hardening formatting check, 2026-04-14T10:05:02Z)"
       - "python3.11 -m pytest -q tests/test_cli.py::test_cliq_app_command_get_accepts_command_name_alias_shape tests/test_cli.py::test_cliq_app_command_get_accepts_payload_data_action_name_alias_shape"
       - "2 passed in 0.17s (cliq-193 app-command detail hardening: app-command-get now accepts alias-only `payload.data.action_name` / `payload.data.command_name` payloads, 2026-04-14T09:27:59Z)"
       - "./.venv/bin/ruff format --check zoho_cli/cli.py tests/test_cli.py"

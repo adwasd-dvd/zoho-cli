@@ -3,6 +3,7 @@
 ## Unreleased
 
 ### Added
+- Hardened `cliq-193` app-command detail parsing so `zoho cliq app-command-get` now accepts `payload.data.action_name` / `payload.data.command_name` alias-only responses instead of falling back to `unknown` command output.
 - Hardened `cliq-193` command output parsing so `zoho cliq app-commands` and `zoho cliq app-command-get` now treat `command_name` and `action_name` as first-class name aliases, preventing `unknown` command names when maintenance payloads omit canonical `name` fields.
 - Hardened `cliq-193` install list output parsing so `zoho cliq app-installs` now unwraps deeper wrapper stacks for record-list maintenance payloads by extending install-row unwrapping depth (`8 -> 16`) and unwrapping first dict entries from list-valued wrapper keys (for example `record: [{item: ...}]`) instead of falling back to empty/fallback install fields.
 - Hardened `cliq-193` install output parsing so `zoho cliq app-install-get` unwraps deeper `payload/response/result/data/records/record/item` wrapper stacks (unwrap depth `8 -> 16`), and install list/detail views now treat `subjectId`/`subject_id` as first-class subject aliases.

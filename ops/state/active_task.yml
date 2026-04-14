@@ -4,10 +4,10 @@ module: cliq
 stage: in_progress
 status: in_progress
 owner: automation
-updated_at: '2026-04-14T09:03:13Z'
+updated_at: '2026-04-14T09:27:59Z'
 success_criteria:
 - ship the next cliq-193 app-governance command/client slice with focused tests
 - run one focused live verification for that new slice and archive evidence
 - keep cliq-165 export blocker evidence current while app-account activation remains external
 next_if_done: take the next queued cliq-193 app-governance slice with focused coverage
-next_step: "focused live rerun complete: `zoho cliq status --check-auth` + `zoho cliq app-command-get APP_PROBE_FAKE_20260414_090313 CMD_PROBE_FAKE_20260414_090313` keep auth/export readiness healthy (`oauthReady: true`, `exportOauthReady: true`) while app-command detail endpoints remain `not_supported`; evidence archived at `tests/auto_pilot/reports/cliq193_app_command_get_probe_summary_20260414_090313.json`. next is the next smallest cliq-193 output-hardening increment with focused tests, then one matching focused live rerun while cliq-165 remains externally blocked by `inactive_appaccount_user`."
+next_step: "unit hardening complete: `zoho cliq app-command-get` now accepts alias-only `payload.data.action_name` / `payload.data.command_name` detail payloads (focused tests green). next is one matching focused live rerun (`zoho cliq status --check-auth` + `zoho cliq app-command-get APP_PROBE_FAKE_<stamp> CMD_PROBE_FAKE_<stamp>`) and evidence archive while cliq-165 remains externally blocked by `inactive_appaccount_user`."

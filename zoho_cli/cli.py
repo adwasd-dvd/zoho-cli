@@ -3650,8 +3650,11 @@ def cliq_app_commands(
                 "title",
                 "description",
                 "summary",
+                "Description",
+                "Summary",
                 "help_text",
                 "helpText",
+                "HelpText",
             )
         )
 
@@ -3797,12 +3800,21 @@ def cliq_app_commands(
                 "description": str(
                     row.get("description")
                     or row.get("summary")
+                    or row.get("Description")
+                    or row.get("Summary")
                     or row.get("help_text")
                     or row.get("helpText")
+                    or row.get("HelpText")
                     or ""
                 ),
                 "status": str(
-                    row.get("status") or row.get("state") or row.get("mode") or ""
+                    row.get("status")
+                    or row.get("state")
+                    or row.get("mode")
+                    or row.get("Status")
+                    or row.get("State")
+                    or row.get("Mode")
+                    or ""
                 ),
                 "raw": row,
             }
@@ -3939,9 +3951,20 @@ def cliq_app_command_get(
                     "display_name",
                     "DisplayName",
                     "displayName",
+                    "description",
+                    "summary",
+                    "Description",
+                    "Summary",
                     "title",
                     "help_text",
                     "helpText",
+                    "HelpText",
+                    "status",
+                    "state",
+                    "mode",
+                    "Status",
+                    "State",
+                    "Mode",
                     "payload",
                     "response",
                     "result",
@@ -4172,11 +4195,22 @@ def cliq_app_command_get(
         "description": str(
             row.get("description")
             or row.get("summary")
+            or row.get("Description")
+            or row.get("Summary")
             or row.get("help_text")
             or row.get("helpText")
+            or row.get("HelpText")
             or ""
         ),
-        "status": str(row.get("status") or row.get("state") or row.get("mode") or ""),
+        "status": str(
+            row.get("status")
+            or row.get("state")
+            or row.get("mode")
+            or row.get("Status")
+            or row.get("State")
+            or row.get("Mode")
+            or ""
+        ),
         "raw": row,
     }
 

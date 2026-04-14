@@ -3,6 +3,7 @@
 ## Unreleased
 
 ### Added
+- Hardened `cliq-193` command output normalization so `zoho cliq app-commands` and `zoho cliq app-command-get` now accept PascalCase description/status aliases (`Description`, `Summary`, `HelpText`, `Status`, `State`, `Mode`) for command-shaped rows, preventing blank description/status fields when maintenance payloads omit lowercase keys.
 - Hardened `cliq-193` command id normalization so `zoho cliq app-commands` and `zoho cliq app-command-get` now also accept Pascal/camel `commandId` aliases (`CommandId`, `CommandID`, `commandID`) in row detection and output mapping, preserving command ids when maintenance payloads omit canonical `commandId` keys.
 - Hardened `cliq-193` metadata-first command row selection so `zoho cliq app-commands` and `zoho cliq app-command-get` now treat Pascal/camel action-id aliases (`ActionId`, `ActionID`, `actionID`) as command-shaped rows, preventing metadata-only rows from being selected when maintenance payloads return id-only command rows.
 - Hardened `cliq-193` command output parsing so `zoho cliq app-commands` and `zoho cliq app-command-get` now also treat PascalCase command-name aliases (`CommandName`, `ActionName`, `DisplayName`) as first-class name fields when canonical/camel/snake aliases are absent.

@@ -6412,6 +6412,44 @@ def test_cliq_app_commands_accepts_response_command_name_camel_case_alias_shape(
     assert payload["commands"][0]["name"] == "deploy_response_camel_alias"
 
 
+def test_cliq_app_commands_prefers_command_rows_over_metadata_in_data_list(
+    mock_config: Path,
+    mock_token_refresh: Any,
+) -> None:
+    mock_client = MagicMock()
+    mock_client.list_app_commands.return_value = {
+        "payload": {
+            "data": [
+                {
+                    "meta": {"cursor": "CURSOR_APP_COMMANDS"},
+                    "status": "ok",
+                },
+                {
+                    "command": {
+                        "command_id": "CMD_8METAFIRST",
+                        "name": "deploy_from_command_row",
+                        "description": "use command row, not metadata",
+                        "status": "enabled",
+                    }
+                },
+            ]
+        }
+    }
+
+    with patch("zoho_cli.cli._get_cliq_client", return_value=mock_client):
+        result = runner.invoke(
+            app,
+            ["cliq", "app-commands", "AP_8"],
+            env=_cfg_env(mock_config),
+        )
+
+    assert result.exit_code == 0, result.output
+    payload = json.loads(result.output)
+    assert payload["count"] == 1
+    assert payload["commands"][0]["commandId"] == "CMD_8METAFIRST"
+    assert payload["commands"][0]["name"] == "deploy_from_command_row"
+
+
 def test_cliq_app_commands_accepts_display_name_camel_case_alias_shape(
     mock_config: Path,
     mock_token_refresh: Any,

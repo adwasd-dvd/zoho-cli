@@ -3619,174 +3619,111 @@ def cliq_app_commands(
                 break
         return current
 
+    def _has_command_payload(candidate: dict[str, Any]) -> bool:
+        return any(
+            key in candidate
+            for key in (
+                "command_id",
+                "commandId",
+                "id",
+                "zuid",
+                "name",
+                "command_name",
+                "commandName",
+                "command",
+                "action",
+                "action_name",
+                "actionName",
+                "display_name",
+                "displayName",
+                "title",
+                "description",
+                "summary",
+                "help_text",
+                "helpText",
+            )
+        )
+
+    def _normalize_command_rows(rows: list[dict[str, Any]]) -> list[dict[str, Any]]:
+        normalized = [_unwrap_command_row(row) for row in rows if isinstance(row, dict)]
+        command_rows = [row for row in normalized if _has_command_payload(row)]
+        return command_rows or normalized
+
     def _extract_command_rows(payload: Any) -> list[dict[str, Any]]:
         if isinstance(payload, list):
-            return [
-                _unwrap_command_row(row) for row in payload if isinstance(row, dict)
-            ]
+            return _normalize_command_rows(payload)
 
-        if not isinstance(payload, dict):
-            return []
-
-        for key in ("payload", "command", "action", "item", "record"):
-            candidate = payload.get(key)
-            if isinstance(candidate, dict):
-                return [_unwrap_command_row(candidate)]
-            if isinstance(candidate, list):
-                return [
-                    _unwrap_command_row(row)
-                    for row in candidate
-                    if isinstance(row, dict)
-                ]
-
-        candidates: list[Any] = [
-            payload.get("payload"),
-            payload.get("response"),
-            payload.get("result"),
-            payload.get("data"),
-            payload.get("commands"),
-            payload.get("actions"),
-            payload.get("list"),
-            payload.get("items"),
-            payload.get("results"),
-            payload.get("records"),
-        ]
-        nested_data = payload.get("data")
-        if isinstance(nested_data, dict):
-            candidates.extend(
-                [
-                    nested_data.get("payload"),
-                    nested_data.get("commands"),
-                    nested_data.get("actions"),
-                    nested_data.get("list"),
-                    nested_data.get("items"),
-                    nested_data.get("results"),
-                    nested_data.get("records"),
-                    nested_data.get("data"),
-                ]
-            )
-
-        for candidate in candidates:
-            if isinstance(candidate, list):
-                return [
-                    _unwrap_command_row(row)
-                    for row in candidate
-                    if isinstance(row, dict)
-                ]
-
-            if isinstance(candidate, dict):
-                for nested_key in (
-                    "payload",
-                    "response",
-                    "result",
-                    "data",
-                    "commands",
-                    "actions",
-                    "list",
-                    "items",
-                    "results",
-                    "records",
-                    "record",
-                    "item",
-                    "command",
-                    "action",
-                ):
-                    nested_rows = _extract_command_rows(candidate.get(nested_key))
+        if isinstance(payload, dict):
+            for key in (
+                "data",
+                "commands",
+                "command",
+                "payload",
+                "response",
+                "result",
+                "record",
+                "records",
+                "items",
+                "list",
+                "results",
+            ):
+                candidate = payload.get(key)
+                if isinstance(candidate, dict):
+                    nested_rows = _extract_command_rows(candidate)
                     if nested_rows:
                         return nested_rows
+                if isinstance(candidate, list):
+                    return _normalize_command_rows(candidate)
 
-                nested_command = (
-                    candidate.get("command")
-                    or candidate.get("action")
-                    or candidate.get("item")
-                    or candidate.get("record")
-                )
-                if isinstance(nested_command, dict):
-                    return [_unwrap_command_row(nested_command)]
-                if isinstance(nested_command, list):
-                    return [
-                        _unwrap_command_row(row)
-                        for row in nested_command
-                        if isinstance(row, dict)
-                    ]
+            candidates = [
+                payload.get("payload"),
+                payload.get("response"),
+                payload.get("result"),
+                payload.get("data"),
+                payload.get("records"),
+                payload.get("record"),
+                payload.get("item"),
+                payload,
+            ]
 
-                nested_records = candidate.get("records")
-                if isinstance(nested_records, list):
-                    return [
-                        _unwrap_command_row(row)
-                        for row in nested_records
-                        if isinstance(row, dict)
-                    ]
-                if isinstance(nested_records, dict):
-                    nested_record = (
-                        nested_records.get("record")
-                        or nested_records.get("item")
-                        or nested_records.get("command")
-                        or nested_records.get("action")
-                    )
-                    if isinstance(nested_record, dict):
-                        return [_unwrap_command_row(nested_record)]
+            for candidate in candidates:
+                if isinstance(candidate, list):
+                    return _normalize_command_rows(candidate)
+                if isinstance(candidate, dict):
+                    nested_command = candidate.get("command")
+                    if isinstance(nested_command, dict):
+                        return _normalize_command_rows([nested_command])
+                    if isinstance(nested_command, list):
+                        return _normalize_command_rows(nested_command)
+
+                    nested_records = candidate.get("records")
+                    if isinstance(nested_records, list):
+                        return _normalize_command_rows(nested_records)
+                    if isinstance(nested_records, dict):
+                        nested_rows = _extract_command_rows(nested_records)
+                        if nested_rows:
+                            return nested_rows
+
+                    nested_record = candidate.get("record")
                     if isinstance(nested_record, list):
-                        return [
-                            _unwrap_command_row(row)
-                            for row in nested_record
-                            if isinstance(row, dict)
-                        ]
+                        return _normalize_command_rows(nested_record)
+                    if isinstance(nested_record, dict):
+                        nested_rows = _extract_command_rows(nested_record)
+                        if nested_rows:
+                            return nested_rows
 
-                if any(
-                    key in candidate
-                    for key in (
-                        "command_id",
-                        "commandId",
-                        "id",
-                        "zuid",
-                        "name",
-                        "command_name",
-                        "commandName",
-                        "command",
-                        "action",
-                        "action_name",
-                        "actionName",
-                        "display_name",
-                        "displayName",
-                        "title",
-                        "description",
-                        "summary",
-                        "help_text",
-                        "helpText",
-                        "status",
-                        "state",
-                        "mode",
-                    )
-                ):
-                    return [_unwrap_command_row(candidate)]
+                    nested_data = candidate.get("data")
+                    if isinstance(nested_data, list):
+                        return _normalize_command_rows(nested_data)
+                    if isinstance(nested_data, dict):
+                        nested_rows = _extract_command_rows(nested_data)
+                        if nested_rows:
+                            return nested_rows
 
-            if any(
-                key in payload
-                for key in (
-                    "command_id",
-                    "commandId",
-                    "id",
-                    "zuid",
-                    "name",
-                    "command_name",
-                    "commandName",
-                    "command",
-                    "action",
-                    "action_name",
-                    "actionName",
-                    "display_name",
-                    "displayName",
-                    "title",
-                    "description",
-                    "summary",
-                    "help_text",
-                    "helpText",
-                    "status",
-                    "state",
-                    "mode",
-                )
-            ):
+                    if _has_command_payload(candidate):
+                        return [_unwrap_command_row(candidate)]
+
+            if _has_command_payload(payload):
                 return [_unwrap_command_row(payload)]
 
         return []

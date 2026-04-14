@@ -1,5 +1,5 @@
 project: zoho-cli
-updated_at: '2026-04-14T13:54:12Z'
+updated_at: '2026-04-14T15:03:04Z'
 status: cliq-expansion
 canonical_workspace: /Users/adwasd/.openclaw/workspace-coder
 project_root: /Users/adwasd/.openclaw/workspace-coder/job/zoho-cli
@@ -7,7 +7,7 @@ module_order:
 - Mail
 - Cliq
 - CRM
-current_focus: "cliq-165 export verification remains externally blocked by API-side `inactive_appaccount_user`; completed the matching focused cliq-193 live rerun (`cliq status --check-auth` + `cliq app-command-get APP_PROBE_FAKE_20260414_135410 CMD_PROBE_FAKE_20260414_135410`) and archived evidence while app-command detail endpoints remain `not_supported`; next is the next smallest cliq-193 output-hardening increment with focused tests"
+current_focus: "cliq-165 export verification remains externally blocked by API-side `inactive_appaccount_user`; completed the next cliq-193 output-hardening increment so `cliq app-commands` now prefers command-shaped rows over metadata rows in metadata-first wrapper lists (`payload.data: [{meta: ...}, {command: {...}}]`), and next is a matching focused live rerun (`cliq status --check-auth` + `cliq app-commands APP_PROBE_FAKE_<stamp>`) before the following hardening slice"
 primary_blockers:
 - crm live read-only verification remains blocked by account-level CRM org access
 - cliq databases live verification currently requires additional scope (`ZohoCliq.Databases.READ`) on the active token despite healthy baseline auth/export readiness
@@ -29,8 +29,10 @@ primary_blockers:
   returns `not_supported`)
 - calls/meetings endpoints are unsupported on current token/network (`cliq meetings`
   now returns `not_supported` in focused live verification)
-next_step: "implement the next smallest cliq-193 output-hardening increment with focused unit coverage, then run one matching focused live rerun (`cliq status --check-auth` + `cliq app-command-get APP_PROBE_FAKE_<stamp> CMD_PROBE_FAKE_<stamp>`) and archive evidence while keeping cliq-165 as the highest-priority external blocker (`inactive_appaccount_user`)"
+next_step: "keep cliq-165 as the highest-priority external blocker (`inactive_appaccount_user`), run one matching focused live rerun for the latest cliq-193 app-command list hardening (`cliq status --check-auth` + `cliq app-commands APP_PROBE_FAKE_<stamp>`), then continue with the next smallest cliq-193 output-hardening increment with focused tests."
 additional_info:
+- '2026-04-14 unit hardening: `zoho cliq app-commands` now prefers command-shaped rows over metadata rows when wrapper lists are metadata-first (`payload.data: [{meta: ...}, {command: {...}}]`), preventing fallback `unknown` command entries when valid command rows appear later; focused tests passed (`tests/test_cli.py::test_cliq_app_commands_prefers_command_rows_over_metadata_in_data_list`, `tests/test_cli.py::test_cliq_app_commands_accepts_top_level_payload_wrapper_shape`).'
+- '2026-04-14 nightly verification: reran `make release-gate && make ci`; release-gate passed 527 tests + wheel smoke and ci stayed green with fmt/lint + pytest 527 passed, so no new broad regressions were found while Cliq live blockers remain unchanged.'
 - '2026-04-14 focused live verification: reran cliq-193 app-command detail probe (`cliq status --check-auth` + `cliq app-command-get APP_PROBE_FAKE_20260414_135410 CMD_PROBE_FAKE_20260414_135410`) and archived evidence at `tests/auto_pilot/reports/cliq193_app_command_get_probe_summary_20260414_135410.json`; auth/export readiness remains healthy (`oauthReady: true`, `exportOauthReady: true`) while app-command detail endpoints remain `not_supported`.'
 - '2026-04-14 unit hardening: `zoho cliq app-command-get` now prefers command-shaped rows over metadata rows when wrapper lists contain metadata-first entries (for example `payload.data: [{meta: ...}, {command: {...}}]`), preventing blank fallback command names while preserving command detail output; focused tests passed (`tests/test_cli.py::test_cliq_app_command_get_prefers_command_row_over_metadata_in_data_list`, `tests/test_cli.py::test_cliq_app_command_get_accepts_top_level_payload_wrapper_shape`).'
 - '2026-04-14 focused live verification: reran cliq-193 app-command detail probe (`cliq status --check-auth` + `cliq app-command-get APP_PROBE_FAKE_20260414_131429 CMD_PROBE_FAKE_20260414_131429`) and archived evidence at `tests/auto_pilot/reports/cliq193_app_command_get_probe_summary_20260414_131429.json`; auth/export readiness remains healthy (`oauthReady: true`, `exportOauthReady: true`) while app-command detail endpoints remain `not_supported`.'

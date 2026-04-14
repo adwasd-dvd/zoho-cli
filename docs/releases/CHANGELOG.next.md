@@ -3,6 +3,7 @@
 ## Unreleased
 
 ### Added
+- Hardened `cliq-193` app-command list extraction so `zoho cliq app-commands` now prefers command-shaped rows over metadata rows when wrapper lists are metadata-first (`payload.data: [{meta: ...}, {command: {...}}]`), preventing fallback `unknown` entries when valid command rows appear later in the list.
 - Hardened `cliq-193` app-command detail extraction so `zoho cliq app-command-get` now unwraps deeper `data.records.record[].item` wrapper chains by extending command-row unwrapping depth (`10 -> 16`), covering nested maintenance payloads that previously degraded command detail fields.
 - Hardened `cliq-193` command output parsing so `zoho cliq app-commands` and `zoho cliq app-command-get` now accept display-name aliases (`displayName` / `display_name`) when canonical command name fields are absent in maintenance payloads.
 - Hardened `cliq-193` command list parsing so `zoho cliq app-commands` now recognizes top-level and nested camelCase command-name aliases (`commandName` / `actionName`) when maintenance payloads return singleton command objects outside canonical list wrappers.

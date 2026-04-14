@@ -1,10 +1,16 @@
-last_run_at: "2026-04-14T13:54:12Z"
+last_run_at: "2026-04-14T15:03:04Z"
 last_result: warning
 current_focus: cliq
 suites:
   unit:
     status: passing
     notes:
+      - "python3.11 -m pytest -q tests/test_cli.py::test_cliq_app_commands_prefers_command_rows_over_metadata_in_data_list tests/test_cli.py::test_cliq_app_commands_accepts_top_level_payload_wrapper_shape"
+      - "2 passed (cliq-193 app-command list hardening: app-commands now prefers command-shaped rows over metadata rows in metadata-first wrapper lists, 2026-04-14T15:03:04Z)"
+      - "./.venv/bin/ruff format tests/test_cli.py && ./.venv/bin/ruff format --check zoho_cli/cli.py tests/test_cli.py"
+      - "1 file reformatted, then 2 files already formatted (cliq-193 app-command list metadata-first hardening formatting check, 2026-04-14T15:03:04Z)"
+      - "make release-gate"
+      - "broad nightly release gate is green: 527 passed in 10.43s + wheel smoke (0.2.0) (2026-04-14T14:35:19Z)"
       - "python3.11 -m zoho_cli --config /tmp/zoho-test-config.json --account ai-dev@happy-distro.co.uk cliq status --check-auth --network happydistrouklimited"
       - "focused cliq-193 live app-command-get rerun keeps auth/export readiness healthy (`oauthReady: true`, `exportOauthReady: true`); evidence: `tests/auto_pilot/reports/cliq193_status_20260414_135410.json` (2026-04-14T13:54:12Z)"
       - "python3.11 -m zoho_cli --config /tmp/zoho-test-config.json --account ai-dev@happy-distro.co.uk cliq app-command-get APP_PROBE_FAKE_20260414_135410 CMD_PROBE_FAKE_20260414_135410 --network happydistrouklimited"
@@ -972,6 +978,8 @@ suites:
   ci:
     status: passing
     notes:
+      - make ci
+      - fmt-check, lint, and full pytest gate passed (527 tests) (2026-04-14T14:54:08Z)
       - make ci
       - fmt-check, lint, and full pytest gate passed (321 tests) (2026-04-12T14:19:04Z)
       - make ci

@@ -1,4 +1,4 @@
-last_run_at: "2026-04-14T02:51:09Z"
+last_run_at: "2026-04-14T03:03:10Z"
 last_result: warning
 current_focus: cliq
 suites:
@@ -625,6 +625,10 @@ suites:
   integration:
     status: warning
     notes:
+      - "python3.11 -m zoho_cli --config /tmp/zoho-test-config.json --account ai-dev@happy-distro.co.uk cliq status --check-auth --network happydistrouklimited"
+      - "focused cliq-193 live app-get check keeps auth/export readiness healthy (`oauthReady: true`, `exportOauthReady: true`); evidence: `tests/auto_pilot/reports/cliq193_status_20260414_030308.json` (2026-04-14T03:03:10Z)"
+      - "python3.11 -m zoho_cli --config /tmp/zoho-test-config.json --account ai-dev@happy-distro.co.uk cliq app-get APP_PROBE_FAKE_20260414_030308 --network happydistrouklimited"
+      - "focused cliq-193 live `cliq app-get` verification returns `error: not_supported`; evidence: `tests/auto_pilot/reports/cliq193_app_get_20260414_030308.json` + `tests/auto_pilot/reports/cliq193_app_get_probe_summary_20260414_030308.json` (2026-04-14T03:03:10Z)"
       - "python3.11 -m zoho_cli --config /tmp/zoho-test-config.json --account ai-dev@happy-distro.co.uk cliq status --check-auth --network happydistrouklimited"
       - "focused cliq-193 live app-permission-get check keeps auth/export readiness healthy (`oauthReady: true`, `exportOauthReady: true`); evidence: `tests/auto_pilot/reports/cliq193_status_20260414_022317.json` (2026-04-14T02:23:17Z)"
       - "python3.11 -m zoho_cli --config /tmp/zoho-test-config.json --account ai-dev@happy-distro.co.uk cliq app-permission-get APP_PROBE_FAKE_20260414_022317 PERMISSION_PROBE_FAKE_20260414_022317 --network happydistrouklimited"

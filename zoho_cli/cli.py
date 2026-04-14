@@ -3625,6 +3625,8 @@ def cliq_app_commands(
             for key in (
                 "command_id",
                 "commandId",
+                "action_id",
+                "actionId",
                 "id",
                 "zuid",
                 "name",
@@ -3755,6 +3757,8 @@ def cliq_app_commands(
                 "commandId": str(
                     row.get("command_id")
                     or row.get("commandId")
+                    or row.get("action_id")
+                    or row.get("actionId")
                     or row.get("id")
                     or row.get("zuid")
                     or ""
@@ -4047,6 +4051,8 @@ def cliq_app_command_get(
             for key in (
                 "command_id",
                 "commandId",
+                "action_id",
+                "actionId",
                 "id",
                 "zuid",
                 "name",
@@ -4085,6 +4091,8 @@ def cliq_app_command_get(
         "commandId": str(
             row.get("command_id")
             or row.get("commandId")
+            or row.get("action_id")
+            or row.get("actionId")
             or row.get("id")
             or row.get("zuid")
             or resolved_command_id

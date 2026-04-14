@@ -5891,6 +5891,51 @@ def test_cliq_app_commands_accepts_top_level_payload_wrapper_shape(
     assert payload["commands"][0]["status"] == "enabled"
 
 
+def test_cliq_app_commands_accepts_deep_data_records_record_item_wrapper_shape(
+    mock_config: Path,
+    mock_token_refresh: Any,
+) -> None:
+    mock_client = MagicMock()
+    nested_row: dict[str, Any] = {
+        "command": {
+            "commandId": "CMD_8DEEP",
+            "name": "deep_payload_command",
+            "summary": "Deep payload list wrapper",
+            "mode": "enabled",
+        }
+    }
+    for _ in range(9):
+        nested_row = {"item": nested_row}
+
+    mock_client.list_app_commands.return_value = {
+        "payload": {
+            "result": {
+                "data": {
+                    "records": {
+                        "record": [nested_row],
+                    }
+                }
+            }
+        }
+    }
+
+    with patch("zoho_cli.cli._get_cliq_client", return_value=mock_client):
+        result = runner.invoke(
+            app,
+            ["cliq", "app-commands", "AP_8"],
+            env=_cfg_env(mock_config),
+        )
+
+    assert result.exit_code == 0, result.output
+    payload = json.loads(result.output)
+    assert payload["appId"] == "AP_8"
+    assert payload["count"] == 1
+    assert payload["commands"][0]["commandId"] == "CMD_8DEEP"
+    assert payload["commands"][0]["name"] == "deep_payload_command"
+    assert payload["commands"][0]["description"] == "Deep payload list wrapper"
+    assert payload["commands"][0]["status"] == "enabled"
+
+
 def test_cliq_app_command_get(mock_config: Path, mock_token_refresh: Any) -> None:
     mock_client = MagicMock()
     mock_client.get_app_command.return_value = {

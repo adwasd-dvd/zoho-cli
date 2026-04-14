@@ -1,5 +1,5 @@
 project: zoho-cli
-updated_at: '2026-04-14T03:43:01Z'
+updated_at: '2026-04-14T04:09:56Z'
 status: cliq-expansion
 canonical_workspace: /Users/adwasd/.openclaw/workspace-coder
 project_root: /Users/adwasd/.openclaw/workspace-coder/job/zoho-cli
@@ -7,7 +7,7 @@ module_order:
 - Mail
 - Cliq
 - CRM
-current_focus: 'cliq-165 export verification remains externally blocked by API-side `inactive_appaccount_user`; focused cliq-193 live rerun for the latest deep `app-command-get` wrapper hardening is archived (`tests/auto_pilot/reports/cliq193_app_command_get_probe_summary_20260414_034259.json`) with healthy auth/export readiness and endpoint-level `not_supported`, and the next step is the next smallest app-governance output-hardening increment'
+current_focus: 'cliq-165 export verification remains externally blocked by API-side `inactive_appaccount_user`; cliq-193 list output hardening now extends `cliq app-commands` deep wrapper unwrapping depth (10 -> 16) with focused tests green, and the next step is one matching focused live rerun to archive evidence before the next smallest app-governance increment'
 primary_blockers:
 - crm live read-only verification remains blocked by account-level CRM org access
 - cliq databases live verification currently requires additional scope (`ZohoCliq.Databases.READ`) on the active token despite healthy baseline auth/export readiness
@@ -29,8 +29,9 @@ primary_blockers:
   returns `not_supported`)
 - calls/meetings endpoints are unsupported on current token/network (`cliq meetings`
   now returns `not_supported` in focused live verification)
-next_step: 'take the next smallest cliq-193 app-governance output-hardening increment with focused tests, then run one matching focused live rerun and archive evidence while keeping cliq-165 as the highest-priority external blocker (`inactive_appaccount_user`)'
+next_step: 'run one focused live rerun for the latest cliq-193 list hardening (`cliq status --check-auth` + `cliq app-commands APP_PROBE_FAKE_<timestamp>`) and archive evidence, then take the next smallest app-governance output-hardening increment while keeping cliq-165 as the highest-priority external blocker (`inactive_appaccount_user`)'
 additional_info:
+- '2026-04-14 unit hardening: `zoho cliq app-commands` now unwraps deeper list-row wrapper stacks by extending command-row unwrapping depth (10 -> 16), preventing wrapper-shaped output from deep `payload/result/data/records/record/item` maintenance payloads; focused tests passed (`tests/test_cli.py::test_cliq_app_commands_accepts_top_level_payload_wrapper_shape`, `tests/test_cli.py::test_cliq_app_commands_accepts_deep_data_records_record_item_wrapper_shape`).'
 - '2026-04-14 focused live verification: reran cliq-193 app-command detail probe (`cliq status --check-auth` + `cliq app-command-get APP_PROBE_FAKE_20260414_034259 CMD_PROBE_FAKE_20260414_034259`) and archived evidence at `tests/auto_pilot/reports/cliq193_app_command_get_probe_summary_20260414_034259.json`; auth/export readiness remains healthy (`oauthReady: true`, `exportOauthReady: true`) while app-command detail endpoints remain `not_supported`.'
 - '2026-04-14 unit hardening: `zoho cliq app-command-get` now unwraps deeper `data.records.record[].item` wrapper chains by extending command-row unwrapping depth (8 -> 10), preventing wrapper-shaped command-name output on deep maintenance rows; focused tests passed (`tests/test_cli.py::test_cliq_app_command_get_accepts_top_level_payload_wrapper_shape`, `tests/test_cli.py::test_cliq_app_command_get_accepts_deep_data_records_record_item_wrapper_shape`).'
 - '2026-04-14 focused live verification: reran cliq-193 app detail probe (`cliq status --check-auth` + `cliq app-get APP_PROBE_FAKE_20260414_030308`) and archived evidence at `tests/auto_pilot/reports/cliq193_app_get_probe_summary_20260414_030308.json`; auth/export readiness remains healthy (`oauthReady: true`, `exportOauthReady: true`) while app-detail endpoints remain `not_supported`.'

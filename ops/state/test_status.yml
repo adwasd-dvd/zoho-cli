@@ -1,10 +1,14 @@
-last_run_at: "2026-04-15T08:35:28Z"
+last_run_at: "2026-04-15T08:56:38Z"
 last_result: warning
 current_focus: cliq
 suites:
   unit:
     status: warning
     notes:
+      - "./.venv/bin/ruff format --check zoho_cli/cli.py tests/test_cli.py"
+      - "2 files already formatted (cliq-193 metadata-only wrapper fallback hardening formatting check, 2026-04-15T08:56:38Z)"
+      - "python3.11 -m pytest -q tests/test_cli.py::test_cliq_app_commands_skips_metadata_only_data_list_and_uses_commands_list tests/test_cli.py::test_cliq_app_commands_skips_empty_data_list_and_uses_commands_list"
+      - "2 passed (cliq-193 app-command list extraction now skips metadata-only `payload.data` wrappers and continues scanning fallback keys like `payload.commands`, 2026-04-15T08:56:38Z)"
       - "python3.11 -m zoho_cli --config /tmp/zoho-test-config.json --account ai-dev@happy-distro.co.uk cliq status --check-auth --network happydistrouklimited"
       - "focused cliq-193 live app-commands rerun keeps auth/export readiness healthy (`oauthReady: true`, `exportOauthReady: true`); evidence: `tests/auto_pilot/reports/cliq193_status_20260415_083526.json` (2026-04-15T08:35:28Z)"
       - "python3.11 -m zoho_cli --config /tmp/zoho-test-config.json --account ai-dev@happy-distro.co.uk cliq app-commands APP_PROBE_FAKE_20260415_083526 --network happydistrouklimited"

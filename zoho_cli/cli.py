@@ -3768,11 +3768,80 @@ def cliq_app_commands(
             command_rows = filtered_rows
         return command_rows or normalized
 
+    def _has_preferred_command_rows(rows: list[dict[str, Any]]) -> bool:
+        for row in rows:
+            if not isinstance(row, dict):
+                continue
+            if "meta" not in row:
+                return True
+            if any(
+                key in row
+                for key in (
+                    "command_id",
+                    "commandId",
+                    "CommandId",
+                    "CommandID",
+                    "commandID",
+                    "action_id",
+                    "actionId",
+                    "ActionId",
+                    "ActionID",
+                    "actionID",
+                    "id",
+                    "zuid",
+                    "name",
+                    "CommandName",
+                    "command_name",
+                    "commandName",
+                    "ActionName",
+                    "action_name",
+                    "actionName",
+                    "display_name",
+                    "DisplayName",
+                    "displayName",
+                    "title",
+                    "help_text",
+                    "helpText",
+                    "helptext",
+                    "HelpText",
+                    "help",
+                    "Help",
+                    "command_help",
+                    "commandHelp",
+                    "CommandHelp",
+                    "command_help_text",
+                    "commandHelpText",
+                    "CommandHelpText",
+                    "action_help",
+                    "actionHelp",
+                    "ActionHelp",
+                    "action_help_text",
+                    "actionHelpText",
+                    "ActionHelpText",
+                    "command_description",
+                    "commandDescription",
+                    "CommandDescription",
+                    "action_description",
+                    "actionDescription",
+                    "ActionDescription",
+                    "command_status",
+                    "commandStatus",
+                    "CommandStatus",
+                    "action_status",
+                    "actionStatus",
+                    "ActionStatus",
+                )
+            ):
+                return True
+        return False
+
     def _extract_command_rows(payload: Any) -> list[dict[str, Any]]:
         if isinstance(payload, list):
             return _normalize_command_rows(payload)
 
         if isinstance(payload, dict):
+            metadata_fallback_rows: list[dict[str, Any]] = []
+
             for key in (
                 "data",
                 "commands",
@@ -3790,11 +3859,17 @@ def cliq_app_commands(
                 if isinstance(candidate, dict):
                     nested_rows = _extract_command_rows(candidate)
                     if nested_rows:
-                        return nested_rows
+                        if _has_preferred_command_rows(nested_rows):
+                            return nested_rows
+                        if not metadata_fallback_rows:
+                            metadata_fallback_rows = nested_rows
                 if isinstance(candidate, list):
                     rows = _normalize_command_rows(candidate)
                     if rows:
-                        return rows
+                        if _has_preferred_command_rows(rows):
+                            return rows
+                        if not metadata_fallback_rows:
+                            metadata_fallback_rows = rows
 
             candidates = [
                 payload.get("payload"),
@@ -3811,7 +3886,10 @@ def cliq_app_commands(
                 if isinstance(candidate, list):
                     rows = _normalize_command_rows(candidate)
                     if rows:
-                        return rows
+                        if _has_preferred_command_rows(rows):
+                            return rows
+                        if not metadata_fallback_rows:
+                            metadata_fallback_rows = rows
                 if isinstance(candidate, dict):
                     nested_command = candidate.get("command")
                     if isinstance(nested_command, dict):
@@ -3851,6 +3929,9 @@ def cliq_app_commands(
 
                     if _has_command_payload(candidate):
                         return [_unwrap_command_row(candidate)]
+
+            if metadata_fallback_rows:
+                return metadata_fallback_rows
 
             if _has_command_payload(payload):
                 return [_unwrap_command_row(payload)]
@@ -4070,7 +4151,9 @@ def cliq_app_command_get(
                 return True
             for key in wrapper_keys:
                 nested = candidate.get(key)
-                if isinstance(nested, dict) and any(hint in nested for hint in command_hints):
+                if isinstance(nested, dict) and any(
+                    hint in nested for hint in command_hints
+                ):
                     return True
             return False
 

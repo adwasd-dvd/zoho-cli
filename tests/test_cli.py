@@ -7436,6 +7436,33 @@ def test_cliq_app_command_get_prefers_helptext_row_over_metadata_in_data_list(
     mock_client.get_app_command.assert_called_once_with("AP_13", "CMD_16HT")
 
 
+def test_cliq_app_command_get_prefers_command_prefixed_help_row_over_metadata_in_data_list(
+    mock_config: Path,
+    mock_token_refresh: Any,
+) -> None:
+    mock_client = MagicMock()
+    mock_client.get_app_command.return_value = {
+        "payload": {
+            "data": [
+                {"meta": {"page": 1, "has_more": False}},
+                {"CommandHelpText": "Rotate on-call token"},
+            ]
+        }
+    }
+
+    with patch("zoho_cli.cli._get_cliq_client", return_value=mock_client):
+        result = runner.invoke(
+            app,
+            ["cliq", "app-command-get", "AP_13", "CMD_16CHT"],
+            env=_cfg_env(mock_config),
+        )
+
+    assert result.exit_code == 0, result.output
+    payload = json.loads(result.output)
+    assert payload["command"]["description"] == "Rotate on-call token"
+    mock_client.get_app_command.assert_called_once_with("AP_13", "CMD_16CHT")
+
+
 def test_cliq_app_command_get_prefers_pascal_action_id_row_over_metadata_in_data_list(
     mock_config: Path,
     mock_token_refresh: Any,

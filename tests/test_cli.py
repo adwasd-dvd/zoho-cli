@@ -7564,6 +7564,45 @@ def test_cliq_app_command_get_prefers_action_id_row_over_metadata_in_nested_payl
     mock_client.get_app_command.assert_called_once_with("AP_13", "CMD_16SNAKEACTION")
 
 
+def test_cliq_app_command_get_prefers_wrapped_action_row_over_wrapped_metadata_in_payload_data_list(
+    mock_config: Path,
+    mock_token_refresh: Any,
+) -> None:
+    mock_client = MagicMock()
+    mock_client.get_app_command.return_value = {
+        "payload": {
+            "data": [
+                {"payload": {"meta": {"page": 1, "has_more": False}}},
+                {
+                    "payload": {
+                        "action_id": "CMD_16WRAPPED",
+                        "action_name": "incident_wrap",
+                        "action_description": "Wrapped action row",
+                        "action_status": "enabled",
+                    }
+                },
+            ]
+        }
+    }
+
+    with patch("zoho_cli.cli._get_cliq_client", return_value=mock_client):
+        result = runner.invoke(
+            app,
+            ["cliq", "app-command-get", "AP_13", "CMD_16WRAPPED"],
+            env=_cfg_env(mock_config),
+        )
+
+    assert result.exit_code == 0, result.output
+    payload = json.loads(result.output)
+    assert payload["appId"] == "AP_13"
+    assert payload["command"]["commandId"] == "CMD_16WRAPPED"
+    assert payload["command"]["name"] == "incident_wrap"
+    assert payload["command"]["description"] == "Wrapped action row"
+    assert payload["command"]["status"] == "enabled"
+    assert payload["command"]["raw"]["action_id"] == "CMD_16WRAPPED"
+    mock_client.get_app_command.assert_called_once_with("AP_13", "CMD_16WRAPPED")
+
+
 def test_cliq_app_command_get_accepts_data_records_record_item_nested_command_shape(
     mock_config: Path,
     mock_token_refresh: Any,

@@ -3670,6 +3670,18 @@ def cliq_app_commands(
                 "action_description",
                 "actionDescription",
                 "ActionDescription",
+                "command_help",
+                "commandHelp",
+                "CommandHelp",
+                "command_help_text",
+                "commandHelpText",
+                "CommandHelpText",
+                "action_help",
+                "actionHelp",
+                "ActionHelp",
+                "action_help_text",
+                "actionHelpText",
+                "ActionHelpText",
                 "status",
                 "state",
                 "mode",
@@ -3897,6 +3909,18 @@ def cliq_app_commands(
                     or row.get("action_description")
                     or row.get("actionDescription")
                     or row.get("ActionDescription")
+                    or row.get("command_help")
+                    or row.get("commandHelp")
+                    or row.get("CommandHelp")
+                    or row.get("command_help_text")
+                    or row.get("commandHelpText")
+                    or row.get("CommandHelpText")
+                    or row.get("action_help")
+                    or row.get("actionHelp")
+                    or row.get("ActionHelp")
+                    or row.get("action_help_text")
+                    or row.get("actionHelpText")
+                    or row.get("ActionHelpText")
                     or ""
                 ),
                 "status": str(
@@ -4306,6 +4330,18 @@ def cliq_app_command_get(
                 "action_description",
                 "actionDescription",
                 "ActionDescription",
+                "command_help",
+                "commandHelp",
+                "CommandHelp",
+                "command_help_text",
+                "commandHelpText",
+                "CommandHelpText",
+                "action_help",
+                "actionHelp",
+                "ActionHelp",
+                "action_help_text",
+                "actionHelpText",
+                "ActionHelpText",
                 "status",
                 "state",
                 "mode",
@@ -4384,6 +4420,18 @@ def cliq_app_command_get(
             or row.get("action_description")
             or row.get("actionDescription")
             or row.get("ActionDescription")
+            or row.get("command_help")
+            or row.get("commandHelp")
+            or row.get("CommandHelp")
+            or row.get("command_help_text")
+            or row.get("commandHelpText")
+            or row.get("CommandHelpText")
+            or row.get("action_help")
+            or row.get("actionHelp")
+            or row.get("ActionHelp")
+            or row.get("action_help_text")
+            or row.get("actionHelpText")
+            or row.get("ActionHelpText")
             or ""
         ),
         "status": str(

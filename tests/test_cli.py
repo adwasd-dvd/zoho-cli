@@ -6562,6 +6562,38 @@ def test_cliq_app_commands_accepts_pascal_case_command_prefixed_description_and_
     assert payload["commands"][0]["status"] == "enabled"
 
 
+def test_cliq_app_commands_accepts_command_prefixed_help_alias_shape(
+    mock_config: Path,
+    mock_token_refresh: Any,
+) -> None:
+    mock_client = MagicMock()
+    mock_client.list_app_commands.return_value = {
+        "data": [
+            {
+                "CommandID": "CMD_13PASCALHELP",
+                "actionName": "deploy_pascal_help",
+                "CommandHelpText": "deploy through command help text",
+                "ActionHelp": "deploy through action help",
+                "commandStatus": "enabled",
+            }
+        ]
+    }
+
+    with patch("zoho_cli.cli._get_cliq_client", return_value=mock_client):
+        result = runner.invoke(
+            app,
+            ["--config", str(mock_config), "cliq", "app-commands", "AP_13"],
+            obj={},
+        )
+
+    assert result.exit_code == 0, result.output
+    payload = json.loads(result.output)
+    assert payload["commands"][0]["commandId"] == "CMD_13PASCALHELP"
+    assert payload["commands"][0]["name"] == "deploy_pascal_help"
+    assert payload["commands"][0]["description"] == "deploy through command help text"
+    assert payload["commands"][0]["status"] == "enabled"
+
+
 def test_cliq_app_commands_accepts_help_alias_shape(
     mock_config: Path,
     mock_token_refresh: Any,
@@ -7906,6 +7938,43 @@ def test_cliq_app_command_get_accepts_pascal_case_command_prefixed_description_a
     assert payload["command"]["commandId"] == "CMD_17PREFIXEDPASCAL"
     assert payload["command"]["name"] == "deploy_get_prefixed_pascal_alias"
     assert payload["command"]["description"] == "dispatch get prefixed pascal alias"
+    assert payload["command"]["status"] == "enabled"
+
+
+def test_cliq_app_command_get_accepts_command_prefixed_help_alias_shape(
+    mock_config: Path,
+    mock_token_refresh: Any,
+) -> None:
+    mock_client = MagicMock()
+    mock_client.get_app_command.return_value = {
+        "data": {
+            "CommandID": "CMD_17PASCALHELP",
+            "actionName": "detail_pascal_help",
+            "CommandHelpText": "detail through command help text",
+            "ActionHelp": "detail through action help",
+            "commandStatus": "enabled",
+        }
+    }
+
+    with patch("zoho_cli.cli._get_cliq_client", return_value=mock_client):
+        result = runner.invoke(
+            app,
+            [
+                "--config",
+                str(mock_config),
+                "cliq",
+                "app-command-get",
+                "AP_17",
+                "CMD_17PASCALHELP",
+            ],
+            obj={},
+        )
+
+    assert result.exit_code == 0, result.output
+    payload = json.loads(result.output)
+    assert payload["command"]["commandId"] == "CMD_17PASCALHELP"
+    assert payload["command"]["name"] == "detail_pascal_help"
+    assert payload["command"]["description"] == "detail through command help text"
     assert payload["command"]["status"] == "enabled"
 
 

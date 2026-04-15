@@ -3,6 +3,7 @@
 ## Unreleased
 
 ### Added
+- Hardened `cliq-193` app-command output normalization so `zoho cliq app-commands` and `zoho cliq app-command-get` now accept command-prefixed help aliases (`commandHelp`/`command_help`, `commandHelpText`/`command_help_text`, plus action-prefixed companions), preserving description output when maintenance payloads omit canonical description/help keys.
 - Hardened `cliq-193` app-command output normalization so `zoho cliq app-commands` and `zoho cliq app-command-get` now accept PascalCase command-prefixed description/status aliases (`CommandDescription` / `ActionDescription`, `CommandStatus` / `ActionStatus`) in addition to existing camel/snake aliases.
 - Fixed a `cliq-193` regression in `zoho cliq app-commands` metadata-first row filtering: rows carrying only `meta` metadata are now skipped when stronger command-shaped rows exist in the same payload, restoring correct command counts for mixed metadata+command wrapper lists.
 - Hardened `cliq-193` app-command output normalization so `zoho cliq app-commands` and `zoho cliq app-command-get` now accept command-prefixed description/status aliases (`commandDescription`/`command_description` and `commandStatus`/`command_status`, plus action-prefixed companions), preserving description/status output for maintenance payloads that omit canonical keys.

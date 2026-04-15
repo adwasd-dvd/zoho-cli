@@ -1,5 +1,5 @@
 project: zoho-cli
-updated_at: '2026-04-15T18:10:26Z'
+updated_at: '2026-04-15T19:29:25Z'
 status: cliq-expansion
 canonical_workspace: /Users/adwasd/.openclaw/workspace-coder
 project_root: /Users/adwasd/.openclaw/workspace-coder/job/zoho-cli
@@ -7,7 +7,7 @@ module_order:
 - Mail
 - Cliq
 - CRM
-current_focus: "cliq-165 export verification remains externally blocked by API-side `inactive_appaccount_user`; latest cliq-193 focused live rerun (`APP_PROBE_FAKE_20260415_180937`) keeps app-command endpoints `not_supported` while auth/export readiness remains healthy, and the next smallest unit step is continued app-command output-hardening coverage."
+current_focus: "cliq-165 export verification remains externally blocked by API-side `inactive_appaccount_user`; latest cliq-193 unit hardening adds snake+camel plus uppercase-snake display-name alias support (`command_displayName`/`action_displayName`, `COMMAND_DISPLAYNAME`/`ACTION_DISPLAYNAME`) and the matching focused live rerun (`APP_PROBE_FAKE_20260415_192925`) still shows app-command endpoints `not_supported` with healthy auth/export readiness."
 primary_blockers:
 - crm live read-only verification remains blocked by account-level CRM org access
 - cliq databases live verification currently requires additional scope (`ZohoCliq.Databases.READ`) on the active token despite healthy baseline auth/export readiness

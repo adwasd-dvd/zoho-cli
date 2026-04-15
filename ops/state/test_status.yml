@@ -1,10 +1,15 @@
-last_run_at: "2026-04-15T18:10:26Z"
+last_run_at: "2026-04-15T19:29:25Z"
 last_result: warning
 current_focus: cliq
 suites:
   unit:
     status: warning
     notes:
+      - "python3.11 -m zoho_cli --config /tmp/zoho-test-config.json --account ai-dev@happy-distro.co.uk cliq status --check-auth --network happydistrouklimited"
+      - "python3.11 -m zoho_cli --config /tmp/zoho-test-config.json --account ai-dev@happy-distro.co.uk cliq app-commands APP_PROBE_FAKE_20260415_192925 --network happydistrouklimited"
+      - "focused cliq-193 live `cliq app-commands` verification remains blocked with `error: not_supported` while auth/export readiness stays healthy; evidence: `tests/auto_pilot/reports/cliq193_app_commands_probe_summary_20260415_192925.json` (`2026-04-15T19:29:25Z`)"
+      - "python3.11 -m pytest -q tests/test_cli.py::test_cliq_app_commands_accepts_snake_camel_command_display_name_alias_shape tests/test_cli.py::test_cliq_app_commands_accepts_uppercase_snake_command_displayname_alias_shape tests/test_cli.py::test_cliq_app_command_get_accepts_snake_camel_action_display_name_alias_shape tests/test_cli.py::test_cliq_app_command_get_accepts_uppercase_snake_action_displayname_alias_shape"
+      - "4 passed in 0.10s (cliq-193 snake+camel plus uppercase-snake display-name alias hardening for app-command list/detail output, 2026-04-15T19:27:43Z)"
       - "python3.11 -m zoho_cli --config /tmp/zoho-test-config.json --account ai-dev@happy-distro.co.uk cliq status --check-auth --network happydistrouklimited"
       - "python3.11 -m zoho_cli --config /tmp/zoho-test-config.json --account ai-dev@happy-distro.co.uk cliq app-commands APP_PROBE_FAKE_20260415_180937 --network happydistrouklimited"
       - "focused cliq-193 live `cliq app-commands` verification remains blocked with `error: not_supported` while auth/export readiness stays healthy; evidence: `tests/auto_pilot/reports/cliq193_app_commands_probe_summary_20260415_180937.json` (`2026-04-15T18:10:26Z`)"
@@ -939,6 +944,11 @@ suites:
   cli_smoke:
     status: passing
     notes:
+      - "python3.11 -m zoho_cli --config /tmp/zoho-test-config.json --account ai-dev@happy-distro.co.uk cliq status --check-auth --network happydistrouklimited"
+      - "python3.11 -m zoho_cli --config /tmp/zoho-test-config.json --account ai-dev@happy-distro.co.uk cliq app-commands APP_PROBE_FAKE_20260415_192925 --network happydistrouklimited"
+      - "focused cliq-193 live `cliq app-commands` verification remains blocked with `error: not_supported` while auth/export readiness stays healthy; evidence: `tests/auto_pilot/reports/cliq193_app_commands_probe_summary_20260415_192925.json` (`2026-04-15T19:29:25Z`)"
+      - "python3.11 -m pytest -q tests/test_cli.py::test_cliq_app_commands_accepts_snake_camel_command_display_name_alias_shape tests/test_cli.py::test_cliq_app_commands_accepts_uppercase_snake_command_displayname_alias_shape tests/test_cli.py::test_cliq_app_command_get_accepts_snake_camel_action_display_name_alias_shape tests/test_cli.py::test_cliq_app_command_get_accepts_uppercase_snake_action_displayname_alias_shape"
+      - "4 passed in 0.10s (cliq-193 snake+camel plus uppercase-snake display-name alias hardening for app-command list/detail output, 2026-04-15T19:27:43Z)"
       - "`./.venv/bin/python -m zoho_cli --config /tmp/zoho-test-config.json --account ai-dev@happy-distro.co.uk crm status` returns scaffold-ready payload with inferred base URL (`https://www.zohoapis.com/crm/v2`) (2026-04-08T14:07:20Z)"
       - cliq OAuth readiness surfaced in `zoho cliq status` (`requiredScopes`, `missingScopes`, `oauthReady`) and login now supports `--with-cliq` + repeatable `--scope`
       - cliq scaffold command `zoho cliq status` now reports readiness + inferred regional base URL and optional OAuth check
@@ -949,6 +959,11 @@ suites:
   integration:
     status: warning
     notes:
+      - "python3.11 -m zoho_cli --config /tmp/zoho-test-config.json --account ai-dev@happy-distro.co.uk cliq status --check-auth --network happydistrouklimited"
+      - "python3.11 -m zoho_cli --config /tmp/zoho-test-config.json --account ai-dev@happy-distro.co.uk cliq app-commands APP_PROBE_FAKE_20260415_192925 --network happydistrouklimited"
+      - "focused cliq-193 live `cliq app-commands` verification remains blocked with `error: not_supported` while auth/export readiness stays healthy; evidence: `tests/auto_pilot/reports/cliq193_app_commands_probe_summary_20260415_192925.json` (`2026-04-15T19:29:25Z`)"
+      - "python3.11 -m pytest -q tests/test_cli.py::test_cliq_app_commands_accepts_snake_camel_command_display_name_alias_shape tests/test_cli.py::test_cliq_app_commands_accepts_uppercase_snake_command_displayname_alias_shape tests/test_cli.py::test_cliq_app_command_get_accepts_snake_camel_action_display_name_alias_shape tests/test_cli.py::test_cliq_app_command_get_accepts_uppercase_snake_action_displayname_alias_shape"
+      - "4 passed in 0.10s (cliq-193 snake+camel plus uppercase-snake display-name alias hardening for app-command list/detail output, 2026-04-15T19:27:43Z)"
       - "python3.11 -m zoho_cli --config /tmp/zoho-test-config.json --account ai-dev@happy-distro.co.uk cliq status --check-auth --network happydistrouklimited"
       - "focused cliq-193 live app-command-get check keeps auth/export readiness healthy (`oauthReady: true`, `exportOauthReady: true`); evidence: `tests/auto_pilot/reports/cliq193_status_20260414_135410.json` (2026-04-14T13:54:12Z)"
       - "python3.11 -m zoho_cli --config /tmp/zoho-test-config.json --account ai-dev@happy-distro.co.uk cliq app-command-get APP_PROBE_FAKE_20260414_135410 CMD_PROBE_FAKE_20260414_135410 --network happydistrouklimited"
@@ -1203,6 +1218,11 @@ suites:
   ci:
     status: passing
     notes:
+      - "python3.11 -m zoho_cli --config /tmp/zoho-test-config.json --account ai-dev@happy-distro.co.uk cliq status --check-auth --network happydistrouklimited"
+      - "python3.11 -m zoho_cli --config /tmp/zoho-test-config.json --account ai-dev@happy-distro.co.uk cliq app-commands APP_PROBE_FAKE_20260415_192925 --network happydistrouklimited"
+      - "focused cliq-193 live `cliq app-commands` verification remains blocked with `error: not_supported` while auth/export readiness stays healthy; evidence: `tests/auto_pilot/reports/cliq193_app_commands_probe_summary_20260415_192925.json` (`2026-04-15T19:29:25Z`)"
+      - "python3.11 -m pytest -q tests/test_cli.py::test_cliq_app_commands_accepts_snake_camel_command_display_name_alias_shape tests/test_cli.py::test_cliq_app_commands_accepts_uppercase_snake_command_displayname_alias_shape tests/test_cli.py::test_cliq_app_command_get_accepts_snake_camel_action_display_name_alias_shape tests/test_cli.py::test_cliq_app_command_get_accepts_uppercase_snake_action_displayname_alias_shape"
+      - "4 passed in 0.10s (cliq-193 snake+camel plus uppercase-snake display-name alias hardening for app-command list/detail output, 2026-04-15T19:27:43Z)"
       - make ci
       - fmt-check, lint, and full pytest gate passed (527 tests) (2026-04-14T14:54:08Z)
       - make ci
@@ -1250,6 +1270,11 @@ suites:
   packaging:
     status: passing
     notes:
+      - "python3.11 -m zoho_cli --config /tmp/zoho-test-config.json --account ai-dev@happy-distro.co.uk cliq status --check-auth --network happydistrouklimited"
+      - "python3.11 -m zoho_cli --config /tmp/zoho-test-config.json --account ai-dev@happy-distro.co.uk cliq app-commands APP_PROBE_FAKE_20260415_192925 --network happydistrouklimited"
+      - "focused cliq-193 live `cliq app-commands` verification remains blocked with `error: not_supported` while auth/export readiness stays healthy; evidence: `tests/auto_pilot/reports/cliq193_app_commands_probe_summary_20260415_192925.json` (`2026-04-15T19:29:25Z`)"
+      - "python3.11 -m pytest -q tests/test_cli.py::test_cliq_app_commands_accepts_snake_camel_command_display_name_alias_shape tests/test_cli.py::test_cliq_app_commands_accepts_uppercase_snake_command_displayname_alias_shape tests/test_cli.py::test_cliq_app_command_get_accepts_snake_camel_action_display_name_alias_shape tests/test_cli.py::test_cliq_app_command_get_accepts_uppercase_snake_action_displayname_alias_shape"
+      - "4 passed in 0.10s (cliq-193 snake+camel plus uppercase-snake display-name alias hardening for app-command list/detail output, 2026-04-15T19:27:43Z)"
       - make release-gate passed (321 tests + wheel smoke) (2026-04-12T14:19:04Z)
       - make release-gate passed (274 tests + wheel smoke) (2026-04-12T01:36:19Z)
       - make release-gate passed (252 tests + wheel smoke) (2026-04-10T04:39:44Z)

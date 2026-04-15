@@ -6460,6 +6460,40 @@ def test_cliq_app_commands_accepts_actionid_lowercase_alias_shape(
     assert payload["commands"][0]["status"] == "enabled"
 
 
+def test_cliq_app_commands_accepts_uppercase_alias_shape(
+    mock_config: Path,
+    mock_token_refresh: Any,
+) -> None:
+    mock_client = MagicMock()
+    mock_client.list_app_commands.return_value = {
+        "payload": {
+            "data": [
+                {
+                    "COMMANDID": "CMD_8UPPER",
+                    "ACTIONNAME": "incident_ack_uppercase_alias",
+                    "SUMMARY": "ack now via uppercase aliases",
+                    "STATUS": "enabled",
+                }
+            ]
+        }
+    }
+
+    with patch("zoho_cli.cli._get_cliq_client", return_value=mock_client):
+        result = runner.invoke(
+            app,
+            ["cliq", "app-commands", "AP_8"],
+            env=_cfg_env(mock_config),
+        )
+
+    assert result.exit_code == 0, result.output
+    payload = json.loads(result.output)
+    assert payload["appId"] == "AP_8"
+    assert payload["commands"][0]["commandId"] == "CMD_8UPPER"
+    assert payload["commands"][0]["name"] == "incident_ack_uppercase_alias"
+    assert payload["commands"][0]["description"] == "ack now via uppercase aliases"
+    assert payload["commands"][0]["status"] == "enabled"
+
+
 def test_cliq_app_commands_accepts_command_id_pascal_case_alias_shape(
     mock_config: Path,
     mock_token_refresh: Any,
@@ -8196,6 +8230,38 @@ def test_cliq_app_command_get_accepts_commandid_lowercase_alias_shape(
     assert payload["command"]["commandId"] == "CMD_17LOWERID"
     assert payload["command"]["name"] == "deploy_from_commandid_lowercase_alias"
     assert payload["command"]["description"] == "dispatch lowercase commandid alias"
+    assert payload["command"]["status"] == "enabled"
+
+
+def test_cliq_app_command_get_accepts_uppercase_alias_shape(
+    mock_config: Path,
+    mock_token_refresh: Any,
+) -> None:
+    mock_client = MagicMock()
+    mock_client.get_app_command.return_value = {
+        "payload": {
+            "data": {
+                "ACTIONID": "ACT_17UPPER",
+                "DISPLAYNAME": "deploy_from_uppercase_alias",
+                "HELPTEXT": "dispatch uppercase aliases",
+                "MODE": "enabled",
+            }
+        }
+    }
+
+    with patch("zoho_cli.cli._get_cliq_client", return_value=mock_client):
+        result = runner.invoke(
+            app,
+            ["cliq", "app-command-get", "AP_17", "CMD_17ALIAS"],
+            env=_cfg_env(mock_config),
+        )
+
+    assert result.exit_code == 0, result.output
+    payload = json.loads(result.output)
+    assert payload["appId"] == "AP_17"
+    assert payload["command"]["commandId"] == "ACT_17UPPER"
+    assert payload["command"]["name"] == "deploy_from_uppercase_alias"
+    assert payload["command"]["description"] == "dispatch uppercase aliases"
     assert payload["command"]["status"] == "enabled"
 
 

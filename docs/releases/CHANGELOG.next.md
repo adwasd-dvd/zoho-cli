@@ -3,6 +3,7 @@
 ## Unreleased
 
 ### Added
+- Hardened `cliq-193` app-command list/detail normalization so `zoho cliq app-commands` and `zoho cliq app-command-get` now accept uppercase maintenance aliases (`COMMANDID`, `ACTIONID`, `ACTIONNAME`, `DISPLAYNAME`, `SUMMARY`, `MODE`, and companion help/description/status keys) across command-row hint detection and output mapping.
 - Hardened `cliq-193` app-command detail id normalization so `zoho cliq app-command-get` now accepts lowercase id aliases (`commandid`, `actionid`) in command-row hint detection and output mapping, preserving `command.commandId` when maintenance payloads omit canonical id keys.
 - Hardened `cliq-193` app-command list extraction so metadata-first wrapper traversal now prefers list entries carrying command hints before generic metadata entries, which preserves wrapped action rows (for example `{payload: {action_id: ...}}`) in mixed `payload.data` wrappers.
 - Hardened `cliq-193` app-command list extraction so metadata-first filtering now treats direct action/command aliases (`action`, `Action`, `command`, `Command`) as command-shaped hints when canonical `name` fields are absent, preventing metadata-tagged command rows from being dropped in mixed wrapper payloads.

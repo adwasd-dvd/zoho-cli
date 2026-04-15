@@ -3642,6 +3642,7 @@ def cliq_app_commands(
                 "CommandId",
                 "CommandID",
                 "commandID",
+                "commandid",
                 "action_id",
                 "actionId",
                 "id",
@@ -3660,6 +3661,7 @@ def cliq_app_commands(
                 "ActionId",
                 "ActionID",
                 "actionID",
+                "actionid",
                 "display_name",
                 "DisplayName",
                 "displayName",
@@ -3683,15 +3685,19 @@ def cliq_app_commands(
                 "command_help",
                 "commandHelp",
                 "CommandHelp",
+                "commandhelp",
                 "command_help_text",
                 "commandHelpText",
                 "CommandHelpText",
+                "commandhelptext",
                 "action_help",
                 "actionHelp",
                 "ActionHelp",
+                "actionhelp",
                 "action_help_text",
                 "actionHelpText",
                 "ActionHelpText",
+                "actionhelptext",
                 "status",
                 "state",
                 "mode",
@@ -3747,11 +3753,13 @@ def cliq_app_commands(
                     "CommandId",
                     "CommandID",
                     "commandID",
+                    "commandid",
                     "action_id",
                     "actionId",
                     "ActionId",
                     "ActionID",
                     "actionID",
+                    "actionid",
                     "id",
                     "zuid",
                     "name",
@@ -3778,15 +3786,19 @@ def cliq_app_commands(
                     "command_help",
                     "commandHelp",
                     "CommandHelp",
+                    "commandhelp",
                     "command_help_text",
                     "commandHelpText",
                     "CommandHelpText",
+                    "commandhelptext",
                     "action_help",
                     "actionHelp",
                     "ActionHelp",
+                    "actionhelp",
                     "action_help_text",
                     "actionHelpText",
                     "ActionHelpText",
+                    "actionhelptext",
                     "command_description",
                     "commandDescription",
                     "CommandDescription",
@@ -3821,11 +3833,13 @@ def cliq_app_commands(
                     "CommandId",
                     "CommandID",
                     "commandID",
+                    "commandid",
                     "action_id",
                     "actionId",
                     "ActionId",
                     "ActionID",
                     "actionID",
+                    "actionid",
                     "id",
                     "zuid",
                     "name",
@@ -3852,15 +3866,19 @@ def cliq_app_commands(
                     "command_help",
                     "commandHelp",
                     "CommandHelp",
+                    "commandhelp",
                     "command_help_text",
                     "commandHelpText",
                     "CommandHelpText",
+                    "commandhelptext",
                     "action_help",
                     "actionHelp",
                     "ActionHelp",
+                    "actionhelp",
                     "action_help_text",
                     "actionHelpText",
                     "ActionHelpText",
+                    "actionhelptext",
                     "command_description",
                     "commandDescription",
                     "CommandDescription",
@@ -4001,11 +4019,13 @@ def cliq_app_commands(
                     or row.get("CommandId")
                     or row.get("CommandID")
                     or row.get("commandID")
+                    or row.get("commandid")
                     or row.get("action_id")
                     or row.get("actionId")
                     or row.get("ActionId")
                     or row.get("ActionID")
                     or row.get("actionID")
+                    or row.get("actionid")
                     or row.get("id")
                     or row.get("zuid")
                     or ""
@@ -4048,15 +4068,19 @@ def cliq_app_commands(
                     or row.get("command_help")
                     or row.get("commandHelp")
                     or row.get("CommandHelp")
+                    or row.get("commandhelp")
                     or row.get("command_help_text")
                     or row.get("commandHelpText")
                     or row.get("CommandHelpText")
+                    or row.get("commandhelptext")
                     or row.get("action_help")
                     or row.get("actionHelp")
                     or row.get("ActionHelp")
+                    or row.get("actionhelp")
                     or row.get("action_help_text")
                     or row.get("actionHelpText")
                     or row.get("ActionHelpText")
+                    or row.get("actionhelptext")
                     or ""
                 ),
                 "status": str(
@@ -4104,11 +4128,13 @@ def cliq_app_command_get(
             "CommandId",
             "CommandID",
             "commandID",
+            "commandid",
             "action_id",
             "actionId",
             "ActionId",
             "ActionID",
             "actionID",
+            "actionid",
             "id",
             "zuid",
             "name",
@@ -4156,15 +4182,19 @@ def cliq_app_command_get(
             "Mode",
             "commandHelp",
             "CommandHelp",
+            "commandhelp",
             "command_help",
             "actionHelp",
             "ActionHelp",
+            "actionhelp",
             "action_help",
             "commandHelpText",
             "CommandHelpText",
+            "commandhelptext",
             "command_help_text",
             "actionHelpText",
             "ActionHelpText",
+            "actionhelptext",
             "action_help_text",
         )
 
@@ -4344,6 +4374,13 @@ def cliq_app_command_get(
                     "CommandId",
                     "CommandID",
                     "commandID",
+                    "commandid",
+                    "action_id",
+                    "actionId",
+                    "ActionId",
+                    "ActionID",
+                    "actionID",
+                    "actionid",
                     "id",
                     "zuid",
                     "name",
@@ -4401,11 +4438,13 @@ def cliq_app_command_get(
                 "CommandId",
                 "CommandID",
                 "commandID",
+                "commandid",
                 "action_id",
                 "actionId",
                 "ActionId",
                 "ActionID",
                 "actionID",
+                "actionid",
                 "id",
                 "zuid",
                 "name",
@@ -4442,15 +4481,19 @@ def cliq_app_command_get(
                 "command_help",
                 "commandHelp",
                 "CommandHelp",
+                "commandhelp",
                 "command_help_text",
                 "commandHelpText",
                 "CommandHelpText",
+                "commandhelptext",
                 "action_help",
                 "actionHelp",
                 "ActionHelp",
+                "actionhelp",
                 "action_help_text",
                 "actionHelpText",
                 "ActionHelpText",
+                "actionhelptext",
                 "status",
                 "state",
                 "mode",
@@ -4485,11 +4528,13 @@ def cliq_app_command_get(
             or row.get("CommandId")
             or row.get("CommandID")
             or row.get("commandID")
+            or row.get("commandid")
             or row.get("action_id")
             or row.get("actionId")
             or row.get("ActionId")
             or row.get("ActionID")
             or row.get("actionID")
+            or row.get("actionid")
             or row.get("id")
             or row.get("zuid")
             or resolved_command_id
@@ -4532,15 +4577,19 @@ def cliq_app_command_get(
             or row.get("command_help")
             or row.get("commandHelp")
             or row.get("CommandHelp")
+            or row.get("commandhelp")
             or row.get("command_help_text")
             or row.get("commandHelpText")
             or row.get("CommandHelpText")
+            or row.get("commandhelptext")
             or row.get("action_help")
             or row.get("actionHelp")
             or row.get("ActionHelp")
+            or row.get("actionhelp")
             or row.get("action_help_text")
             or row.get("actionHelpText")
             or row.get("ActionHelpText")
+            or row.get("actionhelptext")
             or ""
         ),
         "status": str(

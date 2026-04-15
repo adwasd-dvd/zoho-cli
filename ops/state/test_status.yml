@@ -1,10 +1,13 @@
-last_run_at: "2026-04-15T06:39:59Z"
+last_run_at: "2026-04-15T07:13:08Z"
 last_result: warning
 current_focus: cliq
 suites:
   unit:
     status: warning
     notes:
+      - "focused cliq-193 live app-commands rerun keeps auth/export readiness healthy (`oauthReady: true`, `exportOauthReady: true`); evidence: `tests/auto_pilot/reports/cliq193_status_20260415_071229.json` (2026-04-15T07:13:08Z)"
+      - "python3.11 -m zoho_cli --config /tmp/zoho-test-config.json --account ai-dev@happy-distro.co.uk cliq app-commands APP_PROBE_FAKE_20260415_071229 --network happydistrouklimited"
+      - "focused cliq-193 live `cliq app-commands` verification returns `error: not_supported`; evidence: `tests/auto_pilot/reports/cliq193_app_commands_20260415_071229.json` + `tests/auto_pilot/reports/cliq193_app_commands_probe_summary_20260415_071229.json` (2026-04-15T07:13:08Z)"
       - "./.venv/bin/ruff format --check zoho_cli/cli.py tests/test_cli.py"
       - "2 files already formatted (cliq-193 action-id metadata-row hardening formatting check, 2026-04-15T06:39:59Z)"
       - "python3.11 -m pytest -q tests/test_cli.py::test_cliq_app_command_get_prefers_action_id_row_over_metadata_in_nested_payload_data_list tests/test_cli.py::test_cliq_app_command_get_prefers_pascal_action_id_row_over_metadata_in_data_list"

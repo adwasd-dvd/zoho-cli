@@ -3597,8 +3597,12 @@ def cliq_app_commands(
                 "result",
                 "command",
                 "commands",
+                "Command",
+                "Commands",
                 "action",
                 "actions",
+                "Action",
+                "Actions",
                 "item",
                 "record",
                 "records",
@@ -3638,7 +3642,9 @@ def cliq_app_commands(
                 "commandName",
                 "ActionName",
                 "command",
+                "Command",
                 "action",
+                "Action",
                 "action_name",
                 "actionName",
                 "ActionId",
@@ -3798,7 +3804,9 @@ def cliq_app_commands(
                     or row.get("actionName")
                     or row.get("command_name")
                     or row.get("command")
+                    or row.get("Command")
                     or row.get("action")
+                    or row.get("Action")
                     or row.get("action_name")
                     or row.get("display_name")
                     or row.get("DisplayName")
@@ -3860,11 +3868,15 @@ def cliq_app_command_get(
                     "response",
                     "result",
                     "command",
+                    "Command",
                     "action",
+                    "Action",
                     "item",
                     "record",
                     "commands",
+                    "Commands",
                     "actions",
+                    "Actions",
                     "list",
                     "items",
                     "results",
@@ -3898,7 +3910,9 @@ def cliq_app_command_get(
                                         "actionName",
                                         "command_name",
                                         "command",
+                                        "Command",
                                         "action",
+                                        "Action",
                                         "action_name",
                                         "display_name",
                                         "DisplayName",
@@ -3954,7 +3968,9 @@ def cliq_app_command_get(
                     "actionName",
                     "command_name",
                     "command",
+                    "Command",
                     "action",
+                    "Action",
                     "action_name",
                     "action_id",
                     "actionId",
@@ -3987,7 +4003,9 @@ def cliq_app_command_get(
                     "record",
                     "item",
                     "commands",
+                    "Commands",
                     "actions",
+                    "Actions",
                     "list",
                     "items",
                     "results",
@@ -4064,9 +4082,12 @@ def cliq_app_command_get(
                 "response",
                 "result",
                 "command",
+                "Command",
                 "action",
+                "Action",
                 "item",
                 "record",
+                "data",
             ):
                 candidate = nested_data.get(key)
                 if isinstance(candidate, dict):
@@ -4076,7 +4097,9 @@ def cliq_app_command_get(
                 "response",
                 "result",
                 "commands",
+                "Commands",
                 "actions",
+                "Actions",
                 "list",
                 "items",
                 "results",
@@ -4107,7 +4130,9 @@ def cliq_app_command_get(
                     "actionName",
                     "command_name",
                     "command",
+                    "Command",
                     "action",
+                    "Action",
                     "action_name",
                     "display_name",
                     "DisplayName",
@@ -4155,7 +4180,9 @@ def cliq_app_command_get(
                 "actionName",
                 "command_name",
                 "command",
+                "Command",
                 "action",
+                "Action",
                 "action_name",
                 "display_name",
                 "DisplayName",
@@ -4216,7 +4243,9 @@ def cliq_app_command_get(
             or row.get("actionName")
             or row.get("command_name")
             or row.get("command")
+            or row.get("Command")
             or row.get("action")
+            or row.get("Action")
             or row.get("action_name")
             or row.get("display_name")
             or row.get("DisplayName")

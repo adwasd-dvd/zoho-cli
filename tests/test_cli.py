@@ -6594,6 +6594,43 @@ def test_cliq_app_commands_accepts_command_name_pascal_case_alias_shape(
     assert payload["commands"][0]["status"] == "enabled"
 
 
+def test_cliq_app_commands_accepts_pascal_case_command_wrapper_shape(
+    mock_config: Path,
+    mock_token_refresh: Any,
+) -> None:
+    mock_client = MagicMock()
+    mock_client.list_app_commands.return_value = {
+        "payload": {
+            "data": [
+                {
+                    "Command": {
+                        "CommandID": "CMD_17PASCALWRAP",
+                        "CommandName": "deploy_from_pascal_command_wrapper",
+                        "Summary": "Deploy from PascalCase wrapper",
+                        "Status": "enabled",
+                    }
+                }
+            ]
+        }
+    }
+
+    with patch("zoho_cli.cli._get_cliq_client", return_value=mock_client):
+        result = runner.invoke(
+            app,
+            ["cliq", "app-commands", "AP_17"],
+            env=_cfg_env(mock_config),
+        )
+
+    assert result.exit_code == 0, result.output
+    payload = json.loads(result.output)
+    assert payload["appId"] == "AP_17"
+    assert len(payload["commands"]) == 1
+    assert payload["commands"][0]["commandId"] == "CMD_17PASCALWRAP"
+    assert payload["commands"][0]["name"] == "deploy_from_pascal_command_wrapper"
+    assert payload["commands"][0]["description"] == "Deploy from PascalCase wrapper"
+    assert payload["commands"][0]["status"] == "enabled"
+
+
 def test_cliq_app_commands_accepts_top_level_command_name_camel_case_alias_shape(
     mock_config: Path,
     mock_token_refresh: Any,
@@ -7499,6 +7536,40 @@ def test_cliq_app_command_get_accepts_command_name_alias_shape(
     assert payload["command"]["commandId"] == "CMD_17ALIAS"
     assert payload["command"]["name"] == "publish_release_alias"
     assert payload["command"]["description"] == "Publish release from command_name"
+    assert payload["command"]["status"] == "enabled"
+
+
+def test_cliq_app_command_get_accepts_pascal_case_action_wrapper_shape(
+    mock_config: Path,
+    mock_token_refresh: Any,
+) -> None:
+    mock_client = MagicMock()
+    mock_client.get_app_command.return_value = {
+        "payload": {
+            "data": {
+                "Action": {
+                    "ActionID": "ACT_17PASCALWRAP",
+                    "ActionName": "deploy_from_pascal_action_wrapper",
+                    "Summary": "Deploy from PascalCase action wrapper",
+                    "Status": "enabled",
+                }
+            }
+        }
+    }
+
+    with patch("zoho_cli.cli._get_cliq_client", return_value=mock_client):
+        result = runner.invoke(
+            app,
+            ["cliq", "app-command-get", "AP_17", "CMD_17ALIAS"],
+            env=_cfg_env(mock_config),
+        )
+
+    assert result.exit_code == 0, result.output
+    payload = json.loads(result.output)
+    assert payload["appId"] == "AP_17"
+    assert payload["command"]["commandId"] == "ACT_17PASCALWRAP"
+    assert payload["command"]["name"] == "deploy_from_pascal_action_wrapper"
+    assert payload["command"]["description"] == "Deploy from PascalCase action wrapper"
     assert payload["command"]["status"] == "enabled"
 
 

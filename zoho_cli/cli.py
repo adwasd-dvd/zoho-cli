@@ -3664,12 +3664,20 @@ def cliq_app_commands(
                 "HelpText",
                 "help",
                 "Help",
+                "command_description",
+                "commandDescription",
+                "action_description",
+                "actionDescription",
                 "status",
                 "state",
                 "mode",
                 "Status",
                 "State",
                 "Mode",
+                "command_status",
+                "commandStatus",
+                "action_status",
+                "actionStatus",
             )
         )
 
@@ -3825,6 +3833,10 @@ def cliq_app_commands(
                     or row.get("HelpText")
                     or row.get("help")
                     or row.get("Help")
+                    or row.get("command_description")
+                    or row.get("commandDescription")
+                    or row.get("action_description")
+                    or row.get("actionDescription")
                     or ""
                 ),
                 "status": str(
@@ -3834,6 +3846,10 @@ def cliq_app_commands(
                     or row.get("Status")
                     or row.get("State")
                     or row.get("Mode")
+                    or row.get("command_status")
+                    or row.get("commandStatus")
+                    or row.get("action_status")
+                    or row.get("actionStatus")
                     or ""
                 ),
                 "raw": row,
@@ -4198,12 +4214,20 @@ def cliq_app_command_get(
                 "HelpText",
                 "help",
                 "Help",
+                "command_description",
+                "commandDescription",
+                "action_description",
+                "actionDescription",
                 "status",
                 "state",
                 "mode",
                 "Status",
                 "State",
                 "Mode",
+                "command_status",
+                "commandStatus",
+                "action_status",
+                "actionStatus",
             )
         ):
             return payload
@@ -4264,6 +4288,10 @@ def cliq_app_command_get(
             or row.get("HelpText")
             or row.get("help")
             or row.get("Help")
+            or row.get("command_description")
+            or row.get("commandDescription")
+            or row.get("action_description")
+            or row.get("actionDescription")
             or ""
         ),
         "status": str(
@@ -4273,6 +4301,10 @@ def cliq_app_command_get(
             or row.get("Status")
             or row.get("State")
             or row.get("Mode")
+            or row.get("command_status")
+            or row.get("commandStatus")
+            or row.get("action_status")
+            or row.get("actionStatus")
             or ""
         ),
         "raw": row,

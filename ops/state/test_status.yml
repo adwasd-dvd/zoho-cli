@@ -1,10 +1,14 @@
-last_run_at: "2026-04-15T21:43:04Z"
+last_run_at: "2026-04-15T22:39:56Z"
 last_result: warning
 current_focus: cliq
 suites:
   unit:
     status: warning
     notes:
+      - "python3.11 -m pytest -q tests/test_cli.py::test_cliq_app_commands_accepts_snake_camel_command_display_name_alias_shape tests/test_cli.py::test_cliq_app_commands_accepts_snake_pascal_command_display_name_alias_shape tests/test_cli.py::test_cliq_app_command_get_accepts_snake_camel_action_display_name_alias_shape tests/test_cli.py::test_cliq_app_command_get_accepts_snake_pascal_action_display_name_alias_shape"
+      - "4 passed in 0.12s (cliq-193 snake+Pascal display-name alias hardening for app-command list/detail output, 2026-04-15T22:39:56Z)"
+      - "./.venv/bin/ruff format --check zoho_cli/cli.py tests/test_cli.py"
+      - "2 files already formatted (cliq-193 snake+Pascal display-name alias hardening formatting check, 2026-04-15T22:39:56Z)"
       - "python3.11 -m zoho_cli --config /tmp/zoho-test-config.json --account ai-dev@happy-distro.co.uk cliq status --check-auth --network happydistrouklimited"
       - "python3.11 -m zoho_cli --config /tmp/zoho-test-config.json --account ai-dev@happy-distro.co.uk cliq app-commands APP_PROBE_FAKE_20260415_214304 --network happydistrouklimited"
       - "focused cliq-193 live `cliq app-commands` verification remains blocked with `error: not_supported` while auth/export readiness stays healthy; evidence: `tests/auto_pilot/reports/cliq193_app_commands_probe_summary_20260415_214304.json` (`2026-04-15T21:43:04Z`)"

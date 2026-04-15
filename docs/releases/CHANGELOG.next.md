@@ -3,6 +3,7 @@
 ## Unreleased
 
 ### Added
+- Hardened `cliq-193` app-command list/detail normalization so `zoho cliq app-commands` and `zoho cliq app-command-get` now also accept snake+Pascal display-name aliases (`command_DisplayName` / `action_DisplayName`) in command-row hint detection and output name mapping.
 - Hardened `cliq-193` app-command list/detail normalization so `zoho cliq app-commands` and `zoho cliq app-command-get` now also accept camel+snake display-name aliases (`commandDisplay_name` / `actionDisplay_name`) in command-row hint detection and output name mapping.
 - Hardened `cliq-193` app-command list/detail normalization so `zoho cliq app-commands` and `zoho cliq app-command-get` now also accept camel display aliases (`commandDisplay` / `actionDisplay`) in command-row hint detection and output name mapping.
 - Hardened `cliq-193` app-command list/detail normalization so `zoho cliq app-commands` and `zoho cliq app-command-get` now also accept plain command/action display aliases (`command_display` / `action_display`) in command-row hint detection and output name mapping.

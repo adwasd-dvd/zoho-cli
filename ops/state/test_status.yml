@@ -1,10 +1,14 @@
-last_run_at: "2026-04-15T02:24:26Z"
+last_run_at: "2026-04-15T03:06:02Z"
 last_result: warning
 current_focus: cliq
 suites:
   unit:
     status: warning
     notes:
+      - "./.venv/bin/ruff format --check zoho_cli/cli.py tests/test_cli.py"
+      - "2 files already formatted (cliq-193 PascalCase command-prefixed description/status alias hardening formatting check, 2026-04-15T03:06:02Z)"
+      - "python3.11 -m pytest -q tests/test_cli.py::test_cliq_app_commands_accepts_command_prefixed_description_and_status_alias_shape tests/test_cli.py::test_cliq_app_commands_accepts_pascal_case_command_prefixed_description_and_status_alias_shape tests/test_cli.py::test_cliq_app_command_get_accepts_command_prefixed_description_and_status_alias_shape tests/test_cli.py::test_cliq_app_command_get_accepts_pascal_case_command_prefixed_description_and_status_alias_shape"
+      - "4 passed (cliq-193 PascalCase command-prefixed description/status alias hardening for app-command list/detail output, 2026-04-15T03:06:02Z)"
       - "make release-gate"
       - "broad release gate rerun is green: 551 passed in 9.72s + wheel smoke (0.2.0) (2026-04-15T02:24:26Z)"
       - "python3.11 -m zoho_cli --config /tmp/zoho-test-config.json --account ai-dev@happy-distro.co.uk cliq status --check-auth --network happydistrouklimited"

@@ -1,5 +1,5 @@
 module: Cliq
-updated_at: '2026-04-15T02:04:44Z'
+updated_at: '2026-04-15T03:06:02Z'
 status: in_progress
 blockers:
 - "cliq-193 focused live rerun (`cliq status --check-auth` + `cliq app-commands APP_PROBE_FAKE_20260415_020441`) keeps auth/export readiness healthy (`oauthReady: true`, `exportOauthReady: true`) while app-command list endpoints remain unsupported (`error: not_supported`); evidence: `tests/auto_pilot/reports/cliq193_app_commands_probe_summary_20260415_020441.json`, `tests/auto_pilot/reports/cliq193_status_20260415_020441.json`, `tests/auto_pilot/reports/cliq193_app_commands_20260415_020441.json`."

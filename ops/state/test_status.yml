@@ -1,10 +1,20 @@
-last_run_at: "2026-04-15T01:24:40Z"
+last_run_at: "2026-04-15T01:47:23Z"
 last_result: warning
 current_focus: cliq
 suites:
   unit:
-    status: passing
+    status: warning
     notes:
+      - "python3.11 -m pytest -q tests/test_cli.py::test_cliq_app_commands_prefers_command_rows_over_metadata_in_data_list tests/test_cli.py::test_cliq_app_commands_prefers_pascal_action_id_row_over_metadata_in_data_list tests/test_cli.py::test_cliq_app_commands_prefers_helptext_row_over_metadata_in_data_list tests/test_cli.py::test_cliq_app_commands_skips_empty_data_list_and_uses_commands_list"
+      - "4 passed (cliq-193 metadata-row regression fix for `cliq app-commands`: metadata-only `meta` rows are skipped when stronger command rows coexist, 2026-04-15T01:47:23Z)"
+      - "python3.11 -m pytest -q tests/test_cli.py::test_cliq_app_command_get_prefers_command_row_over_metadata_in_data_list tests/test_cli.py::test_cliq_app_command_get_prefers_pascal_action_id_row_over_metadata_in_data_list"
+      - "2 passed (sanity check after list-side metadata-row fix, 2026-04-15T01:47:23Z)"
+      - "./.venv/bin/ruff format --check zoho_cli/cli.py"
+      - "1 file already formatted (cliq-193 metadata-row regression fix formatting check, 2026-04-15T01:47:23Z)"
+      - "make release-gate"
+      - "release gate failed: 2 failed, 549 passed in 10.91s (`tests/test_cli.py::test_cliq_app_commands_prefers_command_rows_over_metadata_in_data_list`, `tests/test_cli.py::test_cliq_app_commands_prefers_pascal_action_id_row_over_metadata_in_data_list`), 2026-04-15T01:36:48Z"
+      - "python3.11 -m pytest -q tests/test_cli.py::test_cliq_app_commands_prefers_command_rows_over_metadata_in_data_list tests/test_cli.py::test_cliq_app_commands_prefers_pascal_action_id_row_over_metadata_in_data_list"
+      - "2 failed (focused confirmation rerun for the same metadata-row regressions, 2026-04-15T01:37:35Z)"
       - "python3.11 -m zoho_cli --config /tmp/zoho-test-config.json --account ai-dev@happy-distro.co.uk cliq status --check-auth --network happydistrouklimited"
       - "focused cliq-193 live app-commands rerun keeps auth/export readiness healthy (`oauthReady: true`, `exportOauthReady: true`); evidence: `tests/auto_pilot/reports/cliq193_status_20260415_012437.json` (2026-04-15T01:24:40Z)"
       - "python3.11 -m zoho_cli --config /tmp/zoho-test-config.json --account ai-dev@happy-distro.co.uk cliq app-commands APP_PROBE_FAKE_20260415_012437 --network happydistrouklimited"

@@ -3684,6 +3684,52 @@ def cliq_app_commands(
     def _normalize_command_rows(rows: list[dict[str, Any]]) -> list[dict[str, Any]]:
         normalized = [_unwrap_command_row(row) for row in rows if isinstance(row, dict)]
         command_rows = [row for row in normalized if _has_command_payload(row)]
+
+        def _looks_like_command_row(candidate: dict[str, Any]) -> bool:
+            if "meta" not in candidate:
+                return True
+            return any(
+                key in candidate
+                for key in (
+                    "command_id",
+                    "commandId",
+                    "CommandId",
+                    "CommandID",
+                    "commandID",
+                    "action_id",
+                    "actionId",
+                    "ActionId",
+                    "ActionID",
+                    "actionID",
+                    "id",
+                    "zuid",
+                    "name",
+                    "CommandName",
+                    "command_name",
+                    "commandName",
+                    "ActionName",
+                    "action_name",
+                    "actionName",
+                    "display_name",
+                    "DisplayName",
+                    "displayName",
+                    "title",
+                    "help_text",
+                    "helpText",
+                    "helptext",
+                    "HelpText",
+                    "help",
+                    "Help",
+                    "command_description",
+                    "commandDescription",
+                    "action_description",
+                    "actionDescription",
+                )
+            )
+
+        filtered_rows = [row for row in command_rows if _looks_like_command_row(row)]
+        if filtered_rows:
+            command_rows = filtered_rows
         return command_rows or normalized
 
     def _extract_command_rows(payload: Any) -> list[dict[str, Any]]:

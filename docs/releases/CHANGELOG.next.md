@@ -3,6 +3,7 @@
 ## Unreleased
 
 ### Added
+- Fixed a `cliq-193` regression in `zoho cliq app-commands` metadata-first row filtering: rows carrying only `meta` metadata are now skipped when stronger command-shaped rows exist in the same payload, restoring correct command counts for mixed metadata+command wrapper lists.
 - Hardened `cliq-193` app-command output normalization so `zoho cliq app-commands` and `zoho cliq app-command-get` now accept command-prefixed description/status aliases (`commandDescription`/`command_description` and `commandStatus`/`command_status`, plus action-prefixed companions), preserving description/status output for maintenance payloads that omit canonical keys.
 - Hardened `cliq-193` PascalCase wrapper normalization so `zoho cliq app-commands` and `zoho cliq app-command-get` now unwrap `Command`/`Action` wrapper rows (and plural `Commands`/`Actions` list wrappers), preserving command id/name/description/status output for maintenance payloads that only expose PascalCase wrapper keys.
 - Hardened `cliq-193` metadata-first command row selection so `zoho cliq app-commands` and `zoho cliq app-command-get` now treat lowercase `helptext` fields as command-shaped row hints, preventing helptext-only command rows from being dropped behind metadata wrappers.
@@ -237,12 +238,14 @@
 - Removed duplicate CRM `fields` command/client definitions so the CRM read-only surface now has one canonical `fields` implementation.
 
 ### Release readiness
-- Assessed at 2026-04-14T01:37:08Z: release is **not ready**.
+- Assessed at 2026-04-15T01:36:48Z: release is **not ready**.
 - Fresh gate evidence:
-  - `make release-gate && make ci` remains green (`503` tests + wheel smoke + fmt/lint, 2026-04-14T01:37:08Z).
-  - Focused live checks are current through `2026-04-14T01:23:02Z`; latest `cliq app-install-get` probe (`cliq-193`) keeps auth/export readiness healthy (`oauthReady: true`, `exportOauthReady: true`) while classifying app-install detail endpoints as `not_supported`.
+  - `make release-gate` is currently failing (2 failed, 549 passed, 2026-04-15T01:36:48Z).
+  - Failing tests: `tests/test_cli.py::test_cliq_app_commands_prefers_command_rows_over_metadata_in_data_list`, `tests/test_cli.py::test_cliq_app_commands_prefers_pascal_action_id_row_over_metadata_in_data_list`.
+  - Focused live checks are current through `2026-04-15T01:24:40Z`; latest `cliq app-commands` probe (`cliq-193`) keeps auth/export readiness healthy (`oauthReady: true`, `exportOauthReady: true`) while app-command list endpoints remain `not_supported`.
   - Changelog draft and release state have been refreshed for this assessment.
 - Remaining release blockers:
   - blocker bugs are **not** clear (`crm-002` live smoke remains blocked by account-level CRM org access and returns `OAUTH_SCOPE_MISMATCH`).
   - current focus milestone `cliq-expansion-phase` is **not complete** (`cliq-165` export verification is externally blocked by `inactive_appaccount_user`, and `cliq-193` is still in progress).
   - relevant integration checks are **not** clean (`ops/state/test_status.yml` remains `integration: warning` because live Cliq scope/endpoint blockers are unresolved).
+  - broad release gate is **not** clean until the two cliq-193 metadata-row regression tests above pass again.

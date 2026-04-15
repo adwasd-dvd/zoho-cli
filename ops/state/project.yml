@@ -1,5 +1,5 @@
 project: zoho-cli
-updated_at: '2026-04-15T21:24:53Z'
+updated_at: '2026-04-15T21:43:04Z'
 status: cliq-expansion
 canonical_workspace: /Users/adwasd/.openclaw/workspace-coder
 project_root: /Users/adwasd/.openclaw/workspace-coder/job/zoho-cli
@@ -7,7 +7,7 @@ module_order:
 - Mail
 - Cliq
 - CRM
-current_focus: "cliq-165 export verification remains externally blocked by API-side `inactive_appaccount_user`; latest cliq-193 unit increment hardened app-command list/detail display-name normalization for camel+snake aliases (`commandDisplay_name`/`actionDisplay_name`) with focused tests green, so the next step is a matching focused live `cliq app-commands` rerun."
+current_focus: "cliq-165 export verification remains externally blocked by API-side `inactive_appaccount_user`; latest cliq-193 focused live rerun (`APP_PROBE_FAKE_20260415_214304`) kept auth/export readiness healthy while app-command list endpoints remained `not_supported`, so the next step is the next smallest app-command output-hardening unit increment."
 primary_blockers:
 - crm live read-only verification remains blocked by account-level CRM org access
 - cliq databases live verification currently requires additional scope (`ZohoCliq.Databases.READ`) on the active token despite healthy baseline auth/export readiness
@@ -29,8 +29,9 @@ primary_blockers:
   returns `not_supported`)
 - calls/meetings endpoints are unsupported on current token/network (`cliq meetings`
   now returns `not_supported` in focused live verification)
-next_step: "run one focused cliq-193 live rerun for the latest app-command output-hardening slice (`cliq status --check-auth` + `cliq app-commands APP_PROBE_FAKE_<stamp>`), archive evidence, then continue the next smallest app-command normalization increment while cliq-165 stays externally blocked by `inactive_appaccount_user`."
+next_step: "take the next smallest cliq-193 app-command output-hardening unit increment with focused tests, then run one matching focused live rerun (`cliq status --check-auth` + `cliq app-commands APP_PROBE_FAKE_<stamp>`) while cliq-165 stays externally blocked by `inactive_appaccount_user`."
 additional_info:
+- '2026-04-15 focused live verification: reran cliq-193 app-command list probe (`cliq status --check-auth` + `cliq app-commands APP_PROBE_FAKE_20260415_214304`) and archived evidence at `tests/auto_pilot/reports/cliq193_app_commands_probe_summary_20260415_214304.json`; auth/export readiness remains healthy (`oauthReady: true`, `exportOauthReady: true`) while app-command list endpoints remain `not_supported`.'
 - '2026-04-15 unit hardening: `zoho cliq app-commands` + `zoho cliq app-command-get` now normalize camel+snake display-name aliases (`commandDisplay_name`/`actionDisplay_name`) in command-row hint detection and output mapping; focused tests passed (`tests/test_cli.py::test_cliq_app_commands_accepts_camel_snake_command_display_name_alias_shape`, `tests/test_cli.py::test_cliq_app_command_get_accepts_camel_snake_action_display_name_alias_shape`) and `./.venv/bin/ruff format --check zoho_cli/cli.py tests/test_cli.py` is clean.'
 - '2026-04-15 focused live verification: reran cliq-193 app-command list probe (`cliq status --check-auth` + `cliq app-commands APP_PROBE_FAKE_20260415_203516`) and archived evidence at `tests/auto_pilot/reports/cliq193_app_commands_probe_summary_20260415_203516.json`; auth/export readiness remains healthy (`oauthReady: true`, `exportOauthReady: true`) while app-command list endpoints remain `not_supported`.'
 - '2026-04-15 unit hardening: `zoho cliq app-commands` + `zoho cliq app-command-get` now normalize camel-title command/action display-name aliases (`commandDisplayname`/`actionDisplayname`) alongside mixed-case variants in command-row hint detection and output mapping; focused tests passed (`tests/test_cli.py::test_cliq_app_commands_accepts_mixed_case_command_display_name_alias_shape`, `tests/test_cli.py::test_cliq_app_commands_accepts_camel_title_command_displayname_alias_shape`, `tests/test_cli.py::test_cliq_app_command_get_accepts_mixed_case_action_display_name_alias_shape`, `tests/test_cli.py::test_cliq_app_command_get_accepts_camel_title_action_displayname_alias_shape`).'

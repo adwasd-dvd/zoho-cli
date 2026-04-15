@@ -1,10 +1,14 @@
-last_run_at: "2026-04-15T03:49:01Z"
+last_run_at: "2026-04-15T04:06:27Z"
 last_result: warning
 current_focus: cliq
 suites:
   unit:
     status: warning
     notes:
+      - "./.venv/bin/ruff format --check zoho_cli/cli.py tests/test_cli.py"
+      - "2 files already formatted (cliq-193 metadata-first command-prefixed help-row hardening for app-command list filtering, 2026-04-15T04:06:27Z)"
+      - "python3.11 -m pytest -q tests/test_cli.py::test_cliq_app_commands_prefers_command_prefixed_help_row_over_metadata_in_data_list tests/test_cli.py::test_cliq_app_commands_prefers_helptext_row_over_metadata_in_data_list tests/test_cli.py::test_cliq_app_command_get_prefers_command_prefixed_help_row_over_metadata_in_data_list"
+      - "3 passed (cliq-193 metadata-first command-prefixed help-row hardening for app-command list output, 2026-04-15T04:06:27Z)"
       - "./.venv/bin/ruff format --check zoho_cli/cli.py tests/test_cli.py"
       - "2 files already formatted (cliq-193 metadata-first command-prefixed help-row hardening formatting check, 2026-04-15T03:49:01Z)"
       - "python3.11 -m pytest -q tests/test_cli.py::test_cliq_app_command_get_prefers_command_prefixed_help_row_over_metadata_in_data_list tests/test_cli.py::test_cliq_app_command_get_prefers_helptext_row_over_metadata_in_data_list tests/test_cli.py::test_cliq_app_command_get_accepts_command_prefixed_help_alias_shape"

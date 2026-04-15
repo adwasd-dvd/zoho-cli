@@ -6881,6 +6881,42 @@ def test_cliq_app_commands_prefers_helptext_row_over_metadata_in_data_list(
     assert payload["commands"][0]["description"] == "Run remediation workflow"
 
 
+def test_cliq_app_commands_prefers_command_prefixed_help_row_over_metadata_in_data_list(
+    mock_config: Path,
+    mock_token_refresh: Any,
+) -> None:
+    mock_client = MagicMock()
+    mock_client.list_app_commands.return_value = {
+        "payload": {
+            "data": [
+                {
+                    "meta": {"cursor": "CURSOR_APP_COMMANDS"},
+                    "status": "ok",
+                },
+                {
+                    "meta": {"source": "maintenance"},
+                    "CommandHelpText": "Run remediation workflow via command help",
+                },
+            ]
+        }
+    }
+
+    with patch("zoho_cli.cli._get_cliq_client", return_value=mock_client):
+        result = runner.invoke(
+            app,
+            ["cliq", "app-commands", "AP_8"],
+            env=_cfg_env(mock_config),
+        )
+
+    assert result.exit_code == 0, result.output
+    payload = json.loads(result.output)
+    assert payload["count"] == 1
+    assert (
+        payload["commands"][0]["description"]
+        == "Run remediation workflow via command help"
+    )
+
+
 def test_cliq_app_commands_skips_empty_data_list_and_uses_commands_list(
     mock_config: Path,
     mock_token_refresh: Any,

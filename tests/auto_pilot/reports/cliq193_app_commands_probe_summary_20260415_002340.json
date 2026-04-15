@@ -1,0 +1,14 @@
+{
+  "task": "cliq-193 focused live app-commands rerun",
+  "generatedAt": "2026-04-15T00:23:43Z",
+  "statusFile": "tests/auto_pilot/reports/cliq193_status_20260415_002340.json",
+  "appCommandsFile": "tests/auto_pilot/reports/cliq193_app_commands_20260415_002340.json",
+  "oauthReady": true,
+  "exportOauthReady": true,
+  "appCommandsStatus": "error",
+  "appCommandsError": "not_supported",
+  "statusExitCode": 0,
+  "appCommandsExitCode": 1,
+  "status": "warning",
+  "nextStep": "take the next smallest cliq-193 app-command output-hardening increment with focused tests; keep cliq-165 blocked on external inactive_appaccount_user"
+}

@@ -1,10 +1,12 @@
-last_run_at: "2026-04-15T02:04:44Z"
+last_run_at: "2026-04-15T02:24:26Z"
 last_result: warning
 current_focus: cliq
 suites:
   unit:
     status: warning
     notes:
+      - "make release-gate"
+      - "broad release gate rerun is green: 551 passed in 9.72s + wheel smoke (0.2.0) (2026-04-15T02:24:26Z)"
       - "python3.11 -m zoho_cli --config /tmp/zoho-test-config.json --account ai-dev@happy-distro.co.uk cliq status --check-auth --network happydistrouklimited"
       - "focused cliq-193 live app-commands rerun keeps auth/export readiness healthy (`oauthReady: true`, `exportOauthReady: true`); evidence: `tests/auto_pilot/reports/cliq193_status_20260415_020441.json` (2026-04-15T02:04:44Z)"
       - "python3.11 -m zoho_cli --config /tmp/zoho-test-config.json --account ai-dev@happy-distro.co.uk cliq app-commands APP_PROBE_FAKE_20260415_020441 --network happydistrouklimited"

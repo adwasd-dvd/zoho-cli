@@ -3614,8 +3614,18 @@ def cliq_app_commands(
                     break
                 if isinstance(nested, list):
                     picked = next(
-                        (entry for entry in nested if isinstance(entry, dict)), None
+                        (
+                            entry
+                            for entry in nested
+                            if isinstance(entry, dict)
+                            and _entry_has_command_hints(entry)
+                        ),
+                        None,
                     )
+                    if not picked:
+                        picked = next(
+                            (entry for entry in nested if isinstance(entry, dict)), None
+                        )
                     if picked:
                         current = picked
                         break
@@ -3696,6 +3706,31 @@ def cliq_app_commands(
                 "ActionStatus",
             )
         )
+
+    def _entry_has_command_hints(candidate: dict[str, Any]) -> bool:
+        if _has_command_payload(candidate):
+            return True
+        for key in (
+            "payload",
+            "response",
+            "result",
+            "command",
+            "commands",
+            "Command",
+            "Commands",
+            "action",
+            "actions",
+            "Action",
+            "Actions",
+            "item",
+            "record",
+            "records",
+            "data",
+        ):
+            nested = candidate.get(key)
+            if isinstance(nested, dict) and _has_command_payload(nested):
+                return True
+        return False
 
     def _normalize_command_rows(rows: list[dict[str, Any]]) -> list[dict[str, Any]]:
         normalized = [_unwrap_command_row(row) for row in rows if isinstance(row, dict)]

@@ -3,6 +3,7 @@
 ## Unreleased
 
 ### Added
+- Hardened `cliq-193` app-command list extraction so metadata-first wrapper traversal now prefers list entries carrying command hints before generic metadata entries, which preserves wrapped action rows (for example `{payload: {action_id: ...}}`) in mixed `payload.data` wrappers.
 - Hardened `cliq-193` app-command list extraction so metadata-first filtering now treats direct action/command aliases (`action`, `Action`, `command`, `Command`) as command-shaped hints when canonical `name` fields are absent, preventing metadata-tagged command rows from being dropped in mixed wrapper payloads.
 - Hardened `cliq-193` app-command list extraction so metadata-only `payload.data` wrappers no longer short-circuit fallback scanning of alternate list keys (for example `payload.commands`), preventing metadata-only rows from masking valid command rows in mixed wrapper payloads.
 - Hardened `cliq-193` app-command detail metadata filtering so `zoho cliq app-command-get` now treats wrapped action-id rows (for example `{payload: {action_id: ...}}`) as command-shaped candidates in metadata-first `payload.data` lists, preventing wrapped metadata rows from masking valid wrapped command rows.

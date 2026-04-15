@@ -6854,6 +6854,45 @@ def test_cliq_app_commands_prefers_pascal_action_id_row_over_metadata_in_data_li
     assert payload["commands"][0]["name"] == ""
 
 
+def test_cliq_app_commands_prefers_wrapped_action_row_over_wrapped_metadata_in_payload_data_list(
+    mock_config: Path,
+    mock_token_refresh: Any,
+) -> None:
+    mock_client = MagicMock()
+    mock_client.list_app_commands.return_value = {
+        "payload": {
+            "data": [
+                {"payload": {"meta": {"page": 1, "has_more": False}}},
+                {
+                    "payload": {
+                        "action_id": "CMD_8WRAPPEDACTION",
+                        "action_name": "deploy_wrapped_action",
+                        "action_description": "use wrapped action row, not wrapped metadata",
+                        "action_status": "enabled",
+                    }
+                },
+            ]
+        }
+    }
+
+    with patch("zoho_cli.cli._get_cliq_client", return_value=mock_client):
+        result = runner.invoke(
+            app,
+            ["cliq", "app-commands", "AP_8"],
+            env=_cfg_env(mock_config),
+        )
+
+    assert result.exit_code == 0, result.output
+    payload = json.loads(result.output)
+    assert payload["count"] == 1
+    assert payload["commands"][0]["commandId"] == "CMD_8WRAPPEDACTION"
+    assert payload["commands"][0]["name"] == "deploy_wrapped_action"
+    assert (
+        payload["commands"][0]["description"]
+        == "use wrapped action row, not wrapped metadata"
+    )
+
+
 def test_cliq_app_commands_prefers_helptext_row_over_metadata_in_data_list(
     mock_config: Path,
     mock_token_refresh: Any,

@@ -1,5 +1,5 @@
 project: zoho-cli
-updated_at: '2026-04-15T09:18:02Z'
+updated_at: '2026-04-15T09:32:58Z'
 status: cliq-expansion
 canonical_workspace: /Users/adwasd/.openclaw/workspace-coder
 project_root: /Users/adwasd/.openclaw/workspace-coder/job/zoho-cli
@@ -7,7 +7,7 @@ module_order:
 - Mail
 - Cliq
 - CRM
-current_focus: "cliq-165 export verification remains externally blocked by API-side `inactive_appaccount_user`; latest cliq-193 unit hardening now treats metadata-tagged action/command alias rows (`action`/`Action`, `command`/`Command`) as command-shaped in `app-commands` extraction, and the paired focused live rerun confirms auth/export readiness is still healthy while app-command list endpoints remain `not_supported`."
+current_focus: "cliq-165 export verification remains externally blocked by API-side `inactive_appaccount_user`; latest cliq-193 unit hardening now makes `app-commands` metadata-first wrapper traversal prefer wrapped command-hint entries (for example `{payload: {action_id: ...}}`) ahead of wrapped metadata rows, preventing wrapped command rows from being dropped in mixed `payload.data` lists."
 primary_blockers:
 - crm live read-only verification remains blocked by account-level CRM org access
 - cliq databases live verification currently requires additional scope (`ZohoCliq.Databases.READ`) on the active token despite healthy baseline auth/export readiness
@@ -29,8 +29,9 @@ primary_blockers:
   returns `not_supported`)
 - calls/meetings endpoints are unsupported on current token/network (`cliq meetings`
   now returns `not_supported` in focused live verification)
-next_step: "take the next smallest cliq-193 app-command output-hardening increment with focused tests, then run one matching focused live rerun (`cliq status --check-auth` + `cliq app-commands APP_PROBE_FAKE_<stamp>`) while cliq-165 remains externally blocked by `inactive_appaccount_user`."
+next_step: "run one matching focused live rerun for the wrapped-action metadata hardening (`cliq status --check-auth` + `cliq app-commands APP_PROBE_FAKE_<stamp>`), then continue the next smallest cliq-193 app-command output-hardening increment while cliq-165 remains externally blocked by `inactive_appaccount_user`."
 additional_info:
+- '2026-04-15 unit hardening: `zoho cliq app-commands` metadata-first wrapper traversal now prefers wrapped entries that contain command hints, so `payload.data` rows like `{payload: {action_id: ...}}` are selected ahead of wrapped metadata rows; focused tests passed (`tests/test_cli.py::test_cliq_app_commands_prefers_wrapped_action_row_over_wrapped_metadata_in_payload_data_list`, `tests/test_cli.py::test_cliq_app_commands_prefers_action_hint_row_with_meta_over_metadata_only_data_list`, `tests/test_cli.py::test_cliq_app_commands_skips_metadata_only_data_list_and_uses_commands_list`).'
 - '2026-04-15 unit hardening: `zoho cliq app-commands` metadata-first row filtering now treats direct action/command aliases (`action`, `Action`, `command`, `Command`) as command-shaped hints even when rows carry `meta`, preventing metadata wrappers from masking valid command rows; focused tests passed (`tests/test_cli.py::test_cliq_app_commands_prefers_action_hint_row_with_meta_over_metadata_only_data_list`, `tests/test_cli.py::test_cliq_app_commands_skips_metadata_only_data_list_and_uses_commands_list`, `tests/test_cli.py::test_cliq_app_commands_skips_empty_data_list_and_uses_commands_list`).'
 - '2026-04-15 focused live verification: reran cliq-193 app-command list probe (`cliq status --check-auth` + `cliq app-commands APP_PROBE_FAKE_20260415_091529`) and archived evidence at `tests/auto_pilot/reports/cliq193_app_commands_probe_summary_20260415_091529.json`; auth/export readiness remains healthy (`oauthReady: true`, `exportOauthReady: true`) while app-command list endpoints remain `not_supported`.'
 - '2026-04-15 unit hardening: `zoho cliq app-commands` metadata-first extraction now skips metadata-only `payload.data` wrappers and continues scanning alternate keys like `payload.commands`, preventing metadata wrappers from masking valid command rows; focused tests passed (`tests/test_cli.py::test_cliq_app_commands_skips_metadata_only_data_list_and_uses_commands_list`, `tests/test_cli.py::test_cliq_app_commands_skips_empty_data_list_and_uses_commands_list`).'

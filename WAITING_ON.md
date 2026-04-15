@@ -7,3 +7,4 @@
 - Cliq native local multipart sends (voice/image/file) still fail on tested user/channel targets with endpoint-level `request_url_invalid` / `operation_failed`; endpoint+field matrix evidence is still being collected for cliq-155 closure.
 - Zoho token refresh can still throttle (`Access Denied` too many requests) during bursty live probe batches; retrieval probes need cooldown-safe reruns.
 - Cliq maintenance export verification is now blocked by API-side `inactive_appaccount_user` even after maintenance export scopes (`ZohoCliq.OrganizationChats.READ` + `ZohoCliq.OrganizationMessages.READ`) were granted; `cliq export-chats` list + `--chat-id` both hit this blocker.
+- Cliq app-governance app-command list verification (`cliq app-commands`) remains externally blocked on happydistrouklimited (`error: not_supported`) even with healthy auth/export readiness; latest evidence: `tests/auto_pilot/reports/cliq193_app_commands_probe_summary_20260415_151228.json`.

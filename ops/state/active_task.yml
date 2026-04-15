@@ -4,10 +4,10 @@ module: cliq
 stage: in_progress
 status: in_progress
 owner: automation
-updated_at: '2026-04-15T15:12:31Z'
+updated_at: '2026-04-15T15:55:26Z'
 success_criteria:
 - ship the next cliq-193 app-governance command/client slice with focused tests
 - run one focused live verification for that new slice and archive evidence
 - keep cliq-165 export blocker evidence current while app-account activation remains external
 next_if_done: take the next queued cliq-193 app-governance slice with focused coverage
-next_step: "completed the matching focused live rerun (`cliq status --check-auth` + `cliq app-commands APP_PROBE_FAKE_20260415_151228`) for the flat-lower command-name/display alias slice; auth/export readiness remains healthy while app-command list stays `not_supported`. next: take the next smallest cliq-193 app-command output-hardening unit increment with focused tests, then rerun this focused live probe while cliq-165 remains externally blocked on `inactive_appaccount_user`."
+next_step: "completed focused cliq-193 live rerun (`cliq status --check-auth` + `cliq app-commands APP_PROBE_FAKE_20260415_155523`) and archived evidence; auth/export readiness stayed healthy while app-command list endpoints remain `error: not_supported`. next: take the next smallest app-command output-hardening unit increment with focused pytest coverage while cliq-165 remains externally blocked on `inactive_appaccount_user`."

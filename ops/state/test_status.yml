@@ -1,10 +1,13 @@
-last_run_at: "2026-04-15T15:12:31Z"
+last_run_at: "2026-04-15T15:55:26Z"
 last_result: warning
 current_focus: cliq
 suites:
   unit:
     status: warning
     notes:
+      - "python3.11 -m zoho_cli --config /tmp/zoho-test-config.json --account ai-dev@happy-distro.co.uk cliq status --check-auth --network happydistrouklimited"
+      - "python3.11 -m zoho_cli --config /tmp/zoho-test-config.json --account ai-dev@happy-distro.co.uk cliq app-commands APP_PROBE_FAKE_20260415_155523 --network happydistrouklimited"
+      - "focused cliq-193 live `cliq app-commands` verification remains blocked with `error: not_supported` while auth/export readiness stays healthy; evidence: `tests/auto_pilot/reports/cliq193_app_commands_probe_summary_20260415_155523.json` (`2026-04-15T15:55:26Z`)"
       - "python3.11 -m zoho_cli --config /tmp/zoho-test-config.json --account ai-dev@happy-distro.co.uk cliq status --check-auth --network happydistrouklimited"
       - "python3.11 -m zoho_cli --config /tmp/zoho-test-config.json --account ai-dev@happy-distro.co.uk cliq app-commands APP_PROBE_FAKE_20260415_151228 --network happydistrouklimited"
       - "focused cliq-193 live `cliq app-commands` verification remains blocked with `error: not_supported` while auth/export readiness stays healthy; evidence: `tests/auto_pilot/reports/cliq193_app_commands_probe_summary_20260415_151228.json` (`2026-04-15T15:12:31Z`)"

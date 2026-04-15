@@ -1,5 +1,5 @@
 project: zoho-cli
-updated_at: '2026-04-15T11:29:13Z'
+updated_at: '2026-04-15T13:49:06Z'
 status: cliq-expansion
 canonical_workspace: /Users/adwasd/.openclaw/workspace-coder
 project_root: /Users/adwasd/.openclaw/workspace-coder/job/zoho-cli
@@ -7,7 +7,7 @@ module_order:
 - Mail
 - Cliq
 - CRM
-current_focus: "cliq-165 export verification remains externally blocked by API-side `inactive_appaccount_user`; latest cliq-193 unit hardening now normalizes lowercase id aliases (`commandid`, `actionid`) for `cliq app-command-get`, and the next step is a matching focused live rerun (`cliq status --check-auth` + `cliq app-commands APP_PROBE_FAKE_<stamp>`)."
+current_focus: "cliq-165 export verification remains externally blocked by API-side `inactive_appaccount_user`; latest cliq-193 unit hardening now normalizes uppercase command-prefixed help aliases (`COMMANDHELP`/`ACTIONHELP`, plus `COMMAND_HELP`/`ACTION_HELP`) for app-command list/detail output, so the next step is a matching focused live rerun (`cliq status --check-auth` + `cliq app-commands APP_PROBE_FAKE_<stamp>`)."
 primary_blockers:
 - crm live read-only verification remains blocked by account-level CRM org access
 - cliq databases live verification currently requires additional scope (`ZohoCliq.Databases.READ`) on the active token despite healthy baseline auth/export readiness
@@ -29,8 +29,10 @@ primary_blockers:
   returns `not_supported`)
 - calls/meetings endpoints are unsupported on current token/network (`cliq meetings`
   now returns `not_supported` in focused live verification)
-next_step: "run one matching focused cliq-193 live rerun (`cliq status --check-auth` + `cliq app-commands APP_PROBE_FAKE_<stamp>`) for the latest app-command-get lowercase id-alias hardening, then take the next smallest app-command output-hardening increment while cliq-165 remains externally blocked by `inactive_appaccount_user`."
+next_step: "run one matching focused cliq-193 live rerun (`cliq status --check-auth` + `cliq app-commands APP_PROBE_FAKE_<stamp>`) for the latest uppercase command-prefixed help alias hardening, then take the next smallest app-command output-hardening increment while cliq-165 remains externally blocked by `inactive_appaccount_user`."
 additional_info:
+- '2026-04-15 focused live verification: reran cliq-193 app-command list probe (`cliq status --check-auth` + `cliq app-commands APP_PROBE_FAKE_20260415_132834`) and archived evidence at `tests/auto_pilot/reports/cliq193_app_commands_probe_summary_20260415_132834.json`; auth/export readiness remains healthy (`oauthReady: true`, `exportOauthReady: true`) while app-command list endpoints remain `not_supported`.'
+- '2026-04-15 unit hardening: `zoho cliq app-commands` + `zoho cliq app-command-get` now normalize uppercase command-prefixed help aliases (`COMMANDHELP`/`ACTIONHELP`, plus `COMMAND_HELP`/`ACTION_HELP`) so maintenance payloads preserve descriptions when only uppercase command-help keys are present; focused tests passed (`tests/test_cli.py::test_cliq_app_commands_accepts_uppercase_command_prefixed_help_alias_shape`, `tests/test_cli.py::test_cliq_app_command_get_accepts_uppercase_command_prefixed_help_alias_shape`, plus uppercase alias regressions).'
 - '2026-04-15 unit hardening: `zoho cliq app-command-get` now normalizes lowercase command-id aliases (`commandid`, `actionid`) in command-row hint detection and output mapping, preserving `command.commandId` when maintenance payloads use lowercase id keys; focused tests passed (`tests/test_cli.py::test_cliq_app_command_get_accepts_actionid_lowercase_alias_shape`, `tests/test_cli.py::test_cliq_app_command_get_accepts_commandid_lowercase_alias_shape`).'
 - '2026-04-15 unit hardening: `zoho cliq app-commands` metadata-first wrapper traversal now prefers wrapped entries that contain command hints, so `payload.data` rows like `{payload: {action_id: ...}}` are selected ahead of wrapped metadata rows; focused tests passed (`tests/test_cli.py::test_cliq_app_commands_prefers_wrapped_action_row_over_wrapped_metadata_in_payload_data_list`, `tests/test_cli.py::test_cliq_app_commands_prefers_action_hint_row_with_meta_over_metadata_only_data_list`, `tests/test_cli.py::test_cliq_app_commands_skips_metadata_only_data_list_and_uses_commands_list`).'
 - '2026-04-15 unit hardening: `zoho cliq app-commands` metadata-first row filtering now treats direct action/command aliases (`action`, `Action`, `command`, `Command`) as command-shaped hints even when rows carry `meta`, preventing metadata wrappers from masking valid command rows; focused tests passed (`tests/test_cli.py::test_cliq_app_commands_prefers_action_hint_row_with_meta_over_metadata_only_data_list`, `tests/test_cli.py::test_cliq_app_commands_skips_metadata_only_data_list_and_uses_commands_list`, `tests/test_cli.py::test_cliq_app_commands_skips_empty_data_list_and_uses_commands_list`).'

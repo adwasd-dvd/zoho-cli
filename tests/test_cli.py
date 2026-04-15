@@ -6697,6 +6697,74 @@ def test_cliq_app_commands_accepts_flat_lower_command_prefixed_help_alias_shape(
     assert payload["commands"][0]["status"] == "enabled"
 
 
+def test_cliq_app_commands_accepts_uppercase_command_prefixed_help_alias_shape(
+    mock_config: Path,
+    mock_token_refresh: Any,
+) -> None:
+    mock_client = MagicMock()
+    mock_client.list_app_commands.return_value = {
+        "data": [
+            {
+                "COMMANDID": "CMD_13UPPERHELP",
+                "ACTIONNAME": "deploy_upper_help",
+                "COMMANDHELP": "deploy through uppercase command help",
+                "ACTIONHELP": "deploy through uppercase action help",
+                "COMMANDSTATUS": "enabled",
+            }
+        ]
+    }
+
+    with patch("zoho_cli.cli._get_cliq_client", return_value=mock_client):
+        result = runner.invoke(
+            app,
+            ["--config", str(mock_config), "cliq", "app-commands", "AP_13"],
+            obj={},
+        )
+
+    assert result.exit_code == 0, result.output
+    payload = json.loads(result.output)
+    assert payload["commands"][0]["commandId"] == "CMD_13UPPERHELP"
+    assert payload["commands"][0]["name"] == "deploy_upper_help"
+    assert (
+        payload["commands"][0]["description"] == "deploy through uppercase command help"
+    )
+    assert payload["commands"][0]["status"] == "enabled"
+
+
+def test_cliq_app_commands_accepts_uppercase_snake_command_prefixed_alias_shape(
+    mock_config: Path,
+    mock_token_refresh: Any,
+) -> None:
+    mock_client = MagicMock()
+    mock_client.list_app_commands.return_value = {
+        "data": [
+            {
+                "COMMAND_ID": "CMD_13UPPERSNAKE",
+                "ACTION_NAME": "deploy_upper_snake_alias",
+                "COMMAND_DESCRIPTION": "deploy through uppercase snake description",
+                "COMMAND_STATUS": "enabled",
+            }
+        ]
+    }
+
+    with patch("zoho_cli.cli._get_cliq_client", return_value=mock_client):
+        result = runner.invoke(
+            app,
+            ["--config", str(mock_config), "cliq", "app-commands", "AP_13"],
+            obj={},
+        )
+
+    assert result.exit_code == 0, result.output
+    payload = json.loads(result.output)
+    assert payload["commands"][0]["commandId"] == "CMD_13UPPERSNAKE"
+    assert payload["commands"][0]["name"] == "deploy_upper_snake_alias"
+    assert (
+        payload["commands"][0]["description"]
+        == "deploy through uppercase snake description"
+    )
+    assert payload["commands"][0]["status"] == "enabled"
+
+
 def test_cliq_app_commands_accepts_help_alias_shape(
     mock_config: Path,
     mock_token_refresh: Any,
@@ -8464,6 +8532,82 @@ def test_cliq_app_command_get_accepts_flat_lower_command_prefixed_help_alias_sha
     assert payload["command"]["commandId"] == "CMD_17LOWERHELP"
     assert payload["command"]["name"] == "detail_lower_help"
     assert payload["command"]["description"] == "detail through lower command help text"
+    assert payload["command"]["status"] == "enabled"
+
+
+def test_cliq_app_command_get_accepts_uppercase_command_prefixed_help_alias_shape(
+    mock_config: Path,
+    mock_token_refresh: Any,
+) -> None:
+    mock_client = MagicMock()
+    mock_client.get_app_command.return_value = {
+        "data": {
+            "COMMANDID": "CMD_17UPPERHELP",
+            "ACTIONNAME": "detail_upper_help",
+            "COMMANDHELP": "detail through uppercase command help",
+            "ACTIONHELP": "detail through uppercase action help",
+            "COMMANDSTATUS": "enabled",
+        }
+    }
+
+    with patch("zoho_cli.cli._get_cliq_client", return_value=mock_client):
+        result = runner.invoke(
+            app,
+            [
+                "--config",
+                str(mock_config),
+                "cliq",
+                "app-command-get",
+                "AP_17",
+                "CMD_17UPPERHELP",
+            ],
+            obj={},
+        )
+
+    assert result.exit_code == 0, result.output
+    payload = json.loads(result.output)
+    assert payload["command"]["commandId"] == "CMD_17UPPERHELP"
+    assert payload["command"]["name"] == "detail_upper_help"
+    assert payload["command"]["description"] == "detail through uppercase command help"
+    assert payload["command"]["status"] == "enabled"
+
+
+def test_cliq_app_command_get_accepts_uppercase_snake_command_prefixed_alias_shape(
+    mock_config: Path,
+    mock_token_refresh: Any,
+) -> None:
+    mock_client = MagicMock()
+    mock_client.get_app_command.return_value = {
+        "data": {
+            "COMMAND_ID": "CMD_17UPPERSNAKE",
+            "ACTION_NAME": "detail_upper_snake_alias",
+            "COMMAND_DESCRIPTION": "detail through uppercase snake description",
+            "COMMAND_STATUS": "enabled",
+        }
+    }
+
+    with patch("zoho_cli.cli._get_cliq_client", return_value=mock_client):
+        result = runner.invoke(
+            app,
+            [
+                "--config",
+                str(mock_config),
+                "cliq",
+                "app-command-get",
+                "AP_17",
+                "CMD_17UPPERSNAKE",
+            ],
+            obj={},
+        )
+
+    assert result.exit_code == 0, result.output
+    payload = json.loads(result.output)
+    assert payload["command"]["commandId"] == "CMD_17UPPERSNAKE"
+    assert payload["command"]["name"] == "detail_upper_snake_alias"
+    assert (
+        payload["command"]["description"]
+        == "detail through uppercase snake description"
+    )
     assert payload["command"]["status"] == "enabled"
 
 

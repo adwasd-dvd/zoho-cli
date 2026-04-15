@@ -6460,6 +6460,40 @@ def test_cliq_app_commands_accepts_actionid_lowercase_alias_shape(
     assert payload["commands"][0]["status"] == "enabled"
 
 
+def test_cliq_app_commands_accepts_flat_lower_command_name_alias_shape(
+    mock_config: Path,
+    mock_token_refresh: Any,
+) -> None:
+    mock_client = MagicMock()
+    mock_client.list_app_commands.return_value = {
+        "payload": {
+            "data": [
+                {
+                    "commandid": "CMD_8LOWERNAME",
+                    "actionname": "incident_ack_flat_lower_name_alias",
+                    "summary": "ack now via flat-lower name alias",
+                    "state": "enabled",
+                }
+            ]
+        }
+    }
+
+    with patch("zoho_cli.cli._get_cliq_client", return_value=mock_client):
+        result = runner.invoke(
+            app,
+            ["cliq", "app-commands", "AP_8"],
+            env=_cfg_env(mock_config),
+        )
+
+    assert result.exit_code == 0, result.output
+    payload = json.loads(result.output)
+    assert payload["appId"] == "AP_8"
+    assert payload["commands"][0]["commandId"] == "CMD_8LOWERNAME"
+    assert payload["commands"][0]["name"] == "incident_ack_flat_lower_name_alias"
+    assert payload["commands"][0]["description"] == "ack now via flat-lower name alias"
+    assert payload["commands"][0]["status"] == "enabled"
+
+
 def test_cliq_app_commands_accepts_uppercase_alias_shape(
     mock_config: Path,
     mock_token_refresh: Any,
@@ -8332,6 +8366,36 @@ def test_cliq_app_command_get_accepts_commandid_lowercase_alias_shape(
     assert payload["command"]["commandId"] == "CMD_17LOWERID"
     assert payload["command"]["name"] == "deploy_from_commandid_lowercase_alias"
     assert payload["command"]["description"] == "dispatch lowercase commandid alias"
+    assert payload["command"]["status"] == "enabled"
+
+
+def test_cliq_app_command_get_accepts_flat_lower_command_name_alias_shape(
+    mock_config: Path,
+    mock_token_refresh: Any,
+) -> None:
+    mock_client = MagicMock()
+    mock_client.get_app_command.return_value = {
+        "data": {
+            "commandid": "CMD_17LOWERNAME",
+            "commandname": "deploy_from_flat_lower_command_name_alias",
+            "summary": "dispatch flat-lower command-name alias",
+            "state": "enabled",
+        }
+    }
+
+    with patch("zoho_cli.cli._get_cliq_client", return_value=mock_client):
+        result = runner.invoke(
+            app,
+            ["cliq", "app-command-get", "AP_17", "CMD_17ALIAS"],
+            env=_cfg_env(mock_config),
+        )
+
+    assert result.exit_code == 0, result.output
+    payload = json.loads(result.output)
+    assert payload["appId"] == "AP_17"
+    assert payload["command"]["commandId"] == "CMD_17LOWERNAME"
+    assert payload["command"]["name"] == "deploy_from_flat_lower_command_name_alias"
+    assert payload["command"]["description"] == "dispatch flat-lower command-name alias"
     assert payload["command"]["status"] == "enabled"
 
 

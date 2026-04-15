@@ -3634,8 +3634,19 @@ def cliq_app_commands(
         return current
 
     def _has_command_payload(candidate: dict[str, Any]) -> bool:
-        return any(
-            key in candidate
+        generic_status_hints = {
+            "status",
+            "state",
+            "mode",
+            "Status",
+            "State",
+            "Mode",
+            "STATUS",
+            "STATE",
+            "MODE",
+        }
+        present_hints = {
+            key
             for key in (
                 "command_id",
                 "commandId",
@@ -3660,6 +3671,8 @@ def cliq_app_commands(
                 "ACTIONNAME",
                 "COMMAND_NAME",
                 "ACTION_NAME",
+                "commandname",
+                "actionname",
                 "command",
                 "Command",
                 "action",
@@ -3675,6 +3688,7 @@ def cliq_app_commands(
                 "displayName",
                 "DISPLAYNAME",
                 "DISPLAY_NAME",
+                "displayname",
                 "title",
                 "description",
                 "summary",
@@ -3748,7 +3762,11 @@ def cliq_app_commands(
                 "ACTIONSTATUS",
                 "ACTION_STATUS",
             )
-        )
+            if key in candidate
+        }
+        if not present_hints:
+            return False
+        return any(key not in generic_status_hints for key in present_hints)
 
     def _entry_has_command_hints(candidate: dict[str, Any]) -> bool:
         if _has_command_payload(candidate):
@@ -3947,6 +3965,8 @@ def cliq_app_commands(
                     or row.get("ACTIONNAME")
                     or row.get("COMMAND_NAME")
                     or row.get("ACTION_NAME")
+                    or row.get("commandname")
+                    or row.get("actionname")
                     or row.get("command_name")
                     or row.get("command")
                     or row.get("Command")
@@ -3958,6 +3978,7 @@ def cliq_app_commands(
                     or row.get("displayName")
                     or row.get("DISPLAYNAME")
                     or row.get("DISPLAY_NAME")
+                    or row.get("displayname")
                     or row.get("title")
                     or ""
                 ),
@@ -4090,6 +4111,8 @@ def cliq_app_command_get(
             "ACTIONNAME",
             "COMMAND_NAME",
             "ACTION_NAME",
+            "commandname",
+            "actionname",
             "command_name",
             "command",
             "Command",
@@ -4101,6 +4124,7 @@ def cliq_app_command_get(
             "displayName",
             "DISPLAYNAME",
             "DISPLAY_NAME",
+            "displayname",
             "description",
             "Description",
             "DESCRIPTION",
@@ -4392,6 +4416,8 @@ def cliq_app_command_get(
             or row.get("ACTIONNAME")
             or row.get("COMMAND_NAME")
             or row.get("ACTION_NAME")
+            or row.get("commandname")
+            or row.get("actionname")
             or row.get("command_name")
             or row.get("command")
             or row.get("Command")
@@ -4403,6 +4429,7 @@ def cliq_app_command_get(
             or row.get("displayName")
             or row.get("DISPLAYNAME")
             or row.get("DISPLAY_NAME")
+            or row.get("displayname")
             or row.get("title")
             or ""
         ),

@@ -4,10 +4,10 @@ module: cliq
 stage: in_progress
 status: in_progress
 owner: automation
-updated_at: '2026-04-15T19:29:25Z'
+updated_at: '2026-04-15T20:35:16Z'
 success_criteria:
 - ship the next cliq-193 app-governance command/client slice with focused tests
 - run one focused live verification for that new slice and archive evidence
 - keep cliq-165 export blocker evidence current while app-account activation remains external
 next_if_done: take the next queued cliq-193 app-governance slice with focused coverage
-next_step: "completed `cliq-193` app-command display-name alias hardening for snake+camel (`command_displayName`/`action_displayName`) plus uppercase-snake (`COMMAND_DISPLAYNAME`/`ACTION_DISPLAYNAME`) keys with focused tests green, then ran the matching focused live rerun (`cliq status --check-auth` + `cliq app-commands APP_PROBE_FAKE_20260415_192925`) with fresh evidence at `tests/auto_pilot/reports/cliq193_app_commands_probe_summary_20260415_192925.json`; auth/export readiness stays healthy while app-command endpoints remain `not_supported`. next: take the next smallest app-command output-hardening unit increment with focused tests, then rerun the matching live probe while cliq-165 remains externally blocked on `inactive_appaccount_user`."
+next_step: "completed focused live rerun for the latest `cliq-193` app-command slice (`cliq status --check-auth` + `cliq app-commands APP_PROBE_FAKE_20260415_203516`) with evidence archived at `tests/auto_pilot/reports/cliq193_{status,app_commands,app_commands_probe_summary}_20260415_203516.json`; auth/export readiness stays healthy while endpoint support remains `not_supported`. next: take the next smallest app-command output-hardening unit increment with focused tests, then run one matching focused live rerun while `cliq-165` remains externally blocked on `inactive_appaccount_user`."

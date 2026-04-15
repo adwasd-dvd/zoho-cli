@@ -3,6 +3,7 @@
 ## Unreleased
 
 ### Added
+- Hardened `cliq-193` app-command detail metadata filtering so `zoho cliq app-command-get` now treats snake/camel/Pascal action-id aliases (`action_id`, `actionId`, `ActionId`, `ActionID`, `actionID`) as command-shaped row hints inside metadata-first wrapper lists, preventing metadata rows in `payload.data` from masking valid action-id command rows.
 - Hardened `cliq-193` app-command list metadata filtering so command-prefixed help-only rows (`CommandHelpText`/`ActionHelpText` and companions) are treated as command-shaped when `payload.data` is metadata-first, preventing metadata rows from leaking into command output.
 - Hardened `cliq-193` app-command detail row selection so `zoho cliq app-command-get` metadata-first wrapper parsing now treats command-prefixed help-only aliases (`CommandHelpText`, plus companion help aliases) as command-shaped rows, preventing metadata rows in `payload.data` from masking valid command description output.
 - Hardened `cliq-193` app-command output normalization so `zoho cliq app-commands` and `zoho cliq app-command-get` now accept command-prefixed help aliases (`commandHelp`/`command_help`, `commandHelpText`/`command_help_text`, plus action-prefixed companions), preserving description output when maintenance payloads omit canonical description/help keys.

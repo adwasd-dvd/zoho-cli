@@ -7528,6 +7528,42 @@ def test_cliq_app_command_get_prefers_pascal_action_id_row_over_metadata_in_data
     mock_client.get_app_command.assert_called_once_with("AP_13", "CMD_16ACTIONID")
 
 
+def test_cliq_app_command_get_prefers_action_id_row_over_metadata_in_nested_payload_data_list(
+    mock_config: Path,
+    mock_token_refresh: Any,
+) -> None:
+    mock_client = MagicMock()
+    mock_client.get_app_command.return_value = {
+        "payload": {
+            "data": [
+                {"meta": {"page": 1, "has_more": False}},
+                {
+                    "action_id": "CMD_16SNAKEACTION",
+                    "action_name": "incident_replay",
+                    "action_description": "Replay incident timeline",
+                    "action_status": "enabled",
+                },
+            ]
+        }
+    }
+
+    with patch("zoho_cli.cli._get_cliq_client", return_value=mock_client):
+        result = runner.invoke(
+            app,
+            ["cliq", "app-command-get", "AP_13", "CMD_16SNAKEACTION"],
+            env=_cfg_env(mock_config),
+        )
+
+    assert result.exit_code == 0, result.output
+    payload = json.loads(result.output)
+    assert payload["appId"] == "AP_13"
+    assert payload["command"]["commandId"] == "CMD_16SNAKEACTION"
+    assert payload["command"]["name"] == "incident_replay"
+    assert payload["command"]["description"] == "Replay incident timeline"
+    assert payload["command"]["status"] == "enabled"
+    mock_client.get_app_command.assert_called_once_with("AP_13", "CMD_16SNAKEACTION")
+
+
 def test_cliq_app_command_get_accepts_data_records_record_item_nested_command_shape(
     mock_config: Path,
     mock_token_refresh: Any,

@@ -3690,12 +3690,14 @@ def cliq_app_commands(
                 "DISPLAY_NAME",
                 "displayname",
                 "command_display_name",
+                "command_displayname",
                 "commandDisplayName",
                 "commanddisplayname",
                 "CommandDisplayName",
                 "COMMANDDISPLAYNAME",
                 "COMMAND_DISPLAY_NAME",
                 "action_display_name",
+                "action_displayname",
                 "actionDisplayName",
                 "actiondisplayname",
                 "ActionDisplayName",
@@ -3992,12 +3994,14 @@ def cliq_app_commands(
                     or row.get("DISPLAY_NAME")
                     or row.get("displayname")
                     or row.get("command_display_name")
+                    or row.get("command_displayname")
                     or row.get("commandDisplayName")
                     or row.get("commanddisplayname")
                     or row.get("CommandDisplayName")
                     or row.get("COMMANDDISPLAYNAME")
                     or row.get("COMMAND_DISPLAY_NAME")
                     or row.get("action_display_name")
+                    or row.get("action_displayname")
                     or row.get("actionDisplayName")
                     or row.get("actiondisplayname")
                     or row.get("ActionDisplayName")
@@ -4150,12 +4154,14 @@ def cliq_app_command_get(
             "DISPLAY_NAME",
             "displayname",
             "command_display_name",
+            "command_displayname",
             "commandDisplayName",
             "commanddisplayname",
             "CommandDisplayName",
             "COMMANDDISPLAYNAME",
             "COMMAND_DISPLAY_NAME",
             "action_display_name",
+            "action_displayname",
             "actionDisplayName",
             "actiondisplayname",
             "ActionDisplayName",
@@ -4467,12 +4473,14 @@ def cliq_app_command_get(
             or row.get("DISPLAY_NAME")
             or row.get("displayname")
             or row.get("command_display_name")
+            or row.get("command_displayname")
             or row.get("commandDisplayName")
             or row.get("commanddisplayname")
             or row.get("CommandDisplayName")
             or row.get("COMMANDDISPLAYNAME")
             or row.get("COMMAND_DISPLAY_NAME")
             or row.get("action_display_name")
+            or row.get("action_displayname")
             or row.get("actionDisplayName")
             or row.get("actiondisplayname")
             or row.get("ActionDisplayName")

@@ -1,10 +1,14 @@
-last_run_at: "2026-04-15T09:32:58Z"
+last_run_at: "2026-04-15T10:18:21Z"
 last_result: warning
 current_focus: cliq
 suites:
   unit:
     status: warning
     notes:
+      - "python3.11 -m zoho_cli --config /tmp/zoho-test-config.json --account ai-dev@happy-distro.co.uk cliq status --check-auth --network happydistrouklimited"
+      - "focused cliq-193 live app-commands rerun keeps auth/export readiness healthy (`oauthReady: true`, `exportOauthReady: true`); evidence: `tests/auto_pilot/reports/cliq193_status_20260415_101821.json` (2026-04-15T10:18:21Z)"
+      - "python3.11 -m zoho_cli --config /tmp/zoho-test-config.json --account ai-dev@happy-distro.co.uk cliq app-commands APP_PROBE_FAKE_20260415_101821 --network happydistrouklimited"
+      - "focused cliq-193 live `cliq app-commands` verification returns `error: not_supported`; evidence: `tests/auto_pilot/reports/cliq193_app_commands_20260415_101821.json` + `tests/auto_pilot/reports/cliq193_app_commands_probe_summary_20260415_101821.json` (2026-04-15T10:18:21Z)"
       - "python3.11 -m pytest -q tests/test_cli.py::test_cliq_app_commands_prefers_wrapped_action_row_over_wrapped_metadata_in_payload_data_list tests/test_cli.py::test_cliq_app_commands_prefers_action_hint_row_with_meta_over_metadata_only_data_list tests/test_cli.py::test_cliq_app_commands_skips_metadata_only_data_list_and_uses_commands_list"
       - "3 passed (cliq-193 app-command list metadata-first wrapper traversal now prefers wrapped command-hint rows over wrapped metadata rows, 2026-04-15T09:32:58Z)"
       - "./.venv/bin/ruff format --check zoho_cli/cli.py tests/test_cli.py"

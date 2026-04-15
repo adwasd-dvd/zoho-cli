@@ -3692,11 +3692,13 @@ def cliq_app_commands(
                 "HELP",
                 "command_description",
                 "commandDescription",
+                "commanddescription",
                 "CommandDescription",
                 "COMMANDDESCRIPTION",
                 "COMMAND_DESCRIPTION",
                 "action_description",
                 "actionDescription",
+                "actiondescription",
                 "ActionDescription",
                 "ACTIONDESCRIPTION",
                 "ACTION_DESCRIPTION",
@@ -3735,11 +3737,13 @@ def cliq_app_commands(
                 "MODE",
                 "command_status",
                 "commandStatus",
+                "commandstatus",
                 "CommandStatus",
                 "COMMANDSTATUS",
                 "COMMAND_STATUS",
                 "action_status",
                 "actionStatus",
+                "actionstatus",
                 "ActionStatus",
                 "ACTIONSTATUS",
                 "ACTION_STATUS",
@@ -3974,11 +3978,13 @@ def cliq_app_commands(
                     or row.get("HELP")
                     or row.get("command_description")
                     or row.get("commandDescription")
+                    or row.get("commanddescription")
                     or row.get("CommandDescription")
                     or row.get("COMMANDDESCRIPTION")
                     or row.get("COMMAND_DESCRIPTION")
                     or row.get("action_description")
                     or row.get("actionDescription")
+                    or row.get("actiondescription")
                     or row.get("ActionDescription")
                     or row.get("ACTIONDESCRIPTION")
                     or row.get("ACTION_DESCRIPTION")
@@ -4020,11 +4026,13 @@ def cliq_app_commands(
                     or row.get("MODE")
                     or row.get("command_status")
                     or row.get("commandStatus")
+                    or row.get("commandstatus")
                     or row.get("CommandStatus")
                     or row.get("COMMANDSTATUS")
                     or row.get("COMMAND_STATUS")
                     or row.get("action_status")
                     or row.get("actionStatus")
+                    or row.get("actionstatus")
                     or row.get("ActionStatus")
                     or row.get("ACTIONSTATUS")
                     or row.get("ACTION_STATUS")
@@ -4110,21 +4118,25 @@ def cliq_app_command_get(
             "HELPTEXT",
             "command_description",
             "commandDescription",
+            "commanddescription",
             "CommandDescription",
             "COMMANDDESCRIPTION",
             "COMMAND_DESCRIPTION",
             "action_description",
             "actionDescription",
+            "actiondescription",
             "ActionDescription",
             "ACTIONDESCRIPTION",
             "ACTION_DESCRIPTION",
             "command_status",
             "commandStatus",
+            "commandstatus",
             "CommandStatus",
             "COMMANDSTATUS",
             "COMMAND_STATUS",
             "action_status",
             "actionStatus",
+            "actionstatus",
             "ActionStatus",
             "ACTIONSTATUS",
             "ACTION_STATUS",
@@ -4411,11 +4423,13 @@ def cliq_app_command_get(
             or row.get("HELP")
             or row.get("command_description")
             or row.get("commandDescription")
+            or row.get("commanddescription")
             or row.get("CommandDescription")
             or row.get("COMMANDDESCRIPTION")
             or row.get("COMMAND_DESCRIPTION")
             or row.get("action_description")
             or row.get("actionDescription")
+            or row.get("actiondescription")
             or row.get("ActionDescription")
             or row.get("ACTIONDESCRIPTION")
             or row.get("ACTION_DESCRIPTION")
@@ -4457,11 +4471,13 @@ def cliq_app_command_get(
             or row.get("MODE")
             or row.get("command_status")
             or row.get("commandStatus")
+            or row.get("commandstatus")
             or row.get("CommandStatus")
             or row.get("COMMANDSTATUS")
             or row.get("COMMAND_STATUS")
             or row.get("action_status")
             or row.get("actionStatus")
+            or row.get("actionstatus")
             or row.get("ActionStatus")
             or row.get("ACTIONSTATUS")
             or row.get("ACTION_STATUS")

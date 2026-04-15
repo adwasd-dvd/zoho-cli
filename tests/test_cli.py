@@ -6992,6 +6992,46 @@ def test_cliq_app_commands_skips_metadata_only_data_list_and_uses_commands_list(
     assert payload["commands"][0]["name"] == "deploy_from_commands_after_metadata"
 
 
+def test_cliq_app_commands_prefers_action_hint_row_with_meta_over_metadata_only_data_list(
+    mock_config: Path,
+    mock_token_refresh: Any,
+) -> None:
+    mock_client = MagicMock()
+    mock_client.list_app_commands.return_value = {
+        "payload": {
+            "data": [
+                {
+                    "meta": {"cursor": "CURSOR_APP_COMMANDS"},
+                    "status": "ok",
+                }
+            ],
+            "commands": [
+                {
+                    "meta": {"source": "command_alias_row"},
+                    "action": "deploy_from_action_alias_with_meta",
+                    "action_help": "fallback when command row is metadata-tagged",
+                }
+            ],
+        }
+    }
+
+    with patch("zoho_cli.cli._get_cliq_client", return_value=mock_client):
+        result = runner.invoke(
+            app,
+            ["cliq", "app-commands", "AP_8"],
+            env=_cfg_env(mock_config),
+        )
+
+    assert result.exit_code == 0, result.output
+    payload = json.loads(result.output)
+    assert payload["count"] == 1
+    assert payload["commands"][0]["name"] == "deploy_from_action_alias_with_meta"
+    assert (
+        payload["commands"][0]["description"]
+        == "fallback when command row is metadata-tagged"
+    )
+
+
 def test_cliq_app_commands_accepts_display_name_camel_case_alias_shape(
     mock_config: Path,
     mock_token_refresh: Any,

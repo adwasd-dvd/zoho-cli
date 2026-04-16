@@ -1,10 +1,17 @@
-last_run_at: "2026-04-16T01:02:14Z"
+last_run_at: "2026-04-16T01:21:54Z"
 last_result: warning
 current_focus: cliq
 suites:
   unit:
     status: warning
     notes:
+      - "./.venv/bin/ruff format --check zoho_cli/cli.py tests/test_cli.py"
+      - "2 files already formatted (cliq-193 uppercase-flat display alias hardening formatting check, 2026-04-16T01:20:40Z)"
+      - "./.venv/bin/pytest -q tests/test_cli.py::test_cliq_app_commands_accepts_uppercase_flat_command_display_alias_shape tests/test_cli.py::test_cliq_app_command_get_accepts_uppercase_flat_action_display_alias_shape"
+      - "2 passed in 0.43s (cliq-193 uppercase-flat display alias hardening for app-command list/detail output, 2026-04-16T01:20:49Z)"
+      - "python3.11 -m zoho_cli --config /tmp/zoho-test-config.json --account ai-dev@happy-distro.co.uk cliq status --check-auth --network happydistrouklimited"
+      - "python3.11 -m zoho_cli --config /tmp/zoho-test-config.json --account ai-dev@happy-distro.co.uk cliq app-commands APP_PROBE_FAKE_20260416_012152 --network happydistrouklimited"
+      - "focused cliq-193 live `cliq app-commands` verification remains blocked with `error: not_supported` while auth/export readiness stays healthy; evidence: `tests/auto_pilot/reports/cliq193_app_commands_probe_summary_20260416_012152.json` (`2026-04-16T01:21:54Z`)"
       - "./.venv/bin/ruff format --check zoho_cli/cli.py tests/test_cli.py"
       - "2 files already formatted (cliq-193 Pascal+snake display-name/short alias hardening formatting check, 2026-04-16T01:02:14Z)"
       - "./.venv/bin/pytest -q tests/test_cli.py::test_cliq_app_commands_accepts_pascal_snake_command_display_name_alias_shape tests/test_cli.py::test_cliq_app_command_get_accepts_pascal_snake_action_display_name_alias_shape"

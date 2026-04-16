@@ -4,10 +4,10 @@ module: cliq
 stage: in_progress
 status: in_progress
 owner: automation
-updated_at: '2026-04-16T01:02:14Z'
+updated_at: '2026-04-16T01:21:54Z'
 success_criteria:
 - ship the next cliq-193 app-governance command/client slice with focused tests
 - run one focused live verification for that new slice and archive evidence
 - keep cliq-165 export blocker evidence current while app-account activation remains external
 next_if_done: take the next queued cliq-193 app-governance slice with focused coverage
-next_step: "completed one cliq-193 unit increment (Pascal+snake display-name/short aliases `Command_DisplayName`/`Action_DisplayName` plus `Command_Display`/`Action_Display` for app-command list/detail), validated with focused pytest + formatting checks; next: rerun the focused live probe (`cliq status --check-auth` + `cliq app-commands APP_PROBE_FAKE_<stamp>`) and archive evidence while `cliq-165` remains externally blocked on `inactive_appaccount_user`."
+next_step: "completed one cliq-193 unit increment (uppercase-flat display aliases `COMMANDDISPLAY`/`ACTIONDISPLAY` for app-command list/detail) with focused pytest + formatting checks, and ran the matching focused live rerun (`cliq status --check-auth` + `cliq app-commands APP_PROBE_FAKE_20260416_012152`) to refresh blocker evidence (`not_supported` while `oauthReady`/`exportOauthReady` stay true); next: take the next smallest app-command output-hardening increment while `cliq-165` remains externally blocked on `inactive_appaccount_user`."

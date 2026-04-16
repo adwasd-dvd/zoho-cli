@@ -1,10 +1,18 @@
-last_run_at: "2026-04-16T15:46:21Z"
+last_run_at: "2026-04-16T16:31:45Z"
 last_result: success
 current_focus: cliq
 suites:
   unit:
     status: success
     notes:
+      - "python3.11 -m pytest -q tests/test_cli.py::test_cliq_app_commands_accepts_snake_camel_tail_command_prefixed_helptext_alias_shape tests/test_cli.py::test_cliq_app_command_get_accepts_snake_camel_tail_action_prefixed_helptext_alias_shape"
+      - "2 passed in 0.08s (cliq-193 mixed snake+camel-tail helptext alias hardening for app-command list/detail output, 2026-04-16T16:31:45Z)"
+      - "./.venv/bin/ruff format --check zoho_cli/cli.py tests/test_cli.py"
+      - "2 files already formatted (post-change formatting check, 2026-04-16T16:31:45Z)"
+      - "./.venv/bin/zoho --config /tmp/zoho-test-config.json --account ai-dev@happy-distro.co.uk cliq status --check-auth --network happydistrouklimited"
+      - "./.venv/bin/zoho --config /tmp/zoho-test-config.json --account ai-dev@happy-distro.co.uk cliq app-commands APP_PROBE_FAKE_20260416_160757 --network happydistrouklimited"
+      - "python3.11 tests/auto_pilot/cliq193_probe_summary.py --stamp 20260416_160757 --probe-app-id APP_PROBE_FAKE_20260416_160757 --status-file tests/auto_pilot/reports/cliq193_status_20260416_160757.json --app-commands-file tests/auto_pilot/reports/cliq193_app_commands_20260416_160757.json --status-command \"./.venv/bin/zoho --config /tmp/zoho-test-config.json --account ai-dev@happy-distro.co.uk cliq status --check-auth --network happydistrouklimited\" --app-commands-command \"./.venv/bin/zoho --config /tmp/zoho-test-config.json --account ai-dev@happy-distro.co.uk cliq app-commands APP_PROBE_FAKE_20260416_160757 --network happydistrouklimited\" --status-exit-code 0 --app-commands-exit-code 1 --timestamp-utc 2026-04-16T16:07:57Z --output tests/auto_pilot/reports/cliq193_app_commands_probe_summary_20260416_160757.json"
+      - "focused cliq-193 live `cliq app-commands` verification remains blocked (`appCommandsError: empty_output`; CLI stderr `error: not_supported`) while auth/export readiness stays healthy; evidence: `tests/auto_pilot/reports/cliq193_app_commands_probe_summary_20260416_160757.json` (`2026-04-16T16:07:57Z`)"
       - "python3.11 -m pytest -q tests/test_cli.py::test_cliq_app_commands_accepts_kebab_camel_title_command_prefixed_helptext_alias_shape tests/test_cli.py::test_cliq_app_command_get_accepts_kebab_camel_title_action_prefixed_helptext_alias_shape"
       - "2 passed in 0.08s (cliq-193 mixed kebab+camel-title helptext alias hardening for app-command list/detail output revalidated, 2026-04-16T15:46:21Z)"
       - "./.venv/bin/ruff format --check zoho_cli/cli.py tests/test_cli.py"

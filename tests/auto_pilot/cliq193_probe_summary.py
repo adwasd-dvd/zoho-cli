@@ -60,9 +60,10 @@ def build_summary(
 
     return {
         "timestampUtc": timestamp_utc
-        or datetime.now(tz=timezone.utc).replace(microsecond=0).isoformat().replace(
-            "+00:00", "Z"
-        ),
+        or datetime.now(tz=timezone.utc)
+        .replace(microsecond=0)
+        .isoformat()
+        .replace("+00:00", "Z"),
         "stamp": stamp,
         "probeAppId": probe_app_id,
         "statusCommand": status_command,

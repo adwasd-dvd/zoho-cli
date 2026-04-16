@@ -3,6 +3,7 @@
 ## Unreleased
 
 ### Added
+- Hardened `cliq-193` app-command list/detail normalization so `zoho cliq app-commands` and `zoho cliq app-command-get` now also accept mixed snake+camel-tail helptext aliases (`command_helpText` / `action_helpText`) in command-row hint detection and output description mapping.
 - Hardened `cliq-193` app-command list/detail normalization so `zoho cliq app-commands` and `zoho cliq app-command-get` now also accept mixed kebab+camel-title helptext aliases (`command-Helptext` / `action-Helptext`) in command-row hint detection and output description mapping.
 - Hardened `cliq-193` app-command list/detail normalization so `zoho cliq app-commands` and `zoho cliq app-command-get` now also accept mixed kebab+Pascal-tail help-text aliases (`command-HelpText` / `action-HelpText`, `command-Help-Text` / `action-Help-Text`) and uppercase-kebab helptext aliases (`COMMAND-HELPTEXT` / `ACTION-HELPTEXT`) in command-row hint detection and output description mapping.
 - Hardened `cliq-193` app-command list/detail normalization so `zoho cliq app-commands` and `zoho cliq app-command-get` now also accept mixed kebab+Pascal-tail display-name aliases (`command-Display-Name` / `action-Display-Name`, plus `command-DisplayName` / `action-DisplayName`) in command-row hint detection and output name mapping.

@@ -6,7 +6,7 @@ Stable facts for this repo loop:
 - Daily notes live in `../../memory/daily/`
 - Anchors live in `../../memory/anchors/`
 - Nightly verification should run `make release-gate` and `make ci` so packaging and formatting/lint drift are both visible.
-- Latest nightly broad verify (2026-04-12T14:19:04Z) is green: release-gate unit suite 321 passed + wheel smoke, and ci fmt/lint + pytest 321 passed.
+- Latest nightly broad verify (2026-04-16T14:29:00Z) is green: release-gate unit suite 637 passed + wheel smoke, and ci fmt/lint + pytest 637 passed.
 
 Known recurring failure modes:
 1. wrong workspace root (`workspace` vs `workspace-coder`)

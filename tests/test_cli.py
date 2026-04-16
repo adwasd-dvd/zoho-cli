@@ -6932,6 +6932,40 @@ def test_cliq_app_commands_accepts_snake_pascal_tail_command_prefixed_helptext_a
     assert payload["commands"][0]["status"] == "enabled"
 
 
+def test_cliq_app_commands_accepts_snake_pascal_triple_command_prefixed_help_text_alias_shape(
+    mock_config: Path,
+    mock_token_refresh: Any,
+) -> None:
+    mock_client = MagicMock()
+    mock_client.list_app_commands.return_value = {
+        "data": [
+            {
+                "CommandID": "CMD_13SNAKEPASCALTRIPLEHELP",
+                "actionName": "deploy_snake_pascal_triple_help",
+                "command_Help_Text": "deploy through snake+Pascal triple command help",
+                "commandStatus": "enabled",
+            }
+        ]
+    }
+
+    with patch("zoho_cli.cli._get_cliq_client", return_value=mock_client):
+        result = runner.invoke(
+            app,
+            ["--config", str(mock_config), "cliq", "app-commands", "AP_13"],
+            obj={},
+        )
+
+    assert result.exit_code == 0, result.output
+    payload = json.loads(result.output)
+    assert payload["commands"][0]["commandId"] == "CMD_13SNAKEPASCALTRIPLEHELP"
+    assert payload["commands"][0]["name"] == "deploy_snake_pascal_triple_help"
+    assert (
+        payload["commands"][0]["description"]
+        == "deploy through snake+Pascal triple command help"
+    )
+    assert payload["commands"][0]["status"] == "enabled"
+
+
 def test_cliq_app_commands_accepts_kebab_pascal_tail_command_prefixed_help_text_alias_shape(
     mock_config: Path,
     mock_token_refresh: Any,
@@ -7031,6 +7065,41 @@ def test_cliq_app_commands_accepts_uppercase_kebab_command_prefixed_helptext_ali
     assert (
         payload["commands"][0]["description"]
         == "deploy through uppercase-kebab command helptext"
+    )
+    assert payload["commands"][0]["status"] == "enabled"
+
+
+def test_cliq_app_commands_accepts_uppercase_snake_command_prefixed_helptext_alias_shape(
+    mock_config: Path,
+    mock_token_refresh: Any,
+) -> None:
+    mock_client = MagicMock()
+    mock_client.list_app_commands.return_value = {
+        "data": [
+            {
+                "COMMANDID": "CMD_13UPPERSNAKEHELPTEXT",
+                "ACTIONNAME": "deploy_upper_snake_helptext",
+                "COMMAND_HELPTEXT": "deploy through uppercase-snake command helptext",
+                "ACTION_HELPTEXT": "deploy through uppercase-snake action helptext",
+                "COMMANDSTATUS": "enabled",
+            }
+        ]
+    }
+
+    with patch("zoho_cli.cli._get_cliq_client", return_value=mock_client):
+        result = runner.invoke(
+            app,
+            ["--config", str(mock_config), "cliq", "app-commands", "AP_13"],
+            obj={},
+        )
+
+    assert result.exit_code == 0, result.output
+    payload = json.loads(result.output)
+    assert payload["commands"][0]["commandId"] == "CMD_13UPPERSNAKEHELPTEXT"
+    assert payload["commands"][0]["name"] == "deploy_upper_snake_helptext"
+    assert (
+        payload["commands"][0]["description"]
+        == "deploy through uppercase-snake command helptext"
     )
     assert payload["commands"][0]["status"] == "enabled"
 
@@ -10729,6 +10798,45 @@ def test_cliq_app_command_get_accepts_snake_pascal_tail_action_prefixed_helptext
     assert payload["command"]["status"] == "enabled"
 
 
+def test_cliq_app_command_get_accepts_snake_pascal_triple_action_prefixed_help_text_alias_shape(
+    mock_config: Path,
+    mock_token_refresh: Any,
+) -> None:
+    mock_client = MagicMock()
+    mock_client.get_app_command.return_value = {
+        "data": {
+            "CommandID": "CMD_17SNAKEPASCALTRIPLEHELP",
+            "actionName": "detail_snake_pascal_triple_help",
+            "action_Help_Text": "detail through snake+Pascal triple action help",
+            "commandStatus": "enabled",
+        }
+    }
+
+    with patch("zoho_cli.cli._get_cliq_client", return_value=mock_client):
+        result = runner.invoke(
+            app,
+            [
+                "--config",
+                str(mock_config),
+                "cliq",
+                "app-command-get",
+                "AP_17",
+                "CMD_17SNAKEPASCALTRIPLEHELP",
+            ],
+            obj={},
+        )
+
+    assert result.exit_code == 0, result.output
+    payload = json.loads(result.output)
+    assert payload["command"]["commandId"] == "CMD_17SNAKEPASCALTRIPLEHELP"
+    assert payload["command"]["name"] == "detail_snake_pascal_triple_help"
+    assert (
+        payload["command"]["description"]
+        == "detail through snake+Pascal triple action help"
+    )
+    assert payload["command"]["status"] == "enabled"
+
+
 def test_cliq_app_command_get_accepts_kebab_pascal_tail_action_prefixed_help_text_alias_shape(
     mock_config: Path,
     mock_token_refresh: Any,
@@ -10842,6 +10950,45 @@ def test_cliq_app_command_get_accepts_uppercase_kebab_action_prefixed_helptext_a
     assert (
         payload["command"]["description"]
         == "detail through uppercase-kebab action helptext"
+    )
+    assert payload["command"]["status"] == "enabled"
+
+
+def test_cliq_app_command_get_accepts_uppercase_snake_action_prefixed_helptext_alias_shape(
+    mock_config: Path,
+    mock_token_refresh: Any,
+) -> None:
+    mock_client = MagicMock()
+    mock_client.get_app_command.return_value = {
+        "data": {
+            "COMMANDID": "CMD_17UPPERSNAKEHELPTEXT",
+            "ACTIONNAME": "detail_upper_snake_helptext",
+            "ACTION_HELPTEXT": "detail through uppercase-snake action helptext",
+            "COMMANDSTATUS": "enabled",
+        }
+    }
+
+    with patch("zoho_cli.cli._get_cliq_client", return_value=mock_client):
+        result = runner.invoke(
+            app,
+            [
+                "--config",
+                str(mock_config),
+                "cliq",
+                "app-command-get",
+                "AP_17",
+                "CMD_17UPPERSNAKEHELPTEXT",
+            ],
+            obj={},
+        )
+
+    assert result.exit_code == 0, result.output
+    payload = json.loads(result.output)
+    assert payload["command"]["commandId"] == "CMD_17UPPERSNAKEHELPTEXT"
+    assert payload["command"]["name"] == "detail_upper_snake_helptext"
+    assert (
+        payload["command"]["description"]
+        == "detail through uppercase-snake action helptext"
     )
     assert payload["command"]["status"] == "enabled"
 

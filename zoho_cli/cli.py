@@ -3693,9 +3693,13 @@ def cliq_app_commands(
                 "command_displayname",
                 "command_display",
                 "command_displayName",
+                "command_Display",
                 "command_DisplayName",
+                "Command_Display",
+                "Command_DisplayName",
                 "commandDisplay_name",
                 "commandDisplay",
+                "commanddisplay",
                 "commandDisplayName",
                 "commandDisplayname",
                 "commanddisplayName",
@@ -3711,9 +3715,13 @@ def cliq_app_commands(
                 "action_displayname",
                 "action_display",
                 "action_displayName",
+                "action_Display",
                 "action_DisplayName",
+                "Action_Display",
+                "Action_DisplayName",
                 "actionDisplay_name",
                 "actionDisplay",
+                "actiondisplay",
                 "actionDisplayName",
                 "actionDisplayname",
                 "actiondisplayName",
@@ -4019,9 +4027,13 @@ def cliq_app_commands(
                     or row.get("command_displayname")
                     or row.get("command_display")
                     or row.get("command_displayName")
+                    or row.get("command_Display")
                     or row.get("command_DisplayName")
+                    or row.get("Command_Display")
+                    or row.get("Command_DisplayName")
                     or row.get("commandDisplay_name")
                     or row.get("commandDisplay")
+                    or row.get("commanddisplay")
                     or row.get("commandDisplayName")
                     or row.get("commandDisplayname")
                     or row.get("commanddisplayName")
@@ -4037,9 +4049,13 @@ def cliq_app_commands(
                     or row.get("action_displayname")
                     or row.get("action_display")
                     or row.get("action_displayName")
+                    or row.get("action_Display")
                     or row.get("action_DisplayName")
+                    or row.get("Action_Display")
+                    or row.get("Action_DisplayName")
                     or row.get("actionDisplay_name")
                     or row.get("actionDisplay")
+                    or row.get("actiondisplay")
                     or row.get("actionDisplayName")
                     or row.get("actionDisplayname")
                     or row.get("actiondisplayName")
@@ -4201,9 +4217,13 @@ def cliq_app_command_get(
             "command_displayname",
             "command_display",
             "command_displayName",
+            "command_Display",
             "command_DisplayName",
+            "Command_Display",
+            "Command_DisplayName",
             "commandDisplay_name",
             "commandDisplay",
+            "commanddisplay",
             "commandDisplayName",
             "commandDisplayname",
             "commanddisplayName",
@@ -4219,9 +4239,13 @@ def cliq_app_command_get(
             "action_displayname",
             "action_display",
             "action_displayName",
+            "action_Display",
             "action_DisplayName",
+            "Action_Display",
+            "Action_DisplayName",
             "actionDisplay_name",
             "actionDisplay",
+            "actiondisplay",
             "actionDisplayName",
             "actionDisplayname",
             "actiondisplayName",
@@ -4542,9 +4566,13 @@ def cliq_app_command_get(
             or row.get("command_displayname")
             or row.get("command_display")
             or row.get("command_displayName")
+            or row.get("command_Display")
             or row.get("command_DisplayName")
+            or row.get("Command_Display")
+            or row.get("Command_DisplayName")
             or row.get("commandDisplay_name")
             or row.get("commandDisplay")
+            or row.get("commanddisplay")
             or row.get("commandDisplayName")
             or row.get("commandDisplayname")
             or row.get("commanddisplayName")
@@ -4560,9 +4588,13 @@ def cliq_app_command_get(
             or row.get("action_displayname")
             or row.get("action_display")
             or row.get("action_displayName")
+            or row.get("action_Display")
             or row.get("action_DisplayName")
+            or row.get("Action_Display")
+            or row.get("Action_DisplayName")
             or row.get("actionDisplay_name")
             or row.get("actionDisplay")
+            or row.get("actiondisplay")
             or row.get("actionDisplayName")
             or row.get("actionDisplayname")
             or row.get("actiondisplayName")

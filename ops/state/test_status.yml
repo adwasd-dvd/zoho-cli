@@ -1,10 +1,15 @@
-last_run_at: "2026-04-16T20:23:52Z"
+last_run_at: "2026-04-16T21:23:56Z"
 last_result: success
 current_focus: cliq
 suites:
   unit:
     status: success
     notes:
+      - "revalidation run at 2026-04-16T21:23:56Z"
+      - "python3.11 -m pytest -q tests/test_cli.py::test_cliq_app_commands_accepts_pascal_snake_triple_command_prefixed_help_text_alias_shape tests/test_cli.py::test_cliq_app_command_get_accepts_pascal_snake_triple_action_prefixed_help_text_alias_shape"
+      - "2 passed in 0.08s (cliq-193 Pascal+snake triple help-text alias hardening for app-command list/detail output, 2026-04-16T21:23:56Z)"
+      - "./.venv/bin/ruff format --check zoho_cli/cli.py tests/test_cli.py"
+      - "2 files already formatted (post-change formatting check, 2026-04-16T21:23:56Z)"
       - "revalidation run at 2026-04-16T20:23:52Z"
       - "./.venv/bin/zoho --config /tmp/zoho-test-config.json --account ai-dev@happy-distro.co.uk cliq status --check-auth --network happydistrouklimited"
       - "./.venv/bin/zoho --config /tmp/zoho-test-config.json --account ai-dev@happy-distro.co.uk cliq app-commands APP_PROBE_FAKE_20260416_202352 --network happydistrouklimited"

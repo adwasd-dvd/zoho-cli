@@ -4,10 +4,10 @@ module: cliq
 stage: in_progress
 status: in_progress
 owner: automation
-updated_at: '2026-04-16T11:54:57Z'
+updated_at: '2026-04-16T12:54:00Z'
 success_criteria:
 - ship the next cliq-193 app-governance command/client slice with focused tests
 - run one focused live verification for that new slice and archive evidence
 - keep cliq-165 export blocker evidence current while app-account activation remains external
 next_if_done: take the next queued cliq-193 app-governance slice with focused coverage
-next_step: "completed cliq-193 unit hardening for mixed kebab+camel displayname aliases (`command-displayName`/`action-displayName`) in `cliq app-commands` + `cliq app-command-get` with focused tests passing (`2 passed`); next: run the queued focused live rerun (`cliq status --check-auth` + `cliq app-commands APP_PROBE_FAKE_<stamp>`) and archive evidence while cliq-165 remains blocked on `inactive_appaccount_user`."
+next_step: "completed cliq-193 app-command output hardening for mixed kebab+camel help-text aliases (`command-helpText`/`action-helpText`) with focused tests and formatting check green (`python3.11 -m pytest -q tests/test_cli.py::test_cliq_app_commands_accepts_kebab_command_prefixed_helptext_camel_tail_alias_shape tests/test_cli.py::test_cliq_app_command_get_accepts_kebab_action_prefixed_helptext_camel_tail_alias_shape` -> `2 passed`; `./.venv/bin/ruff format --check zoho_cli/cli.py tests/test_cli.py`); next: run one fresh focused live rerun (`cliq status --check-auth` + `cliq app-commands APP_PROBE_FAKE_<stamp>`) to pair evidence with this alias slice while cliq-165 remains blocked on `inactive_appaccount_user`."

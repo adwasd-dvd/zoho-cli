@@ -6830,6 +6830,40 @@ def test_cliq_app_commands_accepts_kebab_command_prefixed_help_alias_shape(
     assert payload["commands"][0]["status"] == "enabled"
 
 
+def test_cliq_app_commands_accepts_kebab_command_prefixed_helptext_camel_tail_alias_shape(
+    mock_config: Path,
+    mock_token_refresh: Any,
+) -> None:
+    mock_client = MagicMock()
+    mock_client.list_app_commands.return_value = {
+        "data": [
+            {
+                "CommandID": "CMD_13KEBABHELPMIXED",
+                "actionName": "deploy_kebab_help_mixed",
+                "command-helpText": "deploy through kebab command help mixed alias",
+                "commandStatus": "enabled",
+            }
+        ]
+    }
+
+    with patch("zoho_cli.cli._get_cliq_client", return_value=mock_client):
+        result = runner.invoke(
+            app,
+            ["--config", str(mock_config), "cliq", "app-commands", "AP_13"],
+            obj={},
+        )
+
+    assert result.exit_code == 0, result.output
+    payload = json.loads(result.output)
+    assert payload["commands"][0]["commandId"] == "CMD_13KEBABHELPMIXED"
+    assert payload["commands"][0]["name"] == "deploy_kebab_help_mixed"
+    assert (
+        payload["commands"][0]["description"]
+        == "deploy through kebab command help mixed alias"
+    )
+    assert payload["commands"][0]["status"] == "enabled"
+
+
 def test_cliq_app_commands_accepts_pascal_kebab_command_prefixed_help_text_alias_shape(
     mock_config: Path,
     mock_token_refresh: Any,
@@ -10338,6 +10372,45 @@ def test_cliq_app_command_get_accepts_kebab_action_prefixed_help_alias_shape(
     assert payload["command"]["commandId"] == "CMD_17KEBABHELP"
     assert payload["command"]["name"] == "detail_kebab_help"
     assert payload["command"]["description"] == "detail through kebab action help text"
+    assert payload["command"]["status"] == "enabled"
+
+
+def test_cliq_app_command_get_accepts_kebab_action_prefixed_helptext_camel_tail_alias_shape(
+    mock_config: Path,
+    mock_token_refresh: Any,
+) -> None:
+    mock_client = MagicMock()
+    mock_client.get_app_command.return_value = {
+        "data": {
+            "CommandID": "CMD_17KEBABHELPMIXED",
+            "actionName": "detail_kebab_help_mixed",
+            "action-helpText": "detail through kebab action help mixed alias",
+            "commandStatus": "enabled",
+        }
+    }
+
+    with patch("zoho_cli.cli._get_cliq_client", return_value=mock_client):
+        result = runner.invoke(
+            app,
+            [
+                "--config",
+                str(mock_config),
+                "cliq",
+                "app-command-get",
+                "AP_17",
+                "CMD_17KEBABHELPMIXED",
+            ],
+            obj={},
+        )
+
+    assert result.exit_code == 0, result.output
+    payload = json.loads(result.output)
+    assert payload["command"]["commandId"] == "CMD_17KEBABHELPMIXED"
+    assert payload["command"]["name"] == "detail_kebab_help_mixed"
+    assert (
+        payload["command"]["description"]
+        == "detail through kebab action help mixed alias"
+    )
     assert payload["command"]["status"] == "enabled"
 
 

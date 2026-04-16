@@ -4,10 +4,10 @@ module: cliq
 stage: in_progress
 status: in_progress
 owner: automation
-updated_at: '2026-04-16T06:23:14Z'
+updated_at: '2026-04-16T06:41:40Z'
 success_criteria:
 - ship the next cliq-193 app-governance command/client slice with focused tests
 - run one focused live verification for that new slice and archive evidence
 - keep cliq-165 export blocker evidence current while app-account activation remains external
 next_if_done: take the next queued cliq-193 app-governance slice with focused coverage
-next_step: "completed uppercase-kebab display-name alias hardening for `cliq app-commands`/`cliq app-command-get` (`COMMAND-DISPLAY-NAME`/`ACTION-DISPLAY-NAME`, plus `COMMAND-DISPLAY`/`ACTION-DISPLAY`) with focused tests green (`python3.11 -m pytest -q tests/test_cli.py::test_cliq_app_commands_accepts_uppercase_kebab_command_display_name_alias_shape tests/test_cli.py::test_cliq_app_command_get_accepts_uppercase_kebab_action_display_name_alias_shape` -> `2 passed`); next: run the next smallest cliq-193 app-command output-hardening slice with focused tests while cliq-165 remains externally blocked on `inactive_appaccount_user`."
+next_step: "completed uppercase-kebab displayname alias hardening for `cliq app-commands`/`cliq app-command-get` (`COMMAND-DISPLAYNAME`/`ACTION-DISPLAYNAME`) with focused tests green (`python3.11 -m pytest -q tests/test_cli.py::test_cliq_app_commands_accepts_uppercase_kebab_command_displayname_alias_shape tests/test_cli.py::test_cliq_app_command_get_accepts_uppercase_kebab_action_displayname_alias_shape` -> `2 passed`); next: run one focused cliq-193 live rerun (`cliq status --check-auth` + `cliq app-commands APP_PROBE_FAKE_<stamp>`) while cliq-165 remains externally blocked on `inactive_appaccount_user`."

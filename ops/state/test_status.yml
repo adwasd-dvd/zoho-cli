@@ -1,15 +1,15 @@
-last_run_at: "2026-04-16T06:23:14Z"
+last_run_at: "2026-04-16T06:41:40Z"
 last_result: success
 current_focus: cliq
 suites:
   unit:
     status: success
     notes:
-      - "python3.11 -m pytest -q tests/test_cli.py::test_cliq_app_commands_accepts_uppercase_kebab_command_display_name_alias_shape tests/test_cli.py::test_cliq_app_command_get_accepts_uppercase_kebab_action_display_name_alias_shape"
-      - "2 passed in 0.07s (cliq-193 uppercase-kebab display-name alias hardening for app-command list/detail output, 2026-04-16T06:23:14Z)"
+      - "python3.11 -m pytest -q tests/test_cli.py::test_cliq_app_commands_accepts_uppercase_kebab_command_displayname_alias_shape tests/test_cli.py::test_cliq_app_command_get_accepts_uppercase_kebab_action_displayname_alias_shape"
+      - "2 passed in 0.07s (cliq-193 uppercase-kebab displayname alias hardening for app-command list/detail output, 2026-04-16T06:41:40Z)"
       - "./.venv/bin/ruff format --check zoho_cli/cli.py tests/test_cli.py"
-      - "2 files already formatted (post-change formatting check, 2026-04-16T06:23:14Z)"
-      - "python3.11 -m pytest -q tests/test_cli.py::test_cliq_app_commands_accepts_kebab_command_display_name_alias_shape tests/test_cli.py::test_cliq_app_command_get_accepts_kebab_action_display_name_alias_shape"
+      - "2 files already formatted (post-change formatting check, 2026-04-16T06:41:40Z)"
+      - "python3.11 -m pytest -q tests/test_cli.py::test_cliq_app_commands_accepts_uppercase_kebab_command_display_name_alias_shape tests/test_cli.py::test_cliq_app_command_get_accepts_uppercase_kebab_action_display_name_alias_shape"
       - "2 passed in 0.42s (cliq-193 kebab-case display-name alias hardening for app-command list/detail output, 2026-04-16T05:57:47Z)"
       - "./.venv/bin/ruff format tests/test_cli.py && ./.venv/bin/ruff format --check zoho_cli/cli.py tests/test_cli.py"
       - "1 file reformatted, then 2 files already formatted (post-change formatting check, 2026-04-16T05:57:47Z)"

@@ -575,7 +575,6 @@ class ZohoCliqClient:
         last_error: tuple[int, str, str, str] | None = None
         preferred_error: tuple[int, str, str, str] | None = None
         saw_scope_invalid = False
-        saw_inactive_appaccount = False
         saw_not_supported = False
 
         retryable_error_codes = {

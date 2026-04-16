@@ -3721,6 +3721,7 @@ def cliq_app_commands(
                 "command-displayname",
                 "command-display",
                 "Command-Display-Name",
+                "Command-DisplayName",
                 "Command-Displayname",
                 "Command-Display",
                 "COMMAND-DISPLAY-NAME",
@@ -3757,6 +3758,7 @@ def cliq_app_commands(
                 "action-displayname",
                 "action-display",
                 "Action-Display-Name",
+                "Action-DisplayName",
                 "Action-Displayname",
                 "Action-Display",
                 "ACTION-DISPLAY-NAME",
@@ -3800,24 +3802,36 @@ def cliq_app_commands(
                 "COMMANDHELP",
                 "CommandHelp",
                 "commandhelp",
+                "command-help",
+                "Command-Help",
+                "COMMAND-HELP",
                 "command_help_text",
                 "commandHelpText",
                 "CommandHelpText",
                 "commandhelptext",
                 "COMMANDHELPTEXT",
                 "COMMAND_HELP_TEXT",
+                "command-help-text",
+                "Command-Help-Text",
+                "COMMAND-HELP-TEXT",
                 "action_help",
                 "ACTION_HELP",
                 "actionHelp",
                 "ACTIONHELP",
                 "ActionHelp",
                 "actionhelp",
+                "action-help",
+                "Action-Help",
+                "ACTION-HELP",
                 "action_help_text",
                 "actionHelpText",
                 "ActionHelpText",
                 "actionhelptext",
                 "ACTIONHELPTEXT",
                 "ACTION_HELP_TEXT",
+                "action-help-text",
+                "Action-Help-Text",
+                "ACTION-HELP-TEXT",
                 "status",
                 "state",
                 "mode",
@@ -4095,6 +4109,7 @@ def cliq_app_commands(
                     or row.get("command-displayname")
                     or row.get("command-display")
                     or row.get("Command-Display-Name")
+                    or row.get("Command-DisplayName")
                     or row.get("Command-Displayname")
                     or row.get("Command-Display")
                     or row.get("COMMAND-DISPLAY-NAME")
@@ -4131,6 +4146,7 @@ def cliq_app_commands(
                     or row.get("action-displayname")
                     or row.get("action-display")
                     or row.get("Action-Display-Name")
+                    or row.get("Action-DisplayName")
                     or row.get("Action-Displayname")
                     or row.get("Action-Display")
                     or row.get("ACTION-DISPLAY-NAME")
@@ -4177,24 +4193,36 @@ def cliq_app_commands(
                     or row.get("COMMANDHELP")
                     or row.get("CommandHelp")
                     or row.get("commandhelp")
+                    or row.get("command-help")
+                    or row.get("Command-Help")
+                    or row.get("COMMAND-HELP")
                     or row.get("command_help_text")
                     or row.get("commandHelpText")
                     or row.get("CommandHelpText")
                     or row.get("commandhelptext")
                     or row.get("COMMANDHELPTEXT")
                     or row.get("COMMAND_HELP_TEXT")
+                    or row.get("command-help-text")
+                    or row.get("Command-Help-Text")
+                    or row.get("COMMAND-HELP-TEXT")
                     or row.get("action_help")
                     or row.get("ACTION_HELP")
                     or row.get("actionHelp")
                     or row.get("ACTIONHELP")
                     or row.get("ActionHelp")
                     or row.get("actionhelp")
+                    or row.get("action-help")
+                    or row.get("Action-Help")
+                    or row.get("ACTION-HELP")
                     or row.get("action_help_text")
                     or row.get("actionHelpText")
                     or row.get("ActionHelpText")
                     or row.get("actionhelptext")
                     or row.get("ACTIONHELPTEXT")
                     or row.get("ACTION_HELP_TEXT")
+                    or row.get("action-help-text")
+                    or row.get("Action-Help-Text")
+                    or row.get("ACTION-HELP-TEXT")
                     or ""
                 ),
                 "status": str(
@@ -4315,6 +4343,7 @@ def cliq_app_command_get(
             "command-displayname",
             "command-display",
             "Command-Display-Name",
+            "Command-DisplayName",
             "Command-Displayname",
             "Command-Display",
             "COMMAND-DISPLAY-NAME",
@@ -4351,6 +4380,7 @@ def cliq_app_command_get(
             "action-displayname",
             "action-display",
             "Action-Display-Name",
+            "Action-DisplayName",
             "Action-Displayname",
             "Action-Display",
             "ACTION-DISPLAY-NAME",
@@ -4413,12 +4443,18 @@ def cliq_app_command_get(
             "COMMANDHELP",
             "CommandHelp",
             "commandhelp",
+            "command-help",
+            "Command-Help",
+            "COMMAND-HELP",
             "command_help",
             "COMMAND_HELP",
             "actionHelp",
             "ACTIONHELP",
             "ActionHelp",
             "actionhelp",
+            "action-help",
+            "Action-Help",
+            "ACTION-HELP",
             "action_help",
             "ACTION_HELP",
             "commandHelpText",
@@ -4427,12 +4463,18 @@ def cliq_app_command_get(
             "command_help_text",
             "COMMANDHELPTEXT",
             "COMMAND_HELP_TEXT",
+            "command-help-text",
+            "Command-Help-Text",
+            "COMMAND-HELP-TEXT",
             "actionHelpText",
             "ActionHelpText",
             "actionhelptext",
             "action_help_text",
             "ACTIONHELPTEXT",
             "ACTION_HELP_TEXT",
+            "action-help-text",
+            "Action-Help-Text",
+            "ACTION-HELP-TEXT",
         )
 
         wrapper_keys = (
@@ -4710,6 +4752,7 @@ def cliq_app_command_get(
             or row.get("command-displayname")
             or row.get("command-display")
             or row.get("Command-Display-Name")
+            or row.get("Command-DisplayName")
             or row.get("Command-Displayname")
             or row.get("Command-Display")
             or row.get("COMMAND-DISPLAY-NAME")
@@ -4746,6 +4789,7 @@ def cliq_app_command_get(
             or row.get("action-displayname")
             or row.get("action-display")
             or row.get("Action-Display-Name")
+            or row.get("Action-DisplayName")
             or row.get("Action-Displayname")
             or row.get("Action-Display")
             or row.get("ACTION-DISPLAY-NAME")
@@ -4792,24 +4836,36 @@ def cliq_app_command_get(
             or row.get("COMMANDHELP")
             or row.get("CommandHelp")
             or row.get("commandhelp")
+            or row.get("command-help")
+            or row.get("Command-Help")
+            or row.get("COMMAND-HELP")
             or row.get("command_help_text")
             or row.get("commandHelpText")
             or row.get("CommandHelpText")
             or row.get("commandhelptext")
             or row.get("COMMANDHELPTEXT")
             or row.get("COMMAND_HELP_TEXT")
+            or row.get("command-help-text")
+            or row.get("Command-Help-Text")
+            or row.get("COMMAND-HELP-TEXT")
             or row.get("action_help")
             or row.get("ACTION_HELP")
             or row.get("actionHelp")
             or row.get("ACTIONHELP")
             or row.get("ActionHelp")
             or row.get("actionhelp")
+            or row.get("action-help")
+            or row.get("Action-Help")
+            or row.get("ACTION-HELP")
             or row.get("action_help_text")
             or row.get("actionHelpText")
             or row.get("ActionHelpText")
             or row.get("actionhelptext")
             or row.get("ACTIONHELPTEXT")
             or row.get("ACTION_HELP_TEXT")
+            or row.get("action-help-text")
+            or row.get("Action-Help-Text")
+            or row.get("ACTION-HELP-TEXT")
             or ""
         ),
         "status": str(

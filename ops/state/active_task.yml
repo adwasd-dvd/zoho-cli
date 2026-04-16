@@ -4,10 +4,10 @@ module: cliq
 stage: in_progress
 status: in_progress
 owner: automation
-updated_at: '2026-04-16T04:51:17Z'
+updated_at: '2026-04-16T05:11:48Z'
 success_criteria:
 - ship the next cliq-193 app-governance command/client slice with focused tests
 - run one focused live verification for that new slice and archive evidence
 - keep cliq-165 export blocker evidence current while app-account activation remains external
 next_if_done: take the next queued cliq-193 app-governance slice with focused coverage
-next_step: "ran focused live cliq-193 rerun (`./.venv/bin/zoho ... cliq status --check-auth` + `./.venv/bin/zoho ... cliq app-commands APP_PROBE_FAKE_20260416_045031`) and archived evidence at `tests/auto_pilot/reports/cliq193_{status,app_commands,app_commands_probe_summary}_20260416_045031.json`; auth/export readiness stayed healthy (`oauthReady: true`, `exportOauthReady: true`) while app-command list endpoint remains `not_supported`; next: take the next smallest app-command output-hardening unit slice with focused tests, then rerun this same focused live probe while `cliq-165` remains externally blocked on `inactive_appaccount_user`."
+next_step: "completed the next cliq-193 app-command output-hardening unit slice by adding Pascal-snake-triple display-name alias coverage (`Command_Display_Name`/`Action_Display_Name`) in list/detail normalization with focused tests green (`2 passed`); next: rerun focused live verification (`cliq status --check-auth` + `cliq app-commands APP_PROBE_FAKE_<stamp>`) and archive evidence while cliq-165 remains externally blocked on `inactive_appaccount_user`."

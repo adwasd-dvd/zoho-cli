@@ -3694,9 +3694,11 @@ def cliq_app_commands(
                 "command_display",
                 "command_displayName",
                 "command_Display",
+                "command_Display_Name",
                 "command_DisplayName",
                 "command_Displayname",
                 "Command_Display",
+                "Command_Display_Name",
                 "Command_DisplayName",
                 "Command_Displayname",
                 "commandDisplay_name",
@@ -3719,9 +3721,11 @@ def cliq_app_commands(
                 "action_display",
                 "action_displayName",
                 "action_Display",
+                "action_Display_Name",
                 "action_DisplayName",
                 "action_Displayname",
                 "Action_Display",
+                "Action_Display_Name",
                 "Action_DisplayName",
                 "Action_Displayname",
                 "actionDisplay_name",
@@ -4034,9 +4038,11 @@ def cliq_app_commands(
                     or row.get("command_display")
                     or row.get("command_displayName")
                     or row.get("command_Display")
+                    or row.get("command_Display_Name")
                     or row.get("command_DisplayName")
                     or row.get("command_Displayname")
                     or row.get("Command_Display")
+                    or row.get("Command_Display_Name")
                     or row.get("Command_DisplayName")
                     or row.get("Command_Displayname")
                     or row.get("commandDisplay_name")
@@ -4059,9 +4065,11 @@ def cliq_app_commands(
                     or row.get("action_display")
                     or row.get("action_displayName")
                     or row.get("action_Display")
+                    or row.get("action_Display_Name")
                     or row.get("action_DisplayName")
                     or row.get("action_Displayname")
                     or row.get("Action_Display")
+                    or row.get("Action_Display_Name")
                     or row.get("Action_DisplayName")
                     or row.get("Action_Displayname")
                     or row.get("actionDisplay_name")
@@ -4230,9 +4238,11 @@ def cliq_app_command_get(
             "command_display",
             "command_displayName",
             "command_Display",
+            "command_Display_Name",
             "command_DisplayName",
             "command_Displayname",
             "Command_Display",
+            "Command_Display_Name",
             "Command_DisplayName",
             "Command_Displayname",
             "commandDisplay_name",
@@ -4255,9 +4265,11 @@ def cliq_app_command_get(
             "action_display",
             "action_displayName",
             "action_Display",
+            "action_Display_Name",
             "action_DisplayName",
             "action_Displayname",
             "Action_Display",
+            "Action_Display_Name",
             "Action_DisplayName",
             "Action_Displayname",
             "actionDisplay_name",
@@ -4585,9 +4597,11 @@ def cliq_app_command_get(
             or row.get("command_display")
             or row.get("command_displayName")
             or row.get("command_Display")
+            or row.get("command_Display_Name")
             or row.get("command_DisplayName")
             or row.get("command_Displayname")
             or row.get("Command_Display")
+            or row.get("Command_Display_Name")
             or row.get("Command_DisplayName")
             or row.get("Command_Displayname")
             or row.get("commandDisplay_name")
@@ -4610,9 +4624,11 @@ def cliq_app_command_get(
             or row.get("action_display")
             or row.get("action_displayName")
             or row.get("action_Display")
+            or row.get("action_Display_Name")
             or row.get("action_DisplayName")
             or row.get("action_Displayname")
             or row.get("Action_Display")
+            or row.get("Action_Display_Name")
             or row.get("Action_DisplayName")
             or row.get("Action_Displayname")
             or row.get("actionDisplay_name")

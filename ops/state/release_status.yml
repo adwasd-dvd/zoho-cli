@@ -3,16 +3,19 @@ next_version: 0.2.1
 release_candidate: false
 last_release_tag: v0.1.9
 current_train: cliq-expansion
-assessed_at: '2026-04-15T02:24:26Z'
+assessed_at: '2026-04-16T05:11:48Z'
 current_milestone: cliq-expansion-phase
 current_milestone_complete: false
 missing_requirements:
-  - 'blocker backlog not clear: crm-002 live smoke is blocked by account-level CRM org access (`OAUTH_SCOPE_MISMATCH`)'
-  - 'current focus milestone is incomplete: cliq-expansion-phase remains in progress (`active_task`: cliq-193) and cliq-165 export verification is still externally blocked by API-side `inactive_appaccount_user`'
-  - 'relevant integration checks are not clean: `ops/state/test_status.yml` remains `integration: warning` due unresolved live Cliq endpoint/scope blockers (for example cliq-165 export `inactive_appaccount_user`, cliq-192 mixed `oauth_scope_invalid`/`not_supported`, cliq-193 focused `cliq app-commands` still `not_supported` at 2026-04-15T02:24:26Z)'
+  - 'blocker backlog is not clear: crm-002 live smoke remains blocked by account-level CRM org access (`OAUTH_SCOPE_MISMATCH`).'
+  - 'current focus milestone is incomplete: `cliq-expansion-phase` remains in progress (`active_task`: cliq-193), and cliq-165 export verification is still externally blocked by API-side `inactive_appaccount_user`.'
+  - 'full broad verification was not rerun for this unit-only slice (`make release-gate`/`make ci` pending after latest cliq-193 alias hardening).'
+  - 'live integration evidence is still warning: focused `cliq app-commands` probe remains `not_supported` while auth/export readiness is healthy (`tests/auto_pilot/reports/cliq193_app_commands_probe_summary_20260416_045031.json`, 2026-04-16T04:51:17Z).'
 release_gate:
   blocker_bugs_cleared: false
   unit_tests_passed: true
   integration_tests_passed_or_explicitly_skipped: false
   changelog_updated: true
   version_bumped: false
+  release_gate_script_passed: true
+  ci_passed: false

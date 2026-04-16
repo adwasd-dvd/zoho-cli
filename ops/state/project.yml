@@ -1,5 +1,5 @@
 project: zoho-cli
-updated_at: '2026-04-16T02:43:03Z'
+updated_at: '2026-04-16T03:04:08Z'
 status: cliq-expansion
 canonical_workspace: /Users/adwasd/.openclaw/workspace-coder
 project_root: /Users/adwasd/.openclaw/workspace-coder/job/zoho-cli
@@ -7,7 +7,7 @@ module_order:
 - Mail
 - Cliq
 - CRM
-current_focus: "cliq-165 export verification remains externally blocked by API-side `inactive_appaccount_user`; latest cliq-193 increment added focused regression coverage for uppercase-snake short display aliases (`COMMAND_DISPLAY`/`ACTION_DISPLAY`) in app-command list/detail output normalization, and next step remains one matching focused live rerun."
+current_focus: "cliq-165 export verification remains externally blocked by API-side `inactive_appaccount_user`; cliq-193 now has a robust probe-summary helper for current status payload shape (`auth: \"ok\"`), and the missing `20260416_025358` summary evidence is backfilled."
 primary_blockers:
 - crm live read-only verification remains blocked by account-level CRM org access
 - cliq databases live verification currently requires additional scope (`ZohoCliq.Databases.READ`) on the active token despite healthy baseline auth/export readiness
@@ -29,8 +29,9 @@ primary_blockers:
   returns `not_supported`)
 - calls/meetings endpoints are unsupported on current token/network (`cliq meetings`
   now returns `not_supported` in focused live verification)
-next_step: "run one focused live probe (`cliq status --check-auth` + `cliq app-commands APP_PROBE_FAKE_<stamp>`) to keep blocker evidence current after the uppercase-snake short display alias regression slice, while cliq-165 stays externally blocked by `inactive_appaccount_user`."
+next_step: "run one fresh focused live probe (`cliq status --check-auth` + `cliq app-commands APP_PROBE_FAKE_<stamp>`) and generate summary via `tests/auto_pilot/cliq193_probe_summary.py` to keep blocker evidence current with non-empty app-command payload capture while cliq-165 stays externally blocked by `inactive_appaccount_user`."
 additional_info:
+- '2026-04-16 cliq-193 automation hardening: added `tests/auto_pilot/cliq193_probe_summary.py` to build stable app-command probe summaries when status payload `auth` is a string (`"ok"`) and when app-command output is empty; added focused tests in `tests/test_cliq193_probe_summary.py` (`2 passed`) and backfilled `tests/auto_pilot/reports/cliq193_app_commands_probe_summary_20260416_025358.json`.'
 - '2026-04-16 unit hardening: added focused regression coverage for uppercase-snake short display aliases (`COMMAND_DISPLAY`/`ACTION_DISPLAY`) in `zoho cliq app-commands` + `zoho cliq app-command-get`; focused tests passed (`tests/test_cli.py::test_cliq_app_commands_accepts_uppercase_snake_command_display_alias_shape`, `tests/test_cli.py::test_cliq_app_command_get_accepts_uppercase_snake_action_display_alias_shape`) and `./.venv/bin/ruff format --check tests/test_cli.py` is clean.'
 - '2026-04-16 focused live verification: reran cliq-193 app-command list probe (`cliq status --check-auth` + `cliq app-commands APP_PROBE_FAKE_20260416_012152`) and archived evidence at `tests/auto_pilot/reports/cliq193_app_commands_probe_summary_20260416_012152.json`; auth/export readiness remains healthy (`oauthReady: true`, `exportOauthReady: true`) while app-command list endpoints remain `not_supported`.'
 - '2026-04-16 unit hardening: `zoho cliq app-commands` + `zoho cliq app-command-get` now normalize uppercase-flat short display aliases (`COMMANDDISPLAY`/`ACTIONDISPLAY`) in command-row hint detection and output mapping; focused tests passed (`tests/test_cli.py::test_cliq_app_commands_accepts_uppercase_flat_command_display_alias_shape`, `tests/test_cli.py::test_cliq_app_command_get_accepts_uppercase_flat_action_display_alias_shape`) and `./.venv/bin/ruff format --check zoho_cli/cli.py tests/test_cli.py` is clean.'

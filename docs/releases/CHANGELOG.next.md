@@ -159,6 +159,7 @@
 - Callback success page now adapts to OAuth scopes and displays Mail/Cliq/CRM-specific guidance instead of a Mail-only static success page.
 
 ### Fixed
+- Added `tests/auto_pilot/cliq193_probe_summary.py` to robustly build `cliq-193` app-command probe summaries when `cliq status` emits string auth payloads (`"auth": "ok"`) and when app-command output files are empty; added focused regressions in `tests/test_cliq193_probe_summary.py` and backfilled missing summary evidence for stamp `20260416_025358`.
 - Hardened `cliq-193` app-command detail extraction so `zoho cliq app-command-get` now prefers command-shaped rows when wrapper lists include metadata-first entries (for example `payload.data: [{meta: ...}, {command: {...}}]`), avoiding fallback blank command names when a valid command row is present later in the list.
 - Hardened cliq-193 app-governance list extraction so `zoho cliq app-permissions`, `zoho cliq app-installs`, and `zoho cliq app-commands` now unwrap `data.records.record[]` rows that carry nested `item` wrappers before field mapping, preventing wrapper-shaped maintenance rows from dropping key list output fields.
 - Hardened `zoho cliq app-get` detail extraction so `data.records.record[]` rows that carry nested `item` wrappers now unwrap before field mapping, preventing wrapper-shaped maintenance payloads from degrading into fallback/empty app output.

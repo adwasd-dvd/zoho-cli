@@ -7584,6 +7584,41 @@ def test_cliq_app_commands_accepts_pascal_snake_command_display_name_alias_shape
     )
 
 
+def test_cliq_app_commands_accepts_pascal_snake_camel_title_command_display_name_alias_shape(
+    mock_config: Path,
+    mock_token_refresh: Any,
+) -> None:
+    mock_client = MagicMock()
+    mock_client.list_app_commands.return_value = {
+        "response": {
+            "data": {
+                "commands": [
+                    {
+                        "commandid": "CMD_8DISPLAYPASCALSNAKECAMELTITLE",
+                        "Command_Displayname": "incident_resolved_command_display_pascal_snake_camel_title_alias",
+                    }
+                ]
+            }
+        }
+    }
+
+    with patch("zoho_cli.cli._get_cliq_client", return_value=mock_client):
+        result = runner.invoke(
+            app,
+            ["cliq", "app-commands", "AP_8"],
+            env=_cfg_env(mock_config),
+        )
+
+    assert result.exit_code == 0, result.output
+    payload = json.loads(result.output)
+    assert payload["count"] == 1
+    assert payload["commands"][0]["commandId"] == "CMD_8DISPLAYPASCALSNAKECAMELTITLE"
+    assert (
+        payload["commands"][0]["name"]
+        == "incident_resolved_command_display_pascal_snake_camel_title_alias"
+    )
+
+
 def test_cliq_app_commands_accepts_camel_snake_command_display_name_alias_shape(
     mock_config: Path,
     mock_token_refresh: Any,
@@ -7686,6 +7721,41 @@ def test_cliq_app_commands_accepts_uppercase_flat_command_display_alias_shape(
     assert (
         payload["commands"][0]["name"]
         == "incident_resolved_command_display_upper_flat_alias"
+    )
+
+
+def test_cliq_app_commands_accepts_uppercase_snake_command_display_alias_shape(
+    mock_config: Path,
+    mock_token_refresh: Any,
+) -> None:
+    mock_client = MagicMock()
+    mock_client.list_app_commands.return_value = {
+        "response": {
+            "data": {
+                "commands": [
+                    {
+                        "COMMANDID": "CMD_8DISPLAYUPPERSNAKESHORT",
+                        "COMMAND_DISPLAY": "incident_resolved_command_display_upper_snake_short_alias",
+                    }
+                ]
+            }
+        }
+    }
+
+    with patch("zoho_cli.cli._get_cliq_client", return_value=mock_client):
+        result = runner.invoke(
+            app,
+            ["cliq", "app-commands", "AP_8"],
+            env=_cfg_env(mock_config),
+        )
+
+    assert result.exit_code == 0, result.output
+    payload = json.loads(result.output)
+    assert payload["count"] == 1
+    assert payload["commands"][0]["commandId"] == "CMD_8DISPLAYUPPERSNAKESHORT"
+    assert (
+        payload["commands"][0]["name"]
+        == "incident_resolved_command_display_upper_snake_short_alias"
     )
 
 
@@ -8922,6 +8992,37 @@ def test_cliq_app_command_get_accepts_pascal_snake_action_display_name_alias_sha
     )
 
 
+def test_cliq_app_command_get_accepts_pascal_snake_camel_title_action_display_name_alias_shape(
+    mock_config: Path,
+    mock_token_refresh: Any,
+) -> None:
+    mock_client = MagicMock()
+    mock_client.get_app_command.return_value = {
+        "payload": {
+            "data": {
+                "actionid": "ACT_17DISPLAYPASCALSNAKECAMELTITLE",
+                "Action_Displayname": "deploy_from_payload_data_action_display_pascal_snake_camel_title_alias",
+            }
+        }
+    }
+
+    with patch("zoho_cli.cli._get_cliq_client", return_value=mock_client):
+        result = runner.invoke(
+            app,
+            ["cliq", "app-command-get", "AP_17", "CMD_17ALIAS"],
+            env=_cfg_env(mock_config),
+        )
+
+    assert result.exit_code == 0, result.output
+    payload = json.loads(result.output)
+    assert payload["appId"] == "AP_17"
+    assert payload["command"]["commandId"] == "ACT_17DISPLAYPASCALSNAKECAMELTITLE"
+    assert (
+        payload["command"]["name"]
+        == "deploy_from_payload_data_action_display_pascal_snake_camel_title_alias"
+    )
+
+
 def test_cliq_app_command_get_accepts_camel_snake_action_display_name_alias_shape(
     mock_config: Path,
     mock_token_refresh: Any,
@@ -9012,6 +9113,37 @@ def test_cliq_app_command_get_accepts_uppercase_flat_action_display_alias_shape(
     assert (
         payload["command"]["name"]
         == "deploy_from_payload_data_action_display_upper_flat_alias"
+    )
+
+
+def test_cliq_app_command_get_accepts_uppercase_snake_action_display_alias_shape(
+    mock_config: Path,
+    mock_token_refresh: Any,
+) -> None:
+    mock_client = MagicMock()
+    mock_client.get_app_command.return_value = {
+        "payload": {
+            "data": {
+                "ACTIONID": "ACT_17DISPLAYUPPERSNAKESHORT",
+                "ACTION_DISPLAY": "deploy_from_payload_data_action_display_upper_snake_short_alias",
+            }
+        }
+    }
+
+    with patch("zoho_cli.cli._get_cliq_client", return_value=mock_client):
+        result = runner.invoke(
+            app,
+            ["cliq", "app-command-get", "AP_17", "CMD_17ALIAS"],
+            env=_cfg_env(mock_config),
+        )
+
+    assert result.exit_code == 0, result.output
+    payload = json.loads(result.output)
+    assert payload["appId"] == "AP_17"
+    assert payload["command"]["commandId"] == "ACT_17DISPLAYUPPERSNAKESHORT"
+    assert (
+        payload["command"]["name"]
+        == "deploy_from_payload_data_action_display_upper_snake_short_alias"
     )
 
 

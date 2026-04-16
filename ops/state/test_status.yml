@@ -1,10 +1,14 @@
-last_run_at: "2026-04-16T01:59:10Z"
+last_run_at: "2026-04-16T02:43:03Z"
 last_result: success
 current_focus: cliq
 suites:
   unit:
     status: success
     notes:
+      - "./.venv/bin/ruff format --check tests/test_cli.py"
+      - "1 file already formatted (cliq-193 uppercase-snake short display alias regression formatting check, 2026-04-16T02:43:03Z)"
+      - "python3.11 -m pytest -q tests/test_cli.py::test_cliq_app_commands_accepts_uppercase_snake_command_display_alias_shape tests/test_cli.py::test_cliq_app_command_get_accepts_uppercase_snake_action_display_alias_shape"
+      - "2 passed in 0.44s (cliq-193 uppercase-snake short display alias regression coverage for app-command list/detail output, 2026-04-16T02:43:03Z)"
       - "./.venv/bin/ruff check zoho_cli/cliq.py"
       - "all checks passed (cliq-193 blocker cleanup: removed unused `saw_inactive_appaccount` to clear Ruff F841 in `_request_with_candidates_and_not_supported`, 2026-04-16T01:59:10Z)"
       - "./.venv/bin/ruff format --check zoho_cli/cli.py tests/test_cli.py"

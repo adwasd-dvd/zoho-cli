@@ -1,10 +1,14 @@
-last_run_at: "2026-04-16T10:45:30Z"
+last_run_at: "2026-04-16T11:54:57Z"
 last_result: success
 current_focus: cliq
 suites:
   unit:
     status: success
     notes:
+      - "python3.11 -m pytest -q tests/test_cli.py::test_cliq_app_commands_accepts_kebab_command_displayname_camel_tail_alias_shape tests/test_cli.py::test_cliq_app_command_get_accepts_kebab_action_displayname_camel_tail_alias_shape"
+      - "2 passed in 0.48s (cliq-193 mixed kebab+camel displayname alias hardening for app-command list/detail output, 2026-04-16T11:54:57Z)"
+      - "./.venv/bin/ruff format --check zoho_cli/cli.py tests/test_cli.py"
+      - "2 files already formatted (post-change formatting check, 2026-04-16T11:54:57Z)"
       - "python3.11 -m pytest -q tests/test_cli.py::test_cliq_app_commands_accepts_kebab_command_prefixed_help_alias_shape tests/test_cli.py::test_cliq_app_command_get_accepts_kebab_action_prefixed_help_alias_shape tests/test_cli.py::test_cliq_app_commands_accepts_pascal_kebab_command_displayname_alias_shape tests/test_cli.py::test_cliq_app_command_get_accepts_pascal_kebab_action_displayname_alias_shape"
       - "4 passed in 0.11s (cliq-193 Pascal-kebab displayname + kebab help-alias hardening for app-command list/detail output, 2026-04-16T10:25:50Z)"
       - "./.venv/bin/ruff format --check zoho_cli/cli.py tests/test_cli.py"

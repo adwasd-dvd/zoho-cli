@@ -3,7 +3,7 @@
 ## Immediate
 1. **`cliq-165` remains the top blocker**: maintenance export scopes are granted, but both `cliq export-chats` list and `--chat-id` still return API-side `inactive_appaccount_user` until Cliq admin-side app-account activation is completed.
 2. **`cliq-193` live endpoint remains externally blocked**: the latest focused rerun (`20260416_165104`) still shows healthy auth/export readiness (`oauthReady: true`, `exportOauthReady: true`) while app-command verification fails (`appCommandsError: empty_output` in `tests/auto_pilot/reports/cliq193_app_commands_probe_summary_20260416_165104.json`, with CLI returning `not_supported` to stderr).
-3. **Latest `cliq-193` unit hardening slice is complete**: app-command list/detail normalization now also accepts mixed snake+camel-tail helptext aliases (`command_helpText` / `action_helpText`) in command-row hint detection and output description mapping, with focused tests passing (`2 passed`).
+3. **Latest `cliq-193` unit hardening slice is complete**: app-command list/detail normalization now also accepts mixed snake+Pascal-tail helptext aliases (`command_HelpText` / `action_HelpText`) in command-row hint detection and output description mapping, with focused tests passing (`2 passed`).
 4. **Nightly broad verification remains green**: latest `make release-gate` and `make ci` broad run is green at 637 tests + wheel smoke + fmt/lint.
 
 ## Next

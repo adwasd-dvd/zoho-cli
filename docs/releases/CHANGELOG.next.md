@@ -3,6 +3,7 @@
 ## Unreleased
 
 ### Added
+- Hardened `cliq-193` app-command list/detail normalization so `zoho cliq app-commands` and `zoho cliq app-command-get` now also accept uppercase-kebab display-name aliases (`COMMAND-DISPLAY-NAME` / `ACTION-DISPLAY-NAME`) and short forms (`COMMAND-DISPLAY` / `ACTION-DISPLAY`) in command-row hint detection and output name mapping.
 - Hardened `cliq-193` app-command list/detail normalization so `zoho cliq app-commands` and `zoho cliq app-command-get` now also accept kebab-case display-name aliases (`command-display-name` / `action-display-name`) in command-row hint detection and output name mapping.
 - Hardened `cliq-193` app-command list/detail normalization so `zoho cliq app-commands` and `zoho cliq app-command-get` now also accept Pascal-snake-triple display-name aliases (`Command_Display_Name` / `Action_Display_Name`) in command-row hint detection and output name mapping.
 - Hardened `cliq-193` app-command list/detail normalization so `zoho cliq app-commands` and `zoho cliq app-command-get` now also accept Pascal-snake camel-title display-name aliases (`Command_Displayname` / `Action_Displayname`) in command-row hint detection and output name mapping.

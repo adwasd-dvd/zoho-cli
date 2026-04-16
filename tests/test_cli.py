@@ -6054,6 +6054,36 @@ def test_cliq_app_commands_accepts_top_level_command_wrapper_dict_shape(
     assert payload["commands"][0]["status"] == "enabled"
 
 
+def test_cliq_app_commands_accepts_uppercase_command_wrapper_dict_shape(
+    mock_config: Path,
+    mock_token_refresh: Any,
+) -> None:
+    mock_client = MagicMock()
+    mock_client.list_app_commands.return_value = {
+        "COMMAND": {
+            "COMMANDID": "CMD_5UP",
+            "ACTIONNAME": "incident_resolve_upper",
+            "SUMMARY": "Resolve via uppercase wrapper",
+            "MODE": "enabled",
+        }
+    }
+
+    with patch("zoho_cli.cli._get_cliq_client", return_value=mock_client):
+        result = runner.invoke(
+            app,
+            ["cliq", "app-commands", "AP_5"],
+            env=_cfg_env(mock_config),
+        )
+
+    assert result.exit_code == 0, result.output
+    payload = json.loads(result.output)
+    assert payload["count"] == 1
+    assert payload["commands"][0]["commandId"] == "CMD_5UP"
+    assert payload["commands"][0]["name"] == "incident_resolve_upper"
+    assert payload["commands"][0]["description"] == "Resolve via uppercase wrapper"
+    assert payload["commands"][0]["status"] == "enabled"
+
+
 def test_cliq_app_commands_accepts_data_list_wrapped_command_shape(
     mock_config: Path,
     mock_token_refresh: Any,
@@ -7724,6 +7754,41 @@ def test_cliq_app_commands_accepts_kebab_command_display_name_alias_shape(
     )
 
 
+def test_cliq_app_commands_accepts_pascal_kebab_command_display_name_alias_shape(
+    mock_config: Path,
+    mock_token_refresh: Any,
+) -> None:
+    mock_client = MagicMock()
+    mock_client.list_app_commands.return_value = {
+        "response": {
+            "data": {
+                "commands": [
+                    {
+                        "CommandID": "CMD_8DISPLAYPASCALKEBAB",
+                        "Command-Display-Name": "incident_resolved_command_display_pascal_kebab_alias",
+                    }
+                ]
+            }
+        }
+    }
+
+    with patch("zoho_cli.cli._get_cliq_client", return_value=mock_client):
+        result = runner.invoke(
+            app,
+            ["cliq", "app-commands", "AP_8"],
+            env=_cfg_env(mock_config),
+        )
+
+    assert result.exit_code == 0, result.output
+    payload = json.loads(result.output)
+    assert payload["count"] == 1
+    assert payload["commands"][0]["commandId"] == "CMD_8DISPLAYPASCALKEBAB"
+    assert (
+        payload["commands"][0]["name"]
+        == "incident_resolved_command_display_pascal_kebab_alias"
+    )
+
+
 def test_cliq_app_commands_accepts_uppercase_kebab_command_display_name_alias_shape(
     mock_config: Path,
     mock_token_refresh: Any,
@@ -8368,6 +8433,40 @@ def test_cliq_app_command_get_accepts_nested_action_wrapper_dict_shape(
     assert payload["command"]["description"] == "Sync incident status"
     assert payload["command"]["status"] == "enabled"
     mock_client.get_app_command.assert_called_once_with("AP_13", "CMD_16")
+
+
+def test_cliq_app_command_get_accepts_uppercase_action_wrapper_shape(
+    mock_config: Path,
+    mock_token_refresh: Any,
+) -> None:
+    mock_client = MagicMock()
+    mock_client.get_app_command.return_value = {
+        "ACTION": {
+            "ACTIONID": "CMD_16UP",
+            "ACTION": "sync_status_upper",
+            "SUMMARY": "Sync incident status via uppercase wrapper",
+            "MODE": "enabled",
+        }
+    }
+
+    with patch("zoho_cli.cli._get_cliq_client", return_value=mock_client):
+        result = runner.invoke(
+            app,
+            ["cliq", "app-command-get", "AP_13", "CMD_16UP"],
+            env=_cfg_env(mock_config),
+        )
+
+    assert result.exit_code == 0, result.output
+    payload = json.loads(result.output)
+    assert payload["appId"] == "AP_13"
+    assert payload["command"]["commandId"] == "CMD_16UP"
+    assert payload["command"]["name"] == "sync_status_upper"
+    assert (
+        payload["command"]["description"]
+        == "Sync incident status via uppercase wrapper"
+    )
+    assert payload["command"]["status"] == "enabled"
+    mock_client.get_app_command.assert_called_once_with("AP_13", "CMD_16UP")
 
 
 def test_cliq_app_command_get_accepts_top_level_result_wrapper_shape(
@@ -9253,6 +9352,37 @@ def test_cliq_app_command_get_accepts_kebab_action_display_name_alias_shape(
     assert (
         payload["command"]["name"]
         == "deploy_from_payload_data_action_display_kebab_alias"
+    )
+
+
+def test_cliq_app_command_get_accepts_pascal_kebab_action_display_name_alias_shape(
+    mock_config: Path,
+    mock_token_refresh: Any,
+) -> None:
+    mock_client = MagicMock()
+    mock_client.get_app_command.return_value = {
+        "payload": {
+            "data": {
+                "ActionID": "ACT_17DISPLAYPASCALKEBAB",
+                "Action-Display-Name": "deploy_from_payload_data_action_display_pascal_kebab_alias",
+            }
+        }
+    }
+
+    with patch("zoho_cli.cli._get_cliq_client", return_value=mock_client):
+        result = runner.invoke(
+            app,
+            ["cliq", "app-command-get", "AP_17", "CMD_17ALIAS"],
+            env=_cfg_env(mock_config),
+        )
+
+    assert result.exit_code == 0, result.output
+    payload = json.loads(result.output)
+    assert payload["appId"] == "AP_17"
+    assert payload["command"]["commandId"] == "ACT_17DISPLAYPASCALKEBAB"
+    assert (
+        payload["command"]["name"]
+        == "deploy_from_payload_data_action_display_pascal_kebab_alias"
     )
 
 

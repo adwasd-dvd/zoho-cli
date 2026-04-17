@@ -269,6 +269,199 @@ def test_cliq_bridge_run_rejects_unsupported_bridge(mock_config: Path) -> None:
     assert "unsupported_bridge" in result.output
 
 
+def test_cliq_apps_bridge_run_defaults_action_and_input(
+    mock_config: Path,
+) -> None:
+    seen: dict[str, Any] = {}
+
+    def _fake_run(*a, **kw):
+        seen["command"] = a[0]
+        return subprocess.CompletedProcess(
+            args=a[0],
+            returncode=0,
+            stdout=json.dumps({"ok": True}),
+            stderr="",
+        )
+
+    with pytest.MonkeyPatch.context() as monkeypatch:
+        monkeypatch.setattr(
+            "zoho_cli.cli.shutil.which", lambda _name: "/usr/local/bin/membrane"
+        )
+        monkeypatch.setattr("zoho_cli.cli.subprocess.run", _fake_run)
+
+        result = runner.invoke(
+            app,
+            [
+                "--config",
+                str(mock_config),
+                "cliq",
+                "apps-bridge-run",
+            ],
+        )
+
+    assert result.exit_code == 0, result.output
+    assert seen["command"][:6] == [
+        "/usr/local/bin/membrane",
+        "action",
+        "run",
+        "--connectionId=CONN_CLIQ_FROM_CONFIG",
+        "apps",
+        "--json",
+    ]
+    assert seen["command"][6] == "--input"
+    assert json.loads(seen["command"][7]) == {"limit": 50}
+
+    payload = json.loads(result.output)
+    assert payload["actionId"] == "apps"
+    assert payload["input"] == {"limit": 50}
+
+
+def test_cliq_apps_bridge_run_merges_input_json_with_limit(
+    mock_config: Path,
+) -> None:
+    seen: dict[str, Any] = {}
+
+    def _fake_run(*a, **kw):
+        seen["command"] = a[0]
+        return subprocess.CompletedProcess(
+            args=a[0],
+            returncode=0,
+            stdout=json.dumps({"ok": True}),
+            stderr="",
+        )
+
+    with pytest.MonkeyPatch.context() as monkeypatch:
+        monkeypatch.setattr(
+            "zoho_cli.cli.shutil.which", lambda _name: "/usr/local/bin/membrane"
+        )
+        monkeypatch.setattr("zoho_cli.cli.subprocess.run", _fake_run)
+
+        result = runner.invoke(
+            app,
+            [
+                "--config",
+                str(mock_config),
+                "cliq",
+                "apps-bridge-run",
+                "--limit",
+                "25",
+                "--action-id",
+                "custom-apps-action",
+                "--input-json",
+                '{"cursor": "abc"}',
+            ],
+        )
+
+    assert result.exit_code == 0, result.output
+    assert seen["command"][4] == "custom-apps-action"
+    assert seen["command"][6] == "--input"
+    assert json.loads(seen["command"][7]) == {"cursor": "abc", "limit": 25}
+
+    payload = json.loads(result.output)
+    assert payload["actionId"] == "custom-apps-action"
+    assert payload["input"] == {"cursor": "abc", "limit": 25}
+
+
+def test_cliq_app_get_bridge_run_defaults_action_and_input(
+    mock_config: Path,
+) -> None:
+    seen: dict[str, Any] = {}
+
+    def _fake_run(*a, **kw):
+        seen["command"] = a[0]
+        return subprocess.CompletedProcess(
+            args=a[0],
+            returncode=0,
+            stdout=json.dumps({"ok": True}),
+            stderr="",
+        )
+
+    with pytest.MonkeyPatch.context() as monkeypatch:
+        monkeypatch.setattr(
+            "zoho_cli.cli.shutil.which", lambda _name: "/usr/local/bin/membrane"
+        )
+        monkeypatch.setattr("zoho_cli.cli.subprocess.run", _fake_run)
+
+        result = runner.invoke(
+            app,
+            [
+                "--config",
+                str(mock_config),
+                "cliq",
+                "app-get-bridge-run",
+                "APP_123",
+            ],
+        )
+
+    assert result.exit_code == 0, result.output
+    assert seen["command"][:6] == [
+        "/usr/local/bin/membrane",
+        "action",
+        "run",
+        "--connectionId=CONN_CLIQ_FROM_CONFIG",
+        "app-get",
+        "--json",
+    ]
+    assert seen["command"][6] == "--input"
+    assert json.loads(seen["command"][7]) == {"appId": "APP_123"}
+
+    payload = json.loads(result.output)
+    assert payload["actionId"] == "app-get"
+    assert payload["appId"] == "APP_123"
+    assert payload["input"] == {"appId": "APP_123"}
+
+
+def test_cliq_app_get_bridge_run_merges_input_json_with_app_id(
+    mock_config: Path,
+) -> None:
+    seen: dict[str, Any] = {}
+
+    def _fake_run(*a, **kw):
+        seen["command"] = a[0]
+        return subprocess.CompletedProcess(
+            args=a[0],
+            returncode=0,
+            stdout=json.dumps({"ok": True}),
+            stderr="",
+        )
+
+    with pytest.MonkeyPatch.context() as monkeypatch:
+        monkeypatch.setattr(
+            "zoho_cli.cli.shutil.which", lambda _name: "/usr/local/bin/membrane"
+        )
+        monkeypatch.setattr("zoho_cli.cli.subprocess.run", _fake_run)
+
+        result = runner.invoke(
+            app,
+            [
+                "--config",
+                str(mock_config),
+                "cliq",
+                "app-get-bridge-run",
+                "APP_123",
+                "--action-id",
+                "custom-app-get",
+                "--input-json",
+                '{"verbose": true}',
+            ],
+        )
+
+    assert result.exit_code == 0, result.output
+    assert seen["command"][4] == "custom-app-get"
+    assert seen["command"][6] == "--input"
+    assert json.loads(seen["command"][7]) == {
+        "verbose": True,
+        "appId": "APP_123",
+    }
+
+    payload = json.loads(result.output)
+    assert payload["actionId"] == "custom-app-get"
+    assert payload["input"] == {
+        "verbose": True,
+        "appId": "APP_123",
+    }
+
+
 def test_cliq_app_commands_bridge_run_defaults_action_and_input(
     mock_config: Path,
 ) -> None:

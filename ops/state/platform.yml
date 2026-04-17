@@ -1,5 +1,5 @@
 module: Platform
-updated_at: "2026-04-17T20:58:39Z"
+updated_at: "2026-04-17T21:25:51Z"
 status: in_progress
 blockers: []
-next_small_step: continue platform-203 by mapping the next highest-value cliq blocker to an explicit bridge-backed wrapper (next likely slice: apps/app-get bridge wrappers) while preserving membrane preset/connection/input parity
+next_small_step: continue platform-201/202 no-behavior-change modularization slices while preserving current membrane wrapper parity and deferring externally blocked cliq endpoints behind capability gates

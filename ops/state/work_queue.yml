@@ -209,9 +209,9 @@
   depends_on:
   - platform-200
 - id: platform-202
-  title: move first cliq command family from cli monolith into products+commands slices with parity tests
+  title: move cliq app-governance command families from cli monolith into products+commands slices with parity tests
   module: platform
-  stage: queued
+  stage: in_progress
   priority: medium
   depends_on:
   - platform-201

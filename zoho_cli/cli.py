@@ -4193,6 +4193,13 @@ def cliq_app_install_get(
     )
 
 
+register_cliq_app_installs_commands(
+    cliq_app,
+    cliq_app_installs_command=cliq_app_installs,
+    cliq_app_install_get_command=cliq_app_install_get,
+)
+
+
 @cliq_app.command("app-permissions-bridge-run")
 def cliq_app_permissions_bridge_run(
     app_id: str = typer.Argument(..., help="Cliq app id."),

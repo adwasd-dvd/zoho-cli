@@ -1,15 +1,15 @@
 # Current Focus
 
 ## Immediate
-1. **Hybrid bridge v1.1 landed**: membrane path now includes preset resolution (`zoho-cliq` / `zoho-crm`) plus first explicit product wrapper (`zoho crm bridge-run --bridge membrane`) to reduce setup friction.
+1. **Framework pass in progress**: `platform-202` is actively extracting cliq app-governance command-family registration out of `zoho_cli/cli.py` into `zoho_cli.commands.*` slices (no behavior change, parity-test guarded).
 2. **`cliq-165` remains the top blocker**: maintenance export scopes are granted, but both `cliq export-chats` list and `--chat-id` still return API-side `inactive_appaccount_user` until Cliq admin-side app-account activation is completed.
 3. **`cliq-193` app-command live endpoint is external-deferred**: repeated focused reruns still fail app-command verification (`appCommandsError: empty_output`, CLI stderr `not_supported`) while scope readiness is healthy (`oauthReady: true`, `exportOauthReady: true`), so work stays capability-gated.
 4. **Nightly broad verification remains green**: latest `make release-gate` and `make ci` broad run is green at 637 tests + wheel smoke + fmt/lint.
-5. **Parallel track**: continue `platform-200/201/202` modularization while adding thin membrane-backed wrappers for high-value Cliq/CRM gaps.
+5. **Parallel track**: keep hybrid membrane wrappers stable, but prioritize command-layer structure and work-queue hygiene this cycle.
 
 ## Next
-1. `platform-203`: add first thin `cliq` membrane-backed wrapper command (explicit bridge flag) mirroring `crm bridge-run`.
-2. `platform-200/201/202`: continue no-behavior-change modularization slices with parity checks.
+1. `platform-202`: extract next adjacent cliq pair (`app-commands` / `app-command-get`) into commands-slice registration with parity checks.
+2. `platform-200/201`: continue no-behavior-change modularization slices and close remaining registrar stragglers.
 3. `cliq-193`: keep unsupported endpoint work capability-gated and post-release deferred.
 4. `cliq-165`: rerun export verification immediately after app-account activation (`list` + one `--chat-id` export) and archive first success JSON.
 5. Define short migration matrix (which bridge wrappers should graduate to native next) for the next release cut.

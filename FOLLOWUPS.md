@@ -6,9 +6,10 @@
 - [ ] Confirm mail path handling preserves absolute `/Volumes/...` inputs.
 - [ ] Keep coding loop changes small enough to finish comfortably within the run timeout.
 - [ ] Execute MR-first 7-10 workday plan: close remaining `cliq-193` slices, then land `platform-200/201/202`, then `crm-002` smoke closeout.
-- [ ] Execute queued modularization slices (`platform-200/201/202`) as small no-behavior-change steps once the next `cliq-193` slice is merged.
+- [ ] Continue in-progress modularization slices (`platform-201/202`) as small no-behavior-change steps (command-family extraction + parity checks).
 - [x] Land `platform-203` membrane bridge follow-up: add stable connection presets (`zoho-cliq`/`zoho-crm`) and one thin product wrapper command to reduce operator setup friction. (Delivered via preset-aware `zoho membrane actions/run` + `zoho crm bridge-run --bridge membrane`.)
-- [ ] Extend `platform-203` with the first `cliq` thin bridge wrapper command using the same preset-resolution path.
+- [x] Extend `platform-203` with the first `cliq` thin bridge wrapper command using the same preset-resolution path.
+- [ ] For framework pass, extract the next cliq app-governance command registration pair (`app-commands` / `app-command-get`) into `zoho_cli.commands.cliq` and keep command names stable.
 - [ ] Apply 3-strike unsupported policy consistently: after 3 consecutive `not_supported`/`inactive_appaccount_user` live checks for the same endpoint, mark it post-release deferred and continue unrelated slices behind capability-gated isolation.
 - [ ] Post-release: evaluate official Zoho CRM server-side SDK and phase in safely via small slices (first candidate commands: `crm list` / `crm get`) after the current release ships.
 - [x] Run one interactive `zoho login --with-cliq` re-auth that includes chat-read scope, then verify `zoho cliq chats --network happydistrouklimited` succeeds.

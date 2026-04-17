@@ -17,6 +17,7 @@ from zoho_cli.cli import (
     membrane_app,
 )
 from zoho_cli.commands.cliq import register_cliq_app_catalog_commands
+from zoho_cli.commands.cliq import register_cliq_app_installs_commands
 from zoho_cli.commands.cliq import register_cliq_app_permissions_commands
 from zoho_cli.commands.root import (
     register_builtin_root_typers,
@@ -51,6 +52,10 @@ def test_commands_package_exports_root_registrars() -> None:
     assert (
         commands_pkg.register_cliq_app_permissions_commands
         is register_cliq_app_permissions_commands
+    )
+    assert (
+        commands_pkg.register_cliq_app_installs_commands
+        is register_cliq_app_installs_commands
     )
     assert commands_pkg.register_cliq_root_typers is register_cliq_root_typers
     assert (
@@ -115,6 +120,27 @@ def test_register_cliq_app_permissions_commands_preserves_expected_command_names
     assert [command.name for command in app.registered_commands] == [
         "app-permissions",
         "app-permission-get",
+    ]
+
+
+def test_register_cliq_app_installs_commands_preserves_expected_command_names() -> None:
+    app = typer.Typer(no_args_is_help=True)
+
+    def _app_installs_command() -> None:
+        return None
+
+    def _app_install_get_command() -> None:
+        return None
+
+    register_cliq_app_installs_commands(
+        app,
+        cliq_app_installs_command=_app_installs_command,
+        cliq_app_install_get_command=_app_install_get_command,
+    )
+
+    assert [command.name for command in app.registered_commands] == [
+        "app-installs",
+        "app-install-get",
     ]
 
 

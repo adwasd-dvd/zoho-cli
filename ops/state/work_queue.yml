@@ -215,3 +215,11 @@
   priority: medium
   depends_on:
   - platform-201
+- id: crm-003
+  title: evaluate and phase in official Zoho CRM server-side SDK in post-release follow-up slices
+  module: crm
+  stage: queued
+  priority: medium
+  depends_on:
+  - crm-002
+  - platform-202

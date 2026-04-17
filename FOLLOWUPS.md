@@ -7,6 +7,7 @@
 - [ ] Keep coding loop changes small enough to finish comfortably within the run timeout.
 - [ ] Execute MR-first 7-10 workday plan: close remaining `cliq-193` slices, then land `platform-200/201/202`, then `crm-002` smoke closeout.
 - [ ] Execute queued modularization slices (`platform-200/201/202`) as small no-behavior-change steps once the next `cliq-193` slice is merged.
+- [ ] Post-release: evaluate official Zoho CRM server-side SDK and phase in safely via small slices (first candidate commands: `crm list` / `crm get`) after the current release ships.
 - [x] Run one interactive `zoho login --with-cliq` re-auth that includes chat-read scope, then verify `zoho cliq chats --network happydistrouklimited` succeeds.
 - [x] Re-run broad verification gate (`make release-gate && make ci`) after the latest cliq send fallback changes.
 - [x] Re-run nightly broad verification gate while cliq-193 app-command hardening is active; latest run is green at 637 tests + wheel smoke + fmt/lint (`2026-04-16T14:29:00Z`).

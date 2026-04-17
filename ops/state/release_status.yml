@@ -3,13 +3,13 @@ next_version: 0.2.1
 release_candidate: false
 last_release_tag: v0.1.9
 current_train: cliq-expansion
-assessed_at: '2026-04-17T17:56:30Z'
+assessed_at: '2026-04-17T20:00:15Z'
 current_milestone: cliq-expansion-phase
 current_milestone_complete: false
 missing_requirements:
   - 'blocker backlog is not clear: cliq-193 live app-command verification still returns `not_supported`.'
   - 'current focus milestone is incomplete: `cliq-expansion-phase` remains in progress (`active_task`: platform-203), and cliq-165 export verification is still externally blocked by API-side `inactive_appaccount_user`.'
-  - 'broad and medium-scope verification are healthy (`make release-gate` -> `699 passed in 13.20s` + wheel smoke, `make ci` -> lint/format clean + `699 passed in 12.74s`; latest focused bridge checks: `python3.11 -m pytest -q tests/test_registry.py tests/test_membrane_bridge.py` -> `22 passed in 0.15s`), but focused `cliq app-commands` live verification remains externally blocked (`not_supported`) while auth/export readiness is healthy (latest evidence `tests/auto_pilot/reports/cliq193_app_commands_probe_summary_20260417_161825.json`, `unsupportedConsecutiveCount: 59`); release train remains incomplete until blockers clear.'
+  - 'broad and medium-scope verification are healthy (`make release-gate` -> `699 passed in 13.20s` + wheel smoke, `make ci` -> lint/format clean + `699 passed in 12.74s`; latest medium-scope checks: `python3.11 -m pytest -q tests/test_registry.py tests/test_membrane_bridge.py` -> `32 passed in 0.33s`, `python3.11 -m pytest -q tests/test_cli.py -k "cliq_bridge_run or crm_bridge_run or cliq_app_commands or cliq_app_command_get"` -> `201 passed, 212 deselected in 3.57s`, `python3.11 -m pytest -q tests/test_cliq.py -k "app_command or app_install or app_permission or list_apps or get_app"` -> `24 passed, 146 deselected in 0.54s`), but focused `cliq app-commands` live verification remains externally blocked/deferred (`not_supported`) while auth/export readiness is healthy (latest evidence `tests/auto_pilot/reports/cliq193_app_commands_probe_summary_20260417_195259.json`, `unsupportedConsecutiveCount: 60`, `postReleaseDeferred: true`); release train remains incomplete until blockers clear.'
 release_gate:
   blocker_bugs_cleared: false
   unit_tests_passed: true

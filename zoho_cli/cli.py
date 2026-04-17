@@ -5942,6 +5942,112 @@ def cliq_app_command_get(
     )
 
 
+@cliq_app.command("app-command-get-bridge-run")
+def cliq_app_command_get_bridge_run(
+    app_id: str = typer.Argument(..., help="Cliq app id."),
+    command_id: str = typer.Argument(..., help="Cliq app command id."),
+    action_id: Optional[str] = typer.Option(
+        None,
+        "--action-id",
+        help="Optional membrane action id override.",
+    ),
+    bridge: str = typer.Option(
+        "membrane",
+        "--bridge",
+        help="Bridge backend. Currently only 'membrane' is supported.",
+    ),
+    connection_id: Optional[str] = typer.Option(
+        None,
+        "--connection-id",
+        help="Membrane connection ID. Overrides preset lookup when provided.",
+    ),
+    preset: Optional[str] = typer.Option(
+        "zoho-cliq",
+        "--preset",
+        help="Connection preset alias (default: zoho-cliq).",
+    ),
+    input_json: Optional[str] = typer.Option(
+        None,
+        "--input-json",
+        help="Optional JSON input passed to membrane --input (merged with appId + commandId).",
+    ),
+) -> None:
+    """Run Cliq app-command detail through membrane bridge (explicit opt-in)."""
+    if bridge.strip().lower() != "membrane":
+        utils.error_exit(
+            "unsupported_bridge",
+            "Only --bridge membrane is supported right now.",
+        )
+
+    resolved_app_id = app_id.strip()
+    if not resolved_app_id:
+        utils.error_exit("invalid_app_id", "App id cannot be empty")
+
+    resolved_command_id = command_id.strip()
+    if not resolved_command_id:
+        utils.error_exit("invalid_command_id", "Command id cannot be empty")
+
+    resolved_action_id = (action_id or "").strip() or "app-command-get"
+
+    cfg = _cfg()
+    email = _S.account or _config.default_account(cfg)
+    resolved_connection_id = _resolve_membrane_connection_id(
+        connection_id=connection_id,
+        preset=preset,
+        cfg=cfg,
+        email=email,
+    )
+
+    resolved_input: Any | None = None
+    if input_json is not None:
+        try:
+            resolved_input = json.loads(input_json)
+        except json.JSONDecodeError:
+            utils.error_exit(
+                "invalid_input_json",
+                "--input-json must be a valid JSON object/string.",
+            )
+
+    if resolved_input is None:
+        resolved_input = {
+            "appId": resolved_app_id,
+            "commandId": resolved_command_id,
+        }
+    elif isinstance(resolved_input, dict):
+        resolved_input = dict(resolved_input)
+        resolved_input.setdefault("appId", resolved_app_id)
+        resolved_input.setdefault("commandId", resolved_command_id)
+    else:
+        utils.error_exit(
+            "invalid_input_json",
+            "--input-json must decode to a JSON object for app-command-get bridge runs.",
+        )
+
+    command: list[str] = [
+        "action",
+        "run",
+        f"--connectionId={resolved_connection_id}",
+        resolved_action_id,
+        "--json",
+        "--input",
+        json.dumps(resolved_input, ensure_ascii=False),
+    ]
+
+    result = _run_membrane_command(command)
+    utils.output(
+        {
+            "bridge": "membrane",
+            "preset": _normalize_membrane_preset(preset or "zoho-cliq"),
+            "connectionId": resolved_connection_id,
+            "actionId": resolved_action_id,
+            "appId": resolved_app_id,
+            "commandId": resolved_command_id,
+            "input": resolved_input,
+            "result": result,
+        }
+    )
+
+
 @cliq_app.command("export-chats")
 def cliq_export_chats(
     chat_id: Optional[str] = typer.Option(

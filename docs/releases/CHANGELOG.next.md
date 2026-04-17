@@ -3,6 +3,7 @@
 ## Unreleased
 
 ### Added
+- Hardened `cliq-193` app-command list/detail normalization so `zoho cliq app-commands` and `zoho cliq app-command-get` now also accept mixed snake+uppercase-tail helptext aliases (`command_HELPTEXT` / `action_HELPTEXT`) in command-row hint detection and output description mapping.
 - Added modularization guardrail spec at `docs/architecture/MODULARIZATION_RULES.md`, including target package layout (`commands`/`products`/`core`), boundary rules, file-size guardrails, and one-slice migration workflow.
 - Added queued small-step modularization tasks (`platform-200`, `platform-201`, `platform-202`) to `ops/state/work_queue.yml` and linked them into roadmap tracking.
 - Updated planner workflow prompt (`ops/prompts/planner.md`) to always load modularization rules and prefer incremental extraction slices when monolith files grow.

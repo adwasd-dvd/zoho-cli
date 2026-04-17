@@ -1,10 +1,33 @@
-last_run_at: "2026-04-17T07:48:04Z"
+last_run_at: "2026-04-17T08:25:53Z"
 last_result: success
 current_focus: cliq
 suites:
   unit:
     status: success
     notes:
+      - "revalidation run at 2026-04-17T08:25:53Z"
+      - "python3.11 -m pytest -q tests/test_cli.py::test_cliq_app_commands_accepts_snake_upper_tail_command_prefixed_helptext_alias_shape tests/test_cli.py::test_cliq_app_command_get_accepts_snake_upper_tail_action_prefixed_helptext_alias_shape"
+      - "2 passed in 0.08s (cliq-193 mixed snake+uppercase-tail helptext alias hardening for app-command list/detail output, 2026-04-17T08:25:53Z)"
+      - "./.venv/bin/ruff format --check zoho_cli/cli.py tests/test_cli.py"
+      - "2 files already formatted (post-change formatting check, 2026-04-17T08:25:53Z)"
+      - "integration verification refresh at 2026-04-17T08:05:32Z"
+      - "python3.11 -m pytest -q tests/test_cli.py -k \"cliq_app_commands or cliq_app_command_get\""
+      - "183 passed, 212 deselected in 2.96s"
+      - "python3.11 -m pytest -q tests/test_cliq.py -k app_command"
+      - "6 passed, 158 deselected in 0.15s"
+      - "./.venv/bin/zoho --config /tmp/zoho-test-config.json --account ai-dev@happy-distro.co.uk cliq status --check-auth --network happydistrouklimited"
+      - "./.venv/bin/zoho --config /tmp/zoho-test-config.json --account ai-dev@happy-distro.co.uk cliq app-commands APP_PROBE_FAKE_20260417_080532 --network happydistrouklimited"
+      - "python3 tests/auto_pilot/cliq193_probe_summary.py --stamp 20260417_080532 --probe-app-id APP_PROBE_FAKE_20260417_080532 --status-file tests/auto_pilot/reports/cliq193_status_20260417_080532.json --app-commands-file tests/auto_pilot/reports/cliq193_app_commands_20260417_080532.json --status-command \"./.venv/bin/zoho --config /tmp/zoho-test-config.json --account ai-dev@happy-distro.co.uk cliq status --check-auth --network happydistrouklimited\" --app-commands-command \"./.venv/bin/zoho --config /tmp/zoho-test-config.json --account ai-dev@happy-distro.co.uk cliq app-commands APP_PROBE_FAKE_20260417_080532 --network happydistrouklimited\" --status-exit-code 0 --app-commands-exit-code 1 --timestamp-utc 2026-04-17T08:05:32Z --output tests/auto_pilot/reports/cliq193_app_commands_probe_summary_20260417_080532.json"
+      - "focused live rerun at 2026-04-17T08:05:32Z: `cliq app-commands` remains blocked (`appCommandsError: empty_output`, stderr `error: not_supported`) while `cliq status --check-auth` is healthy (`oauthReady: true`, `exportOauthReady: true`); evidence: tests/auto_pilot/reports/cliq193_app_commands_probe_summary_20260417_080532.json"
+      - "integration verification refresh at 2026-04-17T07:57:39Z"
+      - "python3.11 -m pytest -q tests/test_cli.py -k \"cliq_app_commands or cliq_app_command_get\""
+      - "183 passed, 212 deselected in 2.82s"
+      - "python3.11 -m pytest -q tests/test_cliq.py -k app_command"
+      - "6 passed, 158 deselected in 0.15s"
+      - "./.venv/bin/zoho --config /tmp/zoho-test-config.json --account ai-dev@happy-distro.co.uk cliq status --check-auth --network happydistrouklimited"
+      - "./.venv/bin/zoho --config /tmp/zoho-test-config.json --account ai-dev@happy-distro.co.uk cliq app-commands APP_PROBE_FAKE_20260417_075739 --network happydistrouklimited"
+      - "python3 tests/auto_pilot/cliq193_probe_summary.py --stamp 20260417_075739 --probe-app-id APP_PROBE_FAKE_20260417_075739 --status-file tests/auto_pilot/reports/cliq193_status_20260417_075739.json --app-commands-file tests/auto_pilot/reports/cliq193_app_commands_20260417_075739.json --status-command \"./.venv/bin/zoho --config /tmp/zoho-test-config.json --account ai-dev@happy-distro.co.uk cliq status --check-auth --network happydistrouklimited\" --app-commands-command \"./.venv/bin/zoho --config /tmp/zoho-test-config.json --account ai-dev@happy-distro.co.uk cliq app-commands APP_PROBE_FAKE_20260417_075739 --network happydistrouklimited\" --status-exit-code 0 --app-commands-exit-code 1 --timestamp-utc 2026-04-17T07:57:39Z --output tests/auto_pilot/reports/cliq193_app_commands_probe_summary_20260417_075739.json"
+      - "focused live rerun at 2026-04-17T07:57:39Z: `cliq app-commands` remains blocked (`appCommandsError: empty_output`, stderr `error: not_supported`) while `cliq status --check-auth` is healthy (`oauthReady: true`, `exportOauthReady: true`); evidence: tests/auto_pilot/reports/cliq193_app_commands_probe_summary_20260417_075739.json"
       - "revalidation run at 2026-04-17T07:48:04Z"
       - "python3.11 -m pytest -q tests/test_cli.py::test_cliq_app_commands_accepts_snake_upper_tail_pascal_prefix_command_mode_status_alias_shape tests/test_cli.py::test_cliq_app_command_get_accepts_snake_upper_tail_pascal_prefix_action_mode_status_alias_shape"
       - "2 passed in 0.08s (cliq-193 Pascal-prefix mixed snake+uppercase-tail mode alias hardening slice revalidation, 2026-04-17T07:48:04Z)"

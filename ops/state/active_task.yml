@@ -4,10 +4,10 @@ module: cliq
 stage: in_progress
 status: in_progress
 owner: automation
-updated_at: '2026-04-16T23:31:00Z'
+updated_at: '2026-04-17T00:14:24Z'
 success_criteria:
 - ship the next cliq-193 app-governance command/client slice with focused tests
 - run one focused live verification for that new slice and archive evidence
 - keep cliq-165 export blocker evidence current while app-account activation remains external
 next_if_done: finish the next queued cliq-193 hardening slice, then start platform-200 modularization guardrail rollout
-next_step: "cliq-193 command/action mode alias hardening now includes kebab forms (`command-mode`/`action-mode`, plus Pascal/uppercase companions) with focused list/detail tests passing; next run one focused live blocker probe (`cliq status --check-auth` + `cliq app-commands APP_PROBE_FAKE_<stamp>`) and archive evidence."
+next_step: "cliq-193 focused live blocker probe rerun is now archived at stamp `20260417_001424` and still reports `appCommandsError: empty_output` with CLI stderr `not_supported`; next take the smallest app-command output-hardening unit slice with focused tests, then rerun one focused live blocker probe (`cliq status --check-auth` + `cliq app-commands APP_PROBE_FAKE_<stamp>`) to refresh evidence."

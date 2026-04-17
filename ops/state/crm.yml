@@ -1,5 +1,5 @@
 module: CRM
-updated_at: "2026-04-17T03:36:50Z"
-status: in_progress
+updated_at: "2026-04-17T03:44:29Z"
+status: completed
 blockers: []
-next_small_step: run a cooldown-safe live smoke (`crm fields`, `crm get`, `crm search`) and mark crm-002 complete when all three pass
+next_small_step: monitor for regressions while focus remains on cliq-193 and platform-200

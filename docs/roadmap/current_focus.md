@@ -10,7 +10,7 @@
 ## Next
 1. `cliq-193`: first run one Cliq re-auth (`zoho login --with-cliq --with-cliq-export`) for the test config, then rerun the focused live probe (`cliq status --check-auth` + `cliq app-commands APP_PROBE_FAKE_<stamp>`), then continue the next smallest app-command output-hardening unit slice with focused tests.
 2. `cliq-165`: rerun export verification immediately after app-account activation (`list` + one `--chat-id` export) and archive first success JSON.
-3. `crm-002`: auth/API blocker is cleared (`oauthReady: true`; live `crm modules` + `crm list --module Leads --limit 1` succeed). Finish cooldown-safe `fields` + `get` + `search` smoke and close the task.
+3. `crm-002`: completed live CRM smoke (`fields` + `list` + `get` + `search`) on the test account; keep monitoring only.
 4. `platform-200`: after the next cliq-193 slice lands, start the modularization guardrail rollout (rules enforced first, then registry/commands extraction as no-behavior-change slices).
 
 ## MR-first delivery estimate (blockers skipped)

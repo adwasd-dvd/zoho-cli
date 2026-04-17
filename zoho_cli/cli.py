@@ -60,6 +60,7 @@ from zoho_cli.cliq import ZohoCliqClient
 from zoho_cli.commands import (
     register_builtin_root_typers,
     register_cliq_app_catalog_commands,
+    register_cliq_app_commands_commands,
     register_cliq_app_installs_commands,
     register_cliq_app_permissions_commands,
 )
@@ -4700,7 +4701,6 @@ def cliq_app_commands_bridge_run(
     )
 
 
-@cliq_app.command("app-commands")
 def cliq_app_commands(
     app_id: str = typer.Argument(..., help="Cliq app id."),
     limit: int = typer.Option(
@@ -5653,7 +5653,6 @@ def cliq_app_commands(
     )
 
 
-@cliq_app.command("app-command-get")
 def cliq_app_command_get(
     app_id: str = typer.Argument(..., help="Cliq app id."),
     command_id: str = typer.Argument(..., help="Cliq app command id."),
@@ -6556,6 +6555,13 @@ def cliq_app_command_get(
             "command": view,
         }
     )
+
+
+register_cliq_app_commands_commands(
+    cliq_app,
+    cliq_app_commands_command=cliq_app_commands,
+    cliq_app_command_get_command=cliq_app_command_get,
+)
 
 
 @cliq_app.command("app-command-get-bridge-run")

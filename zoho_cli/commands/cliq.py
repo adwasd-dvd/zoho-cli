@@ -18,6 +18,17 @@ def register_cliq_app_catalog_commands(
     cliq_app.command("app-get")(cliq_app_get_command)
 
 
+def register_cliq_app_commands_commands(
+    cliq_app: typer.Typer,
+    *,
+    cliq_app_commands_command: Callable[..., None],
+    cliq_app_command_get_command: Callable[..., None],
+) -> None:
+    """Register the adjacent Cliq app-commands command family on ``cliq_app``."""
+    cliq_app.command("app-commands")(cliq_app_commands_command)
+    cliq_app.command("app-command-get")(cliq_app_command_get_command)
+
+
 def register_cliq_app_permissions_commands(
     cliq_app: typer.Typer,
     *,

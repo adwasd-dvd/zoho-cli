@@ -1,5 +1,5 @@
 module: Platform
-updated_at: "2026-04-17T22:26:00Z"
+updated_at: "2026-04-17T23:34:56Z"
 status: in_progress
 blockers: []
-next_small_step: continue platform-202 no-behavior-change cliq command-family extraction by moving the next adjacent app-governance pair (`app-installs` / `app-install-get`) into commands/products slices with parity tests while keeping deferred external blockers capability-gated
+next_small_step: continue platform-202 no-behavior-change cliq command-family extraction by evaluating remaining direct decorators in `zoho_cli/cli.py` and moving the next smallest adjacent pair into commands/products slices with parity tests while keeping deferred external blockers capability-gated

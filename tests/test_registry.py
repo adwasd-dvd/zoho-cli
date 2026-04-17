@@ -16,6 +16,7 @@ from zoho_cli.cli import (
     mail_app,
     membrane_app,
 )
+from zoho_cli.commands.cliq import register_cliq_app_catalog_commands
 from zoho_cli.commands.root import (
     register_builtin_root_typers,
     register_cliq_root_typers,
@@ -42,6 +43,10 @@ def test_register_root_commands_is_noop_scaffold() -> None:
 
 
 def test_commands_package_exports_root_registrars() -> None:
+    assert (
+        commands_pkg.register_cliq_app_catalog_commands
+        is register_cliq_app_catalog_commands
+    )
     assert commands_pkg.register_cliq_root_typers is register_cliq_root_typers
     assert (
         commands_pkg.register_crm_config_root_typers is register_crm_config_root_typers
@@ -62,6 +67,27 @@ def test_register_root_commands_runs_supplied_registrars_in_order() -> None:
     register_root_commands(app, registrars=(first, second))
 
     assert seen == ["first", "second"]
+
+
+def test_register_cliq_app_catalog_commands_preserves_expected_command_names() -> None:
+    app = typer.Typer(no_args_is_help=True)
+
+    def _apps_command() -> None:
+        return None
+
+    def _app_get_command() -> None:
+        return None
+
+    register_cliq_app_catalog_commands(
+        app,
+        cliq_apps_command=_apps_command,
+        cliq_app_get_command=_app_get_command,
+    )
+
+    assert [command.name for command in app.registered_commands] == [
+        "apps",
+        "app-get",
+    ]
 
 
 def test_register_builtin_root_typers_preserves_expected_group_names() -> None:

@@ -57,7 +57,10 @@ from zoho_cli import (
 )
 from zoho_cli.api import ZohoMailClient
 from zoho_cli.cliq import ZohoCliqClient
-from zoho_cli.commands.root import register_builtin_root_typers
+from zoho_cli.commands import (
+    register_builtin_root_typers,
+    register_cliq_app_catalog_commands,
+)
 from zoho_cli.crm import ZohoCrmClient
 from zoho_cli.registry import register_root_commands
 
@@ -2664,7 +2667,6 @@ def cliq_custom_emails(
     )
 
 
-@cliq_app.command("apps")
 def cliq_apps(
     limit: int = typer.Option(50, "--limit", "-n", help="Max apps to return."),
     network: Optional[str] = typer.Option(
@@ -2860,7 +2862,6 @@ def cliq_apps(
     )
 
 
-@cliq_app.command("app-get")
 def cliq_app_get(
     app_id: str = typer.Argument(..., help="Cliq app id."),
     network: Optional[str] = typer.Option(
@@ -3071,6 +3072,13 @@ def cliq_app_get(
             "app": view,
         }
     )
+
+
+register_cliq_app_catalog_commands(
+    cliq_app,
+    cliq_apps_command=cliq_apps,
+    cliq_app_get_command=cliq_app_get,
+)
 
 
 @cliq_app.command("apps-bridge-run")

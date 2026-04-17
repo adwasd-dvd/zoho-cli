@@ -4,10 +4,10 @@ module: cliq
 stage: in_progress
 status: in_progress
 owner: automation
-updated_at: '2026-04-17T01:17:14Z'
+updated_at: '2026-04-17T03:32:28Z'
 success_criteria:
 - ship the next cliq-193 app-governance command/client slice with focused tests
 - run one focused live verification for that new slice and archive evidence
 - keep cliq-165 export blocker evidence current while app-account activation remains external
 next_if_done: finish the next queued cliq-193 hardening slice, then start platform-200 modularization guardrail rollout
-next_step: "cliq-193 focused live blocker probe rerun (`cliq status --check-auth` + `cliq app-commands APP_PROBE_FAKE_20260417_005822`) confirms auth/export readiness stays healthy while app-command verification remains blocked (`appCommandsError: empty_output`; stderr `error: not_supported`); next ship the next smallest app-command output hardening slice with focused tests, then rerun this probe."
+next_step: "cliq-193 focused live blocker probe rerun (`cliq status --check-auth` + `cliq app-commands APP_PROBE_FAKE_20260417_033228`) still reports app-command endpoint block (`appCommandsError: empty_output`; stderr `error: not_supported`) and now shows Cliq scopes missing (`oauthReady: false`, `exportOauthReady: false`); next run one Cliq re-auth (`zoho login --with-cliq --with-cliq-export`) on the test config, rerun the probe, then continue the next smallest app-command hardening slice."

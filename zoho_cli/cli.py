@@ -3935,9 +3935,11 @@ def cliq_app_commands(
                 "STATE",
                 "MODE",
                 "command_status",
+                "command_Status",
                 "commandStatus",
                 "commandstatus",
                 "CommandStatus",
+                "Command_Status",
                 "COMMANDSTATUS",
                 "COMMAND_STATUS",
                 "command_mode",
@@ -3952,9 +3954,11 @@ def cliq_app_commands(
                 "Command-Mode",
                 "COMMAND-MODE",
                 "action_status",
+                "action_Status",
                 "actionStatus",
                 "actionstatus",
                 "ActionStatus",
+                "Action_Status",
                 "ACTIONSTATUS",
                 "ACTION_STATUS",
                 "action_mode",
@@ -4389,9 +4393,11 @@ def cliq_app_commands(
                     or row.get("STATE")
                     or row.get("MODE")
                     or row.get("command_status")
+                    or row.get("command_Status")
                     or row.get("commandStatus")
                     or row.get("commandstatus")
                     or row.get("CommandStatus")
+                    or row.get("Command_Status")
                     or row.get("COMMANDSTATUS")
                     or row.get("COMMAND_STATUS")
                     or row.get("command_mode")
@@ -4406,9 +4412,11 @@ def cliq_app_commands(
                     or row.get("Command-Mode")
                     or row.get("COMMAND-MODE")
                     or row.get("action_status")
+                    or row.get("action_Status")
                     or row.get("actionStatus")
                     or row.get("actionstatus")
                     or row.get("ActionStatus")
+                    or row.get("Action_Status")
                     or row.get("ACTIONSTATUS")
                     or row.get("ACTION_STATUS")
                     or row.get("action_mode")
@@ -4604,9 +4612,11 @@ def cliq_app_command_get(
             "ACTIONDESCRIPTION",
             "ACTION_DESCRIPTION",
             "command_status",
+            "command_Status",
             "commandStatus",
             "commandstatus",
             "CommandStatus",
+            "Command_Status",
             "COMMANDSTATUS",
             "COMMAND_STATUS",
             "command_mode",
@@ -4621,9 +4631,11 @@ def cliq_app_command_get(
             "Command-Mode",
             "COMMAND-MODE",
             "action_status",
+            "action_Status",
             "actionStatus",
             "actionstatus",
             "ActionStatus",
+            "Action_Status",
             "ACTIONSTATUS",
             "ACTION_STATUS",
             "action_mode",
@@ -5152,9 +5164,11 @@ def cliq_app_command_get(
             or row.get("STATE")
             or row.get("MODE")
             or row.get("command_status")
+            or row.get("command_Status")
             or row.get("commandStatus")
             or row.get("commandstatus")
             or row.get("CommandStatus")
+            or row.get("Command_Status")
             or row.get("COMMANDSTATUS")
             or row.get("COMMAND_STATUS")
             or row.get("command_mode")
@@ -5169,9 +5183,11 @@ def cliq_app_command_get(
             or row.get("Command-Mode")
             or row.get("COMMAND-MODE")
             or row.get("action_status")
+            or row.get("action_Status")
             or row.get("actionStatus")
             or row.get("actionstatus")
             or row.get("ActionStatus")
+            or row.get("Action_Status")
             or row.get("ACTIONSTATUS")
             or row.get("ACTION_STATUS")
             or row.get("action_mode")

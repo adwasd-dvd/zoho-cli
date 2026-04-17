@@ -1,10 +1,15 @@
-last_run_at: "2026-04-17T17:39:13Z"
+last_run_at: "2026-04-17T17:42:28Z"
 last_result: success
 current_focus: platform
 suites:
   unit:
     status: success
     notes:
+      - "platform-201 package export parity verification at 2026-04-17T17:42:28Z"
+      - "python3.11 -m pytest -q tests/test_registry.py"
+      - "14 passed in 0.02s"
+      - "./.venv/bin/ruff format --check zoho_cli/commands/__init__.py"
+      - "1 file already formatted"
       - "platform-203 membrane bridge bootstrap verification at 2026-04-17T17:39:13Z"
       - "python3.11 -m pytest -q tests/test_registry.py tests/test_membrane_bridge.py"
       - "18 passed in 0.09s"

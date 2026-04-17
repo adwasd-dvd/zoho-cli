@@ -1,5 +1,5 @@
 module: Platform
-updated_at: "2026-04-17T16:48:54Z"
+updated_at: "2026-04-17T17:42:28Z"
 status: in_progress
 blockers: []
-next_small_step: continue platform-201 by splitting the remaining crm/config root-registration helper into crm-only + config-only helpers from `register_builtin_root_typers` while preserving root-command parity
+next_small_step: continue platform-201 by adding package-surface parity coverage for exported root-registration helpers (including membrane) while preserving root-command behavior parity

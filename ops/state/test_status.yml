@@ -1,10 +1,13 @@
-last_run_at: "2026-04-17T20:00:15Z"
+last_run_at: "2026-04-17T20:08:00Z"
 last_result: success
 current_focus: platform
 suites:
   unit:
     status: success
     notes:
+      - "platform-203 cliq app-permission bridge wrapper verification at 2026-04-17T20:08:00Z"
+      - "pytest -q tests/test_membrane_bridge.py -k \"app_permission_get_bridge_run\""
+      - "2 passed, 18 deselected in 0.10s"
       - "integration-loop medium-scope verification refresh at 2026-04-17T20:00:15Z"
       - "python3.11 -m pytest -q tests/test_registry.py tests/test_membrane_bridge.py"
       - "32 passed in 0.33s"

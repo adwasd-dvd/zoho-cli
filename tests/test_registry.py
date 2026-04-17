@@ -1,8 +1,23 @@
 from __future__ import annotations
 
+from functools import partial
+
 import typer
 
-from zoho_cli.cli import _register_builtin_root_typers, app as cli_app
+from zoho_cli.cli import (
+    app as cli_app,
+    attachment_subapp,
+    cliq_app,
+    config_app,
+    crm_app,
+    folders_app,
+    labels_app,
+    mail_app,
+)
+from zoho_cli.commands.root import (
+    register_builtin_root_typers,
+    register_mail_root_typers,
+)
 from zoho_cli.registry import register_root_commands
 
 
@@ -33,7 +48,21 @@ def test_register_root_commands_runs_supplied_registrars_in_order() -> None:
 def test_register_builtin_root_typers_preserves_expected_group_names() -> None:
     app = typer.Typer(no_args_is_help=True)
 
-    register_root_commands(app, registrars=(_register_builtin_root_typers,))
+    register_root_commands(
+        app,
+        registrars=(
+            partial(
+                register_builtin_root_typers,
+                mail_app=mail_app,
+                attachment_app=attachment_subapp,
+                folders_app=folders_app,
+                labels_app=labels_app,
+                cliq_app=cliq_app,
+                crm_app=crm_app,
+                config_app=config_app,
+            ),
+        ),
+    )
 
     assert [group.name for group in app.registered_groups] == [
         "mail",
@@ -43,6 +72,30 @@ def test_register_builtin_root_typers_preserves_expected_group_names() -> None:
         "cliq",
         "crm",
         "config",
+    ]
+
+
+def test_register_mail_root_typers_preserves_expected_group_names() -> None:
+    app = typer.Typer(no_args_is_help=True)
+
+    register_root_commands(
+        app,
+        registrars=(
+            partial(
+                register_mail_root_typers,
+                mail_app=mail_app,
+                attachment_app=attachment_subapp,
+                folders_app=folders_app,
+                labels_app=labels_app,
+            ),
+        ),
+    )
+
+    assert [group.name for group in app.registered_groups] == [
+        "mail",
+        "attachment",
+        "folders",
+        "labels",
     ]
 
 

@@ -179,6 +179,14 @@ def test_render_success_html_shows_product_specific_commands() -> None:
     assert "zoho cliq chats" in html
 
 
+def test_render_success_html_shows_crm_badge_and_command() -> None:
+    html = auth._render_success_html(  # type: ignore[attr-defined]
+        ["ZohoCRM.modules.ALL", "ZohoCRM.settings.ALL"]
+    )
+    assert "Zoho CRM" in html
+    assert "zoho crm status --check-auth" in html
+
+
 def test_create_callback_server_tracks_requested_scopes() -> None:
     server, _redirect_uri, result = auth.create_callback_server(
         0,

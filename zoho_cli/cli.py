@@ -13,6 +13,8 @@ from __future__ import annotations
 import json
 import shlex
 import sys
+import threading
+from urllib.parse import urlparse
 
 # Fail fast with a clear message if any runtime dependency is missing
 # (e.g. Homebrew formula may omit transitive deps like idna)
@@ -522,8 +524,8 @@ def login(
     )
 
     if no_browser:
-        # ── manual paste flow (headless / remote) ─────────────────────────
-        # Detect region first (no local server needed).
+        # ── manual flow (headless / remote) ────────────────────────────────
+        # Detect region first.
         forced_accounts_url = _config.infer_accounts_server(cfg)
         if not forced_accounts_url:
             _stderr("Auto-detecting your Zoho region…")
@@ -549,6 +551,27 @@ def login(
             # Unset redirect in no-browser mode must default to localhost.
             redirect_uri = localhost_redirect
 
+        callback_server = None
+        callback_result: dict[str, Any] | None = None
+        callback_thread: threading.Thread | None = None
+
+        parsed_redirect = urlparse(redirect_uri)
+        is_local_callback = parsed_redirect.hostname in {"localhost", "127.0.0.1"}
+        if is_local_callback:
+            preferred_port = parsed_redirect.port or port
+            callback_server, redirect_uri, callback_result = (
+                auth.create_callback_server(
+                    preferred_port,
+                    requested_scopes=scopes,
+                )
+            )
+            callback_thread = threading.Thread(
+                target=callback_server.serve_forever,
+                kwargs={"poll_interval": 0.2},
+                daemon=True,
+            )
+            callback_thread.start()
+
         auth_url = auth.build_auth_url(client_id, redirect_uri, scopes)
 
         _stderr("\n── Zoho OAuth Login (manual) ──────────────────────────────")
@@ -556,12 +579,44 @@ def login(
         _stderr(f"   {auth_url}\n")
         _stderr("2. Approve access.")
         _stderr("3. Copy the full redirect URL (or just the code) and paste it below.")
+        if is_local_callback:
+            _stderr("4. If localhost shows Connected, you can just press Enter below.")
         _stderr("────────────────────────────────────────────────────────────\n")
-        raw_url = click.prompt("Paste the full redirect URL here", err=True)
-        parsed_redirect_uri = auth.extract_redirect_uri(raw_url)
-        if parsed_redirect_uri:
-            redirect_uri = parsed_redirect_uri
-        code, accounts_server = auth.parse_redirect(raw_url)
+        prompt_label = "Paste the full redirect URL here"
+        if is_local_callback:
+            prompt_label += " (or press Enter)"
+
+        try:
+            if is_local_callback:
+                raw_url = click.prompt(
+                    prompt_label,
+                    default="",
+                    show_default=False,
+                    err=True,
+                ).strip()
+            else:
+                raw_url = click.prompt(prompt_label, err=True).strip()
+
+            if raw_url:
+                parsed_redirect_uri = auth.extract_redirect_uri(raw_url)
+                if parsed_redirect_uri:
+                    redirect_uri = parsed_redirect_uri
+                code, accounts_server = auth.parse_redirect(raw_url)
+            elif callback_result and callback_result.get("code"):
+                code = str(callback_result["code"])
+                accounts_server = callback_result.get("accounts_server")
+            else:
+                utils.error_exit(
+                    "oauth_missing_redirect",
+                    "No redirect URL pasted and no localhost callback was captured. "
+                    "Re-run login and paste the full redirect URL (or use browser mode).",
+                )
+        finally:
+            if callback_server:
+                callback_server.shutdown()
+                callback_server.server_close()
+            if callback_thread:
+                callback_thread.join(timeout=1)
     else:
         # ── browser flow with local callback server ────────────────────────
         # Bind the port NOW — before region detection — so it is held during

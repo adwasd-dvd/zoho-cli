@@ -182,6 +182,79 @@ def test_login_no_browser_uses_redirect_from_pasted_url_for_exchange(
     assert seen["redirect_uri"] == "https://example.com/zoho/oauth/callback"
 
 
+def test_login_no_browser_accepts_localhost_callback_without_paste(
+    mock_config: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """Manual flow can proceed from captured localhost callback when paste input is empty."""
+
+    class _FakeServer:
+        def serve_forever(self, poll_interval: float = 0.5) -> None:
+            return None
+
+        def shutdown(self) -> None:
+            return None
+
+        def server_close(self) -> None:
+            return None
+
+    seen: dict[str, str | None] = {}
+    callback_result = {
+        "code": "code-from-callback",
+        "accounts_server": ACCOUNTS_BASE,
+        "requested_scopes": ["ZohoMail.messages.ALL", "ZohoCRM.modules.ALL"],
+    }
+
+    monkeypatch.setattr(auth, "discover_accounts_server", lambda _cid: ACCOUNTS_BASE)
+    monkeypatch.setattr(
+        auth,
+        "create_callback_server",
+        lambda *_a, **_kw: (
+            _FakeServer(),
+            "http://localhost:51821/callback",
+            callback_result,
+        ),
+    )
+    monkeypatch.setattr("click.prompt", lambda *_a, **_kw: "")
+
+    def _exchange_code(
+        code: str,
+        client_id: str,
+        client_secret: str,
+        redirect_uri: str,
+        accounts_base_url: str | None = None,
+    ) -> dict[str, str]:
+        seen["code"] = code
+        seen["redirect_uri"] = redirect_uri
+        seen["accounts_base_url"] = accounts_base_url
+        return {
+            "access_token": "token123",
+            "refresh_token": "refresh123",
+            "scope": "ZohoMail.messages.ALL,ZohoCRM.modules.ALL",
+        }
+
+    monkeypatch.setattr(auth, "exchange_code", _exchange_code)
+    monkeypatch.setattr(auth, "discover_account_id", lambda *_a, **_kw: ACCOUNT_ID)
+    monkeypatch.setattr("zoho_cli.storage.store_token", lambda *_a, **_kw: None)
+
+    result = runner.invoke(
+        app,
+        [
+            "--config",
+            str(mock_config),
+            "--account",
+            ACCOUNT_EMAIL,
+            "login",
+            "--no-browser",
+            "--with-crm",
+        ],
+    )
+
+    assert result.exit_code == 0, result.output
+    assert seen["code"] == "code-from-callback"
+    assert seen["redirect_uri"] == "http://localhost:51821/callback"
+    assert seen["accounts_base_url"] == ACCOUNTS_BASE
+
+
 def test_login_no_browser_with_cliq_export_includes_export_scopes(
     mock_config: Path, monkeypatch: pytest.MonkeyPatch
 ) -> None:

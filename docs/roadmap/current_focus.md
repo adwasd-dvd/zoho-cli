@@ -12,3 +12,20 @@
 2. `cliq-165`: rerun export verification immediately after app-account activation (`list` + one `--chat-id` export) and archive first success JSON.
 3. `crm-002`: auth/API blocker is cleared (`oauthReady: true`; live `crm modules` + `crm list --module Leads --limit 1` succeed). Finish cooldown-safe `fields` + `get` + `search` smoke and close the task.
 4. `platform-200`: after the next cliq-193 slice lands, start the modularization guardrail rollout (rules enforced first, then registry/commands extraction as no-behavior-change slices).
+
+## MR-first delivery estimate (blockers skipped)
+- **Code-complete via mergeable slices**: **7-10 workdays**.
+- **Full external-unblocked completion**: add **~1-3 weeks** depending on Zoho-side activation/support.
+
+### Proposed 10-day execution window
+1. **D1-D3**: finish remaining `cliq-193` hardening slices, each as standalone MR with focused tests + one live probe evidence refresh.
+2. **D4**: `platform-200` guardrails MR (no behavior change).
+3. **D5-D6**: `platform-201` command registration extraction in 1-2 MRs (no behavior change).
+4. **D7-D8**: `platform-202` first cliq command-family extraction with parity tests.
+5. **D9**: `crm-002` cooldown-safe live smoke (`fields/get/search`) + closeout updates.
+6. **D10**: stabilization buffer (review comments, flaky reruns, release-note/state cleanup).
+
+### Blocker handling policy for this window
+- External/API/account blockers are marked **external-blocked** with report-path evidence.
+- External blockers do **not** block merge of unrelated slices.
+- Every MR must stay green on focused tests and formatting checks before merge.

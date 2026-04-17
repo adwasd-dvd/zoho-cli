@@ -5,6 +5,7 @@
 - [ ] Replace any exact-text markdown update flow with section-based rewrite logic.
 - [ ] Confirm mail path handling preserves absolute `/Volumes/...` inputs.
 - [ ] Keep coding loop changes small enough to finish comfortably within the run timeout.
+- [ ] Execute MR-first 7-10 workday plan: close remaining `cliq-193` slices, then land `platform-200/201/202`, then `crm-002` smoke closeout.
 - [ ] Execute queued modularization slices (`platform-200/201/202`) as small no-behavior-change steps once the next `cliq-193` slice is merged.
 - [x] Run one interactive `zoho login --with-cliq` re-auth that includes chat-read scope, then verify `zoho cliq chats --network happydistrouklimited` succeeds.
 - [x] Re-run broad verification gate (`make release-gate && make ci`) after the latest cliq send fallback changes.

@@ -3,6 +3,7 @@
 ## Unreleased
 
 ### Added
+- Hardened `cliq-193` app-command list/detail normalization so `zoho cliq app-commands` and `zoho cliq app-command-get` now also accept mixed snake+uppercase-tail triple help-text aliases (`command_HELP_TEXT` / `action_HELP_TEXT`) plus Pascal-prefix companions (`Command_HELP_TEXT` / `Action_HELP_TEXT`) in command-row hint detection and output description mapping.
 - Hardened `cliq-193` app-command list/detail normalization so `zoho cliq app-commands` and `zoho cliq app-command-get` now also accept Pascal-prefix mixed snake+uppercase-tail helptext aliases (`Command_HELPTEXT` / `Action_HELPTEXT`) in command-row hint detection and output description mapping.
 - Hardened `cliq-193` app-command list/detail normalization so `zoho cliq app-commands` and `zoho cliq app-command-get` now also accept mixed snake+uppercase-tail helptext aliases (`command_HELPTEXT` / `action_HELPTEXT`) in command-row hint detection and output description mapping.
 - Added modularization guardrail spec at `docs/architecture/MODULARIZATION_RULES.md`, including target package layout (`commands`/`products`/`core`), boundary rules, file-size guardrails, and one-slice migration workflow.

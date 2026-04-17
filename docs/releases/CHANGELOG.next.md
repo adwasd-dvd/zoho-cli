@@ -7,9 +7,11 @@
 - Added queued small-step modularization tasks (`platform-200`, `platform-201`, `platform-202`) to `ops/state/work_queue.yml` and linked them into roadmap tracking.
 - Updated planner workflow prompt (`ops/prompts/planner.md`) to always load modularization rules and prefer incremental extraction slices when monolith files grow.
 - Improved `zoho login --no-browser` localhost callback handling: the CLI now spins a temporary callback server so CRM/Mail/Cliq OAuth redirects can render the same Connected HTML page, while still supporting manual redirect URL paste as fallback.
+- Updated CRM live status tracking after re-auth and permission enablement: `crm status --check-auth` now reports `oauthReady: true`, and live `crm modules` / `crm list --module Leads --limit 1` succeed on the test account (crm-002 unblocked at auth/API layer).
 - Hardened `cliq-193` app-command list/detail normalization so `zoho cliq app-commands` and `zoho cliq app-command-get` now also accept command/action mode status aliases (`commandMode`/`command_mode`, `actionMode`/`action_mode`, plus Pascal/uppercase companions) in output status mapping.
 - Hardened `cliq-193` app-command list/detail normalization so `zoho cliq app-commands` and `zoho cliq app-command-get` now also accept kebab mode status aliases (`command-mode` / `action-mode`, plus `Command-Mode`/`Action-Mode` and uppercase companions) in output status mapping and command-row hint detection.
 - Hardened `cliq-193` app-command list/detail normalization so `zoho cliq app-commands` and `zoho cliq app-command-get` now also accept mixed snake+Pascal-tail mode status aliases (`command_Mode` / `action_Mode`, plus `Command_Mode` / `Action_Mode`) in output status mapping and command-row hint detection.
+- Hardened `cliq-193` app-command list/detail normalization so `zoho cliq app-commands` and `zoho cliq app-command-get` now also accept mixed snake+Pascal-tail status aliases (`command_Status` / `action_Status`, plus `Command_Status` / `Action_Status`) in output status mapping and command-row hint detection.
 - Hardened `cliq-193` app-command list/detail normalization so `zoho cliq app-commands` and `zoho cliq app-command-get` now also accept Pascal+snake triple help-text aliases (`Command_Help_Text` / `Action_Help_Text`, plus `Command_HelpText` / `Action_HelpText`) in command-row hint detection and output description mapping.
 - Hardened `cliq-193` app-command list/detail normalization so `zoho cliq app-commands` and `zoho cliq app-command-get` now also accept mixed snake+Pascal-triple help-text aliases (`command_Help_Text` / `action_Help_Text`) plus uppercase-snake helptext aliases (`COMMAND_HELPTEXT` / `ACTION_HELPTEXT`) in command-row hint detection and output description mapping.
 - Hardened `cliq-193` app-command list/detail normalization so `zoho cliq app-commands` and `zoho cliq app-command-get` now also accept mixed snake+Pascal-tail helptext aliases (`command_HelpText` / `action_HelpText`) in command-row hint detection and output description mapping.
@@ -291,14 +293,13 @@
 - Removed duplicate CRM `fields` command/client definitions so the CRM read-only surface now has one canonical `fields` implementation.
 
 ### Release readiness
-- Assessed at 2026-04-15T01:36:48Z: release is **not ready**.
+- Assessed at 2026-04-17T01:54:21Z: release is **not ready**.
 - Fresh gate evidence:
-  - `make release-gate` is currently failing (2 failed, 549 passed, 2026-04-15T01:36:48Z).
-  - Failing tests: `tests/test_cli.py::test_cliq_app_commands_prefers_command_rows_over_metadata_in_data_list`, `tests/test_cli.py::test_cliq_app_commands_prefers_pascal_action_id_row_over_metadata_in_data_list`.
-  - Focused live checks are current through `2026-04-15T01:24:40Z`; latest `cliq app-commands` probe (`cliq-193`) keeps auth/export readiness healthy (`oauthReady: true`, `exportOauthReady: true`) while app-command list endpoints remain `not_supported`.
-  - Changelog draft and release state have been refreshed for this assessment.
+  - `./ops/scripts/release_gate.sh full` is green (`659 passed in 11.97s` + wheel smoke `0.2.0`, 2026-04-17T01:54Z run).
+  - `make ci` is green (`659 passed in 11.63s`, plus format/lint checks).
+  - Focused live checks are current through `2026-04-17T03:32:28Z`; latest `cliq app-commands` probe (`cliq-193`) still remains blocked (`appCommandsError: empty_output`, stderr `error: not_supported`) and companion status evidence shows test-config Cliq scopes currently missing (`oauthReady: false`, `exportOauthReady: false`).
+  - Changelog draft and release state were refreshed for this assessment; no publish actions were performed.
 - Remaining release blockers:
-  - blocker bugs are **not** clear (`crm-002` live smoke remains blocked by account-level CRM org access and returns `OAUTH_SCOPE_MISMATCH`).
-  - current focus milestone `cliq-expansion-phase` is **not complete** (`cliq-165` export verification is externally blocked by `inactive_appaccount_user`, and `cliq-193` is still in progress).
-  - relevant integration checks are **not** clean (`ops/state/test_status.yml` remains `integration: warning` because live Cliq scope/endpoint blockers are unresolved).
-  - broad release gate is **not** clean until the two cliq-193 metadata-row regression tests above pass again.
+  - blocker bugs are **not** clear (`cliq-193` live app-command verification still returns `not_supported`).
+  - current focus milestone `cliq-expansion-phase` is **not complete** (`active_task: cliq-193` is still in progress, and `cliq-165` export verification is externally blocked by `inactive_appaccount_user`).
+  - relevant integration checks are **not** clean (`release_gate.integration_tests_passed_or_explicitly_skipped: false` while the focused cliq-193 live probe remains warning/blocked).

@@ -1,6 +1,5 @@
 module: CRM
-updated_at: "2026-04-08T15:49:49Z"
+updated_at: "2026-04-17T03:36:50Z"
 status: in_progress
-blockers:
-  - test account is not in a CRM org; Zoho consent screen confirms CRM permissions are not granted, and live CRM APIs return `OAUTH_SCOPE_MISMATCH`
-next_small_step: switch to a CRM-enabled org account (or add this account to a CRM org), then rerun `zoho login --with-crm` + `crm list/get/search` smoke
+blockers: []
+next_small_step: run a cooldown-safe live smoke (`crm fields`, `crm get`, `crm search`) and mark crm-002 complete when all three pass

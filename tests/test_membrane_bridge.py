@@ -269,6 +269,100 @@ def test_cliq_bridge_run_rejects_unsupported_bridge(mock_config: Path) -> None:
     assert "unsupported_bridge" in result.output
 
 
+def test_cliq_export_chats_bridge_run_defaults_to_export_conversations(
+    mock_config: Path,
+) -> None:
+    seen: dict[str, Any] = {}
+
+    def _fake_run(*a, **kw):
+        seen["command"] = a[0]
+        return subprocess.CompletedProcess(
+            args=a[0],
+            returncode=0,
+            stdout=json.dumps({"ok": True}),
+            stderr="",
+        )
+
+    with pytest.MonkeyPatch.context() as monkeypatch:
+        monkeypatch.setattr(
+            "zoho_cli.cli.shutil.which", lambda _name: "/usr/local/bin/membrane"
+        )
+        monkeypatch.setattr("zoho_cli.cli.subprocess.run", _fake_run)
+
+        result = runner.invoke(
+            app,
+            [
+                "--config",
+                str(mock_config),
+                "cliq",
+                "export-chats-bridge-run",
+            ],
+        )
+
+    assert result.exit_code == 0, result.output
+    assert seen["command"] == [
+        "/usr/local/bin/membrane",
+        "action",
+        "run",
+        "--connectionId=CONN_CLIQ_FROM_CONFIG",
+        "export-conversations",
+        "--json",
+    ]
+    payload = json.loads(result.output)
+    assert payload["actionId"] == "export-conversations"
+    assert payload["chatId"] is None
+
+
+def test_cliq_export_chats_bridge_run_with_chat_id_sets_action_and_input(
+    mock_config: Path,
+) -> None:
+    seen: dict[str, Any] = {}
+
+    def _fake_run(*a, **kw):
+        seen["command"] = a[0]
+        return subprocess.CompletedProcess(
+            args=a[0],
+            returncode=0,
+            stdout=json.dumps({"ok": True}),
+            stderr="",
+        )
+
+    with pytest.MonkeyPatch.context() as monkeypatch:
+        monkeypatch.setattr(
+            "zoho_cli.cli.shutil.which", lambda _name: "/usr/local/bin/membrane"
+        )
+        monkeypatch.setattr("zoho_cli.cli.subprocess.run", _fake_run)
+
+        result = runner.invoke(
+            app,
+            [
+                "--config",
+                str(mock_config),
+                "cliq",
+                "export-chats-bridge-run",
+                "--chat-id",
+                "CT_123",
+            ],
+        )
+
+    assert result.exit_code == 0, result.output
+    assert seen["command"][:6] == [
+        "/usr/local/bin/membrane",
+        "action",
+        "run",
+        "--connectionId=CONN_CLIQ_FROM_CONFIG",
+        "export-chat-messages",
+        "--json",
+    ]
+    assert seen["command"][6] == "--input"
+    assert json.loads(seen["command"][7]) == {"chatId": "CT_123"}
+
+    payload = json.loads(result.output)
+    assert payload["actionId"] == "export-chat-messages"
+    assert payload["chatId"] == "CT_123"
+    assert payload["input"] == {"chatId": "CT_123"}
+
+
 def test_crm_bridge_run_uses_default_preset(mock_config: Path) -> None:
     seen: dict[str, Any] = {}
 

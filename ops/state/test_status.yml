@@ -1,10 +1,13 @@
-last_run_at: "2026-04-17T18:25:19Z"
+last_run_at: "2026-04-17T18:46:25Z"
 last_result: success
 current_focus: platform
 suites:
   unit:
     status: success
     notes:
+      - "platform-203 cliq export bridge wrapper verification at 2026-04-17T18:46:25Z"
+      - "python3.11 -m pytest -q tests/test_membrane_bridge.py -k \"cliq_export_chats_bridge_run or cliq_bridge_run_uses_default_preset or cliq_bridge_run_rejects_unsupported_bridge\""
+      - "4 passed, 8 deselected in 0.09s"
       - "platform-203 cliq deferred-gate blocker slice verification at 2026-04-17T18:25:19Z"
       - "python3.11 -m pytest -q tests/test_cliq.py -k \"three_strike_not_supported_deferred or inactive_appaccount_three_strike_deferred or deferred_guard_blocks_http_calls or deferred_guard_uses_last_unsupported_signal or success_clears_unsupported_counter or export_chat_messages_inactive_three_strike_deferred\""
       - "6 passed, 164 deselected in 0.14s"

@@ -4,10 +4,10 @@ module: platform
 stage: in_progress
 status: in_progress
 owner: coder
-updated_at: '2026-04-17T18:25:19Z'
+updated_at: '2026-04-17T18:46:25Z'
 success_criteria:
 - ship membrane preset resolution (`zoho-cliq` / `zoho-crm`) with focused tests
-- land first explicit product wrapper commands (`crm bridge-run --bridge membrane`, `cliq bridge-run --bridge membrane`)
+- land first explicit product wrapper commands (`crm bridge-run --bridge membrane`, `cliq bridge-run --bridge membrane`, `cliq export-chats-bridge-run`)
 - keep docs and state files aligned with hybrid rollout guidance
 next_if_done: continue platform-201/202 modularization slices and map top-priority blocked cliq actions behind explicit bridge/capability gates
 next_step: continue platform-203 by mapping the next highest-value cliq blocker to an explicit bridge-backed wrapper or capability-gated fallback path (app-governance endpoints already moved under persisted unsupported/deferred gating).

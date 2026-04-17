@@ -5971,6 +5971,112 @@ def cliq_export_chats(
     utils.output(payload)
 
 
+@cliq_app.command("export-chats-bridge-run")
+def cliq_export_chats_bridge_run(
+    chat_id: Optional[str] = typer.Option(
+        None,
+        "--chat-id",
+        help="Optional chat id. When set, default action switches to export-chat-messages.",
+    ),
+    action_id: Optional[str] = typer.Option(
+        None,
+        "--action-id",
+        help="Optional membrane action id override.",
+    ),
+    bridge: str = typer.Option(
+        "membrane",
+        "--bridge",
+        help="Bridge backend. Currently only 'membrane' is supported.",
+    ),
+    connection_id: Optional[str] = typer.Option(
+        None,
+        "--connection-id",
+        help="Membrane connection ID. Overrides preset lookup when provided.",
+    ),
+    preset: Optional[str] = typer.Option(
+        "zoho-cliq",
+        "--preset",
+        help="Connection preset alias (default: zoho-cliq).",
+    ),
+    input_json: Optional[str] = typer.Option(
+        None,
+        "--input-json",
+        help="Optional JSON input passed to membrane --input (merged with chatId when --chat-id is provided).",
+    ),
+) -> None:
+    """Run Cliq export-chats through membrane bridge (explicit opt-in)."""
+    if bridge.strip().lower() != "membrane":
+        utils.error_exit(
+            "unsupported_bridge",
+            "Only --bridge membrane is supported right now.",
+        )
+
+    resolved_chat_id = (chat_id or "").strip()
+    resolved_action_id = (action_id or "").strip() or (
+        "export-chat-messages" if resolved_chat_id else "export-conversations"
+    )
+
+    cfg = _cfg()
+    email = _S.account or _config.default_account(cfg)
+    resolved_connection_id = _resolve_membrane_connection_id(
+        connection_id=connection_id,
+        preset=preset,
+        cfg=cfg,
+        email=email,
+    )
+
+    resolved_input: Any | None = None
+    if input_json is not None:
+        try:
+            resolved_input = json.loads(input_json)
+        except json.JSONDecodeError:
+            utils.error_exit(
+                "invalid_input_json",
+                "--input-json must be a valid JSON object/string.",
+            )
+
+    if resolved_chat_id:
+        if resolved_input is None:
+            resolved_input = {"chatId": resolved_chat_id}
+        elif isinstance(resolved_input, dict):
+            resolved_input = dict(resolved_input)
+            resolved_input.setdefault("chatId", resolved_chat_id)
+        else:
+            utils.error_exit(
+                "invalid_input_json",
+                "--input-json must decode to a JSON object when --chat-id is provided.",
+            )
+
+    command: list[str] = [
+        "action",
+        "run",
+        f"--connectionId={resolved_connection_id}",
+        resolved_action_id,
+        "--json",
+    ]
+
+    if resolved_input is not None:
+        command.extend(
+            [
+                "--input",
+                json.dumps(resolved_input, ensure_ascii=False),
+            ]
+        )
+
+    result = _run_membrane_command(command)
+    payload: dict[str, Any] = {
+        "bridge": "membrane",
+        "preset": _normalize_membrane_preset(preset or "zoho-cliq"),
+        "connectionId": resolved_connection_id,
+        "actionId": resolved_action_id,
+        "chatId": resolved_chat_id or None,
+        "result": result,
+    }
+    if resolved_input is not None:
+        payload["input"] = resolved_input
+    utils.output(payload)
+
+
 @cliq_app.command("whoami")
 def cliq_whoami(
     network: Optional[str] = typer.Option(

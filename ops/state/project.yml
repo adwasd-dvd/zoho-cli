@@ -1,5 +1,5 @@
 project: zoho-cli
-updated_at: '2026-04-17T18:10:09Z'
+updated_at: '2026-04-17T18:46:25Z'
 status: cliq-expansion
 canonical_workspace: /Users/adwasd/.openclaw/workspace-coder
 project_root: /Users/adwasd/.openclaw/workspace-coder/job/zoho-cli
@@ -7,7 +7,7 @@ module_order:
 - Mail
 - Cliq
 - CRM
-current_focus: "Hybrid rollout advanced: membrane bridge now supports preset-based connection resolution (`zoho-cliq`/`zoho-crm`) with first explicit product wrappers (`zoho crm bridge-run --bridge membrane`, `zoho cliq bridge-run --bridge membrane`) so external capability can be used immediately with less operator friction."
+current_focus: "Hybrid rollout advanced: membrane bridge now supports preset-based connection resolution (`zoho-cliq`/`zoho-crm`) with explicit product wrappers (`zoho crm bridge-run --bridge membrane`, `zoho cliq bridge-run --bridge membrane`, `zoho cliq export-chats-bridge-run`) so external capability can be used immediately with less operator friction."
 primary_blockers:
 - crm live read-only verification remains blocked by account-level CRM org access
 - cliq databases live verification currently requires additional scope (`ZohoCliq.Databases.READ`) on the active token despite healthy baseline auth/export readiness

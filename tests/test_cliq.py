@@ -140,6 +140,243 @@ def test_cliq_client_list_teams_scope_invalid_reports_hint(
 
 
 @respx.mock
+def test_cliq_client_list_teams_three_strike_not_supported_deferred(
+    client: cliq.ZohoCliqClient,
+    monkeypatch: pytest.MonkeyPatch,
+    tmp_path: Path,
+    capsys: pytest.CaptureFixture[str],
+) -> None:
+    tracker_path = tmp_path / "cliq_unsupported_tracker.json"
+    monkeypatch.setenv("ZOHO_CLIQ_UNSUPPORTED_TRACKER_PATH", str(tracker_path))
+    monkeypatch.setenv("ZOHO_CLIQ_UNSUPPORTED_THRESHOLD", "3")
+    monkeypatch.delenv("ZOHO_CLIQ_FORCE_UNSUPPORTED_RECHECK", raising=False)
+
+    respx.get("https://cliq.zoho.com/api/v2/teams").mock(
+        return_value=httpx.Response(404, text="request_url_invalid")
+    )
+    respx.get("https://cliq.zoho.com/api/v2/admin/teams").mock(
+        return_value=httpx.Response(404, text="request_url_invalid")
+    )
+
+    errors: list[str] = []
+    for _ in range(3):
+        with pytest.raises(SystemExit):
+            client.list_teams(limit=4)
+        errors.append(capsys.readouterr().err)
+
+    assert "post-release deferred" not in errors[0].lower()
+    assert "post-release deferred" in errors[2].lower()
+
+    tracker_payload = json.loads(tracker_path.read_text(encoding="utf-8"))
+    key = client._unsupported_operation_key("teams-list")
+    entry = tracker_payload["operations"][key]
+    assert entry["unsupportedConsecutiveCount"] == 3
+    assert entry["postReleaseDeferred"] is True
+
+
+@respx.mock
+def test_cliq_client_list_teams_inactive_appaccount_three_strike_deferred(
+    client: cliq.ZohoCliqClient,
+    monkeypatch: pytest.MonkeyPatch,
+    tmp_path: Path,
+    capsys: pytest.CaptureFixture[str],
+) -> None:
+    tracker_path = tmp_path / "cliq_unsupported_tracker.json"
+    monkeypatch.setenv("ZOHO_CLIQ_UNSUPPORTED_TRACKER_PATH", str(tracker_path))
+    monkeypatch.setenv("ZOHO_CLIQ_UNSUPPORTED_THRESHOLD", "3")
+    monkeypatch.delenv("ZOHO_CLIQ_FORCE_UNSUPPORTED_RECHECK", raising=False)
+
+    respx.get("https://cliq.zoho.com/api/v2/teams").mock(
+        return_value=httpx.Response(403, json={"code": "inactive_appaccount_user"})
+    )
+    respx.get("https://cliq.zoho.com/api/v2/admin/teams").mock(
+        return_value=httpx.Response(403, json={"code": "inactive_appaccount_user"})
+    )
+
+    errors: list[str] = []
+    for _ in range(3):
+        with pytest.raises(SystemExit):
+            client.list_teams(limit=4)
+        errors.append(capsys.readouterr().err)
+
+    assert "inactive_appaccount_user" in errors[0]
+    assert "post-release deferred" not in errors[0].lower()
+    assert "inactive_appaccount_user" in errors[2]
+    assert "post-release deferred" in errors[2].lower()
+
+    tracker_payload = json.loads(tracker_path.read_text(encoding="utf-8"))
+    key = client._unsupported_operation_key("teams-list")
+    entry = tracker_payload["operations"][key]
+    assert entry["unsupportedConsecutiveCount"] == 3
+    assert entry["postReleaseDeferred"] is True
+    assert entry["lastUnsupportedSignal"] == "inactive_appaccount_user"
+
+
+def test_cliq_client_list_teams_deferred_guard_blocks_http_calls(
+    client: cliq.ZohoCliqClient,
+    monkeypatch: pytest.MonkeyPatch,
+    tmp_path: Path,
+    capsys: pytest.CaptureFixture[str],
+) -> None:
+    tracker_path = tmp_path / "cliq_unsupported_tracker.json"
+    monkeypatch.setenv("ZOHO_CLIQ_UNSUPPORTED_TRACKER_PATH", str(tracker_path))
+    monkeypatch.delenv("ZOHO_CLIQ_FORCE_UNSUPPORTED_RECHECK", raising=False)
+
+    key = client._unsupported_operation_key("teams-list")
+    tracker_path.write_text(
+        json.dumps(
+            {
+                "version": 1,
+                "operations": {
+                    key: {
+                        "unsupportedConsecutiveCount": 3,
+                        "unsupportedThreshold": 3,
+                        "postReleaseDeferred": True,
+                        "lastUnsupportedSignal": "not_supported",
+                    }
+                },
+            }
+        ),
+        encoding="utf-8",
+    )
+
+    def _unexpected_http_get(*args: object, **kwargs: object) -> httpx.Response:
+        raise AssertionError("HTTP GET should not run for deferred operations")
+
+    monkeypatch.setattr(cliq.httpx, "get", _unexpected_http_get)
+
+    with pytest.raises(SystemExit):
+        client.list_teams(limit=4)
+
+    err = capsys.readouterr().err
+    assert "post-release deferred" in err.lower()
+
+
+def test_cliq_client_list_teams_deferred_guard_uses_last_unsupported_signal(
+    client: cliq.ZohoCliqClient,
+    monkeypatch: pytest.MonkeyPatch,
+    tmp_path: Path,
+    capsys: pytest.CaptureFixture[str],
+) -> None:
+    tracker_path = tmp_path / "cliq_unsupported_tracker.json"
+    monkeypatch.setenv("ZOHO_CLIQ_UNSUPPORTED_TRACKER_PATH", str(tracker_path))
+    monkeypatch.delenv("ZOHO_CLIQ_FORCE_UNSUPPORTED_RECHECK", raising=False)
+
+    key = client._unsupported_operation_key("teams-list")
+    tracker_path.write_text(
+        json.dumps(
+            {
+                "version": 1,
+                "operations": {
+                    key: {
+                        "unsupportedConsecutiveCount": 3,
+                        "unsupportedThreshold": 3,
+                        "postReleaseDeferred": True,
+                        "lastUnsupportedSignal": "inactive_appaccount_user",
+                    }
+                },
+            }
+        ),
+        encoding="utf-8",
+    )
+
+    def _unexpected_http_get(*args: object, **kwargs: object) -> httpx.Response:
+        raise AssertionError("HTTP GET should not run for deferred operations")
+
+    monkeypatch.setattr(cliq.httpx, "get", _unexpected_http_get)
+
+    with pytest.raises(SystemExit):
+        client.list_teams(limit=4)
+
+    err = capsys.readouterr().err
+    assert "inactive_appaccount_user" in err
+    assert "post-release deferred" in err.lower()
+
+
+@respx.mock
+def test_cliq_client_list_teams_success_clears_unsupported_counter(
+    client: cliq.ZohoCliqClient,
+    monkeypatch: pytest.MonkeyPatch,
+    tmp_path: Path,
+) -> None:
+    tracker_path = tmp_path / "cliq_unsupported_tracker.json"
+    monkeypatch.setenv("ZOHO_CLIQ_UNSUPPORTED_TRACKER_PATH", str(tracker_path))
+
+    key = client._unsupported_operation_key("teams-list")
+    tracker_path.write_text(
+        json.dumps(
+            {
+                "version": 1,
+                "operations": {
+                    key: {
+                        "unsupportedConsecutiveCount": 2,
+                        "unsupportedThreshold": 3,
+                        "postReleaseDeferred": False,
+                        "lastUnsupportedSignal": "not_supported",
+                    }
+                },
+            }
+        ),
+        encoding="utf-8",
+    )
+
+    respx.get("https://cliq.zoho.com/api/v2/teams").mock(
+        return_value=httpx.Response(
+            200,
+            json={
+                "data": [
+                    {
+                        "team_id": "TM_1",
+                        "name": "Ops",
+                    }
+                ]
+            },
+        )
+    )
+
+    result = client.list_teams(limit=4)
+    assert result["data"][0]["team_id"] == "TM_1"
+
+    tracker_payload = json.loads(tracker_path.read_text(encoding="utf-8"))
+    entry = tracker_payload["operations"][key]
+    assert entry["unsupportedConsecutiveCount"] == 0
+    assert entry["postReleaseDeferred"] is False
+
+
+@respx.mock
+def test_cliq_client_export_chat_messages_inactive_three_strike_deferred(
+    client: cliq.ZohoCliqClient,
+    monkeypatch: pytest.MonkeyPatch,
+    tmp_path: Path,
+    capsys: pytest.CaptureFixture[str],
+) -> None:
+    tracker_path = tmp_path / "cliq_unsupported_tracker.json"
+    monkeypatch.setenv("ZOHO_CLIQ_UNSUPPORTED_TRACKER_PATH", str(tracker_path))
+    monkeypatch.setenv("ZOHO_CLIQ_UNSUPPORTED_THRESHOLD", "3")
+    monkeypatch.delenv("ZOHO_CLIQ_FORCE_UNSUPPORTED_RECHECK", raising=False)
+
+    respx.get("https://cliq.zoho.com/maintenanceapi/v2/chats/CT_1/messages").mock(
+        return_value=httpx.Response(403, json={"code": "inactive_appaccount_user"})
+    )
+
+    errors: list[str] = []
+    for _ in range(3):
+        with pytest.raises(SystemExit):
+            client.export_chat_messages("CT_1")
+        errors.append(capsys.readouterr().err)
+
+    assert "post-release deferred" not in errors[0].lower()
+    assert "post-release deferred" in errors[2].lower()
+
+    tracker_payload = json.loads(tracker_path.read_text(encoding="utf-8"))
+    key = client._unsupported_operation_key("export-chat-messages")
+    entry = tracker_payload["operations"][key]
+    assert entry["unsupportedConsecutiveCount"] == 3
+    assert entry["postReleaseDeferred"] is True
+    assert entry["lastUnsupportedSignal"] == "inactive_appaccount_user"
+
+
+@respx.mock
 def test_cliq_client_list_departments_falls_back_to_admin_endpoint(
     client: cliq.ZohoCliqClient,
 ) -> None:

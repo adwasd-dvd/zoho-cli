@@ -4,13 +4,16 @@ from __future__ import annotations
 
 import json
 import mimetypes
+import os
 import re
+from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any, Optional
 from urllib.parse import urlparse
 
 import httpx
 
+from zoho_cli import config as zoho_config
 from zoho_cli import utils
 
 
@@ -28,6 +31,9 @@ DEFAULT_CLIQ_EXPORT_SCOPES = [
     CLIQ_EXPORT_CHATS_SCOPE,
     CLIQ_EXPORT_MESSAGES_SCOPE,
 ]
+
+UNSUPPORTED_THRESHOLD_DEFAULT = 3
+UNSUPPORTED_TRACKER_VERSION = 1
 
 
 def missing_cliq_scopes(granted_scopes: list[str] | None) -> list[str]:
@@ -79,6 +85,212 @@ class ZohoCliqClient:
             "attemptedPaths": [],
             "selectedPath": None,
         }
+
+    @staticmethod
+    def _unsupported_threshold() -> int:
+        raw = (os.environ.get("ZOHO_CLIQ_UNSUPPORTED_THRESHOLD") or "").strip()
+        if not raw:
+            return UNSUPPORTED_THRESHOLD_DEFAULT
+        try:
+            value = int(raw)
+        except ValueError:
+            return UNSUPPORTED_THRESHOLD_DEFAULT
+        return max(1, value)
+
+    @staticmethod
+    def _force_unsupported_recheck_enabled() -> bool:
+        raw = (os.environ.get("ZOHO_CLIQ_FORCE_UNSUPPORTED_RECHECK") or "").strip()
+        return raw.lower() in {"1", "true", "yes", "on"}
+
+    def _unsupported_tracker_path(self) -> Path:
+        override = (os.environ.get("ZOHO_CLIQ_UNSUPPORTED_TRACKER_PATH") or "").strip()
+        if override:
+            return Path(override).expanduser()
+        return zoho_config.config_path().parent / "cliq_unsupported_tracker.json"
+
+    def _unsupported_operation_key(self, operation_label: str) -> str:
+        label = operation_label.strip().lower() or "unknown-operation"
+        return f"{self.base_url}::{label}"
+
+    def _read_unsupported_tracker(self) -> dict[str, Any]:
+        path = self._unsupported_tracker_path()
+        if not path.exists():
+            return {"version": UNSUPPORTED_TRACKER_VERSION, "operations": {}}
+
+        try:
+            raw = path.read_text(encoding="utf-8", errors="replace").strip()
+        except OSError:
+            return {"version": UNSUPPORTED_TRACKER_VERSION, "operations": {}}
+
+        if not raw:
+            return {"version": UNSUPPORTED_TRACKER_VERSION, "operations": {}}
+
+        try:
+            payload = json.loads(raw)
+        except json.JSONDecodeError:
+            return {"version": UNSUPPORTED_TRACKER_VERSION, "operations": {}}
+
+        if not isinstance(payload, dict):
+            return {"version": UNSUPPORTED_TRACKER_VERSION, "operations": {}}
+
+        operations = payload.get("operations")
+        if not isinstance(operations, dict):
+            operations = {}
+
+        return {
+            "version": UNSUPPORTED_TRACKER_VERSION,
+            "operations": operations,
+        }
+
+    def _write_unsupported_tracker(self, payload: dict[str, Any]) -> None:
+        path = self._unsupported_tracker_path()
+        data = {
+            "version": UNSUPPORTED_TRACKER_VERSION,
+            "operations": payload.get("operations", {}),
+        }
+        try:
+            path.parent.mkdir(parents=True, exist_ok=True)
+            path.write_text(
+                json.dumps(data, ensure_ascii=False, indent=2) + "\n",
+                encoding="utf-8",
+            )
+        except OSError:
+            return
+
+    @staticmethod
+    def _as_non_negative_int(value: Any) -> int:
+        try:
+            return max(0, int(value))
+        except (TypeError, ValueError):
+            return 0
+
+    def _read_operation_unsupported_entry(self, operation_label: str) -> dict[str, Any]:
+        payload = self._read_unsupported_tracker()
+        operations = payload.get("operations", {})
+        if not isinstance(operations, dict):
+            return {}
+        entry = operations.get(self._unsupported_operation_key(operation_label))
+        if isinstance(entry, dict):
+            return entry
+        return {}
+
+    def _clear_operation_unsupported_entry(self, operation_label: str) -> None:
+        payload = self._read_unsupported_tracker()
+        operations = payload.get("operations", {})
+        if not isinstance(operations, dict):
+            return
+
+        key = self._unsupported_operation_key(operation_label)
+        entry = operations.get(key)
+        if not isinstance(entry, dict):
+            return
+
+        entry["unsupportedConsecutiveCount"] = 0
+        entry["postReleaseDeferred"] = False
+        entry["lastUnsupportedSignal"] = None
+        entry["updatedAt"] = (
+            datetime.now(tz=timezone.utc)
+            .replace(microsecond=0)
+            .isoformat()
+            .replace("+00:00", "Z")
+        )
+        operations[key] = entry
+        payload["operations"] = operations
+        self._write_unsupported_tracker(payload)
+
+    def _record_unsupported_signal(
+        self,
+        operation_label: str,
+        *,
+        signal_code: str,
+    ) -> dict[str, Any]:
+        payload = self._read_unsupported_tracker()
+        operations = payload.get("operations", {})
+        if not isinstance(operations, dict):
+            operations = {}
+
+        key = self._unsupported_operation_key(operation_label)
+        current_entry = operations.get(key)
+        entry = dict(current_entry) if isinstance(current_entry, dict) else {}
+
+        threshold = self._unsupported_threshold()
+        consecutive = self._as_non_negative_int(
+            entry.get("unsupportedConsecutiveCount")
+        )
+        consecutive += 1
+        deferred = bool(entry.get("postReleaseDeferred")) or consecutive >= threshold
+
+        entry.update(
+            {
+                "unsupportedConsecutiveCount": consecutive,
+                "unsupportedThreshold": threshold,
+                "lastUnsupportedSignal": signal_code,
+                "postReleaseDeferred": deferred,
+                "updatedAt": datetime.now(tz=timezone.utc)
+                .replace(microsecond=0)
+                .isoformat()
+                .replace("+00:00", "Z"),
+            }
+        )
+
+        operations[key] = entry
+        payload["operations"] = operations
+        self._write_unsupported_tracker(payload)
+        return entry
+
+    def _deferred_suffix(self, entry: dict[str, Any]) -> str:
+        consecutive = self._as_non_negative_int(
+            entry.get("unsupportedConsecutiveCount")
+        )
+        threshold = max(
+            1,
+            self._as_non_negative_int(
+                entry.get("unsupportedThreshold") or self._unsupported_threshold()
+            ),
+        )
+        return (
+            " This operation has been post-release deferred after "
+            f"{consecutive} consecutive unsupported signals (threshold {threshold}). "
+            "Capability-gated isolation is active, continue unrelated features."
+        )
+
+    def _guard_deferred_operation(
+        self,
+        *,
+        operation_label: str,
+        signal_code: str,
+        message: str,
+    ) -> None:
+        if self._force_unsupported_recheck_enabled():
+            return
+
+        entry = self._read_operation_unsupported_entry(operation_label)
+        if not bool(entry.get("postReleaseDeferred")):
+            return
+
+        exit_signal = signal_code
+        last_signal = entry.get("lastUnsupportedSignal")
+        if isinstance(last_signal, str) and last_signal.strip():
+            exit_signal = last_signal.strip()
+
+        utils.error_exit(exit_signal, f"{message}{self._deferred_suffix(entry)}")
+
+    def _error_exit_unsupported_signal(
+        self,
+        *,
+        operation_label: str,
+        signal_code: str,
+        message: str,
+    ) -> None:
+        entry = self._record_unsupported_signal(
+            operation_label,
+            signal_code=signal_code,
+        )
+
+        if bool(entry.get("postReleaseDeferred")):
+            utils.error_exit(signal_code, f"{message}{self._deferred_suffix(entry)}")
+
+        utils.error_exit(signal_code, message)
 
     def _collect_paginated_get(
         self,
@@ -572,10 +784,17 @@ class ZohoCliqClient:
         not_supported_message: str,
     ) -> dict:
         """Try mutable candidates and emit `not_supported` for endpoint-level misses."""
+        self._guard_deferred_operation(
+            operation_label=operation_label,
+            signal_code="not_supported",
+            message=not_supported_message,
+        )
+
         last_error: tuple[int, str, str, str] | None = None
         preferred_error: tuple[int, str, str, str] | None = None
         saw_scope_invalid = False
         saw_not_supported = False
+        saw_inactive_appaccount = False
 
         retryable_error_codes = {
             "param_missing",
@@ -595,6 +814,7 @@ class ZohoCliqClient:
                 timeout=httpx.Timeout(30.0),
             )
             if resp.is_success:
+                self._clear_operation_unsupported_entry(operation_label)
                 return self._decode_success_response(resp)
 
             body = resp.text or ""
@@ -619,10 +839,21 @@ class ZohoCliqClient:
                 resp.status_code in (404, 405)
                 or "request_url_invalid" in lowered
                 or scope_invalid
+                or "inactive_appaccount_user" in lowered
                 or error_code
-                in {"operation_not_allowed", "not_supported", "unsupported"}
+                in {
+                    "inactive_appaccount_user",
+                    "operation_not_allowed",
+                    "not_supported",
+                    "unsupported",
+                }
                 or error_code in {"request_method_invalid", "extra_param_found"}
             ):
+                if (
+                    "inactive_appaccount_user" in lowered
+                    or error_code == "inactive_appaccount_user"
+                ):
+                    saw_inactive_appaccount = True
                 saw_not_supported = True
                 continue
 
@@ -654,7 +885,15 @@ class ZohoCliqClient:
             )
 
         if saw_not_supported:
-            utils.error_exit("not_supported", not_supported_message)
+            self._error_exit_unsupported_signal(
+                operation_label=operation_label,
+                signal_code=(
+                    "inactive_appaccount_user"
+                    if saw_inactive_appaccount
+                    else "not_supported"
+                ),
+                message=not_supported_message,
+            )
 
         if last_error is not None:
             status, method, path, body = last_error
@@ -677,9 +916,16 @@ class ZohoCliqClient:
         not_supported_message: str,
     ) -> dict:
         """Try read candidates and emit `not_supported` for endpoint-level misses."""
+        self._guard_deferred_operation(
+            operation_label=operation_label,
+            signal_code="not_supported",
+            message=not_supported_message,
+        )
+
         last_error: tuple[int, str, str] | None = None
         saw_scope_invalid = False
         saw_not_supported = False
+        saw_inactive_appaccount = False
 
         for path, params in candidates:
             resp = httpx.get(
@@ -690,6 +936,7 @@ class ZohoCliqClient:
             )
             if resp.is_success:
                 payload = resp.json()
+                self._clear_operation_unsupported_entry(operation_label)
                 if isinstance(payload, dict):
                     return payload
                 return {"data": payload}
@@ -719,8 +966,10 @@ class ZohoCliqClient:
             if (
                 resp.status_code in (404, 405)
                 or "request_url_invalid" in lowered
+                or "inactive_appaccount_user" in lowered
                 or error_code
                 in {
+                    "inactive_appaccount_user",
                     "operation_not_allowed",
                     "not_supported",
                     "unsupported",
@@ -728,6 +977,11 @@ class ZohoCliqClient:
                     "extra_param_found",
                 }
             ):
+                if (
+                    "inactive_appaccount_user" in lowered
+                    or error_code == "inactive_appaccount_user"
+                ):
+                    saw_inactive_appaccount = True
                 saw_not_supported = True
                 last_error = (resp.status_code, path, body)
                 continue
@@ -741,7 +995,15 @@ class ZohoCliqClient:
             )
 
         if saw_not_supported:
-            utils.error_exit("not_supported", not_supported_message)
+            self._error_exit_unsupported_signal(
+                operation_label=operation_label,
+                signal_code=(
+                    "inactive_appaccount_user"
+                    if saw_inactive_appaccount
+                    else "not_supported"
+                ),
+                message=not_supported_message,
+            )
 
         if last_error is not None:
             status, path, body = last_error
@@ -1072,6 +1334,16 @@ class ZohoCliqClient:
         to_time: str | None = None,
     ) -> dict:
         """Search messages for a chat/channel with endpoint and param fallbacks."""
+        not_supported_message = (
+            "Cliq message search is not available for this token/network endpoint. "
+            "Run `zoho cliq capabilities --channel-id <id>` to confirm available operations."
+        )
+        self._guard_deferred_operation(
+            operation_label="search-messages",
+            signal_code="not_supported",
+            message=not_supported_message,
+        )
+
         resolved_chat = (chat_id or "").strip()
         if not resolved_chat and channel_id:
             resolved_chat = self.resolve_chat_id(channel_id) or ""
@@ -1155,6 +1427,7 @@ class ZohoCliqClient:
                         timeout=httpx.Timeout(30.0),
                     )
                     if resp.is_success:
+                        self._clear_operation_unsupported_entry("search-messages")
                         return resp.json()
 
                     body = resp.text or ""
@@ -1177,9 +1450,15 @@ class ZohoCliqClient:
                     if (
                         resp.status_code in (404, 405)
                         or "request_url_invalid" in lowered
+                        or "inactive_appaccount_user" in lowered
                         or error_code in retryable_error_codes
                         or error_code
-                        in {"operation_not_allowed", "not_supported", "unsupported"}
+                        in {
+                            "inactive_appaccount_user",
+                            "operation_not_allowed",
+                            "not_supported",
+                            "unsupported",
+                        }
                     ):
                         saw_not_supported = True
                         last_error = (resp.status_code, path, body)
@@ -1197,9 +1476,10 @@ class ZohoCliqClient:
             )
 
         if saw_not_supported:
-            utils.error_exit(
-                "not_supported",
-                "Cliq message search is not available for this token/network endpoint. Run `zoho cliq capabilities --channel-id <id>` to confirm available operations.",
+            self._error_exit_unsupported_signal(
+                operation_label="search-messages",
+                signal_code="not_supported",
+                message=not_supported_message,
             )
 
         if last_error is not None:
@@ -1219,6 +1499,16 @@ class ZohoCliqClient:
         channel_id: str | None = None,
     ) -> dict:
         """Fetch file/attachment payloads for one message with endpoint fallbacks."""
+        not_supported_message = (
+            "Cliq file/attachment retrieval is not available for this token/network endpoint. "
+            "Run `zoho cliq capabilities --channel-id <id>` to confirm available operations."
+        )
+        self._guard_deferred_operation(
+            operation_label="message-files",
+            signal_code="not_supported",
+            message=not_supported_message,
+        )
+
         resolved_chat = (chat_id or "").strip()
         if not resolved_chat and channel_id:
             resolved_chat = self.resolve_chat_id(channel_id) or ""
@@ -1261,6 +1551,7 @@ class ZohoCliqClient:
                 timeout=httpx.Timeout(30.0),
             )
             if resp.is_success:
+                self._clear_operation_unsupported_entry("message-files")
                 payload = resp.json()
                 fetch_meta = {
                     "path": path,
@@ -1298,6 +1589,7 @@ class ZohoCliqClient:
                     first_no_attachment_path = path
                 last_error = (resp.status_code, path, body)
                 if path.endswith("/attachments"):
+                    self._clear_operation_unsupported_entry("message-files")
                     return {
                         "files": [],
                         "fetch": {"path": first_no_attachment_path},
@@ -1312,8 +1604,14 @@ class ZohoCliqClient:
             if (
                 resp.status_code in (404, 405)
                 or "request_url_invalid" in lowered
+                or "inactive_appaccount_user" in lowered
                 or error_code
-                in {"operation_not_allowed", "not_supported", "unsupported"}
+                in {
+                    "inactive_appaccount_user",
+                    "operation_not_allowed",
+                    "not_supported",
+                    "unsupported",
+                }
             ):
                 saw_not_supported = True
                 last_error = (resp.status_code, path, body)
@@ -1325,6 +1623,7 @@ class ZohoCliqClient:
             )
 
         if first_no_attachment_path is not None:
+            self._clear_operation_unsupported_entry("message-files")
             return {
                 "files": [],
                 "fetch": {"path": first_no_attachment_path},
@@ -1337,9 +1636,10 @@ class ZohoCliqClient:
             )
 
         if saw_not_supported:
-            utils.error_exit(
-                "not_supported",
-                "Cliq file/attachment retrieval is not available for this token/network endpoint. Run `zoho cliq capabilities --channel-id <id>` to confirm available operations.",
+            self._error_exit_unsupported_signal(
+                operation_label="message-files",
+                signal_code="not_supported",
+                message=not_supported_message,
             )
 
         if last_error is not None:
@@ -2460,6 +2760,13 @@ class ZohoCliqClient:
 
     def chats(self, *, limit: int = 50) -> dict:
         """List chats (DM/group conversation descriptors)."""
+        not_supported_message = "Cliq chat listing endpoint is not available for this token/network endpoint."
+        self._guard_deferred_operation(
+            operation_label="chats-list",
+            signal_code="not_supported",
+            message=not_supported_message,
+        )
+
         resp = httpx.get(
             f"{self.base_url}/chats",
             headers=self._headers,
@@ -2467,19 +2774,46 @@ class ZohoCliqClient:
             timeout=httpx.Timeout(30.0),
         )
         if resp.is_success:
+            self._clear_operation_unsupported_entry("chats-list")
             return resp.json()
 
         body = resp.text or ""
         lowered = body.lower()
+        code = ""
+        try:
+            parsed = resp.json()
+            if isinstance(parsed, dict):
+                code = str(parsed.get("code") or parsed.get("error") or "").lower()
+        except ValueError:
+            pass
+
         if "oauthtoken_scope_invalid" in lowered:
             utils.error_exit(
                 "oauth_scope_invalid",
                 "Cliq token is missing chat-read scope. Run `zoho cliq status --check-auth` to inspect granted scopes, then re-run `zoho login --with-cliq --scope ZohoCliq.Chats.ALL` and retry.",
             )
-        if resp.status_code in (404, 405) or "request_url_invalid" in lowered:
-            utils.error_exit(
+        if (
+            resp.status_code in (404, 405)
+            or "request_url_invalid" in lowered
+            or "inactive_appaccount_user" in lowered
+            or code
+            in {
+                "inactive_appaccount_user",
+                "operation_not_allowed",
                 "not_supported",
-                "Cliq chat listing endpoint is not available for this token/network endpoint.",
+                "unsupported",
+            }
+        ):
+            signal = (
+                "inactive_appaccount_user"
+                if "inactive_appaccount_user" in lowered
+                or code == "inactive_appaccount_user"
+                else "not_supported"
+            )
+            self._error_exit_unsupported_signal(
+                operation_label="chats-list",
+                signal_code=signal,
+                message=not_supported_message,
             )
 
         utils.error_exit("api_error", f"HTTP {resp.status_code} GET /chats: {body}")
@@ -2487,6 +2821,18 @@ class ZohoCliqClient:
 
     def export_conversations(self) -> dict:
         """Export conversation descriptors via maintenance bulk-export API."""
+        not_supported_message = "Cliq export conversations endpoint is not available for this token/network endpoint."
+        inactive_message = (
+            "Cliq maintenance export is blocked because this account is inactive for "
+            "app-account export APIs. Activate the account in Cliq admin or use an "
+            "active org account, then retry."
+        )
+        self._guard_deferred_operation(
+            operation_label="export-conversations",
+            signal_code="not_supported",
+            message=not_supported_message,
+        )
+
         candidates: list[tuple[str, dict[str, Any] | None]] = [
             (
                 "/maintenanceapi/v2/chats",
@@ -2501,6 +2847,7 @@ class ZohoCliqClient:
         ]
 
         saw_scope_invalid = False
+        saw_inactive_appaccount = False
         saw_not_supported = False
         last_error: tuple[int, str, str] | None = None
 
@@ -2513,6 +2860,7 @@ class ZohoCliqClient:
             )
 
             if resp.is_success:
+                self._clear_operation_unsupported_entry("export-conversations")
                 payload = resp.json()
                 if isinstance(payload, dict):
                     return payload
@@ -2563,15 +2911,17 @@ class ZohoCliqClient:
             )
 
         if saw_inactive_appaccount:
-            utils.error_exit(
-                "inactive_appaccount_user",
-                "Cliq maintenance export is blocked because this account is inactive for app-account export APIs. Activate the account in Cliq admin or use an active org account, then retry.",
+            self._error_exit_unsupported_signal(
+                operation_label="export-conversations",
+                signal_code="inactive_appaccount_user",
+                message=inactive_message,
             )
 
         if saw_not_supported:
-            utils.error_exit(
-                "not_supported",
-                "Cliq export conversations endpoint is not available for this token/network endpoint.",
+            self._error_exit_unsupported_signal(
+                operation_label="export-conversations",
+                signal_code="not_supported",
+                message=not_supported_message,
             )
 
         if last_error is not None:
@@ -2585,6 +2935,18 @@ class ZohoCliqClient:
 
     def export_chat_messages(self, chat_id: str) -> dict:
         """Export one chat's messages via maintenance bulk-export API."""
+        not_supported_message = "Cliq export chat-messages endpoint is not available for this token/network endpoint."
+        inactive_message = (
+            "Cliq maintenance export is blocked because this account is inactive for "
+            "app-account export APIs. Activate the account in Cliq admin or use an "
+            "active org account, then retry."
+        )
+        self._guard_deferred_operation(
+            operation_label="export-chat-messages",
+            signal_code="not_supported",
+            message=not_supported_message,
+        )
+
         resolved_chat = chat_id.strip()
         if not resolved_chat:
             utils.error_exit("invalid_destination", "chat_id cannot be empty")
@@ -2597,6 +2959,7 @@ class ZohoCliqClient:
         )
 
         if resp.is_success:
+            self._clear_operation_unsupported_entry("export-chat-messages")
             payload = resp.json()
             if isinstance(payload, dict):
                 return payload
@@ -2624,9 +2987,10 @@ class ZohoCliqClient:
             )
 
         if "inactive_appaccount_user" in lowered or code == "inactive_appaccount_user":
-            utils.error_exit(
-                "inactive_appaccount_user",
-                "Cliq maintenance export is blocked because this account is inactive for app-account export APIs. Activate the account in Cliq admin or use an active org account, then retry.",
+            self._error_exit_unsupported_signal(
+                operation_label="export-chat-messages",
+                signal_code="inactive_appaccount_user",
+                message=inactive_message,
             )
 
         if (
@@ -2634,9 +2998,10 @@ class ZohoCliqClient:
             or "request_url_invalid" in lowered
             or code in {"operation_not_allowed", "not_supported", "unsupported"}
         ):
-            utils.error_exit(
-                "not_supported",
-                "Cliq export chat-messages endpoint is not available for this token/network endpoint.",
+            self._error_exit_unsupported_signal(
+                operation_label="export-chat-messages",
+                signal_code="not_supported",
+                message=not_supported_message,
             )
 
         utils.error_exit("api_error", f"HTTP {resp.status_code} GET {path}: {body}")
@@ -4108,6 +4473,17 @@ class ZohoCliqClient:
             "audio/mp4" if media_kind == "voice" else "application/octet-stream"
         )
 
+        not_supported_message = (
+            "Cliq local multipart upload endpoints are not supported for this token/"
+            "network target. Text send can still succeed; collect `attempts:` "
+            "evidence and treat this as endpoint limitation."
+        )
+        self._guard_deferred_operation(
+            operation_label="send-local-file-message",
+            signal_code="not_supported",
+            message=not_supported_message,
+        )
+
         destination_paths: list[str]
         if channel_id:
             resolved_candidates = self._resolve_channel_message_paths(channel_id)
@@ -4257,6 +4633,9 @@ class ZohoCliqClient:
                         continue
 
                     if resp.is_success:
+                        self._clear_operation_unsupported_entry(
+                            "send-local-file-message"
+                        )
                         decoded = self._decode_success_response(resp)
                         upload_meta = {
                             "path": send_path,
@@ -4292,8 +4671,10 @@ class ZohoCliqClient:
                     endpoint_miss = (
                         resp.status_code in (404, 405)
                         or "request_url_invalid" in lowered
+                        or "inactive_appaccount_user" in lowered
                         or code
                         in {
+                            "inactive_appaccount_user",
                             "request_method_invalid",
                             "operation_failed",
                             "operation_not_allowed",
@@ -4343,10 +4724,10 @@ class ZohoCliqClient:
                 and not saw_non_limitation_failure
                 and not stop_early
             ):
-                utils.error_exit(
-                    "not_supported",
-                    "Cliq local multipart upload endpoints are not supported for this token/network target. Text send can still succeed; collect `attempts:` evidence and treat this as endpoint limitation."
-                    + _attempt_suffix(),
+                self._error_exit_unsupported_signal(
+                    operation_label="send-local-file-message",
+                    signal_code="not_supported",
+                    message=not_supported_message + _attempt_suffix(),
                 )
             utils.error_exit(
                 "api_error",

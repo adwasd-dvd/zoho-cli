@@ -197,14 +197,14 @@
 - id: platform-200
   title: codify modularization boundaries and migration guardrails for command/service/core layers
   module: platform
-  stage: in_progress
+  stage: completed
   priority: medium
   depends_on:
   - cliq-193
 - id: platform-201
   title: extract cli command registration into registry + commands modules (no behavior change)
   module: platform
-  stage: queued
+  stage: in_progress
   priority: medium
   depends_on:
   - platform-200
@@ -212,6 +212,13 @@
   title: move first cliq command family from cli monolith into products+commands slices with parity tests
   module: platform
   stage: queued
+  priority: medium
+  depends_on:
+  - platform-201
+- id: platform-203
+  title: bootstrap membrane bridge commands for hybrid rollout (borrow now, replace gradually)
+  module: platform
+  stage: in_progress
   priority: medium
   depends_on:
   - platform-201

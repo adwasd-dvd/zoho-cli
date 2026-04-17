@@ -1,13 +1,13 @@
-id: cliq-193
-title: implement app-governance plane (apps/app-get/app-permissions/app-permission-get/app-installs/app-install-get/app-commands/app-command-get complete, continue next slice)
-module: cliq
+id: platform-203
+title: bootstrap membrane bridge commands for hybrid rollout
+module: platform
 stage: in_progress
 status: in_progress
-owner: automation
-updated_at: '2026-04-17T16:48:54Z'
+owner: coder
+updated_at: '2026-04-17T17:37:44Z'
 success_criteria:
-- ship the next cliq-193 app-governance command/client slice with focused tests
-- run one focused live verification for that new slice and archive evidence
-- keep cliq-165 export blocker evidence current while app-account activation remains external
-next_if_done: keep cliq-193 endpoint-specific work capability-gated and post-release deferred under the 3-strike unsupported policy, then start platform-200 modularization guardrail rollout
-next_step: "platform-201 no-behavior-change extraction split root registration into `register_cliq_root_typers` + `register_crm_config_root_typers` (while keeping `register_cliq_crm_config_root_typers` as a delegating compatibility helper) and focused verification is green (`python3.11 -m pytest -q tests/test_registry.py` -> `8 passed`); continue platform-201 by extracting the next root-registration helper slice (crm vs config split) while cliq-193/cliq-165 live endpoint checks remain capability-gated/deferred until external state changes."
+- ship experimental membrane bridge command surface with focused tests
+- document quick-start usage in README/changelog for immediate operator adoption
+- define the next wrapper slice that maps high-value Cliq/CRM flows onto membrane fallback
+next_if_done: map first cliq/crm high-value workflows to stable zoho subcommands that can delegate to membrane behind an explicit bridge flag
+next_step: complete membrane bridge v1 by adding connection-id preset support (`zoho-cliq`, `zoho-crm`) plus one thin cliq wrapper command powered by the bridge.

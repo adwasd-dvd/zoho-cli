@@ -3,6 +3,7 @@
 - Gmail gog OAuth may be unconfigured.
 - Some historical mail-export file paths under `/Volumes/Happy Work Drive/...` may no longer exist.
 - Cron prompt and workspace root may still need manual alignment in `jobs.json`.
+- Membrane bridge commands are now wired in CLI, but local runtime still needs Membrane CLI install (`npm install -g @membranehq/cli`) before live bridge execution.
 - Cliq native local multipart sends (voice/image/file) still fail on tested user/channel targets with endpoint-level `request_url_invalid` / `operation_failed`; endpoint+field matrix evidence is still being collected for cliq-155 closure.
 - Zoho token refresh can still throttle (`Access Denied` too many requests) during bursty live probe batches; retrieval probes need cooldown-safe reruns.
 - Cliq maintenance export verification is blocked by API-side `inactive_appaccount_user` even after maintenance export scopes (`ZohoCliq.OrganizationChats.READ` + `ZohoCliq.OrganizationMessages.READ`) were granted; `cliq export-chats` list + `--chat-id` both hit this blocker.

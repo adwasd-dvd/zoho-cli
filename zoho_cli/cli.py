@@ -10,8 +10,11 @@ Output:
 
 from __future__ import annotations
 
+from functools import partial
 import json
 import shlex
+import shutil
+import subprocess
 import sys
 import threading
 from urllib.parse import urlparse
@@ -53,6 +56,7 @@ from zoho_cli import (
 )
 from zoho_cli.api import ZohoMailClient
 from zoho_cli.cliq import ZohoCliqClient
+from zoho_cli.commands.root import register_builtin_root_typers
 from zoho_cli.crm import ZohoCrmClient
 from zoho_cli.registry import register_root_commands
 
@@ -85,19 +89,28 @@ labels_app = typer.Typer(no_args_is_help=True, help="Label management.")
 cliq_app = typer.Typer(no_args_is_help=True, help="Cliq operations (scaffold).")
 crm_app = typer.Typer(no_args_is_help=True, help="CRM operations (scaffold).")
 config_app = typer.Typer(no_args_is_help=True, help="Configuration helpers.")
+membrane_app = typer.Typer(
+    no_args_is_help=True,
+    help="Membrane bridge operations (experimental).",
+)
 
 
-def _register_builtin_root_typers(root_app: typer.Typer) -> None:
-    root_app.add_typer(mail_app, name="mail")
-    root_app.add_typer(attachment_subapp, name="attachment")
-    root_app.add_typer(folders_app, name="folders")
-    root_app.add_typer(labels_app, name="labels")
-    root_app.add_typer(cliq_app, name="cliq")
-    root_app.add_typer(crm_app, name="crm")
-    root_app.add_typer(config_app, name="config")
-
-
-register_root_commands(app, registrars=(_register_builtin_root_typers,))
+register_root_commands(
+    app,
+    registrars=(
+        partial(
+            register_builtin_root_typers,
+            mail_app=mail_app,
+            attachment_app=attachment_subapp,
+            folders_app=folders_app,
+            labels_app=labels_app,
+            cliq_app=cliq_app,
+            crm_app=crm_app,
+            config_app=config_app,
+            membrane_app=membrane_app,
+        ),
+    ),
+)
 
 # ── global state ──────────────────────────────────────────────────────────────
 
@@ -245,6 +258,60 @@ def _require_account_id(cfg: dict, email: str) -> str:
 
 def _stderr(msg: str) -> None:
     print(msg, file=sys.stderr)
+
+
+def _require_membrane_binary() -> str:
+    membrane_bin = shutil.which("membrane")
+    if membrane_bin:
+        return membrane_bin
+    utils.error_exit(
+        "membrane_cli_missing",
+        "Membrane CLI not found. Install with: npm install -g @membranehq/cli",
+    )
+
+
+def _run_membrane_command(
+    args: list[str],
+    *,
+    expect_json: bool = True,
+) -> Any:
+    membrane_bin = _require_membrane_binary()
+    command = [membrane_bin, *args]
+    completed = subprocess.run(
+        command,
+        check=False,
+        capture_output=True,
+        text=True,
+    )
+
+    stdout_text = (completed.stdout or "").strip()
+    stderr_text = (completed.stderr or "").strip()
+
+    if completed.returncode != 0:
+        detail = stderr_text or stdout_text or f"exit code {completed.returncode}"
+        utils.error_exit(
+            "membrane_command_failed",
+            f"{detail} (cmd: {shlex.join(command)})",
+        )
+
+    if not expect_json:
+        return {
+            "status": "ok",
+            "command": command,
+            "stdout": stdout_text,
+            "stderr": stderr_text,
+        }
+
+    if not stdout_text:
+        return {}
+
+    try:
+        return json.loads(stdout_text)
+    except json.JSONDecodeError:
+        utils.error_exit(
+            "membrane_invalid_json",
+            f"Membrane output is not valid JSON (cmd: {shlex.join(command)}).",
+        )
 
 
 def _send_and_report(
@@ -1294,6 +1361,122 @@ def labels_delete(label_id: str = typer.Argument(..., help="Label ID.")) -> None
 # ══════════════════════════════════════════════════════════════════════════════
 # zoho cliq …
 # ══════════════════════════════════════════════════════════════════════════════
+
+
+@membrane_app.command("doctor")
+def membrane_doctor() -> None:
+    """Check membrane CLI availability/version for bridge mode."""
+    membrane_bin = _require_membrane_binary()
+    result = _run_membrane_command(["--version"], expect_json=False)
+    utils.output(
+        {
+            "status": "ok",
+            "bin": membrane_bin,
+            "version": result.get("stdout") or "unknown",
+        }
+    )
+
+
+@membrane_app.command("discover")
+def membrane_discover(
+    connector: str = typer.Option(
+        ...,
+        "--connector",
+        help="Connector slug to discover (for example: zoho-cliq, zoho-crm).",
+    ),
+) -> None:
+    """Discover connector IDs from Membrane registry."""
+    payload = _run_membrane_command(
+        ["search", connector, "--elementType=connector", "--json"]
+    )
+    utils.output(payload)
+
+
+@membrane_app.command("connections")
+def membrane_connections() -> None:
+    """List existing Membrane connections."""
+    payload = _run_membrane_command(["connection", "list", "--json"])
+    utils.output(payload)
+
+
+@membrane_app.command("actions")
+def membrane_actions(
+    connection_id: str = typer.Option(
+        ...,
+        "--connection-id",
+        help="Membrane connection ID.",
+    ),
+    intent: str = typer.Option(
+        "QUERY",
+        "--intent",
+        help="Intent hint for action discovery.",
+    ),
+) -> None:
+    """List available actions for a Membrane connection."""
+    payload = _run_membrane_command(
+        [
+            "action",
+            "list",
+            f"--intent={intent}",
+            f"--connectionId={connection_id}",
+            "--json",
+        ]
+    )
+    utils.output(payload)
+
+
+@membrane_app.command("run")
+def membrane_run(
+    action_id: str = typer.Argument(..., help="Action ID to execute."),
+    connection_id: str = typer.Option(
+        ...,
+        "--connection-id",
+        help="Membrane connection ID.",
+    ),
+    input_json: Optional[str] = typer.Option(
+        None,
+        "--input-json",
+        help="JSON string passed to --input.",
+    ),
+) -> None:
+    """Run one Membrane action and return raw JSON response."""
+    command: list[str] = [
+        "action",
+        "run",
+        f"--connectionId={connection_id}",
+        action_id,
+        "--json",
+    ]
+
+    if input_json is not None:
+        try:
+            json.loads(input_json)
+        except json.JSONDecodeError:
+            utils.error_exit(
+                "invalid_input_json",
+                "--input-json must be a valid JSON object/string.",
+            )
+        command.extend(["--input", input_json])
+
+    payload = _run_membrane_command(command)
+    utils.output(payload)
+
+
+@membrane_app.command("raw")
+def membrane_raw(
+    args: List[str] = typer.Argument(
+        ...,
+        help="Arguments forwarded to membrane CLI exactly as provided.",
+    ),
+    json_output: bool = typer.Option(
+        False,
+        "--json-output",
+        help="Parse stdout as JSON and emit structured JSON.",
+    ),
+) -> None:
+    """Pass through arbitrary membrane CLI arguments."""
+    payload = _run_membrane_command(args, expect_json=json_output)
+    utils.output(payload)
 
 
 @cliq_app.command("status")
@@ -3905,11 +4088,15 @@ def cliq_app_commands(
                 "command-helptext",
                 "command-helpText",
                 "command-help_text",
+                "command.help_text",
                 "command-Helptext",
                 "command-HelpText",
                 "command-Help-Text",
                 "command-HELP_TEXT",
                 "command-HELP-TEXT",
+                "Command-helptext",
+                "Command-helpText",
+                "Command-help_text",
                 "Command-Helptext",
                 "Command-HelpText",
                 "Command-Help-Text",
@@ -3956,11 +4143,15 @@ def cliq_app_commands(
                 "action-helptext",
                 "action-helpText",
                 "action-help_text",
+                "action.help_text",
                 "action-Helptext",
                 "action-HelpText",
                 "action-Help-Text",
                 "action-HELP_TEXT",
                 "action-HELP-TEXT",
+                "Action-helptext",
+                "Action-helpText",
+                "Action-help_text",
                 "Action-Helptext",
                 "Action-HelpText",
                 "Action-Help-Text",
@@ -4420,11 +4611,15 @@ def cliq_app_commands(
                     or row.get("command-helptext")
                     or row.get("command-helpText")
                     or row.get("command-help_text")
+                    or row.get("command.help_text")
                     or row.get("command-Helptext")
                     or row.get("command-HelpText")
                     or row.get("command-Help-Text")
                     or row.get("command-HELP_TEXT")
                     or row.get("command-HELP-TEXT")
+                    or row.get("Command-helptext")
+                    or row.get("Command-helpText")
+                    or row.get("Command-help_text")
                     or row.get("Command-Helptext")
                     or row.get("Command-HelpText")
                     or row.get("Command-Help-Text")
@@ -4471,11 +4666,15 @@ def cliq_app_commands(
                     or row.get("action-helptext")
                     or row.get("action-helpText")
                     or row.get("action-help_text")
+                    or row.get("action.help_text")
                     or row.get("action-Helptext")
                     or row.get("action-HelpText")
                     or row.get("action-Help-Text")
                     or row.get("action-HELP_TEXT")
                     or row.get("action-HELP-TEXT")
+                    or row.get("Action-helptext")
+                    or row.get("Action-helpText")
+                    or row.get("Action-help_text")
                     or row.get("Action-Helptext")
                     or row.get("Action-HelpText")
                     or row.get("Action-Help-Text")
@@ -4853,11 +5052,15 @@ def cliq_app_command_get(
             "command-helptext",
             "command-helpText",
             "command-help_text",
+            "command.help_text",
             "command-Helptext",
             "command-HelpText",
             "command-Help-Text",
             "command-HELP_TEXT",
             "command-HELP-TEXT",
+            "Command-helptext",
+            "Command-helpText",
+            "Command-help_text",
             "Command-Helptext",
             "Command-HelpText",
             "Command-Help-Text",
@@ -4895,11 +5098,15 @@ def cliq_app_command_get(
             "action-helptext",
             "action-helpText",
             "action-help_text",
+            "action.help_text",
             "action-Helptext",
             "action-HelpText",
             "action-Help-Text",
             "action-HELP_TEXT",
             "action-HELP-TEXT",
+            "Action-helptext",
+            "Action-helpText",
+            "Action-help_text",
             "Action-Helptext",
             "Action-HelpText",
             "Action-Help-Text",
@@ -5311,11 +5518,15 @@ def cliq_app_command_get(
             or row.get("command-helptext")
             or row.get("command-helpText")
             or row.get("command-help_text")
+            or row.get("command.help_text")
             or row.get("command-Helptext")
             or row.get("command-HelpText")
             or row.get("command-Help-Text")
             or row.get("command-HELP_TEXT")
             or row.get("command-HELP-TEXT")
+            or row.get("Command-helptext")
+            or row.get("Command-helpText")
+            or row.get("Command-help_text")
             or row.get("Command-Helptext")
             or row.get("Command-HelpText")
             or row.get("Command-Help-Text")
@@ -5362,11 +5573,15 @@ def cliq_app_command_get(
             or row.get("action-helptext")
             or row.get("action-helpText")
             or row.get("action-help_text")
+            or row.get("action.help_text")
             or row.get("action-Helptext")
             or row.get("action-HelpText")
             or row.get("action-Help-Text")
             or row.get("action-HELP_TEXT")
             or row.get("action-HELP-TEXT")
+            or row.get("Action-helptext")
+            or row.get("Action-helpText")
+            or row.get("Action-help_text")
             or row.get("Action-Helptext")
             or row.get("Action-HelpText")
             or row.get("Action-Help-Text")

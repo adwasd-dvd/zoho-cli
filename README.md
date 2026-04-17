@@ -59,6 +59,12 @@ uv tool install .
 - Implemented commands: `crm status`, `crm modules`, `crm fields`, `crm list`, `crm get`, `crm search`
 - Current limitation: live verification is blocked because the test account is not in a CRM org.
 
+### 🧪 Membrane bridge (experimental fast-fallback)
+
+- Bridge commands: `membrane doctor`, `membrane discover`, `membrane connections`, `membrane actions`, `membrane run`, `membrane raw`
+- Purpose: quickly reuse Membrane-hosted Zoho connectors while preserving `zoho-cli` as the stable front door
+- Requirement: `membrane` binary installed (`npm install -g @membranehq/cli`)
+
 ---
 
 ## Output formats

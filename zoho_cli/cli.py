@@ -54,6 +54,7 @@ from zoho_cli import (
 from zoho_cli.api import ZohoMailClient
 from zoho_cli.cliq import ZohoCliqClient
 from zoho_cli.crm import ZohoCrmClient
+from zoho_cli.registry import register_root_commands
 
 
 def _get_version() -> str:
@@ -85,13 +86,18 @@ cliq_app = typer.Typer(no_args_is_help=True, help="Cliq operations (scaffold).")
 crm_app = typer.Typer(no_args_is_help=True, help="CRM operations (scaffold).")
 config_app = typer.Typer(no_args_is_help=True, help="Configuration helpers.")
 
-app.add_typer(mail_app, name="mail")
-app.add_typer(attachment_subapp, name="attachment")
-app.add_typer(folders_app, name="folders")
-app.add_typer(labels_app, name="labels")
-app.add_typer(cliq_app, name="cliq")
-app.add_typer(crm_app, name="crm")
-app.add_typer(config_app, name="config")
+
+def _register_builtin_root_typers(root_app: typer.Typer) -> None:
+    root_app.add_typer(mail_app, name="mail")
+    root_app.add_typer(attachment_subapp, name="attachment")
+    root_app.add_typer(folders_app, name="folders")
+    root_app.add_typer(labels_app, name="labels")
+    root_app.add_typer(cliq_app, name="cliq")
+    root_app.add_typer(crm_app, name="crm")
+    root_app.add_typer(config_app, name="config")
+
+
+register_root_commands(app, registrars=(_register_builtin_root_typers,))
 
 # ── global state ──────────────────────────────────────────────────────────────
 

@@ -1,5 +1,5 @@
 module: Platform
-updated_at: "2026-04-17T15:00:44Z"
+updated_at: "2026-04-17T15:15:00Z"
 status: in_progress
 blockers: []
-next_small_step: wire `zoho_cli.registry.register_root_commands` into `zoho_cli.cli` (using the new `registrars=` hook) with parity tests, no behavior change
+next_small_step: start platform-201 by extracting the built-in root registrar into a dedicated commands module while preserving root-command parity

@@ -1,5 +1,5 @@
 module: Platform
-updated_at: "2026-04-17T15:38:00Z"
+updated_at: "2026-04-17T16:29:38Z"
 status: in_progress
 blockers: []
-next_small_step: continue platform-201 by extracting the next root command-registration helper (cliq/crm/config family) from `register_builtin_root_typers` while preserving root-command parity
+next_small_step: continue platform-201 by extracting the next root command-registration helper beyond cliq/crm/config (for example splitting crm/config helpers) from `register_builtin_root_typers` while preserving root-command parity

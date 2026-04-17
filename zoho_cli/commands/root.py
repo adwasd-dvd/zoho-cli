@@ -20,6 +20,19 @@ def register_mail_root_typers(
     root_app.add_typer(labels_app, name="labels")
 
 
+def register_cliq_crm_config_root_typers(
+    root_app: typer.Typer,
+    *,
+    cliq_app: typer.Typer,
+    crm_app: typer.Typer,
+    config_app: typer.Typer,
+) -> None:
+    """Register cliq/crm/config root command groups on ``root_app``."""
+    root_app.add_typer(cliq_app, name="cliq")
+    root_app.add_typer(crm_app, name="crm")
+    root_app.add_typer(config_app, name="config")
+
+
 def register_builtin_root_typers(
     root_app: typer.Typer,
     *,
@@ -39,6 +52,9 @@ def register_builtin_root_typers(
         folders_app=folders_app,
         labels_app=labels_app,
     )
-    root_app.add_typer(cliq_app, name="cliq")
-    root_app.add_typer(crm_app, name="crm")
-    root_app.add_typer(config_app, name="config")
+    register_cliq_crm_config_root_typers(
+        root_app,
+        cliq_app=cliq_app,
+        crm_app=crm_app,
+        config_app=config_app,
+    )

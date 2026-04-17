@@ -3,13 +3,13 @@ next_version: 0.2.1
 release_candidate: false
 last_release_tag: v0.1.9
 current_train: cliq-expansion
-assessed_at: '2026-04-17T06:19:27Z'
+assessed_at: '2026-04-17T06:29:54Z'
 current_milestone: cliq-expansion-phase
 current_milestone_complete: false
 missing_requirements:
   - 'blocker backlog is not clear: cliq-193 live app-command verification still returns `not_supported`.'
   - 'current focus milestone is incomplete: `cliq-expansion-phase` remains in progress (`active_task`: cliq-193), and cliq-165 export verification is still externally blocked by API-side `inactive_appaccount_user`.'
-  - 'relevant integration gate is still not clean: focused `cliq app-commands` probe remains `not_supported` while scope readiness stays healthy (`oauthReady: true`, `exportOauthReady: true`) (`tests/auto_pilot/reports/cliq193_app_commands_probe_summary_20260417_060112.json`, 2026-04-17T06:01:12Z).'
+  - 'relevant integration gate is still not clean: focused `cliq app-commands` probe remains `not_supported` while scope readiness stays healthy (`oauthReady: true`, `exportOauthReady: true`) (`tests/auto_pilot/reports/cliq193_app_commands_probe_summary_20260417_062954.json`, 2026-04-17T06:29:54Z).'
 release_gate:
   blocker_bugs_cleared: false
   unit_tests_passed: true

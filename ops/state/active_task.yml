@@ -4,10 +4,10 @@ module: cliq
 stage: in_progress
 status: in_progress
 owner: automation
-updated_at: '2026-04-17T04:45:28Z'
+updated_at: '2026-04-17T04:54:18Z'
 success_criteria:
 - ship the next cliq-193 app-governance command/client slice with focused tests
 - run one focused live verification for that new slice and archive evidence
 - keep cliq-165 export blocker evidence current while app-account activation remains external
 next_if_done: finish the next queued cliq-193 hardening slice, then start platform-200 modularization guardrail rollout
-next_step: "cliq-193 helptext alias hardening now also covers mixed snake+Pascal-camel-title-tail fields (`command_Helptext` / `action_Helptext`) in app-command list/detail parsing with focused tests passing; next immediate step is one fresh focused live blocker rerun (`cliq status --check-auth` + `cliq app-commands APP_PROBE_FAKE_<stamp>`) to refresh external `not_supported` evidence."
+next_step: "focused live blocker rerun (`cliq status --check-auth` + `cliq app-commands APP_PROBE_FAKE_20260417_045418`) confirms `cliq app-commands` is still externally blocked (`appCommandsError: empty_output`, stderr `error: not_supported`) while auth/export readiness is healthy; next immediate step is the next smallest cliq-193 app-command parsing hardening unit slice with focused tests."

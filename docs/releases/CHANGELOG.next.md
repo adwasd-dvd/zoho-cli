@@ -3,6 +3,7 @@
 ## Unreleased
 
 ### Added
+- Expanded `zoho_cli.commands` package export parity by exposing `register_cliq_root_typers`, `register_crm_config_root_typers`, and `register_membrane_root_typers` for platform-201 modularization imports.
 - Added explicit Cliq app-governance membrane wrappers `zoho cliq apps-bridge-run` and `zoho cliq app-get-bridge-run`, with default actions (`apps` / `app-get`), preset/connection parity, and validated `--input-json` merge behavior (`limit` for apps, `appId` for app-get).
 - Added Cliq unsupported-operation deferral tracking in `ZohoCliqClient`: repeated endpoint-level `not_supported`/`inactive_appaccount_user` responses are now persisted per operation, auto-marked post-release deferred at a threshold (default 3), and short-circuited on subsequent runs unless forced recheck is enabled (`ZOHO_CLIQ_FORCE_UNSUPPORTED_RECHECK=1`).
 - Added the first thin Cliq membrane wrapper command, `zoho cliq bridge-run --bridge membrane`, mirroring CRM bridge ergonomics with default preset resolution (`zoho-cliq`), optional `--connection-id` override, and validated `--input-json` forwarding.

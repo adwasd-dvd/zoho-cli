@@ -4,6 +4,7 @@ from functools import partial
 
 import typer
 
+import zoho_cli.commands as commands_pkg
 from zoho_cli.cli import (
     app as cli_app,
     attachment_subapp,
@@ -38,6 +39,14 @@ def test_register_root_commands_is_noop_scaffold() -> None:
     register_root_commands(app)
 
     assert len(app.registered_commands) == before
+
+
+def test_commands_package_exports_root_registrars() -> None:
+    assert commands_pkg.register_cliq_root_typers is register_cliq_root_typers
+    assert (
+        commands_pkg.register_crm_config_root_typers is register_crm_config_root_typers
+    )
+    assert commands_pkg.register_membrane_root_typers is register_membrane_root_typers
 
 
 def test_register_root_commands_runs_supplied_registrars_in_order() -> None:

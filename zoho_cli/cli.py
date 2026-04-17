@@ -3878,6 +3878,10 @@ def cliq_app_commands(
                 "command_Help_Text",
                 "command_HELP_TEXT",
                 "command_HELP-TEXT",
+                "Command_help_text",
+                "Command_helpText",
+                "Command_helptext",
+                "Command_help-Text",
                 "Command_HelpText",
                 "Command_Helptext",
                 "Command_Help_Text",
@@ -3924,6 +3928,10 @@ def cliq_app_commands(
                 "action_Help_Text",
                 "action_HELP_TEXT",
                 "action_HELP-TEXT",
+                "Action_help_text",
+                "Action_helpText",
+                "Action_helptext",
+                "Action_help-Text",
                 "Action_HelpText",
                 "Action_Helptext",
                 "Action_Help_Text",
@@ -4383,6 +4391,10 @@ def cliq_app_commands(
                     or row.get("command_Help_Text")
                     or row.get("command_HELP_TEXT")
                     or row.get("command_HELP-TEXT")
+                    or row.get("Command_help_text")
+                    or row.get("Command_helpText")
+                    or row.get("Command_helptext")
+                    or row.get("Command_help-Text")
                     or row.get("Command_HelpText")
                     or row.get("Command_Helptext")
                     or row.get("Command_Help_Text")
@@ -4429,6 +4441,10 @@ def cliq_app_commands(
                     or row.get("action_Help_Text")
                     or row.get("action_HELP_TEXT")
                     or row.get("action_HELP-TEXT")
+                    or row.get("Action_help_text")
+                    or row.get("Action_helpText")
+                    or row.get("Action_helptext")
+                    or row.get("Action_help-Text")
                     or row.get("Action_HelpText")
                     or row.get("Action_Helptext")
                     or row.get("Action_Help_Text")
@@ -4809,6 +4825,10 @@ def cliq_app_command_get(
             "command_Help_Text",
             "command_HELP_TEXT",
             "command_HELP-TEXT",
+            "Command_help_text",
+            "Command_helpText",
+            "Command_helptext",
+            "Command_help-Text",
             "Command_HelpText",
             "Command_Helptext",
             "Command_Help_Text",
@@ -4846,6 +4866,10 @@ def cliq_app_command_get(
             "action_Help_Text",
             "action_HELP_TEXT",
             "action_HELP-TEXT",
+            "Action_help_text",
+            "Action_helpText",
+            "Action_helptext",
+            "Action_help-Text",
             "Action_HelpText",
             "Action_Helptext",
             "Action_Help_Text",
@@ -5254,6 +5278,10 @@ def cliq_app_command_get(
             or row.get("command_Help_Text")
             or row.get("command_HELP_TEXT")
             or row.get("command_HELP-TEXT")
+            or row.get("Command_help_text")
+            or row.get("Command_helpText")
+            or row.get("Command_helptext")
+            or row.get("Command_help-Text")
             or row.get("Command_HelpText")
             or row.get("Command_Helptext")
             or row.get("Command_Help_Text")
@@ -5300,6 +5328,10 @@ def cliq_app_command_get(
             or row.get("action_Help_Text")
             or row.get("action_HELP_TEXT")
             or row.get("action_HELP-TEXT")
+            or row.get("Action_help_text")
+            or row.get("Action_helpText")
+            or row.get("Action_helptext")
+            or row.get("Action_help-Text")
             or row.get("Action_HelpText")
             or row.get("Action_Helptext")
             or row.get("Action_Help_Text")

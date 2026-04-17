@@ -1,0 +1,5 @@
+module: Platform
+updated_at: "2026-04-17T14:35:19Z"
+status: in_progress
+blockers: []
+next_small_step: wire `zoho_cli.registry.register_root_commands` into `zoho_cli.cli` with parity tests (no behavior change)

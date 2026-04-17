@@ -197,7 +197,7 @@
 - id: platform-200
   title: codify modularization boundaries and migration guardrails for command/service/core layers
   module: platform
-  stage: queued
+  stage: in_progress
   priority: medium
   depends_on:
   - cliq-193

@@ -3,6 +3,7 @@
 ## Unreleased
 
 ### Added
+- Added the first thin Cliq membrane wrapper command, `zoho cliq bridge-run --bridge membrane`, mirroring CRM bridge ergonomics with default preset resolution (`zoho-cliq`), optional `--connection-id` override, and validated `--input-json` forwarding.
 - Extended the experimental Membrane bridge with connection presets (`--preset zoho-cliq|zoho-crm`) that resolve connection IDs from account/global config or dedicated env vars (`ZOHO_MEMBRANE_CLIQ_CONNECTION_ID`, `ZOHO_MEMBRANE_CRM_CONNECTION_ID`), and added a thin explicit CRM wrapper command `zoho crm bridge-run --bridge membrane` for fast fallback execution through Membrane actions.
 - Added an experimental Membrane bridge command group to speed up external-skill reuse without replacing the existing CLI contract: `zoho membrane doctor|discover|connections|actions|run|raw` now shells out to `membrane` with JSON-safe output/error handling so Zoho Cliq/CRM connector capabilities can be used immediately while native parity work continues.
 - Added `cliq-193` 3-strike unsupported classification in `tests/auto_pilot/cliq193_probe_summary.py`: summary artifacts now include `unsupportedSignal`, `unsupportedConsecutiveCount`, `unsupportedThreshold`, `postReleaseDeferred`, and `recommendedNext`, so repeated `not_supported`/`inactive_appaccount_user`-style blockers can be auto-marked post-release deferred while unrelated slices continue.

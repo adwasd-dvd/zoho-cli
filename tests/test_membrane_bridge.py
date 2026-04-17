@@ -208,6 +208,67 @@ def test_membrane_actions_requires_connection_or_preset(mock_config: Path) -> No
     assert "missing_membrane_preset_connection" in result.output
 
 
+def test_cliq_bridge_run_uses_default_preset(mock_config: Path) -> None:
+    seen: dict[str, Any] = {}
+
+    def _fake_run(*a, **kw):
+        seen["command"] = a[0]
+        return subprocess.CompletedProcess(
+            args=a[0],
+            returncode=0,
+            stdout=json.dumps({"ok": True}),
+            stderr="",
+        )
+
+    with pytest.MonkeyPatch.context() as monkeypatch:
+        monkeypatch.setattr(
+            "zoho_cli.cli.shutil.which", lambda _name: "/usr/local/bin/membrane"
+        )
+        monkeypatch.setattr("zoho_cli.cli.subprocess.run", _fake_run)
+
+        result = runner.invoke(
+            app,
+            [
+                "--config",
+                str(mock_config),
+                "cliq",
+                "bridge-run",
+                "post-message",
+            ],
+        )
+
+    assert result.exit_code == 0, result.output
+    assert seen["command"] == [
+        "/usr/local/bin/membrane",
+        "action",
+        "run",
+        "--connectionId=CONN_CLIQ_FROM_CONFIG",
+        "post-message",
+        "--json",
+    ]
+    payload = json.loads(result.output)
+    assert payload["bridge"] == "membrane"
+    assert payload["preset"] == "zoho-cliq"
+
+
+def test_cliq_bridge_run_rejects_unsupported_bridge(mock_config: Path) -> None:
+    result = runner.invoke(
+        app,
+        [
+            "--config",
+            str(mock_config),
+            "cliq",
+            "bridge-run",
+            "post-message",
+            "--bridge",
+            "native",
+        ],
+    )
+
+    assert result.exit_code == 1
+    assert "unsupported_bridge" in result.output
+
+
 def test_crm_bridge_run_uses_default_preset(mock_config: Path) -> None:
     seen: dict[str, Any] = {}
 

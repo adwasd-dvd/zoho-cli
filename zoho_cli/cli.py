@@ -1678,6 +1678,78 @@ def cliq_status(
     utils.output(payload)
 
 
+@cliq_app.command("bridge-run")
+def cliq_bridge_run(
+    action_id: str = typer.Argument(
+        ..., help="Membrane action id (for example: post-message)."
+    ),
+    bridge: str = typer.Option(
+        "membrane",
+        "--bridge",
+        help="Bridge backend. Currently only 'membrane' is supported.",
+    ),
+    connection_id: Optional[str] = typer.Option(
+        None,
+        "--connection-id",
+        help="Membrane connection ID. Overrides preset lookup when provided.",
+    ),
+    preset: Optional[str] = typer.Option(
+        "zoho-cliq",
+        "--preset",
+        help="Connection preset alias (default: zoho-cliq).",
+    ),
+    input_json: Optional[str] = typer.Option(
+        None,
+        "--input-json",
+        help="JSON string passed to membrane --input.",
+    ),
+) -> None:
+    """Run one Cliq action through membrane bridge (explicit opt-in)."""
+    if bridge.strip().lower() != "membrane":
+        utils.error_exit(
+            "unsupported_bridge",
+            "Only --bridge membrane is supported right now.",
+        )
+
+    cfg = _cfg()
+    email = _S.account or _config.default_account(cfg)
+    resolved_connection_id = _resolve_membrane_connection_id(
+        connection_id=connection_id,
+        preset=preset,
+        cfg=cfg,
+        email=email,
+    )
+
+    command: list[str] = [
+        "action",
+        "run",
+        f"--connectionId={resolved_connection_id}",
+        action_id,
+        "--json",
+    ]
+
+    if input_json is not None:
+        try:
+            json.loads(input_json)
+        except json.JSONDecodeError:
+            utils.error_exit(
+                "invalid_input_json",
+                "--input-json must be a valid JSON object/string.",
+            )
+        command.extend(["--input", input_json])
+
+    result = _run_membrane_command(command)
+    utils.output(
+        {
+            "bridge": "membrane",
+            "preset": _normalize_membrane_preset(preset or "zoho-cliq"),
+            "connectionId": resolved_connection_id,
+            "actionId": action_id,
+            "result": result,
+        }
+    )
+
+
 @cliq_app.command("capabilities")
 def cliq_capabilities(
     network: Optional[str] = typer.Option(

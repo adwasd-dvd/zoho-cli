@@ -60,6 +60,8 @@ from zoho_cli.cliq import ZohoCliqClient
 from zoho_cli.commands import (
     register_builtin_root_typers,
     register_cliq_app_catalog_commands,
+    register_cliq_app_installs_commands,
+    register_cliq_app_permissions_commands,
 )
 from zoho_cli.crm import ZohoCrmClient
 from zoho_cli.registry import register_root_commands
@@ -3273,7 +3275,6 @@ def cliq_app_get_bridge_run(
     )
 
 
-@cliq_app.command("app-permissions")
 def cliq_app_permissions(
     app_id: str = typer.Argument(..., help="Cliq app id."),
     limit: int = typer.Option(
@@ -3492,7 +3493,6 @@ def cliq_app_permissions(
     )
 
 
-@cliq_app.command("app-permission-get")
 def cliq_app_permission_get(
     app_id: str = typer.Argument(..., help="Cliq app id."),
     permission_id: str = typer.Argument(..., help="Cliq app permission id."),
@@ -3687,7 +3687,13 @@ def cliq_app_permission_get(
     )
 
 
-@cliq_app.command("app-installs")
+register_cliq_app_permissions_commands(
+    cliq_app,
+    cliq_app_permissions_command=cliq_app_permissions,
+    cliq_app_permission_get_command=cliq_app_permission_get,
+)
+
+
 def cliq_app_installs(
     app_id: str = typer.Argument(..., help="Cliq app id."),
     limit: int = typer.Option(
@@ -3952,7 +3958,6 @@ def cliq_app_installs(
     )
 
 
-@cliq_app.command("app-install-get")
 def cliq_app_install_get(
     app_id: str = typer.Argument(..., help="Cliq app id."),
     install_id: str = typer.Argument(..., help="Cliq app install id."),

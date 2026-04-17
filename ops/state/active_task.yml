@@ -4,10 +4,10 @@ module: platform
 stage: in_progress
 status: in_progress
 owner: coder
-updated_at: '2026-04-17T22:01:00Z'
+updated_at: '2026-04-17T22:26:00Z'
 success_criteria:
 - ship membrane preset resolution (`zoho-cliq` / `zoho-crm`) with focused tests
 - land first explicit product wrapper commands (`crm bridge-run --bridge membrane`, `cliq bridge-run --bridge membrane`, `cliq export-chats-bridge-run`, `cliq apps-bridge-run`, `cliq app-get-bridge-run`, `cliq app-commands-bridge-run`, `cliq app-command-get-bridge-run`, `cliq app-installs-bridge-run`, `cliq app-install-get-bridge-run`, `cliq app-permission-get-bridge-run`, `cliq app-permissions-bridge-run`)
 - keep docs and state files aligned with hybrid rollout guidance
 next_if_done: continue platform-201/202 modularization slices and map top-priority blocked cliq actions behind explicit bridge/capability gates
-next_step: "continue platform-201/202 no-behavior-change modularization slices; first platform-202 cliq app-catalog extraction (`apps`/`app-get`) now uses commands-slice registration with parity coverage, so next smallest slice is extracting the adjacent app-permissions family while cliq-193/cliq-165 endpoints remain capability-gated/deferred unless external-state signals change."
+next_step: "continue platform-201/202 no-behavior-change modularization slices; platform-202 now has command-slice registration for both cliq app-catalog (`apps`/`app-get`) and app-permissions (`app-permissions`/`app-permission-get`), so next smallest slice is extracting the adjacent app-installs family while cliq-193/cliq-165 endpoints remain capability-gated/deferred unless external-state signals change."

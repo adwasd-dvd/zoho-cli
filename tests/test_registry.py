@@ -16,7 +16,9 @@ from zoho_cli.cli import (
 )
 from zoho_cli.commands.root import (
     register_builtin_root_typers,
+    register_cliq_root_typers,
     register_cliq_crm_config_root_typers,
+    register_crm_config_root_typers,
     register_mail_root_typers,
 )
 from zoho_cli.registry import register_root_commands
@@ -120,6 +122,39 @@ def test_register_cliq_crm_config_root_typers_preserves_expected_group_names() -
         "crm",
         "config",
     ]
+
+
+def test_register_cliq_root_typers_preserves_expected_group_names() -> None:
+    app = typer.Typer(no_args_is_help=True)
+
+    register_root_commands(
+        app,
+        registrars=(
+            partial(
+                register_cliq_root_typers,
+                cliq_app=cliq_app,
+            ),
+        ),
+    )
+
+    assert [group.name for group in app.registered_groups] == ["cliq"]
+
+
+def test_register_crm_config_root_typers_preserves_expected_group_names() -> None:
+    app = typer.Typer(no_args_is_help=True)
+
+    register_root_commands(
+        app,
+        registrars=(
+            partial(
+                register_crm_config_root_typers,
+                crm_app=crm_app,
+                config_app=config_app,
+            ),
+        ),
+    )
+
+    assert [group.name for group in app.registered_groups] == ["crm", "config"]
 
 
 def test_cli_app_root_group_names_match_expected_defaults() -> None:

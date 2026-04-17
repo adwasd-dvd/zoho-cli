@@ -4,7 +4,7 @@ module: platform
 stage: in_progress
 status: in_progress
 owner: coder
-updated_at: '2026-04-17T21:35:00Z'
+updated_at: '2026-04-17T21:52:00Z'
 success_criteria:
 - ship membrane preset resolution (`zoho-cliq` / `zoho-crm`) with focused tests
 - land first explicit product wrapper commands (`crm bridge-run --bridge membrane`, `cliq bridge-run --bridge membrane`, `cliq export-chats-bridge-run`, `cliq apps-bridge-run`, `cliq app-get-bridge-run`, `cliq app-commands-bridge-run`, `cliq app-command-get-bridge-run`, `cliq app-installs-bridge-run`, `cliq app-install-get-bridge-run`, `cliq app-permission-get-bridge-run`, `cliq app-permissions-bridge-run`)

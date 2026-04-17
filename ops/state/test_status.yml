@@ -1,10 +1,16 @@
-last_run_at: "2026-04-17T20:29:00Z"
+last_run_at: "2026-04-17T20:58:39Z"
 last_result: success
 current_focus: platform
 suites:
   unit:
     status: success
     notes:
+      - "platform-203 cliq app-installs/app-install bridge wrapper verification at 2026-04-17T20:58:39Z"
+      - "python3.11 -m pytest -q tests/test_membrane_bridge.py -k \"app_install_get_bridge_run or app_installs_bridge_run\""
+      - "4 passed, 20 deselected in 0.09s"
+      - "platform-203 cliq app-installs bridge wrapper verification at 2026-04-17T20:56:32Z"
+      - "python3.11 -m pytest -q tests/test_membrane_bridge.py -k \"app_installs_bridge_run\""
+      - "2 passed, 22 deselected in 0.12s"
       - "platform-203 cliq app-permissions bridge wrapper verification at 2026-04-17T20:29:00Z"
       - "python3.11 -m pytest -q tests/test_membrane_bridge.py -k \"app_permissions_bridge_run\""
       - "2 passed, 20 deselected in 0.06s"

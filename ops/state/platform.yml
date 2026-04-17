@@ -1,5 +1,5 @@
 module: Platform
-updated_at: "2026-04-17T20:29:00Z"
+updated_at: "2026-04-17T20:58:39Z"
 status: in_progress
 blockers: []
-next_small_step: continue platform-203 by mapping the next highest-value cliq blocker to an explicit bridge-backed wrapper (next likely slice: app-installs list bridge wrapper) while preserving membrane preset/connection/input parity
+next_small_step: continue platform-203 by mapping the next highest-value cliq blocker to an explicit bridge-backed wrapper (next likely slice: apps/app-get bridge wrappers) while preserving membrane preset/connection/input parity

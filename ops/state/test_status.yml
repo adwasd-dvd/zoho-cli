@@ -1,10 +1,25 @@
-last_run_at: "2026-04-17T07:19:54Z"
+last_run_at: "2026-04-17T07:48:04Z"
 last_result: success
 current_focus: cliq
 suites:
   unit:
     status: success
     notes:
+      - "revalidation run at 2026-04-17T07:48:04Z"
+      - "python3.11 -m pytest -q tests/test_cli.py::test_cliq_app_commands_accepts_snake_upper_tail_pascal_prefix_command_mode_status_alias_shape tests/test_cli.py::test_cliq_app_command_get_accepts_snake_upper_tail_pascal_prefix_action_mode_status_alias_shape"
+      - "2 passed in 0.08s (cliq-193 Pascal-prefix mixed snake+uppercase-tail mode alias hardening slice revalidation, 2026-04-17T07:48:04Z)"
+      - "./.venv/bin/ruff format --check zoho_cli/cli.py tests/test_cli.py"
+      - "2 files already formatted (post-change formatting revalidation, 2026-04-17T07:48:04Z)"
+      - "./.venv/bin/zoho --config /tmp/zoho-test-config.json --account ai-dev@happy-distro.co.uk cliq status --check-auth --network happydistrouklimited"
+      - "./.venv/bin/zoho --config /tmp/zoho-test-config.json --account ai-dev@happy-distro.co.uk cliq app-commands APP_PROBE_FAKE_20260417_074436 --network happydistrouklimited"
+      - "focused live rerun at 2026-04-17T07:44:36Z: `cliq app-commands` remains blocked (`appCommandsError: empty_output`, stderr `error: not_supported`) while `cliq status --check-auth` is healthy (`oauthReady: true`, `exportOauthReady: true`); evidence: tests/auto_pilot/reports/cliq193_app_commands_probe_summary_20260417_074436.json"
+      - "revalidation run at 2026-04-17T07:38:52Z"
+      - "python3.11 -m pytest -q tests/test_cli.py::test_cliq_app_commands_accepts_snake_upper_tail_pascal_prefix_command_mode_status_alias_shape tests/test_cli.py::test_cliq_app_command_get_accepts_snake_upper_tail_pascal_prefix_action_mode_status_alias_shape"
+      - "2 passed in 0.54s (cliq-193 Pascal-prefix mixed snake+uppercase-tail mode alias hardening slice revalidation, 2026-04-17T07:38:52Z)"
+      - "./.venv/bin/ruff format zoho_cli/cli.py tests/test_cli.py"
+      - "1 file reformatted, 1 file left unchanged (post-change formatting normalization, 2026-04-17T07:38:52Z)"
+      - "./.venv/bin/ruff format --check zoho_cli/cli.py tests/test_cli.py"
+      - "2 files already formatted (post-change formatting revalidation, 2026-04-17T07:38:52Z)"
       - "revalidation run at 2026-04-17T07:19:54Z"
       - "python3.11 -m pytest -q tests/test_cli.py::test_cliq_app_commands_accepts_snake_upper_tail_command_status_alias_shape tests/test_cli.py::test_cliq_app_command_get_accepts_snake_upper_tail_action_status_alias_shape"
       - "2 passed in 0.08s (cliq-193 mixed snake+uppercase-tail status alias hardening slice revalidation, 2026-04-17T07:19:54Z)"

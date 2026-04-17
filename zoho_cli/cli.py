@@ -3960,6 +3960,7 @@ def cliq_app_commands(
                 "commandmode",
                 "CommandMode",
                 "Command_Mode",
+                "Command_MODE",
                 "COMMANDMODE",
                 "COMMAND_MODE",
                 "command-mode",
@@ -3989,6 +3990,7 @@ def cliq_app_commands(
                 "actionmode",
                 "ActionMode",
                 "Action_Mode",
+                "Action_MODE",
                 "ACTIONMODE",
                 "ACTION_MODE",
                 "action-mode",
@@ -4442,6 +4444,7 @@ def cliq_app_commands(
                     or row.get("commandmode")
                     or row.get("CommandMode")
                     or row.get("Command_Mode")
+                    or row.get("Command_MODE")
                     or row.get("COMMANDMODE")
                     or row.get("COMMAND_MODE")
                     or row.get("command-mode")
@@ -4471,6 +4474,7 @@ def cliq_app_commands(
                     or row.get("actionmode")
                     or row.get("ActionMode")
                     or row.get("Action_Mode")
+                    or row.get("Action_MODE")
                     or row.get("ACTIONMODE")
                     or row.get("ACTION_MODE")
                     or row.get("action-mode")
@@ -4681,6 +4685,7 @@ def cliq_app_command_get(
             "commandmode",
             "CommandMode",
             "Command_Mode",
+            "Command_MODE",
             "COMMANDMODE",
             "COMMAND_MODE",
             "command-mode",
@@ -4710,6 +4715,7 @@ def cliq_app_command_get(
             "actionmode",
             "ActionMode",
             "Action_Mode",
+            "Action_MODE",
             "ACTIONMODE",
             "ACTION_MODE",
             "action-mode",
@@ -5261,6 +5267,7 @@ def cliq_app_command_get(
             or row.get("commandmode")
             or row.get("CommandMode")
             or row.get("Command_Mode")
+            or row.get("Command_MODE")
             or row.get("COMMANDMODE")
             or row.get("COMMAND_MODE")
             or row.get("command-mode")
@@ -5290,6 +5297,7 @@ def cliq_app_command_get(
             or row.get("actionmode")
             or row.get("ActionMode")
             or row.get("Action_Mode")
+            or row.get("Action_MODE")
             or row.get("ACTIONMODE")
             or row.get("ACTION_MODE")
             or row.get("action-mode")

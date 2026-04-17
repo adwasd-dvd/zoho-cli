@@ -6905,6 +6905,80 @@ def test_cliq_app_commands_accepts_kebab_command_status_alias_shape(
     assert payload["commands"][0]["status"] == "enabled"
 
 
+def test_cliq_app_commands_accepts_kebab_upper_tail_command_status_alias_shape(
+    mock_config: Path,
+    mock_token_refresh: Any,
+) -> None:
+    mock_client = MagicMock()
+    mock_client.list_app_commands.return_value = {
+        "payload": {
+            "data": [
+                {
+                    "commandID": "CMD_13KEBABUPPERSTATUSALIAS",
+                    "actionName": "deploy_command_kebab_upper_status_alias",
+                    "Description": "dispatch command kebab+upper status alias",
+                    "command-STATUS": "disabled",
+                }
+            ]
+        }
+    }
+
+    with patch("zoho_cli.cli._get_cliq_client", return_value=mock_client):
+        result = runner.invoke(
+            app,
+            ["cliq", "app-commands", "AP_13"],
+            env=_cfg_env(mock_config),
+        )
+
+    assert result.exit_code == 0, result.output
+    payload = json.loads(result.output)
+    assert payload["appId"] == "AP_13"
+    assert payload["commands"][0]["commandId"] == "CMD_13KEBABUPPERSTATUSALIAS"
+    assert payload["commands"][0]["name"] == "deploy_command_kebab_upper_status_alias"
+    assert (
+        payload["commands"][0]["description"]
+        == "dispatch command kebab+upper status alias"
+    )
+    assert payload["commands"][0]["status"] == "disabled"
+
+
+def test_cliq_app_commands_accepts_kebab_upper_tail_command_mode_status_alias_shape(
+    mock_config: Path,
+    mock_token_refresh: Any,
+) -> None:
+    mock_client = MagicMock()
+    mock_client.list_app_commands.return_value = {
+        "payload": {
+            "data": [
+                {
+                    "commandID": "CMD_13KEBABUPPERMODEALIAS",
+                    "actionName": "deploy_command_kebab_upper_mode_alias",
+                    "Description": "dispatch command kebab+upper mode alias",
+                    "command-MODE": "enabled",
+                }
+            ]
+        }
+    }
+
+    with patch("zoho_cli.cli._get_cliq_client", return_value=mock_client):
+        result = runner.invoke(
+            app,
+            ["cliq", "app-commands", "AP_13"],
+            env=_cfg_env(mock_config),
+        )
+
+    assert result.exit_code == 0, result.output
+    payload = json.loads(result.output)
+    assert payload["appId"] == "AP_13"
+    assert payload["commands"][0]["commandId"] == "CMD_13KEBABUPPERMODEALIAS"
+    assert payload["commands"][0]["name"] == "deploy_command_kebab_upper_mode_alias"
+    assert (
+        payload["commands"][0]["description"]
+        == "dispatch command kebab+upper mode alias"
+    )
+    assert payload["commands"][0]["status"] == "enabled"
+
+
 def test_cliq_app_commands_accepts_snake_pascal_tail_command_mode_status_alias_shape(
     mock_config: Path,
     mock_token_refresh: Any,
@@ -11020,6 +11094,76 @@ def test_cliq_app_command_get_accepts_kebab_action_status_alias_shape(
     assert payload["command"]["commandId"] == "CMD_17ACTIONKEBABSTATUSALIAS"
     assert payload["command"]["name"] == "deploy_get_action_kebab_status_alias"
     assert payload["command"]["description"] == "dispatch get action kebab status alias"
+    assert payload["command"]["status"] == "disabled"
+
+
+def test_cliq_app_command_get_accepts_kebab_upper_tail_action_status_alias_shape(
+    mock_config: Path,
+    mock_token_refresh: Any,
+) -> None:
+    mock_client = MagicMock()
+    mock_client.get_app_command.return_value = {
+        "payload": {
+            "data": {
+                "commandID": "CMD_17ACTIONKEBABUPPERSTATUSALIAS",
+                "actionName": "deploy_get_action_kebab_upper_status_alias",
+                "Description": "dispatch get action kebab+upper status alias",
+                "action-STATUS": "enabled",
+            }
+        }
+    }
+
+    with patch("zoho_cli.cli._get_cliq_client", return_value=mock_client):
+        result = runner.invoke(
+            app,
+            ["cliq", "app-command-get", "AP_17", "CMD_17ALIAS"],
+            env=_cfg_env(mock_config),
+        )
+
+    assert result.exit_code == 0, result.output
+    payload = json.loads(result.output)
+    assert payload["appId"] == "AP_17"
+    assert payload["command"]["commandId"] == "CMD_17ACTIONKEBABUPPERSTATUSALIAS"
+    assert payload["command"]["name"] == "deploy_get_action_kebab_upper_status_alias"
+    assert (
+        payload["command"]["description"]
+        == "dispatch get action kebab+upper status alias"
+    )
+    assert payload["command"]["status"] == "enabled"
+
+
+def test_cliq_app_command_get_accepts_kebab_upper_tail_action_mode_status_alias_shape(
+    mock_config: Path,
+    mock_token_refresh: Any,
+) -> None:
+    mock_client = MagicMock()
+    mock_client.get_app_command.return_value = {
+        "payload": {
+            "data": {
+                "commandID": "CMD_17ACTIONKEBABUPPERMODEALIAS",
+                "actionName": "deploy_get_action_kebab_upper_mode_alias",
+                "Description": "dispatch get action kebab+upper mode alias",
+                "action-MODE": "disabled",
+            }
+        }
+    }
+
+    with patch("zoho_cli.cli._get_cliq_client", return_value=mock_client):
+        result = runner.invoke(
+            app,
+            ["cliq", "app-command-get", "AP_17", "CMD_17ALIAS"],
+            env=_cfg_env(mock_config),
+        )
+
+    assert result.exit_code == 0, result.output
+    payload = json.loads(result.output)
+    assert payload["appId"] == "AP_17"
+    assert payload["command"]["commandId"] == "CMD_17ACTIONKEBABUPPERMODEALIAS"
+    assert payload["command"]["name"] == "deploy_get_action_kebab_upper_mode_alias"
+    assert (
+        payload["command"]["description"]
+        == "dispatch get action kebab+upper mode alias"
+    )
     assert payload["command"]["status"] == "disabled"
 
 

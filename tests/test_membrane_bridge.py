@@ -19,7 +19,19 @@ def mock_config(tmp_path: Path) -> Path:
         "client_id": "test_id",
         "client_secret": "test_secret",
         "default_account": "test@example.com",
-        "accounts": {"test@example.com": {"accountId": "ACC123"}},
+        "accounts": {
+            "test@example.com": {
+                "accountId": "ACC123",
+                "membrane_connections": {
+                    "zoho-cliq": "CONN_CLIQ_FROM_CONFIG",
+                    "zoho-crm": "CONN_CRM_FROM_CONFIG",
+                },
+            }
+        },
+        "membrane_connections": {
+            "zoho-cliq": "CONN_CLIQ_GLOBAL",
+            "zoho-crm": "CONN_CRM_GLOBAL",
+        },
     }
     cfg_path = tmp_path / "config.json"
     cfg_path.write_text(json.dumps(cfg))
@@ -108,6 +120,47 @@ def test_membrane_actions_forwards_connection_and_intent(mock_config: Path) -> N
     ]
 
 
+def test_membrane_actions_resolves_connection_from_preset(mock_config: Path) -> None:
+    seen: dict[str, Any] = {}
+
+    def _fake_run(*a, **kw):
+        seen["command"] = a[0]
+        return subprocess.CompletedProcess(
+            args=a[0],
+            returncode=0,
+            stdout=json.dumps({"items": []}),
+            stderr="",
+        )
+
+    with pytest.MonkeyPatch.context() as monkeypatch:
+        monkeypatch.setattr(
+            "zoho_cli.cli.shutil.which", lambda _name: "/usr/local/bin/membrane"
+        )
+        monkeypatch.setattr("zoho_cli.cli.subprocess.run", _fake_run)
+
+        result = runner.invoke(
+            app,
+            [
+                "--config",
+                str(mock_config),
+                "membrane",
+                "actions",
+                "--preset",
+                "zoho-crm",
+            ],
+        )
+
+    assert result.exit_code == 0, result.output
+    assert seen["command"] == [
+        "/usr/local/bin/membrane",
+        "action",
+        "list",
+        "--intent=QUERY",
+        "--connectionId=CONN_CRM_FROM_CONFIG",
+        "--json",
+    ]
+
+
 def test_membrane_run_rejects_invalid_input_json(mock_config: Path) -> None:
     with pytest.MonkeyPatch.context() as monkeypatch:
         monkeypatch.setattr(
@@ -131,3 +184,86 @@ def test_membrane_run_rejects_invalid_input_json(mock_config: Path) -> None:
 
     assert result.exit_code == 1
     assert "invalid_input_json" in result.output
+
+
+def test_membrane_actions_requires_connection_or_preset(mock_config: Path) -> None:
+    with pytest.MonkeyPatch.context() as monkeypatch:
+        monkeypatch.setattr(
+            "zoho_cli.cli.shutil.which", lambda _name: "/usr/local/bin/membrane"
+        )
+
+        result = runner.invoke(
+            app,
+            [
+                "--config",
+                str(mock_config),
+                "membrane",
+                "actions",
+                "--preset",
+                "unknown-product",
+            ],
+        )
+
+    assert result.exit_code == 1
+    assert "missing_membrane_preset_connection" in result.output
+
+
+def test_crm_bridge_run_uses_default_preset(mock_config: Path) -> None:
+    seen: dict[str, Any] = {}
+
+    def _fake_run(*a, **kw):
+        seen["command"] = a[0]
+        return subprocess.CompletedProcess(
+            args=a[0],
+            returncode=0,
+            stdout=json.dumps({"data": [{"id": "1"}]}),
+            stderr="",
+        )
+
+    with pytest.MonkeyPatch.context() as monkeypatch:
+        monkeypatch.setattr(
+            "zoho_cli.cli.shutil.which", lambda _name: "/usr/local/bin/membrane"
+        )
+        monkeypatch.setattr("zoho_cli.cli.subprocess.run", _fake_run)
+
+        result = runner.invoke(
+            app,
+            [
+                "--config",
+                str(mock_config),
+                "crm",
+                "bridge-run",
+                "list-records",
+            ],
+        )
+
+    assert result.exit_code == 0, result.output
+    assert seen["command"] == [
+        "/usr/local/bin/membrane",
+        "action",
+        "run",
+        "--connectionId=CONN_CRM_FROM_CONFIG",
+        "list-records",
+        "--json",
+    ]
+    payload = json.loads(result.output)
+    assert payload["bridge"] == "membrane"
+    assert payload["preset"] == "zoho-crm"
+
+
+def test_crm_bridge_run_rejects_unsupported_bridge(mock_config: Path) -> None:
+    result = runner.invoke(
+        app,
+        [
+            "--config",
+            str(mock_config),
+            "crm",
+            "bridge-run",
+            "list-records",
+            "--bridge",
+            "native",
+        ],
+    )
+
+    assert result.exit_code == 1
+    assert "unsupported_bridge" in result.output

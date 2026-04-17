@@ -1,18 +1,18 @@
 # Current Focus
 
 ## Immediate
-1. **Hybrid bridge bootstrap landed**: experimental `zoho membrane` commands (`doctor/discover/connections/actions/run/raw`) are now available to reuse Membrane-hosted Zoho connectors immediately while preserving native `zoho-cli` contracts.
+1. **Hybrid bridge v1.1 landed**: membrane path now includes preset resolution (`zoho-cliq` / `zoho-crm`) plus first explicit product wrapper (`zoho crm bridge-run --bridge membrane`) to reduce setup friction.
 2. **`cliq-165` remains the top blocker**: maintenance export scopes are granted, but both `cliq export-chats` list and `--chat-id` still return API-side `inactive_appaccount_user` until Cliq admin-side app-account activation is completed.
 3. **`cliq-193` app-command live endpoint is external-deferred**: repeated focused reruns still fail app-command verification (`appCommandsError: empty_output`, CLI stderr `not_supported`) while scope readiness is healthy (`oauthReady: true`, `exportOauthReady: true`), so work stays capability-gated.
 4. **Nightly broad verification remains green**: latest `make release-gate` and `make ci` broad run is green at 637 tests + wheel smoke + fmt/lint.
 5. **Parallel track**: continue `platform-200/201/202` modularization while adding thin membrane-backed wrappers for high-value Cliq/CRM gaps.
 
 ## Next
-1. `platform-203`: add membrane connection presets (`zoho-cliq` / `zoho-crm`) to remove manual connection-id friction.
-2. `platform-203`: land one thin membrane-backed wrapper command in Cliq/CRM path behind an explicit bridge flag.
-3. `platform-200/201/202`: continue no-behavior-change modularization slices with parity checks.
-4. `cliq-193`: keep unsupported endpoint work capability-gated and post-release deferred.
-5. `cliq-165`: rerun export verification immediately after app-account activation (`list` + one `--chat-id` export) and archive first success JSON.
+1. `platform-203`: add first thin `cliq` membrane-backed wrapper command (explicit bridge flag) mirroring `crm bridge-run`.
+2. `platform-200/201/202`: continue no-behavior-change modularization slices with parity checks.
+3. `cliq-193`: keep unsupported endpoint work capability-gated and post-release deferred.
+4. `cliq-165`: rerun export verification immediately after app-account activation (`list` + one `--chat-id` export) and archive first success JSON.
+5. Define short migration matrix (which bridge wrappers should graduate to native next) for the next release cut.
 
 ## MR-first delivery estimate (blockers skipped)
 - **Code-complete via mergeable slices**: **7-10 workdays**.

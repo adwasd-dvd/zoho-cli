@@ -12,6 +12,7 @@ from __future__ import annotations
 
 from functools import partial
 import json
+import os
 import shlex
 import shutil
 import subprocess
@@ -312,6 +313,76 @@ def _run_membrane_command(
             "membrane_invalid_json",
             f"Membrane output is not valid JSON (cmd: {shlex.join(command)}).",
         )
+
+
+_MEMBRANE_PRESET_ALIASES: dict[str, str] = {
+    "cliq": "zoho-cliq",
+    "crm": "zoho-crm",
+    "zoho-cliq": "zoho-cliq",
+    "zoho-crm": "zoho-crm",
+}
+
+_MEMBRANE_PRESET_ENV_VARS: dict[str, str] = {
+    "zoho-cliq": "ZOHO_MEMBRANE_CLIQ_CONNECTION_ID",
+    "zoho-crm": "ZOHO_MEMBRANE_CRM_CONNECTION_ID",
+}
+
+
+def _normalize_membrane_preset(preset: str) -> str:
+    normalized = preset.strip().lower()
+    return _MEMBRANE_PRESET_ALIASES.get(normalized, normalized)
+
+
+def _resolve_membrane_connection_id(
+    *,
+    connection_id: Optional[str],
+    preset: Optional[str],
+    cfg: Optional[dict] = None,
+    email: Optional[str] = None,
+) -> str:
+    if connection_id:
+        return connection_id.strip()
+
+    if not preset:
+        utils.error_exit(
+            "missing_connection_id",
+            "Provide --connection-id or --preset for membrane bridge calls.",
+        )
+
+    normalized_preset = _normalize_membrane_preset(preset)
+    env_name = _MEMBRANE_PRESET_ENV_VARS.get(normalized_preset)
+
+    if env_name and os.environ.get(env_name):
+        return os.environ[env_name].strip()
+
+    cfg_data = cfg if cfg is not None else _cfg()
+    account_email = email or _config.default_account(cfg_data)
+    account_cfg = (
+        cfg_data.get("accounts", {}).get(account_email, {}) if account_email else {}
+    )
+
+    account_map = account_cfg.get("membrane_connections", {})
+    if isinstance(account_map, dict):
+        value = account_map.get(normalized_preset)
+        if isinstance(value, str) and value.strip():
+            return value.strip()
+
+    global_map = cfg_data.get("membrane_connections", {})
+    if isinstance(global_map, dict):
+        value = global_map.get(normalized_preset)
+        if isinstance(value, str) and value.strip():
+            return value.strip()
+
+    env_hint = env_name or "ZOHO_MEMBRANE_<PRODUCT>_CONNECTION_ID"
+    utils.error_exit(
+        "missing_membrane_preset_connection",
+        (
+            f"No membrane connection id found for preset '{normalized_preset}'. "
+            "Set --connection-id directly, or configure "
+            f"accounts.<email>.membrane_connections.{normalized_preset}, "
+            f"membrane_connections.{normalized_preset}, or env {env_hint}."
+        ),
+    )
 
 
 def _send_and_report(
@@ -1401,10 +1472,15 @@ def membrane_connections() -> None:
 
 @membrane_app.command("actions")
 def membrane_actions(
-    connection_id: str = typer.Option(
-        ...,
+    connection_id: Optional[str] = typer.Option(
+        None,
         "--connection-id",
         help="Membrane connection ID.",
+    ),
+    preset: Optional[str] = typer.Option(
+        None,
+        "--preset",
+        help="Connection preset alias (for example: zoho-cliq, zoho-crm).",
     ),
     intent: str = typer.Option(
         "QUERY",
@@ -1413,12 +1489,21 @@ def membrane_actions(
     ),
 ) -> None:
     """List available actions for a Membrane connection."""
+    cfg = _cfg()
+    email = _S.account or _config.default_account(cfg)
+    resolved_connection_id = _resolve_membrane_connection_id(
+        connection_id=connection_id,
+        preset=preset,
+        cfg=cfg,
+        email=email,
+    )
+
     payload = _run_membrane_command(
         [
             "action",
             "list",
             f"--intent={intent}",
-            f"--connectionId={connection_id}",
+            f"--connectionId={resolved_connection_id}",
             "--json",
         ]
     )
@@ -1428,10 +1513,15 @@ def membrane_actions(
 @membrane_app.command("run")
 def membrane_run(
     action_id: str = typer.Argument(..., help="Action ID to execute."),
-    connection_id: str = typer.Option(
-        ...,
+    connection_id: Optional[str] = typer.Option(
+        None,
         "--connection-id",
         help="Membrane connection ID.",
+    ),
+    preset: Optional[str] = typer.Option(
+        None,
+        "--preset",
+        help="Connection preset alias (for example: zoho-cliq, zoho-crm).",
     ),
     input_json: Optional[str] = typer.Option(
         None,
@@ -1440,10 +1530,19 @@ def membrane_run(
     ),
 ) -> None:
     """Run one Membrane action and return raw JSON response."""
+    cfg = _cfg()
+    email = _S.account or _config.default_account(cfg)
+    resolved_connection_id = _resolve_membrane_connection_id(
+        connection_id=connection_id,
+        preset=preset,
+        cfg=cfg,
+        email=email,
+    )
+
     command: list[str] = [
         "action",
         "run",
-        f"--connectionId={connection_id}",
+        f"--connectionId={resolved_connection_id}",
         action_id,
         "--json",
     ]
@@ -8025,6 +8124,78 @@ def crm_search(
     )
     data = resp.get("data", resp)
     utils.output(data)
+
+
+@crm_app.command("bridge-run")
+def crm_bridge_run(
+    action_id: str = typer.Argument(
+        ..., help="Membrane action id (for example: list-records)."
+    ),
+    bridge: str = typer.Option(
+        "membrane",
+        "--bridge",
+        help="Bridge backend. Currently only 'membrane' is supported.",
+    ),
+    connection_id: Optional[str] = typer.Option(
+        None,
+        "--connection-id",
+        help="Membrane connection ID. Overrides preset lookup when provided.",
+    ),
+    preset: Optional[str] = typer.Option(
+        "zoho-crm",
+        "--preset",
+        help="Connection preset alias (default: zoho-crm).",
+    ),
+    input_json: Optional[str] = typer.Option(
+        None,
+        "--input-json",
+        help="JSON string passed to membrane --input.",
+    ),
+) -> None:
+    """Run one CRM action through membrane bridge (explicit opt-in)."""
+    if bridge.strip().lower() != "membrane":
+        utils.error_exit(
+            "unsupported_bridge",
+            "Only --bridge membrane is supported right now.",
+        )
+
+    cfg = _cfg()
+    email = _S.account or _config.default_account(cfg)
+    resolved_connection_id = _resolve_membrane_connection_id(
+        connection_id=connection_id,
+        preset=preset,
+        cfg=cfg,
+        email=email,
+    )
+
+    command: list[str] = [
+        "action",
+        "run",
+        f"--connectionId={resolved_connection_id}",
+        action_id,
+        "--json",
+    ]
+
+    if input_json is not None:
+        try:
+            json.loads(input_json)
+        except json.JSONDecodeError:
+            utils.error_exit(
+                "invalid_input_json",
+                "--input-json must be a valid JSON object/string.",
+            )
+        command.extend(["--input", input_json])
+
+    result = _run_membrane_command(command)
+    utils.output(
+        {
+            "bridge": "membrane",
+            "preset": _normalize_membrane_preset(preset or "zoho-crm"),
+            "connectionId": resolved_connection_id,
+            "actionId": action_id,
+            "result": result,
+        }
+    )
 
 
 # ══════════════════════════════════════════════════════════════════════════════

@@ -1,13 +1,13 @@
 id: platform-203
-title: bootstrap membrane bridge commands for hybrid rollout
+title: expand membrane bridge presets and first CRM wrapper for hybrid rollout
 module: platform
 stage: in_progress
 status: in_progress
 owner: coder
-updated_at: '2026-04-17T17:37:44Z'
+updated_at: '2026-04-17T17:56:30Z'
 success_criteria:
-- ship experimental membrane bridge command surface with focused tests
-- document quick-start usage in README/changelog for immediate operator adoption
-- define the next wrapper slice that maps high-value Cliq/CRM flows onto membrane fallback
-next_if_done: map first cliq/crm high-value workflows to stable zoho subcommands that can delegate to membrane behind an explicit bridge flag
-next_step: complete membrane bridge v1 by adding connection-id preset support (`zoho-cliq`, `zoho-crm`) plus one thin cliq wrapper command powered by the bridge.
+- ship membrane preset resolution (`zoho-cliq` / `zoho-crm`) with focused tests
+- land first explicit product wrapper command (`crm bridge-run --bridge membrane`)
+- keep docs and state files aligned with hybrid rollout guidance
+next_if_done: add first cliq wrapper command on the same bridge path and start mapping top-priority blocked cliq actions behind explicit fallback flags
+next_step: implement one thin `cliq` wrapper command that can delegate through membrane via preset-based connection resolution.

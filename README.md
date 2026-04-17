@@ -62,6 +62,8 @@ uv tool install .
 ### 🧪 Membrane bridge (experimental fast-fallback)
 
 - Bridge commands: `membrane doctor`, `membrane discover`, `membrane connections`, `membrane actions`, `membrane run`, `membrane raw`
+- Preset lookup: `--preset zoho-cliq|zoho-crm` resolves connection IDs from config/env to reduce manual setup friction
+- Thin CRM wrapper: `crm bridge-run <action-id> --bridge membrane` delegates one call through Membrane while keeping `zoho-cli` entrypoints stable
 - Purpose: quickly reuse Membrane-hosted Zoho connectors while preserving `zoho-cli` as the stable front door
 - Requirement: `membrane` binary installed (`npm install -g @membranehq/cli`)
 

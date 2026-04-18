@@ -1,5 +1,5 @@
 module: Platform
-updated_at: "2026-04-18T09:50:36Z"
+updated_at: "2026-04-18T10:10:33Z"
 status: in_progress
 blockers: []
 next_small_step: extract the next smallest remaining direct Cliq decorator command family after `custom-domains` + `custom-emails` (likely `file` + `voice`) into commands-slice registrar wiring with focused parity checks.

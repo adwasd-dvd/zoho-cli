@@ -4,10 +4,10 @@ module: cliq
 stage: in_progress
 status: in_progress
 owner: coder
-updated_at: '2026-04-18T19:40:22Z'
+updated_at: '2026-04-18T20:05:19Z'
 success_criteria:
 - define a minimal cliq-194 intake contract scaffold (web-trigger first, adaptive poll fallback, mandatory read-ack after consume)
 - keep cliq-193/cliq-165 external blockers capability-gated and non-blocking for this slice
 - keep work queue, project state, and focused verification notes aligned with the cliq-194 handoff
-next_if_done: if medium-scope cliq-194 watch-loop verification stays green, move to cliq-195 packaging follow-up.
-next_step: run a medium-scope cliq-194 watch-loop verification refresh (`watch-context` + `watch-act` + `bridge-run`) now that default `watchIntake.consume.actionId` inference is covered.
+next_if_done: if cliq-195 packaging kickoff slice lands cleanly, continue platform-204/v1 gate alignment without re-opening deferred external blockers.
+next_step: start the first cliq-195 operator-workflow packaging slice, reusing the now-green cliq-194 watch-loop baseline.

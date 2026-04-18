@@ -68,6 +68,7 @@ from zoho_cli.commands import (
     register_cliq_channel_metadata_commands,
     register_cliq_channel_membership_commands,
     register_cliq_message_discovery_commands,
+    register_cliq_file_voice_commands,
     register_cliq_mute_unmute_commands,
     register_cliq_pinned_commands,
     register_cliq_pin_unpin_commands,
@@ -8243,7 +8244,6 @@ register_cliq_message_discovery_commands(
 )
 
 
-@cliq_app.command("file")
 def cliq_file(
     message_id: str = typer.Argument(..., help="Cliq message id."),
     channel_id: Optional[str] = typer.Option(
@@ -8323,7 +8323,6 @@ def cliq_file(
     )
 
 
-@cliq_app.command("voice")
 def cliq_voice(
     message_id: str = typer.Argument(..., help="Cliq message id."),
     channel_id: Optional[str] = typer.Option(
@@ -8442,6 +8441,13 @@ def cliq_voice(
             "allFilesCount": len(files),
         }
     )
+
+
+register_cliq_file_voice_commands(
+    cliq_app,
+    cliq_file_command=cliq_file,
+    cliq_voice_command=cliq_voice,
+)
 
 
 @cliq_app.command("messages")

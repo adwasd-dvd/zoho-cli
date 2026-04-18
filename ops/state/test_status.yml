@@ -1,10 +1,17 @@
-last_run_at: "2026-04-18T10:10:33Z"
+last_run_at: "2026-04-18T10:56:01Z"
 last_result: success
 current_focus: platform
 suites:
   unit:
     status: success
     notes:
+      - "platform-202 direct cliq file/voice command extraction parity verification at 2026-04-18T10:56:01Z"
+      - "python3.11 -m pytest -q tests/test_registry.py::test_commands_package_exports_root_registrars tests/test_registry.py::test_register_cliq_file_voice_commands_preserves_expected_command_names"
+      - "2 passed in 0.02s"
+      - "python3.11 -m pytest -q tests/test_cli.py -k \"cliq_file_from_channel or cliq_voice_from_channel\""
+      - "2 passed, 411 deselected in 0.12s"
+      - "./.venv/bin/ruff format --check zoho_cli/commands/cliq.py zoho_cli/commands/__init__.py zoho_cli/cli.py tests/test_registry.py"
+      - "4 files already formatted"
       - "integration-loop medium-scope verification refresh at 2026-04-18T10:10:33Z"
       - "python3.11 -m pytest -q tests/test_registry.py tests/test_membrane_bridge.py"
       - "77 passed in 0.55s"

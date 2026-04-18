@@ -202,6 +202,17 @@ def register_cliq_message_discovery_commands(
     cliq_app.command("search")(cliq_search_command)
 
 
+def register_cliq_file_voice_commands(
+    cliq_app: typer.Typer,
+    *,
+    cliq_file_command: Callable[..., None],
+    cliq_voice_command: Callable[..., None],
+) -> None:
+    """Register adjacent Cliq file/voice retrieval commands on ``cliq_app``."""
+    cliq_app.command("file")(cliq_file_command)
+    cliq_app.command("voice")(cliq_voice_command)
+
+
 def register_cliq_scheduled_lifecycle_commands(
     cliq_app: typer.Typer,
     *,

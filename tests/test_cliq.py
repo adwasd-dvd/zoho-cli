@@ -2987,6 +2987,7 @@ def test_build_watch_context_seed_includes_watch_intake_contract_metadata() -> N
     assert payload["watchIntake"]["pollFallback"]["transport"] == "api-poll"
     assert payload["watchIntake"]["consume"]["ackAction"] == "read-ack-latest"
     assert payload["watchIntake"]["consume"]["ackRequired"] is True
+    assert payload["watchIntake"]["consume"]["actionId"] == "watch-loop"
 
 
 def test_build_watch_reply_action_preserves_watch_intake_metadata() -> None:

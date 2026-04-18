@@ -1171,6 +1171,7 @@ class ZohoCliqClient:
                 "consume": {
                     "ackAction": "read-ack-latest",
                     "ackRequired": True,
+                    "actionId": "watch-loop",
                 },
             },
             "messages": normalized_messages,

@@ -1578,6 +1578,7 @@ def test_cliq_watch_context_from_channel(
     assert payload["newCount"] == 1
     assert payload["watchIntake"]["triggerMode"] == "web-notification-first"
     assert payload["watchIntake"]["pollFallback"]["mode"] == "adaptive"
+    assert payload["watchIntake"]["consume"]["actionId"] == "watch-loop"
     assert payload["messages"][0]["messageId"] == "M3"
 
 

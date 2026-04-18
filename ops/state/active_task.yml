@@ -4,10 +4,10 @@ module: cliq
 stage: in_progress
 status: in_progress
 owner: coder
-updated_at: '2026-04-18T19:02:00Z'
+updated_at: '2026-04-18T19:40:22Z'
 success_criteria:
 - define a minimal cliq-194 intake contract scaffold (web-trigger first, adaptive poll fallback, mandatory read-ack after consume)
 - keep cliq-193/cliq-165 external blockers capability-gated and non-blocking for this slice
 - keep work queue, project state, and focused verification notes aligned with the cliq-194 handoff
-next_if_done: add a default watch bridge action hint in watch-context output so `cliq bridge-run --watch-file` can run without explicit action arguments in baseline loops.
-next_step: extend watch-context/watch-intake scaffolding with an explicit membrane action hint key (for example `watchIntake.consume.actionId`) and pin end-to-end compatibility with focused bridge-run tests.
+next_if_done: if medium-scope cliq-194 watch-loop verification stays green, move to cliq-195 packaging follow-up.
+next_step: run a medium-scope cliq-194 watch-loop verification refresh (`watch-context` + `watch-act` + `bridge-run`) now that default `watchIntake.consume.actionId` inference is covered.

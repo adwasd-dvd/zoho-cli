@@ -8,6 +8,7 @@ from typing import Any
 import pytest
 from typer.testing import CliRunner
 
+from zoho_cli import cliq as cliq_client
 from zoho_cli.cli import app
 
 runner = CliRunner()
@@ -371,6 +372,56 @@ def test_cliq_bridge_run_watch_file_forwards_watch_payload_and_action_hint(
     payload = json.loads(result.output)
     assert payload["actionId"] == "watch-loop"
     assert payload["watchIntake"]["consume"]["ackAction"] == "read-ack-latest"
+
+
+def test_cliq_bridge_run_watch_file_infers_action_from_watch_context_seed(
+    tmp_path: Path,
+    mock_config: Path,
+) -> None:
+    seen: dict[str, Any] = {}
+
+    def _fake_run(*a, **kw):
+        seen["command"] = a[0]
+        return subprocess.CompletedProcess(
+            args=a[0],
+            returncode=0,
+            stdout=json.dumps({"ok": True}),
+            stderr="",
+        )
+
+    watch_payload = cliq_client.ZohoCliqClient.build_watch_context_seed(
+        [
+            {"id": "M2", "text": "latest"},
+            {"id": "M1", "text": "older"},
+        ],
+        since_message_id="M1",
+        max_messages=5,
+    )
+    watch_file = tmp_path / "watch-context.json"
+    watch_file.write_text(json.dumps(watch_payload))
+
+    with pytest.MonkeyPatch.context() as monkeypatch:
+        monkeypatch.setattr(
+            "zoho_cli.cli.shutil.which", lambda _name: "/usr/local/bin/membrane"
+        )
+        monkeypatch.setattr("zoho_cli.cli.subprocess.run", _fake_run)
+
+        result = runner.invoke(
+            app,
+            [
+                "--config",
+                str(mock_config),
+                "cliq",
+                "bridge-run",
+                "--watch-file",
+                str(watch_file),
+            ],
+        )
+
+    assert result.exit_code == 0, result.output
+    assert seen["command"][4] == "watch-loop"
+    payload = json.loads(result.output)
+    assert payload["actionId"] == "watch-loop"
 
 
 def test_cliq_bridge_run_watch_file_preserves_explicit_action_override(

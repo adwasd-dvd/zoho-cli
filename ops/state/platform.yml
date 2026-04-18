@@ -1,5 +1,5 @@
 module: Platform
-updated_at: "2026-04-18T02:32:15Z"
+updated_at: "2026-04-18T02:43:48Z"
 status: in_progress
 blockers: []
-next_small_step: continue platform-202 by extracting the next adjacent Cliq command registration pair (`channel-archive` / `channel-delete`) into commands-slice wiring with parity checks, using the latest member-management registrar parity check as baseline.
+next_small_step: continue platform-202 by extracting the next adjacent Cliq thread command registration pair (`thread-create` / `thread-reply`) into commands-slice wiring with parity checks, using the latest channel-lifecycle registrar parity check as baseline.

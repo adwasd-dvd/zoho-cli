@@ -156,3 +156,14 @@ def register_cliq_channel_member_management_commands(
     """Register adjacent Cliq channel-member management commands on ``cliq_app``."""
     cliq_app.command("member-add")(cliq_member_add_command)
     cliq_app.command("member-remove")(cliq_member_remove_command)
+
+
+def register_cliq_channel_lifecycle_commands(
+    cliq_app: typer.Typer,
+    *,
+    cliq_channel_archive_command: Callable[..., None],
+    cliq_channel_delete_command: Callable[..., None],
+) -> None:
+    """Register adjacent Cliq channel-lifecycle commands on ``cliq_app``."""
+    cliq_app.command("channel-archive")(cliq_channel_archive_command)
+    cliq_app.command("channel-delete")(cliq_channel_delete_command)

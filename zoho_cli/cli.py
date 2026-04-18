@@ -63,6 +63,7 @@ from zoho_cli.commands import (
     register_cliq_app_catalog_commands,
     register_cliq_app_commands_bridge_commands,
     register_cliq_app_commands_commands,
+    register_cliq_channel_lifecycle_commands,
     register_cliq_channel_member_management_commands,
     register_cliq_channel_metadata_commands,
     register_cliq_channel_membership_commands,
@@ -7187,7 +7188,6 @@ register_cliq_channel_member_management_commands(
 )
 
 
-@cliq_app.command("channel-archive")
 def cliq_channel_archive(
     channel_id: str = typer.Argument(..., help="Target channel id."),
     unarchive: bool = typer.Option(
@@ -7210,7 +7210,6 @@ def cliq_channel_archive(
     )
 
 
-@cliq_app.command("channel-delete")
 def cliq_channel_delete(
     channel_id: str = typer.Argument(..., help="Target channel id."),
     force: bool = typer.Option(False, "--force", help="Confirm channel deletion."),
@@ -7232,6 +7231,13 @@ def cliq_channel_delete(
         "Cliq channel deleted",
         extra={"channelId": channel_id, "result": data},
     )
+
+
+register_cliq_channel_lifecycle_commands(
+    cliq_app,
+    cliq_channel_archive_command=cliq_channel_archive,
+    cliq_channel_delete_command=cliq_channel_delete,
+)
 
 
 @cliq_app.command("channel-unarchive")

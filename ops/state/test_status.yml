@@ -1,10 +1,28 @@
-last_run_at: "2026-04-18T07:55:47Z"
+last_run_at: "2026-04-18T08:06:47Z"
 last_result: success
 current_focus: platform
 suites:
   unit:
     status: success
     notes:
+      - "integration-loop medium-scope verification refresh at 2026-04-18T08:06:47Z"
+      - "./.venv/bin/python -m pytest -q tests/test_registry.py tests/test_membrane_bridge.py"
+      - "72 passed in 0.57s"
+      - "./.venv/bin/python -m pytest -q tests/test_cli.py -k \"cliq_designations or cliq_user_status or cliq_userfields or cliq_bridge_run or crm_bridge_run\""
+      - "3 passed, 410 deselected in 0.11s"
+      - "./.venv/bin/python -m pytest -q tests/test_cliq.py -k \"designations or user_statuses or user_fields\""
+      - "6 passed, 164 deselected in 0.11s"
+      - "./.venv/bin/python -m zoho_cli --help && ./.venv/bin/python -m zoho_cli cliq --help && ./.venv/bin/python -m zoho_cli crm --help && ./.venv/bin/python -m zoho_cli config --help"
+      - "HELP_SMOKE_OK"
+      - "integration-loop medium-scope verification refresh at 2026-04-18T08:01:05Z"
+      - "./.venv/bin/python -m pytest -q tests/test_registry.py tests/test_membrane_bridge.py"
+      - "72 passed in 0.54s"
+      - "./.venv/bin/python -m pytest -q tests/test_cli.py -k \"cliq_designations or cliq_user_status or cliq_userfields or cliq_bridge_run or crm_bridge_run\""
+      - "3 passed, 410 deselected in 0.11s"
+      - "./.venv/bin/python -m pytest -q tests/test_cliq.py -k \"designations or user_statuses or user_fields\""
+      - "6 passed, 164 deselected in 0.22s"
+      - "./.venv/bin/python -m zoho_cli --help && ./.venv/bin/python -m zoho_cli cliq --help && ./.venv/bin/python -m zoho_cli crm --help && ./.venv/bin/python -m zoho_cli config --help"
+      - "HELP_SMOKE_OK"
       - "platform-202 direct cliq designations/user-status command extraction parity verification at 2026-04-18T07:55:47Z"
       - "./.venv/bin/python -m pytest tests/test_registry.py -k \"designations_user_status or departments_roles or commands_package_exports_root_registrars\""
       - "3 passed, 41 deselected in 0.07s"

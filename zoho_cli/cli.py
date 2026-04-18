@@ -69,9 +69,11 @@ from zoho_cli.commands import (
     register_cliq_channel_membership_commands,
     register_cliq_message_discovery_commands,
     register_cliq_mute_unmute_commands,
+    register_cliq_pinned_commands,
     register_cliq_pin_unpin_commands,
     register_cliq_scheduled_cancel_leave_commands,
     register_cliq_scheduled_lifecycle_commands,
+    register_cliq_status_commands,
     register_cliq_thread_commands,
     register_cliq_thread_state_commands,
     register_cliq_export_commands,
@@ -1601,7 +1603,6 @@ def membrane_raw(
     utils.output(payload)
 
 
-@cliq_app.command("status")
 def cliq_status(
     check_auth: bool = typer.Option(
         False, "--check-auth", help="Verify OAuth refresh for the selected account."
@@ -1699,6 +1700,12 @@ def cliq_status(
                 payload["exportNext"] = _export_next()
 
     utils.output(payload)
+
+
+register_cliq_status_commands(
+    cliq_app,
+    cliq_status_command=cliq_status,
+)
 
 
 @cliq_app.command("bridge-run")
@@ -7913,7 +7920,6 @@ register_cliq_pin_unpin_commands(
 )
 
 
-@cliq_app.command("pinned")
 def cliq_pinned(
     channel_id: Optional[str] = typer.Option(
         None, "--channel-id", help="Destination channel id (resolved to chat_id)."
@@ -7965,6 +7971,12 @@ def cliq_pinned(
             "pinnedMessages": pinned_messages,
         }
     )
+
+
+register_cliq_pinned_commands(
+    cliq_app,
+    cliq_pinned_command=cliq_pinned,
+)
 
 
 def cliq_thread_followers(

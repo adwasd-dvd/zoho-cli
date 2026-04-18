@@ -244,3 +244,21 @@ def register_cliq_pin_unpin_commands(
     """Register adjacent Cliq pin/unpin commands on ``cliq_app``."""
     cliq_app.command("pin")(cliq_pin_command)
     cliq_app.command("unpin")(cliq_unpin_command)
+
+
+def register_cliq_pinned_commands(
+    cliq_app: typer.Typer,
+    *,
+    cliq_pinned_command: Callable[..., None],
+) -> None:
+    """Register the Cliq pinned-messages listing command on ``cliq_app``."""
+    cliq_app.command("pinned")(cliq_pinned_command)
+
+
+def register_cliq_status_commands(
+    cliq_app: typer.Typer,
+    *,
+    cliq_status_command: Callable[..., None],
+) -> None:
+    """Register the Cliq status command on ``cliq_app``."""
+    cliq_app.command("status")(cliq_status_command)

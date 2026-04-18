@@ -4,10 +4,10 @@ module: platform
 stage: in_progress
 status: in_progress
 owner: coder
-updated_at: '2026-04-18T05:07:41Z'
+updated_at: '2026-04-18T05:44:54Z'
 success_criteria:
 - move adjacent cliq app-governance command families from direct Typer decorators to commands-slice registration (no behavior change)
 - keep command names/order stable with focused registry + cli parity tests
 - keep work queue and project state aligned with framework-first execution
 next_if_done: reassess platform-201/platform-202 completion status and queue the next no-behavior-change modularization slice.
-next_step: continue platform-202 by extracting the next remaining direct Cliq command registration (`pinned`) into commands-slice wiring with parity checks, after completing the pin/unpin registrar extraction at 2026-04-18T05:07:41Z (`tests/test_registry.py -k "mute_unmute or pin_unpin or commands_package_exports_root_registrars"` -> `3 passed`; `tests/test_cli.py -k "cliq_pin_from_channel or cliq_unpin_from_channel"` -> `2 passed`).
+next_step: continue platform-202 by extracting the next remaining direct Cliq command registration (`bridge-run`) into commands-slice wiring with parity checks, after completing the `status` registrar extraction at 2026-04-18T05:40:51Z (`tests/test_registry.py -k "status_commands or pinned_commands or commands_package_exports_root_registrars"` -> `3 passed`; `tests/test_cli.py -k "cliq_status_scaffold_info"` -> `1 passed`).

@@ -333,3 +333,14 @@ def register_cliq_userfields_commands(
 ) -> None:
     """Register the Cliq userfields command on ``cliq_app``."""
     cliq_app.command("userfields")(cliq_userfields_command)
+
+
+def register_cliq_events_reminders_commands(
+    cliq_app: typer.Typer,
+    *,
+    cliq_events_command: Callable[..., None],
+    cliq_reminders_command: Callable[..., None],
+) -> None:
+    """Register adjacent Cliq events/reminders commands on ``cliq_app``."""
+    cliq_app.command("events")(cliq_events_command)
+    cliq_app.command("reminders")(cliq_reminders_command)

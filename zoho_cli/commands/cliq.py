@@ -169,6 +169,15 @@ def register_cliq_channel_lifecycle_commands(
     cliq_app.command("channel-delete")(cliq_channel_delete_command)
 
 
+def register_cliq_channel_unarchive_commands(
+    cliq_app: typer.Typer,
+    *,
+    cliq_channel_unarchive_command: Callable[..., None],
+) -> None:
+    """Register the Cliq channel-unarchive command on ``cliq_app``."""
+    cliq_app.command("channel-unarchive")(cliq_channel_unarchive_command)
+
+
 def register_cliq_thread_commands(
     cliq_app: typer.Typer,
     *,

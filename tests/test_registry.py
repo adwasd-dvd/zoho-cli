@@ -21,6 +21,7 @@ from zoho_cli.commands.cliq import register_cliq_app_catalog_bridge_commands
 from zoho_cli.commands.cliq import register_cliq_app_commands_bridge_commands
 from zoho_cli.commands.cliq import register_cliq_app_commands_commands
 from zoho_cli.commands.cliq import register_cliq_channel_lifecycle_commands
+from zoho_cli.commands.cliq import register_cliq_channel_unarchive_commands
 from zoho_cli.commands.cliq import register_cliq_channel_member_management_commands
 from zoho_cli.commands.cliq import register_cliq_channel_metadata_commands
 from zoho_cli.commands.cliq import register_cliq_channel_membership_commands
@@ -110,6 +111,10 @@ def test_commands_package_exports_root_registrars() -> None:
     assert (
         commands_pkg.register_cliq_channel_lifecycle_commands
         is register_cliq_channel_lifecycle_commands
+    )
+    assert (
+        commands_pkg.register_cliq_channel_unarchive_commands
+        is register_cliq_channel_unarchive_commands
     )
     assert (
         commands_pkg.register_cliq_channel_member_management_commands
@@ -565,6 +570,24 @@ def test_register_cliq_channel_lifecycle_commands_preserves_expected_command_nam
     assert [command.name for command in app.registered_commands] == [
         "channel-archive",
         "channel-delete",
+    ]
+
+
+def test_register_cliq_channel_unarchive_commands_preserves_expected_command_names() -> (
+    None
+):
+    app = typer.Typer(no_args_is_help=True)
+
+    def _channel_unarchive_command() -> None:
+        return None
+
+    register_cliq_channel_unarchive_commands(
+        app,
+        cliq_channel_unarchive_command=_channel_unarchive_command,
+    )
+
+    assert [command.name for command in app.registered_commands] == [
+        "channel-unarchive",
     ]
 
 

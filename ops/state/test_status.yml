@@ -1,10 +1,17 @@
-last_run_at: "2026-04-18T13:55:52Z"
+last_run_at: "2026-04-18T14:21:35Z"
 last_result: success
 current_focus: platform
 suites:
   unit:
     status: success
     notes:
+      - "platform-202 direct cliq channel-unarchive command extraction parity verification at 2026-04-18T14:21:35Z"
+      - "python3.11 -m pytest -q tests/test_registry.py -k \"channel_unarchive or channel_lifecycle or commands_package_exports_root_registrars\""
+      - "3 passed, 54 deselected in 0.07s"
+      - "python3.11 -m pytest -q tests/test_cli.py -k \"cliq_channel_unarchive\""
+      - "1 passed, 412 deselected in 0.08s"
+      - "./.venv/bin/ruff format --check zoho_cli/commands/cliq.py zoho_cli/commands/__init__.py zoho_cli/cli.py tests/test_registry.py"
+      - "4 files already formatted"
       - "integration-loop medium-scope verification refresh at 2026-04-18T13:55:52Z"
       - "python3.11 -m pytest -q tests/test_registry.py tests/test_membrane_bridge.py"
       - "84 passed in 0.55s"

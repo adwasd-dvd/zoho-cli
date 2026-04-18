@@ -64,6 +64,7 @@ from zoho_cli.commands import (
     register_cliq_app_commands_bridge_commands,
     register_cliq_app_commands_commands,
     register_cliq_channel_lifecycle_commands,
+    register_cliq_channel_unarchive_commands,
     register_cliq_channel_member_management_commands,
     register_cliq_channel_metadata_commands,
     register_cliq_channel_membership_commands,
@@ -7327,7 +7328,6 @@ register_cliq_channel_lifecycle_commands(
 )
 
 
-@cliq_app.command("channel-unarchive")
 def cliq_channel_unarchive(
     channel_id: str = typer.Argument(..., help="Target channel id."),
     network: Optional[str] = typer.Option(
@@ -7336,6 +7336,12 @@ def cliq_channel_unarchive(
 ) -> None:
     """Unarchive a Cliq channel."""
     cliq_channel_archive(channel_id=channel_id, unarchive=True, network=network)
+
+
+register_cliq_channel_unarchive_commands(
+    cliq_app,
+    cliq_channel_unarchive_command=cliq_channel_unarchive,
+)
 
 
 def cliq_thread_create(

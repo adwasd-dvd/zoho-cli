@@ -1199,6 +1199,101 @@ class ZohoCliqClient:
             "hasTarget": bool(target_id),
         }
 
+    @classmethod
+    def build_watch_read_ack_action(
+        cls,
+        watch_payload: dict[str, Any],
+        *,
+        chat_id: str | None = None,
+        channel_id: str | None = None,
+        message_id: str | None = None,
+    ) -> dict[str, Any]:
+        """Build a deterministic read-ack action from watch-context output."""
+        payload_chat = str(watch_payload.get("chatId") or "").strip()
+        payload_channel = str(watch_payload.get("channelId") or "").strip()
+
+        resolved_chat = (chat_id or "").strip() or payload_chat
+        resolved_channel = (channel_id or "").strip() or payload_channel
+
+        data = watch_payload.get("messages")
+        messages = (
+            [item for item in data if isinstance(item, dict)]
+            if isinstance(data, list)
+            else []
+        )
+
+        explicit_target = (message_id or "").strip()
+        target: dict[str, Any] | None = None
+        if explicit_target:
+            for item in reversed(messages):
+                if cls._extract_message_id(item) == explicit_target:
+                    target = item
+                    break
+        else:
+            for item in reversed(messages):
+                if cls._extract_message_id(item):
+                    target = item
+                    break
+
+        target_id = explicit_target or cls._extract_message_id(target or {})
+        return {
+            "action": "read-ack-latest",
+            "chatId": resolved_chat,
+            "channelId": resolved_channel,
+            "newCount": watch_payload.get("newCount", len(messages)),
+            "targetMessageId": target_id,
+            "targetSenderId": cls._extract_sender_id(target or {}),
+            "targetText": cls._extract_message_text(target or {}),
+            "hasTarget": bool(target_id),
+            "ackRequired": bool(target_id),
+        }
+
+    def execute_watch_read_ack_action(
+        self,
+        watch_payload: dict[str, Any],
+        *,
+        chat_id: str | None = None,
+        channel_id: str | None = None,
+        message_id: str | None = None,
+    ) -> dict[str, Any]:
+        """Execute one deterministic watch action: read-ack the latest new message."""
+        action = self.build_watch_read_ack_action(
+            watch_payload,
+            chat_id=chat_id,
+            channel_id=channel_id,
+            message_id=message_id,
+        )
+
+        resolved_chat = str(action.get("chatId") or "").strip()
+        resolved_channel = str(action.get("channelId") or "").strip()
+        if not resolved_chat and not resolved_channel:
+            utils.error_exit(
+                "invalid_destination",
+                "Watch payload is missing destination. Provide --chat-id/--channel-id or use payload from `zoho cliq watch-context`.",
+            )
+
+        target_id = str(action.get("targetMessageId") or "").strip()
+        if not target_id:
+            return {
+                "status": "ok",
+                **action,
+                "applied": False,
+                "reason": "no_new_messages",
+                "result": {},
+            }
+
+        resp = self.read_ack_message(
+            target_id,
+            chat_id=resolved_chat or None,
+            channel_id=resolved_channel or None,
+        )
+        return {
+            "status": "ok",
+            **action,
+            "applied": True,
+            "result": resp.get("data", resp),
+        }
+
     def execute_watch_reply_action(
         self,
         watch_payload: dict[str, Any],
@@ -1704,6 +1799,47 @@ class ZohoCliqClient:
             candidates,
             scope_hint="ZohoCliq.Messages.CREATE",
             operation_label="reply",
+        )
+
+    def read_ack_message(
+        self,
+        message_id: str,
+        *,
+        chat_id: str | None = None,
+        channel_id: str | None = None,
+    ) -> dict:
+        """Mark a message as read/acknowledged using endpoint/method fallbacks."""
+        resolved_chat = self._resolve_chat_destination(
+            chat_id=chat_id,
+            channel_id=channel_id,
+        )
+        mid = message_id.strip()
+        if not mid:
+            utils.error_exit("invalid_message_id", "message_id cannot be empty")
+
+        candidates: list[tuple[str, str, dict[str, Any] | None]] = [
+            ("POST", f"/chats/{resolved_chat}/messages/{mid}/read", {}),
+            ("POST", f"/chats/{resolved_chat}/messages/{mid}/ack", {}),
+            ("PUT", f"/chats/{resolved_chat}/messages/{mid}/read", {}),
+            ("POST", f"/chats/{resolved_chat}/messages/read", {"message_id": mid}),
+            ("POST", f"/chats/{resolved_chat}/messages/read", {"messageId": mid}),
+        ]
+
+        if channel_id:
+            target_channel = channel_id.strip()
+            if target_channel:
+                candidates.extend(
+                    [
+                        ("POST", f"/channels/{target_channel}/messages/{mid}/read", {}),
+                        ("POST", f"/channels/{target_channel}/messages/{mid}/ack", {}),
+                    ]
+                )
+
+        return self._request_with_candidates_and_not_supported(
+            candidates,
+            scope_hint="ZohoCliq.Messages.READ",
+            operation_label="message-read-ack",
+            not_supported_message="Cliq read-ack endpoints are not available for this token/network endpoint. Run `zoho cliq capabilities --channel-id <id>` and confirm read-ack operations for the target conversation.",
         )
 
     def edit_message(

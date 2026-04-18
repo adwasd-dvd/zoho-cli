@@ -8727,7 +8727,22 @@ def cliq_watch_act(
         "--watch-file",
         help="Path to watch-context JSON payload (use '-' to read from stdin).",
     ),
-    text: str = typer.Option(..., "--text", "-t", help="Reply text to send."),
+    action: str = typer.Option(
+        "reply-latest",
+        "--action",
+        help="Action to execute from the watch payload: reply-latest or read-ack-latest.",
+    ),
+    text: Optional[str] = typer.Option(
+        None,
+        "--text",
+        "-t",
+        help="Reply text to send (required for --action reply-latest).",
+    ),
+    message_id: Optional[str] = typer.Option(
+        None,
+        "--message-id",
+        help="Optional explicit message id to read-ack when --action read-ack-latest.",
+    ),
     channel_id: Optional[str] = typer.Option(
         None,
         "--channel-id",
@@ -8742,7 +8757,7 @@ def cliq_watch_act(
         None, "--network", help="Cliq network slug (e.g. happydistrouklimited)."
     ),
 ) -> None:
-    """Execute one deterministic action from watch payload (reply to latest message)."""
+    """Execute one deterministic action from watch payload."""
     raw = ""
     source = watch_file.strip()
     if source == "-":
@@ -8765,12 +8780,33 @@ def cliq_watch_act(
     email = _require_account(cfg)
     client = _get_cliq_client(cfg, email, network=network)
 
-    result = client.execute_watch_reply_action(
-        watch_payload,
-        text=text,
-        chat_id=chat_id,
-        channel_id=channel_id,
-    )
+    selected_action = action.strip().lower()
+    if selected_action == "reply-latest":
+        reply_text = (text or "").strip()
+        if not reply_text:
+            utils.error_exit(
+                "invalid_text",
+                "--text is required when --action reply-latest",
+            )
+        result = client.execute_watch_reply_action(
+            watch_payload,
+            text=reply_text,
+            chat_id=chat_id,
+            channel_id=channel_id,
+        )
+    elif selected_action == "read-ack-latest":
+        result = client.execute_watch_read_ack_action(
+            watch_payload,
+            chat_id=chat_id,
+            channel_id=channel_id,
+            message_id=message_id,
+        )
+    else:
+        utils.error_exit(
+            "invalid_action",
+            "--action must be one of: reply-latest, read-ack-latest",
+        )
+
     utils.output(result)
 
 

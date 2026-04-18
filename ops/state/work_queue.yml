@@ -197,7 +197,7 @@
 - id: cliq-194
   title: add plugin-grade realtime channel support for cliq (default web-notification trigger, adaptive api-poll fallback, mandatory read-ack after consume)
   module: cliq
-  stage: queued
+  stage: in_progress
   priority: high
   depends_on:
   - platform-202
@@ -218,7 +218,7 @@
 - id: platform-202
   title: move cliq app-governance command families from cli monolith into products+commands slices with parity tests
   module: platform
-  stage: in_progress
+  stage: completed
   priority: medium
   depends_on:
   - platform-201

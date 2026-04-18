@@ -1,5 +1,5 @@
 module: Platform
-updated_at: "2026-04-18T17:31:53Z"
+updated_at: "2026-04-18T18:01:05Z"
 status: in_progress
 blockers: []
-next_small_step: reassess platform-201/platform-202 completion status now that a no-direct-`@cliq_app.command` regression guard is in place, then queue the next smallest Cliq-facing slice (`cliq-194` readiness) in module order.
+next_small_step: platform-202 decorator extraction is complete; support cliq-194 by adding watch-context trigger metadata (web-trigger default + adaptive api-poll fallback hints) on top of the landed read-ack guardrail scaffold.

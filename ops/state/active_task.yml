@@ -1,13 +1,13 @@
-id: platform-202
-title: continue command-layer modularization for cliq command families
-module: platform
+id: cliq-194
+title: add plugin-grade realtime intake baseline for cliq
+module: cliq
 stage: in_progress
 status: in_progress
 owner: coder
-updated_at: '2026-04-18T17:31:53Z'
+updated_at: '2026-04-18T18:01:05Z'
 success_criteria:
-- move adjacent cliq command families from direct Typer decorators to commands-slice registration (no behavior change)
-- keep command names/order stable with focused registry + cli parity tests
-- keep work queue and project state aligned with framework-first execution
-next_if_done: reassess platform-201/platform-202 completion status and queue the next no-behavior-change modularization slice.
-next_step: reassess platform-201/platform-202 completion status now that Cliq direct decorators are regression-guarded, then queue the next smallest Cliq-facing slice (likely `cliq-194` readiness scaffolding) in module order.
+- define a minimal cliq-194 intake contract scaffold (web-trigger first, adaptive poll fallback, mandatory read-ack after consume)
+- keep cliq-193/cliq-165 external blockers capability-gated and non-blocking for this slice
+- keep work queue, project state, and focused verification notes aligned with the cliq-194 handoff
+next_if_done: wire watch-context trigger metadata for web-notification-first intake with adaptive api-poll fallback hints.
+next_step: land the next cliq-194 scaffold slice by emitting a minimal watch-intake contract block (triggerMode/default polling fallback metadata) while preserving existing watch-context payload compatibility.

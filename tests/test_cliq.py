@@ -2992,6 +2992,44 @@ def test_build_watch_reply_action_selects_latest_message() -> None:
     assert action["hasTarget"] is True
 
 
+def test_build_watch_read_ack_action_selects_latest_message() -> None:
+    action = cliq.ZohoCliqClient.build_watch_read_ack_action(
+        {
+            "chatId": "CT_1",
+            "channelId": "O1",
+            "messages": [
+                {"messageId": "M1", "senderId": "U1", "text": "first"},
+                {"messageId": "M2", "senderId": "U2", "text": "latest"},
+            ],
+        }
+    )
+
+    assert action["action"] == "read-ack-latest"
+    assert action["chatId"] == "CT_1"
+    assert action["channelId"] == "O1"
+    assert action["targetMessageId"] == "M2"
+    assert action["hasTarget"] is True
+    assert action["ackRequired"] is True
+
+
+def test_build_watch_read_ack_action_honors_explicit_message_id() -> None:
+    action = cliq.ZohoCliqClient.build_watch_read_ack_action(
+        {
+            "chatId": "CT_1",
+            "channelId": "O1",
+            "messages": [
+                {"messageId": "M1", "senderId": "U1", "text": "first"},
+                {"messageId": "M2", "senderId": "U2", "text": "latest"},
+            ],
+        },
+        message_id="M1",
+    )
+
+    assert action["targetMessageId"] == "M1"
+    assert action["hasTarget"] is True
+    assert action["ackRequired"] is True
+
+
 @respx.mock
 def test_execute_watch_reply_action_replies_to_latest_message(
     client: cliq.ZohoCliqClient,
@@ -3032,6 +3070,51 @@ def test_execute_watch_reply_action_no_messages_returns_noop(
     )
 
     assert result["status"] == "ok"
+    assert result["applied"] is False
+    assert result["reason"] == "no_new_messages"
+    assert result["targetMessageId"] == ""
+
+
+@respx.mock
+def test_execute_watch_read_ack_action_marks_latest_message(
+    client: cliq.ZohoCliqClient,
+) -> None:
+    route = respx.post("https://cliq.zoho.com/api/v2/chats/CT_1/messages/M2/read").mock(
+        return_value=httpx.Response(200, json={"data": {"id": "M2", "status": "ok"}})
+    )
+
+    result = client.execute_watch_read_ack_action(
+        {
+            "chatId": "CT_1",
+            "channelId": "O1",
+            "messages": [
+                {"messageId": "M1", "senderId": "U1", "text": "first"},
+                {"messageId": "M2", "senderId": "U2", "text": "latest"},
+            ],
+        }
+    )
+
+    assert route.called
+    assert result["status"] == "ok"
+    assert result["action"] == "read-ack-latest"
+    assert result["applied"] is True
+    assert result["targetMessageId"] == "M2"
+    assert result["result"]["id"] == "M2"
+
+
+def test_execute_watch_read_ack_action_no_messages_returns_noop(
+    client: cliq.ZohoCliqClient,
+) -> None:
+    result = client.execute_watch_read_ack_action(
+        {
+            "chatId": "CT_1",
+            "channelId": "O1",
+            "messages": [],
+        }
+    )
+
+    assert result["status"] == "ok"
+    assert result["action"] == "read-ack-latest"
     assert result["applied"] is False
     assert result["reason"] == "no_new_messages"
     assert result["targetMessageId"] == ""

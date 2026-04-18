@@ -1709,6 +1709,87 @@ def test_cliq_watch_act_no_messages_returns_noop(
     assert payload["reason"] == "no_new_messages"
 
 
+def test_cliq_watch_act_reply_latest_requires_text(
+    tmp_path: Path,
+    mock_config: Path,
+    mock_token_refresh: Any,
+) -> None:
+    watch_file = tmp_path / "watch.json"
+    watch_file.write_text(
+        json.dumps(
+            {
+                "chatId": "CT_1",
+                "channelId": "O1",
+                "newCount": 1,
+                "messages": [
+                    {"messageId": "M2", "senderId": "U2", "text": "latest"},
+                ],
+            }
+        )
+    )
+
+    result = runner.invoke(
+        app,
+        [
+            "cliq",
+            "watch-act",
+            "--watch-file",
+            str(watch_file),
+        ],
+        env=_cfg_env(mock_config),
+    )
+
+    assert result.exit_code == 1
+    assert "invalid_text" in result.output
+
+
+@respx.mock
+def test_cliq_watch_act_read_ack_latest(
+    tmp_path: Path,
+    mock_config: Path,
+    mock_token_refresh: Any,
+) -> None:
+    watch_file = tmp_path / "watch.json"
+    watch_file.write_text(
+        json.dumps(
+            {
+                "chatId": "CT_1",
+                "channelId": "O1",
+                "newCount": 2,
+                "messages": [
+                    {"messageId": "M1", "senderId": "U1", "text": "first"},
+                    {"messageId": "M2", "senderId": "U2", "text": "latest"},
+                ],
+            }
+        )
+    )
+
+    route = respx.post("https://cliq.zoho.com/api/v2/chats/CT_1/messages/M2/read").mock(
+        return_value=httpx.Response(200, json={"data": {"id": "M2", "status": "ok"}})
+    )
+
+    result = runner.invoke(
+        app,
+        [
+            "cliq",
+            "watch-act",
+            "--watch-file",
+            str(watch_file),
+            "--action",
+            "read-ack-latest",
+        ],
+        env=_cfg_env(mock_config),
+    )
+
+    assert result.exit_code == 0, result.output
+    assert route.called
+    payload = json.loads(result.output)
+    assert payload["status"] == "ok"
+    assert payload["action"] == "read-ack-latest"
+    assert payload["applied"] is True
+    assert payload["targetMessageId"] == "M2"
+
+
 def test_cliq_messages_requires_destination(
     mock_config: Path, mock_token_refresh: Any
 ) -> None:

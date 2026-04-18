@@ -216,6 +216,7 @@
 - Added first `cliq-150` OpenClaw watch primitive: `zoho cliq watch-context` plus `ZohoCliqClient.build_watch_context_seed` for cursor-based incremental context payloads.
 - Added companion `cliq-150` action primitive: `zoho cliq watch-act` plus `ZohoCliqClient.build_watch_reply_action` / `execute_watch_reply_action` to consume `watch-context` payloads and deterministically reply to the latest unseen message.
 - Extended `zoho cliq watch-act` stdin workflow: `--watch-file` now defaults to `-`, so watch payload JSON can be piped directly without passing a path flag.
+- Extended `zoho cliq watch-act` with `--action read-ack-latest` (plus optional `--message-id`) backed by `ZohoCliqClient.build_watch_read_ack_action` / `execute_watch_read_ack_action` and read-ack endpoint fallbacks, so cliq-194 loops can acknowledge consumed inbound messages while keeping default `reply-latest` behavior unchanged.
 - Added CRM fields read path: `zoho crm fields --module <api_name>` with pagination, backed by `ZohoCrmClient.fields` (`/settings/fields`).
 - Added CRM read-only record commands for `crm-002`: `zoho crm list`, `zoho crm get`, and `zoho crm search` (`--criteria` or `--word`) wired through `ZohoCrmClient` with pagination/field-selection support.
 - Callback success page now adapts to OAuth scopes and displays Mail/Cliq/CRM-specific guidance instead of a Mail-only static success page.

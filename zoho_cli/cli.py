@@ -71,6 +71,7 @@ from zoho_cli.commands import (
     register_cliq_file_voice_commands,
     register_cliq_messages_message_commands,
     register_cliq_context_watch_context_commands,
+    register_cliq_watch_act_commands,
     register_cliq_voice_send_commands,
     register_cliq_reply_edit_commands,
     register_cliq_delete_react_commands,
@@ -8689,7 +8690,6 @@ register_cliq_context_watch_context_commands(
 )
 
 
-@cliq_app.command("watch-act")
 def cliq_watch_act(
     watch_file: str = typer.Option(
         "-",
@@ -8741,6 +8741,12 @@ def cliq_watch_act(
         channel_id=channel_id,
     )
     utils.output(result)
+
+
+register_cliq_watch_act_commands(
+    cliq_app,
+    cliq_watch_act_command=cliq_watch_act,
+)
 
 
 def cliq_reply(

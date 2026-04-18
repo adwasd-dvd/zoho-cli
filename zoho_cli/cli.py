@@ -70,6 +70,7 @@ from zoho_cli.commands import (
     register_cliq_message_discovery_commands,
     register_cliq_file_voice_commands,
     register_cliq_voice_send_commands,
+    register_cliq_reply_edit_commands,
     register_cliq_mute_unmute_commands,
     register_cliq_pinned_commands,
     register_cliq_pin_unpin_commands,
@@ -8729,7 +8730,6 @@ def cliq_watch_act(
     utils.output(result)
 
 
-@cliq_app.command("reply")
 def cliq_reply(
     message_id: str = typer.Argument(..., help="Anchor message id to reply to."),
     text: str = typer.Option(..., "--text", "-t", help="Reply message text."),
@@ -8770,7 +8770,6 @@ def cliq_reply(
     )
 
 
-@cliq_app.command("edit")
 def cliq_edit(
     message_id: str = typer.Argument(..., help="Target message id."),
     text: str = typer.Option(..., "--text", "-t", help="Updated message text."),
@@ -8809,6 +8808,13 @@ def cliq_edit(
             "result": data,
         },
     )
+
+
+register_cliq_reply_edit_commands(
+    cliq_app,
+    cliq_reply_command=cliq_reply,
+    cliq_edit_command=cliq_edit,
+)
 
 
 @cliq_app.command("delete")

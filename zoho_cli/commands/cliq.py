@@ -224,6 +224,17 @@ def register_cliq_voice_send_commands(
     cliq_app.command("send")(cliq_send_command)
 
 
+def register_cliq_reply_edit_commands(
+    cliq_app: typer.Typer,
+    *,
+    cliq_reply_command: Callable[..., None],
+    cliq_edit_command: Callable[..., None],
+) -> None:
+    """Register adjacent Cliq reply/edit commands on ``cliq_app``."""
+    cliq_app.command("reply")(cliq_reply_command)
+    cliq_app.command("edit")(cliq_edit_command)
+
+
 def register_cliq_scheduled_lifecycle_commands(
     cliq_app: typer.Typer,
     *,

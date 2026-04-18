@@ -55,6 +55,7 @@ from zoho_cli.commands.cliq import register_cliq_threads_commands
 from zoho_cli.commands.cliq import register_cliq_post_to_bot_commands
 from zoho_cli.commands.cliq import register_cliq_bot_subscribers_commands
 from zoho_cli.commands.cliq import register_cliq_trigger_bot_commands
+from zoho_cli.commands.cliq import register_cliq_notify_mail_commands
 from zoho_cli.commands.cliq import register_cliq_thread_state_commands
 from zoho_cli.commands.cliq import register_cliq_export_commands
 from zoho_cli.commands.cliq import register_cliq_identity_commands
@@ -239,6 +240,10 @@ def test_commands_package_exports_root_registrars() -> None:
     assert (
         commands_pkg.register_cliq_trigger_bot_commands
         is register_cliq_trigger_bot_commands
+    )
+    assert (
+        commands_pkg.register_cliq_notify_mail_commands
+        is register_cliq_notify_mail_commands
     )
     assert (
         commands_pkg.register_cliq_thread_state_commands
@@ -692,6 +697,22 @@ def test_register_cliq_trigger_bot_commands_preserves_expected_command_names() -
 
     assert [command.name for command in app.registered_commands] == [
         "trigger-bot",
+    ]
+
+
+def test_register_cliq_notify_mail_commands_preserves_expected_command_names() -> None:
+    app = typer.Typer(no_args_is_help=True)
+
+    def _notify_mail_command() -> None:
+        return None
+
+    register_cliq_notify_mail_commands(
+        app,
+        cliq_notify_mail_command=_notify_mail_command,
+    )
+
+    assert [command.name for command in app.registered_commands] == [
+        "notify-mail",
     ]
 
 

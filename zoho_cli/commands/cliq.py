@@ -225,6 +225,15 @@ def register_cliq_trigger_bot_commands(
     cliq_app.command("trigger-bot")(cliq_trigger_bot_command)
 
 
+def register_cliq_notify_mail_commands(
+    cliq_app: typer.Typer,
+    *,
+    cliq_notify_mail_command: Callable[..., None],
+) -> None:
+    """Register the Cliq notify-mail command on ``cliq_app``."""
+    cliq_app.command("notify-mail")(cliq_notify_mail_command)
+
+
 def register_cliq_thread_state_commands(
     cliq_app: typer.Typer,
     *,

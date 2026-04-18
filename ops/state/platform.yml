@@ -1,5 +1,5 @@
 module: Platform
-updated_at: "2026-04-18T15:52:46Z"
+updated_at: "2026-04-18T16:49:33Z"
 status: in_progress
 blockers: []
-next_small_step: extract the next smallest remaining direct Cliq decorator command after `trigger-bot` (`notify-mail`) into commands-slice registrar wiring with focused parity checks.
+next_small_step: reassess platform-201/platform-202 completion status after `notify-mail` extraction, then identify and queue the next smallest remaining no-behavior-change Cliq modularization slice in module order.

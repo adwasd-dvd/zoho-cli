@@ -98,6 +98,7 @@ from zoho_cli.commands import (
     register_cliq_post_to_bot_commands,
     register_cliq_bot_subscribers_commands,
     register_cliq_trigger_bot_commands,
+    register_cliq_notify_mail_commands,
     register_cliq_thread_state_commands,
     register_cliq_export_commands,
     register_cliq_identity_commands,
@@ -9168,7 +9169,6 @@ register_cliq_voice_send_commands(
 )
 
 
-@cliq_app.command("notify-mail")
 def cliq_notify_mail(
     message_id: str = typer.Argument(..., help="Mail message ID to notify."),
     channel_id: Optional[str] = typer.Option(
@@ -9212,6 +9212,12 @@ def cliq_notify_mail(
             "result": data,
         },
     )
+
+
+register_cliq_notify_mail_commands(
+    cliq_app,
+    cliq_notify_mail_command=cliq_notify_mail,
+)
 
 
 # ══════════════════════════════════════════════════════════════════════════════

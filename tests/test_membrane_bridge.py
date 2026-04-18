@@ -344,6 +344,19 @@ def test_cliq_bridge_run_watch_file_forwards_watch_payload_and_action_hint(
             "packageId": "cliq-195",
             "externalEscalation": {
                 "defaultAction": "notify-mail",
+                "handoff": {
+                    "contractId": "cliq-195-escalation-handoff-v1",
+                    "payloadTemplate": {
+                        "target": {
+                            "kind": "external-contact",
+                            "channel": "mail",
+                            "defaultAction": "notify-mail",
+                        },
+                        "recipient": "",
+                        "summary": "",
+                        "reason": "",
+                    },
+                },
             },
         },
     }
@@ -389,6 +402,18 @@ def test_cliq_bridge_run_watch_file_forwards_watch_payload_and_action_hint(
     }
     assert payload["watchIntake"]["consume"]["ackAction"] == "read-ack-latest"
     assert payload["operatorWorkflow"]["packageId"] == "cliq-195"
+    assert payload["operatorWorkflow"]["externalEscalation"]["handoff"][
+        "payloadTemplate"
+    ] == {
+        "target": {
+            "kind": "external-contact",
+            "channel": "mail",
+            "defaultAction": "notify-mail",
+        },
+        "recipient": "",
+        "summary": "",
+        "reason": "",
+    }
 
 
 def test_cliq_bridge_run_watch_file_infers_action_from_watch_context_seed(
@@ -439,6 +464,18 @@ def test_cliq_bridge_run_watch_file_infers_action_from_watch_context_seed(
     assert seen["command"][4] == "watch-loop"
     payload = json.loads(result.output)
     assert payload["actionId"] == "watch-loop"
+    assert payload["operatorWorkflow"]["externalEscalation"]["handoff"][
+        "payloadTemplate"
+    ] == {
+        "target": {
+            "kind": "external-contact",
+            "channel": "mail",
+            "defaultAction": "notify-mail",
+        },
+        "recipient": "",
+        "summary": "",
+        "reason": "",
+    }
 
 
 def test_cliq_bridge_run_watch_file_infers_action_from_escalation_hint(

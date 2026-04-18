@@ -1199,6 +1199,16 @@ class ZohoCliqClient:
                         "contractId": "cliq-195-escalation-handoff-v1",
                         "target": "external-contact",
                         "requiredFields": ["recipient", "summary", "reason"],
+                        "payloadTemplate": {
+                            "target": {
+                                "kind": "external-contact",
+                                "channel": "mail",
+                                "defaultAction": "notify-mail",
+                            },
+                            "recipient": "",
+                            "summary": "",
+                            "reason": "",
+                        },
                     },
                 },
             },

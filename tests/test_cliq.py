@@ -3019,6 +3019,18 @@ def test_build_watch_context_seed_includes_watch_intake_contract_metadata() -> N
     assert payload["operatorWorkflow"]["externalEscalation"]["handoff"][
         "requiredFields"
     ] == ["recipient", "summary", "reason"]
+    assert payload["operatorWorkflow"]["externalEscalation"]["handoff"][
+        "payloadTemplate"
+    ] == {
+        "target": {
+            "kind": "external-contact",
+            "channel": "mail",
+            "defaultAction": "notify-mail",
+        },
+        "recipient": "",
+        "summary": "",
+        "reason": "",
+    }
 
 
 def test_build_watch_reply_action_preserves_watch_intake_metadata() -> None:
@@ -3041,6 +3053,16 @@ def test_build_watch_reply_action_preserves_watch_intake_metadata() -> None:
                     "handoff": {
                         "contractId": "cliq-195-escalation-handoff-v1",
                         "requiredFields": ["recipient", "summary", "reason"],
+                        "payloadTemplate": {
+                            "target": {
+                                "kind": "external-contact",
+                                "channel": "mail",
+                                "defaultAction": "notify-mail",
+                            },
+                            "recipient": "",
+                            "summary": "",
+                            "reason": "",
+                        },
                     },
                 },
             },
@@ -3069,6 +3091,18 @@ def test_build_watch_reply_action_preserves_watch_intake_metadata() -> None:
     assert action["operatorWorkflow"]["externalEscalation"]["handoff"][
         "requiredFields"
     ] == ["recipient", "summary", "reason"]
+    assert action["operatorWorkflow"]["externalEscalation"]["handoff"][
+        "payloadTemplate"
+    ] == {
+        "target": {
+            "kind": "external-contact",
+            "channel": "mail",
+            "defaultAction": "notify-mail",
+        },
+        "recipient": "",
+        "summary": "",
+        "reason": "",
+    }
 
 
 def test_build_watch_read_ack_action_preserves_watch_intake_metadata() -> None:
@@ -3091,6 +3125,16 @@ def test_build_watch_read_ack_action_preserves_watch_intake_metadata() -> None:
                     },
                     "handoff": {
                         "contractId": "cliq-195-escalation-handoff-v1",
+                        "payloadTemplate": {
+                            "target": {
+                                "kind": "external-contact",
+                                "channel": "mail",
+                                "defaultAction": "notify-mail",
+                            },
+                            "recipient": "",
+                            "summary": "",
+                            "reason": "",
+                        },
                     },
                 },
             },
@@ -3112,6 +3156,18 @@ def test_build_watch_read_ack_action_preserves_watch_intake_metadata() -> None:
         action["operatorWorkflow"]["externalEscalation"]["actionHint"]["watchActAction"]
         == "read-ack-latest"
     )
+    assert action["operatorWorkflow"]["externalEscalation"]["handoff"][
+        "payloadTemplate"
+    ] == {
+        "target": {
+            "kind": "external-contact",
+            "channel": "mail",
+            "defaultAction": "notify-mail",
+        },
+        "recipient": "",
+        "summary": "",
+        "reason": "",
+    }
 
 
 def test_build_watch_reply_action_selects_latest_message() -> None:

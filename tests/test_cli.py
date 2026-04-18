@@ -1590,6 +1590,18 @@ def test_cliq_watch_context_from_channel(
         payload["operatorWorkflow"]["externalEscalation"]["handoff"]["contractId"]
         == "cliq-195-escalation-handoff-v1"
     )
+    assert payload["operatorWorkflow"]["externalEscalation"]["handoff"][
+        "payloadTemplate"
+    ] == {
+        "target": {
+            "kind": "external-contact",
+            "channel": "mail",
+            "defaultAction": "notify-mail",
+        },
+        "recipient": "",
+        "summary": "",
+        "reason": "",
+    }
     assert payload["messages"][0]["messageId"] == "M3"
 
 
@@ -1683,7 +1695,19 @@ def test_cliq_watch_act_preserves_watch_intake_metadata_in_result(
                             "watchActAction": "read-ack-latest",
                             "bridgeActionId": "notify-mail",
                         },
-                        "handoff": {"contractId": "cliq-195-escalation-handoff-v1"},
+                        "handoff": {
+                            "contractId": "cliq-195-escalation-handoff-v1",
+                            "payloadTemplate": {
+                                "target": {
+                                    "kind": "external-contact",
+                                    "channel": "mail",
+                                    "defaultAction": "notify-mail",
+                                },
+                                "recipient": "",
+                                "summary": "",
+                                "reason": "",
+                            },
+                        },
                     },
                 },
                 "newCount": 1,
@@ -1731,6 +1755,18 @@ def test_cliq_watch_act_preserves_watch_intake_metadata_in_result(
         payload["operatorWorkflow"]["externalEscalation"]["handoff"]["contractId"]
         == "cliq-195-escalation-handoff-v1"
     )
+    assert payload["operatorWorkflow"]["externalEscalation"]["handoff"][
+        "payloadTemplate"
+    ] == {
+        "target": {
+            "kind": "external-contact",
+            "channel": "mail",
+            "defaultAction": "notify-mail",
+        },
+        "recipient": "",
+        "summary": "",
+        "reason": "",
+    }
 
 
 @respx.mock

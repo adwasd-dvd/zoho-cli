@@ -3,6 +3,7 @@
 ## Unreleased
 
 ### Added
+- Extended the cliq-195 escalation handoff contract with a thin `payloadTemplate` block in `operatorWorkflow.externalEscalation.handoff` so watch-context consumers can read default external-contact target fields (`target.kind/channel/defaultAction`, plus `recipient`/`summary`/`reason`) directly from operator-workflow metadata; watch-act and bridge-run watch-file passthrough continue to preserve the same metadata unchanged.
 - Added a thin cliq-195 action-source metadata slice for watch consumers: `zoho cliq watch-act` and `zoho cliq bridge-run --watch-file` now emit `actionSourceMetadata` (`source`, `sourcePath`, `fromWatchLoopHint`, `fromEscalationHint`, `fromExplicitOverride`) so routing intent is auditable without unpacking nested watch/escalation hints.
 - Extended cliq-195 escalation-action wiring for watch consumers: `zoho cliq watch-act` now supports `--escalation-action` to resolve `--action` from `operatorWorkflow.externalEscalation.actionHint.watchActAction`, and `zoho cliq bridge-run --watch-file --escalation-action` now explicitly prefers escalation bridge hints while leaving default watch-loop (`watchIntake.consume.actionId`) precedence unchanged.
 - Extended the cliq-195 watch-file bridge contract so `zoho cliq bridge-run --watch-file` now forwards `operatorWorkflow` alongside `watchPayload` and `watchIntake` in membrane `--input` and output metadata, making escalation contract fields directly available to bridge consumers while preserving existing watch-loop action-id precedence.

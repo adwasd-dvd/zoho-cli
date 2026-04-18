@@ -1,5 +1,5 @@
 module: Platform
-updated_at: "2026-04-18T16:49:33Z"
+updated_at: "2026-04-18T17:31:53Z"
 status: in_progress
 blockers: []
-next_small_step: reassess platform-201/platform-202 completion status after `notify-mail` extraction, then identify and queue the next smallest remaining no-behavior-change Cliq modularization slice in module order.
+next_small_step: reassess platform-201/platform-202 completion status now that a no-direct-`@cliq_app.command` regression guard is in place, then queue the next smallest Cliq-facing slice (`cliq-194` readiness) in module order.

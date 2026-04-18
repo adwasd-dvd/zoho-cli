@@ -4,10 +4,10 @@ module: platform
 stage: in_progress
 status: in_progress
 owner: coder
-updated_at: '2026-04-18T16:49:33Z'
+updated_at: '2026-04-18T17:31:53Z'
 success_criteria:
 - move adjacent cliq command families from direct Typer decorators to commands-slice registration (no behavior change)
 - keep command names/order stable with focused registry + cli parity tests
 - keep work queue and project state aligned with framework-first execution
 next_if_done: reassess platform-201/platform-202 completion status and queue the next no-behavior-change modularization slice.
-next_step: reassess platform-201/platform-202 completion status after `notify-mail` extraction, then identify and queue the next smallest remaining no-behavior-change Cliq modularization slice in module order.
+next_step: reassess platform-201/platform-202 completion status now that Cliq direct decorators are regression-guarded, then queue the next smallest Cliq-facing slice (likely `cliq-194` readiness scaffolding) in module order.

@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from functools import partial
+from pathlib import Path
 
 import typer
 
@@ -1481,3 +1482,10 @@ def test_cli_app_root_group_names_match_expected_defaults() -> None:
         "config",
         "membrane",
     ]
+
+
+def test_cli_module_has_no_direct_cliq_command_decorators() -> None:
+    cli_module_path = Path(__file__).resolve().parents[1] / "zoho_cli" / "cli.py"
+    cli_source = cli_module_path.read_text(encoding="utf-8")
+
+    assert "@cliq_app.command" not in cli_source

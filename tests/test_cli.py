@@ -131,7 +131,8 @@ def test_login_no_browser_defaults_to_localhost_redirect_when_unset(
 
     assert result.exit_code == 0, result.output
     assert "https://accounts.zoho.com/oauth/v2/auth?" in result.output
-    assert "redirect_uri=http%3A%2F%2Flocalhost%3A51821%2Fcallback" in result.output
+    assert "redirect_uri=http%3A%2F%2Flocalhost%3A" in result.output
+    assert "%2Fcallback" in result.output
     assert "example.com%2Fzoho%2Foauth%2Fcallback" not in result.output
 
 

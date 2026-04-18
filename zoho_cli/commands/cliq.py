@@ -64,3 +64,29 @@ def register_cliq_app_permissions_bridge_commands(
     cliq_app.command("app-permission-get-bridge-run")(
         cliq_app_permission_get_bridge_run_command
     )
+
+
+def register_cliq_app_installs_bridge_commands(
+    cliq_app: typer.Typer,
+    *,
+    cliq_app_installs_bridge_run_command: Callable[..., None],
+    cliq_app_install_get_bridge_run_command: Callable[..., None],
+) -> None:
+    """Register the adjacent Cliq app-installs bridge command family."""
+    cliq_app.command("app-install-get-bridge-run")(
+        cliq_app_install_get_bridge_run_command
+    )
+    cliq_app.command("app-installs-bridge-run")(cliq_app_installs_bridge_run_command)
+
+
+def register_cliq_app_commands_bridge_commands(
+    cliq_app: typer.Typer,
+    *,
+    cliq_app_commands_bridge_run_command: Callable[..., None],
+    cliq_app_command_get_bridge_run_command: Callable[..., None],
+) -> None:
+    """Register the adjacent Cliq app-commands bridge command family."""
+    cliq_app.command("app-commands-bridge-run")(cliq_app_commands_bridge_run_command)
+    cliq_app.command("app-command-get-bridge-run")(
+        cliq_app_command_get_bridge_run_command
+    )

@@ -60,7 +60,9 @@ from zoho_cli.cliq import ZohoCliqClient
 from zoho_cli.commands import (
     register_builtin_root_typers,
     register_cliq_app_catalog_commands,
+    register_cliq_app_commands_bridge_commands,
     register_cliq_app_commands_commands,
+    register_cliq_app_installs_bridge_commands,
     register_cliq_app_installs_commands,
     register_cliq_app_permissions_commands,
     register_cliq_app_permissions_bridge_commands,
@@ -4409,7 +4411,6 @@ register_cliq_app_permissions_bridge_commands(
 )
 
 
-@cliq_app.command("app-install-get-bridge-run")
 def cliq_app_install_get_bridge_run(
     app_id: str = typer.Argument(..., help="Cliq app id."),
     install_id: str = typer.Argument(..., help="Cliq app install id."),
@@ -4515,7 +4516,6 @@ def cliq_app_install_get_bridge_run(
     )
 
 
-@cliq_app.command("app-installs-bridge-run")
 def cliq_app_installs_bridge_run(
     app_id: str = typer.Argument(..., help="Cliq app id."),
     action_id: Optional[str] = typer.Option(
@@ -4611,7 +4611,13 @@ def cliq_app_installs_bridge_run(
     )
 
 
-@cliq_app.command("app-commands-bridge-run")
+register_cliq_app_installs_bridge_commands(
+    cliq_app,
+    cliq_app_installs_bridge_run_command=cliq_app_installs_bridge_run,
+    cliq_app_install_get_bridge_run_command=cliq_app_install_get_bridge_run,
+)
+
+
 def cliq_app_commands_bridge_run(
     app_id: str = typer.Argument(..., help="Cliq app id."),
     action_id: Optional[str] = typer.Option(
@@ -6570,7 +6576,6 @@ register_cliq_app_commands_commands(
 )
 
 
-@cliq_app.command("app-command-get-bridge-run")
 def cliq_app_command_get_bridge_run(
     app_id: str = typer.Argument(..., help="Cliq app id."),
     command_id: str = typer.Argument(..., help="Cliq app command id."),
@@ -6674,6 +6679,13 @@ def cliq_app_command_get_bridge_run(
             "result": result,
         }
     )
+
+
+register_cliq_app_commands_bridge_commands(
+    cliq_app,
+    cliq_app_commands_bridge_run_command=cliq_app_commands_bridge_run,
+    cliq_app_command_get_bridge_run_command=cliq_app_command_get_bridge_run,
+)
 
 
 @cliq_app.command("export-chats")

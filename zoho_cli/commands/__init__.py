@@ -2,7 +2,9 @@
 
 from .cliq import (
     register_cliq_app_catalog_commands,
+    register_cliq_app_commands_bridge_commands,
     register_cliq_app_commands_commands,
+    register_cliq_app_installs_bridge_commands,
     register_cliq_app_installs_commands,
     register_cliq_app_permissions_bridge_commands,
     register_cliq_app_permissions_commands,
@@ -24,7 +26,9 @@ from .root import (
 __all__ = [
     "register_builtin_root_typers",
     "register_cliq_app_catalog_commands",
+    "register_cliq_app_commands_bridge_commands",
     "register_cliq_app_commands_commands",
+    "register_cliq_app_installs_bridge_commands",
     "register_cliq_app_installs_commands",
     "register_cliq_app_permissions_bridge_commands",
     "register_cliq_app_permissions_commands",

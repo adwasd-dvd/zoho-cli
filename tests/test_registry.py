@@ -35,6 +35,7 @@ from zoho_cli.commands.cliq import register_cliq_capabilities_commands
 from zoho_cli.commands.cliq import register_cliq_channels_chats_commands
 from zoho_cli.commands.cliq import register_cliq_users_teams_commands
 from zoho_cli.commands.cliq import register_cliq_departments_roles_commands
+from zoho_cli.commands.cliq import register_cliq_designations_user_status_commands
 from zoho_cli.commands.cliq import register_cliq_status_commands
 from zoho_cli.commands.cliq import register_cliq_thread_commands
 from zoho_cli.commands.cliq import register_cliq_thread_state_commands
@@ -146,6 +147,10 @@ def test_commands_package_exports_root_registrars() -> None:
     assert (
         commands_pkg.register_cliq_departments_roles_commands
         is register_cliq_departments_roles_commands
+    )
+    assert (
+        commands_pkg.register_cliq_designations_user_status_commands
+        is register_cliq_designations_user_status_commands
     )
     assert commands_pkg.register_cliq_status_commands is register_cliq_status_commands
     assert (
@@ -784,6 +789,29 @@ def test_register_cliq_departments_roles_commands_preserves_expected_command_nam
     assert [command.name for command in app.registered_commands] == [
         "departments",
         "roles",
+    ]
+
+
+def test_register_cliq_designations_user_status_commands_preserves_expected_command_names() -> (
+    None
+):
+    app = typer.Typer(no_args_is_help=True)
+
+    def _designations_command() -> None:
+        return None
+
+    def _user_status_command() -> None:
+        return None
+
+    register_cliq_designations_user_status_commands(
+        app,
+        cliq_designations_command=_designations_command,
+        cliq_user_status_command=_user_status_command,
+    )
+
+    assert [command.name for command in app.registered_commands] == [
+        "designations",
+        "user-status",
     ]
 
 

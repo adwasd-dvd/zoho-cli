@@ -78,6 +78,7 @@ from zoho_cli.commands import (
     register_cliq_channels_chats_commands,
     register_cliq_users_teams_commands,
     register_cliq_departments_roles_commands,
+    register_cliq_designations_user_status_commands,
     register_cliq_status_commands,
     register_cliq_thread_commands,
     register_cliq_thread_state_commands,
@@ -2083,7 +2084,6 @@ register_cliq_departments_roles_commands(
 )
 
 
-@cliq_app.command("designations")
 def cliq_designations(
     limit: int = typer.Option(50, "--limit", "-n", help="Max designations to return."),
     network: Optional[str] = typer.Option(
@@ -2131,7 +2131,6 @@ def cliq_designations(
     )
 
 
-@cliq_app.command("user-status")
 def cliq_user_status(
     limit: int = typer.Option(
         50, "--limit", "-n", help="Max user-status rows to return."
@@ -2180,6 +2179,13 @@ def cliq_user_status(
             "statuses": views,
         }
     )
+
+
+register_cliq_designations_user_status_commands(
+    cliq_app,
+    cliq_designations_command=cliq_designations,
+    cliq_user_status_command=cliq_user_status,
+)
 
 
 @cliq_app.command("userfields")

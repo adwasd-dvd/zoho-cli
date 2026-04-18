@@ -1,10 +1,17 @@
-last_run_at: "2026-04-18T07:35:45Z"
+last_run_at: "2026-04-18T07:55:47Z"
 last_result: success
 current_focus: platform
 suites:
   unit:
     status: success
     notes:
+      - "platform-202 direct cliq designations/user-status command extraction parity verification at 2026-04-18T07:55:47Z"
+      - "./.venv/bin/python -m pytest tests/test_registry.py -k \"designations_user_status or departments_roles or commands_package_exports_root_registrars\""
+      - "3 passed, 41 deselected in 0.07s"
+      - "./.venv/bin/python -m pytest tests/test_cli.py -k \"test_cliq_designations or test_cliq_user_status\""
+      - "2 passed, 411 deselected in 0.09s"
+      - "./.venv/bin/python -m ruff check zoho_cli/commands/cliq.py zoho_cli/commands/__init__.py zoho_cli/cli.py tests/test_registry.py"
+      - "All checks passed!"
       - "platform-202 direct cliq departments/roles command extraction parity verification at 2026-04-18T07:35:45Z"
       - "./.venv/bin/python -m pytest tests/test_registry.py -k \"departments_roles or users_teams or commands_package_exports_root_registrars\""
       - "3 passed, 40 deselected in 0.07s"

@@ -33,6 +33,7 @@ from zoho_cli.commands.cliq import register_cliq_scheduled_lifecycle_commands
 from zoho_cli.commands.cliq import register_cliq_bridge_run_commands
 from zoho_cli.commands.cliq import register_cliq_capabilities_commands
 from zoho_cli.commands.cliq import register_cliq_channels_chats_commands
+from zoho_cli.commands.cliq import register_cliq_users_teams_commands
 from zoho_cli.commands.cliq import register_cliq_status_commands
 from zoho_cli.commands.cliq import register_cliq_thread_commands
 from zoho_cli.commands.cliq import register_cliq_thread_state_commands
@@ -136,6 +137,10 @@ def test_commands_package_exports_root_registrars() -> None:
     assert (
         commands_pkg.register_cliq_channels_chats_commands
         is register_cliq_channels_chats_commands
+    )
+    assert (
+        commands_pkg.register_cliq_users_teams_commands
+        is register_cliq_users_teams_commands
     )
     assert commands_pkg.register_cliq_status_commands is register_cliq_status_commands
     assert (
@@ -730,6 +735,27 @@ def test_register_cliq_channels_chats_commands_preserves_expected_command_names(
     assert [command.name for command in app.registered_commands] == [
         "channels",
         "chats",
+    ]
+
+
+def test_register_cliq_users_teams_commands_preserves_expected_command_names() -> None:
+    app = typer.Typer(no_args_is_help=True)
+
+    def _users_command() -> None:
+        return None
+
+    def _teams_command() -> None:
+        return None
+
+    register_cliq_users_teams_commands(
+        app,
+        cliq_users_command=_users_command,
+        cliq_teams_command=_teams_command,
+    )
+
+    assert [command.name for command in app.registered_commands] == [
+        "users",
+        "teams",
     ]
 
 

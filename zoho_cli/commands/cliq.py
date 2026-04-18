@@ -291,3 +291,14 @@ def register_cliq_channels_chats_commands(
     """Register adjacent Cliq channels/chats commands on ``cliq_app``."""
     cliq_app.command("channels")(cliq_channels_command)
     cliq_app.command("chats")(cliq_chats_command)
+
+
+def register_cliq_users_teams_commands(
+    cliq_app: typer.Typer,
+    *,
+    cliq_users_command: Callable[..., None],
+    cliq_teams_command: Callable[..., None],
+) -> None:
+    """Register adjacent Cliq users/teams commands on ``cliq_app``."""
+    cliq_app.command("users")(cliq_users_command)
+    cliq_app.command("teams")(cliq_teams_command)

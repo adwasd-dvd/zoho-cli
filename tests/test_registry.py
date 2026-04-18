@@ -20,6 +20,8 @@ from zoho_cli.commands.cliq import register_cliq_app_catalog_commands
 from zoho_cli.commands.cliq import register_cliq_app_catalog_bridge_commands
 from zoho_cli.commands.cliq import register_cliq_app_commands_bridge_commands
 from zoho_cli.commands.cliq import register_cliq_app_commands_commands
+from zoho_cli.commands.cliq import register_cliq_channel_member_management_commands
+from zoho_cli.commands.cliq import register_cliq_channel_metadata_commands
 from zoho_cli.commands.cliq import register_cliq_channel_membership_commands
 from zoho_cli.commands.cliq import register_cliq_export_commands
 from zoho_cli.commands.cliq import register_cliq_identity_commands
@@ -76,6 +78,14 @@ def test_commands_package_exports_root_registrars() -> None:
     assert (
         commands_pkg.register_cliq_app_commands_bridge_commands
         is register_cliq_app_commands_bridge_commands
+    )
+    assert (
+        commands_pkg.register_cliq_channel_member_management_commands
+        is register_cliq_channel_member_management_commands
+    )
+    assert (
+        commands_pkg.register_cliq_channel_metadata_commands
+        is register_cliq_channel_metadata_commands
     )
     assert (
         commands_pkg.register_cliq_channel_membership_commands
@@ -355,6 +365,52 @@ def test_register_cliq_channel_membership_commands_preserves_expected_command_na
     assert [command.name for command in app.registered_commands] == [
         "members",
         "channel-create",
+    ]
+
+
+def test_register_cliq_channel_metadata_commands_preserves_expected_command_names() -> (
+    None
+):
+    app = typer.Typer(no_args_is_help=True)
+
+    def _channel_rename_command() -> None:
+        return None
+
+    def _channel_topic_command() -> None:
+        return None
+
+    register_cliq_channel_metadata_commands(
+        app,
+        cliq_channel_rename_command=_channel_rename_command,
+        cliq_channel_topic_command=_channel_topic_command,
+    )
+
+    assert [command.name for command in app.registered_commands] == [
+        "channel-rename",
+        "channel-topic",
+    ]
+
+
+def test_register_cliq_channel_member_management_commands_preserves_expected_command_names() -> (
+    None
+):
+    app = typer.Typer(no_args_is_help=True)
+
+    def _member_add_command() -> None:
+        return None
+
+    def _member_remove_command() -> None:
+        return None
+
+    register_cliq_channel_member_management_commands(
+        app,
+        cliq_member_add_command=_member_add_command,
+        cliq_member_remove_command=_member_remove_command,
+    )
+
+    assert [command.name for command in app.registered_commands] == [
+        "member-add",
+        "member-remove",
     ]
 
 

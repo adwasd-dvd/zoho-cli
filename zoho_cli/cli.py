@@ -63,6 +63,8 @@ from zoho_cli.commands import (
     register_cliq_app_catalog_commands,
     register_cliq_app_commands_bridge_commands,
     register_cliq_app_commands_commands,
+    register_cliq_channel_member_management_commands,
+    register_cliq_channel_metadata_commands,
     register_cliq_channel_membership_commands,
     register_cliq_export_commands,
     register_cliq_identity_commands,
@@ -7051,7 +7053,6 @@ register_cliq_channel_membership_commands(
 )
 
 
-@cliq_app.command("channel-rename")
 def cliq_channel_rename(
     channel_id: str = typer.Argument(..., help="Target channel id."),
     name: str = typer.Option(..., "--name", help="New channel display name."),
@@ -7076,7 +7077,6 @@ def cliq_channel_rename(
     )
 
 
-@cliq_app.command("channel-topic")
 def cliq_channel_topic(
     channel_id: str = typer.Argument(..., help="Target channel id."),
     topic: str = typer.Option(..., "--topic", help="Channel topic/description."),
@@ -7101,7 +7101,13 @@ def cliq_channel_topic(
     )
 
 
-@cliq_app.command("member-add")
+register_cliq_channel_metadata_commands(
+    cliq_app,
+    cliq_channel_rename_command=cliq_channel_rename,
+    cliq_channel_topic_command=cliq_channel_topic,
+)
+
+
 def cliq_member_add(
     member_id: str = typer.Argument(..., help="Member/user id to add."),
     channel_id: Optional[str] = typer.Option(
@@ -7138,7 +7144,6 @@ def cliq_member_add(
     )
 
 
-@cliq_app.command("member-remove")
 def cliq_member_remove(
     member_id: str = typer.Argument(..., help="Member/user id to remove."),
     channel_id: Optional[str] = typer.Option(
@@ -7173,6 +7178,13 @@ def cliq_member_remove(
             "result": data,
         },
     )
+
+
+register_cliq_channel_member_management_commands(
+    cliq_app,
+    cliq_member_add_command=cliq_member_add,
+    cliq_member_remove_command=cliq_member_remove,
+)
 
 
 @cliq_app.command("channel-archive")

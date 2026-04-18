@@ -39,6 +39,8 @@ from zoho_cli.commands.cliq import register_cliq_designations_user_status_comman
 from zoho_cli.commands.cliq import register_cliq_userfields_commands
 from zoho_cli.commands.cliq import register_cliq_events_reminders_commands
 from zoho_cli.commands.cliq import register_cliq_meetings_databases_commands
+from zoho_cli.commands.cliq import register_cliq_widgets_map_tickers_commands
+from zoho_cli.commands.cliq import register_cliq_custom_domains_emails_commands
 from zoho_cli.commands.cliq import register_cliq_status_commands
 from zoho_cli.commands.cliq import register_cliq_thread_commands
 from zoho_cli.commands.cliq import register_cliq_thread_state_commands
@@ -166,6 +168,14 @@ def test_commands_package_exports_root_registrars() -> None:
     assert (
         commands_pkg.register_cliq_meetings_databases_commands
         is register_cliq_meetings_databases_commands
+    )
+    assert (
+        commands_pkg.register_cliq_widgets_map_tickers_commands
+        is register_cliq_widgets_map_tickers_commands
+    )
+    assert (
+        commands_pkg.register_cliq_custom_domains_emails_commands
+        is register_cliq_custom_domains_emails_commands
     )
     assert commands_pkg.register_cliq_status_commands is register_cliq_status_commands
     assert (
@@ -889,6 +899,52 @@ def test_register_cliq_meetings_databases_commands_preserves_expected_command_na
     assert [command.name for command in app.registered_commands] == [
         "meetings",
         "databases",
+    ]
+
+
+def test_register_cliq_widgets_map_tickers_commands_preserves_expected_command_names() -> (
+    None
+):
+    app = typer.Typer(no_args_is_help=True)
+
+    def _widgets_command() -> None:
+        return None
+
+    def _map_tickers_command() -> None:
+        return None
+
+    register_cliq_widgets_map_tickers_commands(
+        app,
+        cliq_widgets_command=_widgets_command,
+        cliq_map_tickers_command=_map_tickers_command,
+    )
+
+    assert [command.name for command in app.registered_commands] == [
+        "widgets",
+        "map-tickers",
+    ]
+
+
+def test_register_cliq_custom_domains_emails_commands_preserves_expected_command_names() -> (
+    None
+):
+    app = typer.Typer(no_args_is_help=True)
+
+    def _custom_domains_command() -> None:
+        return None
+
+    def _custom_emails_command() -> None:
+        return None
+
+    register_cliq_custom_domains_emails_commands(
+        app,
+        cliq_custom_domains_command=_custom_domains_command,
+        cliq_custom_emails_command=_custom_emails_command,
+    )
+
+    assert [command.name for command in app.registered_commands] == [
+        "custom-domains",
+        "custom-emails",
     ]
 
 

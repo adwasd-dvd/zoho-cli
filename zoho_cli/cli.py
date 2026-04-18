@@ -82,6 +82,8 @@ from zoho_cli.commands import (
     register_cliq_userfields_commands,
     register_cliq_events_reminders_commands,
     register_cliq_meetings_databases_commands,
+    register_cliq_widgets_map_tickers_commands,
+    register_cliq_custom_domains_emails_commands,
     register_cliq_status_commands,
     register_cliq_thread_commands,
     register_cliq_thread_state_commands,
@@ -2516,7 +2518,6 @@ register_cliq_meetings_databases_commands(
 )
 
 
-@cliq_app.command("widgets")
 def cliq_widgets(
     limit: int = typer.Option(50, "--limit", "-n", help="Max widgets to return."),
     network: Optional[str] = typer.Option(
@@ -2577,7 +2578,6 @@ def cliq_widgets(
     )
 
 
-@cliq_app.command("map-tickers")
 def cliq_map_tickers(
     limit: int = typer.Option(50, "--limit", "-n", help="Max map tickers to return."),
     network: Optional[str] = typer.Option(
@@ -2638,7 +2638,13 @@ def cliq_map_tickers(
     )
 
 
-@cliq_app.command("custom-domains")
+register_cliq_widgets_map_tickers_commands(
+    cliq_app,
+    cliq_widgets_command=cliq_widgets,
+    cliq_map_tickers_command=cliq_map_tickers,
+)
+
+
 def cliq_custom_domains(
     limit: int = typer.Option(
         50, "--limit", "-n", help="Max custom domains to return."
@@ -2694,7 +2700,6 @@ def cliq_custom_domains(
     )
 
 
-@cliq_app.command("custom-emails")
 def cliq_custom_emails(
     limit: int = typer.Option(50, "--limit", "-n", help="Max custom emails to return."),
     network: Optional[str] = typer.Option(
@@ -2746,6 +2751,13 @@ def cliq_custom_emails(
             "customEmails": views,
         }
     )
+
+
+register_cliq_custom_domains_emails_commands(
+    cliq_app,
+    cliq_custom_domains_command=cliq_custom_domains,
+    cliq_custom_emails_command=cliq_custom_emails,
+)
 
 
 def cliq_apps(

@@ -355,3 +355,25 @@ def register_cliq_meetings_databases_commands(
     """Register adjacent Cliq meetings/databases commands on ``cliq_app``."""
     cliq_app.command("meetings")(cliq_meetings_command)
     cliq_app.command("databases")(cliq_databases_command)
+
+
+def register_cliq_widgets_map_tickers_commands(
+    cliq_app: typer.Typer,
+    *,
+    cliq_widgets_command: Callable[..., None],
+    cliq_map_tickers_command: Callable[..., None],
+) -> None:
+    """Register adjacent Cliq widgets/map-tickers commands on ``cliq_app``."""
+    cliq_app.command("widgets")(cliq_widgets_command)
+    cliq_app.command("map-tickers")(cliq_map_tickers_command)
+
+
+def register_cliq_custom_domains_emails_commands(
+    cliq_app: typer.Typer,
+    *,
+    cliq_custom_domains_command: Callable[..., None],
+    cliq_custom_emails_command: Callable[..., None],
+) -> None:
+    """Register adjacent Cliq custom-domains/custom-emails commands."""
+    cliq_app.command("custom-domains")(cliq_custom_domains_command)
+    cliq_app.command("custom-emails")(cliq_custom_emails_command)

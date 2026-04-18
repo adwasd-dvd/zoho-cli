@@ -195,7 +195,7 @@
   depends_on:
   - cliq-192
 - id: cliq-194
-  title: add plugin-grade realtime channel support for cliq (discord-like inbound loop)
+  title: add plugin-grade realtime channel support for cliq (default web-notification trigger, adaptive api-poll fallback)
   module: cliq
   stage: queued
   priority: high

@@ -63,7 +63,9 @@ from zoho_cli.commands import (
     register_cliq_app_catalog_commands,
     register_cliq_app_commands_bridge_commands,
     register_cliq_app_commands_commands,
+    register_cliq_channel_membership_commands,
     register_cliq_export_commands,
+    register_cliq_identity_commands,
     register_cliq_app_installs_bridge_commands,
     register_cliq_app_installs_commands,
     register_cliq_app_permissions_commands,
@@ -6931,7 +6933,6 @@ register_cliq_export_commands(
 )
 
 
-@cliq_app.command("whoami")
 def cliq_whoami(
     network: Optional[str] = typer.Option(
         None, "--network", help="Cliq network slug (e.g. happydistrouklimited)."
@@ -6958,7 +6959,6 @@ def cliq_whoami(
     )
 
 
-@cliq_app.command("user-resolve")
 def cliq_user_resolve(
     query: str = typer.Argument(..., help="User lookup query (email or display name)."),
     by: str = typer.Option("auto", "--by", help="Match mode: auto|email|name."),
@@ -6976,7 +6976,13 @@ def cliq_user_resolve(
     utils.output(result)
 
 
-@cliq_app.command("members")
+register_cliq_identity_commands(
+    cliq_app,
+    cliq_whoami_command=cliq_whoami,
+    cliq_user_resolve_command=cliq_user_resolve,
+)
+
+
 def cliq_members(
     channel_id: Optional[str] = typer.Option(
         None, "--channel-id", help="Channel id (preferred for member listing)."
@@ -7010,7 +7016,6 @@ def cliq_members(
     )
 
 
-@cliq_app.command("channel-create")
 def cliq_channel_create(
     name: str = typer.Option(..., "--name", help="Channel display name."),
     level: str = typer.Option(
@@ -7037,6 +7042,13 @@ def cliq_channel_create(
             "result": data,
         },
     )
+
+
+register_cliq_channel_membership_commands(
+    cliq_app,
+    cliq_members_command=cliq_members,
+    cliq_channel_create_command=cliq_channel_create,
+)
 
 
 @cliq_app.command("channel-rename")

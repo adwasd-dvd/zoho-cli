@@ -112,3 +112,25 @@ def register_cliq_export_commands(
     """Register adjacent Cliq export commands on ``cliq_app``."""
     cliq_app.command("export-chats")(cliq_export_chats_command)
     cliq_app.command("export-chats-bridge-run")(cliq_export_chats_bridge_run_command)
+
+
+def register_cliq_identity_commands(
+    cliq_app: typer.Typer,
+    *,
+    cliq_whoami_command: Callable[..., None],
+    cliq_user_resolve_command: Callable[..., None],
+) -> None:
+    """Register adjacent Cliq identity commands on ``cliq_app``."""
+    cliq_app.command("whoami")(cliq_whoami_command)
+    cliq_app.command("user-resolve")(cliq_user_resolve_command)
+
+
+def register_cliq_channel_membership_commands(
+    cliq_app: typer.Typer,
+    *,
+    cliq_members_command: Callable[..., None],
+    cliq_channel_create_command: Callable[..., None],
+) -> None:
+    """Register adjacent Cliq channel-membership commands on ``cliq_app``."""
+    cliq_app.command("members")(cliq_members_command)
+    cliq_app.command("channel-create")(cliq_channel_create_command)

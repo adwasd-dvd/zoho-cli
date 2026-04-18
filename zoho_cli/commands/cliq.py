@@ -18,6 +18,17 @@ def register_cliq_app_catalog_commands(
     cliq_app.command("app-get")(cliq_app_get_command)
 
 
+def register_cliq_app_catalog_bridge_commands(
+    cliq_app: typer.Typer,
+    *,
+    cliq_apps_bridge_run_command: Callable[..., None],
+    cliq_app_get_bridge_run_command: Callable[..., None],
+) -> None:
+    """Register the adjacent Cliq app-catalog bridge command family."""
+    cliq_app.command("apps-bridge-run")(cliq_apps_bridge_run_command)
+    cliq_app.command("app-get-bridge-run")(cliq_app_get_bridge_run_command)
+
+
 def register_cliq_app_commands_commands(
     cliq_app: typer.Typer,
     *,

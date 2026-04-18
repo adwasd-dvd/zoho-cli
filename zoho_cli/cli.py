@@ -58,6 +58,7 @@ from zoho_cli import (
 from zoho_cli.api import ZohoMailClient
 from zoho_cli.cliq import ZohoCliqClient
 from zoho_cli.commands import (
+    register_cliq_app_catalog_bridge_commands,
     register_builtin_root_typers,
     register_cliq_app_catalog_commands,
     register_cliq_app_commands_bridge_commands,
@@ -3087,7 +3088,6 @@ register_cliq_app_catalog_commands(
 )
 
 
-@cliq_app.command("apps-bridge-run")
 def cliq_apps_bridge_run(
     limit: int = typer.Option(
         50,
@@ -3183,7 +3183,6 @@ def cliq_apps_bridge_run(
     )
 
 
-@cliq_app.command("app-get-bridge-run")
 def cliq_app_get_bridge_run(
     app_id: str = typer.Argument(..., help="Cliq app id."),
     action_id: Optional[str] = typer.Option(
@@ -3277,6 +3276,13 @@ def cliq_app_get_bridge_run(
             "result": result,
         }
     )
+
+
+register_cliq_app_catalog_bridge_commands(
+    cliq_app,
+    cliq_apps_bridge_run_command=cliq_apps_bridge_run,
+    cliq_app_get_bridge_run_command=cliq_app_get_bridge_run,
+)
 
 
 def cliq_app_permissions(

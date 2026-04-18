@@ -17,6 +17,7 @@ from zoho_cli.cli import (
     membrane_app,
 )
 from zoho_cli.commands.cliq import register_cliq_app_catalog_commands
+from zoho_cli.commands.cliq import register_cliq_app_catalog_bridge_commands
 from zoho_cli.commands.cliq import register_cliq_app_commands_bridge_commands
 from zoho_cli.commands.cliq import register_cliq_app_commands_commands
 from zoho_cli.commands.cliq import register_cliq_app_installs_bridge_commands
@@ -52,6 +53,10 @@ def test_commands_package_exports_root_registrars() -> None:
     assert (
         commands_pkg.register_cliq_app_catalog_commands
         is register_cliq_app_catalog_commands
+    )
+    assert (
+        commands_pkg.register_cliq_app_catalog_bridge_commands
+        is register_cliq_app_catalog_bridge_commands
     )
     assert (
         commands_pkg.register_cliq_app_permissions_commands
@@ -117,6 +122,29 @@ def test_register_cliq_app_catalog_commands_preserves_expected_command_names() -
     assert [command.name for command in app.registered_commands] == [
         "apps",
         "app-get",
+    ]
+
+
+def test_register_cliq_app_catalog_bridge_commands_preserves_expected_command_names() -> (
+    None
+):
+    app = typer.Typer(no_args_is_help=True)
+
+    def _apps_bridge_run_command() -> None:
+        return None
+
+    def _app_get_bridge_run_command() -> None:
+        return None
+
+    register_cliq_app_catalog_bridge_commands(
+        app,
+        cliq_apps_bridge_run_command=_apps_bridge_run_command,
+        cliq_app_get_bridge_run_command=_app_get_bridge_run_command,
+    )
+
+    assert [command.name for command in app.registered_commands] == [
+        "apps-bridge-run",
+        "app-get-bridge-run",
     ]
 
 

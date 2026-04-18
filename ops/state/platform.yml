@@ -1,5 +1,5 @@
 module: Platform
-updated_at: "2026-04-18T00:42:13Z"
+updated_at: "2026-04-18T01:08:51Z"
 status: in_progress
 blockers: []
-next_small_step: continue platform-202 no-behavior-change cliq command-family extraction by moving the next adjacent bridge pair (`apps-bridge-run` / `app-get-bridge-run`) into commands-slice registration with focused parity tests while keeping deferred external blockers capability-gated
+next_small_step: reassess platform-202 completion now that adjacent Cliq app-catalog bridge registration (`apps-bridge-run` / `app-get-bridge-run`) is also commands-slice managed, then queue the next smallest no-behavior-change modularization slice.

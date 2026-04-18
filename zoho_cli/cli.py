@@ -67,6 +67,7 @@ from zoho_cli.commands import (
     register_cliq_channel_member_management_commands,
     register_cliq_channel_metadata_commands,
     register_cliq_channel_membership_commands,
+    register_cliq_message_discovery_commands,
     register_cliq_thread_commands,
     register_cliq_thread_state_commands,
     register_cliq_export_commands,
@@ -7394,7 +7395,6 @@ def cliq_threads(
     )
 
 
-@cliq_app.command("schedule")
 def cliq_schedule(
     text: str = typer.Option(..., "--text", "-t", help="Message text."),
     when: str = typer.Option(
@@ -8070,7 +8070,6 @@ register_cliq_thread_state_commands(
 )
 
 
-@cliq_app.command("search")
 def cliq_search(
     query: str = typer.Argument(..., help="Search query text."),
     channel_id: Optional[str] = typer.Option(
@@ -8133,6 +8132,13 @@ def cliq_search(
             "messages": messages,
         }
     )
+
+
+register_cliq_message_discovery_commands(
+    cliq_app,
+    cliq_schedule_command=cliq_schedule,
+    cliq_search_command=cliq_search,
+)
 
 
 @cliq_app.command("file")

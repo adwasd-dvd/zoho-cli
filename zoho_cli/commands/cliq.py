@@ -189,3 +189,14 @@ def register_cliq_thread_state_commands(
     """Register adjacent Cliq thread-state commands on ``cliq_app``."""
     cliq_app.command("thread-followers")(cliq_thread_followers_command)
     cliq_app.command("thread-state")(cliq_thread_state_command)
+
+
+def register_cliq_message_discovery_commands(
+    cliq_app: typer.Typer,
+    *,
+    cliq_schedule_command: Callable[..., None],
+    cliq_search_command: Callable[..., None],
+) -> None:
+    """Register adjacent Cliq message-discovery commands on ``cliq_app``."""
+    cliq_app.command("schedule")(cliq_schedule_command)
+    cliq_app.command("search")(cliq_search_command)

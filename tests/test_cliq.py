@@ -2972,6 +2972,23 @@ def test_build_watch_context_seed_truncates_when_cursor_not_found() -> None:
     assert [item["messageId"] for item in payload["messages"]] == ["M3", "M4"]
 
 
+def test_build_watch_context_seed_includes_watch_intake_contract_metadata() -> None:
+    payload = cliq.ZohoCliqClient.build_watch_context_seed(
+        [
+            {"id": "M2", "text": "latest"},
+            {"id": "M1", "text": "older"},
+        ],
+        since_message_id="M1",
+        max_messages=5,
+    )
+
+    assert payload["watchIntake"]["triggerMode"] == "web-notification-first"
+    assert payload["watchIntake"]["pollFallback"]["mode"] == "adaptive"
+    assert payload["watchIntake"]["pollFallback"]["transport"] == "api-poll"
+    assert payload["watchIntake"]["consume"]["ackAction"] == "read-ack-latest"
+    assert payload["watchIntake"]["consume"]["ackRequired"] is True
+
+
 def test_build_watch_reply_action_selects_latest_message() -> None:
     action = cliq.ZohoCliqClient.build_watch_reply_action(
         {

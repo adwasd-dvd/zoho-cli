@@ -4,10 +4,10 @@ module: cliq
 stage: in_progress
 status: in_progress
 owner: coder
-updated_at: '2026-04-18T18:11:02Z'
+updated_at: '2026-04-18T18:20:00Z'
 success_criteria:
 - define a minimal cliq-194 intake contract scaffold (web-trigger first, adaptive poll fallback, mandatory read-ack after consume)
 - keep cliq-193/cliq-165 external blockers capability-gated and non-blocking for this slice
 - keep work queue, project state, and focused verification notes aligned with the cliq-194 handoff
-next_if_done: wire watch-context trigger metadata for web-notification-first intake with adaptive api-poll fallback hints.
-next_step: land the next cliq-194 scaffold slice by emitting a minimal watch-intake contract block (triggerMode/default polling fallback metadata) while preserving existing watch-context payload compatibility.
+next_if_done: wire watch-act/watch-bridge consumption guidance so loops can use watchIntake metadata for trigger orchestration without changing default reply/read-ack behavior.
+next_step: land the next cliq-194 scaffold slice by adding lightweight watch-act/watch-bridge metadata passthrough tests that consume `watchIntake` hints while preserving existing payload compatibility.

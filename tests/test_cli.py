@@ -1576,6 +1576,8 @@ def test_cliq_watch_context_from_channel(
     assert payload["chatId"] == "CT_1"
     assert payload["cursor"]["cursorFound"] is True
     assert payload["newCount"] == 1
+    assert payload["watchIntake"]["triggerMode"] == "web-notification-first"
+    assert payload["watchIntake"]["pollFallback"]["mode"] == "adaptive"
     assert payload["messages"][0]["messageId"] == "M3"
 
 

@@ -1154,6 +1154,18 @@ class ZohoCliqClient:
             "totalFetched": len(cleaned_messages),
             "newCount": len(normalized_messages),
             "truncated": truncated,
+            "watchIntake": {
+                "triggerMode": "web-notification-first",
+                "pollFallback": {
+                    "mode": "adaptive",
+                    "transport": "api-poll",
+                    "cursorField": "cursor.nextSinceMessageId",
+                },
+                "consume": {
+                    "ackAction": "read-ack-latest",
+                    "ackRequired": True,
+                },
+            },
             "messages": normalized_messages,
         }
 

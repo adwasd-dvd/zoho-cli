@@ -8709,6 +8709,7 @@ def cliq_watch_context(
             "totalFetched": watch["totalFetched"],
             "newCount": watch["newCount"],
             "truncated": watch["truncated"],
+            "watchIntake": watch["watchIntake"],
             "messages": watch["messages"],
         }
     )

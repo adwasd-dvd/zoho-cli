@@ -3,6 +3,7 @@
 ## Unreleased
 
 ### Added
+- Added cliq-194 watch-intake metadata scaffolding to `zoho cliq watch-context`: payloads now include a `watchIntake` contract block with `triggerMode: web-notification-first`, adaptive `api-poll` fallback hints, and read-ack consume guidance while preserving existing cursor/message fields.
 - Reframed the architecture plan around a v1.0 AI-employee-first target (Mail + Cliq core), with explicit must-ship vs post-release boundaries and cross-channel interoperability guardrails in `docs/architecture/MULTI_PRODUCT_PLAN.md`.
 - Reworked roadmap/follow-up planning for fast v1.0 release delivery: `platform-204/205/206/207`, `mail-010`, and `cliq-195` were prioritized in queue/state docs with deferred handling retained for known external blockers (`cliq-165`, `cliq-193`).
 - Expanded `zoho_cli.commands` package export parity by exposing `register_cliq_root_typers`, `register_crm_config_root_typers`, and `register_membrane_root_typers` for platform-201 modularization imports.

@@ -1,5 +1,5 @@
 module: Platform
-updated_at: "2026-04-18T05:44:54Z"
+updated_at: "2026-04-18T05:54:32Z"
 status: in_progress
 blockers: []
-next_small_step: continue platform-202 by extracting the next remaining direct Cliq command registration (`bridge-run`) into commands-slice wiring with parity checks, after completing the `status` registrar extraction (`3 passed` registry slice + `1 passed` focused CLI slice).
+next_small_step: continue platform-202 by extracting the next remaining direct Cliq command registration (`bridge-run`) into commands-slice wiring with parity checks; latest medium-scope integration refresh stayed green (`66 passed` registry+bridge, focused CLI/client smoke `6 passed` + `4 passed`, help smoke OK).

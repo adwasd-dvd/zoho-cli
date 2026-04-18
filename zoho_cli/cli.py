@@ -75,6 +75,7 @@ from zoho_cli.commands import (
     register_cliq_scheduled_lifecycle_commands,
     register_cliq_bridge_run_commands,
     register_cliq_capabilities_commands,
+    register_cliq_channels_chats_commands,
     register_cliq_status_commands,
     register_cliq_thread_commands,
     register_cliq_thread_state_commands,
@@ -1843,7 +1844,6 @@ register_cliq_capabilities_commands(
 )
 
 
-@cliq_app.command("channels")
 def cliq_channels(
     limit: int = typer.Option(50, "--limit", "-n", help="Max channels to return."),
     network: Optional[str] = typer.Option(
@@ -1860,7 +1860,6 @@ def cliq_channels(
     utils.output(data)
 
 
-@cliq_app.command("chats")
 def cliq_chats(
     limit: int = typer.Option(50, "--limit", "-n", help="Max chats to return."),
     network: Optional[str] = typer.Option(
@@ -1902,6 +1901,13 @@ def cliq_chats(
             "chats": views,
         }
     )
+
+
+register_cliq_channels_chats_commands(
+    cliq_app,
+    cliq_channels_command=cliq_channels,
+    cliq_chats_command=cliq_chats,
+)
 
 
 @cliq_app.command("users")

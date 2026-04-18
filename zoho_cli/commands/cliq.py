@@ -280,3 +280,14 @@ def register_cliq_capabilities_commands(
 ) -> None:
     """Register the Cliq capabilities command on ``cliq_app``."""
     cliq_app.command("capabilities")(cliq_capabilities_command)
+
+
+def register_cliq_channels_chats_commands(
+    cliq_app: typer.Typer,
+    *,
+    cliq_channels_command: Callable[..., None],
+    cliq_chats_command: Callable[..., None],
+) -> None:
+    """Register adjacent Cliq channels/chats commands on ``cliq_app``."""
+    cliq_app.command("channels")(cliq_channels_command)
+    cliq_app.command("chats")(cliq_chats_command)

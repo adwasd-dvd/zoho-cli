@@ -81,6 +81,7 @@ from zoho_cli.commands import (
     register_cliq_designations_user_status_commands,
     register_cliq_userfields_commands,
     register_cliq_events_reminders_commands,
+    register_cliq_meetings_databases_commands,
     register_cliq_status_commands,
     register_cliq_thread_commands,
     register_cliq_thread_state_commands,
@@ -2189,6 +2190,7 @@ register_cliq_designations_user_status_commands(
     cliq_user_status_command=cliq_user_status,
 )
 
+
 def cliq_userfields(
     limit: int = typer.Option(
         50, "--limit", "-n", help="Max user-field rows to return."
@@ -2379,7 +2381,6 @@ register_cliq_events_reminders_commands(
 )
 
 
-@cliq_app.command("meetings")
 def cliq_meetings(
     limit: int = typer.Option(50, "--limit", "-n", help="Max meetings to return."),
     network: Optional[str] = typer.Option(
@@ -2454,7 +2455,6 @@ def cliq_meetings(
     )
 
 
-@cliq_app.command("databases")
 def cliq_databases(
     limit: int = typer.Option(50, "--limit", "-n", help="Max databases to return."),
     network: Optional[str] = typer.Option(
@@ -2507,6 +2507,13 @@ def cliq_databases(
             "databases": views,
         }
     )
+
+
+register_cliq_meetings_databases_commands(
+    cliq_app,
+    cliq_meetings_command=cliq_meetings,
+    cliq_databases_command=cliq_databases,
+)
 
 
 @cliq_app.command("widgets")

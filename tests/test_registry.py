@@ -38,6 +38,7 @@ from zoho_cli.commands.cliq import register_cliq_departments_roles_commands
 from zoho_cli.commands.cliq import register_cliq_designations_user_status_commands
 from zoho_cli.commands.cliq import register_cliq_userfields_commands
 from zoho_cli.commands.cliq import register_cliq_events_reminders_commands
+from zoho_cli.commands.cliq import register_cliq_meetings_databases_commands
 from zoho_cli.commands.cliq import register_cliq_status_commands
 from zoho_cli.commands.cliq import register_cliq_thread_commands
 from zoho_cli.commands.cliq import register_cliq_thread_state_commands
@@ -161,6 +162,10 @@ def test_commands_package_exports_root_registrars() -> None:
     assert (
         commands_pkg.register_cliq_events_reminders_commands
         is register_cliq_events_reminders_commands
+    )
+    assert (
+        commands_pkg.register_cliq_meetings_databases_commands
+        is register_cliq_meetings_databases_commands
     )
     assert commands_pkg.register_cliq_status_commands is register_cliq_status_commands
     assert (
@@ -861,6 +866,29 @@ def test_register_cliq_events_reminders_commands_preserves_expected_command_name
     assert [command.name for command in app.registered_commands] == [
         "events",
         "reminders",
+    ]
+
+
+def test_register_cliq_meetings_databases_commands_preserves_expected_command_names() -> (
+    None
+):
+    app = typer.Typer(no_args_is_help=True)
+
+    def _meetings_command() -> None:
+        return None
+
+    def _databases_command() -> None:
+        return None
+
+    register_cliq_meetings_databases_commands(
+        app,
+        cliq_meetings_command=_meetings_command,
+        cliq_databases_command=_databases_command,
+    )
+
+    assert [command.name for command in app.registered_commands] == [
+        "meetings",
+        "databases",
     ]
 
 

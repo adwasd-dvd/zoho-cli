@@ -344,3 +344,14 @@ def register_cliq_events_reminders_commands(
     """Register adjacent Cliq events/reminders commands on ``cliq_app``."""
     cliq_app.command("events")(cliq_events_command)
     cliq_app.command("reminders")(cliq_reminders_command)
+
+
+def register_cliq_meetings_databases_commands(
+    cliq_app: typer.Typer,
+    *,
+    cliq_meetings_command: Callable[..., None],
+    cliq_databases_command: Callable[..., None],
+) -> None:
+    """Register adjacent Cliq meetings/databases commands on ``cliq_app``."""
+    cliq_app.command("meetings")(cliq_meetings_command)
+    cliq_app.command("databases")(cliq_databases_command)

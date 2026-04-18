@@ -26,6 +26,7 @@ from zoho_cli.commands.cliq import register_cliq_channel_metadata_commands
 from zoho_cli.commands.cliq import register_cliq_channel_membership_commands
 from zoho_cli.commands.cliq import register_cliq_message_discovery_commands
 from zoho_cli.commands.cliq import register_cliq_mute_unmute_commands
+from zoho_cli.commands.cliq import register_cliq_pin_unpin_commands
 from zoho_cli.commands.cliq import register_cliq_scheduled_cancel_leave_commands
 from zoho_cli.commands.cliq import register_cliq_scheduled_lifecycle_commands
 from zoho_cli.commands.cliq import register_cliq_thread_commands
@@ -109,6 +110,10 @@ def test_commands_package_exports_root_registrars() -> None:
     assert (
         commands_pkg.register_cliq_mute_unmute_commands
         is register_cliq_mute_unmute_commands
+    )
+    assert (
+        commands_pkg.register_cliq_pin_unpin_commands
+        is register_cliq_pin_unpin_commands
     )
     assert (
         commands_pkg.register_cliq_scheduled_lifecycle_commands
@@ -598,6 +603,27 @@ def test_register_cliq_mute_unmute_commands_preserves_expected_command_names() -
     assert [command.name for command in app.registered_commands] == [
         "mute",
         "unmute",
+    ]
+
+
+def test_register_cliq_pin_unpin_commands_preserves_expected_command_names() -> None:
+    app = typer.Typer(no_args_is_help=True)
+
+    def _pin_command() -> None:
+        return None
+
+    def _unpin_command() -> None:
+        return None
+
+    register_cliq_pin_unpin_commands(
+        app,
+        cliq_pin_command=_pin_command,
+        cliq_unpin_command=_unpin_command,
+    )
+
+    assert [command.name for command in app.registered_commands] == [
+        "pin",
+        "unpin",
     ]
 
 

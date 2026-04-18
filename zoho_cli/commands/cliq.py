@@ -233,3 +233,14 @@ def register_cliq_mute_unmute_commands(
     """Register adjacent Cliq mute/unmute commands on ``cliq_app``."""
     cliq_app.command("mute")(cliq_mute_command)
     cliq_app.command("unmute")(cliq_unmute_command)
+
+
+def register_cliq_pin_unpin_commands(
+    cliq_app: typer.Typer,
+    *,
+    cliq_pin_command: Callable[..., None],
+    cliq_unpin_command: Callable[..., None],
+) -> None:
+    """Register adjacent Cliq pin/unpin commands on ``cliq_app``."""
+    cliq_app.command("pin")(cliq_pin_command)
+    cliq_app.command("unpin")(cliq_unpin_command)

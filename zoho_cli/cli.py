@@ -69,6 +69,7 @@ from zoho_cli.commands import (
     register_cliq_channel_membership_commands,
     register_cliq_message_discovery_commands,
     register_cliq_mute_unmute_commands,
+    register_cliq_pin_unpin_commands,
     register_cliq_scheduled_cancel_leave_commands,
     register_cliq_scheduled_lifecycle_commands,
     register_cliq_thread_commands,
@@ -7835,7 +7836,6 @@ register_cliq_mute_unmute_commands(
 )
 
 
-@cliq_app.command("pin")
 def cliq_pin(
     channel_id: Optional[str] = typer.Option(
         None, "--channel-id", help="Destination channel id (resolved to chat_id)."
@@ -7870,7 +7870,6 @@ def cliq_pin(
     )
 
 
-@cliq_app.command("unpin")
 def cliq_unpin(
     channel_id: Optional[str] = typer.Option(
         None, "--channel-id", help="Destination channel id (resolved to chat_id)."
@@ -7905,6 +7904,13 @@ def cliq_unpin(
             "result": data,
         },
     )
+
+
+register_cliq_pin_unpin_commands(
+    cliq_app,
+    cliq_pin_command=cliq_pin,
+    cliq_unpin_command=cliq_unpin,
+)
 
 
 @cliq_app.command("pinned")

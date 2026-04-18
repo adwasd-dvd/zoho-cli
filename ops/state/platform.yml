@@ -1,5 +1,5 @@
 module: Platform
-updated_at: "2026-04-18T08:06:47Z"
+updated_at: "2026-04-18T08:21:40Z"
 status: in_progress
 blockers: []
-next_small_step: extract the next smallest remaining direct Cliq decorator command after `designations` + `user-status` (likely `userfields`) into commands-slice registrar wiring with focused parity checks.
+next_small_step: extract the next smallest remaining direct Cliq decorator command family after `userfields` (likely `events` + `reminders`) into commands-slice registrar wiring with focused parity checks.

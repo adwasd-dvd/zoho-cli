@@ -79,6 +79,7 @@ from zoho_cli.commands import (
     register_cliq_users_teams_commands,
     register_cliq_departments_roles_commands,
     register_cliq_designations_user_status_commands,
+    register_cliq_userfields_commands,
     register_cliq_status_commands,
     register_cliq_thread_commands,
     register_cliq_thread_state_commands,
@@ -2187,8 +2188,6 @@ register_cliq_designations_user_status_commands(
     cliq_user_status_command=cliq_user_status,
 )
 
-
-@cliq_app.command("userfields")
 def cliq_userfields(
     limit: int = typer.Option(
         50, "--limit", "-n", help="Max user-field rows to return."
@@ -2243,6 +2242,12 @@ def cliq_userfields(
             "userFields": views,
         }
     )
+
+
+register_cliq_userfields_commands(
+    cliq_app,
+    cliq_userfields_command=cliq_userfields,
+)
 
 
 @cliq_app.command("events")

@@ -324,3 +324,12 @@ def register_cliq_designations_user_status_commands(
     """Register adjacent Cliq designations/user-status commands on ``cliq_app``."""
     cliq_app.command("designations")(cliq_designations_command)
     cliq_app.command("user-status")(cliq_user_status_command)
+
+
+def register_cliq_userfields_commands(
+    cliq_app: typer.Typer,
+    *,
+    cliq_userfields_command: Callable[..., None],
+) -> None:
+    """Register the Cliq userfields command on ``cliq_app``."""
+    cliq_app.command("userfields")(cliq_userfields_command)

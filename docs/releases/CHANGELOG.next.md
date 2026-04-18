@@ -327,13 +327,14 @@
 - Removed duplicate CRM `fields` command/client definitions so the CRM read-only surface now has one canonical `fields` implementation.
 
 ### Release readiness
-- Assessed at 2026-04-17T01:54:21Z: release is **not ready**.
+- Assessed at 2026-04-18T01:39:00Z: release is **not ready**.
 - Fresh gate evidence:
-  - `./ops/scripts/release_gate.sh full` is green (`659 passed in 11.97s` + wheel smoke `0.2.0`, 2026-04-17T01:54Z run).
-  - `make ci` is green (`659 passed in 11.63s`, plus format/lint checks).
-  - Focused live checks are current through `2026-04-17T03:32:28Z`; latest `cliq app-commands` probe (`cliq-193`) still remains blocked (`appCommandsError: empty_output`, stderr `error: not_supported`) and companion status evidence shows test-config Cliq scopes currently missing (`oauthReady: false`, `exportOauthReady: false`).
+  - `make release-gate` is green (`699 passed in 13.20s` + wheel smoke `0.2.0`).
+  - `make ci` is green (format/lint clean + `699 passed in 12.74s`).
+  - Latest medium-scope verification is green (`python3.11 -m pytest -q tests/test_registry.py tests/test_membrane_bridge.py` -> `48 passed in 0.56s`; `python3.11 -m pytest -q tests/test_cli.py -k "cliq_bridge_run or crm_bridge_run or cliq_app_commands or cliq_app_command_get"` -> `201 passed, 212 deselected in 3.81s`; `python3.11 -m pytest -q tests/test_cliq.py -k "app_command or app_install or app_permission or list_apps or get_app"` -> `24 passed, 146 deselected in 0.54s`).
+  - Focused `cliq-193` live app-command verification remains externally blocked (`appCommandsError: empty_output`, stderr `error: not_supported`) with healthy auth/export readiness (`oauthReady: true`, `exportOauthReady: true`); latest summary evidence: `tests/auto_pilot/reports/cliq193_app_commands_probe_summary_20260417_195259.json` (`unsupportedConsecutiveCount: 60`, `postReleaseDeferred: true`).
   - Changelog draft and release state were refreshed for this assessment; no publish actions were performed.
 - Remaining release blockers:
   - blocker bugs are **not** clear (`cliq-193` live app-command verification still returns `not_supported`).
-  - current focus milestone `cliq-expansion-phase` is **not complete** (`active_task: cliq-193` is still in progress, and `cliq-165` export verification is externally blocked by `inactive_appaccount_user`).
-  - relevant integration checks are **not** clean (`release_gate.integration_tests_passed_or_explicitly_skipped: false` while the focused cliq-193 live probe remains warning/blocked).
+  - current focus milestone `cliq-expansion-phase` is **not complete** (`active_task: platform-202` is still in progress, and `cliq-165` export verification remains externally blocked by `inactive_appaccount_user`).
+  - relevant integration checks are **not** clean (`release_gate.integration_tests_passed_or_explicitly_skipped: false` while focused cliq-193 live verification remains blocked/deferred).

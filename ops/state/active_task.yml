@@ -4,7 +4,7 @@ module: cliq
 stage: in_progress
 status: in_progress
 owner: coder
-updated_at: '2026-04-18T18:01:05Z'
+updated_at: '2026-04-18T18:11:02Z'
 success_criteria:
 - define a minimal cliq-194 intake contract scaffold (web-trigger first, adaptive poll fallback, mandatory read-ack after consume)
 - keep cliq-193/cliq-165 external blockers capability-gated and non-blocking for this slice

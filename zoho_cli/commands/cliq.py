@@ -200,3 +200,14 @@ def register_cliq_message_discovery_commands(
     """Register adjacent Cliq message-discovery commands on ``cliq_app``."""
     cliq_app.command("schedule")(cliq_schedule_command)
     cliq_app.command("search")(cliq_search_command)
+
+
+def register_cliq_scheduled_lifecycle_commands(
+    cliq_app: typer.Typer,
+    *,
+    cliq_scheduled_command: Callable[..., None],
+    cliq_scheduled_get_command: Callable[..., None],
+) -> None:
+    """Register adjacent Cliq scheduled-lifecycle commands on ``cliq_app``."""
+    cliq_app.command("scheduled")(cliq_scheduled_command)
+    cliq_app.command("scheduled-get")(cliq_scheduled_get_command)

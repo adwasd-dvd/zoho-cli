@@ -1,10 +1,35 @@
-last_run_at: "2026-04-18T03:47:21Z"
+last_run_at: "2026-04-18T04:17:16Z"
 last_result: success
 current_focus: platform
 suites:
   unit:
     status: success
     notes:
+      - "platform-202 adjacent cliq scheduled-lifecycle command-family extraction parity verification at 2026-04-18T04:17:16Z"
+      - "python3.11 -m pytest -q tests/test_registry.py -k \"scheduled_lifecycle or message_discovery_commands or commands_package_exports_root_registrars\""
+      - "3 passed, 30 deselected in 0.06s"
+      - "python3.11 -m pytest -q tests/test_cli.py -k \"cliq_scheduled_from_channel or cliq_scheduled_get_from_channel\""
+      - "2 passed, 411 deselected in 0.09s"
+      - "./.venv/bin/ruff format --check zoho_cli/commands/cliq.py zoho_cli/commands/__init__.py zoho_cli/cli.py tests/test_registry.py"
+      - "4 files already formatted"
+      - "integration-loop medium-scope verification refresh at 2026-04-18T04:04:14Z"
+      - "python3.11 -m pytest -q tests/test_registry.py tests/test_membrane_bridge.py"
+      - "60 passed in 0.54s"
+      - "python3.11 -m pytest -q tests/test_cli.py -k \"cliq_schedule_from_channel or cliq_scheduled_from_channel or cliq_scheduled_get_from_channel or cliq_scheduled_cancel_from_channel or cliq_bridge_run or crm_bridge_run\""
+      - "4 passed, 409 deselected in 0.13s"
+      - "python3.11 -m pytest -q tests/test_cliq.py -k \"schedule_message or list_scheduled_messages or get_scheduled_message or cancel_scheduled_message\""
+      - "4 passed, 166 deselected in 0.06s"
+      - "python3.11 -m zoho_cli --help && python3.11 -m zoho_cli cliq --help && python3.11 -m zoho_cli crm --help && python3.11 -m zoho_cli config --help"
+      - "HELP_SMOKE_OK"
+      - "integration-loop medium-scope verification refresh at 2026-04-18T03:57:11Z"
+      - "python3.11 -m pytest -q tests/test_registry.py tests/test_membrane_bridge.py"
+      - "60 passed in 0.53s"
+      - "python3.11 -m pytest -q tests/test_cli.py -k \"cliq_schedule_from_channel or cliq_scheduled_from_channel or cliq_scheduled_get_from_channel or cliq_scheduled_cancel_from_channel or cliq_bridge_run or crm_bridge_run\""
+      - "4 passed, 409 deselected in 0.13s"
+      - "python3.11 -m pytest -q tests/test_cliq.py -k \"schedule_message or list_scheduled_messages or get_scheduled_message or cancel_scheduled_message\""
+      - "4 passed, 166 deselected in 0.06s"
+      - "python3.11 -m zoho_cli --help && python3.11 -m zoho_cli cliq --help && python3.11 -m zoho_cli crm --help && python3.11 -m zoho_cli config --help"
+      - "HELP_SMOKE_OK"
       - "platform-202 adjacent cliq message-discovery command-family extraction parity verification at 2026-04-18T03:47:21Z"
       - "python3.11 -m pytest -q tests/test_registry.py -k \"message_discovery_commands or commands_package_exports_root_registrars\""
       - "2 passed, 30 deselected in 0.06s"

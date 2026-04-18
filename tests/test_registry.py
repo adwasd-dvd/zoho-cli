@@ -25,6 +25,7 @@ from zoho_cli.commands.cliq import register_cliq_channel_member_management_comma
 from zoho_cli.commands.cliq import register_cliq_channel_metadata_commands
 from zoho_cli.commands.cliq import register_cliq_channel_membership_commands
 from zoho_cli.commands.cliq import register_cliq_message_discovery_commands
+from zoho_cli.commands.cliq import register_cliq_scheduled_lifecycle_commands
 from zoho_cli.commands.cliq import register_cliq_thread_commands
 from zoho_cli.commands.cliq import register_cliq_thread_state_commands
 from zoho_cli.commands.cliq import register_cliq_export_commands
@@ -102,6 +103,10 @@ def test_commands_package_exports_root_registrars() -> None:
     assert (
         commands_pkg.register_cliq_message_discovery_commands
         is register_cliq_message_discovery_commands
+    )
+    assert (
+        commands_pkg.register_cliq_scheduled_lifecycle_commands
+        is register_cliq_scheduled_lifecycle_commands
     )
     assert commands_pkg.register_cliq_thread_commands is register_cliq_thread_commands
     assert (
@@ -516,6 +521,29 @@ def test_register_cliq_message_discovery_commands_preserves_expected_command_nam
     assert [command.name for command in app.registered_commands] == [
         "schedule",
         "search",
+    ]
+
+
+def test_register_cliq_scheduled_lifecycle_commands_preserves_expected_command_names() -> (
+    None
+):
+    app = typer.Typer(no_args_is_help=True)
+
+    def _scheduled_command() -> None:
+        return None
+
+    def _scheduled_get_command() -> None:
+        return None
+
+    register_cliq_scheduled_lifecycle_commands(
+        app,
+        cliq_scheduled_command=_scheduled_command,
+        cliq_scheduled_get_command=_scheduled_get_command,
+    )
+
+    assert [command.name for command in app.registered_commands] == [
+        "scheduled",
+        "scheduled-get",
     ]
 
 

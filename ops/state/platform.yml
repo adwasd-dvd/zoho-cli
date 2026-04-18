@@ -1,5 +1,5 @@
 module: Platform
-updated_at: "2026-04-18T03:47:21Z"
+updated_at: "2026-04-18T04:17:16Z"
 status: in_progress
 blockers: []
-next_small_step: continue platform-202 by extracting the next adjacent Cliq scheduled-lifecycle registration pair (`scheduled` / `scheduled-get`) into commands-slice wiring with parity checks, using the latest message-discovery registrar parity check as baseline.
+next_small_step: continue platform-202 by extracting the next adjacent Cliq command-registration pair (`scheduled-cancel` / `leave`) into commands-slice wiring with parity checks, after completing the scheduled-lifecycle (`scheduled` / `scheduled-get`) registrar extraction (`3 passed` registry slice + `2 passed` focused CLI slice).

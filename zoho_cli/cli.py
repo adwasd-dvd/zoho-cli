@@ -68,6 +68,7 @@ from zoho_cli.commands import (
     register_cliq_channel_metadata_commands,
     register_cliq_channel_membership_commands,
     register_cliq_message_discovery_commands,
+    register_cliq_scheduled_lifecycle_commands,
     register_cliq_thread_commands,
     register_cliq_thread_state_commands,
     register_cliq_export_commands,
@@ -7581,7 +7582,6 @@ def cliq_trigger_bot(
     )
 
 
-@cliq_app.command("scheduled")
 def cliq_scheduled(
     channel_id: Optional[str] = typer.Option(
         None, "--channel-id", help="Destination channel id (resolved to chat_id)."
@@ -7628,7 +7628,6 @@ def cliq_scheduled(
     )
 
 
-@cliq_app.command("scheduled-get")
 def cliq_scheduled_get(
     scheduled_id: str = typer.Argument(..., help="Scheduled message id."),
     channel_id: Optional[str] = typer.Option(
@@ -7673,6 +7672,13 @@ def cliq_scheduled_get(
             "scheduled": scheduled,
         }
     )
+
+
+register_cliq_scheduled_lifecycle_commands(
+    cliq_app,
+    cliq_scheduled_command=cliq_scheduled,
+    cliq_scheduled_get_command=cliq_scheduled_get,
+)
 
 
 @cliq_app.command("scheduled-cancel")

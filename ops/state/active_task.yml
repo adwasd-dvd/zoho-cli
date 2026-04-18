@@ -4,10 +4,10 @@ module: platform
 stage: in_progress
 status: in_progress
 owner: coder
-updated_at: '2026-04-18T03:47:21Z'
+updated_at: '2026-04-18T04:17:16Z'
 success_criteria:
 - move adjacent cliq app-governance command families from direct Typer decorators to commands-slice registration (no behavior change)
 - keep command names/order stable with focused registry + cli parity tests
 - keep work queue and project state aligned with framework-first execution
 next_if_done: reassess platform-201/platform-202 completion status and queue the next no-behavior-change modularization slice.
-next_step: continue platform-202 by extracting the next adjacent Cliq scheduled-lifecycle registration pair (`scheduled` / `scheduled-get`) into commands-slice wiring with parity checks, now that message-discovery registrar extraction (`schedule` / `search`) is complete and focused registry/CLI parity remains green, while keeping deferred live blockers untouched.
+next_step: continue platform-202 by extracting the next adjacent Cliq command-registration pair (`scheduled-cancel` / `leave`) into commands-slice wiring with parity checks, after completing the scheduled-lifecycle (`scheduled` / `scheduled-get`) registrar extraction at 2026-04-18T04:17:16Z (`tests/test_registry.py -k "scheduled_lifecycle or message_discovery_commands or commands_package_exports_root_registrars"` -> `3 passed`; `tests/test_cli.py -k "cliq_scheduled_from_channel or cliq_scheduled_get_from_channel"` -> `2 passed`).

@@ -230,6 +230,14 @@
   priority: medium
   depends_on:
   - platform-201
+- id: platform-204
+  title: codify v1.0 agent-employee architecture (Mail+Cliq core, multi-channel interoperability, post-v1 CRM/Books expansion)
+  module: platform
+  stage: queued
+  priority: high
+  depends_on:
+  - platform-202
+  - cliq-194
 - id: crm-003
   title: evaluate and phase in official Zoho CRM server-side SDK in post-release follow-up slices
   module: crm

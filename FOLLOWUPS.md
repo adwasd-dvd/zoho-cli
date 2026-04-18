@@ -11,6 +11,7 @@
 - [x] Extend `platform-203` with the first `cliq` thin bridge wrapper command using the same preset-resolution path.
 - [ ] For framework pass, extract the next cliq app-governance command registration pair (`app-commands` / `app-command-get`) into `zoho_cli.commands.cliq` and keep command names stable.
 - [ ] Plan and implement `cliq-194`: plugin-grade realtime channel support (Discord-like inbound loop semantics for OpenClaw workflows), using web-notification/browser trigger as default and adaptive API polling as fallback.
+- [ ] Land `platform-204` architecture brief: v1.0 must be AI-agent-first (Mail + Cliq as core virtual-employee workspace), with post-v1 staged expansion to CRM/Books and cross-channel external communication loops.
 - [ ] Apply 3-strike unsupported policy consistently: after 3 consecutive `not_supported`/`inactive_appaccount_user` live checks for the same endpoint, mark it post-release deferred and continue unrelated slices behind capability-gated isolation.
 - [ ] Post-release: evaluate official Zoho CRM server-side SDK and phase in safely via small slices (first candidate commands: `crm list` / `crm get`) after the current release ships.
 - [x] Run one interactive `zoho login --with-cliq` re-auth that includes chat-read scope, then verify `zoho cliq chats --network happydistrouklimited` succeeds.

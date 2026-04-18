@@ -94,6 +94,8 @@ from zoho_cli.commands import (
     register_cliq_custom_domains_emails_commands,
     register_cliq_status_commands,
     register_cliq_thread_commands,
+    register_cliq_threads_commands,
+    register_cliq_post_to_bot_commands,
     register_cliq_thread_state_commands,
     register_cliq_export_commands,
     register_cliq_identity_commands,
@@ -7431,7 +7433,6 @@ register_cliq_thread_commands(
 )
 
 
-@cliq_app.command("threads")
 def cliq_threads(
     channel_id: Optional[str] = typer.Option(
         None, "--channel-id", help="Destination channel id (resolved to chat_id)."
@@ -7483,6 +7484,12 @@ def cliq_threads(
             "threads": threads,
         }
     )
+
+
+register_cliq_threads_commands(
+    cliq_app,
+    cliq_threads_command=cliq_threads,
+)
 
 
 def cliq_schedule(
@@ -7537,7 +7544,6 @@ def cliq_schedule(
     )
 
 
-@cliq_app.command("post-to-bot")
 def cliq_post_to_bot(
     bot_id: str = typer.Argument(..., help="Bot id or unique name."),
     text: str = typer.Option(..., "--text", "-t", help="Message text."),
@@ -7575,6 +7581,12 @@ def cliq_post_to_bot(
             "result": data,
         },
     )
+
+
+register_cliq_post_to_bot_commands(
+    cliq_app,
+    cliq_post_to_bot_command=cliq_post_to_bot,
+)
 
 
 @cliq_app.command("bot-subscribers")

@@ -1,5 +1,5 @@
 module: Platform
-updated_at: "2026-04-18T14:30:39Z"
+updated_at: "2026-04-18T15:02:59Z"
 status: in_progress
 blockers: []
-next_small_step: extract the next smallest remaining direct Cliq decorator command after `channel-unarchive` into commands-slice registrar wiring with focused parity checks.
+next_small_step: extract the next smallest remaining direct Cliq decorator command after `post-to-bot` into commands-slice registrar wiring with focused parity checks.

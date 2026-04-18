@@ -189,6 +189,24 @@ def register_cliq_thread_commands(
     cliq_app.command("thread-reply")(cliq_thread_reply_command)
 
 
+def register_cliq_threads_commands(
+    cliq_app: typer.Typer,
+    *,
+    cliq_threads_command: Callable[..., None],
+) -> None:
+    """Register the Cliq threads command on ``cliq_app``."""
+    cliq_app.command("threads")(cliq_threads_command)
+
+
+def register_cliq_post_to_bot_commands(
+    cliq_app: typer.Typer,
+    *,
+    cliq_post_to_bot_command: Callable[..., None],
+) -> None:
+    """Register the Cliq post-to-bot command on ``cliq_app``."""
+    cliq_app.command("post-to-bot")(cliq_post_to_bot_command)
+
+
 def register_cliq_thread_state_commands(
     cliq_app: typer.Typer,
     *,

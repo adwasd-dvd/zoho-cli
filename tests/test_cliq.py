@@ -2988,6 +2988,14 @@ def test_build_watch_context_seed_includes_watch_intake_contract_metadata() -> N
     assert payload["watchIntake"]["consume"]["ackAction"] == "read-ack-latest"
     assert payload["watchIntake"]["consume"]["ackRequired"] is True
     assert payload["watchIntake"]["consume"]["actionId"] == "watch-loop"
+    assert payload["operatorWorkflow"]["packageId"] == "cliq-195"
+    assert (
+        payload["operatorWorkflow"]["internalLoop"]["defaultAction"] == "reply-latest"
+    )
+    assert (
+        payload["operatorWorkflow"]["externalEscalation"]["defaultAction"]
+        == "notify-mail"
+    )
 
 
 def test_build_watch_reply_action_preserves_watch_intake_metadata() -> None:
@@ -2999,6 +3007,10 @@ def test_build_watch_reply_action_preserves_watch_intake_metadata() -> None:
                 "triggerMode": "web-notification-first",
                 "consume": {"ackAction": "read-ack-latest", "ackRequired": True},
             },
+            "operatorWorkflow": {
+                "packageId": "cliq-195",
+                "externalEscalation": {"defaultAction": "notify-mail"},
+            },
             "messages": [
                 {"messageId": "M1", "senderId": "U1", "text": "latest"},
             ],
@@ -3008,6 +3020,11 @@ def test_build_watch_reply_action_preserves_watch_intake_metadata() -> None:
 
     assert action["watchIntake"]["triggerMode"] == "web-notification-first"
     assert action["watchIntake"]["consume"]["ackAction"] == "read-ack-latest"
+    assert action["operatorWorkflow"]["packageId"] == "cliq-195"
+    assert (
+        action["operatorWorkflow"]["externalEscalation"]["defaultAction"]
+        == "notify-mail"
+    )
 
 
 def test_build_watch_read_ack_action_preserves_watch_intake_metadata() -> None:
@@ -3019,6 +3036,10 @@ def test_build_watch_read_ack_action_preserves_watch_intake_metadata() -> None:
                 "triggerMode": "web-notification-first",
                 "consume": {"ackAction": "read-ack-latest", "ackRequired": True},
             },
+            "operatorWorkflow": {
+                "packageId": "cliq-195",
+                "internalLoop": {"defaultAction": "reply-latest"},
+            },
             "messages": [
                 {"messageId": "M1", "senderId": "U1", "text": "latest"},
             ],
@@ -3027,6 +3048,8 @@ def test_build_watch_read_ack_action_preserves_watch_intake_metadata() -> None:
 
     assert action["watchIntake"]["triggerMode"] == "web-notification-first"
     assert action["watchIntake"]["consume"]["ackRequired"] is True
+    assert action["operatorWorkflow"]["packageId"] == "cliq-195"
+    assert action["operatorWorkflow"]["internalLoop"]["defaultAction"] == "reply-latest"
 
 
 def test_build_watch_reply_action_selects_latest_message() -> None:

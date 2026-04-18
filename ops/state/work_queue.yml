@@ -254,7 +254,7 @@
 - id: cliq-195
   title: package cliq workflows for agent operation (internal loop + external-contact escalation path)
   module: cliq
-  stage: queued
+  stage: in_progress
   priority: high
   depends_on:
   - cliq-194

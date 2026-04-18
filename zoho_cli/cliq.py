@@ -1105,6 +1105,13 @@ class ZohoCliqClient:
             return intake
         return {}
 
+    @staticmethod
+    def _extract_operator_workflow(watch_payload: dict[str, Any]) -> dict[str, Any]:
+        workflow = watch_payload.get("operatorWorkflow")
+        if isinstance(workflow, dict):
+            return workflow
+        return {}
+
     @classmethod
     def build_watch_context_seed(
         cls,
@@ -1174,6 +1181,18 @@ class ZohoCliqClient:
                     "actionId": "watch-loop",
                 },
             },
+            "operatorWorkflow": {
+                "packageId": "cliq-195",
+                "packageScope": "operator-workflows",
+                "internalLoop": {
+                    "mode": "watch-loop",
+                    "defaultAction": "reply-latest",
+                },
+                "externalEscalation": {
+                    "mode": "human-review",
+                    "defaultAction": "notify-mail",
+                },
+            },
             "messages": normalized_messages,
         }
 
@@ -1193,6 +1212,7 @@ class ZohoCliqClient:
         resolved_chat = (chat_id or "").strip() or payload_chat
         resolved_channel = (channel_id or "").strip() or payload_channel
         watch_intake = cls._extract_watch_intake(watch_payload)
+        operator_workflow = cls._extract_operator_workflow(watch_payload)
 
         data = watch_payload.get("messages")
         messages = (
@@ -1213,6 +1233,7 @@ class ZohoCliqClient:
             "chatId": resolved_chat,
             "channelId": resolved_channel,
             "watchIntake": watch_intake,
+            "operatorWorkflow": operator_workflow,
             "newCount": watch_payload.get("newCount", len(messages)),
             "targetMessageId": target_id,
             "targetSenderId": cls._extract_sender_id(target or {}),
@@ -1237,6 +1258,7 @@ class ZohoCliqClient:
         resolved_chat = (chat_id or "").strip() or payload_chat
         resolved_channel = (channel_id or "").strip() or payload_channel
         watch_intake = cls._extract_watch_intake(watch_payload)
+        operator_workflow = cls._extract_operator_workflow(watch_payload)
 
         data = watch_payload.get("messages")
         messages = (
@@ -1264,6 +1286,7 @@ class ZohoCliqClient:
             "chatId": resolved_chat,
             "channelId": resolved_channel,
             "watchIntake": watch_intake,
+            "operatorWorkflow": operator_workflow,
             "newCount": watch_payload.get("newCount", len(messages)),
             "targetMessageId": target_id,
             "targetSenderId": cls._extract_sender_id(target or {}),

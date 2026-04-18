@@ -1,13 +1,13 @@
-id: cliq-194
-title: add plugin-grade realtime intake baseline for cliq
+id: cliq-195
+title: package cliq workflows for agent operation (internal loop + external-contact escalation path)
 module: cliq
 stage: in_progress
 status: in_progress
 owner: coder
-updated_at: '2026-04-18T20:05:19Z'
+updated_at: '2026-04-18T20:13:00Z'
 success_criteria:
-- define a minimal cliq-194 intake contract scaffold (web-trigger first, adaptive poll fallback, mandatory read-ack after consume)
-- keep cliq-193/cliq-165 external blockers capability-gated and non-blocking for this slice
-- keep work queue, project state, and focused verification notes aligned with the cliq-194 handoff
-next_if_done: if cliq-195 packaging kickoff slice lands cleanly, continue platform-204/v1 gate alignment without re-opening deferred external blockers.
-next_step: start the first cliq-195 operator-workflow packaging slice, reusing the now-green cliq-194 watch-loop baseline.
+- add an initial cliq-195 operator-workflow packaging contract to watch-context output without breaking existing watch-loop consumers
+- preserve the operator-workflow contract through watch-act action payload/result surfaces used by automation loops
+- keep focused watch-context/watch-act verification green while deferred external blockers stay capability-gated
+next_if_done: if the first cliq-195 packaging kickoff slice remains green, continue with the next smallest escalation-path packaging step.
+next_step: extend cliq-195 packaging with a thin escalation-path handoff contract while preserving watch-loop compatibility.

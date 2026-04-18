@@ -1,10 +1,15 @@
-last_run_at: "2026-04-18T20:05:19Z"
+last_run_at: "2026-04-18T20:13:00Z"
 last_result: success
 current_focus: cliq
 suites:
   unit:
     status: success
     notes:
+      - "cliq-195 kickoff verification at 2026-04-18T20:13:00Z (operator-workflow watch metadata)"
+      - "python3.11 -m pytest -q tests/test_cliq.py -k \"watch_context_seed_includes_watch_intake_contract_metadata or watch_reply_action_preserves_watch_intake_metadata or watch_read_ack_action_preserves_watch_intake_metadata\""
+      - "3 passed, 174 deselected in 0.14s"
+      - "python3.11 -m pytest -q tests/test_cli.py -k \"cliq_watch_context_from_channel or cliq_watch_act_preserves_watch_intake_metadata_in_result\""
+      - "2 passed, 414 deselected in 0.60s"
       - "integration-loop medium-scope verification refresh at 2026-04-18T20:05:19Z (cliq-194 watch/read-ack surfaces)"
       - "python3.11 -m pytest -q tests/test_registry.py tests/test_membrane_bridge.py"
       - "95 passed in 0.62s"

@@ -1579,6 +1579,7 @@ def test_cliq_watch_context_from_channel(
     assert payload["watchIntake"]["triggerMode"] == "web-notification-first"
     assert payload["watchIntake"]["pollFallback"]["mode"] == "adaptive"
     assert payload["watchIntake"]["consume"]["actionId"] == "watch-loop"
+    assert payload["operatorWorkflow"]["packageId"] == "cliq-195"
     assert payload["messages"][0]["messageId"] == "M3"
 
 
@@ -1655,6 +1656,10 @@ def test_cliq_watch_act_preserves_watch_intake_metadata_in_result(
                         "ackRequired": True,
                     },
                 },
+                "operatorWorkflow": {
+                    "packageId": "cliq-195",
+                    "externalEscalation": {"defaultAction": "notify-mail"},
+                },
                 "newCount": 1,
                 "messages": [
                     {"messageId": "M2", "senderId": "U2", "text": "latest"},
@@ -1685,6 +1690,11 @@ def test_cliq_watch_act_preserves_watch_intake_metadata_in_result(
     payload = json.loads(result.output)
     assert payload["watchIntake"]["triggerMode"] == "web-notification-first"
     assert payload["watchIntake"]["consume"]["ackAction"] == "read-ack-latest"
+    assert payload["operatorWorkflow"]["packageId"] == "cliq-195"
+    assert (
+        payload["operatorWorkflow"]["externalEscalation"]["defaultAction"]
+        == "notify-mail"
+    )
 
 
 @respx.mock

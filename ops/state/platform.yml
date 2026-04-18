@@ -1,5 +1,5 @@
 module: Platform
-updated_at: "2026-04-18T02:05:01Z"
+updated_at: "2026-04-18T02:13:45Z"
 status: in_progress
 blockers: []
-next_small_step: continue platform-202 by extracting the next adjacent Cliq command registration pair (`channel-rename` / `channel-topic`) into commands-slice wiring with parity checks.
+next_small_step: continue platform-202 by extracting the next adjacent Cliq command registration pair (`channel-rename` / `channel-topic`) into commands-slice wiring with parity checks, using the latest green medium-scope integration refresh as baseline.

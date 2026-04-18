@@ -235,6 +235,17 @@ def register_cliq_reply_edit_commands(
     cliq_app.command("edit")(cliq_edit_command)
 
 
+def register_cliq_delete_react_commands(
+    cliq_app: typer.Typer,
+    *,
+    cliq_delete_command: Callable[..., None],
+    cliq_react_command: Callable[..., None],
+) -> None:
+    """Register adjacent Cliq delete/react commands on ``cliq_app``."""
+    cliq_app.command("delete")(cliq_delete_command)
+    cliq_app.command("react")(cliq_react_command)
+
+
 def register_cliq_scheduled_lifecycle_commands(
     cliq_app: typer.Typer,
     *,

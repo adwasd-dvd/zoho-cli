@@ -28,6 +28,7 @@ from zoho_cli.commands.cliq import register_cliq_message_discovery_commands
 from zoho_cli.commands.cliq import register_cliq_file_voice_commands
 from zoho_cli.commands.cliq import register_cliq_voice_send_commands
 from zoho_cli.commands.cliq import register_cliq_reply_edit_commands
+from zoho_cli.commands.cliq import register_cliq_delete_react_commands
 from zoho_cli.commands.cliq import register_cliq_mute_unmute_commands
 from zoho_cli.commands.cliq import register_cliq_pinned_commands
 from zoho_cli.commands.cliq import register_cliq_pin_unpin_commands
@@ -134,6 +135,10 @@ def test_commands_package_exports_root_registrars() -> None:
     assert (
         commands_pkg.register_cliq_reply_edit_commands
         is register_cliq_reply_edit_commands
+    )
+    assert (
+        commands_pkg.register_cliq_delete_react_commands
+        is register_cliq_delete_react_commands
     )
     assert (
         commands_pkg.register_cliq_mute_unmute_commands
@@ -673,6 +678,27 @@ def test_register_cliq_reply_edit_commands_preserves_expected_command_names() ->
     assert [command.name for command in app.registered_commands] == [
         "reply",
         "edit",
+    ]
+
+
+def test_register_cliq_delete_react_commands_preserves_expected_command_names() -> None:
+    app = typer.Typer(no_args_is_help=True)
+
+    def _delete_command() -> None:
+        return None
+
+    def _react_command() -> None:
+        return None
+
+    register_cliq_delete_react_commands(
+        app,
+        cliq_delete_command=_delete_command,
+        cliq_react_command=_react_command,
+    )
+
+    assert [command.name for command in app.registered_commands] == [
+        "delete",
+        "react",
     ]
 
 

@@ -71,6 +71,7 @@ from zoho_cli.commands import (
     register_cliq_file_voice_commands,
     register_cliq_voice_send_commands,
     register_cliq_reply_edit_commands,
+    register_cliq_delete_react_commands,
     register_cliq_mute_unmute_commands,
     register_cliq_pinned_commands,
     register_cliq_pin_unpin_commands,
@@ -8817,7 +8818,6 @@ register_cliq_reply_edit_commands(
 )
 
 
-@cliq_app.command("delete")
 def cliq_delete(
     message_id: str = typer.Argument(..., help="Target message id."),
     channel_id: Optional[str] = typer.Option(
@@ -8856,7 +8856,6 @@ def cliq_delete(
     )
 
 
-@cliq_app.command("react")
 def cliq_react(
     message_id: str = typer.Argument(..., help="Target message id."),
     emoji: str = typer.Option(..., "--emoji", help="Emoji to add/remove as reaction."),
@@ -8901,6 +8900,13 @@ def cliq_react(
             "result": data,
         },
     )
+
+
+register_cliq_delete_react_commands(
+    cliq_app,
+    cliq_delete_command=cliq_delete,
+    cliq_react_command=cliq_react,
+)
 
 
 def cliq_voice_send(

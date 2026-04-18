@@ -1,10 +1,17 @@
-last_run_at: "2026-04-18T12:21:51Z"
+last_run_at: "2026-04-18T12:48:23Z"
 last_result: success
 current_focus: platform
 suites:
   unit:
     status: success
     notes:
+      - "platform-202 direct cliq delete/react command extraction parity verification at 2026-04-18T12:48:23Z"
+      - "python3.11 -m pytest -q tests/test_registry.py -k \"delete_react_commands or commands_package_exports_root_registrars\""
+      - "2 passed, 51 deselected in 0.10s"
+      - "python3.11 -m pytest -q tests/test_cli.py -k \"cliq_delete_message or cliq_react_add\""
+      - "2 passed, 411 deselected in 0.10s"
+      - "./.venv/bin/ruff format --check zoho_cli/commands/cliq.py zoho_cli/commands/__init__.py zoho_cli/cli.py tests/test_registry.py"
+      - "4 files already formatted"
       - "integration-loop medium-scope verification refresh at 2026-04-18T12:21:51Z"
       - "python3.11 -m pytest -q tests/test_registry.py tests/test_membrane_bridge.py"
       - "80 passed in 0.55s"

@@ -63,6 +63,7 @@ from zoho_cli.commands import (
     register_cliq_app_catalog_commands,
     register_cliq_app_commands_bridge_commands,
     register_cliq_app_commands_commands,
+    register_cliq_export_commands,
     register_cliq_app_installs_bridge_commands,
     register_cliq_app_installs_commands,
     register_cliq_app_permissions_commands,
@@ -6694,7 +6695,6 @@ register_cliq_app_commands_bridge_commands(
 )
 
 
-@cliq_app.command("export-chats")
 def cliq_export_chats(
     chat_id: Optional[str] = typer.Option(
         None,
@@ -6819,7 +6819,6 @@ def cliq_export_chats(
     utils.output(payload)
 
 
-@cliq_app.command("export-chats-bridge-run")
 def cliq_export_chats_bridge_run(
     chat_id: Optional[str] = typer.Option(
         None,
@@ -6923,6 +6922,13 @@ def cliq_export_chats_bridge_run(
     if resolved_input is not None:
         payload["input"] = resolved_input
     utils.output(payload)
+
+
+register_cliq_export_commands(
+    cliq_app,
+    cliq_export_chats_command=cliq_export_chats,
+    cliq_export_chats_bridge_run_command=cliq_export_chats_bridge_run,
+)
 
 
 @cliq_app.command("whoami")

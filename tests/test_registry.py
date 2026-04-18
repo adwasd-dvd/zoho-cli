@@ -20,6 +20,7 @@ from zoho_cli.commands.cliq import register_cliq_app_catalog_commands
 from zoho_cli.commands.cliq import register_cliq_app_catalog_bridge_commands
 from zoho_cli.commands.cliq import register_cliq_app_commands_bridge_commands
 from zoho_cli.commands.cliq import register_cliq_app_commands_commands
+from zoho_cli.commands.cliq import register_cliq_export_commands
 from zoho_cli.commands.cliq import register_cliq_app_installs_bridge_commands
 from zoho_cli.commands.cliq import register_cliq_app_installs_commands
 from zoho_cli.commands.cliq import register_cliq_app_permissions_bridge_commands
@@ -74,6 +75,7 @@ def test_commands_package_exports_root_registrars() -> None:
         commands_pkg.register_cliq_app_commands_bridge_commands
         is register_cliq_app_commands_bridge_commands
     )
+    assert commands_pkg.register_cliq_export_commands is register_cliq_export_commands
     assert (
         commands_pkg.register_cliq_app_installs_commands
         is register_cliq_app_installs_commands
@@ -279,6 +281,27 @@ def test_register_cliq_app_commands_bridge_commands_preserves_expected_command_n
     assert [command.name for command in app.registered_commands] == [
         "app-commands-bridge-run",
         "app-command-get-bridge-run",
+    ]
+
+
+def test_register_cliq_export_commands_preserves_expected_command_names() -> None:
+    app = typer.Typer(no_args_is_help=True)
+
+    def _export_chats_command() -> None:
+        return None
+
+    def _export_chats_bridge_run_command() -> None:
+        return None
+
+    register_cliq_export_commands(
+        app,
+        cliq_export_chats_command=_export_chats_command,
+        cliq_export_chats_bridge_run_command=_export_chats_bridge_run_command,
+    )
+
+    assert [command.name for command in app.registered_commands] == [
+        "export-chats",
+        "export-chats-bridge-run",
     ]
 
 

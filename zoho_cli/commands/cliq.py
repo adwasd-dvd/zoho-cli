@@ -101,3 +101,14 @@ def register_cliq_app_commands_bridge_commands(
     cliq_app.command("app-command-get-bridge-run")(
         cliq_app_command_get_bridge_run_command
     )
+
+
+def register_cliq_export_commands(
+    cliq_app: typer.Typer,
+    *,
+    cliq_export_chats_command: Callable[..., None],
+    cliq_export_chats_bridge_run_command: Callable[..., None],
+) -> None:
+    """Register adjacent Cliq export commands on ``cliq_app``."""
+    cliq_app.command("export-chats")(cliq_export_chats_command)
+    cliq_app.command("export-chats-bridge-run")(cliq_export_chats_bridge_run_command)

@@ -1,5 +1,5 @@
 module: Platform
-updated_at: "2026-04-18T01:08:51Z"
+updated_at: "2026-04-18T01:32:37Z"
 status: in_progress
 blockers: []
-next_small_step: reassess platform-202 completion now that adjacent Cliq app-catalog bridge registration (`apps-bridge-run` / `app-get-bridge-run`) is also commands-slice managed, then queue the next smallest no-behavior-change modularization slice.
+next_small_step: continue platform-202 by extracting the next adjacent Cliq command registration pair (`whoami` / `user-resolve`) into commands-slice wiring with parity checks.

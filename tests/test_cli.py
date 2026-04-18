@@ -1580,6 +1580,10 @@ def test_cliq_watch_context_from_channel(
     assert payload["watchIntake"]["pollFallback"]["mode"] == "adaptive"
     assert payload["watchIntake"]["consume"]["actionId"] == "watch-loop"
     assert payload["operatorWorkflow"]["packageId"] == "cliq-195"
+    assert (
+        payload["operatorWorkflow"]["externalEscalation"]["handoff"]["contractId"]
+        == "cliq-195-escalation-handoff-v1"
+    )
     assert payload["messages"][0]["messageId"] == "M3"
 
 
@@ -1658,7 +1662,10 @@ def test_cliq_watch_act_preserves_watch_intake_metadata_in_result(
                 },
                 "operatorWorkflow": {
                     "packageId": "cliq-195",
-                    "externalEscalation": {"defaultAction": "notify-mail"},
+                    "externalEscalation": {
+                        "defaultAction": "notify-mail",
+                        "handoff": {"contractId": "cliq-195-escalation-handoff-v1"},
+                    },
                 },
                 "newCount": 1,
                 "messages": [
@@ -1694,6 +1701,10 @@ def test_cliq_watch_act_preserves_watch_intake_metadata_in_result(
     assert (
         payload["operatorWorkflow"]["externalEscalation"]["defaultAction"]
         == "notify-mail"
+    )
+    assert (
+        payload["operatorWorkflow"]["externalEscalation"]["handoff"]["contractId"]
+        == "cliq-195-escalation-handoff-v1"
     )
 
 

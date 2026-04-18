@@ -1,10 +1,15 @@
-last_run_at: "2026-04-18T20:13:00Z"
+last_run_at: "2026-04-18T20:34:00Z"
 last_result: success
 current_focus: cliq
 suites:
   unit:
     status: success
     notes:
+      - "cliq-195 escalation handoff contract verification at 2026-04-18T20:34:00Z (watch-context + watch-act metadata)"
+      - "python3.11 -m pytest -q tests/test_cliq.py::test_build_watch_context_seed_includes_watch_intake_contract_metadata tests/test_cliq.py::test_build_watch_reply_action_preserves_watch_intake_metadata tests/test_cliq.py::test_build_watch_read_ack_action_preserves_watch_intake_metadata tests/test_cli.py::test_cliq_watch_context_from_channel tests/test_cli.py::test_cliq_watch_act_preserves_watch_intake_metadata_in_result"
+      - "5 passed in 0.57s"
+      - "./.venv/bin/ruff format --check zoho_cli/cliq.py tests/test_cliq.py tests/test_cli.py"
+      - "3 files already formatted"
       - "cliq-195 kickoff verification at 2026-04-18T20:13:00Z (operator-workflow watch metadata)"
       - "python3.11 -m pytest -q tests/test_cliq.py -k \"watch_context_seed_includes_watch_intake_contract_metadata or watch_reply_action_preserves_watch_intake_metadata or watch_read_ack_action_preserves_watch_intake_metadata\""
       - "3 passed, 174 deselected in 0.14s"

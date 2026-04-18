@@ -6,7 +6,7 @@
 - [ ] Land `platform-204` architecture brief (Mail+Cliq core, persona/memory/work contract, post-v1 CRM/Books boundary).
 - [ ] Land `platform-205` v1.0 acceptance gate for AI-employee workflow.
 - [ ] Deliver `mail-010` operator workflow package (triage/draft/reply/safe-send guardrails).
-- [ ] Deliver `cliq-194` realtime intake baseline (web-trigger default + adaptive API polling fallback).
+- [ ] Deliver `cliq-194` realtime intake baseline (web-trigger default + adaptive API polling fallback) with mandatory mark-as-read/read-ack after consume to prevent looped re-processing.
 - [ ] Deliver `cliq-195` operator workflow package (internal loop + external-contact escalation path).
 - [ ] Land `platform-206` cross-channel interoperability contract (Cliq internal + external comm adapters).
 - [ ] Land `platform-207` release-candidate docs + quickstart + runbook.

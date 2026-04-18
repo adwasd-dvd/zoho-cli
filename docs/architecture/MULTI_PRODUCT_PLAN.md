@@ -31,6 +31,7 @@ This repository expands in this order:
    - send guardrails (safety + auditability)
 3. **Cliq operational baseline**
    - inbound loop for near-realtime work intake (`cliq-194`: web-trigger default + API adaptive fallback)
+   - every consumed inbound item must be read-acknowledged/marked as read, plus cursor-based dedupe, to prevent dead-loop mis-operations
    - core reply/notify/workflow actions for internal coordination
 4. **Release readiness**
    - focused acceptance checks for the AI-employee workflow

@@ -2997,6 +2997,18 @@ def test_build_watch_context_seed_includes_watch_intake_contract_metadata() -> N
         == "notify-mail"
     )
     assert (
+        payload["operatorWorkflow"]["externalEscalation"]["actionHint"][
+            "watchActAction"
+        ]
+        == "read-ack-latest"
+    )
+    assert (
+        payload["operatorWorkflow"]["externalEscalation"]["actionHint"][
+            "bridgeActionId"
+        ]
+        == "notify-mail"
+    )
+    assert (
         payload["operatorWorkflow"]["externalEscalation"]["handoff"]["contractId"]
         == "cliq-195-escalation-handoff-v1"
     )
@@ -3022,6 +3034,10 @@ def test_build_watch_reply_action_preserves_watch_intake_metadata() -> None:
                 "packageId": "cliq-195",
                 "externalEscalation": {
                     "defaultAction": "notify-mail",
+                    "actionHint": {
+                        "watchActAction": "read-ack-latest",
+                        "bridgeActionId": "notify-mail",
+                    },
                     "handoff": {
                         "contractId": "cliq-195-escalation-handoff-v1",
                         "requiredFields": ["recipient", "summary", "reason"],
@@ -3040,6 +3056,10 @@ def test_build_watch_reply_action_preserves_watch_intake_metadata() -> None:
     assert action["operatorWorkflow"]["packageId"] == "cliq-195"
     assert (
         action["operatorWorkflow"]["externalEscalation"]["defaultAction"]
+        == "notify-mail"
+    )
+    assert (
+        action["operatorWorkflow"]["externalEscalation"]["actionHint"]["bridgeActionId"]
         == "notify-mail"
     )
     assert (
@@ -3065,6 +3085,10 @@ def test_build_watch_read_ack_action_preserves_watch_intake_metadata() -> None:
                 "internalLoop": {"defaultAction": "reply-latest"},
                 "externalEscalation": {
                     "defaultAction": "notify-mail",
+                    "actionHint": {
+                        "watchActAction": "read-ack-latest",
+                        "bridgeActionId": "notify-mail",
+                    },
                     "handoff": {
                         "contractId": "cliq-195-escalation-handoff-v1",
                     },
@@ -3083,6 +3107,10 @@ def test_build_watch_read_ack_action_preserves_watch_intake_metadata() -> None:
     assert (
         action["operatorWorkflow"]["externalEscalation"]["handoff"]["contractId"]
         == "cliq-195-escalation-handoff-v1"
+    )
+    assert (
+        action["operatorWorkflow"]["externalEscalation"]["actionHint"]["watchActAction"]
+        == "read-ack-latest"
     )
 
 

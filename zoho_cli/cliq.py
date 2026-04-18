@@ -1191,6 +1191,10 @@ class ZohoCliqClient:
                 "externalEscalation": {
                     "mode": "human-review",
                     "defaultAction": "notify-mail",
+                    "actionHint": {
+                        "watchActAction": "read-ack-latest",
+                        "bridgeActionId": "notify-mail",
+                    },
                     "handoff": {
                         "contractId": "cliq-195-escalation-handoff-v1",
                         "target": "external-contact",

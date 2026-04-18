@@ -1839,6 +1839,21 @@ def cliq_bridge_run(
                         consume_cfg.get("action_id"),
                     ]
                 )
+        workflow = watch_payload.get("operatorWorkflow")
+        if isinstance(workflow, dict):
+            escalation = workflow.get("externalEscalation")
+            if isinstance(escalation, dict):
+                escalation_hint = escalation.get("actionHint")
+                if isinstance(escalation_hint, dict):
+                    candidates.extend(
+                        [
+                            escalation_hint.get("bridgeActionId"),
+                            escalation_hint.get("bridge_action_id"),
+                            escalation_hint.get("actionId"),
+                            escalation_hint.get("action_id"),
+                        ]
+                    )
+                candidates.append(escalation.get("defaultAction"))
         for candidate in candidates:
             text = str(candidate or "").strip()
             if text:

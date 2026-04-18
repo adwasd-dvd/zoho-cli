@@ -167,3 +167,25 @@ def register_cliq_channel_lifecycle_commands(
     """Register adjacent Cliq channel-lifecycle commands on ``cliq_app``."""
     cliq_app.command("channel-archive")(cliq_channel_archive_command)
     cliq_app.command("channel-delete")(cliq_channel_delete_command)
+
+
+def register_cliq_thread_commands(
+    cliq_app: typer.Typer,
+    *,
+    cliq_thread_create_command: Callable[..., None],
+    cliq_thread_reply_command: Callable[..., None],
+) -> None:
+    """Register adjacent Cliq thread commands on ``cliq_app``."""
+    cliq_app.command("thread-create")(cliq_thread_create_command)
+    cliq_app.command("thread-reply")(cliq_thread_reply_command)
+
+
+def register_cliq_thread_state_commands(
+    cliq_app: typer.Typer,
+    *,
+    cliq_thread_followers_command: Callable[..., None],
+    cliq_thread_state_command: Callable[..., None],
+) -> None:
+    """Register adjacent Cliq thread-state commands on ``cliq_app``."""
+    cliq_app.command("thread-followers")(cliq_thread_followers_command)
+    cliq_app.command("thread-state")(cliq_thread_state_command)

@@ -67,6 +67,8 @@ from zoho_cli.commands import (
     register_cliq_channel_member_management_commands,
     register_cliq_channel_metadata_commands,
     register_cliq_channel_membership_commands,
+    register_cliq_thread_commands,
+    register_cliq_thread_state_commands,
     register_cliq_export_commands,
     register_cliq_identity_commands,
     register_cliq_app_installs_bridge_commands,
@@ -7251,7 +7253,6 @@ def cliq_channel_unarchive(
     cliq_channel_archive(channel_id=channel_id, unarchive=True, network=network)
 
 
-@cliq_app.command("thread-create")
 def cliq_thread_create(
     message_id: str = typer.Argument(..., help="Parent message id to anchor thread."),
     text: str = typer.Option(..., "--text", "-t", help="Thread message text."),
@@ -7292,7 +7293,6 @@ def cliq_thread_create(
     )
 
 
-@cliq_app.command("thread-reply")
 def cliq_thread_reply(
     thread_id: str = typer.Argument(..., help="Thread id."),
     text: str = typer.Option(..., "--text", "-t", help="Reply text."),
@@ -7331,6 +7331,13 @@ def cliq_thread_reply(
             "result": data,
         },
     )
+
+
+register_cliq_thread_commands(
+    cliq_app,
+    cliq_thread_create_command=cliq_thread_create,
+    cliq_thread_reply_command=cliq_thread_reply,
+)
 
 
 @cliq_app.command("threads")
@@ -7936,7 +7943,6 @@ def cliq_pinned(
     )
 
 
-@cliq_app.command("thread-followers")
 def cliq_thread_followers(
     thread_id: str = typer.Argument(..., help="Thread id."),
     channel_id: Optional[str] = typer.Option(
@@ -7986,7 +7992,6 @@ def cliq_thread_followers(
     )
 
 
-@cliq_app.command("thread-state")
 def cliq_thread_state(
     thread_id: str = typer.Argument(..., help="Thread id."),
     state: Optional[str] = typer.Option(
@@ -8056,6 +8061,13 @@ def cliq_thread_state(
             "thread": data,
         }
     )
+
+
+register_cliq_thread_state_commands(
+    cliq_app,
+    cliq_thread_followers_command=cliq_thread_followers,
+    cliq_thread_state_command=cliq_thread_state,
+)
 
 
 @cliq_app.command("search")

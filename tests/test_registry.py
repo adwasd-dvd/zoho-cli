@@ -24,6 +24,8 @@ from zoho_cli.commands.cliq import register_cliq_channel_lifecycle_commands
 from zoho_cli.commands.cliq import register_cliq_channel_member_management_commands
 from zoho_cli.commands.cliq import register_cliq_channel_metadata_commands
 from zoho_cli.commands.cliq import register_cliq_channel_membership_commands
+from zoho_cli.commands.cliq import register_cliq_thread_commands
+from zoho_cli.commands.cliq import register_cliq_thread_state_commands
 from zoho_cli.commands.cliq import register_cliq_export_commands
 from zoho_cli.commands.cliq import register_cliq_identity_commands
 from zoho_cli.commands.cliq import register_cliq_app_installs_bridge_commands
@@ -95,6 +97,11 @@ def test_commands_package_exports_root_registrars() -> None:
     assert (
         commands_pkg.register_cliq_channel_membership_commands
         is register_cliq_channel_membership_commands
+    )
+    assert commands_pkg.register_cliq_thread_commands is register_cliq_thread_commands
+    assert (
+        commands_pkg.register_cliq_thread_state_commands
+        is register_cliq_thread_state_commands
     )
     assert commands_pkg.register_cliq_export_commands is register_cliq_export_commands
     assert (
@@ -439,6 +446,48 @@ def test_register_cliq_channel_lifecycle_commands_preserves_expected_command_nam
     assert [command.name for command in app.registered_commands] == [
         "channel-archive",
         "channel-delete",
+    ]
+
+
+def test_register_cliq_thread_commands_preserves_expected_command_names() -> None:
+    app = typer.Typer(no_args_is_help=True)
+
+    def _thread_create_command() -> None:
+        return None
+
+    def _thread_reply_command() -> None:
+        return None
+
+    register_cliq_thread_commands(
+        app,
+        cliq_thread_create_command=_thread_create_command,
+        cliq_thread_reply_command=_thread_reply_command,
+    )
+
+    assert [command.name for command in app.registered_commands] == [
+        "thread-create",
+        "thread-reply",
+    ]
+
+
+def test_register_cliq_thread_state_commands_preserves_expected_command_names() -> None:
+    app = typer.Typer(no_args_is_help=True)
+
+    def _thread_followers_command() -> None:
+        return None
+
+    def _thread_state_command() -> None:
+        return None
+
+    register_cliq_thread_state_commands(
+        app,
+        cliq_thread_followers_command=_thread_followers_command,
+        cliq_thread_state_command=_thread_state_command,
+    )
+
+    assert [command.name for command in app.registered_commands] == [
+        "thread-followers",
+        "thread-state",
     ]
 
 

@@ -269,6 +269,51 @@ def test_cliq_bridge_run_rejects_unsupported_bridge(mock_config: Path) -> None:
     assert "unsupported_bridge" in result.output
 
 
+def test_cliq_bridge_run_preserves_watch_intake_input_json(mock_config: Path) -> None:
+    seen: dict[str, Any] = {}
+
+    def _fake_run(*a, **kw):
+        seen["command"] = a[0]
+        return subprocess.CompletedProcess(
+            args=a[0],
+            returncode=0,
+            stdout=json.dumps({"ok": True}),
+            stderr="",
+        )
+
+    watch_payload = {
+        "chatId": "CT_1",
+        "watchIntake": {
+            "triggerMode": "web-notification-first",
+            "pollFallback": {"mode": "adaptive", "transport": "api-poll"},
+            "consume": {"ackAction": "read-ack-latest", "ackRequired": True},
+        },
+    }
+
+    with pytest.MonkeyPatch.context() as monkeypatch:
+        monkeypatch.setattr(
+            "zoho_cli.cli.shutil.which", lambda _name: "/usr/local/bin/membrane"
+        )
+        monkeypatch.setattr("zoho_cli.cli.subprocess.run", _fake_run)
+
+        result = runner.invoke(
+            app,
+            [
+                "--config",
+                str(mock_config),
+                "cliq",
+                "bridge-run",
+                "watch-loop",
+                "--input-json",
+                json.dumps(watch_payload),
+            ],
+        )
+
+    assert result.exit_code == 0, result.output
+    assert seen["command"][6] == "--input"
+    assert json.loads(seen["command"][7]) == watch_payload
+
+
 def test_cliq_apps_bridge_run_defaults_action_and_input(
     mock_config: Path,
 ) -> None:

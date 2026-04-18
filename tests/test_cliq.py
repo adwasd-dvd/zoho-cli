@@ -2989,6 +2989,45 @@ def test_build_watch_context_seed_includes_watch_intake_contract_metadata() -> N
     assert payload["watchIntake"]["consume"]["ackRequired"] is True
 
 
+def test_build_watch_reply_action_preserves_watch_intake_metadata() -> None:
+    action = cliq.ZohoCliqClient.build_watch_reply_action(
+        {
+            "chatId": "CT_1",
+            "channelId": "O1",
+            "watchIntake": {
+                "triggerMode": "web-notification-first",
+                "consume": {"ackAction": "read-ack-latest", "ackRequired": True},
+            },
+            "messages": [
+                {"messageId": "M1", "senderId": "U1", "text": "latest"},
+            ],
+        },
+        text="ack",
+    )
+
+    assert action["watchIntake"]["triggerMode"] == "web-notification-first"
+    assert action["watchIntake"]["consume"]["ackAction"] == "read-ack-latest"
+
+
+def test_build_watch_read_ack_action_preserves_watch_intake_metadata() -> None:
+    action = cliq.ZohoCliqClient.build_watch_read_ack_action(
+        {
+            "chatId": "CT_1",
+            "channelId": "O1",
+            "watchIntake": {
+                "triggerMode": "web-notification-first",
+                "consume": {"ackAction": "read-ack-latest", "ackRequired": True},
+            },
+            "messages": [
+                {"messageId": "M1", "senderId": "U1", "text": "latest"},
+            ],
+        }
+    )
+
+    assert action["watchIntake"]["triggerMode"] == "web-notification-first"
+    assert action["watchIntake"]["consume"]["ackRequired"] is True
+
+
 def test_build_watch_reply_action_selects_latest_message() -> None:
     action = cliq.ZohoCliqClient.build_watch_reply_action(
         {

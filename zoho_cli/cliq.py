@@ -1098,6 +1098,13 @@ class ZohoCliqClient:
                 return text
         return ""
 
+    @staticmethod
+    def _extract_watch_intake(watch_payload: dict[str, Any]) -> dict[str, Any]:
+        intake = watch_payload.get("watchIntake")
+        if isinstance(intake, dict):
+            return intake
+        return {}
+
     @classmethod
     def build_watch_context_seed(
         cls,
@@ -1184,6 +1191,7 @@ class ZohoCliqClient:
 
         resolved_chat = (chat_id or "").strip() or payload_chat
         resolved_channel = (channel_id or "").strip() or payload_channel
+        watch_intake = cls._extract_watch_intake(watch_payload)
 
         data = watch_payload.get("messages")
         messages = (
@@ -1203,6 +1211,7 @@ class ZohoCliqClient:
             "action": "reply-latest",
             "chatId": resolved_chat,
             "channelId": resolved_channel,
+            "watchIntake": watch_intake,
             "newCount": watch_payload.get("newCount", len(messages)),
             "targetMessageId": target_id,
             "targetSenderId": cls._extract_sender_id(target or {}),
@@ -1226,6 +1235,7 @@ class ZohoCliqClient:
 
         resolved_chat = (chat_id or "").strip() or payload_chat
         resolved_channel = (channel_id or "").strip() or payload_channel
+        watch_intake = cls._extract_watch_intake(watch_payload)
 
         data = watch_payload.get("messages")
         messages = (
@@ -1252,6 +1262,7 @@ class ZohoCliqClient:
             "action": "read-ack-latest",
             "chatId": resolved_chat,
             "channelId": resolved_channel,
+            "watchIntake": watch_intake,
             "newCount": watch_payload.get("newCount", len(messages)),
             "targetMessageId": target_id,
             "targetSenderId": cls._extract_sender_id(target or {}),

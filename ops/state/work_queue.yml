@@ -194,6 +194,14 @@
   priority: low
   depends_on:
   - cliq-192
+- id: cliq-194
+  title: add plugin-grade realtime channel support for cliq (discord-like inbound loop)
+  module: cliq
+  stage: queued
+  priority: high
+  depends_on:
+  - cliq-193
+  - platform-202
 - id: platform-200
   title: codify modularization boundaries and migration guardrails for command/service/core layers
   module: platform

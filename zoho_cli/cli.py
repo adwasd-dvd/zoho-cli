@@ -77,6 +77,7 @@ from zoho_cli.commands import (
     register_cliq_capabilities_commands,
     register_cliq_channels_chats_commands,
     register_cliq_users_teams_commands,
+    register_cliq_departments_roles_commands,
     register_cliq_status_commands,
     register_cliq_thread_commands,
     register_cliq_thread_state_commands,
@@ -1981,7 +1982,6 @@ register_cliq_users_teams_commands(
 )
 
 
-@cliq_app.command("departments")
 def cliq_departments(
     limit: int = typer.Option(50, "--limit", "-n", help="Max departments to return."),
     network: Optional[str] = typer.Option(
@@ -2029,7 +2029,6 @@ def cliq_departments(
     )
 
 
-@cliq_app.command("roles")
 def cliq_roles(
     limit: int = typer.Option(50, "--limit", "-n", help="Max roles to return."),
     network: Optional[str] = typer.Option(
@@ -2075,6 +2074,13 @@ def cliq_roles(
             "roles": views,
         }
     )
+
+
+register_cliq_departments_roles_commands(
+    cliq_app,
+    cliq_departments_command=cliq_departments,
+    cliq_roles_command=cliq_roles,
+)
 
 
 @cliq_app.command("designations")

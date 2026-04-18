@@ -302,3 +302,14 @@ def register_cliq_users_teams_commands(
     """Register adjacent Cliq users/teams commands on ``cliq_app``."""
     cliq_app.command("users")(cliq_users_command)
     cliq_app.command("teams")(cliq_teams_command)
+
+
+def register_cliq_departments_roles_commands(
+    cliq_app: typer.Typer,
+    *,
+    cliq_departments_command: Callable[..., None],
+    cliq_roles_command: Callable[..., None],
+) -> None:
+    """Register adjacent Cliq departments/roles commands on ``cliq_app``."""
+    cliq_app.command("departments")(cliq_departments_command)
+    cliq_app.command("roles")(cliq_roles_command)

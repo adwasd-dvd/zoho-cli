@@ -224,6 +224,17 @@ def register_cliq_messages_message_commands(
     cliq_app.command("message")(cliq_message_command)
 
 
+def register_cliq_context_watch_context_commands(
+    cliq_app: typer.Typer,
+    *,
+    cliq_context_command: Callable[..., None],
+    cliq_watch_context_command: Callable[..., None],
+) -> None:
+    """Register adjacent Cliq context/watch-context commands on ``cliq_app``."""
+    cliq_app.command("context")(cliq_context_command)
+    cliq_app.command("watch-context")(cliq_watch_context_command)
+
+
 def register_cliq_voice_send_commands(
     cliq_app: typer.Typer,
     *,

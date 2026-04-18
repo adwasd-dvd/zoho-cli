@@ -70,6 +70,7 @@ from zoho_cli.commands import (
     register_cliq_message_discovery_commands,
     register_cliq_file_voice_commands,
     register_cliq_messages_message_commands,
+    register_cliq_context_watch_context_commands,
     register_cliq_voice_send_commands,
     register_cliq_reply_edit_commands,
     register_cliq_delete_react_commands,
@@ -8533,7 +8534,6 @@ register_cliq_messages_message_commands(
 )
 
 
-@cliq_app.command("context")
 def cliq_context(
     channel_id: Optional[str] = typer.Option(
         None, "--channel-id", help="Source channel id (resolved to chat_id)."
@@ -8614,7 +8614,6 @@ def cliq_context(
     )
 
 
-@cliq_app.command("watch-context")
 def cliq_watch_context(
     channel_id: Optional[str] = typer.Option(
         None, "--channel-id", help="Source channel id (resolved to chat_id)."
@@ -8681,6 +8680,13 @@ def cliq_watch_context(
             "messages": watch["messages"],
         }
     )
+
+
+register_cliq_context_watch_context_commands(
+    cliq_app,
+    cliq_context_command=cliq_context,
+    cliq_watch_context_command=cliq_watch_context,
+)
 
 
 @cliq_app.command("watch-act")

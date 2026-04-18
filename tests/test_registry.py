@@ -27,6 +27,7 @@ from zoho_cli.commands.cliq import register_cliq_channel_membership_commands
 from zoho_cli.commands.cliq import register_cliq_message_discovery_commands
 from zoho_cli.commands.cliq import register_cliq_file_voice_commands
 from zoho_cli.commands.cliq import register_cliq_messages_message_commands
+from zoho_cli.commands.cliq import register_cliq_context_watch_context_commands
 from zoho_cli.commands.cliq import register_cliq_voice_send_commands
 from zoho_cli.commands.cliq import register_cliq_reply_edit_commands
 from zoho_cli.commands.cliq import register_cliq_delete_react_commands
@@ -132,6 +133,10 @@ def test_commands_package_exports_root_registrars() -> None:
     assert (
         commands_pkg.register_cliq_messages_message_commands
         is register_cliq_messages_message_commands
+    )
+    assert (
+        commands_pkg.register_cliq_context_watch_context_commands
+        is register_cliq_context_watch_context_commands
     )
     assert (
         commands_pkg.register_cliq_voice_send_commands
@@ -664,6 +669,29 @@ def test_register_cliq_messages_message_commands_preserves_expected_command_name
     assert [command.name for command in app.registered_commands] == [
         "messages",
         "message",
+    ]
+
+
+def test_register_cliq_context_watch_context_commands_preserves_expected_command_names() -> (
+    None
+):
+    app = typer.Typer(no_args_is_help=True)
+
+    def _context_command() -> None:
+        return None
+
+    def _watch_context_command() -> None:
+        return None
+
+    register_cliq_context_watch_context_commands(
+        app,
+        cliq_context_command=_context_command,
+        cliq_watch_context_command=_watch_context_command,
+    )
+
+    assert [command.name for command in app.registered_commands] == [
+        "context",
+        "watch-context",
     ]
 
 

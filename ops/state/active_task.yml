@@ -4,7 +4,7 @@ module: platform
 stage: in_progress
 status: in_progress
 owner: coder
-updated_at: '2026-04-18T12:05:29Z'
+updated_at: '2026-04-18T12:21:51Z'
 success_criteria:
 - move adjacent cliq command families from direct Typer decorators to commands-slice registration (no behavior change)
 - keep command names/order stable with focused registry + cli parity tests

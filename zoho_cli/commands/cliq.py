@@ -207,6 +207,15 @@ def register_cliq_post_to_bot_commands(
     cliq_app.command("post-to-bot")(cliq_post_to_bot_command)
 
 
+def register_cliq_bot_subscribers_commands(
+    cliq_app: typer.Typer,
+    *,
+    cliq_bot_subscribers_command: Callable[..., None],
+) -> None:
+    """Register the Cliq bot-subscribers command on ``cliq_app``."""
+    cliq_app.command("bot-subscribers")(cliq_bot_subscribers_command)
+
+
 def register_cliq_thread_state_commands(
     cliq_app: typer.Typer,
     *,

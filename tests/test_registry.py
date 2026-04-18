@@ -53,6 +53,7 @@ from zoho_cli.commands.cliq import register_cliq_status_commands
 from zoho_cli.commands.cliq import register_cliq_thread_commands
 from zoho_cli.commands.cliq import register_cliq_threads_commands
 from zoho_cli.commands.cliq import register_cliq_post_to_bot_commands
+from zoho_cli.commands.cliq import register_cliq_bot_subscribers_commands
 from zoho_cli.commands.cliq import register_cliq_thread_state_commands
 from zoho_cli.commands.cliq import register_cliq_export_commands
 from zoho_cli.commands.cliq import register_cliq_identity_commands
@@ -229,6 +230,10 @@ def test_commands_package_exports_root_registrars() -> None:
     assert (
         commands_pkg.register_cliq_post_to_bot_commands
         is register_cliq_post_to_bot_commands
+    )
+    assert (
+        commands_pkg.register_cliq_bot_subscribers_commands
+        is register_cliq_bot_subscribers_commands
     )
     assert (
         commands_pkg.register_cliq_thread_state_commands
@@ -648,6 +653,24 @@ def test_register_cliq_post_to_bot_commands_preserves_expected_command_names() -
 
     assert [command.name for command in app.registered_commands] == [
         "post-to-bot",
+    ]
+
+
+def test_register_cliq_bot_subscribers_commands_preserves_expected_command_names() -> (
+    None
+):
+    app = typer.Typer(no_args_is_help=True)
+
+    def _bot_subscribers_command() -> None:
+        return None
+
+    register_cliq_bot_subscribers_commands(
+        app,
+        cliq_bot_subscribers_command=_bot_subscribers_command,
+    )
+
+    assert [command.name for command in app.registered_commands] == [
+        "bot-subscribers",
     ]
 
 

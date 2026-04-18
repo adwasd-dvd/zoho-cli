@@ -1,10 +1,17 @@
-last_run_at: "2026-04-18T15:02:59Z"
+last_run_at: "2026-04-18T15:25:49Z"
 last_result: success
 current_focus: platform
 suites:
   unit:
     status: success
     notes:
+      - "platform-202 direct cliq bot-subscribers command extraction parity verification at 2026-04-18T15:25:49Z"
+      - "python3.11 -m pytest -q tests/test_registry.py -k \"bot_subscribers_commands or commands_package_exports_root_registrars\""
+      - "2 passed, 58 deselected in 0.05s"
+      - "python3.11 -m pytest -q tests/test_cli.py -k \"cliq_bot_subscribers\""
+      - "1 passed, 412 deselected in 0.08s"
+      - "./.venv/bin/ruff format zoho_cli/cli.py"
+      - "1 file reformatted"
       - "platform-202 direct cliq post-to-bot command extraction parity verification at 2026-04-18T15:02:59Z"
       - "python3.11 -m pytest -q tests/test_registry.py -k \"post_to_bot_commands or commands_package_exports_root_registrars\""
       - "2 passed, 57 deselected in 0.07s"

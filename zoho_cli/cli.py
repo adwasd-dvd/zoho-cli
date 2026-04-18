@@ -96,6 +96,7 @@ from zoho_cli.commands import (
     register_cliq_thread_commands,
     register_cliq_threads_commands,
     register_cliq_post_to_bot_commands,
+    register_cliq_bot_subscribers_commands,
     register_cliq_thread_state_commands,
     register_cliq_export_commands,
     register_cliq_identity_commands,
@@ -7589,7 +7590,6 @@ register_cliq_post_to_bot_commands(
 )
 
 
-@cliq_app.command("bot-subscribers")
 def cliq_bot_subscribers(
     bot_id: str = typer.Argument(..., help="Bot id or unique name."),
     limit: int = typer.Option(50, "--limit", "-n", help="Max rows to return."),
@@ -7623,6 +7623,12 @@ def cliq_bot_subscribers(
             "subscribers": subscribers,
         }
     )
+
+
+register_cliq_bot_subscribers_commands(
+    cliq_app,
+    cliq_bot_subscribers_command=cliq_bot_subscribers,
+)
 
 
 @cliq_app.command("trigger-bot")

@@ -4,10 +4,10 @@ module: cliq
 stage: in_progress
 status: in_progress
 owner: coder
-updated_at: '2026-04-18T20:56:00Z'
+updated_at: '2026-04-18T21:26:43Z'
 success_criteria:
 - add an initial cliq-195 operator-workflow packaging contract to watch-context output without breaking existing watch-loop consumers
 - preserve the operator-workflow contract through watch-act action payload/result surfaces used by automation loops
 - keep focused watch-context/watch-act verification green while deferred external blockers stay capability-gated
-next_if_done: if the escalation action-hint contract slice remains green, continue with the next smallest bridge-facing operator-workflow passthrough step.
-next_step: add one thin bridge-run metadata passthrough companion for `operatorWorkflow` (alongside `watchIntake`) so escalation consumers can read contract fields without unpacking full watch payloads, while keeping watch-loop defaults unchanged.
+next_if_done: if the bridge-run operatorWorkflow passthrough companion remains green, continue with one thin explicit escalation-action wiring slice while preserving watch-loop compatibility.
+next_step: add one thin explicit escalation-action wiring slice for cliq-195 consumers (watch-act/bridge-run), keeping existing watch-intake action-id precedence unchanged.

@@ -3,6 +3,7 @@
 ## Unreleased
 
 ### Added
+- Extended the cliq-195 watch-file bridge contract so `zoho cliq bridge-run --watch-file` now forwards `operatorWorkflow` alongside `watchPayload` and `watchIntake` in membrane `--input` and output metadata, making escalation contract fields directly available to bridge consumers while preserving existing watch-loop action-id precedence.
 - Added the first cliq-195 operator-workflow packaging kickoff metadata to watch-loop payloads: `zoho cliq watch-context` now emits an `operatorWorkflow` contract block (`packageId: cliq-195`, internal-loop default action, external escalation default action), and `zoho cliq watch-act` now preserves that metadata in deterministic action outputs.
 - Extended cliq-195 operator-workflow packaging with a thin escalation handoff contract: `zoho cliq watch-context` now includes `operatorWorkflow.externalEscalation.handoff` (`contractId`, `target`, `requiredFields`) and `zoho cliq watch-act` preserves that handoff metadata in deterministic action payload/results.
 - Added a thin cliq-195 escalation action-hint contract for watch-act/bridge consumers: `zoho cliq watch-context` now emits `operatorWorkflow.externalEscalation.actionHint` (`watchActAction`, `bridgeActionId`), and `zoho cliq bridge-run --watch-file` now infers bridge action ids from that escalation hint when watch-intake action hints are absent.

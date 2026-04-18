@@ -1899,9 +1899,13 @@ def cliq_bridge_run(
     resolved_input_text: Optional[str] = input_json
     if watch_payload is not None:
         watch_intake = watch_payload.get("watchIntake")
+        operator_workflow = watch_payload.get("operatorWorkflow")
         resolved_watch_input: dict[str, Any] = {
             "watchPayload": watch_payload,
             "watchIntake": watch_intake if isinstance(watch_intake, dict) else {},
+            "operatorWorkflow": (
+                operator_workflow if isinstance(operator_workflow, dict) else {}
+            ),
         }
 
         if input_json is None:
@@ -1918,6 +1922,10 @@ def cliq_bridge_run(
                 "watchIntake",
                 watch_intake if isinstance(watch_intake, dict) else {},
             )
+            merged_input.setdefault(
+                "operatorWorkflow",
+                operator_workflow if isinstance(operator_workflow, dict) else {},
+            )
             resolved_input_text = json.dumps(merged_input, ensure_ascii=False)
 
     if resolved_input_text is not None:
@@ -1933,8 +1941,12 @@ def cliq_bridge_run(
     }
     if watch_payload is not None:
         watch_intake = watch_payload.get("watchIntake")
+        operator_workflow = watch_payload.get("operatorWorkflow")
         output_payload["watchIntake"] = (
             watch_intake if isinstance(watch_intake, dict) else {}
+        )
+        output_payload["operatorWorkflow"] = (
+            operator_workflow if isinstance(operator_workflow, dict) else {}
         )
 
     utils.output(output_payload)

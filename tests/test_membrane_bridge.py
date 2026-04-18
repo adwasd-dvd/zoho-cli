@@ -340,6 +340,12 @@ def test_cliq_bridge_run_watch_file_forwards_watch_payload_and_action_hint(
                 "actionId": "watch-loop",
             },
         },
+        "operatorWorkflow": {
+            "packageId": "cliq-195",
+            "externalEscalation": {
+                "defaultAction": "notify-mail",
+            },
+        },
     }
     watch_file = tmp_path / "watch-context.json"
     watch_file.write_text(json.dumps(watch_payload))
@@ -368,10 +374,12 @@ def test_cliq_bridge_run_watch_file_forwards_watch_payload_and_action_hint(
     assert json.loads(seen["command"][7]) == {
         "watchPayload": watch_payload,
         "watchIntake": watch_payload["watchIntake"],
+        "operatorWorkflow": watch_payload["operatorWorkflow"],
     }
     payload = json.loads(result.output)
     assert payload["actionId"] == "watch-loop"
     assert payload["watchIntake"]["consume"]["ackAction"] == "read-ack-latest"
+    assert payload["operatorWorkflow"]["packageId"] == "cliq-195"
 
 
 def test_cliq_bridge_run_watch_file_infers_action_from_watch_context_seed(
@@ -534,6 +542,7 @@ def test_cliq_bridge_run_watch_file_preserves_explicit_action_override(
         "batch": "B1",
         "watchPayload": watch_payload,
         "watchIntake": watch_payload["watchIntake"],
+        "operatorWorkflow": {},
     }
     payload = json.loads(result.output)
     assert payload["actionId"] == "explicit-action"

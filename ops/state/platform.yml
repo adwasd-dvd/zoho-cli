@@ -1,5 +1,5 @@
 module: Platform
-updated_at: "2026-04-18T20:34:00Z"
+updated_at: "2026-04-18T21:26:43Z"
 status: in_progress
 blockers: []
-next_small_step: cliq-195 escalation handoff metadata contract is now in watch-context/watch-act outputs; continue with one thin explicit escalation action wiring slice while preserving the green cliq-194/cliq-195 watch-loop baseline.
+next_small_step: cliq-195 bridge-run now forwards operatorWorkflow metadata alongside watchIntake/watchPayload; continue with one thin explicit escalation-action wiring slice while preserving watch-loop action-id precedence.

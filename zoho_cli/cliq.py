@@ -1209,6 +1209,15 @@ class ZohoCliqClient:
                             "summary": "",
                             "reason": "",
                         },
+                        "envelopeHints": {
+                            "templateRoot": "payloadTemplate",
+                            "targetPath": "payloadTemplate.target",
+                            "fieldMap": {
+                                "to": "payloadTemplate.recipient",
+                                "subject": "payloadTemplate.summary",
+                                "body": "payloadTemplate.reason",
+                            },
+                        },
                     },
                 },
             },

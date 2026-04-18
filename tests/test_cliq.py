@@ -3031,6 +3031,17 @@ def test_build_watch_context_seed_includes_watch_intake_contract_metadata() -> N
         "summary": "",
         "reason": "",
     }
+    assert payload["operatorWorkflow"]["externalEscalation"]["handoff"][
+        "envelopeHints"
+    ] == {
+        "templateRoot": "payloadTemplate",
+        "targetPath": "payloadTemplate.target",
+        "fieldMap": {
+            "to": "payloadTemplate.recipient",
+            "subject": "payloadTemplate.summary",
+            "body": "payloadTemplate.reason",
+        },
+    }
 
 
 def test_build_watch_reply_action_preserves_watch_intake_metadata() -> None:
@@ -3062,6 +3073,15 @@ def test_build_watch_reply_action_preserves_watch_intake_metadata() -> None:
                             "recipient": "",
                             "summary": "",
                             "reason": "",
+                        },
+                        "envelopeHints": {
+                            "templateRoot": "payloadTemplate",
+                            "targetPath": "payloadTemplate.target",
+                            "fieldMap": {
+                                "to": "payloadTemplate.recipient",
+                                "subject": "payloadTemplate.summary",
+                                "body": "payloadTemplate.reason",
+                            },
                         },
                     },
                 },
@@ -3103,6 +3123,17 @@ def test_build_watch_reply_action_preserves_watch_intake_metadata() -> None:
         "summary": "",
         "reason": "",
     }
+    assert action["operatorWorkflow"]["externalEscalation"]["handoff"][
+        "envelopeHints"
+    ] == {
+        "templateRoot": "payloadTemplate",
+        "targetPath": "payloadTemplate.target",
+        "fieldMap": {
+            "to": "payloadTemplate.recipient",
+            "subject": "payloadTemplate.summary",
+            "body": "payloadTemplate.reason",
+        },
+    }
 
 
 def test_build_watch_read_ack_action_preserves_watch_intake_metadata() -> None:
@@ -3134,6 +3165,15 @@ def test_build_watch_read_ack_action_preserves_watch_intake_metadata() -> None:
                             "recipient": "",
                             "summary": "",
                             "reason": "",
+                        },
+                        "envelopeHints": {
+                            "templateRoot": "payloadTemplate",
+                            "targetPath": "payloadTemplate.target",
+                            "fieldMap": {
+                                "to": "payloadTemplate.recipient",
+                                "subject": "payloadTemplate.summary",
+                                "body": "payloadTemplate.reason",
+                            },
                         },
                     },
                 },
@@ -3167,6 +3207,17 @@ def test_build_watch_read_ack_action_preserves_watch_intake_metadata() -> None:
         "recipient": "",
         "summary": "",
         "reason": "",
+    }
+    assert action["operatorWorkflow"]["externalEscalation"]["handoff"][
+        "envelopeHints"
+    ] == {
+        "templateRoot": "payloadTemplate",
+        "targetPath": "payloadTemplate.target",
+        "fieldMap": {
+            "to": "payloadTemplate.recipient",
+            "subject": "payloadTemplate.summary",
+            "body": "payloadTemplate.reason",
+        },
     }
 
 

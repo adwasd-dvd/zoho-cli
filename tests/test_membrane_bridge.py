@@ -356,6 +356,15 @@ def test_cliq_bridge_run_watch_file_forwards_watch_payload_and_action_hint(
                         "summary": "",
                         "reason": "",
                     },
+                    "envelopeHints": {
+                        "templateRoot": "payloadTemplate",
+                        "targetPath": "payloadTemplate.target",
+                        "fieldMap": {
+                            "to": "payloadTemplate.recipient",
+                            "subject": "payloadTemplate.summary",
+                            "body": "payloadTemplate.reason",
+                        },
+                    },
                 },
             },
         },
@@ -413,6 +422,17 @@ def test_cliq_bridge_run_watch_file_forwards_watch_payload_and_action_hint(
         "recipient": "",
         "summary": "",
         "reason": "",
+    }
+    assert payload["operatorWorkflow"]["externalEscalation"]["handoff"][
+        "envelopeHints"
+    ] == {
+        "templateRoot": "payloadTemplate",
+        "targetPath": "payloadTemplate.target",
+        "fieldMap": {
+            "to": "payloadTemplate.recipient",
+            "subject": "payloadTemplate.summary",
+            "body": "payloadTemplate.reason",
+        },
     }
 
 
@@ -475,6 +495,17 @@ def test_cliq_bridge_run_watch_file_infers_action_from_watch_context_seed(
         "recipient": "",
         "summary": "",
         "reason": "",
+    }
+    assert payload["operatorWorkflow"]["externalEscalation"]["handoff"][
+        "envelopeHints"
+    ] == {
+        "templateRoot": "payloadTemplate",
+        "targetPath": "payloadTemplate.target",
+        "fieldMap": {
+            "to": "payloadTemplate.recipient",
+            "subject": "payloadTemplate.summary",
+            "body": "payloadTemplate.reason",
+        },
     }
 
 

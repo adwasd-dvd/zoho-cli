@@ -1602,6 +1602,17 @@ def test_cliq_watch_context_from_channel(
         "summary": "",
         "reason": "",
     }
+    assert payload["operatorWorkflow"]["externalEscalation"]["handoff"][
+        "envelopeHints"
+    ] == {
+        "templateRoot": "payloadTemplate",
+        "targetPath": "payloadTemplate.target",
+        "fieldMap": {
+            "to": "payloadTemplate.recipient",
+            "subject": "payloadTemplate.summary",
+            "body": "payloadTemplate.reason",
+        },
+    }
     assert payload["messages"][0]["messageId"] == "M3"
 
 
@@ -1707,6 +1718,15 @@ def test_cliq_watch_act_preserves_watch_intake_metadata_in_result(
                                 "summary": "",
                                 "reason": "",
                             },
+                            "envelopeHints": {
+                                "templateRoot": "payloadTemplate",
+                                "targetPath": "payloadTemplate.target",
+                                "fieldMap": {
+                                    "to": "payloadTemplate.recipient",
+                                    "subject": "payloadTemplate.summary",
+                                    "body": "payloadTemplate.reason",
+                                },
+                            },
                         },
                     },
                 },
@@ -1766,6 +1786,17 @@ def test_cliq_watch_act_preserves_watch_intake_metadata_in_result(
         "recipient": "",
         "summary": "",
         "reason": "",
+    }
+    assert payload["operatorWorkflow"]["externalEscalation"]["handoff"][
+        "envelopeHints"
+    ] == {
+        "templateRoot": "payloadTemplate",
+        "targetPath": "payloadTemplate.target",
+        "fieldMap": {
+            "to": "payloadTemplate.recipient",
+            "subject": "payloadTemplate.summary",
+            "body": "payloadTemplate.reason",
+        },
     }
 
 

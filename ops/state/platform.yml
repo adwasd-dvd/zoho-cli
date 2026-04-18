@@ -1,5 +1,5 @@
 module: Platform
-updated_at: "2026-04-18T10:56:01Z"
+updated_at: "2026-04-18T11:43:06Z"
 status: in_progress
 blockers: []
-next_small_step: extract the next smallest remaining direct Cliq decorator command family after `file` + `voice` (likely `voice-send`, potentially paired with adjacent `send`) into commands-slice registrar wiring with focused parity checks.
+next_small_step: extract the next smallest remaining direct Cliq decorator command family after `voice-send` + `send` (likely `reply` + `edit`) into commands-slice registrar wiring with focused parity checks.

@@ -69,6 +69,7 @@ from zoho_cli.commands import (
     register_cliq_channel_membership_commands,
     register_cliq_message_discovery_commands,
     register_cliq_file_voice_commands,
+    register_cliq_voice_send_commands,
     register_cliq_mute_unmute_commands,
     register_cliq_pinned_commands,
     register_cliq_pin_unpin_commands,
@@ -8896,7 +8897,6 @@ def cliq_react(
     )
 
 
-@cliq_app.command("voice-send")
 def cliq_voice_send(
     voice_url: str = typer.Option(..., "--voice-url", help="Voice/audio URL to send."),
     text: Optional[str] = typer.Option(
@@ -8934,7 +8934,6 @@ def cliq_voice_send(
     )
 
 
-@cliq_app.command("send")
 def cliq_send(
     text: Optional[str] = typer.Option(None, "--text", "-t", help="Message text."),
     channel_id: Optional[str] = typer.Option(
@@ -9100,6 +9099,13 @@ def cliq_send(
             },
         },
     )
+
+
+register_cliq_voice_send_commands(
+    cliq_app,
+    cliq_voice_send_command=cliq_voice_send,
+    cliq_send_command=cliq_send,
+)
 
 
 @cliq_app.command("notify-mail")

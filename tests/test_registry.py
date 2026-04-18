@@ -26,6 +26,7 @@ from zoho_cli.commands.cliq import register_cliq_channel_metadata_commands
 from zoho_cli.commands.cliq import register_cliq_channel_membership_commands
 from zoho_cli.commands.cliq import register_cliq_message_discovery_commands
 from zoho_cli.commands.cliq import register_cliq_file_voice_commands
+from zoho_cli.commands.cliq import register_cliq_voice_send_commands
 from zoho_cli.commands.cliq import register_cliq_mute_unmute_commands
 from zoho_cli.commands.cliq import register_cliq_pinned_commands
 from zoho_cli.commands.cliq import register_cliq_pin_unpin_commands
@@ -124,6 +125,10 @@ def test_commands_package_exports_root_registrars() -> None:
     assert (
         commands_pkg.register_cliq_file_voice_commands
         is register_cliq_file_voice_commands
+    )
+    assert (
+        commands_pkg.register_cliq_voice_send_commands
+        is register_cliq_voice_send_commands
     )
     assert (
         commands_pkg.register_cliq_mute_unmute_commands
@@ -621,6 +626,27 @@ def test_register_cliq_file_voice_commands_preserves_expected_command_names() ->
     assert [command.name for command in app.registered_commands] == [
         "file",
         "voice",
+    ]
+
+
+def test_register_cliq_voice_send_commands_preserves_expected_command_names() -> None:
+    app = typer.Typer(no_args_is_help=True)
+
+    def _voice_send_command() -> None:
+        return None
+
+    def _send_command() -> None:
+        return None
+
+    register_cliq_voice_send_commands(
+        app,
+        cliq_voice_send_command=_voice_send_command,
+        cliq_send_command=_send_command,
+    )
+
+    assert [command.name for command in app.registered_commands] == [
+        "voice-send",
+        "send",
     ]
 
 

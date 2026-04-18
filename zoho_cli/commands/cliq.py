@@ -213,6 +213,17 @@ def register_cliq_file_voice_commands(
     cliq_app.command("voice")(cliq_voice_command)
 
 
+def register_cliq_voice_send_commands(
+    cliq_app: typer.Typer,
+    *,
+    cliq_voice_send_command: Callable[..., None],
+    cliq_send_command: Callable[..., None],
+) -> None:
+    """Register adjacent Cliq voice-send/send commands on ``cliq_app``."""
+    cliq_app.command("voice-send")(cliq_voice_send_command)
+    cliq_app.command("send")(cliq_send_command)
+
+
 def register_cliq_scheduled_lifecycle_commands(
     cliq_app: typer.Typer,
     *,

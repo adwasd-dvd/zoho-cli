@@ -1,5 +1,5 @@
 module: Platform
-updated_at: "2026-04-18T18:01:05Z"
+updated_at: "2026-04-18T19:02:00Z"
 status: in_progress
 blockers: []
-next_small_step: platform-202 decorator extraction is complete; support cliq-194 by adding watch-context trigger metadata (web-trigger default + adaptive api-poll fallback hints) on top of the landed read-ack guardrail scaffold.
+next_small_step: platform-202 decorator extraction is complete; support cliq-194 by adding explicit watch bridge action-hint metadata (`watchIntake.consume.actionId`) so `cliq bridge-run --watch-file` can infer default membrane actions without explicit action arguments.

@@ -314,6 +314,125 @@ def test_cliq_bridge_run_preserves_watch_intake_input_json(mock_config: Path) ->
     assert json.loads(seen["command"][7]) == watch_payload
 
 
+def test_cliq_bridge_run_watch_file_forwards_watch_payload_and_action_hint(
+    tmp_path: Path,
+    mock_config: Path,
+) -> None:
+    seen: dict[str, Any] = {}
+
+    def _fake_run(*a, **kw):
+        seen["command"] = a[0]
+        return subprocess.CompletedProcess(
+            args=a[0],
+            returncode=0,
+            stdout=json.dumps({"ok": True}),
+            stderr="",
+        )
+
+    watch_payload = {
+        "chatId": "CT_1",
+        "watchIntake": {
+            "triggerMode": "web-notification-first",
+            "consume": {
+                "ackAction": "read-ack-latest",
+                "ackRequired": True,
+                "actionId": "watch-loop",
+            },
+        },
+    }
+    watch_file = tmp_path / "watch-context.json"
+    watch_file.write_text(json.dumps(watch_payload))
+
+    with pytest.MonkeyPatch.context() as monkeypatch:
+        monkeypatch.setattr(
+            "zoho_cli.cli.shutil.which", lambda _name: "/usr/local/bin/membrane"
+        )
+        monkeypatch.setattr("zoho_cli.cli.subprocess.run", _fake_run)
+
+        result = runner.invoke(
+            app,
+            [
+                "--config",
+                str(mock_config),
+                "cliq",
+                "bridge-run",
+                "--watch-file",
+                str(watch_file),
+            ],
+        )
+
+    assert result.exit_code == 0, result.output
+    assert seen["command"][4] == "watch-loop"
+    assert seen["command"][6] == "--input"
+    assert json.loads(seen["command"][7]) == {
+        "watchPayload": watch_payload,
+        "watchIntake": watch_payload["watchIntake"],
+    }
+    payload = json.loads(result.output)
+    assert payload["actionId"] == "watch-loop"
+    assert payload["watchIntake"]["consume"]["ackAction"] == "read-ack-latest"
+
+
+def test_cliq_bridge_run_watch_file_preserves_explicit_action_override(
+    tmp_path: Path,
+    mock_config: Path,
+) -> None:
+    seen: dict[str, Any] = {}
+
+    def _fake_run(*a, **kw):
+        seen["command"] = a[0]
+        return subprocess.CompletedProcess(
+            args=a[0],
+            returncode=0,
+            stdout=json.dumps({"ok": True}),
+            stderr="",
+        )
+
+    watch_payload = {
+        "watchIntake": {
+            "consume": {
+                "actionId": "hinted-action",
+            }
+        }
+    }
+    watch_file = tmp_path / "watch-context.json"
+    watch_file.write_text(json.dumps(watch_payload))
+
+    with pytest.MonkeyPatch.context() as monkeypatch:
+        monkeypatch.setattr(
+            "zoho_cli.cli.shutil.which", lambda _name: "/usr/local/bin/membrane"
+        )
+        monkeypatch.setattr("zoho_cli.cli.subprocess.run", _fake_run)
+
+        result = runner.invoke(
+            app,
+            [
+                "--config",
+                str(mock_config),
+                "cliq",
+                "bridge-run",
+                "positional-action",
+                "--action-id",
+                "explicit-action",
+                "--watch-file",
+                str(watch_file),
+                "--input-json",
+                json.dumps({"batch": "B1"}),
+            ],
+        )
+
+    assert result.exit_code == 0, result.output
+    assert seen["command"][4] == "explicit-action"
+    assert seen["command"][6] == "--input"
+    assert json.loads(seen["command"][7]) == {
+        "batch": "B1",
+        "watchPayload": watch_payload,
+        "watchIntake": watch_payload["watchIntake"],
+    }
+    payload = json.loads(result.output)
+    assert payload["actionId"] == "explicit-action"
+
+
 def test_cliq_apps_bridge_run_defaults_action_and_input(
     mock_config: Path,
 ) -> None:

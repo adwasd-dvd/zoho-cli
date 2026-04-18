@@ -1733,8 +1733,17 @@ register_cliq_status_commands(
 
 
 def cliq_bridge_run(
-    action_id: str = typer.Argument(
-        ..., help="Membrane action id (for example: post-message)."
+    action_id: Optional[str] = typer.Argument(
+        None,
+        help=(
+            "Membrane action id (for example: post-message). Optional when "
+            "--watch-file includes an action hint."
+        ),
+    ),
+    action_override: Optional[str] = typer.Option(
+        None,
+        "--action-id",
+        help="Optional membrane action id override.",
     ),
     bridge: str = typer.Option(
         "membrane",
@@ -1756,12 +1765,93 @@ def cliq_bridge_run(
         "--input-json",
         help="JSON string passed to membrane --input.",
     ),
+    watch_file: Optional[str] = typer.Option(
+        None,
+        "--watch-file",
+        help=(
+            "Optional watch-context JSON payload path (use '-' for stdin). "
+            "When provided, watch payload + watchIntake metadata are forwarded "
+            "to bridge input."
+        ),
+    ),
 ) -> None:
     """Run one Cliq action through membrane bridge (explicit opt-in)."""
     if bridge.strip().lower() != "membrane":
         utils.error_exit(
             "unsupported_bridge",
             "Only --bridge membrane is supported right now.",
+        )
+
+    watch_payload: dict[str, Any] | None = None
+    if watch_file is not None:
+        source = watch_file.strip()
+        raw = ""
+        if source == "-":
+            raw = sys.stdin.read()
+        else:
+            payload_path = Path(source)
+            if not payload_path.exists():
+                utils.error_exit("file_not_found", f"Watch payload not found: {source}")
+            raw = payload_path.read_text()
+
+        try:
+            decoded_watch = json.loads(raw)
+        except json.JSONDecodeError as exc:
+            utils.error_exit(
+                "invalid_watch_payload",
+                f"Invalid JSON payload: {exc}",
+            )
+
+        if not isinstance(decoded_watch, dict):
+            utils.error_exit(
+                "invalid_watch_payload",
+                "Watch payload must be a JSON object",
+            )
+        watch_payload = decoded_watch
+
+    action_hint = ""
+    if watch_payload is not None:
+        candidates: list[Any] = [
+            watch_payload.get("actionId"),
+            watch_payload.get("action_id"),
+            watch_payload.get("bridgeActionId"),
+            watch_payload.get("bridge_action_id"),
+        ]
+        intake = watch_payload.get("watchIntake")
+        if isinstance(intake, dict):
+            bridge_cfg = intake.get("bridge")
+            if isinstance(bridge_cfg, dict):
+                candidates.extend(
+                    [
+                        bridge_cfg.get("actionId"),
+                        bridge_cfg.get("action_id"),
+                        bridge_cfg.get("bridgeActionId"),
+                        bridge_cfg.get("bridge_action_id"),
+                    ]
+                )
+            consume_cfg = intake.get("consume")
+            if isinstance(consume_cfg, dict):
+                candidates.extend(
+                    [
+                        consume_cfg.get("bridgeActionId"),
+                        consume_cfg.get("bridge_action_id"),
+                        consume_cfg.get("actionId"),
+                        consume_cfg.get("action_id"),
+                    ]
+                )
+        for candidate in candidates:
+            text = str(candidate or "").strip()
+            if text:
+                action_hint = text
+                break
+
+    resolved_action_id = (
+        (action_override or "").strip() or (action_id or "").strip() or action_hint
+    )
+    if not resolved_action_id:
+        utils.error_exit(
+            "invalid_action_id",
+            "Provide <action-id>, --action-id, or include actionId in watch payload.",
         )
 
     cfg = _cfg()
@@ -1777,30 +1867,62 @@ def cliq_bridge_run(
         "action",
         "run",
         f"--connectionId={resolved_connection_id}",
-        action_id,
+        resolved_action_id,
         "--json",
     ]
 
+    parsed_input_json: Any | None = None
     if input_json is not None:
         try:
-            json.loads(input_json)
+            parsed_input_json = json.loads(input_json)
         except json.JSONDecodeError:
             utils.error_exit(
                 "invalid_input_json",
                 "--input-json must be a valid JSON object/string.",
             )
-        command.extend(["--input", input_json])
+
+    resolved_input_text: Optional[str] = input_json
+    if watch_payload is not None:
+        watch_intake = watch_payload.get("watchIntake")
+        resolved_watch_input: dict[str, Any] = {
+            "watchPayload": watch_payload,
+            "watchIntake": watch_intake if isinstance(watch_intake, dict) else {},
+        }
+
+        if input_json is None:
+            resolved_input_text = json.dumps(resolved_watch_input, ensure_ascii=False)
+        else:
+            if not isinstance(parsed_input_json, dict):
+                utils.error_exit(
+                    "invalid_input_json",
+                    "--input-json must decode to a JSON object when --watch-file is used.",
+                )
+            merged_input = dict(parsed_input_json)
+            merged_input.setdefault("watchPayload", watch_payload)
+            merged_input.setdefault(
+                "watchIntake",
+                watch_intake if isinstance(watch_intake, dict) else {},
+            )
+            resolved_input_text = json.dumps(merged_input, ensure_ascii=False)
+
+    if resolved_input_text is not None:
+        command.extend(["--input", resolved_input_text])
 
     result = _run_membrane_command(command)
-    utils.output(
-        {
-            "bridge": "membrane",
-            "preset": _normalize_membrane_preset(preset or "zoho-cliq"),
-            "connectionId": resolved_connection_id,
-            "actionId": action_id,
-            "result": result,
-        }
-    )
+    output_payload: dict[str, Any] = {
+        "bridge": "membrane",
+        "preset": _normalize_membrane_preset(preset or "zoho-cliq"),
+        "connectionId": resolved_connection_id,
+        "actionId": resolved_action_id,
+        "result": result,
+    }
+    if watch_payload is not None:
+        watch_intake = watch_payload.get("watchIntake")
+        output_payload["watchIntake"] = (
+            watch_intake if isinstance(watch_intake, dict) else {}
+        )
+
+    utils.output(output_payload)
 
 
 register_cliq_bridge_run_commands(

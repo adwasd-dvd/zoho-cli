@@ -3,6 +3,7 @@
 ## Unreleased
 
 ### Added
+- Added a cliq-194 watch-bridge helper lane to `zoho cliq bridge-run`: `--watch-file` now forwards `watchPayload` + `watchIntake` metadata into membrane `--input`, action ids can be inferred from watch payload hints when omitted, and explicit `--action-id` overrides stay authoritative.
 - Added cliq-194 watch-intake metadata passthrough scaffolding for action/bridge loops: `watch-act` action payload/results now preserve incoming `watchIntake` hints, and `cliq bridge-run --input-json` coverage now pins passthrough of the same metadata contract for downstream watch orchestration.
 - Added cliq-194 watch-intake metadata scaffolding to `zoho cliq watch-context`: payloads now include a `watchIntake` contract block with `triggerMode: web-notification-first`, adaptive `api-poll` fallback hints, and read-ack consume guidance while preserving existing cursor/message fields.
 - Reframed the architecture plan around a v1.0 AI-employee-first target (Mail + Cliq core), with explicit must-ship vs post-release boundaries and cross-channel interoperability guardrails in `docs/architecture/MULTI_PRODUCT_PLAN.md`.

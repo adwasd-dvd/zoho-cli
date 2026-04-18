@@ -69,6 +69,7 @@ from zoho_cli.commands import (
     register_cliq_channel_membership_commands,
     register_cliq_message_discovery_commands,
     register_cliq_file_voice_commands,
+    register_cliq_messages_message_commands,
     register_cliq_voice_send_commands,
     register_cliq_reply_edit_commands,
     register_cliq_delete_react_commands,
@@ -8453,7 +8454,6 @@ register_cliq_file_voice_commands(
 )
 
 
-@cliq_app.command("messages")
 def cliq_messages(
     channel_id: Optional[str] = typer.Option(
         None, "--channel-id", help="Source channel id (resolved to chat_id)."
@@ -8491,7 +8491,6 @@ def cliq_messages(
     )
 
 
-@cliq_app.command("message")
 def cliq_message(
     message_id: str = typer.Argument(..., help="Cliq message id."),
     channel_id: Optional[str] = typer.Option(
@@ -8525,6 +8524,13 @@ def cliq_message(
             ),
         }
     )
+
+
+register_cliq_messages_message_commands(
+    cliq_app,
+    cliq_messages_command=cliq_messages,
+    cliq_message_command=cliq_message,
+)
 
 
 @cliq_app.command("context")

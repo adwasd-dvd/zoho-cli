@@ -1,5 +1,5 @@
 module: Platform
-updated_at: "2026-04-18T12:48:23Z"
+updated_at: "2026-04-18T13:16:24Z"
 status: in_progress
 blockers: []
-next_small_step: extract the next smallest remaining direct Cliq decorator command family after `delete` + `react` (likely `messages` + `message`) into commands-slice registrar wiring with focused parity checks.
+next_small_step: extract the next smallest remaining direct Cliq decorator command family after `messages` + `message` (likely `context` + `watch-context`) into commands-slice registrar wiring with focused parity checks.

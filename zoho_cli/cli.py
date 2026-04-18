@@ -73,6 +73,7 @@ from zoho_cli.commands import (
     register_cliq_pin_unpin_commands,
     register_cliq_scheduled_cancel_leave_commands,
     register_cliq_scheduled_lifecycle_commands,
+    register_cliq_bridge_run_commands,
     register_cliq_status_commands,
     register_cliq_thread_commands,
     register_cliq_thread_state_commands,
@@ -1708,7 +1709,6 @@ register_cliq_status_commands(
 )
 
 
-@cliq_app.command("bridge-run")
 def cliq_bridge_run(
     action_id: str = typer.Argument(
         ..., help="Membrane action id (for example: post-message)."
@@ -1778,6 +1778,12 @@ def cliq_bridge_run(
             "result": result,
         }
     )
+
+
+register_cliq_bridge_run_commands(
+    cliq_app,
+    cliq_bridge_run_command=cliq_bridge_run,
+)
 
 
 @cliq_app.command("capabilities")

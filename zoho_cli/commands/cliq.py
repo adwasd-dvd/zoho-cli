@@ -262,3 +262,12 @@ def register_cliq_status_commands(
 ) -> None:
     """Register the Cliq status command on ``cliq_app``."""
     cliq_app.command("status")(cliq_status_command)
+
+
+def register_cliq_bridge_run_commands(
+    cliq_app: typer.Typer,
+    *,
+    cliq_bridge_run_command: Callable[..., None],
+) -> None:
+    """Register the Cliq bridge-run command on ``cliq_app``."""
+    cliq_app.command("bridge-run")(cliq_bridge_run_command)

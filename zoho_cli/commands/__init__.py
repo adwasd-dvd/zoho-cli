@@ -4,6 +4,7 @@ from .cliq import (
     register_cliq_app_catalog_commands,
     register_cliq_app_commands_commands,
     register_cliq_app_installs_commands,
+    register_cliq_app_permissions_bridge_commands,
     register_cliq_app_permissions_commands,
 )
 from .root import (
@@ -25,6 +26,7 @@ __all__ = [
     "register_cliq_app_catalog_commands",
     "register_cliq_app_commands_commands",
     "register_cliq_app_installs_commands",
+    "register_cliq_app_permissions_bridge_commands",
     "register_cliq_app_permissions_commands",
     "register_cliq_crm_config_root_typers",
     "register_cliq_crm_root_typers",

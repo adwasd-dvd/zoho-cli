@@ -4,10 +4,10 @@ module: platform
 stage: in_progress
 status: in_progress
 owner: coder
-updated_at: '2026-04-17T23:34:56Z'
+updated_at: '2026-04-18T00:06:02Z'
 success_criteria:
 - move adjacent cliq app-governance command families from direct Typer decorators to commands-slice registration (no behavior change)
 - keep command names/order stable with focused registry + cli parity tests
 - keep work queue and project state aligned with framework-first execution
 next_if_done: reassess platform-201/platform-202 completion status and queue the next no-behavior-change modularization slice.
-next_step: evaluate remaining direct Cliq command-family decorators in `zoho_cli/cli.py` and pick the next smallest registrar extraction slice.
+next_step: continue platform-202 by extracting the next adjacent Cliq bridge command-family pair (`app-installs-bridge-run` / `app-install-get-bridge-run`) from direct decorators in `zoho_cli/cli.py` into commands-slice registration with parity checks.

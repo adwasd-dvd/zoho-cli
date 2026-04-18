@@ -63,6 +63,7 @@ from zoho_cli.commands import (
     register_cliq_app_commands_commands,
     register_cliq_app_installs_commands,
     register_cliq_app_permissions_commands,
+    register_cliq_app_permissions_bridge_commands,
 )
 from zoho_cli.crm import ZohoCrmClient
 from zoho_cli.registry import register_root_commands
@@ -4201,7 +4202,6 @@ register_cliq_app_installs_commands(
 )
 
 
-@cliq_app.command("app-permissions-bridge-run")
 def cliq_app_permissions_bridge_run(
     app_id: str = typer.Argument(..., help="Cliq app id."),
     action_id: Optional[str] = typer.Option(
@@ -4297,7 +4297,6 @@ def cliq_app_permissions_bridge_run(
     )
 
 
-@cliq_app.command("app-permission-get-bridge-run")
 def cliq_app_permission_get_bridge_run(
     app_id: str = typer.Argument(..., help="Cliq app id."),
     permission_id: str = typer.Argument(..., help="Cliq app permission id."),
@@ -4401,6 +4400,13 @@ def cliq_app_permission_get_bridge_run(
             "result": result,
         }
     )
+
+
+register_cliq_app_permissions_bridge_commands(
+    cliq_app,
+    cliq_app_permissions_bridge_run_command=cliq_app_permissions_bridge_run,
+    cliq_app_permission_get_bridge_run_command=cliq_app_permission_get_bridge_run,
+)
 
 
 @cliq_app.command("app-install-get-bridge-run")

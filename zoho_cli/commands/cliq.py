@@ -49,3 +49,18 @@ def register_cliq_app_installs_commands(
     """Register the adjacent Cliq app-installs command family on ``cliq_app``."""
     cliq_app.command("app-installs")(cliq_app_installs_command)
     cliq_app.command("app-install-get")(cliq_app_install_get_command)
+
+
+def register_cliq_app_permissions_bridge_commands(
+    cliq_app: typer.Typer,
+    *,
+    cliq_app_permissions_bridge_run_command: Callable[..., None],
+    cliq_app_permission_get_bridge_run_command: Callable[..., None],
+) -> None:
+    """Register the adjacent Cliq app-permissions bridge command family."""
+    cliq_app.command("app-permissions-bridge-run")(
+        cliq_app_permissions_bridge_run_command
+    )
+    cliq_app.command("app-permission-get-bridge-run")(
+        cliq_app_permission_get_bridge_run_command
+    )

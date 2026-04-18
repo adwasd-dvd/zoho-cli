@@ -3,6 +3,8 @@
 ## Unreleased
 
 ### Added
+- Reframed the architecture plan around a v1.0 AI-employee-first target (Mail + Cliq core), with explicit must-ship vs post-release boundaries and cross-channel interoperability guardrails in `docs/architecture/MULTI_PRODUCT_PLAN.md`.
+- Reworked roadmap/follow-up planning for fast v1.0 release delivery: `platform-204/205/206/207`, `mail-010`, and `cliq-195` were prioritized in queue/state docs with deferred handling retained for known external blockers (`cliq-165`, `cliq-193`).
 - Expanded `zoho_cli.commands` package export parity by exposing `register_cliq_root_typers`, `register_crm_config_root_typers`, and `register_membrane_root_typers` for platform-201 modularization imports.
 - Continued platform-202 command-structure extraction by moving `cliq app-installs` / `cliq app-install-get` registration from direct Typer decorators in `zoho_cli/cli.py` into new registrar helper `zoho_cli.commands.cliq.register_cliq_app_installs_commands`, preserving command names and behavior.
 - Added explicit Cliq app-governance membrane wrappers `zoho cliq apps-bridge-run` and `zoho cliq app-get-bridge-run`, with default actions (`apps` / `app-get`), preset/connection parity, and validated `--input-json` merge behavior (`limit` for apps, `appId` for app-get).

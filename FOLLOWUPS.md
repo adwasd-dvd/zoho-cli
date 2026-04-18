@@ -1,23 +1,24 @@
 # FOLLOWUPS
 
-- [x] Stabilize auto-pilot repo-root handling (`scenario_runner.py`, `run_cliq_live_probe.sh`, `run_cliq_alt_probe.sh`) so they run from either repo root or workspace root.
-- [ ] Confirm the broader coder-agent startup path always lands on the canonical workspace.
-- [ ] Replace any exact-text markdown update flow with section-based rewrite logic.
-- [ ] Confirm mail path handling preserves absolute `/Volumes/...` inputs.
-- [ ] Keep coding loop changes small enough to finish comfortably within the run timeout.
-- [ ] Execute MR-first 7-10 workday plan: close remaining `cliq-193` slices, then land `platform-200/201/202`, then `crm-002` smoke closeout.
-- [ ] Continue in-progress modularization slices (`platform-201/202`) as small no-behavior-change steps (command-family extraction + parity checks).
-- [x] Land `platform-203` membrane bridge follow-up: add stable connection presets (`zoho-cliq`/`zoho-crm`) and one thin product wrapper command to reduce operator setup friction. (Delivered via preset-aware `zoho membrane actions/run` + `zoho crm bridge-run --bridge membrane`.)
-- [x] Extend `platform-203` with the first `cliq` thin bridge wrapper command using the same preset-resolution path.
-- [ ] For framework pass, extract the next cliq app-governance command registration pair (`app-commands` / `app-command-get`) into `zoho_cli.commands.cliq` and keep command names stable.
-- [ ] Plan and implement `cliq-194`: plugin-grade realtime channel support (Discord-like inbound loop semantics for OpenClaw workflows), using web-notification/browser trigger as default and adaptive API polling as fallback.
-- [ ] Land `platform-204` architecture brief: v1.0 must be AI-agent-first (Mail + Cliq as core virtual-employee workspace), with post-v1 staged expansion to CRM/Books and cross-channel external communication loops.
-- [ ] Apply 3-strike unsupported policy consistently: after 3 consecutive `not_supported`/`inactive_appaccount_user` live checks for the same endpoint, mark it post-release deferred and continue unrelated slices behind capability-gated isolation.
-- [ ] Post-release: evaluate official Zoho CRM server-side SDK and phase in safely via small slices (first candidate commands: `crm list` / `crm get`) after the current release ships.
-- [x] Run one interactive `zoho login --with-cliq` re-auth that includes chat-read scope, then verify `zoho cliq chats --network happydistrouklimited` succeeds.
-- [x] Re-run broad verification gate (`make release-gate && make ci`) after the latest cliq send fallback changes.
-- [x] Re-run nightly broad verification gate while cliq-193 app-command hardening is active; latest run is green at 637 tests + wheel smoke + fmt/lint (`2026-04-16T14:29:00Z`).
-- [x] Execute live native local-file upload probes (`cliq send` with voice/image/file local paths) and record endpoint matrix evidence to close cliq-155. (Latest evidence: `tests/auto_pilot/reports/cliq_local_media_matrix_live_20260411_185605.log` + `tests/auto_pilot/reports/cliq_retrieval_probe_20260411_185528.log`; still no attachment-positive success sample, currently classified as endpoint limitation.)
-- [x] Re-run one cooldown-safe local upload probe against the new `/files` fallback path and confirm behavior on Cliq Chat File Sharing endpoints. (Latest evidence: `tests/auto_pilot/reports/cliq_local_media_matrix_cooldown_20260411_192105.json` shows local upload success on all 6 user/channel media probes; retrieval remains endpoint-limited per `tests/auto_pilot/reports/cliq_single_token_retrieval_after_upload_20260411_192343.json`.)
-- [ ] Run one live `cliq export-chats` verification with maintenance export scopes (`ZohoCliq.OrganizationChats.READ` + `ZohoCliq.OrganizationMessages.READ`) (`list` + one `--chat-id` export) and archive sample output JSON for the new export tool. (Latest recheck after successful re-auth now fails with `inactive_appaccount_user`; evidence: `tests/auto_pilot/reports/cliq_export_chats_list_inactive_recheck_20260412_105646.json`, `tests/auto_pilot/reports/cliq_export_chat_inactive_recheck_20260412_105646.json`.)
-- [ ] Run `./tests/auto_pilot/run_cliq_deep_scan.sh` with real test account/network inputs and archive one full evidence bundle (users + DM history + channel history + text/media send).
+## v1.0 fast-release lane (AI employee)
+
+- [ ] Close `platform-202` next extraction slice (no behavior change, parity tests green).
+- [ ] Land `platform-204` architecture brief (Mail+Cliq core, persona/memory/work contract, post-v1 CRM/Books boundary).
+- [ ] Land `platform-205` v1.0 acceptance gate for AI-employee workflow.
+- [ ] Deliver `mail-010` operator workflow package (triage/draft/reply/safe-send guardrails).
+- [ ] Deliver `cliq-194` realtime intake baseline (web-trigger default + adaptive API polling fallback).
+- [ ] Deliver `cliq-195` operator workflow package (internal loop + external-contact escalation path).
+- [ ] Land `platform-206` cross-channel interoperability contract (Cliq internal + external comm adapters).
+- [ ] Land `platform-207` release-candidate docs + quickstart + runbook.
+
+## Blocker handling (do not stall release)
+
+- [ ] Keep `cliq-165` under capability-gated deferred status until app-account activation is available.
+- [ ] Keep `cliq-193` under capability-gated deferred status after repeated `not_supported` evidence.
+- [ ] Apply 3-strike unsupported policy consistently for all focused live checks.
+
+## Hygiene
+
+- [ ] Confirm coder startup path always lands on canonical workspace.
+- [ ] Keep markdown status updates section-based (avoid brittle exact-text edits).
+- [ ] Keep coding slices small enough to finish inside run timeout.

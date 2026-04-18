@@ -190,7 +190,7 @@
 - id: cliq-193
   title: implement app-governance plane (apps first slice + follow-on governance commands)
   module: cliq
-  stage: in_progress
+  stage: blocked
   priority: low
   depends_on:
   - cliq-192
@@ -200,7 +200,6 @@
   stage: queued
   priority: high
   depends_on:
-  - cliq-193
   - platform-202
 - id: platform-200
   title: codify modularization boundaries and migration guardrails for command/service/core layers
@@ -233,11 +232,49 @@
 - id: platform-204
   title: codify v1.0 agent-employee architecture (Mail+Cliq core, multi-channel interoperability, post-v1 CRM/Books expansion)
   module: platform
-  stage: queued
+  stage: in_progress
   priority: high
   depends_on:
   - platform-202
+- id: platform-205
+  title: define v1.0 release gate for AI-employee use case (persona/memory/work contract + acceptance checks)
+  module: platform
+  stage: queued
+  priority: high
+  depends_on:
+  - platform-204
+- id: mail-010
+  title: package mail workflows for agent operation (triage, draft/reply assist, safe-send guardrails)
+  module: mail
+  stage: queued
+  priority: high
+  depends_on:
+  - platform-205
+  - mail-004
+- id: cliq-195
+  title: package cliq workflows for agent operation (internal loop + external-contact escalation path)
+  module: cliq
+  stage: queued
+  priority: high
+  depends_on:
   - cliq-194
+  - platform-205
+- id: platform-206
+  title: define cross-channel interoperability contract (internal cliq + external communication channels)
+  module: platform
+  stage: queued
+  priority: high
+  depends_on:
+  - cliq-195
+- id: platform-207
+  title: prepare v1.0 release candidate package (docs, quickstart, and operator runbook for virtual employee deployment)
+  module: platform
+  stage: queued
+  priority: high
+  depends_on:
+  - mail-010
+  - cliq-195
+  - platform-206
 - id: crm-003
   title: evaluate and phase in official Zoho CRM server-side SDK in post-release follow-up slices
   module: crm

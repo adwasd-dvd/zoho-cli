@@ -68,6 +68,7 @@ from zoho_cli.commands import (
     register_cliq_channel_metadata_commands,
     register_cliq_channel_membership_commands,
     register_cliq_message_discovery_commands,
+    register_cliq_scheduled_cancel_leave_commands,
     register_cliq_scheduled_lifecycle_commands,
     register_cliq_thread_commands,
     register_cliq_thread_state_commands,
@@ -7681,7 +7682,6 @@ register_cliq_scheduled_lifecycle_commands(
 )
 
 
-@cliq_app.command("scheduled-cancel")
 def cliq_scheduled_cancel(
     scheduled_id: str = typer.Argument(..., help="Scheduled message id."),
     channel_id: Optional[str] = typer.Option(
@@ -7719,7 +7719,6 @@ def cliq_scheduled_cancel(
     )
 
 
-@cliq_app.command("leave")
 def cliq_leave(
     channel_id: Optional[str] = typer.Option(
         None, "--channel-id", help="Destination channel id (resolved to chat_id)."
@@ -7749,6 +7748,13 @@ def cliq_leave(
             "result": data,
         },
     )
+
+
+register_cliq_scheduled_cancel_leave_commands(
+    cliq_app,
+    cliq_scheduled_cancel_command=cliq_scheduled_cancel,
+    cliq_leave_command=cliq_leave,
+)
 
 
 @cliq_app.command("mute")

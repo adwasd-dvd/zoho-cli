@@ -211,3 +211,14 @@ def register_cliq_scheduled_lifecycle_commands(
     """Register adjacent Cliq scheduled-lifecycle commands on ``cliq_app``."""
     cliq_app.command("scheduled")(cliq_scheduled_command)
     cliq_app.command("scheduled-get")(cliq_scheduled_get_command)
+
+
+def register_cliq_scheduled_cancel_leave_commands(
+    cliq_app: typer.Typer,
+    *,
+    cliq_scheduled_cancel_command: Callable[..., None],
+    cliq_leave_command: Callable[..., None],
+) -> None:
+    """Register adjacent Cliq scheduled-cancel/leave commands on ``cliq_app``."""
+    cliq_app.command("scheduled-cancel")(cliq_scheduled_cancel_command)
+    cliq_app.command("leave")(cliq_leave_command)

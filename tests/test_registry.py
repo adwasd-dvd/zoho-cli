@@ -25,6 +25,7 @@ from zoho_cli.commands.cliq import register_cliq_channel_member_management_comma
 from zoho_cli.commands.cliq import register_cliq_channel_metadata_commands
 from zoho_cli.commands.cliq import register_cliq_channel_membership_commands
 from zoho_cli.commands.cliq import register_cliq_message_discovery_commands
+from zoho_cli.commands.cliq import register_cliq_scheduled_cancel_leave_commands
 from zoho_cli.commands.cliq import register_cliq_scheduled_lifecycle_commands
 from zoho_cli.commands.cliq import register_cliq_thread_commands
 from zoho_cli.commands.cliq import register_cliq_thread_state_commands
@@ -107,6 +108,10 @@ def test_commands_package_exports_root_registrars() -> None:
     assert (
         commands_pkg.register_cliq_scheduled_lifecycle_commands
         is register_cliq_scheduled_lifecycle_commands
+    )
+    assert (
+        commands_pkg.register_cliq_scheduled_cancel_leave_commands
+        is register_cliq_scheduled_cancel_leave_commands
     )
     assert commands_pkg.register_cliq_thread_commands is register_cliq_thread_commands
     assert (
@@ -544,6 +549,29 @@ def test_register_cliq_scheduled_lifecycle_commands_preserves_expected_command_n
     assert [command.name for command in app.registered_commands] == [
         "scheduled",
         "scheduled-get",
+    ]
+
+
+def test_register_cliq_scheduled_cancel_leave_commands_preserves_expected_command_names() -> (
+    None
+):
+    app = typer.Typer(no_args_is_help=True)
+
+    def _scheduled_cancel_command() -> None:
+        return None
+
+    def _leave_command() -> None:
+        return None
+
+    register_cliq_scheduled_cancel_leave_commands(
+        app,
+        cliq_scheduled_cancel_command=_scheduled_cancel_command,
+        cliq_leave_command=_leave_command,
+    )
+
+    assert [command.name for command in app.registered_commands] == [
+        "scheduled-cancel",
+        "leave",
     ]
 
 

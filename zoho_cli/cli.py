@@ -68,6 +68,7 @@ from zoho_cli.commands import (
     register_cliq_channel_metadata_commands,
     register_cliq_channel_membership_commands,
     register_cliq_message_discovery_commands,
+    register_cliq_mute_unmute_commands,
     register_cliq_scheduled_cancel_leave_commands,
     register_cliq_scheduled_lifecycle_commands,
     register_cliq_thread_commands,
@@ -7757,7 +7758,6 @@ register_cliq_scheduled_cancel_leave_commands(
 )
 
 
-@cliq_app.command("mute")
 def cliq_mute(
     channel_id: Optional[str] = typer.Option(
         None, "--channel-id", help="Destination channel id (resolved to chat_id)."
@@ -7792,7 +7792,6 @@ def cliq_mute(
     )
 
 
-@cliq_app.command("unmute")
 def cliq_unmute(
     channel_id: Optional[str] = typer.Option(
         None, "--channel-id", help="Destination channel id (resolved to chat_id)."
@@ -7827,6 +7826,13 @@ def cliq_unmute(
             "result": data,
         },
     )
+
+
+register_cliq_mute_unmute_commands(
+    cliq_app,
+    cliq_mute_command=cliq_mute,
+    cliq_unmute_command=cliq_unmute,
+)
 
 
 @cliq_app.command("pin")

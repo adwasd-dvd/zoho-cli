@@ -222,3 +222,14 @@ def register_cliq_scheduled_cancel_leave_commands(
     """Register adjacent Cliq scheduled-cancel/leave commands on ``cliq_app``."""
     cliq_app.command("scheduled-cancel")(cliq_scheduled_cancel_command)
     cliq_app.command("leave")(cliq_leave_command)
+
+
+def register_cliq_mute_unmute_commands(
+    cliq_app: typer.Typer,
+    *,
+    cliq_mute_command: Callable[..., None],
+    cliq_unmute_command: Callable[..., None],
+) -> None:
+    """Register adjacent Cliq mute/unmute commands on ``cliq_app``."""
+    cliq_app.command("mute")(cliq_mute_command)
+    cliq_app.command("unmute")(cliq_unmute_command)

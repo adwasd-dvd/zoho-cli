@@ -1,5 +1,5 @@
 module: Platform
-updated_at: "2026-04-18T04:27:35Z"
+updated_at: "2026-04-18T04:40:00Z"
 status: in_progress
 blockers: []
-next_small_step: continue platform-202 by extracting the next adjacent Cliq command-registration pair (`mute` / `unmute`) into commands-slice wiring with parity checks, after completing the scheduled-cancel/leave registrar extraction (`3 passed` registry slice + `2 passed` focused CLI slice).
+next_small_step: continue platform-202 by extracting the next adjacent Cliq command-registration pair (`pin` / `unpin`) into commands-slice wiring with parity checks, after completing the mute/unmute registrar extraction (`3 passed` registry slice + `2 passed` focused CLI slice).

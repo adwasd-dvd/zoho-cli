@@ -25,6 +25,7 @@ from zoho_cli.commands.cliq import register_cliq_channel_member_management_comma
 from zoho_cli.commands.cliq import register_cliq_channel_metadata_commands
 from zoho_cli.commands.cliq import register_cliq_channel_membership_commands
 from zoho_cli.commands.cliq import register_cliq_message_discovery_commands
+from zoho_cli.commands.cliq import register_cliq_mute_unmute_commands
 from zoho_cli.commands.cliq import register_cliq_scheduled_cancel_leave_commands
 from zoho_cli.commands.cliq import register_cliq_scheduled_lifecycle_commands
 from zoho_cli.commands.cliq import register_cliq_thread_commands
@@ -104,6 +105,10 @@ def test_commands_package_exports_root_registrars() -> None:
     assert (
         commands_pkg.register_cliq_message_discovery_commands
         is register_cliq_message_discovery_commands
+    )
+    assert (
+        commands_pkg.register_cliq_mute_unmute_commands
+        is register_cliq_mute_unmute_commands
     )
     assert (
         commands_pkg.register_cliq_scheduled_lifecycle_commands
@@ -572,6 +577,27 @@ def test_register_cliq_scheduled_cancel_leave_commands_preserves_expected_comman
     assert [command.name for command in app.registered_commands] == [
         "scheduled-cancel",
         "leave",
+    ]
+
+
+def test_register_cliq_mute_unmute_commands_preserves_expected_command_names() -> None:
+    app = typer.Typer(no_args_is_help=True)
+
+    def _mute_command() -> None:
+        return None
+
+    def _unmute_command() -> None:
+        return None
+
+    register_cliq_mute_unmute_commands(
+        app,
+        cliq_mute_command=_mute_command,
+        cliq_unmute_command=_unmute_command,
+    )
+
+    assert [command.name for command in app.registered_commands] == [
+        "mute",
+        "unmute",
     ]
 
 

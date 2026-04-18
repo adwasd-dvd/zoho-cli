@@ -1,5 +1,5 @@
 module: Platform
-updated_at: "2026-04-18T21:26:43Z"
+updated_at: "2026-04-18T22:56:07Z"
 status: in_progress
 blockers: []
-next_small_step: cliq-195 bridge-run now forwards operatorWorkflow metadata alongside watchIntake/watchPayload; continue with one thin explicit escalation-action wiring slice while preserving watch-loop action-id precedence.
+next_small_step: cliq-195 action-source metadata is now emitted by watch-act/bridge-run outputs; continue with one thin escalation-handoff payload-template slice so external-contact adapters can consume default target fields directly from operatorWorkflow metadata.

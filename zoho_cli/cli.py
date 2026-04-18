@@ -1732,6 +1732,18 @@ register_cliq_status_commands(
 )
 
 
+def _build_action_source_metadata(source: str, source_path: str) -> dict[str, Any]:
+    normalized_source = str(source or "").strip()
+    normalized_source_path = str(source_path or "").strip()
+    return {
+        "source": normalized_source,
+        "sourcePath": normalized_source_path,
+        "fromWatchLoopHint": normalized_source == "watch-loop-hint",
+        "fromEscalationHint": normalized_source == "escalation-hint",
+        "fromExplicitOverride": normalized_source == "explicit-override",
+    }
+
+
 def cliq_bridge_run(
     action_id: Optional[str] = typer.Argument(
         None,
@@ -1774,6 +1786,14 @@ def cliq_bridge_run(
             "to bridge input."
         ),
     ),
+    escalation_action: bool = typer.Option(
+        False,
+        "--escalation-action",
+        help=(
+            "Prefer explicit escalation action hints from operatorWorkflow when "
+            "resolving action id from --watch-file metadata."
+        ),
+    ),
 ) -> None:
     """Run one Cliq action through membrane bridge (explicit opt-in)."""
     if bridge.strip().lower() != "membrane":
@@ -1810,59 +1830,164 @@ def cliq_bridge_run(
         watch_payload = decoded_watch
 
     action_hint = ""
+    action_hint_source = ""
+    action_hint_source_path = ""
     if watch_payload is not None:
-        candidates: list[Any] = [
-            watch_payload.get("actionId"),
-            watch_payload.get("action_id"),
-            watch_payload.get("bridgeActionId"),
-            watch_payload.get("bridge_action_id"),
+        watch_candidates: list[tuple[Any, str]] = [
+            (watch_payload.get("actionId"), "watchPayload.actionId"),
+            (watch_payload.get("action_id"), "watchPayload.action_id"),
+            (watch_payload.get("bridgeActionId"), "watchPayload.bridgeActionId"),
+            (
+                watch_payload.get("bridge_action_id"),
+                "watchPayload.bridge_action_id",
+            ),
         ]
         intake = watch_payload.get("watchIntake")
         if isinstance(intake, dict):
             bridge_cfg = intake.get("bridge")
             if isinstance(bridge_cfg, dict):
-                candidates.extend(
+                watch_candidates.extend(
                     [
-                        bridge_cfg.get("actionId"),
-                        bridge_cfg.get("action_id"),
-                        bridge_cfg.get("bridgeActionId"),
-                        bridge_cfg.get("bridge_action_id"),
+                        (bridge_cfg.get("actionId"), "watchIntake.bridge.actionId"),
+                        (
+                            bridge_cfg.get("action_id"),
+                            "watchIntake.bridge.action_id",
+                        ),
+                        (
+                            bridge_cfg.get("bridgeActionId"),
+                            "watchIntake.bridge.bridgeActionId",
+                        ),
+                        (
+                            bridge_cfg.get("bridge_action_id"),
+                            "watchIntake.bridge.bridge_action_id",
+                        ),
                     ]
                 )
             consume_cfg = intake.get("consume")
             if isinstance(consume_cfg, dict):
-                candidates.extend(
+                watch_candidates.extend(
                     [
-                        consume_cfg.get("bridgeActionId"),
-                        consume_cfg.get("bridge_action_id"),
-                        consume_cfg.get("actionId"),
-                        consume_cfg.get("action_id"),
+                        (
+                            consume_cfg.get("bridgeActionId"),
+                            "watchIntake.consume.bridgeActionId",
+                        ),
+                        (
+                            consume_cfg.get("bridge_action_id"),
+                            "watchIntake.consume.bridge_action_id",
+                        ),
+                        (
+                            consume_cfg.get("actionId"),
+                            "watchIntake.consume.actionId",
+                        ),
+                        (
+                            consume_cfg.get("action_id"),
+                            "watchIntake.consume.action_id",
+                        ),
                     ]
                 )
+
+        escalation_candidates: list[tuple[Any, str]] = []
         workflow = watch_payload.get("operatorWorkflow")
         if isinstance(workflow, dict):
             escalation = workflow.get("externalEscalation")
             if isinstance(escalation, dict):
+                escalation_candidates.extend(
+                    [
+                        (
+                            escalation.get("bridgeActionId"),
+                            "operatorWorkflow.externalEscalation.bridgeActionId",
+                        ),
+                        (
+                            escalation.get("bridge_action_id"),
+                            "operatorWorkflow.externalEscalation.bridge_action_id",
+                        ),
+                        (
+                            escalation.get("actionId"),
+                            "operatorWorkflow.externalEscalation.actionId",
+                        ),
+                        (
+                            escalation.get("action_id"),
+                            "operatorWorkflow.externalEscalation.action_id",
+                        ),
+                    ]
+                )
                 escalation_hint = escalation.get("actionHint")
                 if isinstance(escalation_hint, dict):
-                    candidates.extend(
+                    escalation_candidates.extend(
                         [
-                            escalation_hint.get("bridgeActionId"),
-                            escalation_hint.get("bridge_action_id"),
-                            escalation_hint.get("actionId"),
-                            escalation_hint.get("action_id"),
+                            (
+                                escalation_hint.get("bridgeActionId"),
+                                "operatorWorkflow.externalEscalation.actionHint.bridgeActionId",
+                            ),
+                            (
+                                escalation_hint.get("bridge_action_id"),
+                                "operatorWorkflow.externalEscalation.actionHint.bridge_action_id",
+                            ),
+                            (
+                                escalation_hint.get("actionId"),
+                                "operatorWorkflow.externalEscalation.actionHint.actionId",
+                            ),
+                            (
+                                escalation_hint.get("action_id"),
+                                "operatorWorkflow.externalEscalation.actionHint.action_id",
+                            ),
                         ]
                     )
-                candidates.append(escalation.get("defaultAction"))
-        for candidate in candidates:
+
+                escalation_candidates.append(
+                    (
+                        escalation.get("defaultAction"),
+                        "operatorWorkflow.externalEscalation.defaultAction",
+                    )
+                )
+
+        candidates: list[tuple[Any, str, str]] = []
+        if escalation_action:
+            candidates.extend(
+                (candidate, "escalation-hint", path)
+                for candidate, path in escalation_candidates
+            )
+            candidates.extend(
+                (candidate, "watch-loop-hint", path)
+                for candidate, path in watch_candidates
+            )
+        else:
+            candidates.extend(
+                (candidate, "watch-loop-hint", path)
+                for candidate, path in watch_candidates
+            )
+            candidates.extend(
+                (candidate, "escalation-hint", path)
+                for candidate, path in escalation_candidates
+            )
+
+        for candidate, source, source_path in candidates:
             text = str(candidate or "").strip()
             if text:
                 action_hint = text
+                action_hint_source = source
+                action_hint_source_path = source_path
                 break
 
-    resolved_action_id = (
-        (action_override or "").strip() or (action_id or "").strip() or action_hint
-    )
+    explicit_action_override = (action_override or "").strip()
+    positional_action_id = (action_id or "").strip()
+    resolved_action_id = ""
+    resolved_action_source = ""
+    resolved_action_source_path = ""
+
+    if explicit_action_override:
+        resolved_action_id = explicit_action_override
+        resolved_action_source = "explicit-override"
+        resolved_action_source_path = "--action-id"
+    elif positional_action_id:
+        resolved_action_id = positional_action_id
+        resolved_action_source = "explicit-override"
+        resolved_action_source_path = "<action-id>"
+    else:
+        resolved_action_id = action_hint
+        resolved_action_source = action_hint_source
+        resolved_action_source_path = action_hint_source_path
+
     if not resolved_action_id:
         utils.error_exit(
             "invalid_action_id",
@@ -1937,6 +2062,12 @@ def cliq_bridge_run(
         "preset": _normalize_membrane_preset(preset or "zoho-cliq"),
         "connectionId": resolved_connection_id,
         "actionId": resolved_action_id,
+        "actionSource": resolved_action_source,
+        "actionSourcePath": resolved_action_source_path,
+        "actionSourceMetadata": _build_action_source_metadata(
+            resolved_action_source,
+            resolved_action_source_path,
+        ),
         "result": result,
     }
     if watch_payload is not None:
@@ -8878,10 +9009,18 @@ def cliq_watch_act(
         "--watch-file",
         help="Path to watch-context JSON payload (use '-' to read from stdin).",
     ),
-    action: str = typer.Option(
-        "reply-latest",
+    action: Optional[str] = typer.Option(
+        None,
         "--action",
-        help="Action to execute from the watch payload: reply-latest or read-ack-latest.",
+        help=(
+            "Action to execute from the watch payload: reply-latest or "
+            "read-ack-latest (default: reply-latest)."
+        ),
+    ),
+    escalation_action: bool = typer.Option(
+        False,
+        "--escalation-action",
+        help=("Resolve --action from operatorWorkflow.externalEscalation.actionHint."),
     ),
     text: Optional[str] = typer.Option(
         None,
@@ -8931,7 +9070,124 @@ def cliq_watch_act(
     email = _require_account(cfg)
     client = _get_cliq_client(cfg, email, network=network)
 
-    selected_action = action.strip().lower()
+    selected_action = (action or "").strip().lower()
+    selected_action_source = ""
+    selected_action_source_path = ""
+    if selected_action:
+        selected_action_source = "explicit-override"
+        selected_action_source_path = "--action"
+
+    if escalation_action and not selected_action:
+        workflow = watch_payload.get("operatorWorkflow")
+        escalation_action_hint = ""
+        escalation_action_hint_path = ""
+        if isinstance(workflow, dict):
+            escalation = workflow.get("externalEscalation")
+            if isinstance(escalation, dict):
+                candidates: list[tuple[Any, str]] = [
+                    (
+                        escalation.get("watchActAction"),
+                        "operatorWorkflow.externalEscalation.watchActAction",
+                    ),
+                    (
+                        escalation.get("watch_act_action"),
+                        "operatorWorkflow.externalEscalation.watch_act_action",
+                    ),
+                ]
+                hint = escalation.get("actionHint")
+                if isinstance(hint, dict):
+                    candidates.extend(
+                        [
+                            (
+                                hint.get("watchActAction"),
+                                "operatorWorkflow.externalEscalation.actionHint.watchActAction",
+                            ),
+                            (
+                                hint.get("watch_act_action"),
+                                "operatorWorkflow.externalEscalation.actionHint.watch_act_action",
+                            ),
+                            (
+                                hint.get("action"),
+                                "operatorWorkflow.externalEscalation.actionHint.action",
+                            ),
+                        ]
+                    )
+                for candidate, source_path in candidates:
+                    value = str(candidate or "").strip().lower()
+                    if value:
+                        escalation_action_hint = value
+                        escalation_action_hint_path = source_path
+                        break
+
+        if not escalation_action_hint:
+            utils.error_exit(
+                "invalid_action",
+                "--escalation-action requires operatorWorkflow.externalEscalation.actionHint.watchActAction (or pass --action).",
+            )
+        selected_action = escalation_action_hint
+        selected_action_source = "escalation-hint"
+        selected_action_source_path = escalation_action_hint_path
+
+    if not selected_action:
+        workflow = watch_payload.get("operatorWorkflow")
+        watch_loop_hint = ""
+        watch_loop_hint_path = ""
+        if isinstance(workflow, dict):
+            internal_loop = workflow.get("internalLoop")
+            if isinstance(internal_loop, dict):
+                candidates: list[tuple[Any, str]] = [
+                    (
+                        internal_loop.get("watchActAction"),
+                        "operatorWorkflow.internalLoop.watchActAction",
+                    ),
+                    (
+                        internal_loop.get("watch_act_action"),
+                        "operatorWorkflow.internalLoop.watch_act_action",
+                    ),
+                ]
+                hint = internal_loop.get("actionHint")
+                if isinstance(hint, dict):
+                    candidates.extend(
+                        [
+                            (
+                                hint.get("watchActAction"),
+                                "operatorWorkflow.internalLoop.actionHint.watchActAction",
+                            ),
+                            (
+                                hint.get("watch_act_action"),
+                                "operatorWorkflow.internalLoop.actionHint.watch_act_action",
+                            ),
+                        ]
+                    )
+                candidates.extend(
+                    [
+                        (
+                            internal_loop.get("defaultAction"),
+                            "operatorWorkflow.internalLoop.defaultAction",
+                        ),
+                        (
+                            internal_loop.get("default_action"),
+                            "operatorWorkflow.internalLoop.default_action",
+                        ),
+                    ]
+                )
+
+                for candidate, source_path in candidates:
+                    value = str(candidate or "").strip().lower()
+                    if value:
+                        watch_loop_hint = value
+                        watch_loop_hint_path = source_path
+                        break
+
+        if watch_loop_hint:
+            selected_action = watch_loop_hint
+            selected_action_source = "watch-loop-hint"
+            selected_action_source_path = watch_loop_hint_path
+        else:
+            selected_action = "reply-latest"
+            selected_action_source = "watch-loop-hint"
+            selected_action_source_path = "default:reply-latest"
+
     if selected_action == "reply-latest":
         reply_text = (text or "").strip()
         if not reply_text:
@@ -8956,6 +9212,14 @@ def cliq_watch_act(
         utils.error_exit(
             "invalid_action",
             "--action must be one of: reply-latest, read-ack-latest",
+        )
+
+    if isinstance(result, dict):
+        result["actionSource"] = selected_action_source
+        result["actionSourcePath"] = selected_action_source_path
+        result["actionSourceMetadata"] = _build_action_source_metadata(
+            selected_action_source,
+            selected_action_source_path,
         )
 
     utils.output(result)

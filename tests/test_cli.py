@@ -1645,6 +1645,15 @@ def test_cliq_watch_act_replies_to_latest_message(
     assert payload["status"] == "ok"
     assert payload["applied"] is True
     assert payload["targetMessageId"] == "M2"
+    assert payload["actionSource"] == "watch-loop-hint"
+    assert payload["actionSourcePath"] == "default:reply-latest"
+    assert payload["actionSourceMetadata"] == {
+        "source": "watch-loop-hint",
+        "sourcePath": "default:reply-latest",
+        "fromWatchLoopHint": True,
+        "fromEscalationHint": False,
+        "fromExplicitOverride": False,
+    }
 
 
 @respx.mock
@@ -1879,6 +1888,118 @@ def test_cliq_watch_act_read_ack_latest(
     assert payload["action"] == "read-ack-latest"
     assert payload["applied"] is True
     assert payload["targetMessageId"] == "M2"
+    assert payload["actionSource"] == "explicit-override"
+    assert payload["actionSourcePath"] == "--action"
+    assert payload["actionSourceMetadata"] == {
+        "source": "explicit-override",
+        "sourcePath": "--action",
+        "fromWatchLoopHint": False,
+        "fromEscalationHint": False,
+        "fromExplicitOverride": True,
+    }
+
+
+@respx.mock
+def test_cliq_watch_act_escalation_action_uses_watch_hint(
+    tmp_path: Path,
+    mock_config: Path,
+    mock_token_refresh: Any,
+) -> None:
+    watch_file = tmp_path / "watch.json"
+    watch_file.write_text(
+        json.dumps(
+            {
+                "chatId": "CT_1",
+                "channelId": "O1",
+                "operatorWorkflow": {
+                    "packageId": "cliq-195",
+                    "externalEscalation": {
+                        "actionHint": {
+                            "watchActAction": "read-ack-latest",
+                        }
+                    },
+                },
+                "newCount": 2,
+                "messages": [
+                    {"messageId": "M1", "senderId": "U1", "text": "first"},
+                    {"messageId": "M2", "senderId": "U2", "text": "latest"},
+                ],
+            }
+        )
+    )
+
+    route = respx.post("https://cliq.zoho.com/api/v2/chats/CT_1/messages/M2/read").mock(
+        return_value=httpx.Response(200, json={"data": {"id": "M2", "status": "ok"}})
+    )
+
+    result = runner.invoke(
+        app,
+        [
+            "cliq",
+            "watch-act",
+            "--watch-file",
+            str(watch_file),
+            "--escalation-action",
+        ],
+        env=_cfg_env(mock_config),
+    )
+
+    assert result.exit_code == 0, result.output
+    assert route.called
+    payload = json.loads(result.output)
+    assert payload["status"] == "ok"
+    assert payload["action"] == "read-ack-latest"
+    assert payload["applied"] is True
+    assert payload["targetMessageId"] == "M2"
+    assert payload["actionSource"] == "escalation-hint"
+    assert (
+        payload["actionSourcePath"]
+        == "operatorWorkflow.externalEscalation.actionHint.watchActAction"
+    )
+    assert payload["actionSourceMetadata"] == {
+        "source": "escalation-hint",
+        "sourcePath": "operatorWorkflow.externalEscalation.actionHint.watchActAction",
+        "fromWatchLoopHint": False,
+        "fromEscalationHint": True,
+        "fromExplicitOverride": False,
+    }
+
+
+def test_cliq_watch_act_escalation_action_requires_hint_or_action(
+    tmp_path: Path,
+    mock_config: Path,
+    mock_token_refresh: Any,
+) -> None:
+    watch_file = tmp_path / "watch.json"
+    watch_file.write_text(
+        json.dumps(
+            {
+                "chatId": "CT_1",
+                "channelId": "O1",
+                "operatorWorkflow": {"packageId": "cliq-195"},
+                "newCount": 1,
+                "messages": [
+                    {"messageId": "M2", "senderId": "U2", "text": "latest"},
+                ],
+            }
+        )
+    )
+
+    result = runner.invoke(
+        app,
+        [
+            "cliq",
+            "watch-act",
+            "--watch-file",
+            str(watch_file),
+            "--escalation-action",
+        ],
+        env=_cfg_env(mock_config),
+    )
+
+    assert result.exit_code == 1
+    assert "invalid_action" in result.output
+    assert "--escalation-action requires" in result.output
 
 
 def test_cliq_messages_requires_destination(

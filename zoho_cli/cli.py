@@ -97,6 +97,7 @@ from zoho_cli.commands import (
     register_cliq_threads_commands,
     register_cliq_post_to_bot_commands,
     register_cliq_bot_subscribers_commands,
+    register_cliq_trigger_bot_commands,
     register_cliq_thread_state_commands,
     register_cliq_export_commands,
     register_cliq_identity_commands,
@@ -7631,7 +7632,6 @@ register_cliq_bot_subscribers_commands(
 )
 
 
-@cliq_app.command("trigger-bot")
 def cliq_trigger_bot(
     bot_id: str = typer.Argument(..., help="Bot id or unique name."),
     call_name: str = typer.Argument(..., help="Bot call/action name."),
@@ -7687,6 +7687,12 @@ def cliq_trigger_bot(
             "result": data,
         },
     )
+
+
+register_cliq_trigger_bot_commands(
+    cliq_app,
+    cliq_trigger_bot_command=cliq_trigger_bot,
+)
 
 
 def cliq_scheduled(

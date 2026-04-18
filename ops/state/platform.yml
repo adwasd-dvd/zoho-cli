@@ -1,5 +1,5 @@
 module: Platform
-updated_at: "2026-04-18T06:14:02Z"
+updated_at: "2026-04-18T06:36:28Z"
 status: in_progress
 blockers: []
-next_small_step: reassess platform-201/platform-202 completion status and queue the next no-behavior-change modularization slice now that `bridge-run` registration is routed through commands-slice wiring with parity checks green.
+next_small_step: extract the next smallest adjacent direct Cliq decorator family after `capabilities` (likely `channels` + `chats`) into commands-slice registrar wiring with focused parity checks.

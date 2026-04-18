@@ -74,6 +74,7 @@ from zoho_cli.commands import (
     register_cliq_scheduled_cancel_leave_commands,
     register_cliq_scheduled_lifecycle_commands,
     register_cliq_bridge_run_commands,
+    register_cliq_capabilities_commands,
     register_cliq_status_commands,
     register_cliq_thread_commands,
     register_cliq_thread_state_commands,
@@ -1786,7 +1787,6 @@ register_cliq_bridge_run_commands(
 )
 
 
-@cliq_app.command("capabilities")
 def cliq_capabilities(
     network: Optional[str] = typer.Option(
         None, "--network", help="Cliq network slug (e.g. happydistrouklimited)."
@@ -1835,6 +1835,12 @@ def cliq_capabilities(
         **probe,
     }
     utils.output(payload)
+
+
+register_cliq_capabilities_commands(
+    cliq_app,
+    cliq_capabilities_command=cliq_capabilities,
+)
 
 
 @cliq_app.command("channels")

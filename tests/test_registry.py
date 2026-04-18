@@ -31,6 +31,7 @@ from zoho_cli.commands.cliq import register_cliq_pin_unpin_commands
 from zoho_cli.commands.cliq import register_cliq_scheduled_cancel_leave_commands
 from zoho_cli.commands.cliq import register_cliq_scheduled_lifecycle_commands
 from zoho_cli.commands.cliq import register_cliq_bridge_run_commands
+from zoho_cli.commands.cliq import register_cliq_capabilities_commands
 from zoho_cli.commands.cliq import register_cliq_status_commands
 from zoho_cli.commands.cliq import register_cliq_thread_commands
 from zoho_cli.commands.cliq import register_cliq_thread_state_commands
@@ -126,6 +127,10 @@ def test_commands_package_exports_root_registrars() -> None:
     assert (
         commands_pkg.register_cliq_bridge_run_commands
         is register_cliq_bridge_run_commands
+    )
+    assert (
+        commands_pkg.register_cliq_capabilities_commands
+        is register_cliq_capabilities_commands
     )
     assert commands_pkg.register_cliq_status_commands is register_cliq_status_commands
     assert (
@@ -681,6 +686,22 @@ def test_register_cliq_bridge_run_commands_preserves_expected_command_names() ->
 
     assert [command.name for command in app.registered_commands] == [
         "bridge-run",
+    ]
+
+
+def test_register_cliq_capabilities_commands_preserves_expected_command_names() -> None:
+    app = typer.Typer(no_args_is_help=True)
+
+    def _capabilities_command() -> None:
+        return None
+
+    register_cliq_capabilities_commands(
+        app,
+        cliq_capabilities_command=_capabilities_command,
+    )
+
+    assert [command.name for command in app.registered_commands] == [
+        "capabilities",
     ]
 
 

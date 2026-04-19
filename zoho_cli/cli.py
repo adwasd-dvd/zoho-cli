@@ -2018,6 +2018,14 @@ def cliq_bridge_run(
                                 escalation_hint.get("action_id"),
                                 f"{escalation_hint_source_root}.action_id",
                             ),
+                            (
+                                escalation_hint.get("defaultAction"),
+                                f"{escalation_hint_source_root}.defaultAction",
+                            ),
+                            (
+                                escalation_hint.get("default_action"),
+                                f"{escalation_hint_source_root}.default_action",
+                            ),
                         ]
                     )
 

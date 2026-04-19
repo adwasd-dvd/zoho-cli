@@ -9243,6 +9243,10 @@ def cliq_watch_act(
                         escalation.get("watch_act_action"),
                         f"{escalation_source_root}.watch_act_action",
                     ),
+                    (
+                        escalation.get("action"),
+                        f"{escalation_source_root}.action",
+                    ),
                 ]
                 hint = escalation.get("actionHint")
                 hint_source_root = f"{escalation_source_root}.actionHint"

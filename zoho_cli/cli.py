@@ -1744,6 +1744,20 @@ def _build_action_source_metadata(source: str, source_path: str) -> dict[str, An
     }
 
 
+def _extract_watch_intake_with_source(
+    watch_payload: dict[str, Any],
+) -> tuple[dict[str, Any], str]:
+    watch_intake = watch_payload.get("watchIntake")
+    if isinstance(watch_intake, dict):
+        return watch_intake, "watchIntake"
+
+    snake_watch_intake = watch_payload.get("watch_intake")
+    if isinstance(snake_watch_intake, dict):
+        return snake_watch_intake, "watch_intake"
+
+    return {}, ""
+
+
 def cliq_bridge_run(
     action_id: Optional[str] = typer.Argument(
         None,
@@ -1842,24 +1856,27 @@ def cliq_bridge_run(
                 "watchPayload.bridge_action_id",
             ),
         ]
-        intake = watch_payload.get("watchIntake")
+        intake, intake_source_root = _extract_watch_intake_with_source(watch_payload)
         if isinstance(intake, dict):
             bridge_cfg = intake.get("bridge")
             if isinstance(bridge_cfg, dict):
                 watch_candidates.extend(
                     [
-                        (bridge_cfg.get("actionId"), "watchIntake.bridge.actionId"),
+                        (
+                            bridge_cfg.get("actionId"),
+                            f"{intake_source_root}.bridge.actionId",
+                        ),
                         (
                             bridge_cfg.get("action_id"),
-                            "watchIntake.bridge.action_id",
+                            f"{intake_source_root}.bridge.action_id",
                         ),
                         (
                             bridge_cfg.get("bridgeActionId"),
-                            "watchIntake.bridge.bridgeActionId",
+                            f"{intake_source_root}.bridge.bridgeActionId",
                         ),
                         (
                             bridge_cfg.get("bridge_action_id"),
-                            "watchIntake.bridge.bridge_action_id",
+                            f"{intake_source_root}.bridge.bridge_action_id",
                         ),
                     ]
                 )
@@ -1869,19 +1886,19 @@ def cliq_bridge_run(
                     [
                         (
                             consume_cfg.get("bridgeActionId"),
-                            "watchIntake.consume.bridgeActionId",
+                            f"{intake_source_root}.consume.bridgeActionId",
                         ),
                         (
                             consume_cfg.get("bridge_action_id"),
-                            "watchIntake.consume.bridge_action_id",
+                            f"{intake_source_root}.consume.bridge_action_id",
                         ),
                         (
                             consume_cfg.get("actionId"),
-                            "watchIntake.consume.actionId",
+                            f"{intake_source_root}.consume.actionId",
                         ),
                         (
                             consume_cfg.get("action_id"),
-                            "watchIntake.consume.action_id",
+                            f"{intake_source_root}.consume.action_id",
                         ),
                     ]
                 )
@@ -2043,7 +2060,7 @@ def cliq_bridge_run(
 
     resolved_input_text: Optional[str] = input_json
     if watch_payload is not None:
-        watch_intake = watch_payload.get("watchIntake")
+        watch_intake, _ = _extract_watch_intake_with_source(watch_payload)
         operator_workflow = watch_payload.get("operatorWorkflow")
         if not isinstance(operator_workflow, dict):
             operator_workflow = watch_payload.get("operator_workflow")
@@ -2122,7 +2139,7 @@ def cliq_bridge_run(
         "result": result,
     }
     if watch_payload is not None:
-        watch_intake = watch_payload.get("watchIntake")
+        watch_intake, _ = _extract_watch_intake_with_source(watch_payload)
         operator_workflow = watch_payload.get("operatorWorkflow")
         if not isinstance(operator_workflow, dict):
             operator_workflow = watch_payload.get("operator_workflow")

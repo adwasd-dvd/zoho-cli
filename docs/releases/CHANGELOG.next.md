@@ -3,6 +3,7 @@
 ## Unreleased
 
 ### Added
+- Refined cliq-195 watch-read-ack parity for adapter surfaces: `zoho cliq bridge-run --watch-file` now accepts snake_case watch-intake alias `watch_intake` (canonicalized to `watchIntake`) when inferring action hints and forwarding membrane input/output metadata, while preserving alias-specific provenance paths (`watch_intake.*`), and `build_watch_read_ack_action` now has explicit snake_case alias regression coverage.
 - Refined cliq-195 watch-action escalation-envelope compatibility so top-level envelope aliases now also accept payload-template field names (`recipient`, `summary`, `reason`) with correct provenance source paths, and watch-intake extraction now also accepts snake_case alias `watch_intake` (canonicalized to `watchIntake`) when building deterministic watch reply actions.
 - Refined cliq-195 `zoho cliq bridge-run --watch-file` action-hint compatibility so escalation hint extraction now accepts snake_case `action_hint` aliases (and `default_action` fallback) under both `operatorWorkflow.externalEscalation` and `operator_workflow.external_escalation`, while preserving provenance path metadata in `actionSourcePath`/`actionSourceMetadata`.
 - Refined `zoho cliq watch-act` cliq-195 action-hint compatibility so watch files now resolve both escalation and internal-loop hints from snake_case workflow aliases (`operator_workflow`, `external_escalation`, `internal_loop`, and `action_hint`) while preserving source-path metadata in `actionSourcePath`/`actionSourceMetadata`.

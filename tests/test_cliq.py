@@ -3257,6 +3257,35 @@ def test_build_watch_reply_action_accepts_snake_case_watch_intake_alias() -> Non
     }
 
 
+def test_build_watch_read_ack_action_accepts_snake_case_watch_intake_alias() -> None:
+    action = cliq.ZohoCliqClient.build_watch_read_ack_action(
+        {
+            "chatId": "CT_1",
+            "channelId": "O1",
+            "watch_intake": {
+                "triggerMode": "web-notification-first",
+                "consume": {
+                    "actionId": "watch-loop",
+                    "ackAction": "read-ack-latest",
+                    "ackRequired": True,
+                },
+            },
+            "messages": [
+                {"messageId": "M1", "senderId": "U1", "text": "latest"},
+            ],
+        }
+    )
+
+    assert action["watchIntake"] == {
+        "triggerMode": "web-notification-first",
+        "consume": {
+            "actionId": "watch-loop",
+            "ackAction": "read-ack-latest",
+            "ackRequired": True,
+        },
+    }
+
+
 def test_build_watch_read_ack_action_preserves_watch_intake_metadata() -> None:
     action = cliq.ZohoCliqClient.build_watch_read_ack_action(
         {

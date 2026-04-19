@@ -1635,6 +1635,43 @@ def test_cliq_watch_context_from_channel(
         "subject": "",
         "body": "",
     }
+    assert payload["escalationEnvelopeMetadata"] == {
+        "source": "top-level-alias",
+        "sourcePath": "escalationEnvelope",
+        "fromTopLevelAlias": True,
+        "fromNestedFallback": False,
+        "usedFieldFallback": False,
+        "fieldSources": {
+            "target": {
+                "source": "top-level-alias",
+                "sourcePath": "escalationEnvelope.target",
+                "fromTopLevelAlias": True,
+                "fromNestedFallback": False,
+                "usedFallback": False,
+            },
+            "to": {
+                "source": "top-level-alias",
+                "sourcePath": "escalationEnvelope.to",
+                "fromTopLevelAlias": True,
+                "fromNestedFallback": False,
+                "usedFallback": False,
+            },
+            "subject": {
+                "source": "top-level-alias",
+                "sourcePath": "escalationEnvelope.subject",
+                "fromTopLevelAlias": True,
+                "fromNestedFallback": False,
+                "usedFallback": False,
+            },
+            "body": {
+                "source": "top-level-alias",
+                "sourcePath": "escalationEnvelope.body",
+                "fromTopLevelAlias": True,
+                "fromNestedFallback": False,
+                "usedFallback": False,
+            },
+        },
+    }
     assert payload["messages"][0]["messageId"] == "M3"
 
 

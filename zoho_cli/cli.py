@@ -9002,6 +9002,7 @@ def cliq_watch_context(
             "newCount": watch["newCount"],
             "truncated": watch["truncated"],
             "escalationEnvelope": watch["escalationEnvelope"],
+            "escalationEnvelopeMetadata": watch["escalationEnvelopeMetadata"],
             "watchIntake": watch["watchIntake"],
             "operatorWorkflow": watch["operatorWorkflow"],
             "messages": watch["messages"],

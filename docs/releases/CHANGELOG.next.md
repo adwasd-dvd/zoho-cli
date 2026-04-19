@@ -3,6 +3,7 @@
 ## Unreleased
 
 ### Added
+- Extended the cliq-195 watch-context seed contract with adapter-facing `escalationEnvelopeMetadata` (`source`, `sourcePath`, fallback flags, and per-field `fieldSources`) so watch-context consumers can read escalation envelope provenance parity without re-running alias resolution logic; watch-act and bridge-run focused compatibility checks remain green.
 - Hardened cliq-195 adapter-facing escalation envelope extraction so watch-act and bridge-run now prefer top-level `escalationEnvelope` values while still falling back to `operatorWorkflow.externalEscalation.handoff.envelopeDefaults` for omitted keys, preserving nested compatibility when partial top-level aliases are provided.
 - Added cliq-195 escalation-envelope field-source metadata for adapter consumers: `zoho cliq watch-act` and `zoho cliq bridge-run --watch-file` now emit `escalationEnvelopeMetadata` with per-field `source`/`sourcePath` plus fallback flags (`fromTopLevelAlias`, `fromNestedFallback`, `usedFallback`), so alias-vs-fallback resolution is auditable without re-parsing nested workflow contracts.
 - Extended cliq-195 watch/bridge payload surfaces with a top-level `escalationEnvelope` alias (`target`, `to`, `subject`, `body`) derived from `operatorWorkflow.externalEscalation.handoff.envelopeDefaults`, so adapter consumers can read outbound escalation envelope defaults without nested contract parsing while existing watch-loop metadata remains compatible.

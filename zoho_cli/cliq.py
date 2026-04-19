@@ -1439,7 +1439,14 @@ class ZohoCliqClient:
             },
         }
 
-        return {
+        escalation_envelope = cls._build_external_handoff_envelope_defaults(
+            payload_template
+        )
+        handoff_envelope_defaults = cls._normalize_external_handoff_envelope_defaults(
+            escalation_envelope
+        )
+
+        payload = {
             "sinceMessageId": since,
             "cursorFound": cursor_found,
             "latestMessageId": latest_message_id,
@@ -1447,9 +1454,7 @@ class ZohoCliqClient:
             "totalFetched": len(cleaned_messages),
             "newCount": len(normalized_messages),
             "truncated": truncated,
-            "escalationEnvelope": cls._build_external_handoff_envelope_defaults(
-                payload_template
-            ),
+            "escalationEnvelope": escalation_envelope,
             "watchIntake": {
                 "triggerMode": "web-notification-first",
                 "pollFallback": {
@@ -1483,14 +1488,17 @@ class ZohoCliqClient:
                         "requiredFields": ["recipient", "summary", "reason"],
                         "payloadTemplate": payload_template,
                         "envelopeHints": envelope_hints,
-                        "envelopeDefaults": cls._build_external_handoff_envelope_defaults(
-                            payload_template
-                        ),
+                        "envelopeDefaults": handoff_envelope_defaults,
                     },
                 },
             },
             "messages": normalized_messages,
         }
+        payload["escalationEnvelopeMetadata"] = (
+            cls.extract_escalation_envelope_alias_metadata(payload)
+        )
+
+        return payload
 
     @classmethod
     def build_watch_reply_action(

@@ -3064,6 +3064,43 @@ def test_build_watch_context_seed_includes_watch_intake_contract_metadata() -> N
         "subject": "",
         "body": "",
     }
+    assert payload["escalationEnvelopeMetadata"] == {
+        "source": "top-level-alias",
+        "sourcePath": "escalationEnvelope",
+        "fromTopLevelAlias": True,
+        "fromNestedFallback": False,
+        "usedFieldFallback": False,
+        "fieldSources": {
+            "target": {
+                "source": "top-level-alias",
+                "sourcePath": "escalationEnvelope.target",
+                "fromTopLevelAlias": True,
+                "fromNestedFallback": False,
+                "usedFallback": False,
+            },
+            "to": {
+                "source": "top-level-alias",
+                "sourcePath": "escalationEnvelope.to",
+                "fromTopLevelAlias": True,
+                "fromNestedFallback": False,
+                "usedFallback": False,
+            },
+            "subject": {
+                "source": "top-level-alias",
+                "sourcePath": "escalationEnvelope.subject",
+                "fromTopLevelAlias": True,
+                "fromNestedFallback": False,
+                "usedFallback": False,
+            },
+            "body": {
+                "source": "top-level-alias",
+                "sourcePath": "escalationEnvelope.body",
+                "fromTopLevelAlias": True,
+                "fromNestedFallback": False,
+                "usedFallback": False,
+            },
+        },
+    }
 
 
 def test_build_watch_reply_action_preserves_watch_intake_metadata() -> None:

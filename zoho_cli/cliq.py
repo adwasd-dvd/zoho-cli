@@ -1112,6 +1112,56 @@ class ZohoCliqClient:
             return workflow
         return {}
 
+    @staticmethod
+    def _build_external_handoff_envelope_defaults(
+        payload_template: dict[str, Any],
+    ) -> dict[str, Any]:
+        target = payload_template.get("target")
+        return {
+            "target": dict(target) if isinstance(target, dict) else {},
+            "to": str(payload_template.get("recipient") or ""),
+            "subject": str(payload_template.get("summary") or ""),
+            "body": str(payload_template.get("reason") or ""),
+        }
+
+    @staticmethod
+    def _normalize_external_handoff_envelope_defaults(
+        envelope: dict[str, Any],
+    ) -> dict[str, Any]:
+        target = envelope.get("target")
+        return {
+            "target": dict(target) if isinstance(target, dict) else {},
+            "to": str(envelope.get("to") or ""),
+            "subject": str(envelope.get("subject") or ""),
+            "body": str(envelope.get("body") or ""),
+        }
+
+    @classmethod
+    def extract_escalation_envelope_alias(
+        cls,
+        watch_payload: dict[str, Any],
+    ) -> dict[str, Any]:
+        alias = watch_payload.get("escalationEnvelope")
+        if isinstance(alias, dict):
+            return cls._normalize_external_handoff_envelope_defaults(alias)
+
+        workflow = cls._extract_operator_workflow(watch_payload)
+        escalation = workflow.get("externalEscalation")
+        if not isinstance(escalation, dict):
+            return {}
+        handoff = escalation.get("handoff")
+        if not isinstance(handoff, dict):
+            return {}
+
+        envelope_defaults = handoff.get("envelopeDefaults")
+        if isinstance(envelope_defaults, dict):
+            return cls._normalize_external_handoff_envelope_defaults(envelope_defaults)
+
+        payload_template = handoff.get("payloadTemplate")
+        if isinstance(payload_template, dict):
+            return cls._build_external_handoff_envelope_defaults(payload_template)
+        return {}
+
     @classmethod
     def build_watch_context_seed(
         cls,
@@ -1160,6 +1210,26 @@ class ZohoCliqClient:
                 }
             )
 
+        payload_template = {
+            "target": {
+                "kind": "external-contact",
+                "channel": "mail",
+                "defaultAction": "notify-mail",
+            },
+            "recipient": "",
+            "summary": "",
+            "reason": "",
+        }
+        envelope_hints = {
+            "templateRoot": "payloadTemplate",
+            "targetPath": "payloadTemplate.target",
+            "fieldMap": {
+                "to": "payloadTemplate.recipient",
+                "subject": "payloadTemplate.summary",
+                "body": "payloadTemplate.reason",
+            },
+        }
+
         return {
             "sinceMessageId": since,
             "cursorFound": cursor_found,
@@ -1168,6 +1238,9 @@ class ZohoCliqClient:
             "totalFetched": len(cleaned_messages),
             "newCount": len(normalized_messages),
             "truncated": truncated,
+            "escalationEnvelope": cls._build_external_handoff_envelope_defaults(
+                payload_template
+            ),
             "watchIntake": {
                 "triggerMode": "web-notification-first",
                 "pollFallback": {
@@ -1199,25 +1272,11 @@ class ZohoCliqClient:
                         "contractId": "cliq-195-escalation-handoff-v1",
                         "target": "external-contact",
                         "requiredFields": ["recipient", "summary", "reason"],
-                        "payloadTemplate": {
-                            "target": {
-                                "kind": "external-contact",
-                                "channel": "mail",
-                                "defaultAction": "notify-mail",
-                            },
-                            "recipient": "",
-                            "summary": "",
-                            "reason": "",
-                        },
-                        "envelopeHints": {
-                            "templateRoot": "payloadTemplate",
-                            "targetPath": "payloadTemplate.target",
-                            "fieldMap": {
-                                "to": "payloadTemplate.recipient",
-                                "subject": "payloadTemplate.summary",
-                                "body": "payloadTemplate.reason",
-                            },
-                        },
+                        "payloadTemplate": payload_template,
+                        "envelopeHints": envelope_hints,
+                        "envelopeDefaults": cls._build_external_handoff_envelope_defaults(
+                            payload_template
+                        ),
                     },
                 },
             },
@@ -1260,6 +1319,7 @@ class ZohoCliqClient:
             "action": "reply-latest",
             "chatId": resolved_chat,
             "channelId": resolved_channel,
+            "escalationEnvelope": cls.extract_escalation_envelope_alias(watch_payload),
             "watchIntake": watch_intake,
             "operatorWorkflow": operator_workflow,
             "newCount": watch_payload.get("newCount", len(messages)),
@@ -1313,6 +1373,7 @@ class ZohoCliqClient:
             "action": "read-ack-latest",
             "chatId": resolved_chat,
             "channelId": resolved_channel,
+            "escalationEnvelope": cls.extract_escalation_envelope_alias(watch_payload),
             "watchIntake": watch_intake,
             "operatorWorkflow": operator_workflow,
             "newCount": watch_payload.get("newCount", len(messages)),

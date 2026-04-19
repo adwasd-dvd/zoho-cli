@@ -1,5 +1,5 @@
 module: Platform
-updated_at: "2026-04-18T23:26:00Z"
+updated_at: "2026-04-19T00:13:00Z"
 status: in_progress
 blockers: []
-next_small_step: cliq-195 escalation handoff metadata now includes thin envelope-hints mapped to payload-template defaults; continue with one thin follow-up that emits adapter-ready envelope defaults from operatorWorkflow while preserving watch-act/bridge-run passthrough compatibility.
+next_small_step: cliq-195 bridge/watch payloads now expose top-level escalation-envelope aliasing from operatorWorkflow handoff defaults; continue with one thin follow-up that has adapter-facing paths prefer the top-level alias while preserving nested fallback compatibility.

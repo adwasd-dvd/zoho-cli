@@ -2025,8 +2025,12 @@ def cliq_bridge_run(
     if watch_payload is not None:
         watch_intake = watch_payload.get("watchIntake")
         operator_workflow = watch_payload.get("operatorWorkflow")
+        escalation_envelope = _cliq.ZohoCliqClient.extract_escalation_envelope_alias(
+            watch_payload
+        )
         resolved_watch_input: dict[str, Any] = {
             "watchPayload": watch_payload,
+            "escalationEnvelope": escalation_envelope,
             "watchIntake": watch_intake if isinstance(watch_intake, dict) else {},
             "operatorWorkflow": (
                 operator_workflow if isinstance(operator_workflow, dict) else {}
@@ -2051,6 +2055,7 @@ def cliq_bridge_run(
                 "operatorWorkflow",
                 operator_workflow if isinstance(operator_workflow, dict) else {},
             )
+            merged_input.setdefault("escalationEnvelope", escalation_envelope)
             resolved_input_text = json.dumps(merged_input, ensure_ascii=False)
 
     if resolved_input_text is not None:
@@ -2073,6 +2078,9 @@ def cliq_bridge_run(
     if watch_payload is not None:
         watch_intake = watch_payload.get("watchIntake")
         operator_workflow = watch_payload.get("operatorWorkflow")
+        output_payload["escalationEnvelope"] = (
+            _cliq.ZohoCliqClient.extract_escalation_envelope_alias(watch_payload)
+        )
         output_payload["watchIntake"] = (
             watch_intake if isinstance(watch_intake, dict) else {}
         )
@@ -8989,6 +8997,7 @@ def cliq_watch_context(
             "totalFetched": watch["totalFetched"],
             "newCount": watch["newCount"],
             "truncated": watch["truncated"],
+            "escalationEnvelope": watch["escalationEnvelope"],
             "watchIntake": watch["watchIntake"],
             "operatorWorkflow": watch["operatorWorkflow"],
             "messages": watch["messages"],

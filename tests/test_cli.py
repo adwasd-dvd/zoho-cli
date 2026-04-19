@@ -1613,6 +1613,28 @@ def test_cliq_watch_context_from_channel(
             "body": "payloadTemplate.reason",
         },
     }
+    assert payload["operatorWorkflow"]["externalEscalation"]["handoff"][
+        "envelopeDefaults"
+    ] == {
+        "target": {
+            "kind": "external-contact",
+            "channel": "mail",
+            "defaultAction": "notify-mail",
+        },
+        "to": "",
+        "subject": "",
+        "body": "",
+    }
+    assert payload["escalationEnvelope"] == {
+        "target": {
+            "kind": "external-contact",
+            "channel": "mail",
+            "defaultAction": "notify-mail",
+        },
+        "to": "",
+        "subject": "",
+        "body": "",
+    }
     assert payload["messages"][0]["messageId"] == "M3"
 
 
@@ -1727,6 +1749,16 @@ def test_cliq_watch_act_preserves_watch_intake_metadata_in_result(
                                     "body": "payloadTemplate.reason",
                                 },
                             },
+                            "envelopeDefaults": {
+                                "target": {
+                                    "kind": "external-contact",
+                                    "channel": "mail",
+                                    "defaultAction": "notify-mail",
+                                },
+                                "to": "",
+                                "subject": "",
+                                "body": "",
+                            },
                         },
                     },
                 },
@@ -1797,6 +1829,28 @@ def test_cliq_watch_act_preserves_watch_intake_metadata_in_result(
             "subject": "payloadTemplate.summary",
             "body": "payloadTemplate.reason",
         },
+    }
+    assert payload["operatorWorkflow"]["externalEscalation"]["handoff"][
+        "envelopeDefaults"
+    ] == {
+        "target": {
+            "kind": "external-contact",
+            "channel": "mail",
+            "defaultAction": "notify-mail",
+        },
+        "to": "",
+        "subject": "",
+        "body": "",
+    }
+    assert payload["escalationEnvelope"] == {
+        "target": {
+            "kind": "external-contact",
+            "channel": "mail",
+            "defaultAction": "notify-mail",
+        },
+        "to": "",
+        "subject": "",
+        "body": "",
     }
 
 

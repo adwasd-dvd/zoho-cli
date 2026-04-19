@@ -365,6 +365,16 @@ def test_cliq_bridge_run_watch_file_forwards_watch_payload_and_action_hint(
                             "body": "payloadTemplate.reason",
                         },
                     },
+                    "envelopeDefaults": {
+                        "target": {
+                            "kind": "external-contact",
+                            "channel": "mail",
+                            "defaultAction": "notify-mail",
+                        },
+                        "to": "",
+                        "subject": "",
+                        "body": "",
+                    },
                 },
             },
         },
@@ -395,6 +405,16 @@ def test_cliq_bridge_run_watch_file_forwards_watch_payload_and_action_hint(
     assert seen["command"][6] == "--input"
     assert json.loads(seen["command"][7]) == {
         "watchPayload": watch_payload,
+        "escalationEnvelope": {
+            "target": {
+                "kind": "external-contact",
+                "channel": "mail",
+                "defaultAction": "notify-mail",
+            },
+            "to": "",
+            "subject": "",
+            "body": "",
+        },
         "watchIntake": watch_payload["watchIntake"],
         "operatorWorkflow": watch_payload["operatorWorkflow"],
     }
@@ -433,6 +453,28 @@ def test_cliq_bridge_run_watch_file_forwards_watch_payload_and_action_hint(
             "subject": "payloadTemplate.summary",
             "body": "payloadTemplate.reason",
         },
+    }
+    assert payload["operatorWorkflow"]["externalEscalation"]["handoff"][
+        "envelopeDefaults"
+    ] == {
+        "target": {
+            "kind": "external-contact",
+            "channel": "mail",
+            "defaultAction": "notify-mail",
+        },
+        "to": "",
+        "subject": "",
+        "body": "",
+    }
+    assert payload["escalationEnvelope"] == {
+        "target": {
+            "kind": "external-contact",
+            "channel": "mail",
+            "defaultAction": "notify-mail",
+        },
+        "to": "",
+        "subject": "",
+        "body": "",
     }
 
 
@@ -506,6 +548,28 @@ def test_cliq_bridge_run_watch_file_infers_action_from_watch_context_seed(
             "subject": "payloadTemplate.summary",
             "body": "payloadTemplate.reason",
         },
+    }
+    assert payload["operatorWorkflow"]["externalEscalation"]["handoff"][
+        "envelopeDefaults"
+    ] == {
+        "target": {
+            "kind": "external-contact",
+            "channel": "mail",
+            "defaultAction": "notify-mail",
+        },
+        "to": "",
+        "subject": "",
+        "body": "",
+    }
+    assert payload["escalationEnvelope"] == {
+        "target": {
+            "kind": "external-contact",
+            "channel": "mail",
+            "defaultAction": "notify-mail",
+        },
+        "to": "",
+        "subject": "",
+        "body": "",
     }
 
 
@@ -704,6 +768,7 @@ def test_cliq_bridge_run_watch_file_preserves_explicit_action_override(
         "watchPayload": watch_payload,
         "watchIntake": watch_payload["watchIntake"],
         "operatorWorkflow": {},
+        "escalationEnvelope": {},
     }
     payload = json.loads(result.output)
     assert payload["actionId"] == "explicit-action"

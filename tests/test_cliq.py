@@ -3042,6 +3042,28 @@ def test_build_watch_context_seed_includes_watch_intake_contract_metadata() -> N
             "body": "payloadTemplate.reason",
         },
     }
+    assert payload["operatorWorkflow"]["externalEscalation"]["handoff"][
+        "envelopeDefaults"
+    ] == {
+        "target": {
+            "kind": "external-contact",
+            "channel": "mail",
+            "defaultAction": "notify-mail",
+        },
+        "to": "",
+        "subject": "",
+        "body": "",
+    }
+    assert payload["escalationEnvelope"] == {
+        "target": {
+            "kind": "external-contact",
+            "channel": "mail",
+            "defaultAction": "notify-mail",
+        },
+        "to": "",
+        "subject": "",
+        "body": "",
+    }
 
 
 def test_build_watch_reply_action_preserves_watch_intake_metadata() -> None:
@@ -3082,6 +3104,16 @@ def test_build_watch_reply_action_preserves_watch_intake_metadata() -> None:
                                 "subject": "payloadTemplate.summary",
                                 "body": "payloadTemplate.reason",
                             },
+                        },
+                        "envelopeDefaults": {
+                            "target": {
+                                "kind": "external-contact",
+                                "channel": "mail",
+                                "defaultAction": "notify-mail",
+                            },
+                            "to": "",
+                            "subject": "",
+                            "body": "",
                         },
                     },
                 },
@@ -3134,6 +3166,28 @@ def test_build_watch_reply_action_preserves_watch_intake_metadata() -> None:
             "body": "payloadTemplate.reason",
         },
     }
+    assert action["operatorWorkflow"]["externalEscalation"]["handoff"][
+        "envelopeDefaults"
+    ] == {
+        "target": {
+            "kind": "external-contact",
+            "channel": "mail",
+            "defaultAction": "notify-mail",
+        },
+        "to": "",
+        "subject": "",
+        "body": "",
+    }
+    assert action["escalationEnvelope"] == {
+        "target": {
+            "kind": "external-contact",
+            "channel": "mail",
+            "defaultAction": "notify-mail",
+        },
+        "to": "",
+        "subject": "",
+        "body": "",
+    }
 
 
 def test_build_watch_read_ack_action_preserves_watch_intake_metadata() -> None:
@@ -3174,6 +3228,16 @@ def test_build_watch_read_ack_action_preserves_watch_intake_metadata() -> None:
                                 "subject": "payloadTemplate.summary",
                                 "body": "payloadTemplate.reason",
                             },
+                        },
+                        "envelopeDefaults": {
+                            "target": {
+                                "kind": "external-contact",
+                                "channel": "mail",
+                                "defaultAction": "notify-mail",
+                            },
+                            "to": "",
+                            "subject": "",
+                            "body": "",
                         },
                     },
                 },
@@ -3218,6 +3282,28 @@ def test_build_watch_read_ack_action_preserves_watch_intake_metadata() -> None:
             "subject": "payloadTemplate.summary",
             "body": "payloadTemplate.reason",
         },
+    }
+    assert action["operatorWorkflow"]["externalEscalation"]["handoff"][
+        "envelopeDefaults"
+    ] == {
+        "target": {
+            "kind": "external-contact",
+            "channel": "mail",
+            "defaultAction": "notify-mail",
+        },
+        "to": "",
+        "subject": "",
+        "body": "",
+    }
+    assert action["escalationEnvelope"] == {
+        "target": {
+            "kind": "external-contact",
+            "channel": "mail",
+            "defaultAction": "notify-mail",
+        },
+        "to": "",
+        "subject": "",
+        "body": "",
     }
 
 

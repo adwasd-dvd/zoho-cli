@@ -4,10 +4,10 @@ module: cliq
 stage: in_progress
 status: in_progress
 owner: coder
-updated_at: '2026-04-19T10:41:56Z'
+updated_at: '2026-04-19T10:59:20Z'
 success_criteria:
 - add an initial cliq-195 operator-workflow packaging contract to watch-context output without breaking existing watch-loop consumers
 - preserve the operator-workflow contract through watch-act action payload/result surfaces used by automation loops
 - keep focused watch-context/watch-act verification green while deferred external blockers stay capability-gated
 next_if_done: if focused and medium-scope cliq-195 verification remain green, continue the next operator-workflow packaging increment without regressing deferred capability-gated blockers.
-next_step: after the 2026-04-19T10:41:56Z cliq-195 thin watch-act follow-up validated camelCase internal-loop top-level `action` alias parity under `operatorWorkflow.internalLoop.actionHint.action` (`python3.11 -m pytest -q tests/test_cli.py::test_cliq_watch_act_uses_camel_case_internal_loop_hint_top_level_action tests/test_cli.py::test_cliq_watch_act_uses_snake_case_internal_loop_hint_top_level_action` -> `2 passed in 0.10s`; `./.venv/bin/ruff format --check tests/test_cli.py` -> `1 file already formatted`), continue the next thin no-behavior-change adapter-facing operator-workflow packaging increment.
+next_step: after the 2026-04-19T10:59:20Z cliq-195 thin bridge-run regression-coverage follow-up validated camelCase internal-loop top-level `action` alias parity under `operatorWorkflow.internalLoop.actionHint.action` (`python3.11 -m pytest -q tests/test_membrane_bridge.py::test_cliq_bridge_run_watch_file_infers_action_from_camel_case_internal_loop_hint_top_level_action tests/test_membrane_bridge.py::test_cliq_bridge_run_watch_file_infers_action_from_snake_case_internal_loop_hint_top_level_action` -> `2 passed in 0.12s`; `./.venv/bin/ruff format tests/test_membrane_bridge.py && ./.venv/bin/ruff format --check tests/test_membrane_bridge.py` -> `1 file reformatted`, then `1 file already formatted`), continue the next thin no-behavior-change adapter-facing operator-workflow packaging increment.

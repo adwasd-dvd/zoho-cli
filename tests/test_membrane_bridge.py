@@ -1058,6 +1058,89 @@ def test_cliq_bridge_run_watch_file_accepts_snake_case_operator_workflow_alias(
     }
 
 
+def test_cliq_bridge_run_watch_file_preserves_nested_envelope_defaults_alias_source_paths(
+    tmp_path: Path,
+    mock_config: Path,
+) -> None:
+    seen: dict[str, Any] = {}
+
+    def _fake_run(*a, **kw):
+        seen["command"] = a[0]
+        return subprocess.CompletedProcess(
+            args=a[0],
+            returncode=0,
+            stdout=json.dumps({"ok": True}),
+            stderr="",
+        )
+
+    watch_payload = {
+        "chatId": "CT_1",
+        "watchIntake": {"consume": {"actionId": "watch-loop"}},
+        "operator_workflow": {
+            "packageId": "cliq-195",
+            "external_escalation": {
+                "handoff": {
+                    "envelope_defaults": {
+                        "target": {
+                            "kind": "external-contact",
+                            "channel": "mail",
+                            "defaultAction": "notify-mail",
+                        },
+                        "recipient": "fallback@happy-distro.co.uk",
+                        "summary": "Fallback subject",
+                        "reason": "Fallback body",
+                    }
+                }
+            },
+        },
+    }
+    watch_file = tmp_path / "watch-context.json"
+    watch_file.write_text(json.dumps(watch_payload))
+
+    with pytest.MonkeyPatch.context() as monkeypatch:
+        monkeypatch.setattr(
+            "zoho_cli.cli.shutil.which", lambda _name: "/usr/local/bin/membrane"
+        )
+        monkeypatch.setattr("zoho_cli.cli.subprocess.run", _fake_run)
+
+        result = runner.invoke(
+            app,
+            [
+                "--config",
+                str(mock_config),
+                "cliq",
+                "bridge-run",
+                "--watch-file",
+                str(watch_file),
+            ],
+        )
+
+    assert result.exit_code == 0, result.output
+    payload = json.loads(result.output)
+    assert payload["escalationEnvelope"] == {
+        "target": {
+            "kind": "external-contact",
+            "channel": "mail",
+            "defaultAction": "notify-mail",
+        },
+        "to": "fallback@happy-distro.co.uk",
+        "subject": "Fallback subject",
+        "body": "Fallback body",
+    }
+    assert (
+        payload["escalationEnvelopeMetadata"]["fieldSources"]["to"]["sourcePath"]
+        == "operator_workflow.external_escalation.handoff.envelope_defaults.recipient"
+    )
+    assert (
+        payload["escalationEnvelopeMetadata"]["fieldSources"]["subject"]["sourcePath"]
+        == "operator_workflow.external_escalation.handoff.envelope_defaults.summary"
+    )
+    assert (
+        payload["escalationEnvelopeMetadata"]["fieldSources"]["body"]["sourcePath"]
+        == "operator_workflow.external_escalation.handoff.envelope_defaults.reason"
+    )
+
+
 def test_cliq_bridge_run_watch_file_infers_action_from_watch_context_seed(
     tmp_path: Path,
     mock_config: Path,

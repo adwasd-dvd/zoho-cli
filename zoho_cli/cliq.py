@@ -1247,30 +1247,49 @@ class ZohoCliqClient:
 
         if isinstance(envelope_defaults, dict):
             source_root = f"{escalation_source_root}.handoff.{envelope_defaults_key}"
+            envelope_field_keys: dict[str, tuple[str, ...]] = {
+                "target": ("target",),
+                "to": ("to", "recipient"),
+                "subject": ("subject", "summary"),
+                "body": ("body", "reason"),
+            }
+
+            def _source_path_for(field: str) -> str:
+                candidates = envelope_field_keys[field]
+                selected = next(
+                    (
+                        candidate
+                        for candidate in candidates
+                        if candidate in envelope_defaults
+                    ),
+                    candidates[0],
+                )
+                return f"{source_root}.{selected}"
+
             return (
                 cls._normalize_external_handoff_envelope_defaults(envelope_defaults),
                 {
                     "target": cls._build_escalation_envelope_field_source_metadata(
                         source="nested-envelope-defaults",
-                        source_path=f"{source_root}.target",
+                        source_path=_source_path_for("target"),
                         from_top_level_alias=False,
                         from_nested_fallback=True,
                     ),
                     "to": cls._build_escalation_envelope_field_source_metadata(
                         source="nested-envelope-defaults",
-                        source_path=f"{source_root}.to",
+                        source_path=_source_path_for("to"),
                         from_top_level_alias=False,
                         from_nested_fallback=True,
                     ),
                     "subject": cls._build_escalation_envelope_field_source_metadata(
                         source="nested-envelope-defaults",
-                        source_path=f"{source_root}.subject",
+                        source_path=_source_path_for("subject"),
                         from_top_level_alias=False,
                         from_nested_fallback=True,
                     ),
                     "body": cls._build_escalation_envelope_field_source_metadata(
                         source="nested-envelope-defaults",
-                        source_path=f"{source_root}.body",
+                        source_path=_source_path_for("body"),
                         from_top_level_alias=False,
                         from_nested_fallback=True,
                     ),

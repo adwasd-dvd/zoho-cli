@@ -2023,6 +2023,10 @@ def cliq_bridge_run(
                                 f"{escalation_hint_source_root}.action_id",
                             ),
                             (
+                                escalation_hint.get("action"),
+                                f"{escalation_hint_source_root}.action",
+                            ),
+                            (
                                 escalation_hint.get("defaultAction"),
                                 f"{escalation_hint_source_root}.defaultAction",
                             ),

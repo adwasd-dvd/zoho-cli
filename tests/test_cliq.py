@@ -3442,6 +3442,96 @@ def test_watch_actions_prefer_top_level_escalation_envelope_with_nested_fallback
     assert read_ack_action["escalationEnvelopeMetadata"] == expected_metadata
 
 
+def test_watch_actions_accept_snake_case_escalation_envelope_alias() -> None:
+    watch_payload = {
+        "chatId": "CT_1",
+        "channelId": "O1",
+        "escalation_envelope": {
+            "to": "ops@happy-distro.co.uk",
+        },
+        "operatorWorkflow": {
+            "externalEscalation": {
+                "handoff": {
+                    "envelopeDefaults": {
+                        "target": {
+                            "kind": "external-contact",
+                            "channel": "mail",
+                            "defaultAction": "notify-mail",
+                        },
+                        "to": "fallback@happy-distro.co.uk",
+                        "subject": "Fallback subject",
+                        "body": "Fallback body",
+                    }
+                }
+            }
+        },
+        "messages": [
+            {"messageId": "M1", "senderId": "U1", "text": "latest"},
+        ],
+    }
+
+    reply_action = cliq.ZohoCliqClient.build_watch_reply_action(
+        watch_payload,
+        text="ack",
+    )
+
+    assert reply_action["escalationEnvelope"] == {
+        "target": {
+            "kind": "external-contact",
+            "channel": "mail",
+            "defaultAction": "notify-mail",
+        },
+        "to": "ops@happy-distro.co.uk",
+        "subject": "Fallback subject",
+        "body": "Fallback body",
+    }
+    assert reply_action["escalationEnvelopeMetadata"] == {
+        "source": "mixed",
+        "sourcePath": "mixed",
+        "fromTopLevelAlias": True,
+        "fromNestedFallback": True,
+        "usedFieldFallback": True,
+        "fieldSources": {
+            "target": {
+                "source": "nested-envelope-defaults",
+                "sourcePath": (
+                    "operatorWorkflow.externalEscalation.handoff."
+                    "envelopeDefaults.target"
+                ),
+                "fromTopLevelAlias": False,
+                "fromNestedFallback": True,
+                "usedFallback": True,
+            },
+            "to": {
+                "source": "top-level-alias",
+                "sourcePath": "escalation_envelope.to",
+                "fromTopLevelAlias": True,
+                "fromNestedFallback": False,
+                "usedFallback": False,
+            },
+            "subject": {
+                "source": "nested-envelope-defaults",
+                "sourcePath": (
+                    "operatorWorkflow.externalEscalation.handoff."
+                    "envelopeDefaults.subject"
+                ),
+                "fromTopLevelAlias": False,
+                "fromNestedFallback": True,
+                "usedFallback": True,
+            },
+            "body": {
+                "source": "nested-envelope-defaults",
+                "sourcePath": (
+                    "operatorWorkflow.externalEscalation.handoff.envelopeDefaults.body"
+                ),
+                "fromTopLevelAlias": False,
+                "fromNestedFallback": True,
+                "usedFallback": True,
+            },
+        },
+    }
+
+
 def test_build_watch_reply_action_selects_latest_message() -> None:
     action = cliq.ZohoCliqClient.build_watch_reply_action(
         {

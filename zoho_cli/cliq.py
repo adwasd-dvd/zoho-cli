@@ -1269,7 +1269,14 @@ class ZohoCliqClient:
         cls,
         watch_payload: dict[str, Any],
     ) -> tuple[dict[str, Any], dict[str, Any]]:
-        alias = watch_payload.get("escalationEnvelope")
+        alias_source_root = "escalationEnvelope"
+        alias = watch_payload.get(alias_source_root)
+        if not isinstance(alias, dict):
+            snake_alias_source_root = "escalation_envelope"
+            snake_alias = watch_payload.get(snake_alias_source_root)
+            if isinstance(snake_alias, dict):
+                alias = snake_alias
+                alias_source_root = snake_alias_source_root
         fallback, fallback_sources = (
             cls._extract_external_handoff_envelope_defaults_with_metadata(watch_payload)
         )
@@ -1304,7 +1311,7 @@ class ZohoCliqClient:
                 field_sources[key] = (
                     cls._build_escalation_envelope_field_source_metadata(
                         source="top-level-alias",
-                        source_path=f"escalationEnvelope.{key}",
+                        source_path=f"{alias_source_root}.{key}",
                         from_top_level_alias=True,
                         from_nested_fallback=False,
                     )
@@ -1334,7 +1341,7 @@ class ZohoCliqClient:
         source_path = "mixed"
         if alias_count == len(fields):
             source = "top-level-alias"
-            source_path = "escalationEnvelope"
+            source_path = alias_source_root
         elif fallback_count == len(fields):
             source = "nested-fallback"
             source_path = "operatorWorkflow.externalEscalation.handoff"

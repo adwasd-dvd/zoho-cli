@@ -1,5 +1,5 @@
 module: Platform
-updated_at: "2026-04-19T00:13:00Z"
+updated_at: "2026-04-19T01:03:24Z"
 status: in_progress
 blockers: []
-next_small_step: cliq-195 bridge/watch payloads now expose top-level escalation-envelope aliasing from operatorWorkflow handoff defaults; continue with one thin follow-up that has adapter-facing paths prefer the top-level alias while preserving nested fallback compatibility.
+next_small_step: medium-scope cliq-195 watch/context/bridge verification is green; continue with one thin adapter-facing follow-up that adds escalation-envelope field-source metadata while preserving top-level alias precedence and nested fallback compatibility.

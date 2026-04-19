@@ -4,10 +4,10 @@ module: cliq
 stage: in_progress
 status: in_progress
 owner: coder
-updated_at: '2026-04-19T00:34:00Z'
+updated_at: '2026-04-19T01:03:24Z'
 success_criteria:
 - add an initial cliq-195 operator-workflow packaging contract to watch-context output without breaking existing watch-loop consumers
 - preserve the operator-workflow contract through watch-act action payload/result surfaces used by automation loops
 - keep focused watch-context/watch-act verification green while deferred external blockers stay capability-gated
-next_if_done: if focused watch-context/watch-act/bridge-run checks stay green after alias-precedence fallback hardening, run one medium-scope cliq-195 regression refresh for watch/context/read-ack + bridge-run and then pick the next thin external-contact adapter packaging slice.
-next_step: run a medium-scope cliq-195 verification refresh (watch-context, watch-act, bridge-run, and registry/help smoke) and record results before selecting the next thin external-contact packaging follow-up.
+next_if_done: if the medium-scope cliq-195 verification refresh stays green, land one thin external-contact adapter follow-up that exposes escalation-envelope field-source metadata while keeping top-level alias precedence and nested fallback compatibility.
+next_step: add one thin cliq-195 adapter-facing metadata follow-up that emits escalation-envelope field-source metadata (`source`/`sourcePath` and fallback flags) for watch-act and bridge-run watch-file outputs, then run focused watch/context/bridge regression tests.

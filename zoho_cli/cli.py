@@ -1910,6 +1910,62 @@ def cliq_bridge_run(
             workflow_source_root = "operator_workflow"
             workflow = watch_payload.get(workflow_source_root)
         if isinstance(workflow, dict):
+            internal_loop = workflow.get("internalLoop")
+            internal_loop_source_root = f"{workflow_source_root}.internalLoop"
+            if not isinstance(internal_loop, dict):
+                internal_loop = workflow.get("internal_loop")
+                internal_loop_source_root = f"{workflow_source_root}.internal_loop"
+            if isinstance(internal_loop, dict):
+                watch_candidates.extend(
+                    [
+                        (
+                            internal_loop.get("bridgeActionId"),
+                            f"{internal_loop_source_root}.bridgeActionId",
+                        ),
+                        (
+                            internal_loop.get("bridge_action_id"),
+                            f"{internal_loop_source_root}.bridge_action_id",
+                        ),
+                        (
+                            internal_loop.get("actionId"),
+                            f"{internal_loop_source_root}.actionId",
+                        ),
+                        (
+                            internal_loop.get("action_id"),
+                            f"{internal_loop_source_root}.action_id",
+                        ),
+                    ]
+                )
+
+                internal_hint = internal_loop.get("actionHint")
+                internal_hint_source_root = f"{internal_loop_source_root}.actionHint"
+                if not isinstance(internal_hint, dict):
+                    internal_hint = internal_loop.get("action_hint")
+                    internal_hint_source_root = (
+                        f"{internal_loop_source_root}.action_hint"
+                    )
+                if isinstance(internal_hint, dict):
+                    watch_candidates.extend(
+                        [
+                            (
+                                internal_hint.get("bridgeActionId"),
+                                f"{internal_hint_source_root}.bridgeActionId",
+                            ),
+                            (
+                                internal_hint.get("bridge_action_id"),
+                                f"{internal_hint_source_root}.bridge_action_id",
+                            ),
+                            (
+                                internal_hint.get("actionId"),
+                                f"{internal_hint_source_root}.actionId",
+                            ),
+                            (
+                                internal_hint.get("action_id"),
+                                f"{internal_hint_source_root}.action_id",
+                            ),
+                        ]
+                    )
+
             escalation = workflow.get("externalEscalation")
             escalation_source_root = f"{workflow_source_root}.externalEscalation"
             if not isinstance(escalation, dict):

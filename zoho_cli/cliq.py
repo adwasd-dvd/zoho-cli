@@ -1137,14 +1137,10 @@ class ZohoCliqClient:
         }
 
     @classmethod
-    def extract_escalation_envelope_alias(
+    def _extract_external_handoff_envelope_defaults(
         cls,
         watch_payload: dict[str, Any],
     ) -> dict[str, Any]:
-        alias = watch_payload.get("escalationEnvelope")
-        if isinstance(alias, dict):
-            return cls._normalize_external_handoff_envelope_defaults(alias)
-
         workflow = cls._extract_operator_workflow(watch_payload)
         escalation = workflow.get("externalEscalation")
         if not isinstance(escalation, dict):
@@ -1161,6 +1157,44 @@ class ZohoCliqClient:
         if isinstance(payload_template, dict):
             return cls._build_external_handoff_envelope_defaults(payload_template)
         return {}
+
+    @classmethod
+    def extract_escalation_envelope_alias(
+        cls,
+        watch_payload: dict[str, Any],
+    ) -> dict[str, Any]:
+        alias = watch_payload.get("escalationEnvelope")
+        fallback = cls._extract_external_handoff_envelope_defaults(watch_payload)
+        if not isinstance(alias, dict):
+            return fallback
+
+        normalized_alias = cls._normalize_external_handoff_envelope_defaults(alias)
+        if not fallback:
+            return normalized_alias
+
+        target = (
+            normalized_alias["target"]
+            if "target" in alias
+            else dict(fallback.get("target") or {})
+        )
+        return {
+            "target": target,
+            "to": (
+                normalized_alias["to"]
+                if "to" in alias
+                else str(fallback.get("to") or "")
+            ),
+            "subject": (
+                normalized_alias["subject"]
+                if "subject" in alias
+                else str(fallback.get("subject") or "")
+            ),
+            "body": (
+                normalized_alias["body"]
+                if "body" in alias
+                else str(fallback.get("body") or "")
+            ),
+        }
 
     @classmethod
     def build_watch_context_seed(

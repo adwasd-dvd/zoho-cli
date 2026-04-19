@@ -3307,6 +3307,56 @@ def test_build_watch_read_ack_action_preserves_watch_intake_metadata() -> None:
     }
 
 
+def test_watch_actions_prefer_top_level_escalation_envelope_with_nested_fallback() -> (
+    None
+):
+    watch_payload = {
+        "chatId": "CT_1",
+        "channelId": "O1",
+        "escalationEnvelope": {
+            "to": "ops@happy-distro.co.uk",
+        },
+        "operatorWorkflow": {
+            "externalEscalation": {
+                "handoff": {
+                    "envelopeDefaults": {
+                        "target": {
+                            "kind": "external-contact",
+                            "channel": "mail",
+                            "defaultAction": "notify-mail",
+                        },
+                        "to": "fallback@happy-distro.co.uk",
+                        "subject": "Fallback subject",
+                        "body": "Fallback body",
+                    }
+                }
+            }
+        },
+        "messages": [
+            {"messageId": "M1", "senderId": "U1", "text": "latest"},
+        ],
+    }
+    expected = {
+        "target": {
+            "kind": "external-contact",
+            "channel": "mail",
+            "defaultAction": "notify-mail",
+        },
+        "to": "ops@happy-distro.co.uk",
+        "subject": "Fallback subject",
+        "body": "Fallback body",
+    }
+
+    reply_action = cliq.ZohoCliqClient.build_watch_reply_action(
+        watch_payload,
+        text="ack",
+    )
+    read_ack_action = cliq.ZohoCliqClient.build_watch_read_ack_action(watch_payload)
+
+    assert reply_action["escalationEnvelope"] == expected
+    assert read_ack_action["escalationEnvelope"] == expected
+
+
 def test_build_watch_reply_action_selects_latest_message() -> None:
     action = cliq.ZohoCliqClient.build_watch_reply_action(
         {

@@ -1990,6 +1990,10 @@ def cliq_bridge_run(
                             escalation.get("action_id"),
                             f"{escalation_source_root}.action_id",
                         ),
+                        (
+                            escalation.get("action"),
+                            f"{escalation_source_root}.action",
+                        ),
                     ]
                 )
                 escalation_hint = escalation.get("actionHint")

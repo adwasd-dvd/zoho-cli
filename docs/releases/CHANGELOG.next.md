@@ -3,6 +3,7 @@
 ## Unreleased
 
 ### Added
+- Refined `zoho cliq bridge-run --watch-file` cliq-195 escalation-hint fallback compatibility so bridge action inference now also accepts top-level `operatorWorkflow.externalEscalation.action` (and snake_case workflow aliases) when escalation hint aliases are absent, while preserving `actionSourcePath` / `actionSourceMetadata` provenance.
 - Refined `zoho cliq watch-act --escalation-action` cliq-195 fallback compatibility so escalation action resolution now also accepts top-level `operatorWorkflow.externalEscalation.action` (and snake_case workflow aliases) when `watchActAction` is absent, while preserving `actionSourcePath` / `actionSourceMetadata` provenance.
 - Refined `zoho cliq watch-act --escalation-action` cliq-195 hint compatibility so escalation action resolution now also accepts `defaultAction`/`default_action` fallbacks from both `operatorWorkflow.externalEscalation.actionHint` and `operatorWorkflow.externalEscalation` (including snake_case workflow aliases), while preserving `actionSourcePath` / `actionSourceMetadata` provenance.
 - Refined cliq-195 bridge-run watch-file escalation-hint compatibility so snake_case escalation `action_hint.default_action` is now accepted as an additional fallback alias when inferring bridge action ids from `operatorWorkflow.externalEscalation` / `operator_workflow.external_escalation`, while preserving `actionSourcePath` / `actionSourceMetadata` provenance.

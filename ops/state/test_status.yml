@@ -1,10 +1,15 @@
-last_run_at: "2026-04-19T11:52:16Z"
+last_run_at: "2026-04-19T12:11:34Z"
 last_result: success
 current_focus: cliq
 suites:
   unit:
     status: success
     notes:
+      - "thin cliq-195 watch-act regression-coverage increment at 2026-04-19T12:11:34Z (camelCase internal-loop actionHint.watchActAction alias parity, no behavior change)"
+      - "python3.11 -m pytest -q tests/test_cli.py::test_cliq_watch_act_uses_camel_case_internal_loop_hint_watch_act_action"
+      - "1 passed in 0.57s"
+      - "./.venv/bin/ruff format --check tests/test_cli.py"
+      - "1 file already formatted"
       - "integration-loop medium-scope verification refresh at 2026-04-19T11:52:16Z (cliq-195 watch/context/read-ack + bridge-run surfaces)"
       - "python3.11 -m pytest -q tests/test_registry.py tests/test_membrane_bridge.py"
       - "115 passed in 0.99s"

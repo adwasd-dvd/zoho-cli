@@ -1168,51 +1168,51 @@ class ZohoCliqClient:
         watch_payload: dict[str, Any],
     ) -> tuple[dict[str, Any], dict[str, dict[str, Any]]]:
         workflow = cls._extract_operator_workflow(watch_payload)
+
         escalation = workflow.get("externalEscalation")
+        escalation_source_root = "operatorWorkflow.externalEscalation"
+        if not isinstance(escalation, dict):
+            escalation = workflow.get("external_escalation")
+            escalation_source_root = "operatorWorkflow.external_escalation"
         if not isinstance(escalation, dict):
             return {}, {}
+
         handoff = escalation.get("handoff")
         if not isinstance(handoff, dict):
             return {}, {}
 
         envelope_defaults = handoff.get("envelopeDefaults")
+        envelope_defaults_key = "envelopeDefaults"
+        if not isinstance(envelope_defaults, dict):
+            envelope_defaults = handoff.get("envelope_defaults")
+            envelope_defaults_key = "envelope_defaults"
+
         if isinstance(envelope_defaults, dict):
+            source_root = f"{escalation_source_root}.handoff.{envelope_defaults_key}"
             return (
                 cls._normalize_external_handoff_envelope_defaults(envelope_defaults),
                 {
                     "target": cls._build_escalation_envelope_field_source_metadata(
                         source="nested-envelope-defaults",
-                        source_path=(
-                            "operatorWorkflow.externalEscalation.handoff."
-                            "envelopeDefaults.target"
-                        ),
+                        source_path=f"{source_root}.target",
                         from_top_level_alias=False,
                         from_nested_fallback=True,
                     ),
                     "to": cls._build_escalation_envelope_field_source_metadata(
                         source="nested-envelope-defaults",
-                        source_path=(
-                            "operatorWorkflow.externalEscalation.handoff."
-                            "envelopeDefaults.to"
-                        ),
+                        source_path=f"{source_root}.to",
                         from_top_level_alias=False,
                         from_nested_fallback=True,
                     ),
                     "subject": cls._build_escalation_envelope_field_source_metadata(
                         source="nested-envelope-defaults",
-                        source_path=(
-                            "operatorWorkflow.externalEscalation.handoff."
-                            "envelopeDefaults.subject"
-                        ),
+                        source_path=f"{source_root}.subject",
                         from_top_level_alias=False,
                         from_nested_fallback=True,
                     ),
                     "body": cls._build_escalation_envelope_field_source_metadata(
                         source="nested-envelope-defaults",
-                        source_path=(
-                            "operatorWorkflow.externalEscalation.handoff."
-                            "envelopeDefaults.body"
-                        ),
+                        source_path=f"{source_root}.body",
                         from_top_level_alias=False,
                         from_nested_fallback=True,
                     ),
@@ -1220,43 +1220,37 @@ class ZohoCliqClient:
             )
 
         payload_template = handoff.get("payloadTemplate")
+        payload_template_key = "payloadTemplate"
+        if not isinstance(payload_template, dict):
+            payload_template = handoff.get("payload_template")
+            payload_template_key = "payload_template"
+
         if isinstance(payload_template, dict):
+            source_root = f"{escalation_source_root}.handoff.{payload_template_key}"
             return (
                 cls._build_external_handoff_envelope_defaults(payload_template),
                 {
                     "target": cls._build_escalation_envelope_field_source_metadata(
                         source="nested-payload-template",
-                        source_path=(
-                            "operatorWorkflow.externalEscalation.handoff."
-                            "payloadTemplate.target"
-                        ),
+                        source_path=f"{source_root}.target",
                         from_top_level_alias=False,
                         from_nested_fallback=True,
                     ),
                     "to": cls._build_escalation_envelope_field_source_metadata(
                         source="nested-payload-template",
-                        source_path=(
-                            "operatorWorkflow.externalEscalation.handoff."
-                            "payloadTemplate.recipient"
-                        ),
+                        source_path=f"{source_root}.recipient",
                         from_top_level_alias=False,
                         from_nested_fallback=True,
                     ),
                     "subject": cls._build_escalation_envelope_field_source_metadata(
                         source="nested-payload-template",
-                        source_path=(
-                            "operatorWorkflow.externalEscalation.handoff."
-                            "payloadTemplate.summary"
-                        ),
+                        source_path=f"{source_root}.summary",
                         from_top_level_alias=False,
                         from_nested_fallback=True,
                     ),
                     "body": cls._build_escalation_envelope_field_source_metadata(
                         source="nested-payload-template",
-                        source_path=(
-                            "operatorWorkflow.externalEscalation.handoff."
-                            "payloadTemplate.reason"
-                        ),
+                        source_path=f"{source_root}.reason",
                         from_top_level_alias=False,
                         from_nested_fallback=True,
                     ),

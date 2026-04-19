@@ -3,6 +3,7 @@
 ## Unreleased
 
 ### Added
+- Refined the cliq-195 escalation-envelope adapter fallback contract so nested snake_case workflow aliases are now accepted for fallback extraction (`operatorWorkflow.external_escalation.handoff.envelope_defaults` and `payload_template`) while preserving provenance metadata source paths for watch-act and bridge-run consumers.
 - Refined the cliq-195 escalation-envelope adapter contract so watch payloads now also accept snake_case top-level alias `escalation_envelope` (in addition to `escalationEnvelope`), with parity metadata source paths preserved for watch-act and bridge-run consumers.
 - Extended the cliq-195 bridge-run watch-file adapter contract so membrane `--input` now also carries `actionSource`, `actionSourcePath`, and `actionSourceMetadata` alongside `watchPayload`/`watchIntake`/`operatorWorkflow`/`escalationEnvelope`/`escalationEnvelopeMetadata`, allowing downstream adapters to consume action-routing provenance without re-deriving watch/escalation hint precedence.
 - Extended the cliq-195 bridge-run watch-file adapter contract so membrane `--input` now also carries `escalationEnvelopeMetadata` alongside `watchPayload`/`watchIntake`/`operatorWorkflow`/`escalationEnvelope`, allowing downstream adapters to consume escalation-envelope provenance without recomputing alias/fallback resolution.

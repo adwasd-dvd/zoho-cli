@@ -9264,8 +9264,28 @@ def cliq_watch_act(
                                 hint.get("action"),
                                 f"{hint_source_root}.action",
                             ),
+                            (
+                                hint.get("defaultAction"),
+                                f"{hint_source_root}.defaultAction",
+                            ),
+                            (
+                                hint.get("default_action"),
+                                f"{hint_source_root}.default_action",
+                            ),
                         ]
                     )
+                candidates.extend(
+                    [
+                        (
+                            escalation.get("defaultAction"),
+                            f"{escalation_source_root}.defaultAction",
+                        ),
+                        (
+                            escalation.get("default_action"),
+                            f"{escalation_source_root}.default_action",
+                        ),
+                    ]
+                )
                 for candidate, source_path in candidates:
                     value = str(candidate or "").strip().lower()
                     if value:

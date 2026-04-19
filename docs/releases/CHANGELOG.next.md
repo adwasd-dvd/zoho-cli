@@ -3,6 +3,7 @@
 ## Unreleased
 
 ### Added
+- Refined `zoho cliq watch-act --escalation-action` cliq-195 hint compatibility so escalation action resolution now also accepts `defaultAction`/`default_action` fallbacks from both `operatorWorkflow.externalEscalation.actionHint` and `operatorWorkflow.externalEscalation` (including snake_case workflow aliases), while preserving `actionSourcePath` / `actionSourceMetadata` provenance.
 - Refined cliq-195 bridge-run watch-file escalation-hint compatibility so snake_case escalation `action_hint.default_action` is now accepted as an additional fallback alias when inferring bridge action ids from `operatorWorkflow.externalEscalation` / `operator_workflow.external_escalation`, while preserving `actionSourcePath` / `actionSourceMetadata` provenance.
 - Refined cliq-195 escalation-envelope metadata provenance so nested handoff alias defaults now retain alias-specific source paths (`recipient`/`summary`/`reason`) in `escalationEnvelopeMetadata.fieldSources` for both watch-act and bridge-run watch-file consumers while preserving canonical envelope field output (`to`/`subject`/`body`).
 - Refined cliq-195 bridge-run watch-file action-hint compatibility so internal-loop routing now also accepts snake_case workflow aliases (`operator_workflow.internal_loop.action_hint.bridge_action_id`) when watch-intake hints are absent, while preserving `actionSourcePath`/`actionSourceMetadata` provenance as watch-loop hints.

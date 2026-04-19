@@ -415,6 +415,55 @@ def test_cliq_bridge_run_watch_file_forwards_watch_payload_and_action_hint(
             "subject": "",
             "body": "",
         },
+        "escalationEnvelopeMetadata": {
+            "source": "nested-fallback",
+            "sourcePath": "operatorWorkflow.externalEscalation.handoff",
+            "fromTopLevelAlias": False,
+            "fromNestedFallback": True,
+            "usedFieldFallback": True,
+            "fieldSources": {
+                "target": {
+                    "source": "nested-envelope-defaults",
+                    "sourcePath": (
+                        "operatorWorkflow.externalEscalation.handoff."
+                        "envelopeDefaults.target"
+                    ),
+                    "fromTopLevelAlias": False,
+                    "fromNestedFallback": True,
+                    "usedFallback": True,
+                },
+                "to": {
+                    "source": "nested-envelope-defaults",
+                    "sourcePath": (
+                        "operatorWorkflow.externalEscalation.handoff."
+                        "envelopeDefaults.to"
+                    ),
+                    "fromTopLevelAlias": False,
+                    "fromNestedFallback": True,
+                    "usedFallback": True,
+                },
+                "subject": {
+                    "source": "nested-envelope-defaults",
+                    "sourcePath": (
+                        "operatorWorkflow.externalEscalation.handoff."
+                        "envelopeDefaults.subject"
+                    ),
+                    "fromTopLevelAlias": False,
+                    "fromNestedFallback": True,
+                    "usedFallback": True,
+                },
+                "body": {
+                    "source": "nested-envelope-defaults",
+                    "sourcePath": (
+                        "operatorWorkflow.externalEscalation.handoff."
+                        "envelopeDefaults.body"
+                    ),
+                    "fromTopLevelAlias": False,
+                    "fromNestedFallback": True,
+                    "usedFallback": True,
+                },
+            },
+        },
         "watchIntake": watch_payload["watchIntake"],
         "operatorWorkflow": watch_payload["operatorWorkflow"],
     }
@@ -891,6 +940,14 @@ def test_cliq_bridge_run_watch_file_preserves_explicit_action_override(
         "watchIntake": watch_payload["watchIntake"],
         "operatorWorkflow": {},
         "escalationEnvelope": {},
+        "escalationEnvelopeMetadata": {
+            "source": "",
+            "sourcePath": "",
+            "fromTopLevelAlias": False,
+            "fromNestedFallback": False,
+            "usedFieldFallback": False,
+            "fieldSources": {},
+        },
     }
     payload = json.loads(result.output)
     assert payload["actionId"] == "explicit-action"

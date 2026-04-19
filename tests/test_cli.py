@@ -1922,6 +1922,51 @@ def test_cliq_watch_act_prefers_top_level_escalation_envelope(
         "subject": "Fallback subject",
         "body": "Fallback body",
     }
+    assert payload["escalationEnvelopeMetadata"] == {
+        "source": "mixed",
+        "sourcePath": "mixed",
+        "fromTopLevelAlias": True,
+        "fromNestedFallback": True,
+        "usedFieldFallback": True,
+        "fieldSources": {
+            "target": {
+                "source": "nested-envelope-defaults",
+                "sourcePath": (
+                    "operatorWorkflow.externalEscalation.handoff."
+                    "envelopeDefaults.target"
+                ),
+                "fromTopLevelAlias": False,
+                "fromNestedFallback": True,
+                "usedFallback": True,
+            },
+            "to": {
+                "source": "top-level-alias",
+                "sourcePath": "escalationEnvelope.to",
+                "fromTopLevelAlias": True,
+                "fromNestedFallback": False,
+                "usedFallback": False,
+            },
+            "subject": {
+                "source": "nested-envelope-defaults",
+                "sourcePath": (
+                    "operatorWorkflow.externalEscalation.handoff."
+                    "envelopeDefaults.subject"
+                ),
+                "fromTopLevelAlias": False,
+                "fromNestedFallback": True,
+                "usedFallback": True,
+            },
+            "body": {
+                "source": "nested-envelope-defaults",
+                "sourcePath": (
+                    "operatorWorkflow.externalEscalation.handoff.envelopeDefaults.body"
+                ),
+                "fromTopLevelAlias": False,
+                "fromNestedFallback": True,
+                "usedFallback": True,
+            },
+        },
+    }
 
 
 @respx.mock

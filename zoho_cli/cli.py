@@ -2028,6 +2028,11 @@ def cliq_bridge_run(
         escalation_envelope = _cliq.ZohoCliqClient.extract_escalation_envelope_alias(
             watch_payload
         )
+        escalation_envelope_metadata = (
+            _cliq.ZohoCliqClient.extract_escalation_envelope_alias_metadata(
+                watch_payload
+            )
+        )
         resolved_watch_input: dict[str, Any] = {
             "watchPayload": watch_payload,
             "escalationEnvelope": escalation_envelope,
@@ -2078,9 +2083,8 @@ def cliq_bridge_run(
     if watch_payload is not None:
         watch_intake = watch_payload.get("watchIntake")
         operator_workflow = watch_payload.get("operatorWorkflow")
-        output_payload["escalationEnvelope"] = (
-            _cliq.ZohoCliqClient.extract_escalation_envelope_alias(watch_payload)
-        )
+        output_payload["escalationEnvelope"] = escalation_envelope
+        output_payload["escalationEnvelopeMetadata"] = escalation_envelope_metadata
         output_payload["watchIntake"] = (
             watch_intake if isinstance(watch_intake, dict) else {}
         )

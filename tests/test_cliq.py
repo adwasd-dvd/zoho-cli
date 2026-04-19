@@ -3353,8 +3353,56 @@ def test_watch_actions_prefer_top_level_escalation_envelope_with_nested_fallback
     )
     read_ack_action = cliq.ZohoCliqClient.build_watch_read_ack_action(watch_payload)
 
+    expected_metadata = {
+        "source": "mixed",
+        "sourcePath": "mixed",
+        "fromTopLevelAlias": True,
+        "fromNestedFallback": True,
+        "usedFieldFallback": True,
+        "fieldSources": {
+            "target": {
+                "source": "nested-envelope-defaults",
+                "sourcePath": (
+                    "operatorWorkflow.externalEscalation.handoff."
+                    "envelopeDefaults.target"
+                ),
+                "fromTopLevelAlias": False,
+                "fromNestedFallback": True,
+                "usedFallback": True,
+            },
+            "to": {
+                "source": "top-level-alias",
+                "sourcePath": "escalationEnvelope.to",
+                "fromTopLevelAlias": True,
+                "fromNestedFallback": False,
+                "usedFallback": False,
+            },
+            "subject": {
+                "source": "nested-envelope-defaults",
+                "sourcePath": (
+                    "operatorWorkflow.externalEscalation.handoff."
+                    "envelopeDefaults.subject"
+                ),
+                "fromTopLevelAlias": False,
+                "fromNestedFallback": True,
+                "usedFallback": True,
+            },
+            "body": {
+                "source": "nested-envelope-defaults",
+                "sourcePath": (
+                    "operatorWorkflow.externalEscalation.handoff.envelopeDefaults.body"
+                ),
+                "fromTopLevelAlias": False,
+                "fromNestedFallback": True,
+                "usedFallback": True,
+            },
+        },
+    }
+
     assert reply_action["escalationEnvelope"] == expected
     assert read_ack_action["escalationEnvelope"] == expected
+    assert reply_action["escalationEnvelopeMetadata"] == expected_metadata
+    assert read_ack_action["escalationEnvelopeMetadata"] == expected_metadata
 
 
 def test_build_watch_reply_action_selects_latest_message() -> None:

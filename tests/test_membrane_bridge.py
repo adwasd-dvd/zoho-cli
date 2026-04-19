@@ -553,6 +553,51 @@ def test_cliq_bridge_run_watch_file_prefers_top_level_escalation_envelope(
     }
     assert json.loads(seen["command"][7])["escalationEnvelope"] == expected_envelope
     assert payload["escalationEnvelope"] == expected_envelope
+    assert payload["escalationEnvelopeMetadata"] == {
+        "source": "mixed",
+        "sourcePath": "mixed",
+        "fromTopLevelAlias": True,
+        "fromNestedFallback": True,
+        "usedFieldFallback": True,
+        "fieldSources": {
+            "target": {
+                "source": "nested-envelope-defaults",
+                "sourcePath": (
+                    "operatorWorkflow.externalEscalation.handoff."
+                    "envelopeDefaults.target"
+                ),
+                "fromTopLevelAlias": False,
+                "fromNestedFallback": True,
+                "usedFallback": True,
+            },
+            "to": {
+                "source": "top-level-alias",
+                "sourcePath": "escalationEnvelope.to",
+                "fromTopLevelAlias": True,
+                "fromNestedFallback": False,
+                "usedFallback": False,
+            },
+            "subject": {
+                "source": "nested-envelope-defaults",
+                "sourcePath": (
+                    "operatorWorkflow.externalEscalation.handoff."
+                    "envelopeDefaults.subject"
+                ),
+                "fromTopLevelAlias": False,
+                "fromNestedFallback": True,
+                "usedFallback": True,
+            },
+            "body": {
+                "source": "nested-envelope-defaults",
+                "sourcePath": (
+                    "operatorWorkflow.externalEscalation.handoff.envelopeDefaults.body"
+                ),
+                "fromTopLevelAlias": False,
+                "fromNestedFallback": True,
+                "usedFallback": True,
+            },
+        },
+    }
 
 
 def test_cliq_bridge_run_watch_file_infers_action_from_watch_context_seed(
@@ -857,6 +902,14 @@ def test_cliq_bridge_run_watch_file_preserves_explicit_action_override(
         "fromWatchLoopHint": False,
         "fromEscalationHint": False,
         "fromExplicitOverride": True,
+    }
+    assert payload["escalationEnvelopeMetadata"] == {
+        "source": "",
+        "sourcePath": "",
+        "fromTopLevelAlias": False,
+        "fromNestedFallback": False,
+        "usedFieldFallback": False,
+        "fieldSources": {},
     }
 
 

@@ -1141,60 +1141,235 @@ class ZohoCliqClient:
         cls,
         watch_payload: dict[str, Any],
     ) -> dict[str, Any]:
+        envelope, _metadata = (
+            cls._extract_external_handoff_envelope_defaults_with_metadata(watch_payload)
+        )
+        return envelope
+
+    @staticmethod
+    def _build_escalation_envelope_field_source_metadata(
+        *,
+        source: str,
+        source_path: str,
+        from_top_level_alias: bool,
+        from_nested_fallback: bool,
+    ) -> dict[str, Any]:
+        return {
+            "source": source,
+            "sourcePath": source_path,
+            "fromTopLevelAlias": from_top_level_alias,
+            "fromNestedFallback": from_nested_fallback,
+            "usedFallback": from_nested_fallback,
+        }
+
+    @classmethod
+    def _extract_external_handoff_envelope_defaults_with_metadata(
+        cls,
+        watch_payload: dict[str, Any],
+    ) -> tuple[dict[str, Any], dict[str, dict[str, Any]]]:
         workflow = cls._extract_operator_workflow(watch_payload)
         escalation = workflow.get("externalEscalation")
         if not isinstance(escalation, dict):
-            return {}
+            return {}, {}
         handoff = escalation.get("handoff")
         if not isinstance(handoff, dict):
-            return {}
+            return {}, {}
 
         envelope_defaults = handoff.get("envelopeDefaults")
         if isinstance(envelope_defaults, dict):
-            return cls._normalize_external_handoff_envelope_defaults(envelope_defaults)
+            return (
+                cls._normalize_external_handoff_envelope_defaults(envelope_defaults),
+                {
+                    "target": cls._build_escalation_envelope_field_source_metadata(
+                        source="nested-envelope-defaults",
+                        source_path=(
+                            "operatorWorkflow.externalEscalation.handoff."
+                            "envelopeDefaults.target"
+                        ),
+                        from_top_level_alias=False,
+                        from_nested_fallback=True,
+                    ),
+                    "to": cls._build_escalation_envelope_field_source_metadata(
+                        source="nested-envelope-defaults",
+                        source_path=(
+                            "operatorWorkflow.externalEscalation.handoff."
+                            "envelopeDefaults.to"
+                        ),
+                        from_top_level_alias=False,
+                        from_nested_fallback=True,
+                    ),
+                    "subject": cls._build_escalation_envelope_field_source_metadata(
+                        source="nested-envelope-defaults",
+                        source_path=(
+                            "operatorWorkflow.externalEscalation.handoff."
+                            "envelopeDefaults.subject"
+                        ),
+                        from_top_level_alias=False,
+                        from_nested_fallback=True,
+                    ),
+                    "body": cls._build_escalation_envelope_field_source_metadata(
+                        source="nested-envelope-defaults",
+                        source_path=(
+                            "operatorWorkflow.externalEscalation.handoff."
+                            "envelopeDefaults.body"
+                        ),
+                        from_top_level_alias=False,
+                        from_nested_fallback=True,
+                    ),
+                },
+            )
 
         payload_template = handoff.get("payloadTemplate")
         if isinstance(payload_template, dict):
-            return cls._build_external_handoff_envelope_defaults(payload_template)
-        return {}
+            return (
+                cls._build_external_handoff_envelope_defaults(payload_template),
+                {
+                    "target": cls._build_escalation_envelope_field_source_metadata(
+                        source="nested-payload-template",
+                        source_path=(
+                            "operatorWorkflow.externalEscalation.handoff."
+                            "payloadTemplate.target"
+                        ),
+                        from_top_level_alias=False,
+                        from_nested_fallback=True,
+                    ),
+                    "to": cls._build_escalation_envelope_field_source_metadata(
+                        source="nested-payload-template",
+                        source_path=(
+                            "operatorWorkflow.externalEscalation.handoff."
+                            "payloadTemplate.recipient"
+                        ),
+                        from_top_level_alias=False,
+                        from_nested_fallback=True,
+                    ),
+                    "subject": cls._build_escalation_envelope_field_source_metadata(
+                        source="nested-payload-template",
+                        source_path=(
+                            "operatorWorkflow.externalEscalation.handoff."
+                            "payloadTemplate.summary"
+                        ),
+                        from_top_level_alias=False,
+                        from_nested_fallback=True,
+                    ),
+                    "body": cls._build_escalation_envelope_field_source_metadata(
+                        source="nested-payload-template",
+                        source_path=(
+                            "operatorWorkflow.externalEscalation.handoff."
+                            "payloadTemplate.reason"
+                        ),
+                        from_top_level_alias=False,
+                        from_nested_fallback=True,
+                    ),
+                },
+            )
+        return {}, {}
+
+    @classmethod
+    def _resolve_escalation_envelope_alias_with_metadata(
+        cls,
+        watch_payload: dict[str, Any],
+    ) -> tuple[dict[str, Any], dict[str, Any]]:
+        alias = watch_payload.get("escalationEnvelope")
+        fallback, fallback_sources = (
+            cls._extract_external_handoff_envelope_defaults_with_metadata(watch_payload)
+        )
+        fields = ("target", "to", "subject", "body")
+
+        if not isinstance(alias, dict):
+            if not fallback:
+                return {}, {
+                    "source": "",
+                    "sourcePath": "",
+                    "fromTopLevelAlias": False,
+                    "fromNestedFallback": False,
+                    "usedFieldFallback": False,
+                    "fieldSources": {},
+                }
+            return {key: fallback[key] for key in fields}, {
+                "source": "nested-fallback",
+                "sourcePath": "operatorWorkflow.externalEscalation.handoff",
+                "fromTopLevelAlias": False,
+                "fromNestedFallback": True,
+                "usedFieldFallback": True,
+                "fieldSources": {key: fallback_sources[key] for key in fields},
+            }
+
+        normalized_alias = cls._normalize_external_handoff_envelope_defaults(alias)
+        field_sources: dict[str, dict[str, Any]] = {}
+        resolved: dict[str, Any] = {}
+
+        for key in fields:
+            if key in alias:
+                resolved[key] = normalized_alias[key]
+                field_sources[key] = (
+                    cls._build_escalation_envelope_field_source_metadata(
+                        source="top-level-alias",
+                        source_path=f"escalationEnvelope.{key}",
+                        from_top_level_alias=True,
+                        from_nested_fallback=False,
+                    )
+                )
+                continue
+            if key in fallback_sources:
+                resolved[key] = fallback[key]
+                field_sources[key] = fallback_sources[key]
+                continue
+            resolved[key] = normalized_alias[key]
+            field_sources[key] = cls._build_escalation_envelope_field_source_metadata(
+                source="implicit-empty",
+                source_path="",
+                from_top_level_alias=False,
+                from_nested_fallback=False,
+            )
+
+        alias_count = sum(
+            1 for item in field_sources.values() if item.get("fromTopLevelAlias")
+        )
+        fallback_count = sum(
+            1 for item in field_sources.values() if item.get("fromNestedFallback")
+        )
+        implicit_count = len(field_sources) - alias_count - fallback_count
+
+        source = "mixed"
+        source_path = "mixed"
+        if alias_count == len(fields):
+            source = "top-level-alias"
+            source_path = "escalationEnvelope"
+        elif fallback_count == len(fields):
+            source = "nested-fallback"
+            source_path = "operatorWorkflow.externalEscalation.handoff"
+        elif implicit_count == len(fields):
+            source = "implicit-empty"
+            source_path = ""
+
+        return resolved, {
+            "source": source,
+            "sourcePath": source_path,
+            "fromTopLevelAlias": alias_count > 0,
+            "fromNestedFallback": fallback_count > 0,
+            "usedFieldFallback": fallback_count > 0,
+            "fieldSources": field_sources,
+        }
 
     @classmethod
     def extract_escalation_envelope_alias(
         cls,
         watch_payload: dict[str, Any],
     ) -> dict[str, Any]:
-        alias = watch_payload.get("escalationEnvelope")
-        fallback = cls._extract_external_handoff_envelope_defaults(watch_payload)
-        if not isinstance(alias, dict):
-            return fallback
-
-        normalized_alias = cls._normalize_external_handoff_envelope_defaults(alias)
-        if not fallback:
-            return normalized_alias
-
-        target = (
-            normalized_alias["target"]
-            if "target" in alias
-            else dict(fallback.get("target") or {})
+        envelope, _metadata = cls._resolve_escalation_envelope_alias_with_metadata(
+            watch_payload
         )
-        return {
-            "target": target,
-            "to": (
-                normalized_alias["to"]
-                if "to" in alias
-                else str(fallback.get("to") or "")
-            ),
-            "subject": (
-                normalized_alias["subject"]
-                if "subject" in alias
-                else str(fallback.get("subject") or "")
-            ),
-            "body": (
-                normalized_alias["body"]
-                if "body" in alias
-                else str(fallback.get("body") or "")
-            ),
-        }
+        return envelope
+
+    @classmethod
+    def extract_escalation_envelope_alias_metadata(
+        cls,
+        watch_payload: dict[str, Any],
+    ) -> dict[str, Any]:
+        _envelope, metadata = cls._resolve_escalation_envelope_alias_with_metadata(
+            watch_payload
+        )
+        return metadata
 
     @classmethod
     def build_watch_context_seed(
@@ -1349,11 +1524,16 @@ class ZohoCliqClient:
                 break
 
         target_id = cls._extract_message_id(target or {})
+        escalation_envelope = cls.extract_escalation_envelope_alias(watch_payload)
+        escalation_envelope_metadata = cls.extract_escalation_envelope_alias_metadata(
+            watch_payload
+        )
         return {
             "action": "reply-latest",
             "chatId": resolved_chat,
             "channelId": resolved_channel,
-            "escalationEnvelope": cls.extract_escalation_envelope_alias(watch_payload),
+            "escalationEnvelope": escalation_envelope,
+            "escalationEnvelopeMetadata": escalation_envelope_metadata,
             "watchIntake": watch_intake,
             "operatorWorkflow": operator_workflow,
             "newCount": watch_payload.get("newCount", len(messages)),
@@ -1403,11 +1583,16 @@ class ZohoCliqClient:
                     break
 
         target_id = explicit_target or cls._extract_message_id(target or {})
+        escalation_envelope = cls.extract_escalation_envelope_alias(watch_payload)
+        escalation_envelope_metadata = cls.extract_escalation_envelope_alias_metadata(
+            watch_payload
+        )
         return {
             "action": "read-ack-latest",
             "chatId": resolved_chat,
             "channelId": resolved_channel,
-            "escalationEnvelope": cls.extract_escalation_envelope_alias(watch_payload),
+            "escalationEnvelope": escalation_envelope,
+            "escalationEnvelopeMetadata": escalation_envelope_metadata,
             "watchIntake": watch_intake,
             "operatorWorkflow": operator_workflow,
             "newCount": watch_payload.get("newCount", len(messages)),

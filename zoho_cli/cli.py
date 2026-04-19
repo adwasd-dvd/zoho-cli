@@ -1920,8 +1920,13 @@ def cliq_bridge_run(
                     ]
                 )
                 escalation_hint = escalation.get("actionHint")
+                escalation_hint_source_root = f"{escalation_source_root}.actionHint"
+                if not isinstance(escalation_hint, dict):
+                    escalation_hint = escalation.get("action_hint")
+                    escalation_hint_source_root = (
+                        f"{escalation_source_root}.action_hint"
+                    )
                 if isinstance(escalation_hint, dict):
-                    escalation_hint_source_root = f"{escalation_source_root}.actionHint"
                     escalation_candidates.extend(
                         [
                             (
@@ -1947,6 +1952,12 @@ def cliq_bridge_run(
                     (
                         escalation.get("defaultAction"),
                         f"{escalation_source_root}.defaultAction",
+                    )
+                )
+                escalation_candidates.append(
+                    (
+                        escalation.get("default_action"),
+                        f"{escalation_source_root}.default_action",
                     )
                 )
 
@@ -9119,42 +9130,58 @@ def cliq_watch_act(
     selected_action = (action or "").strip().lower()
     selected_action_source = ""
     selected_action_source_path = ""
+    workflow_source_root = "operatorWorkflow"
+    workflow = watch_payload.get(workflow_source_root)
+    if not isinstance(workflow, dict):
+        workflow_source_root = "operator_workflow"
+        workflow = watch_payload.get(workflow_source_root)
+    if not isinstance(workflow, dict):
+        workflow_source_root = ""
+        workflow = {}
+
     if selected_action:
         selected_action_source = "explicit-override"
         selected_action_source_path = "--action"
 
     if escalation_action and not selected_action:
-        workflow = watch_payload.get("operatorWorkflow")
         escalation_action_hint = ""
         escalation_action_hint_path = ""
-        if isinstance(workflow, dict):
+        if workflow_source_root:
             escalation = workflow.get("externalEscalation")
+            escalation_source_root = f"{workflow_source_root}.externalEscalation"
+            if not isinstance(escalation, dict):
+                escalation = workflow.get("external_escalation")
+                escalation_source_root = f"{workflow_source_root}.external_escalation"
             if isinstance(escalation, dict):
                 candidates: list[tuple[Any, str]] = [
                     (
                         escalation.get("watchActAction"),
-                        "operatorWorkflow.externalEscalation.watchActAction",
+                        f"{escalation_source_root}.watchActAction",
                     ),
                     (
                         escalation.get("watch_act_action"),
-                        "operatorWorkflow.externalEscalation.watch_act_action",
+                        f"{escalation_source_root}.watch_act_action",
                     ),
                 ]
                 hint = escalation.get("actionHint")
+                hint_source_root = f"{escalation_source_root}.actionHint"
+                if not isinstance(hint, dict):
+                    hint = escalation.get("action_hint")
+                    hint_source_root = f"{escalation_source_root}.action_hint"
                 if isinstance(hint, dict):
                     candidates.extend(
                         [
                             (
                                 hint.get("watchActAction"),
-                                "operatorWorkflow.externalEscalation.actionHint.watchActAction",
+                                f"{hint_source_root}.watchActAction",
                             ),
                             (
                                 hint.get("watch_act_action"),
-                                "operatorWorkflow.externalEscalation.actionHint.watch_act_action",
+                                f"{hint_source_root}.watch_act_action",
                             ),
                             (
                                 hint.get("action"),
-                                "operatorWorkflow.externalEscalation.actionHint.action",
+                                f"{hint_source_root}.action",
                             ),
                         ]
                     )
@@ -9175,33 +9202,40 @@ def cliq_watch_act(
         selected_action_source_path = escalation_action_hint_path
 
     if not selected_action:
-        workflow = watch_payload.get("operatorWorkflow")
         watch_loop_hint = ""
         watch_loop_hint_path = ""
-        if isinstance(workflow, dict):
+        if workflow_source_root:
             internal_loop = workflow.get("internalLoop")
+            internal_loop_source_root = f"{workflow_source_root}.internalLoop"
+            if not isinstance(internal_loop, dict):
+                internal_loop = workflow.get("internal_loop")
+                internal_loop_source_root = f"{workflow_source_root}.internal_loop"
             if isinstance(internal_loop, dict):
                 candidates: list[tuple[Any, str]] = [
                     (
                         internal_loop.get("watchActAction"),
-                        "operatorWorkflow.internalLoop.watchActAction",
+                        f"{internal_loop_source_root}.watchActAction",
                     ),
                     (
                         internal_loop.get("watch_act_action"),
-                        "operatorWorkflow.internalLoop.watch_act_action",
+                        f"{internal_loop_source_root}.watch_act_action",
                     ),
                 ]
                 hint = internal_loop.get("actionHint")
+                hint_source_root = f"{internal_loop_source_root}.actionHint"
+                if not isinstance(hint, dict):
+                    hint = internal_loop.get("action_hint")
+                    hint_source_root = f"{internal_loop_source_root}.action_hint"
                 if isinstance(hint, dict):
                     candidates.extend(
                         [
                             (
                                 hint.get("watchActAction"),
-                                "operatorWorkflow.internalLoop.actionHint.watchActAction",
+                                f"{hint_source_root}.watchActAction",
                             ),
                             (
                                 hint.get("watch_act_action"),
-                                "operatorWorkflow.internalLoop.actionHint.watch_act_action",
+                                f"{hint_source_root}.watch_act_action",
                             ),
                         ]
                     )
@@ -9209,11 +9243,11 @@ def cliq_watch_act(
                     [
                         (
                             internal_loop.get("defaultAction"),
-                            "operatorWorkflow.internalLoop.defaultAction",
+                            f"{internal_loop_source_root}.defaultAction",
                         ),
                         (
                             internal_loop.get("default_action"),
-                            "operatorWorkflow.internalLoop.default_action",
+                            f"{internal_loop_source_root}.default_action",
                         ),
                     ]
                 )

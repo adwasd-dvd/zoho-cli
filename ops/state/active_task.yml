@@ -4,10 +4,10 @@ module: cliq
 stage: in_progress
 status: in_progress
 owner: coder
-updated_at: '2026-04-19T18:47:22Z'
+updated_at: '2026-04-19T19:13:34Z'
 success_criteria:
 - add an initial cliq-195 operator-workflow packaging contract to watch-context output without breaking existing watch-loop consumers
 - preserve the operator-workflow contract through watch-act action payload/result surfaces used by automation loops
 - keep focused watch-context/watch-act verification green while deferred external blockers stay capability-gated
 next_if_done: if focused and medium-scope cliq-195 verification remain green, continue the next operator-workflow packaging increment without regressing deferred capability-gated blockers.
-next_step: "after pinning bridge-run --escalation-action snake_case escalation-hint bridge_action_id override parity coverage green, continue the next thin cliq-195 adapter-facing operator-workflow packaging increment (prefer escalation-action top-level bridgeActionId/bridge_action_id parity coverage in bridge-run)."
+next_step: "after pinning bridge-run --escalation-action top-level externalEscalation bridgeActionId/bridge_action_id override parity coverage green, continue the next thin cliq-195 adapter-facing operator-workflow packaging increment (prefer escalation-action top-level actionId/action_id parity coverage in bridge-run)."

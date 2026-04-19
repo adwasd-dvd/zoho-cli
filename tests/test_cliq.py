@@ -3227,6 +3227,36 @@ def test_build_watch_reply_action_preserves_watch_intake_metadata() -> None:
     }
 
 
+def test_build_watch_reply_action_accepts_snake_case_watch_intake_alias() -> None:
+    action = cliq.ZohoCliqClient.build_watch_reply_action(
+        {
+            "chatId": "CT_1",
+            "channelId": "O1",
+            "watch_intake": {
+                "triggerMode": "web-notification-first",
+                "consume": {
+                    "actionId": "watch-loop",
+                    "ackAction": "read-ack-latest",
+                    "ackRequired": True,
+                },
+            },
+            "messages": [
+                {"messageId": "M1", "senderId": "U1", "text": "latest"},
+            ],
+        },
+        text="ack",
+    )
+
+    assert action["watchIntake"] == {
+        "triggerMode": "web-notification-first",
+        "consume": {
+            "actionId": "watch-loop",
+            "ackAction": "read-ack-latest",
+            "ackRequired": True,
+        },
+    }
+
+
 def test_build_watch_read_ack_action_preserves_watch_intake_metadata() -> None:
     action = cliq.ZohoCliqClient.build_watch_read_ack_action(
         {
@@ -3527,6 +3557,93 @@ def test_watch_actions_accept_snake_case_escalation_envelope_alias() -> None:
                 "fromTopLevelAlias": False,
                 "fromNestedFallback": True,
                 "usedFallback": True,
+            },
+        },
+    }
+
+
+def test_watch_actions_accept_top_level_payload_template_field_aliases() -> None:
+    watch_payload = {
+        "chatId": "CT_1",
+        "channelId": "O1",
+        "escalationEnvelope": {
+            "recipient": "ops@happy-distro.co.uk",
+            "summary": "Escalation subject",
+            "reason": "Escalation body",
+        },
+        "operatorWorkflow": {
+            "externalEscalation": {
+                "handoff": {
+                    "envelopeDefaults": {
+                        "target": {
+                            "kind": "external-contact",
+                            "channel": "mail",
+                            "defaultAction": "notify-mail",
+                        },
+                        "to": "fallback@happy-distro.co.uk",
+                        "subject": "Fallback subject",
+                        "body": "Fallback body",
+                    }
+                }
+            }
+        },
+        "messages": [
+            {"messageId": "M1", "senderId": "U1", "text": "latest"},
+        ],
+    }
+
+    reply_action = cliq.ZohoCliqClient.build_watch_reply_action(
+        watch_payload,
+        text="ack",
+    )
+
+    assert reply_action["escalationEnvelope"] == {
+        "target": {
+            "kind": "external-contact",
+            "channel": "mail",
+            "defaultAction": "notify-mail",
+        },
+        "to": "ops@happy-distro.co.uk",
+        "subject": "Escalation subject",
+        "body": "Escalation body",
+    }
+    assert reply_action["escalationEnvelopeMetadata"] == {
+        "source": "mixed",
+        "sourcePath": "mixed",
+        "fromTopLevelAlias": True,
+        "fromNestedFallback": True,
+        "usedFieldFallback": True,
+        "fieldSources": {
+            "target": {
+                "source": "nested-envelope-defaults",
+                "sourcePath": (
+                    "operatorWorkflow.externalEscalation.handoff."
+                    "envelopeDefaults.target"
+                ),
+                "fromTopLevelAlias": False,
+                "fromNestedFallback": True,
+                "usedFallback": True,
+            },
+            "to": {
+                "source": "top-level-alias",
+                "sourcePath": "escalationEnvelope.recipient",
+                "fromTopLevelAlias": True,
+                "fromNestedFallback": False,
+                "usedFallback": False,
+            },
+            "subject": {
+                "source": "top-level-alias",
+                "sourcePath": "escalationEnvelope.summary",
+                "fromTopLevelAlias": True,
+                "fromNestedFallback": False,
+                "usedFallback": False,
+            },
+            "body": {
+                "source": "top-level-alias",
+                "sourcePath": "escalationEnvelope.reason",
+                "fromTopLevelAlias": True,
+                "fromNestedFallback": False,
+                "usedFallback": False,
             },
         },
     }

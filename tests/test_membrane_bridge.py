@@ -731,6 +731,114 @@ def test_cliq_bridge_run_watch_file_accepts_snake_case_escalation_envelope_alias
     }
 
 
+def test_cliq_bridge_run_watch_file_accepts_payload_template_field_aliases(
+    tmp_path: Path,
+    mock_config: Path,
+) -> None:
+    seen: dict[str, Any] = {}
+
+    def _fake_run(*a, **kw):
+        seen["command"] = a[0]
+        return subprocess.CompletedProcess(
+            args=a[0],
+            returncode=0,
+            stdout=json.dumps({"ok": True}),
+            stderr="",
+        )
+
+    watch_payload = {
+        "chatId": "CT_1",
+        "escalation_envelope": {
+            "recipient": "ops@happy-distro.co.uk",
+            "summary": "Escalation subject",
+            "reason": "Escalation body",
+        },
+        "watchIntake": {"consume": {"actionId": "watch-loop"}},
+        "operatorWorkflow": {
+            "packageId": "cliq-195",
+            "externalEscalation": {
+                "handoff": {
+                    "envelopeDefaults": {
+                        "target": {
+                            "kind": "external-contact",
+                            "channel": "mail",
+                            "defaultAction": "notify-mail",
+                        },
+                        "to": "fallback@happy-distro.co.uk",
+                        "subject": "Fallback subject",
+                        "body": "Fallback body",
+                    }
+                }
+            },
+        },
+    }
+    watch_file = tmp_path / "watch-context.json"
+    watch_file.write_text(json.dumps(watch_payload))
+
+    with pytest.MonkeyPatch.context() as monkeypatch:
+        monkeypatch.setattr(
+            "zoho_cli.cli.shutil.which", lambda _name: "/usr/local/bin/membrane"
+        )
+        monkeypatch.setattr("zoho_cli.cli.subprocess.run", _fake_run)
+
+        result = runner.invoke(
+            app,
+            [
+                "--config",
+                str(mock_config),
+                "cliq",
+                "bridge-run",
+                "--watch-file",
+                str(watch_file),
+            ],
+        )
+
+    assert result.exit_code == 0, result.output
+    payload = json.loads(result.output)
+    assert json.loads(seen["command"][7])["escalationEnvelope"] == {
+        "target": {
+            "kind": "external-contact",
+            "channel": "mail",
+            "defaultAction": "notify-mail",
+        },
+        "to": "ops@happy-distro.co.uk",
+        "subject": "Escalation subject",
+        "body": "Escalation body",
+    }
+    assert payload["escalationEnvelopeMetadata"]["fieldSources"] == {
+        "target": {
+            "source": "nested-envelope-defaults",
+            "sourcePath": (
+                "operatorWorkflow.externalEscalation.handoff.envelopeDefaults.target"
+            ),
+            "fromTopLevelAlias": False,
+            "fromNestedFallback": True,
+            "usedFallback": True,
+        },
+        "to": {
+            "source": "top-level-alias",
+            "sourcePath": "escalation_envelope.recipient",
+            "fromTopLevelAlias": True,
+            "fromNestedFallback": False,
+            "usedFallback": False,
+        },
+        "subject": {
+            "source": "top-level-alias",
+            "sourcePath": "escalation_envelope.summary",
+            "fromTopLevelAlias": True,
+            "fromNestedFallback": False,
+            "usedFallback": False,
+        },
+        "body": {
+            "source": "top-level-alias",
+            "sourcePath": "escalation_envelope.reason",
+            "fromTopLevelAlias": True,
+            "fromNestedFallback": False,
+            "usedFallback": False,
+        },
+    }
+
+
 def test_cliq_bridge_run_watch_file_accepts_snake_case_nested_envelope_defaults_alias(
     tmp_path: Path,
     mock_config: Path,

@@ -1103,6 +1103,11 @@ class ZohoCliqClient:
         intake = watch_payload.get("watchIntake")
         if isinstance(intake, dict):
             return intake
+
+        snake_intake = watch_payload.get("watch_intake")
+        if isinstance(snake_intake, dict):
+            return snake_intake
+
         return {}
 
     @staticmethod
@@ -1168,11 +1173,20 @@ class ZohoCliqClient:
         envelope: dict[str, Any],
     ) -> dict[str, Any]:
         target = envelope.get("target")
+        to_value = envelope.get("to") if "to" in envelope else envelope.get("recipient")
+        subject_value = (
+            envelope.get("subject")
+            if "subject" in envelope
+            else envelope.get("summary")
+        )
+        body_value = (
+            envelope.get("body") if "body" in envelope else envelope.get("reason")
+        )
         return {
             "target": dict(target) if isinstance(target, dict) else {},
-            "to": str(envelope.get("to") or ""),
-            "subject": str(envelope.get("subject") or ""),
-            "body": str(envelope.get("body") or ""),
+            "to": str(to_value or ""),
+            "subject": str(subject_value or ""),
+            "body": str(body_value or ""),
         }
 
     @classmethod
@@ -1343,14 +1357,26 @@ class ZohoCliqClient:
         normalized_alias = cls._normalize_external_handoff_envelope_defaults(alias)
         field_sources: dict[str, dict[str, Any]] = {}
         resolved: dict[str, Any] = {}
+        alias_field_keys: dict[str, tuple[str, ...]] = {
+            "target": ("target",),
+            "to": ("to", "recipient"),
+            "subject": ("subject", "summary"),
+            "body": ("body", "reason"),
+        }
 
         for key in fields:
-            if key in alias:
+            alias_key = ""
+            for candidate in alias_field_keys[key]:
+                if candidate in alias:
+                    alias_key = candidate
+                    break
+
+            if alias_key:
                 resolved[key] = normalized_alias[key]
                 field_sources[key] = (
                     cls._build_escalation_envelope_field_source_metadata(
                         source="top-level-alias",
-                        source_path=f"{alias_source_root}.{key}",
+                        source_path=f"{alias_source_root}.{alias_key}",
                         from_top_level_alias=True,
                         from_nested_fallback=False,
                     )

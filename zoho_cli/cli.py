@@ -1887,49 +1887,58 @@ def cliq_bridge_run(
                 )
 
         escalation_candidates: list[tuple[Any, str]] = []
-        workflow = watch_payload.get("operatorWorkflow")
+        workflow_source_root = "operatorWorkflow"
+        workflow = watch_payload.get(workflow_source_root)
+        if not isinstance(workflow, dict):
+            workflow_source_root = "operator_workflow"
+            workflow = watch_payload.get(workflow_source_root)
         if isinstance(workflow, dict):
             escalation = workflow.get("externalEscalation")
+            escalation_source_root = f"{workflow_source_root}.externalEscalation"
+            if not isinstance(escalation, dict):
+                escalation = workflow.get("external_escalation")
+                escalation_source_root = f"{workflow_source_root}.external_escalation"
             if isinstance(escalation, dict):
                 escalation_candidates.extend(
                     [
                         (
                             escalation.get("bridgeActionId"),
-                            "operatorWorkflow.externalEscalation.bridgeActionId",
+                            f"{escalation_source_root}.bridgeActionId",
                         ),
                         (
                             escalation.get("bridge_action_id"),
-                            "operatorWorkflow.externalEscalation.bridge_action_id",
+                            f"{escalation_source_root}.bridge_action_id",
                         ),
                         (
                             escalation.get("actionId"),
-                            "operatorWorkflow.externalEscalation.actionId",
+                            f"{escalation_source_root}.actionId",
                         ),
                         (
                             escalation.get("action_id"),
-                            "operatorWorkflow.externalEscalation.action_id",
+                            f"{escalation_source_root}.action_id",
                         ),
                     ]
                 )
                 escalation_hint = escalation.get("actionHint")
                 if isinstance(escalation_hint, dict):
+                    escalation_hint_source_root = f"{escalation_source_root}.actionHint"
                     escalation_candidates.extend(
                         [
                             (
                                 escalation_hint.get("bridgeActionId"),
-                                "operatorWorkflow.externalEscalation.actionHint.bridgeActionId",
+                                f"{escalation_hint_source_root}.bridgeActionId",
                             ),
                             (
                                 escalation_hint.get("bridge_action_id"),
-                                "operatorWorkflow.externalEscalation.actionHint.bridge_action_id",
+                                f"{escalation_hint_source_root}.bridge_action_id",
                             ),
                             (
                                 escalation_hint.get("actionId"),
-                                "operatorWorkflow.externalEscalation.actionHint.actionId",
+                                f"{escalation_hint_source_root}.actionId",
                             ),
                             (
                                 escalation_hint.get("action_id"),
-                                "operatorWorkflow.externalEscalation.actionHint.action_id",
+                                f"{escalation_hint_source_root}.action_id",
                             ),
                         ]
                     )
@@ -1937,7 +1946,7 @@ def cliq_bridge_run(
                 escalation_candidates.append(
                     (
                         escalation.get("defaultAction"),
-                        "operatorWorkflow.externalEscalation.defaultAction",
+                        f"{escalation_source_root}.defaultAction",
                     )
                 )
 
@@ -2025,6 +2034,8 @@ def cliq_bridge_run(
     if watch_payload is not None:
         watch_intake = watch_payload.get("watchIntake")
         operator_workflow = watch_payload.get("operatorWorkflow")
+        if not isinstance(operator_workflow, dict):
+            operator_workflow = watch_payload.get("operator_workflow")
         escalation_envelope = _cliq.ZohoCliqClient.extract_escalation_envelope_alias(
             watch_payload
         )
@@ -2102,6 +2113,8 @@ def cliq_bridge_run(
     if watch_payload is not None:
         watch_intake = watch_payload.get("watchIntake")
         operator_workflow = watch_payload.get("operatorWorkflow")
+        if not isinstance(operator_workflow, dict):
+            operator_workflow = watch_payload.get("operator_workflow")
         output_payload["escalationEnvelope"] = escalation_envelope
         output_payload["escalationEnvelopeMetadata"] = escalation_envelope_metadata
         output_payload["watchIntake"] = (

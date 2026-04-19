@@ -1106,11 +1106,50 @@ class ZohoCliqClient:
         return {}
 
     @staticmethod
-    def _extract_operator_workflow(watch_payload: dict[str, Any]) -> dict[str, Any]:
+    def _extract_operator_workflow_with_source(
+        watch_payload: dict[str, Any],
+    ) -> tuple[dict[str, Any], str]:
         workflow = watch_payload.get("operatorWorkflow")
         if isinstance(workflow, dict):
-            return workflow
-        return {}
+            return workflow, "operatorWorkflow"
+
+        snake_workflow = watch_payload.get("operator_workflow")
+        if isinstance(snake_workflow, dict):
+            return snake_workflow, "operator_workflow"
+
+        return {}, ""
+
+    @classmethod
+    def _extract_operator_workflow(
+        cls, watch_payload: dict[str, Any]
+    ) -> dict[str, Any]:
+        workflow, _source_root = cls._extract_operator_workflow_with_source(
+            watch_payload
+        )
+        return workflow
+
+    @staticmethod
+    def _extract_handoff_source_path(
+        field_sources: dict[str, dict[str, Any]],
+    ) -> str:
+        markers = (
+            ".handoff.envelopeDefaults",
+            ".handoff.envelope_defaults",
+            ".handoff.payloadTemplate",
+            ".handoff.payload_template",
+        )
+        for key in ("target", "to", "subject", "body"):
+            source = field_sources.get(key)
+            if not isinstance(source, dict):
+                continue
+            source_path = str(source.get("sourcePath") or "")
+            if not source_path:
+                continue
+            for marker in markers:
+                marker_index = source_path.find(marker)
+                if marker_index >= 0:
+                    return source_path[: marker_index + len(".handoff")]
+        return ""
 
     @staticmethod
     def _build_external_handoff_envelope_defaults(
@@ -1167,13 +1206,18 @@ class ZohoCliqClient:
         cls,
         watch_payload: dict[str, Any],
     ) -> tuple[dict[str, Any], dict[str, dict[str, Any]]]:
-        workflow = cls._extract_operator_workflow(watch_payload)
+        workflow, workflow_source_root = cls._extract_operator_workflow_with_source(
+            watch_payload
+        )
+
+        if not workflow_source_root:
+            return {}, {}
 
         escalation = workflow.get("externalEscalation")
-        escalation_source_root = "operatorWorkflow.externalEscalation"
+        escalation_source_root = f"{workflow_source_root}.externalEscalation"
         if not isinstance(escalation, dict):
             escalation = workflow.get("external_escalation")
-            escalation_source_root = "operatorWorkflow.external_escalation"
+            escalation_source_root = f"{workflow_source_root}.external_escalation"
         if not isinstance(escalation, dict):
             return {}, {}
 
@@ -1286,9 +1330,10 @@ class ZohoCliqClient:
                     "usedFieldFallback": False,
                     "fieldSources": {},
                 }
+            fallback_source_path = cls._extract_handoff_source_path(fallback_sources)
             return {key: fallback[key] for key in fields}, {
                 "source": "nested-fallback",
-                "sourcePath": "operatorWorkflow.externalEscalation.handoff",
+                "sourcePath": fallback_source_path,
                 "fromTopLevelAlias": False,
                 "fromNestedFallback": True,
                 "usedFieldFallback": True,
@@ -1338,7 +1383,7 @@ class ZohoCliqClient:
             source_path = alias_source_root
         elif fallback_count == len(fields):
             source = "nested-fallback"
-            source_path = "operatorWorkflow.externalEscalation.handoff"
+            source_path = cls._extract_handoff_source_path(field_sources)
         elif implicit_count == len(fields):
             source = "implicit-empty"
             source_path = ""

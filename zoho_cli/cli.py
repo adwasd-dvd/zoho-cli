@@ -9284,6 +9284,14 @@ def cliq_watch_act(
                         escalation.get("action"),
                         f"{escalation_source_root}.action",
                     ),
+                    (
+                        escalation.get("actionId"),
+                        f"{escalation_source_root}.actionId",
+                    ),
+                    (
+                        escalation.get("action_id"),
+                        f"{escalation_source_root}.action_id",
+                    ),
                 ]
                 hint = escalation.get("actionHint")
                 hint_source_root = f"{escalation_source_root}.actionHint"
@@ -9304,6 +9312,14 @@ def cliq_watch_act(
                             (
                                 hint.get("action"),
                                 f"{hint_source_root}.action",
+                            ),
+                            (
+                                hint.get("actionId"),
+                                f"{hint_source_root}.actionId",
+                            ),
+                            (
+                                hint.get("action_id"),
+                                f"{hint_source_root}.action_id",
                             ),
                             (
                                 hint.get("defaultAction"),
@@ -9394,6 +9410,14 @@ def cliq_watch_act(
                             (
                                 hint.get("action"),
                                 f"{hint_source_root}.action",
+                            ),
+                            (
+                                hint.get("actionId"),
+                                f"{hint_source_root}.actionId",
+                            ),
+                            (
+                                hint.get("action_id"),
+                                f"{hint_source_root}.action_id",
                             ),
                             (
                                 hint.get("defaultAction"),

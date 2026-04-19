@@ -9412,6 +9412,14 @@ def cliq_watch_act(
                                 f"{hint_source_root}.action",
                             ),
                             (
+                                hint.get("bridgeActionId"),
+                                f"{hint_source_root}.bridgeActionId",
+                            ),
+                            (
+                                hint.get("bridge_action_id"),
+                                f"{hint_source_root}.bridge_action_id",
+                            ),
+                            (
                                 hint.get("actionId"),
                                 f"{hint_source_root}.actionId",
                             ),

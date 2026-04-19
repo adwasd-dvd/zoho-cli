@@ -464,6 +464,15 @@ def test_cliq_bridge_run_watch_file_forwards_watch_payload_and_action_hint(
                 },
             },
         },
+        "actionSource": "watch-loop-hint",
+        "actionSourcePath": "watchIntake.consume.actionId",
+        "actionSourceMetadata": {
+            "source": "watch-loop-hint",
+            "sourcePath": "watchIntake.consume.actionId",
+            "fromWatchLoopHint": True,
+            "fromEscalationHint": False,
+            "fromExplicitOverride": False,
+        },
         "watchIntake": watch_payload["watchIntake"],
         "operatorWorkflow": watch_payload["operatorWorkflow"],
     }
@@ -947,6 +956,15 @@ def test_cliq_bridge_run_watch_file_preserves_explicit_action_override(
             "fromNestedFallback": False,
             "usedFieldFallback": False,
             "fieldSources": {},
+        },
+        "actionSource": "explicit-override",
+        "actionSourcePath": "--action-id",
+        "actionSourceMetadata": {
+            "source": "explicit-override",
+            "sourcePath": "--action-id",
+            "fromWatchLoopHint": False,
+            "fromEscalationHint": False,
+            "fromExplicitOverride": True,
         },
     }
     payload = json.loads(result.output)

@@ -2037,6 +2037,12 @@ def cliq_bridge_run(
             "watchPayload": watch_payload,
             "escalationEnvelope": escalation_envelope,
             "escalationEnvelopeMetadata": escalation_envelope_metadata,
+            "actionSource": resolved_action_source,
+            "actionSourcePath": resolved_action_source_path,
+            "actionSourceMetadata": _build_action_source_metadata(
+                resolved_action_source,
+                resolved_action_source_path,
+            ),
             "watchIntake": watch_intake if isinstance(watch_intake, dict) else {},
             "operatorWorkflow": (
                 operator_workflow if isinstance(operator_workflow, dict) else {}
@@ -2064,6 +2070,15 @@ def cliq_bridge_run(
             merged_input.setdefault("escalationEnvelope", escalation_envelope)
             merged_input.setdefault(
                 "escalationEnvelopeMetadata", escalation_envelope_metadata
+            )
+            merged_input.setdefault("actionSource", resolved_action_source)
+            merged_input.setdefault("actionSourcePath", resolved_action_source_path)
+            merged_input.setdefault(
+                "actionSourceMetadata",
+                _build_action_source_metadata(
+                    resolved_action_source,
+                    resolved_action_source_path,
+                ),
             )
             resolved_input_text = json.dumps(merged_input, ensure_ascii=False)
 

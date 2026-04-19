@@ -1974,6 +1974,19 @@ def cliq_bridge_run(
                         ]
                     )
 
+                watch_candidates.extend(
+                    [
+                        (
+                            internal_loop.get("defaultAction"),
+                            f"{internal_loop_source_root}.defaultAction",
+                        ),
+                        (
+                            internal_loop.get("default_action"),
+                            f"{internal_loop_source_root}.default_action",
+                        ),
+                    ]
+                )
+
             escalation = workflow.get("externalEscalation")
             escalation_source_root = f"{workflow_source_root}.externalEscalation"
             if not isinstance(escalation, dict):

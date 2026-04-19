@@ -4,10 +4,10 @@ module: cliq
 stage: in_progress
 status: in_progress
 owner: coder
-updated_at: '2026-04-19T15:04:14Z'
+updated_at: '2026-04-19T15:20:31Z'
 success_criteria:
 - add an initial cliq-195 operator-workflow packaging contract to watch-context output without breaking existing watch-loop consumers
 - preserve the operator-workflow contract through watch-act action payload/result surfaces used by automation loops
 - keep focused watch-context/watch-act verification green while deferred external blockers stay capability-gated
 next_if_done: if focused and medium-scope cliq-195 verification remain green, continue the next operator-workflow packaging increment without regressing deferred capability-gated blockers.
-next_step: "after adding internal-loop action-hint `defaultAction`/`default_action` fallback parity for watch-act + bridge-run at 2026-04-19T15:04:14Z (focused tests: `2 passed in 0.10s`), continue the next thin no-behavior-change cliq-195 adapter-facing operator-workflow packaging increment while keeping deferred external blockers capability-gated."
+next_step: "after adding focused camelCase internal-loop action-hint `defaultAction` regression coverage for watch-act + bridge-run at 2026-04-19T15:20:31Z (focused tests: `2 passed in 0.68s`), continue the next thin no-behavior-change cliq-195 adapter-facing operator-workflow packaging increment while keeping deferred external blockers capability-gated."

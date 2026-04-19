@@ -4,10 +4,10 @@ module: cliq
 stage: in_progress
 status: in_progress
 owner: coder
-updated_at: '2026-04-19T16:15:00Z'
+updated_at: '2026-04-19T16:30:00Z'
 success_criteria:
 - add an initial cliq-195 operator-workflow packaging contract to watch-context output without breaking existing watch-loop consumers
 - preserve the operator-workflow contract through watch-act action payload/result surfaces used by automation loops
 - keep focused watch-context/watch-act verification green while deferred external blockers stay capability-gated
 next_if_done: if focused and medium-scope cliq-195 verification remain green, continue the next operator-workflow packaging increment without regressing deferred capability-gated blockers.
-next_step: "after the 2026-04-19T16:15:00Z focused watch-act regression-coverage increment validated internal-loop top-level action alias parity for both snake_case and camelCase workflow roots (`tests/test_cli.py::test_cliq_watch_act_uses_snake_case_internal_loop_top_level_action`, `tests/test_cli.py::test_cliq_watch_act_uses_camel_case_internal_loop_top_level_action` -> `2 passed`; `./.venv/bin/ruff format --check tests/test_cli.py` clean), continue the next thin cliq-195 adapter-facing operator-workflow packaging increment without behavior regression."
+next_step: "after the 2026-04-19T16:30:00Z focused watch-act compatibility increment validated internal-loop top-level actionId/action_id alias parity for both snake_case and camelCase workflow roots (`tests/test_cli.py::test_cliq_watch_act_uses_snake_case_internal_loop_top_level_action_id`, `tests/test_cli.py::test_cliq_watch_act_uses_camel_case_internal_loop_top_level_action_id` -> `4 passed` with companion top-level action checks; `./.venv/bin/ruff format --check zoho_cli/cli.py tests/test_cli.py` clean), continue the next thin cliq-195 adapter-facing operator-workflow packaging increment without behavior regression."

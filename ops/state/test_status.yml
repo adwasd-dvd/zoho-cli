@@ -1,10 +1,13 @@
-last_run_at: "2026-04-19T16:15:00Z"
+last_run_at: "2026-04-19T16:30:00Z"
 last_result: success
-current_focus: cliq-195-watch-act-top-level-action-regression-coverage
+current_focus: cliq-195-watch-act-top-level-action-id-regression-coverage
 suites:
   unit:
     status: success
     notes:
+      - "focused cliq-195 watch-act compatibility increment at 2026-04-19T16:30:00Z"
+      - "python3.11 -m pytest -q tests/test_cli.py::test_cliq_watch_act_uses_snake_case_internal_loop_top_level_action_id tests/test_cli.py::test_cliq_watch_act_uses_camel_case_internal_loop_top_level_action_id tests/test_cli.py::test_cliq_watch_act_uses_snake_case_internal_loop_top_level_action tests/test_cli.py::test_cliq_watch_act_uses_camel_case_internal_loop_top_level_action -> 4 passed in 0.69s"
+      - "./.venv/bin/ruff format --check zoho_cli/cli.py tests/test_cli.py -> 2 files already formatted"
       - "focused cliq-195 watch-act regression-coverage refresh at 2026-04-19T16:15:00Z"
       - "python3.11 -m pytest -q tests/test_cli.py::test_cliq_watch_act_uses_snake_case_internal_loop_top_level_action tests/test_cli.py::test_cliq_watch_act_uses_camel_case_internal_loop_top_level_action -> 2 passed in 0.62s"
       - "./.venv/bin/ruff format --check tests/test_cli.py -> 1 file already formatted"

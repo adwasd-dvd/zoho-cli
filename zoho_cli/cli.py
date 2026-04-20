@@ -9395,6 +9395,14 @@ def cliq_watch_act(
                         f"{internal_loop_source_root}.watch_act_action",
                     ),
                     (
+                        internal_loop.get("bridgeActionId"),
+                        f"{internal_loop_source_root}.bridgeActionId",
+                    ),
+                    (
+                        internal_loop.get("bridge_action_id"),
+                        f"{internal_loop_source_root}.bridge_action_id",
+                    ),
+                    (
                         internal_loop.get("action"),
                         f"{internal_loop_source_root}.action",
                     ),

@@ -2013,8 +2013,16 @@ def cliq_bridge_run(
                             f"{internal_loop_source_root}.defaultActionId",
                         ),
                         (
+                            internal_loop.get("defaultAction_id"),
+                            f"{internal_loop_source_root}.defaultAction_id",
+                        ),
+                        (
                             internal_loop.get("default_action_id"),
                             f"{internal_loop_source_root}.default_action_id",
+                        ),
+                        (
+                            internal_loop.get("default_actionId"),
+                            f"{internal_loop_source_root}.default_actionId",
                         ),
                         (
                             internal_loop.get("watchActAction"),
@@ -9644,8 +9652,16 @@ def cliq_watch_act(
                             f"{internal_loop_source_root}.defaultActionId",
                         ),
                         (
+                            internal_loop.get("defaultAction_id"),
+                            f"{internal_loop_source_root}.defaultAction_id",
+                        ),
+                        (
                             internal_loop.get("default_action_id"),
                             f"{internal_loop_source_root}.default_action_id",
+                        ),
+                        (
+                            internal_loop.get("default_actionId"),
+                            f"{internal_loop_source_root}.default_actionId",
                         ),
                     ]
                 )

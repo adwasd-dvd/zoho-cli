@@ -1984,6 +1984,10 @@ def cliq_bridge_run(
                                 f"{internal_hint_source_root}.defaultActionId",
                             ),
                             (
+                                internal_hint.get("defaultActionID"),
+                                f"{internal_hint_source_root}.defaultActionID",
+                            ),
+                            (
                                 internal_hint.get("defaultAction_id"),
                                 f"{internal_hint_source_root}.defaultAction_id",
                             ),
@@ -1994,6 +1998,10 @@ def cliq_bridge_run(
                             (
                                 internal_hint.get("default_actionId"),
                                 f"{internal_hint_source_root}.default_actionId",
+                            ),
+                            (
+                                internal_hint.get("default_actionID"),
+                                f"{internal_hint_source_root}.default_actionID",
                             ),
                             (
                                 internal_hint.get("watchActAction"),
@@ -2021,6 +2029,10 @@ def cliq_bridge_run(
                             f"{internal_loop_source_root}.defaultActionId",
                         ),
                         (
+                            internal_loop.get("defaultActionID"),
+                            f"{internal_loop_source_root}.defaultActionID",
+                        ),
+                        (
                             internal_loop.get("defaultAction_id"),
                             f"{internal_loop_source_root}.defaultAction_id",
                         ),
@@ -2031,6 +2043,10 @@ def cliq_bridge_run(
                         (
                             internal_loop.get("default_actionId"),
                             f"{internal_loop_source_root}.default_actionId",
+                        ),
+                        (
+                            internal_loop.get("default_actionID"),
+                            f"{internal_loop_source_root}.default_actionID",
                         ),
                         (
                             internal_loop.get("watchActAction"),
@@ -9639,6 +9655,10 @@ def cliq_watch_act(
                         f"{internal_loop_source_root}.defaultActionId",
                     ),
                     (
+                        internal_loop.get("defaultActionID"),
+                        f"{internal_loop_source_root}.defaultActionID",
+                    ),
+                    (
                         internal_loop.get("default_action_id"),
                         f"{internal_loop_source_root}.default_action_id",
                     ),
@@ -9692,6 +9712,10 @@ def cliq_watch_act(
                                 f"{hint_source_root}.defaultActionId",
                             ),
                             (
+                                hint.get("defaultActionID"),
+                                f"{hint_source_root}.defaultActionID",
+                            ),
+                            (
                                 hint.get("defaultAction_id"),
                                 f"{hint_source_root}.defaultAction_id",
                             ),
@@ -9702,6 +9726,10 @@ def cliq_watch_act(
                             (
                                 hint.get("default_actionId"),
                                 f"{hint_source_root}.default_actionId",
+                            ),
+                            (
+                                hint.get("default_actionID"),
+                                f"{hint_source_root}.default_actionID",
                             ),
                         ]
                     )
@@ -9720,6 +9748,10 @@ def cliq_watch_act(
                             f"{internal_loop_source_root}.defaultActionId",
                         ),
                         (
+                            internal_loop.get("defaultActionID"),
+                            f"{internal_loop_source_root}.defaultActionID",
+                        ),
+                        (
                             internal_loop.get("defaultAction_id"),
                             f"{internal_loop_source_root}.defaultAction_id",
                         ),
@@ -9730,6 +9762,10 @@ def cliq_watch_act(
                         (
                             internal_loop.get("default_actionId"),
                             f"{internal_loop_source_root}.default_actionId",
+                        ),
+                        (
+                            internal_loop.get("default_actionID"),
+                            f"{internal_loop_source_root}.default_actionID",
                         ),
                     ]
                 )

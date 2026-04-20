@@ -2076,6 +2076,10 @@ def cliq_bridge_run(
                             f"{escalation_source_root}.defaultActionId",
                         ),
                         (
+                            escalation.get("defaultActionID"),
+                            f"{escalation_source_root}.defaultActionID",
+                        ),
+                        (
                             escalation.get("defaultAction_id"),
                             f"{escalation_source_root}.defaultAction_id",
                         ),
@@ -2086,6 +2090,10 @@ def cliq_bridge_run(
                         (
                             escalation.get("default_actionId"),
                             f"{escalation_source_root}.default_actionId",
+                        ),
+                        (
+                            escalation.get("default_actionID"),
+                            f"{escalation_source_root}.default_actionID",
                         ),
                         (
                             escalation.get("watchActAction"),
@@ -2148,6 +2156,10 @@ def cliq_bridge_run(
                                 f"{escalation_hint_source_root}.defaultActionId",
                             ),
                             (
+                                escalation_hint.get("defaultActionID"),
+                                f"{escalation_hint_source_root}.defaultActionID",
+                            ),
+                            (
                                 escalation_hint.get("defaultAction_id"),
                                 f"{escalation_hint_source_root}.defaultAction_id",
                             ),
@@ -2158,6 +2170,10 @@ def cliq_bridge_run(
                             (
                                 escalation_hint.get("default_actionId"),
                                 f"{escalation_hint_source_root}.default_actionId",
+                            ),
+                            (
+                                escalation_hint.get("default_actionID"),
+                                f"{escalation_hint_source_root}.default_actionID",
                             ),
                         ]
                     )
@@ -2182,6 +2198,12 @@ def cliq_bridge_run(
                 )
                 escalation_candidates.append(
                     (
+                        escalation.get("defaultActionID"),
+                        f"{escalation_source_root}.defaultActionID",
+                    )
+                )
+                escalation_candidates.append(
+                    (
                         escalation.get("defaultAction_id"),
                         f"{escalation_source_root}.defaultAction_id",
                     )
@@ -2196,6 +2218,12 @@ def cliq_bridge_run(
                     (
                         escalation.get("default_actionId"),
                         f"{escalation_source_root}.default_actionId",
+                    )
+                )
+                escalation_candidates.append(
+                    (
+                        escalation.get("default_actionID"),
+                        f"{escalation_source_root}.default_actionID",
                     )
                 )
 
@@ -9425,6 +9453,10 @@ def cliq_watch_act(
                         f"{escalation_source_root}.defaultActionId",
                     ),
                     (
+                        escalation.get("defaultActionID"),
+                        f"{escalation_source_root}.defaultActionID",
+                    ),
+                    (
                         escalation.get("defaultAction_id"),
                         f"{escalation_source_root}.defaultAction_id",
                     ),
@@ -9435,6 +9467,10 @@ def cliq_watch_act(
                     (
                         escalation.get("default_actionId"),
                         f"{escalation_source_root}.default_actionId",
+                    ),
+                    (
+                        escalation.get("default_actionID"),
+                        f"{escalation_source_root}.default_actionID",
                     ),
                 ]
                 hint = escalation.get("actionHint")
@@ -9486,6 +9522,10 @@ def cliq_watch_act(
                                 f"{hint_source_root}.defaultActionId",
                             ),
                             (
+                                hint.get("defaultActionID"),
+                                f"{hint_source_root}.defaultActionID",
+                            ),
+                            (
                                 hint.get("defaultAction_id"),
                                 f"{hint_source_root}.defaultAction_id",
                             ),
@@ -9496,6 +9536,10 @@ def cliq_watch_act(
                             (
                                 hint.get("default_actionId"),
                                 f"{hint_source_root}.default_actionId",
+                            ),
+                            (
+                                hint.get("default_actionID"),
+                                f"{hint_source_root}.default_actionID",
                             ),
                         ]
                     )
@@ -9514,6 +9558,10 @@ def cliq_watch_act(
                             f"{escalation_source_root}.defaultActionId",
                         ),
                         (
+                            escalation.get("defaultActionID"),
+                            f"{escalation_source_root}.defaultActionID",
+                        ),
+                        (
                             escalation.get("defaultAction_id"),
                             f"{escalation_source_root}.defaultAction_id",
                         ),
@@ -9524,6 +9572,10 @@ def cliq_watch_act(
                         (
                             escalation.get("default_actionId"),
                             f"{escalation_source_root}.default_actionId",
+                        ),
+                        (
+                            escalation.get("default_actionID"),
+                            f"{escalation_source_root}.default_actionID",
                         ),
                     ]
                 )

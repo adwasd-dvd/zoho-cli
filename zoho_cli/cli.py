@@ -1980,6 +1980,14 @@ def cliq_bridge_run(
                                 f"{internal_hint_source_root}.default_action",
                             ),
                             (
+                                internal_hint.get("defaultActionId"),
+                                f"{internal_hint_source_root}.defaultActionId",
+                            ),
+                            (
+                                internal_hint.get("default_action_id"),
+                                f"{internal_hint_source_root}.default_action_id",
+                            ),
+                            (
                                 internal_hint.get("watchActAction"),
                                 f"{internal_hint_source_root}.watchActAction",
                             ),
@@ -1999,6 +2007,14 @@ def cliq_bridge_run(
                         (
                             internal_loop.get("default_action"),
                             f"{internal_loop_source_root}.default_action",
+                        ),
+                        (
+                            internal_loop.get("defaultActionId"),
+                            f"{internal_loop_source_root}.defaultActionId",
+                        ),
+                        (
+                            internal_loop.get("default_action_id"),
+                            f"{internal_loop_source_root}.default_action_id",
                         ),
                         (
                             internal_loop.get("watchActAction"),
@@ -2038,6 +2054,14 @@ def cliq_bridge_run(
                         (
                             escalation.get("action"),
                             f"{escalation_source_root}.action",
+                        ),
+                        (
+                            escalation.get("defaultActionId"),
+                            f"{escalation_source_root}.defaultActionId",
+                        ),
+                        (
+                            escalation.get("default_action_id"),
+                            f"{escalation_source_root}.default_action_id",
                         ),
                         (
                             escalation.get("watchActAction"),
@@ -2095,6 +2119,14 @@ def cliq_bridge_run(
                                 escalation_hint.get("default_action"),
                                 f"{escalation_hint_source_root}.default_action",
                             ),
+                            (
+                                escalation_hint.get("defaultActionId"),
+                                f"{escalation_hint_source_root}.defaultActionId",
+                            ),
+                            (
+                                escalation_hint.get("default_action_id"),
+                                f"{escalation_hint_source_root}.default_action_id",
+                            ),
                         ]
                     )
 
@@ -2108,6 +2140,18 @@ def cliq_bridge_run(
                     (
                         escalation.get("default_action"),
                         f"{escalation_source_root}.default_action",
+                    )
+                )
+                escalation_candidates.append(
+                    (
+                        escalation.get("defaultActionId"),
+                        f"{escalation_source_root}.defaultActionId",
+                    )
+                )
+                escalation_candidates.append(
+                    (
+                        escalation.get("default_action_id"),
+                        f"{escalation_source_root}.default_action_id",
                     )
                 )
 
@@ -9332,6 +9376,14 @@ def cliq_watch_act(
                         escalation.get("bridge_action_id"),
                         f"{escalation_source_root}.bridge_action_id",
                     ),
+                    (
+                        escalation.get("defaultActionId"),
+                        f"{escalation_source_root}.defaultActionId",
+                    ),
+                    (
+                        escalation.get("default_action_id"),
+                        f"{escalation_source_root}.default_action_id",
+                    ),
                 ]
                 hint = escalation.get("actionHint")
                 hint_source_root = f"{escalation_source_root}.actionHint"
@@ -9377,6 +9429,14 @@ def cliq_watch_act(
                                 hint.get("default_action"),
                                 f"{hint_source_root}.default_action",
                             ),
+                            (
+                                hint.get("defaultActionId"),
+                                f"{hint_source_root}.defaultActionId",
+                            ),
+                            (
+                                hint.get("default_action_id"),
+                                f"{hint_source_root}.default_action_id",
+                            ),
                         ]
                     )
                 candidates.extend(
@@ -9388,6 +9448,14 @@ def cliq_watch_act(
                         (
                             escalation.get("default_action"),
                             f"{escalation_source_root}.default_action",
+                        ),
+                        (
+                            escalation.get("defaultActionId"),
+                            f"{escalation_source_root}.defaultActionId",
+                        ),
+                        (
+                            escalation.get("default_action_id"),
+                            f"{escalation_source_root}.default_action_id",
                         ),
                     ]
                 )
@@ -9446,6 +9514,14 @@ def cliq_watch_act(
                         internal_loop.get("action_id"),
                         f"{internal_loop_source_root}.action_id",
                     ),
+                    (
+                        internal_loop.get("defaultActionId"),
+                        f"{internal_loop_source_root}.defaultActionId",
+                    ),
+                    (
+                        internal_loop.get("default_action_id"),
+                        f"{internal_loop_source_root}.default_action_id",
+                    ),
                 ]
                 hint = internal_loop.get("actionHint")
                 hint_source_root = f"{internal_loop_source_root}.actionHint"
@@ -9491,6 +9567,14 @@ def cliq_watch_act(
                                 hint.get("default_action"),
                                 f"{hint_source_root}.default_action",
                             ),
+                            (
+                                hint.get("defaultActionId"),
+                                f"{hint_source_root}.defaultActionId",
+                            ),
+                            (
+                                hint.get("default_action_id"),
+                                f"{hint_source_root}.default_action_id",
+                            ),
                         ]
                     )
                 candidates.extend(
@@ -9502,6 +9586,14 @@ def cliq_watch_act(
                         (
                             internal_loop.get("default_action"),
                             f"{internal_loop_source_root}.default_action",
+                        ),
+                        (
+                            internal_loop.get("defaultActionId"),
+                            f"{internal_loop_source_root}.defaultActionId",
+                        ),
+                        (
+                            internal_loop.get("default_action_id"),
+                            f"{internal_loop_source_root}.default_action_id",
                         ),
                     ]
                 )

@@ -2301,6 +2301,130 @@ def test_cliq_watch_act_escalation_action_accepts_snake_case_operator_workflow_a
 
 
 @respx.mock
+def test_cliq_watch_act_escalation_action_accepts_camel_case_workflow_snake_case_action_hint_watch_act_action_aliases(
+    tmp_path: Path,
+    mock_config: Path,
+    mock_token_refresh: Any,
+) -> None:
+    watch_file = tmp_path / "watch.json"
+    watch_file.write_text(
+        json.dumps(
+            {
+                "chatId": "CT_1",
+                "channelId": "O1",
+                "operatorWorkflow": {
+                    "packageId": "cliq-195",
+                    "externalEscalation": {
+                        "action_hint": {
+                            "watchActAction": "read-ack-latest",
+                        }
+                    },
+                },
+                "newCount": 1,
+                "messages": [
+                    {"messageId": "M2", "senderId": "U2", "text": "latest"},
+                ],
+            }
+        )
+    )
+
+    route = respx.post("https://cliq.zoho.com/api/v2/chats/CT_1/messages/M2/read").mock(
+        return_value=httpx.Response(200, json={"data": {"id": "M2", "status": "ok"}})
+    )
+
+    result = runner.invoke(
+        app,
+        [
+            "cliq",
+            "watch-act",
+            "--watch-file",
+            str(watch_file),
+            "--escalation-action",
+        ],
+        env=_cfg_env(mock_config),
+    )
+
+    assert result.exit_code == 0, result.output
+    assert route.called
+    payload = json.loads(result.output)
+    assert payload["action"] == "read-ack-latest"
+    assert payload["actionSource"] == "escalation-hint"
+    assert (
+        payload["actionSourcePath"]
+        == "operatorWorkflow.externalEscalation.action_hint.watchActAction"
+    )
+    assert payload["actionSourceMetadata"] == {
+        "source": "escalation-hint",
+        "sourcePath": "operatorWorkflow.externalEscalation.action_hint.watchActAction",
+        "fromWatchLoopHint": False,
+        "fromEscalationHint": True,
+        "fromExplicitOverride": False,
+    }
+
+
+@respx.mock
+def test_cliq_watch_act_escalation_action_accepts_snake_case_workflow_camel_case_action_hint_watch_act_action_aliases(
+    tmp_path: Path,
+    mock_config: Path,
+    mock_token_refresh: Any,
+) -> None:
+    watch_file = tmp_path / "watch.json"
+    watch_file.write_text(
+        json.dumps(
+            {
+                "chatId": "CT_1",
+                "channelId": "O1",
+                "operator_workflow": {
+                    "packageId": "cliq-195",
+                    "external_escalation": {
+                        "actionHint": {
+                            "watch_act_action": "read-ack-latest",
+                        }
+                    },
+                },
+                "newCount": 1,
+                "messages": [
+                    {"messageId": "M2", "senderId": "U2", "text": "latest"},
+                ],
+            }
+        )
+    )
+
+    route = respx.post("https://cliq.zoho.com/api/v2/chats/CT_1/messages/M2/read").mock(
+        return_value=httpx.Response(200, json={"data": {"id": "M2", "status": "ok"}})
+    )
+
+    result = runner.invoke(
+        app,
+        [
+            "cliq",
+            "watch-act",
+            "--watch-file",
+            str(watch_file),
+            "--escalation-action",
+        ],
+        env=_cfg_env(mock_config),
+    )
+
+    assert result.exit_code == 0, result.output
+    assert route.called
+    payload = json.loads(result.output)
+    assert payload["action"] == "read-ack-latest"
+    assert payload["actionSource"] == "escalation-hint"
+    assert (
+        payload["actionSourcePath"]
+        == "operator_workflow.external_escalation.actionHint.watch_act_action"
+    )
+    assert payload["actionSourceMetadata"] == {
+        "source": "escalation-hint",
+        "sourcePath": "operator_workflow.external_escalation.actionHint.watch_act_action",
+        "fromWatchLoopHint": False,
+        "fromEscalationHint": True,
+        "fromExplicitOverride": False,
+    }
+
+
+@respx.mock
 def test_cliq_watch_act_escalation_action_accepts_camel_case_workflow_snake_case_top_level_watch_act_action_aliases(
     tmp_path: Path,
     mock_config: Path,

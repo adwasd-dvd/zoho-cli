@@ -1,10 +1,13 @@
-last_run_at: "2026-04-20T04:34:05Z"
+last_run_at: "2026-04-20T04:54:45Z"
 last_result: success
-current_focus: cliq-195-focused-watch-act-escalation-top-level-watch-act-action-alias-regression-coverage-rerun
+current_focus: cliq-195-focused-bridge-run-escalation-top-level-watch-act-action-alias-parity-increment
 suites:
   unit:
     status: success
     notes:
+      - "focused cliq-195 bridge-run escalation top-level watch-act-action mixed workflow alias parity increment at 2026-04-20T04:54:45Z"
+      - "python3.11 -m pytest -q tests/test_membrane_bridge.py::test_cliq_bridge_run_watch_file_escalation_action_overrides_watch_loop_hint_with_camel_case_top_level_action_id tests/test_membrane_bridge.py::test_cliq_bridge_run_watch_file_escalation_action_overrides_watch_loop_hint_with_camel_case_workflow_snake_case_top_level_watch_act_action_aliases tests/test_membrane_bridge.py::test_cliq_bridge_run_watch_file_escalation_action_overrides_watch_loop_hint_with_snake_case_workflow_camel_case_top_level_watch_act_action_aliases -> 3 passed in 0.08s"
+      - "./.venv/bin/ruff format --check zoho_cli/cli.py tests/test_membrane_bridge.py -> 2 files already formatted"
       - "focused cliq-195 watch-act escalation top-level watch-act-action mixed workflow alias regression-coverage rerun at 2026-04-20T04:34:05Z"
       - "python3.11 -m pytest -q tests/test_cli.py::test_cliq_watch_act_escalation_action_accepts_camel_case_workflow_snake_case_top_level_watch_act_action_aliases tests/test_cli.py::test_cliq_watch_act_escalation_action_accepts_snake_case_workflow_camel_case_top_level_watch_act_action_aliases -> 2 passed in 0.10s"
       - "./.venv/bin/ruff format --check tests/test_cli.py -> 1 file already formatted"

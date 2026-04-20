@@ -2039,6 +2039,14 @@ def cliq_bridge_run(
                             escalation.get("action"),
                             f"{escalation_source_root}.action",
                         ),
+                        (
+                            escalation.get("watchActAction"),
+                            f"{escalation_source_root}.watchActAction",
+                        ),
+                        (
+                            escalation.get("watch_act_action"),
+                            f"{escalation_source_root}.watch_act_action",
+                        ),
                     ]
                 )
                 escalation_hint = escalation.get("actionHint")
@@ -2070,6 +2078,14 @@ def cliq_bridge_run(
                             (
                                 escalation_hint.get("action"),
                                 f"{escalation_hint_source_root}.action",
+                            ),
+                            (
+                                escalation_hint.get("watchActAction"),
+                                f"{escalation_hint_source_root}.watchActAction",
+                            ),
+                            (
+                                escalation_hint.get("watch_act_action"),
+                                f"{escalation_hint_source_root}.watch_act_action",
                             ),
                             (
                                 escalation_hint.get("defaultAction"),

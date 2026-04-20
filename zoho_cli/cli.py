@@ -1992,6 +1992,14 @@ def cliq_bridge_run(
                             internal_loop.get("default_action"),
                             f"{internal_loop_source_root}.default_action",
                         ),
+                        (
+                            internal_loop.get("watchActAction"),
+                            f"{internal_loop_source_root}.watchActAction",
+                        ),
+                        (
+                            internal_loop.get("watch_act_action"),
+                            f"{internal_loop_source_root}.watch_act_action",
+                        ),
                     ]
                 )
 

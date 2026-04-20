@@ -2060,8 +2060,16 @@ def cliq_bridge_run(
                             f"{escalation_source_root}.defaultActionId",
                         ),
                         (
+                            escalation.get("defaultAction_id"),
+                            f"{escalation_source_root}.defaultAction_id",
+                        ),
+                        (
                             escalation.get("default_action_id"),
                             f"{escalation_source_root}.default_action_id",
+                        ),
+                        (
+                            escalation.get("default_actionId"),
+                            f"{escalation_source_root}.default_actionId",
                         ),
                         (
                             escalation.get("watchActAction"),
@@ -2124,8 +2132,16 @@ def cliq_bridge_run(
                                 f"{escalation_hint_source_root}.defaultActionId",
                             ),
                             (
+                                escalation_hint.get("defaultAction_id"),
+                                f"{escalation_hint_source_root}.defaultAction_id",
+                            ),
+                            (
                                 escalation_hint.get("default_action_id"),
                                 f"{escalation_hint_source_root}.default_action_id",
+                            ),
+                            (
+                                escalation_hint.get("default_actionId"),
+                                f"{escalation_hint_source_root}.default_actionId",
                             ),
                         ]
                     )
@@ -2150,8 +2166,20 @@ def cliq_bridge_run(
                 )
                 escalation_candidates.append(
                     (
+                        escalation.get("defaultAction_id"),
+                        f"{escalation_source_root}.defaultAction_id",
+                    )
+                )
+                escalation_candidates.append(
+                    (
                         escalation.get("default_action_id"),
                         f"{escalation_source_root}.default_action_id",
+                    )
+                )
+                escalation_candidates.append(
+                    (
+                        escalation.get("default_actionId"),
+                        f"{escalation_source_root}.default_actionId",
                     )
                 )
 
@@ -9381,8 +9409,16 @@ def cliq_watch_act(
                         f"{escalation_source_root}.defaultActionId",
                     ),
                     (
+                        escalation.get("defaultAction_id"),
+                        f"{escalation_source_root}.defaultAction_id",
+                    ),
+                    (
                         escalation.get("default_action_id"),
                         f"{escalation_source_root}.default_action_id",
+                    ),
+                    (
+                        escalation.get("default_actionId"),
+                        f"{escalation_source_root}.default_actionId",
                     ),
                 ]
                 hint = escalation.get("actionHint")
@@ -9434,8 +9470,16 @@ def cliq_watch_act(
                                 f"{hint_source_root}.defaultActionId",
                             ),
                             (
+                                hint.get("defaultAction_id"),
+                                f"{hint_source_root}.defaultAction_id",
+                            ),
+                            (
                                 hint.get("default_action_id"),
                                 f"{hint_source_root}.default_action_id",
+                            ),
+                            (
+                                hint.get("default_actionId"),
+                                f"{hint_source_root}.default_actionId",
                             ),
                         ]
                     )
@@ -9454,8 +9498,16 @@ def cliq_watch_act(
                             f"{escalation_source_root}.defaultActionId",
                         ),
                         (
+                            escalation.get("defaultAction_id"),
+                            f"{escalation_source_root}.defaultAction_id",
+                        ),
+                        (
                             escalation.get("default_action_id"),
                             f"{escalation_source_root}.default_action_id",
+                        ),
+                        (
+                            escalation.get("default_actionId"),
+                            f"{escalation_source_root}.default_actionId",
                         ),
                     ]
                 )

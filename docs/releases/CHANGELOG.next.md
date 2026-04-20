@@ -3,6 +3,7 @@
 ## Unreleased
 
 ### Added
+- Refined cliq-195 action-id inference compatibility so `zoho cliq watch-act` and `zoho cliq bridge-run --watch-file` now also accept mixed-case fallback aliases `defaultAction_id` / `default_actionId` from escalation top-level and action-hint workflow surfaces, while preserving `actionSourcePath` / `actionSourceMetadata` provenance.
 - Refined cliq-195 action-id inference compatibility so `zoho cliq watch-act` and `zoho cliq bridge-run --watch-file` now also accept `defaultActionId` / `default_action_id` fallbacks from both internal-loop and escalation hint/top-level workflow aliases (`operatorWorkflow.*` and `operator_workflow.*`), while preserving `actionSourcePath` / `actionSourceMetadata` provenance.
 - Refined `zoho cliq bridge-run --watch-file --escalation-action` cliq-195 escalation fallback compatibility so action resolution now also accepts top-level `watchActAction` / `watch_act_action` under mixed workflow/external-escalation aliases (`operatorWorkflow.externalEscalation` and `operator_workflow.external_escalation`), while preserving `actionSourcePath` / `actionSourceMetadata` provenance.
 - Refined `zoho cliq bridge-run --watch-file` cliq-195 internal-loop action-hint compatibility so bridge action inference now also accepts `watchActAction` / `watch_act_action` under mixed workflow/internal-loop hint aliases (`operatorWorkflow.internal_loop.actionHint` and `operator_workflow.internalLoop.action_hint`), while preserving `actionSourcePath` / `actionSourceMetadata` provenance.

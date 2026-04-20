@@ -1,10 +1,12 @@
-last_run_at: "2026-04-20T17:07:00Z"
+last_run_at: "2026-04-20T17:28:00Z"
 last_result: success
-current_focus: cliq-195-default-action-id-alias-parity-20260420t170700z
+current_focus: cliq-195-default-action-id-alias-parity-20260420t172800z
 suites:
   unit:
     status: success
     notes:
+      - "focused cliq-195 watch-act + bridge-run mixed workflow/action-hint defaultActionId/default_action_id alias parity follow-up at 2026-04-20T17:28:00Z"
+      - "pytest -q tests/test_cli.py::test_cliq_watch_act_escalation_action_accepts_snake_case_workflow_camel_case_action_hint_default_action_id_aliases tests/test_membrane_bridge.py::test_cliq_bridge_run_watch_file_escalation_action_overrides_watch_loop_hint_with_camel_case_workflow_snake_case_action_hint_default_action_id_aliases -> 2 passed in 0.87s"
       - "focused cliq-195 watch-act + bridge-run mixed workflow defaultActionId/default_action_id alias parity follow-up at 2026-04-20T17:07:00Z"
       - "pytest -q tests/test_membrane_bridge.py::test_cliq_bridge_run_watch_file_escalation_action_overrides_watch_loop_hint_with_snake_case_workflow_camel_case_action_hint_default_action_id_aliases tests/test_cli.py::test_cliq_watch_act_escalation_action_accepts_camel_case_workflow_snake_case_action_hint_default_action_id_aliases -> 2 passed in 0.11s"
       - "pytest -q tests/test_membrane_bridge.py::test_cliq_bridge_run_watch_file_infers_action_from_snake_case_internal_loop_hint_default_action tests/test_membrane_bridge.py::test_cliq_bridge_run_watch_file_infers_action_from_camel_case_internal_loop_hint_default_action tests/test_membrane_bridge.py::test_cliq_bridge_run_watch_file_infers_action_from_camel_case_workflow_snake_case_internal_loop_hint_default_action_aliases tests/test_membrane_bridge.py::test_cliq_bridge_run_watch_file_infers_action_from_snake_case_workflow_camel_case_internal_loop_hint_default_action_aliases tests/test_membrane_bridge.py::test_cliq_bridge_run_watch_file_escalation_action_overrides_watch_loop_hint_with_snake_case_bridge_action_id tests/test_cli.py::test_cliq_watch_act_escalation_action_accepts_camel_case_workflow_snake_case_action_hint_default_action_aliases -> 6 passed in 0.18s"

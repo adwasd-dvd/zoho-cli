@@ -1979,6 +1979,14 @@ def cliq_bridge_run(
                                 internal_hint.get("default_action"),
                                 f"{internal_hint_source_root}.default_action",
                             ),
+                            (
+                                internal_hint.get("watchActAction"),
+                                f"{internal_hint_source_root}.watchActAction",
+                            ),
+                            (
+                                internal_hint.get("watch_act_action"),
+                                f"{internal_hint_source_root}.watch_act_action",
+                            ),
                         ]
                     )
 

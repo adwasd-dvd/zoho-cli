@@ -3,6 +3,7 @@
 ## Unreleased
 
 ### Added
+- Refined `zoho cliq bridge-run --watch-file` cliq-195 internal-loop action-hint compatibility so bridge action inference now also accepts `watchActAction` / `watch_act_action` under mixed workflow/internal-loop hint aliases (`operatorWorkflow.internal_loop.actionHint` and `operator_workflow.internalLoop.action_hint`), while preserving `actionSourcePath` / `actionSourceMetadata` provenance.
 - Refined `zoho cliq bridge-run --watch-file` cliq-195 internal-loop top-level fallback compatibility so bridge action inference now also accepts `watchActAction` / `watch_act_action` under mixed workflow/internal-loop aliases (`operatorWorkflow.internal_loop` and `operator_workflow.internalLoop`), while preserving `actionSourcePath` / `actionSourceMetadata` provenance.
 - Refined `zoho cliq watch-act --escalation-action` cliq-195 escalation-hint compatibility so escalation action inference now also accepts `bridgeActionId` / `bridge_action_id` under `operatorWorkflow.externalEscalation.actionHint` and `operator_workflow.external_escalation.action_hint`, while preserving `actionSourcePath` / `actionSourceMetadata` provenance.
 - Refined `zoho cliq watch-act` cliq-195 internal-loop action-hint compatibility so watch-loop action inference now also accepts `bridgeActionId` / `bridge_action_id` under `operatorWorkflow.internalLoop.actionHint` and `operator_workflow.internal_loop.action_hint`, while preserving `actionSourcePath` / `actionSourceMetadata` provenance.
@@ -371,14 +372,14 @@
 - Removed duplicate CRM `fields` command/client definitions so the CRM read-only surface now has one canonical `fields` implementation.
 
 ### Release readiness
-- Assessed at 2026-04-18T01:39:00Z: release is **not ready**.
+- Assessed at 2026-04-20T01:35:00Z: release is **not ready**.
 - Fresh gate evidence:
-  - `make release-gate` is green (`699 passed in 13.20s` + wheel smoke `0.2.0`).
-  - `make ci` is green (format/lint clean + `699 passed in 12.74s`).
-  - Latest medium-scope verification is green (`python3.11 -m pytest -q tests/test_registry.py tests/test_membrane_bridge.py` -> `48 passed in 0.56s`; `python3.11 -m pytest -q tests/test_cli.py -k "cliq_bridge_run or crm_bridge_run or cliq_app_commands or cliq_app_command_get"` -> `201 passed, 212 deselected in 3.81s`; `python3.11 -m pytest -q tests/test_cliq.py -k "app_command or app_install or app_permission or list_apps or get_app"` -> `24 passed, 146 deselected in 0.54s`).
-  - Focused `cliq-193` live app-command verification remains externally blocked (`appCommandsError: empty_output`, stderr `error: not_supported`) with healthy auth/export readiness (`oauthReady: true`, `exportOauthReady: true`); latest summary evidence: `tests/auto_pilot/reports/cliq193_app_commands_probe_summary_20260417_195259.json` (`unsupportedConsecutiveCount: 60`, `postReleaseDeferred: true`).
+  - `make release-gate` is green (`908 passed in 18.12s` + wheel smoke `ok: wheel smoke passed (0.2.0)`).
+  - `make ci` is green for format/lint and completed full pytest collection/execution for 908 tests.
+  - Blocker backlog is still open: `ops/state/bug_backlog.yml` lists 29 blockers, including repeated `cliq-193` live app-command verification failures (`appCommandsError: empty_output`; stderr `error: not_supported`), with latest listed evidence `tests/auto_pilot/reports/cliq193_app_commands_probe_summary_20260417_121801.json`.
+  - Milestone state remains incomplete: `ops/state/active_task.yml` is `id: cliq-195`, `stage: in_progress`, `updated_at: 2026-04-20T01:32:25Z`; `ops/state/release_status.yml` keeps `current_milestone_complete: false`.
   - Changelog draft and release state were refreshed for this assessment; no publish actions were performed.
 - Remaining release blockers:
-  - blocker bugs are **not** clear (`cliq-193` live app-command verification still returns `not_supported`).
-  - current focus milestone `cliq-expansion-phase` is **not complete** (`active_task: platform-202` is still in progress, and `cliq-165` export verification remains externally blocked by `inactive_appaccount_user`).
-  - relevant integration checks are **not** clean (`release_gate.integration_tests_passed_or_explicitly_skipped: false` while focused cliq-193 live verification remains blocked/deferred).
+  - blocker bugs are **not** clear.
+  - current focus milestone `cliq-expansion-phase` is **not complete**.
+  - relevant integration checks are **not** clean (`release_gate.integration_tests_passed_or_explicitly_skipped: false` because focused live blocker checks remain externally blocked/deferred).

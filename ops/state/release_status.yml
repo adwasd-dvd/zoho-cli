@@ -3,13 +3,13 @@ next_version: 0.2.1
 release_candidate: false
 last_release_tag: v0.1.9
 current_train: cliq-expansion
-assessed_at: '2026-04-19T09:31:03Z'
+assessed_at: '2026-04-20T01:35:00Z'
 current_milestone: cliq-expansion-phase
 current_milestone_complete: false
 missing_requirements:
-  - 'blocker backlog is not clear: `ops/state/bug_backlog.yml` still carries 29 blockers, with repeated cliq-193 live app-command verification failures (`error: not_supported`; latest summary `tests/auto_pilot/reports/cliq193_app_commands_probe_summary_20260417_195259.json`, `unsupportedConsecutiveCount: 60`, `postReleaseDeferred: true`).'
-  - 'current focus milestone is incomplete: `cliq-expansion-phase` remains in progress (`ops/state/active_task.yml` -> `id: cliq-195`, `stage: in_progress`, `updated_at: 2026-04-19T09:31:03Z`).'
-  - 'relevant integration readiness is still not fully clear for release: broad verification is green (`make release-gate` -> `812 passed in 16.34s` + wheel smoke; `make ci` -> `812 passed in 15.46s`), but focused live cliq blocker checks remain externally blocked/deferred, so integration gate is not marked pass/skip.'
+  - 'blocker backlog is not clear: `ops/state/bug_backlog.yml` still carries 29 blockers, with repeated cliq-193 live app-command verification failures (`appCommandsError: empty_output`; CLI stderr `error: not_supported`); latest listed evidence includes `tests/auto_pilot/reports/cliq193_app_commands_probe_summary_20260417_121801.json` and `tests/auto_pilot/reports/cliq193_status_20260417_121801.json`.'
+  - 'current focus milestone is incomplete: `cliq-expansion-phase` remains in progress (`ops/state/active_task.yml` -> `id: cliq-195`, `stage: in_progress`, `updated_at: 2026-04-20T01:57:53Z`; `current_milestone_complete: false`).'
+  - 'relevant integration readiness is still not fully clear for release: broad verification is green in this assessment (`make release-gate` -> `908 passed in 18.12s` + wheel smoke `ok: wheel smoke passed (0.2.0)`; `make ci` -> format/lint clean + full pytest collection of 908 tests), but focused live cliq blocker checks remain externally blocked/deferred, so integration gate is not marked pass/skip.'
 release_gate:
   blocker_bugs_cleared: false
   unit_tests_passed: true

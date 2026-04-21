@@ -4,10 +4,10 @@ module: cliq
 stage: in_progress
 status: in_progress
 owner: coder
-updated_at: '2026-04-21T17:06:29Z'
+updated_at: '2026-04-21T18:14:13Z'
 success_criteria:
 - add an initial cliq-195 operator-workflow packaging contract to watch-context output without breaking existing watch-loop consumers
 - preserve the operator-workflow contract through watch-act action payload/result surfaces used by automation loops
 - keep focused watch-context/watch-act verification green while deferred external blockers stay capability-gated
 next_if_done: if focused and medium-scope cliq-195 verification remain green, continue the next operator-workflow packaging increment without regressing deferred capability-gated blockers.
-next_step: "after the 2026-04-21T17:06:29Z thin cliq-195 mixed internal-loop action-hint actionid alias increment stayed green in focused watch-act/bridge-run checks, continue the next thin no-behavior-change alias-parity increment without regressing watch-loop provenance metadata."
+next_step: "after the 2026-04-21T18:14:13Z thin cliq-195 mixed workflow/external-escalation top-level actionid+bridgeActionid/bridge_actionid alias-parity increment stayed green in focused watch-act/bridge-run checks, continue the next thin no-behavior-change alias-parity increment without regressing watch-loop provenance metadata."

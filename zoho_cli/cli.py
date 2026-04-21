@@ -1864,11 +1864,16 @@ def cliq_bridge_run(
             (watch_payload.get("defaultAction"), "watchPayload.defaultAction"),
             (watch_payload.get("default_action"), "watchPayload.default_action"),
             (watch_payload.get("defaultActionId"), "watchPayload.defaultActionId"),
+            (watch_payload.get("defaultActionid"), "watchPayload.defaultActionid"),
             (watch_payload.get("defaultActionID"), "watchPayload.defaultActionID"),
             (watch_payload.get("defaultAction_id"), "watchPayload.defaultAction_id"),
             (
                 watch_payload.get("default_action_id"),
                 "watchPayload.default_action_id",
+            ),
+            (
+                watch_payload.get("default_actionid"),
+                "watchPayload.default_actionid",
             ),
             (watch_payload.get("default_actionId"), "watchPayload.default_actionId"),
             (
@@ -10004,6 +10009,10 @@ def cliq_watch_act(
                     "watchPayload.defaultActionId",
                 ),
                 (
+                    watch_payload.get("defaultActionid"),
+                    "watchPayload.defaultActionid",
+                ),
+                (
                     watch_payload.get("defaultActionID"),
                     "watchPayload.defaultActionID",
                 ),
@@ -10014,6 +10023,10 @@ def cliq_watch_act(
                 (
                     watch_payload.get("default_action_id"),
                     "watchPayload.default_action_id",
+                ),
+                (
+                    watch_payload.get("default_actionid"),
+                    "watchPayload.default_actionid",
                 ),
                 (
                     watch_payload.get("default_actionId"),

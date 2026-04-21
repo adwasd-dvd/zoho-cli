@@ -1849,6 +1849,7 @@ def cliq_bridge_run(
     if watch_payload is not None:
         watch_candidates: list[tuple[Any, str]] = [
             (watch_payload.get("actionId"), "watchPayload.actionId"),
+            (watch_payload.get("actionid"), "watchPayload.actionid"),
             (watch_payload.get("actionID"), "watchPayload.actionID"),
             (watch_payload.get("action_id"), "watchPayload.action_id"),
             (watch_payload.get("action"), "watchPayload.action"),
@@ -1990,6 +1991,10 @@ def cliq_bridge_run(
                             f"{internal_loop_source_root}.actionId",
                         ),
                         (
+                            internal_loop.get("actionid"),
+                            f"{internal_loop_source_root}.actionid",
+                        ),
+                        (
                             internal_loop.get("actionID"),
                             f"{internal_loop_source_root}.actionID",
                         ),
@@ -2041,6 +2046,10 @@ def cliq_bridge_run(
                             (
                                 internal_hint.get("actionId"),
                                 f"{internal_hint_source_root}.actionId",
+                            ),
+                            (
+                                internal_hint.get("actionid"),
+                                f"{internal_hint_source_root}.actionid",
                             ),
                             (
                                 internal_hint.get("actionID"),
@@ -9657,6 +9666,10 @@ def cliq_watch_act(
                                 f"{hint_source_root}.actionId",
                             ),
                             (
+                                hint.get("actionid"),
+                                f"{hint_source_root}.actionid",
+                            ),
+                            (
                                 hint.get("actionID"),
                                 f"{hint_source_root}.actionID",
                             ),
@@ -9826,6 +9839,10 @@ def cliq_watch_act(
                         f"{internal_loop_source_root}.actionId",
                     ),
                     (
+                        internal_loop.get("actionid"),
+                        f"{internal_loop_source_root}.actionid",
+                    ),
+                    (
                         internal_loop.get("actionID"),
                         f"{internal_loop_source_root}.actionID",
                     ),
@@ -9893,6 +9910,10 @@ def cliq_watch_act(
                             (
                                 hint.get("actionId"),
                                 f"{hint_source_root}.actionId",
+                            ),
+                            (
+                                hint.get("actionid"),
+                                f"{hint_source_root}.actionid",
                             ),
                             (
                                 hint.get("actionID"),
@@ -9983,6 +10004,7 @@ def cliq_watch_act(
         if not watch_loop_hint:
             top_level_candidates: list[tuple[Any, str]] = [
                 (watch_payload.get("actionId"), "watchPayload.actionId"),
+                (watch_payload.get("actionid"), "watchPayload.actionid"),
                 (watch_payload.get("actionID"), "watchPayload.actionID"),
                 (watch_payload.get("action_id"), "watchPayload.action_id"),
                 (watch_payload.get("action"), "watchPayload.action"),

@@ -4,10 +4,10 @@ module: cliq
 stage: in_progress
 status: in_progress
 owner: coder
-updated_at: '2026-04-21T08:32:42Z'
+updated_at: '2026-04-21T09:03:42Z'
 success_criteria:
 - add an initial cliq-195 operator-workflow packaging contract to watch-context output without breaking existing watch-loop consumers
 - preserve the operator-workflow contract through watch-act action payload/result surfaces used by automation loops
 - keep focused watch-context/watch-act verification green while deferred external blockers stay capability-gated
 next_if_done: if focused and medium-scope cliq-195 verification remain green, continue the next operator-workflow packaging increment without regressing deferred capability-gated blockers.
-next_step: "with the thin cliq-195 top-level watchPayload uppercase-tail bridge-action-id alias increment verified again at 2026-04-21T08:32:42Z (`watch-act`/`bridge-run` targeted: 4 passed; ruff format check clean), rerun the medium-scope cliq-195 integration refresh bundle before taking the next thin alias-parity increment."
+next_step: "with focused cliq-195 top-level watchPayload bridge-action-id alias-parity checks green at 2026-04-21T09:03:42Z (`tests/test_cli.py::test_cliq_watch_act_uses_top_level_watch_payload_bridge_action_id_aliases`, `tests/test_cli.py::test_cliq_watch_act_uses_top_level_watch_payload_bridge_action_snake_id_aliases`, `tests/test_membrane_bridge.py::test_cliq_bridge_run_watch_file_infers_action_from_top_level_watch_payload_bridge_action_id_aliases`, `tests/test_membrane_bridge.py::test_cliq_bridge_run_watch_file_infers_action_from_top_level_watch_payload_bridge_action_snake_id_aliases`: 4 passed; format check: 2 files already formatted), rerun the cliq-195 medium-scope integration refresh bundle before the next thin alias-parity increment."

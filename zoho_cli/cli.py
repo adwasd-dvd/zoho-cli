@@ -2129,6 +2129,10 @@ def cliq_bridge_run(
                             f"{internal_loop_source_root}.defaultActionId",
                         ),
                         (
+                            internal_loop.get("defaultActionid"),
+                            f"{internal_loop_source_root}.defaultActionid",
+                        ),
+                        (
                             internal_loop.get("defaultActionID"),
                             f"{internal_loop_source_root}.defaultActionID",
                         ),
@@ -2143,6 +2147,10 @@ def cliq_bridge_run(
                         (
                             internal_loop.get("default_actionId"),
                             f"{internal_loop_source_root}.default_actionId",
+                        ),
+                        (
+                            internal_loop.get("default_actionid"),
+                            f"{internal_loop_source_root}.default_actionid",
                         ),
                         (
                             internal_loop.get("default_actionID"),
@@ -10068,6 +10076,10 @@ def cliq_watch_act(
                             f"{internal_loop_source_root}.defaultActionId",
                         ),
                         (
+                            internal_loop.get("defaultActionid"),
+                            f"{internal_loop_source_root}.defaultActionid",
+                        ),
+                        (
                             internal_loop.get("defaultActionID"),
                             f"{internal_loop_source_root}.defaultActionID",
                         ),
@@ -10082,6 +10094,10 @@ def cliq_watch_act(
                         (
                             internal_loop.get("default_actionId"),
                             f"{internal_loop_source_root}.default_actionId",
+                        ),
+                        (
+                            internal_loop.get("default_actionid"),
+                            f"{internal_loop_source_root}.default_actionid",
                         ),
                         (
                             internal_loop.get("default_actionID"),

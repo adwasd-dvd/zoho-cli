@@ -1851,10 +1851,12 @@ def cliq_bridge_run(
             (watch_payload.get("actionId"), "watchPayload.actionId"),
             (watch_payload.get("action_id"), "watchPayload.action_id"),
             (watch_payload.get("bridgeActionId"), "watchPayload.bridgeActionId"),
+            (watch_payload.get("bridgeAction_id"), "watchPayload.bridgeAction_id"),
             (
                 watch_payload.get("bridge_action_id"),
                 "watchPayload.bridge_action_id",
             ),
+            (watch_payload.get("bridge_actionId"), "watchPayload.bridge_actionId"),
         ]
         intake, intake_source_root = _extract_watch_intake_with_source(watch_payload)
         if isinstance(intake, dict):
@@ -9920,6 +9922,31 @@ def cliq_watch_act(
                         watch_loop_hint = value
                         watch_loop_hint_path = source_path
                         break
+
+        if not watch_loop_hint:
+            top_level_candidates: list[tuple[Any, str]] = [
+                (watch_payload.get("actionId"), "watchPayload.actionId"),
+                (watch_payload.get("action_id"), "watchPayload.action_id"),
+                (watch_payload.get("bridgeActionId"), "watchPayload.bridgeActionId"),
+                (
+                    watch_payload.get("bridgeAction_id"),
+                    "watchPayload.bridgeAction_id",
+                ),
+                (
+                    watch_payload.get("bridge_action_id"),
+                    "watchPayload.bridge_action_id",
+                ),
+                (
+                    watch_payload.get("bridge_actionId"),
+                    "watchPayload.bridge_actionId",
+                ),
+            ]
+            for candidate, source_path in top_level_candidates:
+                value = str(candidate or "").strip().lower()
+                if value:
+                    watch_loop_hint = value
+                    watch_loop_hint_path = source_path
+                    break
 
         if watch_loop_hint:
             selected_action = watch_loop_hint

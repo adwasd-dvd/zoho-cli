@@ -2076,6 +2076,10 @@ def cliq_bridge_run(
                                 f"{internal_hint_source_root}.defaultActionId",
                             ),
                             (
+                                internal_hint.get("defaultActionid"),
+                                f"{internal_hint_source_root}.defaultActionid",
+                            ),
+                            (
                                 internal_hint.get("defaultActionID"),
                                 f"{internal_hint_source_root}.defaultActionID",
                             ),
@@ -2090,6 +2094,10 @@ def cliq_bridge_run(
                             (
                                 internal_hint.get("default_actionId"),
                                 f"{internal_hint_source_root}.default_actionId",
+                            ),
+                            (
+                                internal_hint.get("default_actionid"),
+                                f"{internal_hint_source_root}.default_actionid",
                             ),
                             (
                                 internal_hint.get("default_actionID"),
@@ -10016,6 +10024,10 @@ def cliq_watch_act(
                                 f"{hint_source_root}.defaultActionId",
                             ),
                             (
+                                hint.get("defaultActionid"),
+                                f"{hint_source_root}.defaultActionid",
+                            ),
+                            (
                                 hint.get("defaultActionID"),
                                 f"{hint_source_root}.defaultActionID",
                             ),
@@ -10030,6 +10042,10 @@ def cliq_watch_act(
                             (
                                 hint.get("default_actionId"),
                                 f"{hint_source_root}.default_actionId",
+                            ),
+                            (
+                                hint.get("default_actionid"),
+                                f"{hint_source_root}.default_actionid",
                             ),
                             (
                                 hint.get("default_actionID"),

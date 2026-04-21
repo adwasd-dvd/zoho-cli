@@ -1861,6 +1861,8 @@ def cliq_bridge_run(
                 "watchPayload.bridge_action_id",
             ),
             (watch_payload.get("bridge_actionId"), "watchPayload.bridge_actionId"),
+            (watch_payload.get("defaultAction"), "watchPayload.defaultAction"),
+            (watch_payload.get("default_action"), "watchPayload.default_action"),
         ]
         intake, intake_source_root = _extract_watch_intake_with_source(watch_payload)
         if isinstance(intake, dict):
@@ -9983,6 +9985,8 @@ def cliq_watch_act(
                     watch_payload.get("bridge_actionId"),
                     "watchPayload.bridge_actionId",
                 ),
+                (watch_payload.get("defaultAction"), "watchPayload.defaultAction"),
+                (watch_payload.get("default_action"), "watchPayload.default_action"),
             ]
             for candidate, source_path in top_level_candidates:
                 value = str(candidate or "").strip().lower()

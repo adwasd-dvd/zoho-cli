@@ -4,10 +4,10 @@ module: cliq
 stage: in_progress
 status: in_progress
 owner: coder
-updated_at: '2026-04-21T10:25:00Z'
+updated_at: '2026-04-21T10:45:00Z'
 success_criteria:
 - add an initial cliq-195 operator-workflow packaging contract to watch-context output without breaking existing watch-loop consumers
 - preserve the operator-workflow contract through watch-act action payload/result surfaces used by automation loops
 - keep focused watch-context/watch-act verification green while deferred external blockers stay capability-gated
 next_if_done: if focused and medium-scope cliq-195 verification remain green, continue the next operator-workflow packaging increment without regressing deferred capability-gated blockers.
-next_step: "with focused cliq-195 watchPayload top-level `action` alias verification green at 2026-04-21T10:25:00Z (`./.venv/bin/pytest -q tests/test_cli.py::test_cliq_watch_act_uses_top_level_watch_payload_action_alias tests/test_membrane_bridge.py::test_cliq_bridge_run_watch_file_infers_action_from_top_level_watch_payload_action_fallback` -> `2 passed in 1.10s`; `./.venv/bin/ruff format --check zoho_cli/cli.py tests/test_cli.py tests/test_membrane_bridge.py` -> `3 files already formatted`), continue the next smallest thin no-behavior-change cliq-195 adapter-facing alias-parity increment while deferred external blockers remain capability-gated."
+next_step: "with focused cliq-195 top-level watchPayload `actionId` alias parity verification green at 2026-04-21T10:45:00Z (`./.venv/bin/pytest -q tests/test_cli.py::test_cliq_watch_act_uses_top_level_watch_payload_action_id_aliases tests/test_membrane_bridge.py::test_cliq_bridge_run_watch_file_infers_action_from_top_level_action_id_fallback` -> `2 passed in 0.12s`; `./.venv/bin/ruff format --check tests/test_cli.py tests/test_membrane_bridge.py` -> `2 files already formatted`), continue the next smallest thin no-behavior-change cliq-195 adapter-facing alias-parity increment while deferred external blockers remain capability-gated."

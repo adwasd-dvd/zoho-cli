@@ -2260,12 +2260,20 @@ def cliq_bridge_run(
                                 f"{escalation_hint_source_root}.bridgeActionId",
                             ),
                             (
+                                escalation_hint.get("bridgeActionid"),
+                                f"{escalation_hint_source_root}.bridgeActionid",
+                            ),
+                            (
                                 escalation_hint.get("bridgeActionID"),
                                 f"{escalation_hint_source_root}.bridgeActionID",
                             ),
                             (
                                 escalation_hint.get("bridgeAction_id"),
                                 f"{escalation_hint_source_root}.bridgeAction_id",
+                            ),
+                            (
+                                escalation_hint.get("bridge_actionid"),
+                                f"{escalation_hint_source_root}.bridge_actionid",
                             ),
                             (
                                 escalation_hint.get("bridge_actionID"),
@@ -9710,12 +9718,20 @@ def cliq_watch_act(
                                 f"{hint_source_root}.bridgeActionId",
                             ),
                             (
+                                hint.get("bridgeActionid"),
+                                f"{hint_source_root}.bridgeActionid",
+                            ),
+                            (
                                 hint.get("bridgeActionID"),
                                 f"{hint_source_root}.bridgeActionID",
                             ),
                             (
                                 hint.get("bridgeAction_id"),
                                 f"{hint_source_root}.bridgeAction_id",
+                            ),
+                            (
+                                hint.get("bridge_actionid"),
+                                f"{hint_source_root}.bridge_actionid",
                             ),
                             (
                                 hint.get("bridge_actionID"),

@@ -3,6 +3,7 @@
 ## Unreleased
 
 ### Added
+- Refined cliq-195 top-level watch payload bridge-action fallback compatibility so `zoho cliq watch-act` and `zoho cliq bridge-run --watch-file` now also accept lowercase-tail bridge-action-id aliases `watchPayload.bridgeActionid` / `watchPayload.bridge_actionid` when inferring actions, while preserving `actionSourcePath` / `actionSourceMetadata` provenance.
 - Refined cliq-195 top-level watch payload action fallback compatibility so `zoho cliq watch-act` and `zoho cliq bridge-run --watch-file` now also accept lowercase-tail default-action-id aliases `watchPayload.defaultActionid` / `watchPayload.default_actionid` when inferring actions, while preserving `actionSourcePath` / `actionSourceMetadata` provenance.
 - Refined cliq-195 top-level watch payload action fallback compatibility so `zoho cliq watch-act` and `zoho cliq bridge-run --watch-file` now also accept mixed-case default-action-id aliases `watchPayload.defaultAction_id` / `watchPayload.default_actionId` when inferring actions, while preserving `actionSourcePath` / `actionSourceMetadata` provenance.
 - Refined cliq-195 top-level watch payload action fallback compatibility so `zoho cliq watch-act` and `zoho cliq bridge-run --watch-file` now also accept uppercase-tail default-action aliases `watchPayload.defaultActionID` / `watchPayload.default_actionID` when inferring actions, while preserving `actionSourcePath` / `actionSourceMetadata` provenance.

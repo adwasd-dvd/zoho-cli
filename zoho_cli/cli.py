@@ -1853,8 +1853,10 @@ def cliq_bridge_run(
             (watch_payload.get("action_id"), "watchPayload.action_id"),
             (watch_payload.get("action"), "watchPayload.action"),
             (watch_payload.get("bridgeActionId"), "watchPayload.bridgeActionId"),
+            (watch_payload.get("bridgeActionid"), "watchPayload.bridgeActionid"),
             (watch_payload.get("bridgeActionID"), "watchPayload.bridgeActionID"),
             (watch_payload.get("bridgeAction_id"), "watchPayload.bridgeAction_id"),
+            (watch_payload.get("bridge_actionid"), "watchPayload.bridge_actionid"),
             (watch_payload.get("bridge_actionID"), "watchPayload.bridge_actionID"),
             (
                 watch_payload.get("bridge_action_id"),
@@ -9985,10 +9987,15 @@ def cliq_watch_act(
                 (watch_payload.get("action_id"), "watchPayload.action_id"),
                 (watch_payload.get("action"), "watchPayload.action"),
                 (watch_payload.get("bridgeActionId"), "watchPayload.bridgeActionId"),
+                (watch_payload.get("bridgeActionid"), "watchPayload.bridgeActionid"),
                 (watch_payload.get("bridgeActionID"), "watchPayload.bridgeActionID"),
                 (
                     watch_payload.get("bridgeAction_id"),
                     "watchPayload.bridgeAction_id",
+                ),
+                (
+                    watch_payload.get("bridge_actionid"),
+                    "watchPayload.bridge_actionid",
                 ),
                 (
                     watch_payload.get("bridge_actionID"),

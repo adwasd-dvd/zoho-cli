@@ -1849,6 +1849,7 @@ def cliq_bridge_run(
     if watch_payload is not None:
         watch_candidates: list[tuple[Any, str]] = [
             (watch_payload.get("actionId"), "watchPayload.actionId"),
+            (watch_payload.get("actionID"), "watchPayload.actionID"),
             (watch_payload.get("action_id"), "watchPayload.action_id"),
             (watch_payload.get("bridgeActionId"), "watchPayload.bridgeActionId"),
             (watch_payload.get("bridgeActionID"), "watchPayload.bridgeActionID"),
@@ -9928,6 +9929,7 @@ def cliq_watch_act(
         if not watch_loop_hint:
             top_level_candidates: list[tuple[Any, str]] = [
                 (watch_payload.get("actionId"), "watchPayload.actionId"),
+                (watch_payload.get("actionID"), "watchPayload.actionID"),
                 (watch_payload.get("action_id"), "watchPayload.action_id"),
                 (watch_payload.get("bridgeActionId"), "watchPayload.bridgeActionId"),
                 (watch_payload.get("bridgeActionID"), "watchPayload.bridgeActionID"),

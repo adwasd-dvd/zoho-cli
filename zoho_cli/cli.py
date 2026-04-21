@@ -2104,8 +2104,16 @@ def cliq_bridge_run(
                             f"{escalation_source_root}.bridgeActionId",
                         ),
                         (
+                            escalation.get("bridgeActionID"),
+                            f"{escalation_source_root}.bridgeActionID",
+                        ),
+                        (
                             escalation.get("bridgeAction_id"),
                             f"{escalation_source_root}.bridgeAction_id",
+                        ),
+                        (
+                            escalation.get("bridge_actionID"),
+                            f"{escalation_source_root}.bridge_actionID",
                         ),
                         (
                             escalation.get("bridge_action_id"),
@@ -2176,8 +2184,16 @@ def cliq_bridge_run(
                                 f"{escalation_hint_source_root}.bridgeActionId",
                             ),
                             (
+                                escalation_hint.get("bridgeActionID"),
+                                f"{escalation_hint_source_root}.bridgeActionID",
+                            ),
+                            (
                                 escalation_hint.get("bridgeAction_id"),
                                 f"{escalation_hint_source_root}.bridgeAction_id",
+                            ),
+                            (
+                                escalation_hint.get("bridge_actionID"),
+                                f"{escalation_hint_source_root}.bridge_actionID",
                             ),
                             (
                                 escalation_hint.get("bridge_action_id"),
@@ -9509,8 +9525,16 @@ def cliq_watch_act(
                         f"{escalation_source_root}.bridgeActionId",
                     ),
                     (
+                        escalation.get("bridgeActionID"),
+                        f"{escalation_source_root}.bridgeActionID",
+                    ),
+                    (
                         escalation.get("bridgeAction_id"),
                         f"{escalation_source_root}.bridgeAction_id",
+                    ),
+                    (
+                        escalation.get("bridge_actionID"),
+                        f"{escalation_source_root}.bridge_actionID",
                     ),
                     (
                         escalation.get("bridge_action_id"),
@@ -9578,8 +9602,16 @@ def cliq_watch_act(
                                 f"{hint_source_root}.bridgeActionId",
                             ),
                             (
+                                hint.get("bridgeActionID"),
+                                f"{hint_source_root}.bridgeActionID",
+                            ),
+                            (
                                 hint.get("bridgeAction_id"),
                                 f"{hint_source_root}.bridgeAction_id",
+                            ),
+                            (
+                                hint.get("bridge_actionID"),
+                                f"{hint_source_root}.bridge_actionID",
                             ),
                             (
                                 hint.get("bridge_action_id"),

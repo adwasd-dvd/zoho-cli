@@ -1,10 +1,13 @@
-last_run_at: "2026-04-22T14:24:48Z"
+last_run_at: "2026-04-22T14:45:21Z"
 last_result: success
-current_focus: cliq-195-focused-top-level-default-action-id-kebab-uppercase-tail-mixed-case-same-root-parity-20260422t142448z
+current_focus: cliq-195-focused-action-hint-default-action-id-kebab-uppercase-tail-mixed-case-mixed-root-parity-20260422t144521z
 suites:
   unit:
     status: success
     notes:
+      - "focused cliq-195 action-hint default-action-id kebab uppercase-tail/mixed-case mixed-root mirror-parity verification at 2026-04-22T14:45:21Z"
+      - "./.venv/bin/pytest -q tests/test_cli.py::test_cliq_watch_act_escalation_action_accepts_camel_case_workflow_snake_case_escalation_alias_action_hint_default_action_kebab_mixed_case_id_alias tests/test_cli.py::test_cliq_watch_act_escalation_action_accepts_camel_case_workflow_snake_case_escalation_alias_action_hint_default_action_kebab_uppercase_tail_id_alias tests/test_membrane_bridge.py::test_cliq_bridge_run_watch_file_escalation_action_overrides_watch_loop_hint_with_camel_case_workflow_snake_case_escalation_alias_action_hint_default_action_kebab_mixed_case_id_alias tests/test_membrane_bridge.py::test_cliq_bridge_run_watch_file_escalation_action_overrides_watch_loop_hint_with_camel_case_workflow_snake_case_escalation_alias_action_hint_default_action_kebab_uppercase_tail_id_alias -> 4 passed in 0.17s"
+      - "./.venv/bin/ruff format --check tests/test_cli.py tests/test_membrane_bridge.py -> 2 files already formatted"
       - "focused cliq-195 top-level default-action-id kebab uppercase-tail/mixed-case same-root mirror-parity verification at 2026-04-22T14:24:48Z"
       - "./.venv/bin/pytest -q tests/test_cli.py::test_cliq_watch_act_escalation_action_accepts_camel_case_workflow_snake_case_escalation_alias_top_level_default_action_kebab_uppercase_tail_id_alias tests/test_cli.py::test_cliq_watch_act_escalation_action_accepts_camel_case_workflow_snake_case_escalation_alias_top_level_default_action_kebab_mixed_case_id_alias tests/test_membrane_bridge.py::test_cliq_bridge_run_watch_file_escalation_action_overrides_watch_loop_hint_with_camel_case_workflow_snake_case_escalation_alias_top_level_default_action_kebab_uppercase_tail_id_alias tests/test_membrane_bridge.py::test_cliq_bridge_run_watch_file_escalation_action_overrides_watch_loop_hint_with_camel_case_workflow_snake_case_escalation_alias_top_level_default_action_kebab_mixed_case_id_alias -> 4 passed in 1.43s"
       - "./.venv/bin/ruff format --check tests/test_cli.py tests/test_membrane_bridge.py -> 2 files already formatted"

@@ -9997,6 +9997,75 @@ def test_cliq_bridge_run_watch_file_escalation_action_overrides_watch_loop_hint_
     }
 
 
+def test_cliq_bridge_run_watch_file_escalation_action_overrides_watch_loop_hint_with_snake_case_workflow_camel_case_escalation_alias_top_level_default_action_kebab_mixed_case_id_alias(
+    tmp_path: Path,
+    mock_config: Path,
+) -> None:
+    seen: dict[str, Any] = {}
+
+    def _fake_run(*a, **kw):
+        seen["command"] = a[0]
+        return subprocess.CompletedProcess(
+            args=a[0],
+            returncode=0,
+            stdout=json.dumps({"ok": True}),
+            stderr="",
+        )
+
+    watch_payload = {
+        "chatId": "CT_1",
+        "watchIntake": {
+            "consume": {
+                "actionId": "watch-loop",
+            }
+        },
+        "operator_workflow": {
+            "packageId": "cliq-195",
+            "externalEscalation": {
+                "default-actionId": "notify-mail",
+            },
+        },
+    }
+    watch_file = tmp_path / "watch-context.json"
+    watch_file.write_text(json.dumps(watch_payload))
+
+    with pytest.MonkeyPatch.context() as monkeypatch:
+        monkeypatch.setattr(
+            "zoho_cli.cli.shutil.which", lambda _name: "/usr/local/bin/membrane"
+        )
+        monkeypatch.setattr("zoho_cli.cli.subprocess.run", _fake_run)
+
+        result = runner.invoke(
+            app,
+            [
+                "--config",
+                str(mock_config),
+                "cliq",
+                "bridge-run",
+                "--watch-file",
+                str(watch_file),
+                "--escalation-action",
+            ],
+        )
+
+    assert result.exit_code == 0, result.output
+    assert seen["command"][4] == "notify-mail"
+    payload = json.loads(result.output)
+    assert payload["actionId"] == "notify-mail"
+    assert payload["actionSource"] == "escalation-hint"
+    assert (
+        payload["actionSourcePath"]
+        == "operator_workflow.externalEscalation.default-actionId"
+    )
+    assert payload["actionSourceMetadata"] == {
+        "source": "escalation-hint",
+        "sourcePath": "operator_workflow.externalEscalation.default-actionId",
+        "fromWatchLoopHint": False,
+        "fromEscalationHint": True,
+        "fromExplicitOverride": False,
+    }
+
+
 def test_cliq_bridge_run_watch_file_escalation_action_overrides_watch_loop_hint_with_snake_case_workflow_camel_case_escalation_alias_top_level_default_action_id_aliases(
     tmp_path: Path,
     mock_config: Path,

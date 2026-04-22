@@ -4,10 +4,10 @@ module: cliq
 stage: in_progress
 status: in_progress
 owner: coder
-updated_at: '2026-04-22T18:13:00Z'
+updated_at: '2026-04-22T19:15:13Z'
 success_criteria:
 - add an initial cliq-195 operator-workflow packaging contract to watch-context output without breaking existing watch-loop consumers
 - preserve the operator-workflow contract through watch-act action payload/result surfaces used by automation loops
 - keep focused watch-context/watch-act verification green while deferred external blockers stay capability-gated
 next_if_done: if focused and medium-scope cliq-195 verification remain green, continue the next operator-workflow packaging increment without regressing deferred capability-gated blockers.
-next_step: "after the 2026-04-22T18:13:00Z thin no-behavior-change camel/camel top-level default-actionid parity increment stayed green, add the remaining same-root top-level kebab alias mirror coverage for default-actionId and default-actionID (watch-act + bridge-run) and rerun focused verification."
+next_step: "after the 2026-04-22T19:15:13Z thin no-behavior-change camel/camel top-level default-actionId/default-actionID same-root mirror coverage stayed green, run the next medium-scope cliq-195 integration verification refresh before selecting the next thin alias-parity slice."

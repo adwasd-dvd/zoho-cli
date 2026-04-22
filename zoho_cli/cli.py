@@ -2379,6 +2379,10 @@ def cliq_bridge_run(
                                 escalation_hint.get("default_actionID"),
                                 f"{escalation_hint_source_root}.default_actionID",
                             ),
+                            (
+                                escalation_hint.get("default-action-id"),
+                                f"{escalation_hint_source_root}.default-action-id",
+                            ),
                         ]
                     )
 
@@ -9836,6 +9840,10 @@ def cliq_watch_act(
                             (
                                 hint.get("default_actionID"),
                                 f"{hint_source_root}.default_actionID",
+                            ),
+                            (
+                                hint.get("default-action-id"),
+                                f"{hint_source_root}.default-action-id",
                             ),
                         ]
                     )

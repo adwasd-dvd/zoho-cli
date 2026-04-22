@@ -1,6 +1,6 @@
-last_run_at: "2026-04-22T19:25:30Z"
+last_run_at: "2026-04-22T19:59:06Z"
 last_result: success
-current_focus: cliq-195-integration-loop-medium-scope-verification-refresh-20260422t192530z
+current_focus: cliq-195-top-level-bridge-action-kebab-mixed-case-same-root-20260422t195906z
 suites:
   unit:
     status: success

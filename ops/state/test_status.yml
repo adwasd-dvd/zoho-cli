@@ -1,10 +1,13 @@
-last_run_at: "2026-04-22T17:00:15Z"
+last_run_at: "2026-04-22T17:09:00Z"
 last_result: success
-current_focus: cliq-195-same-root-snake-snake-top-level-default-actionid-uppercase-tail-mirror-20260422t170015z
+current_focus: cliq-195-same-root-snake-snake-top-level-default-actionid-compact-mirror-20260422t170900z
 suites:
   unit:
     status: success
     notes:
+      - "focused cliq-195 same-root snake/snake escalation top-level compact default-action-id mirror verification at 2026-04-22T17:09:00Z"
+      - "./.venv/bin/pytest -q tests/test_cli.py::test_cliq_watch_act_escalation_action_accepts_snake_case_workflow_snake_case_escalation_alias_top_level_default_action_kebab_compact_id_alias tests/test_membrane_bridge.py::test_cliq_bridge_run_watch_file_escalation_action_overrides_watch_loop_hint_with_snake_case_workflow_snake_case_escalation_alias_top_level_default_action_kebab_compact_id_alias -> 2 passed in 1.40s"
+      - "./.venv/bin/ruff format --check tests/test_cli.py tests/test_membrane_bridge.py -> 2 files already formatted"
       - "focused cliq-195 same-root snake/snake escalation top-level uppercase-tail default-action-id mirror verification at 2026-04-22T17:00:15Z"
       - "pytest -q tests/test_cli.py::test_cliq_watch_act_escalation_action_accepts_snake_case_workflow_snake_case_escalation_alias_top_level_default_action_kebab_uppercase_tail_id_alias tests/test_membrane_bridge.py::test_cliq_bridge_run_watch_file_escalation_action_overrides_watch_loop_hint_with_snake_case_workflow_snake_case_escalation_alias_top_level_default_action_kebab_uppercase_tail_id_alias -> 2 passed in 1.41s"
       - "./.venv/bin/ruff format --check tests/test_cli.py tests/test_membrane_bridge.py -> 2 files already formatted"

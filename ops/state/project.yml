@@ -1,5 +1,5 @@
 project: zoho-cli
-updated_at: '2026-04-22T17:29:00Z'
+updated_at: '2026-04-22T18:02:28Z'
 status: v1-architecture-and-queue-optimization
 canonical_workspace: /Users/adwasd/.openclaw/workspace-coder
 project_root: /Users/adwasd/.openclaw/workspace-coder/job/zoho-cli
@@ -7,7 +7,7 @@ module_order:
 - Mail
 - Cliq
 - CRM
-current_focus: "Fast-track v1.0 AI-employee release: 2026-04-22T17:29:00Z focused cliq-195 same-root camel/camel top-level kebab-case `default-action-id` mirror increment landed green while thin alias-parity mode continues."
+current_focus: "Fast-track v1.0 AI-employee release: 2026-04-22T18:02:28Z focused cliq-195 same-root snake/snake top-level kebab-case `default-action-id` mirror verification stayed green while thin alias-parity mode continues."
 primary_blockers:
 - crm live read-only verification remains blocked by account-level CRM org access
 - cliq databases live verification currently requires additional scope (`ZohoCliq.Databases.READ`) on the active token despite healthy baseline auth/export readiness
@@ -29,8 +29,9 @@ primary_blockers:
   returns `not_supported`)
 - calls/meetings endpoints are unsupported on current token/network (`cliq meetings`
   now returns `not_supported` in focused live verification)
-next_step: "continue the next thin no-behavior-change cliq-195 escalation alias-parity increment by scanning for any remaining escalation-root default-action-id mirror gaps after the 2026-04-22T17:29:00Z focused camel/camel top-level kebab-case mirror increment stayed green."
+next_step: "continue the next thin no-behavior-change cliq-195 escalation alias-parity increment by scanning for any remaining escalation-root default-action-id mirror gaps after the 2026-04-22T18:02:28Z focused snake/snake top-level kebab-case mirror verification stayed green."
 additional_info:
+- "2026-04-22 focused verification at 2026-04-22T18:02:28Z confirmed cliq-195 same-root snake/snake escalation top-level kebab-case alias parity for `operator_workflow.external_escalation.default-action-id` across `zoho cliq watch-act --escalation-action` and `zoho cliq bridge-run --watch-file --escalation-action`, with focused checks green (`./.venv/bin/pytest -q tests/test_cli.py::test_cliq_watch_act_escalation_action_accepts_snake_case_workflow_snake_case_escalation_alias_top_level_default_action_kebab_case_id_aliases tests/test_membrane_bridge.py::test_cliq_bridge_run_watch_file_escalation_action_overrides_watch_loop_hint_with_snake_case_workflow_snake_case_escalation_alias_top_level_default_action_kebab_case_id_aliases` -> `2 passed in 0.13s`; `./.venv/bin/ruff format --check tests/test_cli.py tests/test_membrane_bridge.py` -> `2 files already formatted`)."
 - "2026-04-22 focused verification at 2026-04-22T17:29:00Z confirmed cliq-195 same-root camel/camel escalation top-level kebab-case alias parity for `operatorWorkflow.externalEscalation.default-action-id` across `zoho cliq watch-act --escalation-action` and `zoho cliq bridge-run --watch-file --escalation-action`, with focused checks green (`./.venv/bin/pytest -q tests/test_cli.py::test_cliq_watch_act_escalation_action_accepts_camel_case_workflow_camel_case_escalation_alias_top_level_default_action_kebab_case_id_aliases tests/test_membrane_bridge.py::test_cliq_bridge_run_watch_file_escalation_action_overrides_watch_loop_hint_with_camel_case_workflow_camel_case_escalation_alias_top_level_default_action_kebab_case_id_aliases` -> `2 passed in 1.40s`; `./.venv/bin/ruff format --check tests/test_cli.py tests/test_membrane_bridge.py` -> `2 files already formatted`)."
 - "2026-04-22 focused verification at 2026-04-22T17:09:00Z confirmed cliq-195 same-root snake/snake escalation top-level compact kebab alias parity for `operator_workflow.external_escalation.default-actionid` across `zoho cliq watch-act --escalation-action` and `zoho cliq bridge-run --watch-file --escalation-action`, with focused checks green (`./.venv/bin/pytest -q tests/test_cli.py::test_cliq_watch_act_escalation_action_accepts_snake_case_workflow_snake_case_escalation_alias_top_level_default_action_kebab_compact_id_alias tests/test_membrane_bridge.py::test_cliq_bridge_run_watch_file_escalation_action_overrides_watch_loop_hint_with_snake_case_workflow_snake_case_escalation_alias_top_level_default_action_kebab_compact_id_alias` -> `2 passed in 1.40s`; `./.venv/bin/ruff format --check tests/test_cli.py tests/test_membrane_bridge.py` -> `2 files already formatted`)."
 - "2026-04-22 focused verification at 2026-04-22T17:00:15Z confirmed cliq-195 same-root snake/snake escalation top-level uppercase-tail kebab alias parity for `operator_workflow.external_escalation.default-actionID` across `zoho cliq watch-act --escalation-action` and `zoho cliq bridge-run --watch-file --escalation-action`, with focused checks green (`pytest -q tests/test_cli.py::test_cliq_watch_act_escalation_action_accepts_snake_case_workflow_snake_case_escalation_alias_top_level_default_action_kebab_uppercase_tail_id_alias tests/test_membrane_bridge.py::test_cliq_bridge_run_watch_file_escalation_action_overrides_watch_loop_hint_with_snake_case_workflow_snake_case_escalation_alias_top_level_default_action_kebab_uppercase_tail_id_alias` -> `2 passed in 1.41s`; `./.venv/bin/ruff format --check tests/test_cli.py tests/test_membrane_bridge.py` -> `2 files already formatted`)."

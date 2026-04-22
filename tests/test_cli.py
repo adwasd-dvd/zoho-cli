@@ -5432,6 +5432,66 @@ def test_cliq_watch_act_escalation_action_accepts_camel_case_workflow_snake_case
 
 
 @respx.mock
+def test_cliq_watch_act_escalation_action_accepts_camel_case_workflow_snake_case_escalation_alias_top_level_default_action_kebab_compact_id_alias(
+    tmp_path: Path,
+    mock_config: Path,
+    mock_token_refresh: Any,
+) -> None:
+    watch_file = tmp_path / "watch.json"
+    watch_file.write_text(
+        json.dumps(
+            {
+                "chatId": "CT_1",
+                "channelId": "O1",
+                "operatorWorkflow": {
+                    "packageId": "cliq-195",
+                    "external_escalation": {
+                        "default-actionid": "read-ack-latest",
+                    },
+                },
+                "newCount": 1,
+                "messages": [
+                    {"messageId": "M2", "senderId": "U2", "text": "latest"},
+                ],
+            }
+        )
+    )
+
+    route = respx.post("https://cliq.zoho.com/api/v2/chats/CT_1/messages/M2/read").mock(
+        return_value=httpx.Response(200, json={"data": {"id": "M2", "status": "ok"}})
+    )
+
+    result = runner.invoke(
+        app,
+        [
+            "cliq",
+            "watch-act",
+            "--watch-file",
+            str(watch_file),
+            "--escalation-action",
+        ],
+        env=_cfg_env(mock_config),
+    )
+
+    assert result.exit_code == 0, result.output
+    assert route.called
+    payload = json.loads(result.output)
+    assert payload["action"] == "read-ack-latest"
+    assert payload["actionSource"] == "escalation-hint"
+    assert (
+        payload["actionSourcePath"]
+        == "operatorWorkflow.external_escalation.default-actionid"
+    )
+    assert payload["actionSourceMetadata"] == {
+        "source": "escalation-hint",
+        "sourcePath": "operatorWorkflow.external_escalation.default-actionid",
+        "fromWatchLoopHint": False,
+        "fromEscalationHint": True,
+        "fromExplicitOverride": False,
+    }
+
+
+@respx.mock
 def test_cliq_watch_act_escalation_action_accepts_snake_case_workflow_camel_case_escalation_alias_top_level_default_action_kebab_uppercase_tail_id_alias(
     tmp_path: Path,
     mock_config: Path,
@@ -5545,6 +5605,66 @@ def test_cliq_watch_act_escalation_action_accepts_snake_case_workflow_camel_case
     assert payload["actionSourceMetadata"] == {
         "source": "escalation-hint",
         "sourcePath": "operator_workflow.externalEscalation.default-actionId",
+        "fromWatchLoopHint": False,
+        "fromEscalationHint": True,
+        "fromExplicitOverride": False,
+    }
+
+
+@respx.mock
+def test_cliq_watch_act_escalation_action_accepts_snake_case_workflow_camel_case_escalation_alias_top_level_default_action_kebab_compact_id_alias(
+    tmp_path: Path,
+    mock_config: Path,
+    mock_token_refresh: Any,
+) -> None:
+    watch_file = tmp_path / "watch.json"
+    watch_file.write_text(
+        json.dumps(
+            {
+                "chatId": "CT_1",
+                "channelId": "O1",
+                "operator_workflow": {
+                    "packageId": "cliq-195",
+                    "externalEscalation": {
+                        "default-actionid": "read-ack-latest",
+                    },
+                },
+                "newCount": 1,
+                "messages": [
+                    {"messageId": "M2", "senderId": "U2", "text": "latest"},
+                ],
+            }
+        )
+    )
+
+    route = respx.post("https://cliq.zoho.com/api/v2/chats/CT_1/messages/M2/read").mock(
+        return_value=httpx.Response(200, json={"data": {"id": "M2", "status": "ok"}})
+    )
+
+    result = runner.invoke(
+        app,
+        [
+            "cliq",
+            "watch-act",
+            "--watch-file",
+            str(watch_file),
+            "--escalation-action",
+        ],
+        env=_cfg_env(mock_config),
+    )
+
+    assert result.exit_code == 0, result.output
+    assert route.called
+    payload = json.loads(result.output)
+    assert payload["action"] == "read-ack-latest"
+    assert payload["actionSource"] == "escalation-hint"
+    assert (
+        payload["actionSourcePath"]
+        == "operator_workflow.externalEscalation.default-actionid"
+    )
+    assert payload["actionSourceMetadata"] == {
+        "source": "escalation-hint",
+        "sourcePath": "operator_workflow.externalEscalation.default-actionid",
         "fromWatchLoopHint": False,
         "fromEscalationHint": True,
         "fromExplicitOverride": False,

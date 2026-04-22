@@ -2352,6 +2352,10 @@ def cliq_bridge_run(
                                 f"{escalation_hint_source_root}.default_action",
                             ),
                             (
+                                escalation_hint.get("default-action"),
+                                f"{escalation_hint_source_root}.default-action",
+                            ),
+                            (
                                 escalation_hint.get("defaultActionId"),
                                 f"{escalation_hint_source_root}.defaultActionId",
                             ),
@@ -9828,6 +9832,10 @@ def cliq_watch_act(
                             (
                                 hint.get("default_action"),
                                 f"{hint_source_root}.default_action",
+                            ),
+                            (
+                                hint.get("default-action"),
+                                f"{hint_source_root}.default-action",
                             ),
                             (
                                 hint.get("defaultActionId"),

@@ -1,10 +1,16 @@
-last_run_at: "2026-04-22T12:56:51Z"
+last_run_at: "2026-04-22T13:41:44Z"
 last_result: success
-current_focus: cliq-195-top-level-default-action-kebab-compact-id-alias-mixed-root-mirror-verification-20260422t125651z
+current_focus: cliq-195-action-hint-default-action-kebab-compact-id-alias-same-root-mirror-verification-20260422t134144z
 suites:
   unit:
     status: success
     notes:
+      - "focused cliq-195 action-hint default-action-id compact kebab same-root mirror-parity verification at 2026-04-22T13:41:44Z"
+      - "./.venv/bin/python -m pytest -q tests/test_cli.py::test_cliq_watch_act_escalation_action_accepts_camel_case_workflow_camel_case_escalation_alias_action_hint_default_action_kebab_compact_id_alias tests/test_cli.py::test_cliq_watch_act_escalation_action_accepts_snake_case_workflow_snake_case_escalation_alias_action_hint_default_action_kebab_compact_id_alias tests/test_membrane_bridge.py::test_cliq_bridge_run_watch_file_escalation_action_overrides_watch_loop_hint_with_camel_case_workflow_camel_case_escalation_alias_action_hint_default_action_kebab_compact_id_alias tests/test_membrane_bridge.py::test_cliq_bridge_run_watch_file_escalation_action_overrides_watch_loop_hint_with_snake_case_workflow_snake_case_escalation_alias_action_hint_default_action_kebab_compact_id_alias -> 4 passed in 0.17s"
+      - "./.venv/bin/ruff format --check tests/test_cli.py tests/test_membrane_bridge.py -> 2 files already formatted"
+      - "focused cliq-195 action-hint default-action-id compact kebab mixed-root mirror-parity verification at 2026-04-22T13:20:31Z"
+      - "./.venv/bin/python -m pytest -q tests/test_cli.py::test_cliq_watch_act_escalation_action_accepts_camel_case_workflow_snake_case_escalation_alias_action_hint_default_action_kebab_compact_id_alias tests/test_membrane_bridge.py::test_cliq_bridge_run_watch_file_escalation_action_overrides_watch_loop_hint_with_camel_case_workflow_snake_case_escalation_alias_action_hint_default_action_kebab_compact_id_alias -> 2 passed in 1.41s"
+      - "./.venv/bin/ruff format --check tests/test_cli.py tests/test_membrane_bridge.py -> 2 files already formatted"
       - "focused cliq-195 top-level default-action-id compact kebab mixed-root mirror-parity verification at 2026-04-22T12:56:51Z"
       - "./.venv/bin/python -m pytest -q tests/test_cli.py::test_cliq_watch_act_escalation_action_accepts_camel_case_workflow_snake_case_escalation_alias_top_level_default_action_kebab_compact_id_alias tests/test_cli.py::test_cliq_watch_act_escalation_action_accepts_snake_case_workflow_camel_case_escalation_alias_top_level_default_action_kebab_compact_id_alias tests/test_membrane_bridge.py::test_cliq_bridge_run_watch_file_escalation_action_overrides_watch_loop_hint_with_camel_case_workflow_snake_case_escalation_alias_top_level_default_action_kebab_compact_id_alias tests/test_membrane_bridge.py::test_cliq_bridge_run_watch_file_escalation_action_overrides_watch_loop_hint_with_snake_case_workflow_camel_case_escalation_alias_top_level_default_action_kebab_compact_id_alias -> 4 passed in 0.17s"
       - "./.venv/bin/ruff format --check tests/test_cli.py tests/test_membrane_bridge.py -> 2 files already formatted"

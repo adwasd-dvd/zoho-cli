@@ -19777,6 +19777,39 @@ def test_cliq_chats(mock_config: Path, mock_token_refresh: Any) -> None:
 
 
 @respx.mock
+def test_cliq_chats_top_level_chats_shape(
+    mock_config: Path, mock_token_refresh: Any
+) -> None:
+    respx.get("https://cliq.zoho.com/api/v2/chats").mock(
+        return_value=httpx.Response(
+            200,
+            json={
+                "chats": [
+                    {
+                        "chat_id": "CT_2",
+                        "name": "Ops DM",
+                        "chat_type": "dm",
+                    }
+                ],
+                "has_more": True,
+                "next_token": "NEXT123",
+            },
+        )
+    )
+
+    result = runner.invoke(
+        app, ["cliq", "chats", "--limit", "1"], env=_cfg_env(mock_config)
+    )
+    assert result.exit_code == 0, result.output
+    payload = json.loads(result.output)
+    assert payload["count"] == 1
+    assert payload["chats"][0]["chatId"] == "CT_2"
+    assert payload["chats"][0]["type"] == "dm"
+    assert payload["hasMore"] is True
+    assert payload["nextToken"] == "NEXT123"
+
+
+@respx.mock
 def test_cliq_users(mock_config: Path, mock_token_refresh: Any) -> None:
     respx.get("https://cliq.zoho.com/api/v2/users").mock(
         return_value=httpx.Response(200, json={"data": [{"id": "U1", "name": "Alice"}]})

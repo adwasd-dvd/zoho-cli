@@ -2934,12 +2934,23 @@ def cliq_chats(
     client = _get_cliq_client(cfg, email, network=network)
 
     resp = client.chats(limit=limit)
-    data = resp.get("data", resp)
-    if not isinstance(data, list):
-        data = []
+    rows: list[Any] = []
+    if isinstance(resp, dict):
+        data = resp.get("data")
+        if isinstance(data, list):
+            rows = data
+        elif isinstance(data, dict):
+            nested = data.get("chats")
+            if isinstance(nested, list):
+                rows = nested
+
+        if not rows:
+            top_level_chats = resp.get("chats")
+            if isinstance(top_level_chats, list):
+                rows = top_level_chats
 
     views: list[dict[str, Any]] = []
-    for row in data:
+    for row in rows:
         if not isinstance(row, dict):
             continue
         views.append(
@@ -2957,12 +2968,19 @@ def cliq_chats(
             }
         )
 
-    utils.output(
-        {
-            "count": len(views),
-            "chats": views,
-        }
-    )
+    payload: dict[str, Any] = {
+        "count": len(views),
+        "chats": views,
+    }
+    if isinstance(resp, dict):
+        has_more = resp.get("has_more")
+        if isinstance(has_more, bool):
+            payload["hasMore"] = has_more
+        next_token = resp.get("next_token")
+        if isinstance(next_token, str) and next_token.strip():
+            payload["nextToken"] = next_token
+
+    utils.output(payload)
 
 
 register_cliq_channels_chats_commands(

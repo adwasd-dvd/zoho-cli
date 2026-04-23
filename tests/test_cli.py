@@ -1675,6 +1675,140 @@ def test_cliq_watch_context_from_channel(
     assert payload["messages"][0]["messageId"] == "M3"
 
 
+@respx.mock
+def test_cliq_watch_context_watch_act_second_pass_noop_after_cursor_advance(
+    mock_config: Path,
+    mock_token_refresh: Any,
+) -> None:
+    channel_route = respx.get("https://cliq.zoho.com/api/v2/channels/O1").mock(
+        return_value=httpx.Response(200, json={"data": {"chat_id": "CT_1"}})
+    )
+    messages_route = respx.get("https://cliq.zoho.com/api/v2/chats/CT_1/messages").mock(
+        return_value=httpx.Response(
+            200,
+            json={
+                "data": [
+                    {"id": "M3", "text": "third"},
+                    {"id": "M2", "text": "second"},
+                    {"id": "M1", "text": "first"},
+                ]
+            },
+        )
+    )
+
+    first_watch_result = runner.invoke(
+        app,
+        [
+            "cliq",
+            "watch-context",
+            "--channel-id",
+            "O1",
+            "--since-message-id",
+            "M2",
+            "--limit",
+            "10",
+            "--max-messages",
+            "5",
+        ],
+        env=_cfg_env(mock_config),
+    )
+    assert first_watch_result.exit_code == 0, first_watch_result.output
+    first_watch_payload = json.loads(first_watch_result.output)
+    assert first_watch_payload["newCount"] == 1
+    assert first_watch_payload["messages"] == [
+        {
+            "messageId": "M3",
+            "senderId": "",
+            "text": "third",
+            "timestamp": "",
+            "raw": {"id": "M3", "text": "third"},
+        }
+    ]
+    assert (
+        first_watch_payload["watchIntake"]["consume"]["ackAction"] == "read-ack-latest"
+    )
+    assert first_watch_payload["operatorWorkflow"]["packageId"] == "cliq-195"
+
+    reply_route = respx.post(
+        "https://cliq.zoho.com/api/v2/chats/CT_1/messages/M3/reply"
+    ).mock(return_value=httpx.Response(200, json={"data": {"id": "M4"}}))
+    read_ack_route = respx.post(
+        "https://cliq.zoho.com/api/v2/chats/CT_1/messages/M3/read"
+    ).mock(
+        return_value=httpx.Response(200, json={"data": {"id": "M3", "status": "ok"}})
+    )
+
+    first_act_result = runner.invoke(
+        app,
+        [
+            "cliq",
+            "watch-act",
+            "--text",
+            "ack",
+        ],
+        input=json.dumps(first_watch_payload),
+        env=_cfg_env(mock_config),
+    )
+    assert first_act_result.exit_code == 0, first_act_result.output
+    assert reply_route.called
+    assert read_ack_route.called
+    first_act_payload = json.loads(first_act_result.output)
+    assert first_act_payload["applied"] is True
+    assert first_act_payload["targetMessageId"] == "M3"
+    assert first_act_payload["readAck"]["required"] is True
+    assert first_act_payload["readAck"]["applied"] is True
+    assert first_act_payload["watchIntake"]["consume"]["ackAction"] == "read-ack-latest"
+    assert first_act_payload["operatorWorkflow"]["packageId"] == "cliq-195"
+
+    second_watch_result = runner.invoke(
+        app,
+        [
+            "cliq",
+            "watch-context",
+            "--channel-id",
+            "O1",
+            "--since-message-id",
+            first_watch_payload["cursor"]["nextSinceMessageId"],
+            "--limit",
+            "10",
+            "--max-messages",
+            "5",
+        ],
+        env=_cfg_env(mock_config),
+    )
+    assert second_watch_result.exit_code == 0, second_watch_result.output
+    second_watch_payload = json.loads(second_watch_result.output)
+    assert second_watch_payload["cursor"]["cursorFound"] is True
+    assert second_watch_payload["newCount"] == 0
+    assert second_watch_payload["messages"] == []
+    assert (
+        second_watch_payload["watchIntake"]["consume"]["ackAction"] == "read-ack-latest"
+    )
+    assert second_watch_payload["operatorWorkflow"]["packageId"] == "cliq-195"
+
+    second_act_result = runner.invoke(
+        app,
+        [
+            "cliq",
+            "watch-act",
+            "--text",
+            "ack",
+        ],
+        input=json.dumps(second_watch_payload),
+        env=_cfg_env(mock_config),
+    )
+    assert second_act_result.exit_code == 0, second_act_result.output
+    second_act_payload = json.loads(second_act_result.output)
+    assert second_act_payload["status"] == "ok"
+    assert second_act_payload["applied"] is False
+    assert second_act_payload["reason"] == "no_new_messages"
+    assert second_act_payload["readAck"]["required"] is True
+    assert second_act_payload["readAck"]["applied"] is False
+    assert second_act_payload["readAck"]["reason"] == "no_new_messages"
+    assert channel_route.call_count == 2
+    assert messages_route.call_count == 2
+
+
 def test_cliq_watch_context_requires_destination(
     mock_config: Path, mock_token_refresh: Any
 ) -> None:

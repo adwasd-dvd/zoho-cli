@@ -10,6 +10,7 @@
 - [ ] Deliver `cliq-195` operator workflow package (internal loop + external-contact escalation path).
 - [ ] Land `platform-206` cross-channel interoperability contract (Cliq internal + external comm adapters).
 - [ ] Land `platform-207` release-candidate docs + quickstart + runbook.
+- [ ] Queue `platform-208` full CLI information-architecture cleanup (module-first hierarchy hardening, remove legacy root mail aliases after deprecation window, and normalize level-2/level-3 help taxonomy for human + AI operators).
 
 ## Blocker handling (do not stall release)
 

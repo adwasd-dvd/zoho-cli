@@ -18,6 +18,12 @@ def register_mail_root_typers(
         root_app,
         mail_app=mail_app,
     )
+    register_mail_support_typers_under_mail(
+        mail_app,
+        attachment_app=attachment_app,
+        folders_app=folders_app,
+        labels_app=labels_app,
+    )
     register_mail_support_root_typers(
         root_app,
         attachment_app=attachment_app,
@@ -42,10 +48,38 @@ def register_mail_support_root_typers(
     folders_app: typer.Typer,
     labels_app: typer.Typer,
 ) -> None:
-    """Register mail support root command groups on ``root_app``."""
-    root_app.add_typer(attachment_app, name="attachment")
-    root_app.add_typer(folders_app, name="folders")
-    root_app.add_typer(labels_app, name="labels")
+    """Register legacy mail support aliases at root level on ``root_app``."""
+    root_app.add_typer(
+        attachment_app,
+        name="attachment",
+        hidden=True,
+        deprecated=True,
+    )
+    root_app.add_typer(
+        folders_app,
+        name="folders",
+        hidden=True,
+        deprecated=True,
+    )
+    root_app.add_typer(
+        labels_app,
+        name="labels",
+        hidden=True,
+        deprecated=True,
+    )
+
+
+def register_mail_support_typers_under_mail(
+    mail_app: typer.Typer,
+    *,
+    attachment_app: typer.Typer,
+    folders_app: typer.Typer,
+    labels_app: typer.Typer,
+) -> None:
+    """Register mail support groups under the ``mail`` module namespace."""
+    mail_app.add_typer(attachment_app, name="attachment")
+    mail_app.add_typer(folders_app, name="folders")
+    mail_app.add_typer(labels_app, name="labels")
 
 
 def register_cliq_crm_config_root_typers(

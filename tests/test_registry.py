@@ -75,6 +75,7 @@ from zoho_cli.commands.root import (
     register_mail_primary_root_typers,
     register_mail_root_typers,
     register_mail_support_root_typers,
+    register_mail_support_typers_under_mail,
     register_membrane_root_typers,
 )
 from zoho_cli.registry import register_root_commands
@@ -265,6 +266,10 @@ def test_commands_package_exports_root_registrars() -> None:
     assert commands_pkg.register_cliq_root_typers is register_cliq_root_typers
     assert (
         commands_pkg.register_crm_config_root_typers is register_crm_config_root_typers
+    )
+    assert (
+        commands_pkg.register_mail_support_typers_under_mail
+        is register_mail_support_typers_under_mail
     )
     assert commands_pkg.register_membrane_root_typers is register_membrane_root_typers
 
@@ -1358,6 +1363,25 @@ def test_register_mail_support_root_typers_preserves_expected_group_names() -> N
                 labels_app=labels_app,
             ),
         ),
+    )
+
+    assert [group.name for group in app.registered_groups] == [
+        "attachment",
+        "folders",
+        "labels",
+    ]
+
+
+def test_register_mail_support_typers_under_mail_preserves_expected_group_names() -> (
+    None
+):
+    app = typer.Typer(no_args_is_help=True)
+
+    register_mail_support_typers_under_mail(
+        app,
+        attachment_app=attachment_subapp,
+        folders_app=folders_app,
+        labels_app=labels_app,
     )
 
     assert [group.name for group in app.registered_groups] == [

@@ -60,6 +60,7 @@ from .root import (
     register_mail_primary_root_typers,
     register_mail_root_typers,
     register_mail_support_root_typers,
+    register_mail_support_typers_under_mail,
     register_membrane_root_typers,
 )
 
@@ -121,5 +122,6 @@ __all__ = [
     "register_mail_primary_root_typers",
     "register_mail_root_typers",
     "register_mail_support_root_typers",
+    "register_mail_support_typers_under_mail",
     "register_membrane_root_typers",
 ]

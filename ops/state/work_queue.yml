@@ -283,3 +283,11 @@
   depends_on:
   - crm-002
   - platform-202
+- id: platform-208
+  title: finalize module-first CLI information architecture (retire legacy root mail aliases after deprecation window and normalize level-2/3 help taxonomy)
+  module: platform
+  stage: queued
+  priority: medium
+  depends_on:
+  - platform-201
+  - platform-204

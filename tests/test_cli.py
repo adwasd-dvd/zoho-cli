@@ -98,6 +98,35 @@ def _cfg_env(cfg_path: Path) -> dict[str, str]:
     return {"ZOHO_CONFIG": str(cfg_path)}
 
 
+def test_root_help_is_module_first_and_hides_mail_support_aliases() -> None:
+    result = runner.invoke(app, ["--help"])
+
+    assert result.exit_code == 0, result.output
+    assert "Zoho CLI" in result.output
+    assert "mail" in result.output
+    assert "cliq" in result.output
+    assert "crm" in result.output
+    assert " attachment  " not in result.output
+    assert " folders     " not in result.output
+    assert " labels      " not in result.output
+
+
+def test_mail_help_includes_support_subgroups_under_mail() -> None:
+    result = runner.invoke(app, ["mail", "--help"])
+
+    assert result.exit_code == 0, result.output
+    assert "attachment" in result.output
+    assert "folders" in result.output
+    assert "labels" in result.output
+
+
+def test_legacy_mail_support_root_aliases_still_work() -> None:
+    result = runner.invoke(app, ["attachment", "--help"])
+
+    assert result.exit_code == 0, result.output
+    assert "Download and display content of an attachment." in result.output
+
+
 def test_login_no_browser_defaults_to_localhost_redirect_when_unset(
     mock_config: Path, monkeypatch: pytest.MonkeyPatch
 ) -> None:

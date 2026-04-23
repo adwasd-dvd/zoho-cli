@@ -126,18 +126,41 @@ app = typer.Typer(
     name="zoho",
     no_args_is_help=True,
     add_completion=False,
-    help=f"Zoho Mail CLI (v{_get_version()}) — JSON by default, Markdown with --md.",
+    help=(
+        f"Zoho CLI (v{_get_version()}) — unified multi-product CLI for Mail, Cliq, "
+        "and CRM.\n"
+        "Use module-first commands: `zoho mail ...`, `zoho cliq ...`, "
+        "`zoho crm ...`."
+    ),
 )
-mail_app = typer.Typer(no_args_is_help=True, help="Message operations.")
+mail_app = typer.Typer(
+    no_args_is_help=True,
+    help=(
+        "Mail module commands. Includes message operations plus mail support "
+        "subgroups (`mail attachment`, `mail folders`, `mail labels`)."
+    ),
+)
 attachment_subapp = typer.Typer(
     no_args_is_help=True,
     name="attachment",
-    help="Attachment management (download & parse).",
+    help="Mail attachment utilities (download and parse).",
 )
-folders_app = typer.Typer(no_args_is_help=True, help="Folder management.")
-labels_app = typer.Typer(no_args_is_help=True, help="Label management.")
-cliq_app = typer.Typer(no_args_is_help=True, help="Cliq operations (scaffold).")
-crm_app = typer.Typer(no_args_is_help=True, help="CRM operations (scaffold).")
+folders_app = typer.Typer(
+    no_args_is_help=True,
+    help="Mail folder lifecycle operations.",
+)
+labels_app = typer.Typer(
+    no_args_is_help=True,
+    help="Mail label lifecycle operations.",
+)
+cliq_app = typer.Typer(
+    no_args_is_help=True,
+    help="Cliq module operations.",
+)
+crm_app = typer.Typer(
+    no_args_is_help=True,
+    help="CRM module operations.",
+)
 config_app = typer.Typer(no_args_is_help=True, help="Configuration helpers.")
 membrane_app = typer.Typer(
     no_args_is_help=True,

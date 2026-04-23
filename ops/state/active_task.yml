@@ -4,10 +4,10 @@ module: cliq
 stage: in_progress
 status: in_progress
 owner: coder
-updated_at: '2026-04-23T21:08:53Z'
+updated_at: '2026-04-23T22:27:55Z'
 success_criteria:
 - add an initial cliq-195 operator-workflow packaging contract to watch-context output without breaking existing watch-loop consumers
 - preserve the operator-workflow contract through watch-act action payload/result surfaces used by automation loops
 - keep focused watch-context/watch-act verification green while deferred external blockers stay capability-gated
 next_if_done: if focused and medium-scope cliq-195 verification remain green, continue the next operator-workflow packaging increment without regressing deferred capability-gated blockers.
-next_step: "real smoke with ai-dev token confirmed cliq read-ack endpoint `not_supported` and temporary token refresh throttling; after cooldown, rerun minimal live cliq-194 evidence probe and continue the next thin no-behavior-change cliq-195 packaging increment. In parallel, module-first CLI help cleanup is now landed (`mail attachment|folders|labels` hierarchy + hidden root legacy aliases)."
+next_step: "medium-scope cliq-195 integration refresh stayed green at 2026-04-23T22:27:55Z (`tests/test_registry.py` + `tests/test_membrane_bridge.py` 381 passed; `tests/test_cli.py` focused watch/context/bridge slice 284 passed, 414 deselected; `tests/test_cliq.py` focused watch/read-ack/reply slice 24 passed; CLI help smoke `HELP_SMOKE_OK`; `ruff format --check` clean), so the next thin no-behavior-change increment is matching focused watch-act coverage for `operator_workflow.internalLoop.action_hint.bridge-actionID`, then rerun the same medium-scope integration set."

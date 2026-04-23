@@ -410,14 +410,14 @@
 - Removed duplicate CRM `fields` command/client definitions so the CRM read-only surface now has one canonical `fields` implementation.
 
 ### Release readiness
-- Assessed at 2026-04-20T01:35:00Z: release is **not ready**.
+- Assessed at 2026-04-23T01:35:00Z: release is **not ready**.
 - Fresh gate evidence:
-  - `make release-gate` is green (`908 passed in 18.12s` + wheel smoke `ok: wheel smoke passed (0.2.0)`).
-  - `make ci` is green for format/lint and completed full pytest collection/execution for 908 tests.
-  - Blocker backlog is still open: `ops/state/bug_backlog.yml` lists 29 blockers, including repeated `cliq-193` live app-command verification failures (`appCommandsError: empty_output`; stderr `error: not_supported`), with latest listed evidence `tests/auto_pilot/reports/cliq193_app_commands_probe_summary_20260417_121801.json`.
-  - Milestone state remains incomplete: `ops/state/active_task.yml` is `id: cliq-195`, `stage: in_progress`, `updated_at: 2026-04-20T01:32:25Z`; `ops/state/release_status.yml` keeps `current_milestone_complete: false`.
+  - Broad release-gate run is green from `.tmp/nightly_release_gate_20260422T145748Z.log` (`./ops/scripts/release_gate.sh full` -> `1295 passed in 25.87s`; wheel smoke `ok: wheel smoke passed (0.2.0)`).
+  - Blocker backlog remains open: `ops/state/bug_backlog.yml` still lists 29 blockers, with repeated cliq-193 live app-command verification failures (`appCommandsError: empty_output`; stderr `error: not_supported`) and latest listed evidence `tests/auto_pilot/reports/cliq193_app_commands_probe_summary_20260417_121801.json` plus `tests/auto_pilot/reports/cliq193_status_20260417_121801.json`.
+  - Milestone state is still incomplete: `ops/state/active_task.yml` is `id: cliq-195`, `stage: in_progress`, `updated_at: 2026-04-23T01:27:54Z`; `ops/state/release_status.yml` keeps `current_milestone_complete: false`.
+  - Integration gate is still not pass/skip for release (`release_gate.integration_tests_passed_or_explicitly_skipped: false`) because focused live blocker checks remain externally blocked/deferred.
   - Changelog draft and release state were refreshed for this assessment; no publish actions were performed.
 - Remaining release blockers:
   - blocker bugs are **not** clear.
   - current focus milestone `cliq-expansion-phase` is **not complete**.
-  - relevant integration checks are **not** clean (`release_gate.integration_tests_passed_or_explicitly_skipped: false` because focused live blocker checks remain externally blocked/deferred).
+  - relevant integration checks are **not** fully releasable (`release_gate.integration_tests_passed_or_explicitly_skipped: false`).

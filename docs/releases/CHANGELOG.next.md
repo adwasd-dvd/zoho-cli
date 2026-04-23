@@ -3,6 +3,7 @@
 ## Unreleased
 
 ### Added
+- Refined cliq-195 internal-loop action-hint fallback compatibility so `zoho cliq watch-act` and `zoho cliq bridge-run --watch-file` now also accept kebab mixed-case bridge-action-id alias `bridge-actionId` under mixed internal-loop hint roots (`operatorWorkflow.internal_loop.actionHint` and `operator_workflow.internalLoop.action_hint`), while preserving `actionSourcePath` / `actionSourceMetadata` provenance.
 - Hardened `cliq-194` consume safety: `zoho cliq watch-act` reply flow now performs mandatory read-ack after successful reply whenever `watchIntake.consume` indicates `ackRequired=true` or `ackAction=read-ack-latest` (supports camel/snake/kebab aliases), and reports `readAck` execution metadata in action output.
 - Refined cliq-195 internal-loop top-level fallback compatibility so `zoho cliq watch-act` and `zoho cliq bridge-run --watch-file` now also accept kebab bridge-action-id aliases (`bridge-action-id`, `bridge-actionid`, `bridge-actionId`, `bridge-actionID`, `bridge-action_id`) under mixed workflow/internal-loop roots (including `operatorWorkflow.internal_loop`), while preserving `actionSourcePath` / `actionSourceMetadata` provenance.
 - Refined cliq-195 escalation-action top-level fallback compatibility so `zoho cliq watch-act --escalation-action` and `zoho cliq bridge-run --watch-file --escalation-action` now also accept the kebab-snake alias `bridge-action_id` under mixed escalation roots (including `operatorWorkflow.external_escalation`), while preserving `actionSourcePath` / `actionSourceMetadata` provenance.

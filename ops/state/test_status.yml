@@ -1,10 +1,13 @@
-last_run_at: "2026-04-23T22:27:55Z"
+last_run_at: "2026-04-23T22:46:17Z"
 last_result: success
-current_focus: cliq-195-medium-scope-integration-refresh-20260423t222755z
+current_focus: cliq-195-focused-watch-act-bridge-actionid-kebab-uppercase-tail-aliases-20260423t224617z
 suites:
   unit:
     status: success
     notes:
+      - "focused cliq-195 watch-act mixed-root internal-loop action-hint bridge-actionID kebab-uppercase-tail alias verification at 2026-04-23T22:46:17Z"
+      - "./.venv/bin/python -m pytest -q tests/test_cli.py::test_cliq_watch_act_uses_snake_case_workflow_camel_case_internal_loop_hint_bridge_action_kebab_uppercase_tail_id_aliases -> 1 passed in 0.10s"
+      - "./.venv/bin/ruff format tests/test_cli.py -> 1 file left unchanged"
       - "integration-loop medium-scope verification rerun at 2026-04-23T22:27:55Z"
       - "./.venv/bin/python -m pytest -q tests/test_registry.py tests/test_membrane_bridge.py -> 381 passed in 6.44s"
       - "./.venv/bin/python -m pytest -q tests/test_cli.py -k 'cliq_watch_context_from_channel or cliq_watch_act or watch_act_read_ack_latest or cliq_context_with_anchor or cliq_messages_from_channel or cliq_message_get_from_channel or cliq_bridge_run or crm_bridge_run' -> 284 passed, 414 deselected in 6.72s"

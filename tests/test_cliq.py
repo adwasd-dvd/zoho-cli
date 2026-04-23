@@ -3961,6 +3961,70 @@ def test_execute_watch_reply_action_marks_read_when_watch_intake_requires_ack(
 
 
 @respx.mock
+def test_watch_context_seed_end_to_end_reply_read_ack_and_cursor_dedupe(
+    client: cliq.ZohoCliqClient,
+) -> None:
+    reply_route = respx.post(
+        "https://cliq.zoho.com/api/v2/chats/CT_1/messages/M3/reply"
+    ).mock(return_value=httpx.Response(200, json={"data": {"id": "M4"}}))
+    read_route = respx.post(
+        "https://cliq.zoho.com/api/v2/chats/CT_1/messages/M3/read"
+    ).mock(
+        return_value=httpx.Response(200, json={"data": {"id": "M3", "status": "ok"}})
+    )
+
+    messages = [
+        {"id": "M3", "text": "latest", "sender_id": "U3", "time": "3000"},
+        {"id": "M2", "text": "next", "sender_id": "U2", "time": "2000"},
+        {"id": "M1", "text": "anchor", "sender_id": "U1", "time": "1000"},
+    ]
+
+    first_watch = cliq.ZohoCliqClient.build_watch_context_seed(
+        messages,
+        since_message_id="M1",
+        max_messages=10,
+    )
+    first_watch.update({"chatId": "CT_1", "channelId": "O1"})
+
+    assert first_watch["watchIntake"]["triggerMode"] == "web-notification-first"
+    assert first_watch["watchIntake"]["pollFallback"]["transport"] == "api-poll"
+    assert first_watch["nextSinceMessageId"] == "M3"
+    assert [item["messageId"] for item in first_watch["messages"]] == ["M2", "M3"]
+
+    first_result = client.execute_watch_reply_action(first_watch, text="ack")
+
+    assert first_result["status"] == "ok"
+    assert first_result["applied"] is True
+    assert first_result["targetMessageId"] == "M3"
+    assert first_result["readAck"]["required"] is True
+    assert first_result["readAck"]["applied"] is True
+    assert first_result["readAck"]["messageId"] == "M3"
+    assert first_result["readAck"]["result"]["status"] == "ok"
+
+    second_watch = cliq.ZohoCliqClient.build_watch_context_seed(
+        messages,
+        since_message_id=first_watch["nextSinceMessageId"],
+        max_messages=10,
+    )
+    second_watch.update({"chatId": "CT_1", "channelId": "O1"})
+
+    assert second_watch["cursorFound"] is True
+    assert second_watch["newCount"] == 0
+    assert second_watch["messages"] == []
+
+    second_result = client.execute_watch_reply_action(second_watch, text="ack")
+
+    assert second_result["status"] == "ok"
+    assert second_result["applied"] is False
+    assert second_result["reason"] == "no_new_messages"
+    assert second_result["readAck"]["required"] is True
+    assert second_result["readAck"]["applied"] is False
+    assert second_result["readAck"]["reason"] == "no_new_messages"
+    assert reply_route.call_count == 1
+    assert read_route.call_count == 1
+
+
+@respx.mock
 def test_execute_watch_reply_action_allows_explicit_skip_read_ack(
     client: cliq.ZohoCliqClient,
 ) -> None:

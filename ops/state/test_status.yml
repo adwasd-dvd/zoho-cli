@@ -1,10 +1,13 @@
-last_run_at: "2026-04-23T15:24:54Z"
+last_run_at: "2026-04-23T15:41:53Z"
 last_result: success
-current_focus: cliq-194-watch-act-auto-read-ack-focused-medium-20260423t152454z
+current_focus: cliq-194-end-to-end-watch-context-reply-read-ack-dedupe-20260423t154153z
 suites:
   unit:
     status: success
     notes:
+      - "focused cliq-194 end-to-end seed/consume smoke at 2026-04-23T15:41:53Z"
+      - "./.venv/bin/python -m pytest -q tests/test_cliq.py::test_watch_context_seed_end_to_end_reply_read_ack_and_cursor_dedupe -> 1 passed in 0.16s"
+      - "./.venv/bin/ruff format --check tests/test_cliq.py -> 1 file already formatted"
       - "focused+medium cliq-194/cliq-195 verification refresh at 2026-04-23T15:24:54Z"
       - "./.venv/bin/python -m pytest -q tests/test_registry.py tests/test_membrane_bridge.py -> 377 passed in 5.58s"
       - "./.venv/bin/python -m pytest -q tests/test_cli.py -k 'cliq_watch_act or watch_act_read_ack_latest or cliq_bridge_run' -> 278 passed, 410 deselected in 6.20s"

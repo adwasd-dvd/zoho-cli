@@ -3,6 +3,8 @@
 ## Unreleased
 
 ### Added
+- Added module-scoped Cliq network targeting: `zoho cliq --network <slug> ...` now applies a default network across Cliq subcommands for that invocation, with per-command `--network` still taking precedence.
+- Added Cliq target discovery in `zoho cliq status`: `--list-networks` lists configured network slugs from account defaults, and `--list-accounts` lists configured account choices with their `cliq_network` defaults.
 - Reframed CLI help to module-first IA: root help now positions Mail/Cliq/CRM as peer modules (`zoho mail|cliq|crm`), mail support groups (`attachment`, `folders`, `labels`) are now visible under `zoho mail ...`, and legacy root aliases are retained as hidden deprecated compatibility routes.
 - Refined cliq-195 internal-loop action-hint fallback compatibility so `zoho cliq watch-act` and `zoho cliq bridge-run --watch-file` now also accept kebab uppercase-tail bridge-action-id alias `bridge-actionID` under mixed internal-loop hint roots (`operatorWorkflow.internal_loop.actionHint` and `operator_workflow.internalLoop.action_hint`), while preserving `actionSourcePath` / `actionSourceMetadata` provenance.
 - Refined cliq-195 internal-loop action-hint fallback compatibility so `zoho cliq watch-act` and `zoho cliq bridge-run --watch-file` now also accept kebab mixed-case bridge-action-id alias `bridge-actionId` under mixed internal-loop hint roots (`operatorWorkflow.internal_loop.actionHint` and `operator_workflow.internalLoop.action_hint`), while preserving `actionSourcePath` / `actionSourceMetadata` provenance.

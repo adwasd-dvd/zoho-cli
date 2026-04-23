@@ -198,6 +198,13 @@ class _State:
 _S = _State()
 
 
+class _CliqState:
+    network: Optional[str] = None
+
+
+_CLIQ = _CliqState()
+
+
 # Handle -v/--version before Typer requires a subcommand
 if len(sys.argv) > 1 and set(sys.argv[1:]) <= {"-v", "--version"}:
     print(_get_version())
@@ -238,6 +245,21 @@ def _global(
     utils.configure(md=md)
     if debug:
         utils.setup_debug()
+
+
+@cliq_app.callback()
+def _cliq_global(
+    network: Optional[str] = typer.Option(
+        None,
+        "--network",
+        help=(
+            "Default Cliq network slug for this invocation."
+            " You can still override with per-command --network."
+        ),
+    ),
+) -> None:
+    """Set Cliq module-scoped defaults."""
+    _CLIQ.network = network
 
 
 # ── shared helpers ────────────────────────────────────────────────────────────
@@ -291,14 +313,40 @@ def _get_cliq_client(
         csec,
         accounts_base_url=account_cfg.get("accounts_server"),
     )
+    resolved_network = network or _CLIQ.network or account_cfg.get("cliq_network")
     return ZohoCliqClient(
         access_token,
         base_url=_cliq.infer_cliq_base_url(
             mail_base_url=account_cfg.get("mail_base_url"),
             accounts_server=account_cfg.get("accounts_server"),
-            network=network or account_cfg.get("cliq_network"),
+            network=resolved_network,
         ),
     )
+
+
+def _collect_configured_cliq_targets(
+    cfg: dict,
+) -> tuple[list[dict[str, Any]], list[str]]:
+    accounts_cfg = cfg.get("accounts", {}) or {}
+    default_account = _config.default_account(cfg)
+    account_rows: list[dict[str, Any]] = []
+    seen_networks: set[str] = set()
+
+    for email in sorted(accounts_cfg):
+        account_cfg = accounts_cfg.get(email, {}) or {}
+        network = str(account_cfg.get("cliq_network") or "").strip()
+        if network:
+            seen_networks.add(network)
+        account_rows.append(
+            {
+                "email": email,
+                "isDefault": email == default_account,
+                "cliqNetwork": network,
+                "hasCliqNetwork": bool(network),
+            }
+        )
+
+    return account_rows, sorted(seen_networks)
 
 
 def _get_crm_client(cfg: dict, email: str) -> ZohoCrmClient:
@@ -1657,12 +1705,22 @@ def cliq_status(
     network: Optional[str] = typer.Option(
         None, "--network", help="Cliq network slug (e.g. happydistrouklimited)."
     ),
+    list_networks: bool = typer.Option(
+        False,
+        "--list-networks",
+        help="List known Cliq network slugs from configured account defaults.",
+    ),
+    list_accounts: bool = typer.Option(
+        False,
+        "--list-accounts",
+        help="List configured account options and their default Cliq network.",
+    ),
 ) -> None:
     """Show Cliq scaffold readiness and inferred API endpoint."""
     cfg = _cfg()
     email = _S.account or _config.default_account(cfg)
     account_cfg = cfg.get("accounts", {}).get(email, {}) if email else {}
-    resolved_network = network or account_cfg.get("cliq_network")
+    resolved_network = network or _CLIQ.network or account_cfg.get("cliq_network")
 
     def _cmd(*args: str, include_network: bool = False) -> str:
         parts: list[str] = ["zoho"]
@@ -1695,6 +1753,7 @@ def cliq_status(
         "module": "cliq",
         "scaffold": "ready",
         "account": email or "",
+        "network": resolved_network or "",
         "hasAccount": bool(email),
         "hasAccountId": bool(account_cfg.get("accountId")),
         "baseUrl": _cliq.infer_cliq_base_url(
@@ -1711,6 +1770,18 @@ def cliq_status(
             "implement watch/reply/edit/delete operations",
         ],
     }
+
+    if list_networks or list_accounts:
+        configured_accounts, configured_networks = _collect_configured_cliq_targets(cfg)
+        if list_accounts:
+            payload["availableAccounts"] = configured_accounts
+        if list_networks:
+            payload["availableNetworks"] = configured_networks
+        payload["targetUsage"] = {
+            "network": "zoho cliq --network <network> channels",
+            "account": "zoho --account <email> cliq status --check-auth",
+            "combined": "zoho --account <email> cliq --network <network> channels",
+        }
 
     payload["missingScopes"] = _cliq.missing_cliq_scopes(
         payload.get("grantedScopes", [])
@@ -2093,6 +2164,10 @@ def cliq_bridge_run(
                             (
                                 internal_hint.get("bridge-actionId"),
                                 f"{internal_hint_source_root}.bridge-actionId",
+                            ),
+                            (
+                                internal_hint.get("bridge-actionID"),
+                                f"{internal_hint_source_root}.bridge-actionID",
                             ),
                             (
                                 internal_hint.get("actionId"),
@@ -10283,6 +10358,10 @@ def cliq_watch_act(
                             (
                                 hint.get("bridge-actionId"),
                                 f"{hint_source_root}.bridge-actionId",
+                            ),
+                            (
+                                hint.get("bridge-actionID"),
+                                f"{hint_source_root}.bridge-actionID",
                             ),
                             (
                                 hint.get("actionId"),

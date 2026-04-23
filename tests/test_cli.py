@@ -1191,6 +1191,60 @@ def test_cliq_status_export_next_includes_network_hint(tmp_path: Path) -> None:
     )
 
 
+def test_cliq_status_lists_available_networks_and_accounts(tmp_path: Path) -> None:
+    cfg = {
+        "client_id": "test_id",
+        "client_secret": "test_secret",
+        "default_account": "ops@example.com",
+        "accounts": {
+            "ops@example.com": {
+                "accountId": "A1",
+                "cliq_network": "happydistrouklimited",
+            },
+            "ai-dev@happy-distro.co.uk": {
+                "accountId": "A2",
+                "cliq_network": "sandboxlab",
+            },
+            "mail-only@example.com": {
+                "accountId": "A3",
+            },
+        },
+    }
+    cfg_path = tmp_path / "config.json"
+    cfg_path.write_text(json.dumps(cfg))
+
+    result = runner.invoke(
+        app,
+        ["cliq", "status", "--list-networks", "--list-accounts"],
+        env=_cfg_env(cfg_path),
+    )
+    assert result.exit_code == 0, result.output
+
+    payload = json.loads(result.output)
+    assert payload["availableNetworks"] == ["happydistrouklimited", "sandboxlab"]
+    assert payload["availableAccounts"] == [
+        {
+            "email": "ai-dev@happy-distro.co.uk",
+            "isDefault": False,
+            "cliqNetwork": "sandboxlab",
+            "hasCliqNetwork": True,
+        },
+        {
+            "email": "mail-only@example.com",
+            "isDefault": False,
+            "cliqNetwork": "",
+            "hasCliqNetwork": False,
+        },
+        {
+            "email": "ops@example.com",
+            "isDefault": True,
+            "cliqNetwork": "happydistrouklimited",
+            "hasCliqNetwork": True,
+        },
+    ]
+    assert payload["targetUsage"]["network"] == "zoho cliq --network <network> channels"
+
+
 @respx.mock
 def test_cliq_capabilities(mock_config: Path, mock_token_refresh: Any) -> None:
     respx.get("https://cliq.zoho.com/api/v2/channels").mock(
@@ -19649,6 +19703,58 @@ def test_cliq_channels_with_network(mock_config: Path, mock_token_refresh: Any) 
     assert result.exit_code == 0, result.output
     payload = json.loads(result.output)
     assert payload[0]["id"] == "C2"
+
+
+@respx.mock
+def test_cliq_channels_with_module_level_network(
+    mock_config: Path, mock_token_refresh: Any
+) -> None:
+    respx.get(
+        "https://cliq.zoho.com/network/happydistrouklimited/api/v2/channels"
+    ).mock(
+        return_value=httpx.Response(
+            200, json={"data": [{"id": "C3", "name": "NetOps"}]}
+        )
+    )
+
+    result = runner.invoke(
+        app,
+        ["cliq", "--network", "happydistrouklimited", "channels", "--limit", "2"],
+        env=_cfg_env(mock_config),
+    )
+    assert result.exit_code == 0, result.output
+    payload = json.loads(result.output)
+    assert payload[0]["id"] == "C3"
+
+
+@respx.mock
+def test_cliq_channels_command_network_overrides_module_level_network(
+    mock_config: Path, mock_token_refresh: Any
+) -> None:
+    route = respx.get("https://cliq.zoho.com/network/network-b/api/v2/channels").mock(
+        return_value=httpx.Response(
+            200, json={"data": [{"id": "C4", "name": "Override"}]}
+        )
+    )
+
+    result = runner.invoke(
+        app,
+        [
+            "cliq",
+            "--network",
+            "network-a",
+            "channels",
+            "--network",
+            "network-b",
+            "--limit",
+            "1",
+        ],
+        env=_cfg_env(mock_config),
+    )
+    assert result.exit_code == 0, result.output
+    assert route.called
+    payload = json.loads(result.output)
+    assert payload[0]["id"] == "C4"
 
 
 @respx.mock

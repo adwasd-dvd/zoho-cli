@@ -1,10 +1,15 @@
-last_run_at: "2026-04-23T07:44:53Z"
+last_run_at: "2026-04-23T08:17:57Z"
 last_result: success
-current_focus: cliq-195-medium-scope-integration-refresh-20260423t074453z
+current_focus: cliq-195-medium-scope-integration-refresh-20260423t081757z
 suites:
   unit:
     status: success
     notes:
+      - "integration-loop medium-scope verification rerun at 2026-04-23T08:17:57Z"
+      - "./.venv/bin/python -m pytest -q tests/test_registry.py tests/test_membrane_bridge.py -> 372 passed in 5.49s"
+      - "./.venv/bin/python -m pytest -q tests/test_cli.py -k 'cliq_watch_context_from_channel or cliq_watch_act or watch_act_read_ack_latest or cliq_context_with_anchor or cliq_messages_from_channel or cliq_message_get_from_channel or cliq_bridge_run or crm_bridge_run' -> 277 passed, 406 deselected in 6.22s"
+      - "./.venv/bin/python -m pytest -q tests/test_cliq.py -k 'build_watch_context_seed or build_watch_reply_action or execute_watch_reply_action or build_watch_read_ack_action or execute_watch_read_ack_action or list_messages_from_channel_id or get_message_from_chat_id or get_message_from_channel_id or reply_message_success or edit_message_success or delete_message_success or react_message' -> 22 passed, 163 deselected in 0.09s"
+      - "./.venv/bin/python -m zoho_cli --help >/tmp/zoho_help.txt && ./.venv/bin/python -m zoho_cli cliq --help >/tmp/zoho_cliq_help.txt && ./.venv/bin/python -m zoho_cli crm --help >/tmp/zoho_crm_help.txt && ./.venv/bin/python -m zoho_cli config --help >/tmp/zoho_config_help.txt && echo HELP_SMOKE_OK -> HELP_SMOKE_OK"
       - "integration-loop medium-scope verification rerun at 2026-04-23T07:44:53Z"
       - "./.venv/bin/python -m pytest -q tests/test_registry.py tests/test_membrane_bridge.py -> 372 passed in 5.61s"
       - "./.venv/bin/python -m pytest -q tests/test_cli.py -k 'cliq_watch_context_from_channel or cliq_watch_act or watch_act_read_ack_latest or cliq_context_with_anchor or cliq_messages_from_channel or cliq_message_get_from_channel or cliq_bridge_run or crm_bridge_run' -> 277 passed, 406 deselected in 6.32s"

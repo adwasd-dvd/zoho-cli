@@ -1111,6 +1111,53 @@ class ZohoCliqClient:
         return {}
 
     @staticmethod
+    def _coerce_bool_flag(value: Any) -> bool | None:
+        if isinstance(value, bool):
+            return value
+        if isinstance(value, (int, float)):
+            return bool(value)
+        if isinstance(value, str):
+            lowered = value.strip().lower()
+            if lowered in {"1", "true", "yes", "y", "on"}:
+                return True
+            if lowered in {"0", "false", "no", "n", "off"}:
+                return False
+        return None
+
+    @classmethod
+    def _watch_consume_requires_read_ack(cls, watch_payload: dict[str, Any]) -> bool:
+        intake = cls._extract_watch_intake(watch_payload)
+        if not isinstance(intake, dict):
+            return False
+
+        consume = intake.get("consume")
+        if not isinstance(consume, dict):
+            consume = intake.get("consume_policy")
+        if not isinstance(consume, dict):
+            return False
+
+        required_raw = (
+            consume.get("ackRequired")
+            if "ackRequired" in consume
+            else consume.get("ack_required")
+        )
+        required_flag = cls._coerce_bool_flag(required_raw)
+        if required_flag is not None:
+            return required_flag
+
+        ack_action_candidates = (
+            consume.get("ackAction"),
+            consume.get("ack_action"),
+            consume.get("ack-action"),
+        )
+        for candidate in ack_action_candidates:
+            value = str(candidate or "").strip().lower()
+            if value:
+                return value == "read-ack-latest"
+
+        return False
+
+    @staticmethod
     def _extract_operator_workflow_with_source(
         watch_payload: dict[str, Any],
     ) -> tuple[dict[str, Any], str]:
@@ -1755,11 +1802,18 @@ class ZohoCliqClient:
         text: str,
         chat_id: str | None = None,
         channel_id: str | None = None,
+        auto_read_ack: bool | None = None,
     ) -> dict[str, Any]:
         """Execute one deterministic watch action: reply to the latest new message."""
         reply_text = text.strip()
         if not reply_text:
             utils.error_exit("invalid_text", "reply text cannot be empty")
+
+        read_ack_required = (
+            bool(auto_read_ack)
+            if auto_read_ack is not None
+            else self._watch_consume_requires_read_ack(watch_payload)
+        )
 
         action = self.build_watch_reply_action(
             watch_payload,
@@ -1783,6 +1837,12 @@ class ZohoCliqClient:
                 **action,
                 "applied": False,
                 "reason": "no_new_messages",
+                "readAck": {
+                    "required": read_ack_required,
+                    "applied": False,
+                    "reason": "no_new_messages",
+                    "result": {},
+                },
                 "result": {},
             }
 
@@ -1792,10 +1852,28 @@ class ZohoCliqClient:
             chat_id=resolved_chat or None,
             channel_id=resolved_channel or None,
         )
+
+        read_ack_applied = False
+        read_ack_result: dict[str, Any] = {}
+        if read_ack_required:
+            ack_resp = self.read_ack_message(
+                target_id,
+                chat_id=resolved_chat or None,
+                channel_id=resolved_channel or None,
+            )
+            read_ack_applied = True
+            read_ack_result = ack_resp.get("data", ack_resp)
+
         return {
             "status": "ok",
             **action,
             "applied": True,
+            "readAck": {
+                "required": read_ack_required,
+                "applied": read_ack_applied,
+                "messageId": target_id if read_ack_applied else "",
+                "result": read_ack_result,
+            },
             "result": resp.get("data", resp),
         }
 

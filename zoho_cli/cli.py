@@ -2064,6 +2064,10 @@ def cliq_bridge_run(
                                 f"{internal_hint_source_root}.bridge_actionId",
                             ),
                             (
+                                internal_hint.get("bridge-action-id"),
+                                f"{internal_hint_source_root}.bridge-action-id",
+                            ),
+                            (
                                 internal_hint.get("actionId"),
                                 f"{internal_hint_source_root}.actionId",
                             ),
@@ -10244,6 +10248,10 @@ def cliq_watch_act(
                             (
                                 hint.get("bridge_actionId"),
                                 f"{hint_source_root}.bridge_actionId",
+                            ),
+                            (
+                                hint.get("bridge-action-id"),
+                                f"{hint_source_root}.bridge-action-id",
                             ),
                             (
                                 hint.get("actionId"),

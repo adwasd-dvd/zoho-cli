@@ -1707,7 +1707,6 @@ def test_cliq_watch_act_replies_to_latest_message(
     route = respx.post(
         "https://cliq.zoho.com/api/v2/chats/CT_1/messages/M2/reply"
     ).mock(return_value=httpx.Response(200, json={"data": {"id": "M3"}}))
-
     result = runner.invoke(
         app,
         [
@@ -1810,6 +1809,11 @@ def test_cliq_watch_act_preserves_watch_intake_metadata_in_result(
     route = respx.post(
         "https://cliq.zoho.com/api/v2/chats/CT_1/messages/M2/reply"
     ).mock(return_value=httpx.Response(200, json={"data": {"id": "M3"}}))
+    ack_route = respx.post(
+        "https://cliq.zoho.com/api/v2/chats/CT_1/messages/M2/read"
+    ).mock(
+        return_value=httpx.Response(200, json={"data": {"id": "M2", "status": "ok"}})
+    )
 
     result = runner.invoke(
         app,
@@ -1826,6 +1830,7 @@ def test_cliq_watch_act_preserves_watch_intake_metadata_in_result(
 
     assert result.exit_code == 0, result.output
     assert route.called
+    assert ack_route.called
     payload = json.loads(result.output)
     assert payload["watchIntake"]["triggerMode"] == "web-notification-first"
     assert payload["watchIntake"]["consume"]["ackAction"] == "read-ack-latest"
@@ -1879,6 +1884,9 @@ def test_cliq_watch_act_preserves_watch_intake_metadata_in_result(
         "subject": "",
         "body": "",
     }
+    assert payload["readAck"]["required"] is True
+    assert payload["readAck"]["applied"] is True
+    assert payload["readAck"]["messageId"] == "M2"
     assert payload["escalationEnvelope"] == {
         "target": {
             "kind": "external-contact",
@@ -14693,6 +14701,67 @@ def test_cliq_watch_act_uses_camel_case_workflow_snake_case_internal_loop_hint_b
     assert payload["actionSourceMetadata"] == {
         "source": "watch-loop-hint",
         "sourcePath": "operatorWorkflow.internal_loop.actionHint.bridgeAction_id",
+        "fromWatchLoopHint": True,
+        "fromEscalationHint": False,
+        "fromExplicitOverride": False,
+    }
+
+
+@respx.mock
+def test_cliq_watch_act_uses_camel_case_workflow_snake_case_internal_loop_hint_bridge_action_kebab_case_id_aliases(
+    tmp_path: Path,
+    mock_config: Path,
+    mock_token_refresh: Any,
+) -> None:
+    watch_file = tmp_path / "watch.json"
+    watch_file.write_text(
+        json.dumps(
+            {
+                "chatId": "CT_1",
+                "channelId": "O1",
+                "operatorWorkflow": {
+                    "packageId": "cliq-195",
+                    "internal_loop": {
+                        "actionHint": {
+                            "bridge-action-id": "read-ack-latest",
+                        }
+                    },
+                },
+                "newCount": 1,
+                "messages": [
+                    {"messageId": "M2", "senderId": "U2", "text": "latest"},
+                ],
+            }
+        )
+    )
+
+    route = respx.post("https://cliq.zoho.com/api/v2/chats/CT_1/messages/M2/read").mock(
+        return_value=httpx.Response(200, json={"data": {"id": "M2", "status": "ok"}})
+    )
+
+    result = runner.invoke(
+        app,
+        [
+            "cliq",
+            "watch-act",
+            "--watch-file",
+            str(watch_file),
+        ],
+        env=_cfg_env(mock_config),
+    )
+
+    assert result.exit_code == 0, result.output
+    assert route.called
+    payload = json.loads(result.output)
+    assert payload["action"] == "read-ack-latest"
+    assert payload["actionSource"] == "watch-loop-hint"
+    assert (
+        payload["actionSourcePath"]
+        == "operatorWorkflow.internal_loop.actionHint.bridge-action-id"
+    )
+    assert payload["actionSourceMetadata"] == {
+        "source": "watch-loop-hint",
+        "sourcePath": "operatorWorkflow.internal_loop.actionHint.bridge-action-id",
         "fromWatchLoopHint": True,
         "fromEscalationHint": False,
         "fromExplicitOverride": False,

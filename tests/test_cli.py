@@ -19762,7 +19762,16 @@ def test_cliq_chats(mock_config: Path, mock_token_refresh: Any) -> None:
     respx.get("https://cliq.zoho.com/api/v2/chats").mock(
         return_value=httpx.Response(
             200,
-            json={"data": [{"id": "CT_1", "name": "DM David", "type": "direct"}]},
+            json={
+                "data": [
+                    {
+                        "id": "CT_1",
+                        "name": "DM David",
+                        "type": "direct",
+                        "unread_message_count": 2,
+                    }
+                ]
+            },
         )
     )
 
@@ -19772,8 +19781,10 @@ def test_cliq_chats(mock_config: Path, mock_token_refresh: Any) -> None:
     assert result.exit_code == 0, result.output
     payload = json.loads(result.output)
     assert payload["count"] == 1
+    assert payload["unreadChatsCount"] == 1
     assert payload["chats"][0]["chatId"] == "CT_1"
     assert payload["chats"][0]["type"] == "direct"
+    assert payload["chats"][0]["unreadCount"] == 2
 
 
 @respx.mock
@@ -19789,6 +19800,7 @@ def test_cliq_chats_top_level_chats_shape(
                         "chat_id": "CT_2",
                         "name": "Ops DM",
                         "chat_type": "dm",
+                        "unread_message_count": "3",
                     }
                 ],
                 "has_more": True,
@@ -19803,10 +19815,50 @@ def test_cliq_chats_top_level_chats_shape(
     assert result.exit_code == 0, result.output
     payload = json.loads(result.output)
     assert payload["count"] == 1
+    assert payload["unreadChatsCount"] == 1
     assert payload["chats"][0]["chatId"] == "CT_2"
     assert payload["chats"][0]["type"] == "dm"
+    assert payload["chats"][0]["unreadCount"] == 3
     assert payload["hasMore"] is True
     assert payload["nextToken"] == "NEXT123"
+
+
+@respx.mock
+def test_cliq_chats_unread_only_filters_results(
+    mock_config: Path, mock_token_refresh: Any
+) -> None:
+    respx.get("https://cliq.zoho.com/api/v2/chats").mock(
+        return_value=httpx.Response(
+            200,
+            json={
+                "chats": [
+                    {
+                        "chat_id": "CT_10",
+                        "name": "Unread Chat",
+                        "chat_type": "dm",
+                        "unread_message_count": 1,
+                    },
+                    {
+                        "chat_id": "CT_11",
+                        "name": "Read Chat",
+                        "chat_type": "dm",
+                        "unread_message_count": 0,
+                    },
+                ]
+            },
+        )
+    )
+
+    result = runner.invoke(
+        app,
+        ["cliq", "chats", "--unread-only", "--limit", "10"],
+        env=_cfg_env(mock_config),
+    )
+    assert result.exit_code == 0, result.output
+    payload = json.loads(result.output)
+    assert payload["count"] == 1
+    assert payload["unreadChatsCount"] == 1
+    assert payload["chats"][0]["chatId"] == "CT_10"
 
 
 @respx.mock

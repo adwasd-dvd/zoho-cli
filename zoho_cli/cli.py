@@ -2924,6 +2924,11 @@ def cliq_channels(
 
 def cliq_chats(
     limit: int = typer.Option(50, "--limit", "-n", help="Max chats to return."),
+    unread_only: bool = typer.Option(
+        False,
+        "--unread-only",
+        help="Only return chats with unread messages.",
+    ),
     network: Optional[str] = typer.Option(
         None, "--network", help="Cliq network slug (e.g. happydistrouklimited)."
     ),
@@ -2950,9 +2955,32 @@ def cliq_chats(
                 rows = top_level_chats
 
     views: list[dict[str, Any]] = []
+
+    def _unread_count(row: dict[str, Any]) -> int:
+        for key in (
+            "unread_message_count",
+            "unreadMessageCount",
+            "unreadCount",
+        ):
+            value = row.get(key)
+            if isinstance(value, bool):
+                continue
+            if isinstance(value, (int, float)):
+                return max(0, int(value))
+            if isinstance(value, str):
+                parsed = value.strip()
+                if parsed.isdigit():
+                    return int(parsed)
+        return 0
+
     for row in rows:
         if not isinstance(row, dict):
             continue
+
+        unread_count = _unread_count(row)
+        if unread_only and unread_count <= 0:
+            continue
+
         views.append(
             {
                 "chatId": str(
@@ -2964,12 +2992,14 @@ def cliq_chats(
                 "type": str(
                     row.get("type") or row.get("chat_type") or row.get("chatType") or ""
                 ),
+                "unreadCount": unread_count,
                 "raw": row,
             }
         )
 
     payload: dict[str, Any] = {
         "count": len(views),
+        "unreadChatsCount": len([item for item in views if item["unreadCount"] > 0]),
         "chats": views,
     }
     if isinstance(resp, dict):

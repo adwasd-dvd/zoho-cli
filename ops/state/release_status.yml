@@ -3,18 +3,19 @@ next_version: 0.2.1
 release_candidate: false
 last_release_tag: v0.1.9
 current_train: cliq-expansion
-assessed_at: '2026-04-23T15:24:54Z'
+assessed_at: '2026-04-24T01:40:22Z'
 current_milestone: cliq-expansion-phase
 current_milestone_complete: false
 missing_requirements:
   - 'blocker backlog is not clear: `ops/state/bug_backlog.yml` still carries 29 blockers, including repeated cliq-193 live app-command verification failures (`appCommandsError: empty_output`; CLI stderr `error: not_supported`) with latest listed evidence `tests/auto_pilot/reports/cliq193_app_commands_probe_summary_20260417_121801.json` and `tests/auto_pilot/reports/cliq193_status_20260417_121801.json`.'
-  - 'current focus milestone is incomplete: `cliq-expansion-phase` remains in progress (`ops/state/active_task.yml` -> `id: cliq-195`, `stage: in_progress`, `updated_at: 2026-04-23T15:24:54Z`; `current_milestone_complete: false`).'
-  - 'relevant integration readiness is not marked pass/skip for release: broad gate evidence is green (`.tmp/nightly_release_gate_20260423T1452Z.log` -> `1367 passed in 26.48s` and `ok: wheel smoke passed (0.2.0)`; `.tmp/nightly_ci_20260423T1452Z.log` -> `ruff format/check clean` + `1367 passed in 25.94s`), but focused live blocker checks remain externally blocked/deferred, so `release_gate.integration_tests_passed_or_explicitly_skipped` stays `false`.'
+  - 'current focus milestone is incomplete: `cliq-expansion-phase` remains in progress (`ops/state/active_task.yml` -> `id: cliq-195`, `stage: in_progress`, `updated_at: 2026-04-24T01:35:12Z`; `current_milestone_complete: false`).'
+  - 'relevant tests are not fully green for release: broad gate failed in `.tmp/nightly_release_gate_20260424T013912Z.log` (`./ops/scripts/release_gate.sh full` -> `4 failed, 1388 passed in 28.68s`) with failures in `tests/test_cli.py::test_attachment_content_with_filename`, `tests/test_cli.py::test_folders_list`, `tests/test_cliq.py::test_cliq_client_chats`, and `tests/test_cliq.py::test_cliq_client_chats_scope_invalid_reports_hint`.'
+  - 'relevant integration readiness is still not marked pass/skip for release (`release_gate.integration_tests_passed_or_explicitly_skipped: false`) because focused live blocker checks remain externally blocked/deferred.'
 release_gate:
   blocker_bugs_cleared: false
-  unit_tests_passed: true
+  unit_tests_passed: false
   integration_tests_passed_or_explicitly_skipped: false
   changelog_updated: true
   version_bumped: false
-  release_gate_script_passed: true
-  ci_passed: true
+  release_gate_script_passed: false
+  ci_passed: false

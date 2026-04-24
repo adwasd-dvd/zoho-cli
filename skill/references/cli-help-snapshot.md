@@ -1,16 +1,16 @@
 # CLI help snapshot
 
-Generated at: `2026-04-24T05:23:40Z`
+Generated at: `2026-04-24T17:50:55Z`
 
 Use this file as a quick command-surface reference for the skill.
 
-## `./.venv/bin/python -m zoho_cli --help`
+## `zoho --help`
 
 Exit code: `0`
 
 ```text
                                                                                 
- Usage: python -m zoho_cli [OPTIONS] COMMAND [ARGS]...                          
+ Usage: zoho [OPTIONS] COMMAND [ARGS]...                                        
                                                                                 
  Zoho CLI (v0.2.0) — unified multi-product CLI for Mail, Cliq, and CRM. Use     
  module-first commands: `zoho mail ...`, `zoho cliq ...`, `zoho crm ...`.       
@@ -35,13 +35,13 @@ Exit code: `0`
 ╰──────────────────────────────────────────────────────────────────────────────╯
 ```
 
-## `./.venv/bin/python -m zoho_cli login --help`
+## `zoho login --help`
 
 Exit code: `0`
 
 ```text
                                                                                 
- Usage: python -m zoho_cli login [OPTIONS]                                      
+ Usage: zoho login [OPTIONS]                                                    
                                                                                 
  Authenticate via Zoho OAuth 2.0.                                               
                                                                                 
@@ -66,13 +66,13 @@ Exit code: `0`
 ╰──────────────────────────────────────────────────────────────────────────────╯
 ```
 
-## `./.venv/bin/python -m zoho_cli config --help`
+## `zoho config --help`
 
 Exit code: `0`
 
 ```text
                                                                                 
- Usage: python -m zoho_cli config [OPTIONS] COMMAND [ARGS]...                   
+ Usage: zoho config [OPTIONS] COMMAND [ARGS]...                                 
                                                                                 
  Configuration helpers.                                                         
                                                                                 
@@ -86,13 +86,13 @@ Exit code: `0`
 ╰──────────────────────────────────────────────────────────────────────────────╯
 ```
 
-## `./.venv/bin/python -m zoho_cli mail --help`
+## `zoho mail --help`
 
 Exit code: `0`
 
 ```text
                                                                                 
- Usage: python -m zoho_cli mail [OPTIONS] COMMAND [ARGS]...                     
+ Usage: zoho mail [OPTIONS] COMMAND [ARGS]...                                   
                                                                                 
  Mail module commands. Includes message operations plus mail support subgroups  
  (`mail attachment`, `mail folders`, `mail labels`).                            
@@ -129,13 +129,13 @@ Exit code: `0`
 ╰──────────────────────────────────────────────────────────────────────────────╯
 ```
 
-## `./.venv/bin/python -m zoho_cli cliq --help`
+## `zoho cliq --help`
 
 Exit code: `0`
 
 ```text
                                                                                 
- Usage: python -m zoho_cli cliq [OPTIONS] COMMAND [ARGS]...                     
+ Usage: zoho cliq [OPTIONS] COMMAND [ARGS]...                                   
                                                                                 
  Cliq module operations.                                                        
                                                                                 
@@ -282,13 +282,13 @@ Exit code: `0`
 ╰──────────────────────────────────────────────────────────────────────────────╯
 ```
 
-## `./.venv/bin/python -m zoho_cli crm --help`
+## `zoho crm --help`
 
 Exit code: `0`
 
 ```text
                                                                                 
- Usage: python -m zoho_cli crm [OPTIONS] COMMAND [ARGS]...                      
+ Usage: zoho crm [OPTIONS] COMMAND [ARGS]...                                    
                                                                                 
  CRM module operations.                                                         
                                                                                 

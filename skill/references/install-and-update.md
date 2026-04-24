@@ -1,4 +1,4 @@
-# Install and update (agent-local skill + zoho-cli)
+# Install and update (agent-local skill + Zoho CLI `zoho`)
 
 ## Approval rule
 

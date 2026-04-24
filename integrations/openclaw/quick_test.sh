@@ -2,7 +2,7 @@
 # Generic smoke test for attachment listing.
 set -euo pipefail
 
-echo "🧪 Testing zoho-cli attachment functionality..."
+echo "🧪 Testing Zoho CLI attachment functionality..."
 SEARCH_OUTPUT=$(zoho mail search "has:attachment" --limit 1 2>/dev/null || true)
 MSG_ID=$(printf '%s' "$SEARCH_OUTPUT" | python3 -c 'import json,sys
 try:

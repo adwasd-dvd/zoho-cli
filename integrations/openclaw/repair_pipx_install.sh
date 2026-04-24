@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
 # Patch an installed pipx copy with the current repository files.
+# End-user command invocation remains `zoho ...`.
+# This helper edits internal Python package files (`zoho_cli`) only.
 set -euo pipefail
 
 REPO_ROOT="$(cd "$(dirname "$0")/../.." && pwd)"

@@ -79,3 +79,25 @@ def test_lane3_reaction_status_protocol_and_unread_filter_present() -> None:
         "--clear-known",
     ]:
         assert token in workflow
+
+
+def test_lane3_examples_use_zoho_binary_not_legacy_command_forms() -> None:
+    command_doc_files = [
+        SKILL_ROOT / "SKILL.md",
+        SKILL_ROOT / "references" / "employee-operating-model.md",
+        SKILL_ROOT / "references" / "command-playbook.md",
+        SKILL_ROOT / "references" / "install-and-update.md",
+        SKILL_ROOT / "references" / "maintenance-checklist.md",
+        SKILL_ROOT / "references" / "unread-status-workflow.md",
+        SKILL_ROOT / "references" / "cli-help-snapshot.md",
+        REPO_ROOT / "integrations" / "openclaw" / "README.md",
+        REPO_ROOT / "integrations" / "openclaw" / "LANE3_AI_USER_GUIDE.md",
+        REPO_ROOT / "integrations" / "openclaw" / "quick_test.sh",
+    ]
+
+    legacy_command_tokens = ["python -m zoho_cli", "zoho-cli "]
+
+    for path in command_doc_files:
+        text = path.read_text(encoding="utf-8")
+        for token in legacy_command_tokens:
+            assert token not in text, f"legacy command token {token!r} found in {path}"

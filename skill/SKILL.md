@@ -1,6 +1,6 @@
 ---
 name: zoho-cli-employee
-description: Operate zoho-cli as a Zoho employee agent inside OpenClaw. Use when work involves Zoho Mail triage/send/reply, Zoho Cliq channel/chat operations (including network-scoped work such as happydistrouklimited), CRM read operations, or installing/updating zoho-cli and this skill with explicit user approval.
+description: Operate Zoho CLI (`zoho ...`) as a Zoho employee agent inside OpenClaw. Use when work involves Zoho Mail triage/send/reply, Zoho Cliq channel/chat operations (including network-scoped work such as happydistrouklimited), CRM read operations, or installing/updating the Zoho CLI and this skill with explicit user approval.
 ---
 
 # Zoho CLI employee operator

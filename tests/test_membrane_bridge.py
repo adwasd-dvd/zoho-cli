@@ -589,6 +589,65 @@ def test_cliq_bridge_run_watch_file_status_flow_passthrough_enabled(
     assert payload["statusFlow"] == {"enabled": True}
 
 
+def test_cliq_bridge_run_watch_file_infers_action_from_watch_intake_consume_action_uppercase_tail_id_alias(
+    tmp_path: Path,
+    mock_config: Path,
+) -> None:
+    seen: dict[str, Any] = {}
+
+    def _fake_run(*a, **kw):
+        seen["command"] = a[0]
+        return subprocess.CompletedProcess(
+            args=a[0],
+            returncode=0,
+            stdout=json.dumps({"ok": True}),
+            stderr="",
+        )
+
+    watch_payload = {
+        "chatId": "CT_1",
+        "watchIntake": {
+            "consume": {
+                "actionID": "watch-loop-route",
+            }
+        },
+    }
+    watch_file = tmp_path / "watch-context.json"
+    watch_file.write_text(json.dumps(watch_payload))
+
+    with pytest.MonkeyPatch.context() as monkeypatch:
+        monkeypatch.setattr(
+            "zoho_cli.cli.shutil.which", lambda _name: "/usr/local/bin/membrane"
+        )
+        monkeypatch.setattr("zoho_cli.cli.subprocess.run", _fake_run)
+
+        result = runner.invoke(
+            app,
+            [
+                "--config",
+                str(mock_config),
+                "cliq",
+                "bridge-run",
+                "--watch-file",
+                str(watch_file),
+            ],
+        )
+
+    assert result.exit_code == 0, result.output
+    assert seen["command"][4] == "watch-loop-route"
+    payload = json.loads(result.output)
+    assert payload["actionId"] == "watch-loop-route"
+    assert payload["actionSource"] == "watch-loop-hint"
+    assert payload["actionSourcePath"] == "watchIntake.consume.actionID"
+    assert payload["actionSourceMetadata"] == {
+        "source": "watch-loop-hint",
+        "sourcePath": "watchIntake.consume.actionID",
+        "fromWatchLoopHint": True,
+        "fromEscalationHint": False,
+        "fromExplicitOverride": False,
+    }
+
+
 def test_cliq_bridge_run_watch_file_infers_action_from_watch_intake_bridge_action_kebab_id_alias(
     tmp_path: Path,
     mock_config: Path,
@@ -701,6 +760,65 @@ def test_cliq_bridge_run_watch_file_infers_action_from_watch_intake_bridge_actio
     assert payload["actionSourceMetadata"] == {
         "source": "watch-loop-hint",
         "sourcePath": "watchIntake.bridge.bridge-action_id",
+        "fromWatchLoopHint": True,
+        "fromEscalationHint": False,
+        "fromExplicitOverride": False,
+    }
+
+
+def test_cliq_bridge_run_watch_file_infers_action_from_watch_intake_bridge_action_kebab_compact_id_alias(
+    tmp_path: Path,
+    mock_config: Path,
+) -> None:
+    seen: dict[str, Any] = {}
+
+    def _fake_run(*a, **kw):
+        seen["command"] = a[0]
+        return subprocess.CompletedProcess(
+            args=a[0],
+            returncode=0,
+            stdout=json.dumps({"ok": True}),
+            stderr="",
+        )
+
+    watch_payload = {
+        "chatId": "CT_1",
+        "watchIntake": {
+            "bridge": {
+                "bridge-actionid": "watch-loop-route",
+            }
+        },
+    }
+    watch_file = tmp_path / "watch-context.json"
+    watch_file.write_text(json.dumps(watch_payload))
+
+    with pytest.MonkeyPatch.context() as monkeypatch:
+        monkeypatch.setattr(
+            "zoho_cli.cli.shutil.which", lambda _name: "/usr/local/bin/membrane"
+        )
+        monkeypatch.setattr("zoho_cli.cli.subprocess.run", _fake_run)
+
+        result = runner.invoke(
+            app,
+            [
+                "--config",
+                str(mock_config),
+                "cliq",
+                "bridge-run",
+                "--watch-file",
+                str(watch_file),
+            ],
+        )
+
+    assert result.exit_code == 0, result.output
+    assert seen["command"][4] == "watch-loop-route"
+    payload = json.loads(result.output)
+    assert payload["actionId"] == "watch-loop-route"
+    assert payload["actionSource"] == "watch-loop-hint"
+    assert payload["actionSourcePath"] == "watchIntake.bridge.bridge-actionid"
+    assert payload["actionSourceMetadata"] == {
+        "source": "watch-loop-hint",
+        "sourcePath": "watchIntake.bridge.bridge-actionid",
         "fromWatchLoopHint": True,
         "fromEscalationHint": False,
         "fromExplicitOverride": False,
@@ -996,6 +1114,65 @@ def test_cliq_bridge_run_watch_file_infers_action_from_watch_intake_bridge_actio
     assert payload["actionSourceMetadata"] == {
         "source": "watch-loop-hint",
         "sourcePath": "watchIntake.bridge.bridge_actionid",
+        "fromWatchLoopHint": True,
+        "fromEscalationHint": False,
+        "fromExplicitOverride": False,
+    }
+
+
+def test_cliq_bridge_run_watch_file_infers_action_from_watch_intake_bridge_action_snake_uppercase_tail_id_alias(
+    tmp_path: Path,
+    mock_config: Path,
+) -> None:
+    seen: dict[str, Any] = {}
+
+    def _fake_run(*a, **kw):
+        seen["command"] = a[0]
+        return subprocess.CompletedProcess(
+            args=a[0],
+            returncode=0,
+            stdout=json.dumps({"ok": True}),
+            stderr="",
+        )
+
+    watch_payload = {
+        "chatId": "CT_1",
+        "watchIntake": {
+            "bridge": {
+                "bridge_actionID": "watch-loop-route",
+            }
+        },
+    }
+    watch_file = tmp_path / "watch-context.json"
+    watch_file.write_text(json.dumps(watch_payload))
+
+    with pytest.MonkeyPatch.context() as monkeypatch:
+        monkeypatch.setattr(
+            "zoho_cli.cli.shutil.which", lambda _name: "/usr/local/bin/membrane"
+        )
+        monkeypatch.setattr("zoho_cli.cli.subprocess.run", _fake_run)
+
+        result = runner.invoke(
+            app,
+            [
+                "--config",
+                str(mock_config),
+                "cliq",
+                "bridge-run",
+                "--watch-file",
+                str(watch_file),
+            ],
+        )
+
+    assert result.exit_code == 0, result.output
+    assert seen["command"][4] == "watch-loop-route"
+    payload = json.loads(result.output)
+    assert payload["actionId"] == "watch-loop-route"
+    assert payload["actionSource"] == "watch-loop-hint"
+    assert payload["actionSourcePath"] == "watchIntake.bridge.bridge_actionID"
+    assert payload["actionSourceMetadata"] == {
+        "source": "watch-loop-hint",
+        "sourcePath": "watchIntake.bridge.bridge_actionID",
         "fromWatchLoopHint": True,
         "fromEscalationHint": False,
         "fromExplicitOverride": False,

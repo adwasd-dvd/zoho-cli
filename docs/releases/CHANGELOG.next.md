@@ -3,7 +3,10 @@
 ## Unreleased
 
 ### Added
+- Refined cliq-195 watch-loop fallback compatibility so `zoho cliq watch-act` and `zoho cliq bridge-run --watch-file` now also accept uppercase-tail consume alias `watchIntake.consume.actionID` when inferring actions, while preserving `actionSourcePath` / `actionSourceMetadata` provenance.
+- Refined cliq-195 watch-loop fallback compatibility so `zoho cliq watch-act` and `zoho cliq bridge-run --watch-file` now also accept compact kebab bridge alias `watchIntake.bridge.bridge-actionid` when inferring actions, while preserving `actionSourcePath` / `actionSourceMetadata` provenance.
 - Refined cliq-195 watch-loop fallback compatibility so `zoho cliq watch-act` and `zoho cliq bridge-run --watch-file` now also accept snake compact bridge alias `watchIntake.bridge.bridge_actionid` when inferring actions, while preserving `actionSourcePath` / `actionSourceMetadata` provenance.
+- Refined cliq-195 watch-loop fallback compatibility so `zoho cliq watch-act` and `zoho cliq bridge-run --watch-file` now also accept snake uppercase-tail bridge alias `watchIntake.bridge.bridge_actionID` when inferring actions, while preserving `actionSourcePath` / `actionSourceMetadata` provenance.
 - Refined cliq-195 watch-loop fallback compatibility so `zoho cliq watch-act` and `zoho cliq bridge-run --watch-file` now also accept uppercase-tail camel alias `watchIntake.bridge.bridgeActionID` when inferring actions, while preserving `actionSourcePath` / `actionSourceMetadata` provenance.
 - Refined cliq-195 watch-loop fallback compatibility so `zoho cliq watch-act` and `zoho cliq bridge-run --watch-file` now also accept lowercase-tail camel aliases `watchIntake.bridge.bridgeActionid` and `watchIntake.consume.bridgeActionid` when inferring actions, while preserving `actionSourcePath` / `actionSourceMetadata` provenance.
 - Refined cliq-195 watch-loop fallback compatibility so `zoho cliq watch-act` and `zoho cliq bridge-run --watch-file` now also accept mixed-case kebab bridge alias `watchIntake.bridge.bridge-actionId` when inferring actions, while preserving `actionSourcePath` / `actionSourceMetadata` provenance.

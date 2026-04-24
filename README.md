@@ -181,16 +181,25 @@ Project state lives in `ops/state/*.yml`:
 
 ## OpenClaw automation
 
-This repo includes helpers for long-running development automation:
+This repo includes OpenClaw-facing skill and helper docs/scripts:
 
-```bash
-bash integrations/openclaw/bin/bootstrap_openclaw_workspace.sh --repo "$(pwd)"
-```
+- `skill/SKILL.md` — canonical AI skill file
+- `integrations/openclaw/SKILL.md` — integration copy for OpenClaw workflows
+- `integrations/openclaw/SKILL_INDEX.md` — maintainer checklist/index
+- `integrations/openclaw/bin/run-scan.example.sh` — long-running scan example
+- `integrations/openclaw/quick_test.sh` — lightweight attachment smoke test
 
-Key files:
-- `integrations/openclaw/START_HERE.md` — Quickstart guide
-- `ops/prompts/` — Agent prompts for consistent workflows
-- `ops/cron/README.md` — Scheduled verification setup
+---
+
+## Documentation lanes (required maintenance)
+
+This project maintains three documentation lanes:
+
+1. coder development/operations docs (state, progress, memory)
+2. human user/project docs (README + docs)
+3. AI-user skill/docs/scripts (skill + OpenClaw integration files)
+
+See `docs/DOCUMENTATION_LANES.md` for the full contract and update workflow.
 
 ---
 

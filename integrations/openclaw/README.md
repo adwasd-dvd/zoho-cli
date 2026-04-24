@@ -1,17 +1,22 @@
 # OpenClaw integration helpers
 
-This folder contains a cleaned, GitHub-safe copy of the OpenClaw-facing material that was previously scattered across a local workspace.
+This folder contains OpenClaw-facing skill docs and operational helpers.
 
 ## Included
 
-- `SKILL.md` — agent-facing skill document
-- `SKILL_INDEX.md` — short index for maintainers
+- `SKILL.md` — OpenClaw skill-facing document copy
+- `SKILL_INDEX.md` — maintainer workflow + alignment checklist
 - `bin/run-scan.example.sh` — example long-running mail scan wrapper
 - `quick_test.sh` — generic smoke test that auto-finds a message with attachments
 - `repair_pipx_install.sh` — patch helper for an already-installed pipx copy
 
-## Notes
+## Contract
 
-- All hard-coded user paths, account emails, channel IDs, and message IDs were removed.
-- For public GitHub maintenance, keep real account names, tokens, and message IDs out of the repo.
-- The canonical packaged skill file in this repository remains `skill/SKILL.md`. This folder just adds operational helpers.
+- Canonical skill file in this repository: `skill/SKILL.md`.
+- Keep this folder aligned when CLI commands/flags/install/update behavior changes.
+- Follow `docs/DOCUMENTATION_LANES.md` and update both human docs and AI docs in the same change slice.
+
+## Safety notes
+
+- Keep real account names, tokens, and message IDs out of committed docs/scripts.
+- Do not publish local absolute machine-specific paths.

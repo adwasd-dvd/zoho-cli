@@ -3,7 +3,7 @@ name: zoho-mail
 version: 0.1.9
 description: Read, search, send, reply, forward, and fully manage Zoho Mail from the terminal. JSON output for scripting and agents. Requires the 'zoho' binary (install via brew/uv/pipx), one-time OAuth setup (zoho config init), and stores credentials locally. No third-party service required.
 compatibility: Requires the 'zoho' CLI (install via brew/uv/pipx), one-time OAuth setup (zoho config init; zoho login), and network access. Primary credentials: OAuth client_id/client_secret and access/refresh tokens; stored locally in config.json and/or OS keyring — users should be aware these are sensitive secrets. Optional env: ZOHO_ACCOUNT, ZOHO_CONFIG, ZOHO_TOKEN_PASSWORD. For PDF/Word/Excel parsing support, install optional extras ([csv], [pdf], [word]).
-homepage: https://github.com/adwasd-dvd/zoho-cli
+homepage: https://github.com/adwasd-dvd/zoho-mail-cli-zomacli
 user-invocable: false
 requires:
   bins:
@@ -23,10 +23,10 @@ install:
     formula: adwasd-dvd/tap/zoho-cli
     bins: [zoho]
   - kind: uv
-    package: git+https://github.com/adwasd-dvd/zoho-cli
+    package: git+https://github.com/adwasd-dvd/zoho-mail-cli-zomacli
     bins: [zoho]
   - kind: pipx
-    package: git+https://github.com/adwasd-dvd/zoho-cli
+    package: git+https://github.com/adwasd-dvd/zoho-mail-cli-zomacli
     bins: [zoho]
 ---
 
@@ -45,10 +45,10 @@ install:
 brew install adwasd-dvd/tap/zoho-cli
 
 # uv (all platforms)
-uv tool install git+https://github.com/adwasd-dvd/zoho-cli
+uv tool install git+https://github.com/adwasd-dvd/zoho-mail-cli-zomacli
 
 # pipx (all platforms)
-pipx install git+https://github.com/adwasd-dvd/zoho-cli
+pipx install git+https://github.com/adwasd-dvd/zoho-mail-cli-zomacli
 ```
 
 ### Optional: Enable PDF/Word/Excel parsing
@@ -71,7 +71,19 @@ After install, run the one-time setup:
 zoho config init   # interactive wizard: saves credentials and offers to log in
 ```
 
-See the full setup guide in the [README](https://github.com/adwasd-dvd/zoho-cli#setup).
+See the full setup guide in the [README](https://github.com/adwasd-dvd/zoho-mail-cli-zomacli#setup).
+
+### AI-user update alignment protocol (required)
+
+When updating from GitHub, perform this sequence before local install/update:
+
+1. Compare commit range (`git log --oneline <old>..HEAD`).
+2. Compare user docs (`README.md`, `docs/releases/CHANGELOG.next.md`).
+3. Compare skill/docs changes (`skill/SKILL.md`, `integrations/openclaw/*`).
+4. Summarize command/flag/output and skill-usage changes.
+5. Confirm understanding, then update local CLI and local skill together.
+
+Do not update only one side if both changed.
 
 ---
 

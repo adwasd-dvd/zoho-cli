@@ -2,21 +2,29 @@
 
 ## Status
 
-- Core repo: `zoho-cli`
-- Maintained fork: `adwasd-dvd/zoho-cli`
-- OpenClaw skill file: `skill/SKILL.md`
+- Core repo: `zoho-mail-cli-zomacli`
+- Maintained fork: `adwasd-dvd/zoho-mail-cli-zomacli`
+- Canonical skill file: `skill/SKILL.md`
 - OpenClaw helper files: `integrations/openclaw/`
 
-## Recommended workflow
+## Required maintenance workflow
 
-1. Make code changes in `zoho_cli/` and tests in `tests/`.
-2. Update agent-facing docs in `skill/SKILL.md` if commands or install steps change.
-3. Keep only generic helper scripts in this folder.
-4. Never commit local workspace notes, raw mailbox output, or account-specific IDs.
+1. Make CLI/test changes in `zoho_cli/` and `tests/`.
+2. Update human-facing docs (`README.md`, `docs/*`) for any user-visible change.
+3. Update AI-facing docs (`skill/SKILL.md`, `integrations/openclaw/*`) for command/install/update changes.
+4. Keep `docs/DOCUMENTATION_LANES.md` contract satisfied before merge.
+
+## AI-user update alignment checklist (after GitHub pull)
+
+1. Compare code changes (`git log --oneline <old>..HEAD`).
+2. Compare human-impact docs (`README.md`, `docs/releases/CHANGELOG.next.md`).
+3. Compare AI-impact docs (`skill/SKILL.md`, `integrations/openclaw/*`).
+4. Summarize CLI changes + skill usage changes.
+5. Confirm understanding, then update local CLI + local skill together.
 
 ## Safety checks before pushing
 
-- Search for real email addresses or message IDs
-- Search for local absolute paths
-- Search for `client_secret`, `refresh_token`, `access_token`
-- Run the test suite
+- Search for real email addresses or message IDs.
+- Search for local absolute paths.
+- Search for `client_secret`, `refresh_token`, `access_token`.
+- Run focused tests relevant to the changed surface.

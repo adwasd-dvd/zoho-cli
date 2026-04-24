@@ -103,3 +103,16 @@ done
 | `ZOHO_ACCOUNTS_BASE_URL` | Accounts domain override |
 | `ZOHO_TOKEN_PASSWORD` | Password for file-based token storage |
 | `NO_COLOR` | Disable colour output |
+
+---
+
+## Documentation maintenance contract (required)
+
+Follow `docs/DOCUMENTATION_LANES.md`.
+
+For every CLI change:
+1. update Lane 2 human docs (`README.md` / `docs/*`),
+2. update Lane 3 AI skill/docs/scripts (`skill/*` and `integrations/openclaw/*`),
+3. update Lane 1 state/progress docs (`ops/state/*`, daily memory if used).
+
+Do not mark a slice complete if docs and skill usage are out of sync with code.

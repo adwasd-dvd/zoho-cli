@@ -1,17 +1,37 @@
 # OpenClaw integration helpers
 
-This folder contains a cleaned, GitHub-safe copy of the OpenClaw-facing material that was previously scattered across a local workspace.
+This folder contains operational scripts/templates for running `zoho-cli` with OpenClaw.
 
-## Included
+## Canonical skill location
 
-- `SKILL.md` — agent-facing skill document
-- `SKILL_INDEX.md` — short index for maintainers
-- `bin/run-scan.example.sh` — example long-running mail scan wrapper
-- `quick_test.sh` — generic smoke test that auto-finds a message with attachments
-- `repair_pipx_install.sh` — patch helper for an already-installed pipx copy
+- Skill source of truth: `skill/`
+- Main file: `skill/SKILL.md`
 
-## Notes
+## Install skill for a local OpenClaw user
 
-- All hard-coded user paths, account emails, channel IDs, and message IDs were removed.
-- For public GitHub maintenance, keep real account names, tokens, and message IDs out of the repo.
-- The canonical packaged skill file in this repository remains `skill/SKILL.md`. This folder just adds operational helpers.
+```bash
+bash integrations/openclaw/bin/install_openclaw_skill.sh --repo "$(pwd)" --skill-name zoho-cli-employee
+```
+
+Default target path:
+
+- `~/.openclaw/skills/zoho-cli-employee`
+
+## Update CLI + skill after GitHub changes
+
+```bash
+bash integrations/openclaw/bin/update_openclaw_zoho_stack.sh --repo "$(pwd)"
+```
+
+This performs:
+
+1. `git pull --ff-only`
+2. CLI upgrade (`uv` preferred, `pipx` fallback)
+3. skill reinstall to OpenClaw skills directory
+
+## Included helpers
+
+- `bin/install_openclaw_skill.sh`
+- `bin/update_openclaw_zoho_stack.sh`
+- `bin/bootstrap_openclaw_workspace.sh`
+- templates and workspace bootstrap references

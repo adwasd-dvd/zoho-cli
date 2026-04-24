@@ -1,10 +1,16 @@
-last_run_at: "2026-04-24T09:28:41Z"
+last_run_at: "2026-04-24T10:05:21Z"
 last_result: passing
-current_focus: cliq-195-focused-top-level-bridge-action-kebab-id-alias-watch-act-bridge-run-green
+current_focus: cliq-195-medium-scope-integration-refresh-rerun-green-watch-context-watch-act-bridge-run-2026-04-24T100521Z
 suites:
   unit:
     status: passing
     notes:
+      - "integration-loop medium-scope cliq-195 rerun at 2026-04-24T10:05:21Z"
+      - "./.venv/bin/python -m pytest -q tests/test_registry.py tests/test_membrane_bridge.py -> 391 passed in 6.87s"
+      - "./.venv/bin/python -m pytest -q tests/test_cli.py -k 'cliq_watch_context_from_channel or cliq_watch_act or watch_act_read_ack_latest or cliq_context_with_anchor or cliq_messages_from_channel or cliq_message_get_from_channel or cliq_bridge_run or crm_bridge_run' -> 295 passed, 427 deselected in 7.32s"
+      - "./.venv/bin/python -m pytest -q tests/test_cliq.py -k 'build_watch_context_seed or build_watch_reply_action or execute_watch_reply_action or build_watch_read_ack_action or execute_watch_read_ack_action or list_messages_from_channel_id or get_message_from_chat_id or get_message_from_channel_id or reply_message_success or edit_message_success or delete_message_success or react_message' -> 24 passed, 165 deselected in 0.11s"
+      - "./.venv/bin/python -m zoho_cli --help >/tmp/zoho_help.txt && ./.venv/bin/python -m zoho_cli cliq --help >/tmp/zoho_cliq_help.txt && ./.venv/bin/python -m zoho_cli crm --help >/tmp/zoho_crm_help.txt && ./.venv/bin/python -m zoho_cli config --help >/tmp/zoho_config_help.txt && echo HELP_SMOKE_OK -> HELP_SMOKE_OK"
+      - "./.venv/bin/ruff format --check zoho_cli/cli.py tests/test_cli.py tests/test_membrane_bridge.py -> 3 files already formatted"
       - "focused cliq-195 top-level watch-payload kebab bridge-action-id alias increment at 2026-04-24T09:28:41Z"
       - "tiny no-behavior-change fix: added `watchPayload.bridge-action-id` fallback candidate in both cliq watch-act and cliq bridge-run --watch-file"
       - "./.venv/bin/python -m pytest -q tests/test_cli.py::test_cliq_watch_act_uses_top_level_watch_payload_bridge_action_kebab_id_alias tests/test_membrane_bridge.py::test_cliq_bridge_run_watch_file_infers_action_from_top_level_watch_payload_bridge_action_kebab_id_alias -> 2 passed in 1.64s"

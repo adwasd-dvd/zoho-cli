@@ -3,13 +3,13 @@ next_version: 0.2.1
 release_candidate: false
 last_release_tag: v0.1.9
 current_train: cliq-expansion
-assessed_at: '2026-04-24T01:40:22Z'
+assessed_at: '2026-04-24T02:31:43Z'
 current_milestone: cliq-expansion-phase
 current_milestone_complete: false
 missing_requirements:
   - 'blocker backlog is not clear: `ops/state/bug_backlog.yml` still carries 29 blockers, including repeated cliq-193 live app-command verification failures (`appCommandsError: empty_output`; CLI stderr `error: not_supported`) with latest listed evidence `tests/auto_pilot/reports/cliq193_app_commands_probe_summary_20260417_121801.json` and `tests/auto_pilot/reports/cliq193_status_20260417_121801.json`.'
-  - 'current focus milestone is incomplete: `cliq-expansion-phase` remains in progress (`ops/state/active_task.yml` -> `id: cliq-195`, `stage: in_progress`, `updated_at: 2026-04-24T01:35:12Z`; `current_milestone_complete: false`).'
-  - 'relevant tests are not fully green for release: broad gate failed in `.tmp/nightly_release_gate_20260424T013912Z.log` (`./ops/scripts/release_gate.sh full` -> `4 failed, 1388 passed in 28.68s`) with failures in `tests/test_cli.py::test_attachment_content_with_filename`, `tests/test_cli.py::test_folders_list`, `tests/test_cliq.py::test_cliq_client_chats`, and `tests/test_cliq.py::test_cliq_client_chats_scope_invalid_reports_hint`.'
+  - 'current focus milestone is incomplete: `cliq-expansion-phase` remains in progress (`ops/state/active_task.yml` -> `id: cliq-195`, `stage: in_progress`, `updated_at: 2026-04-24T02:31:43Z`; `current_milestone_complete: false`).'
+  - 'relevant tests are not fully green for release: broad gate still needs rerun after `.tmp/nightly_release_gate_20260424T013912Z.log` (`./ops/scripts/release_gate.sh full` -> `4 failed, 1388 passed in 28.68s`), even though targeted follow-up now passes (`./.venv/bin/python -m pytest -q tests/test_cli.py::test_attachment_content_with_filename tests/test_cli.py::test_folders_list tests/test_cliq.py::test_cliq_client_chats tests/test_cliq.py::test_cliq_client_chats_scope_invalid_reports_hint tests/test_cliq.py::test_cliq_client_list_teams_three_strike_not_supported_deferred` -> `5 passed in 0.22s`).'
   - 'relevant integration readiness is still not marked pass/skip for release (`release_gate.integration_tests_passed_or_explicitly_skipped: false`) because focused live blocker checks remain externally blocked/deferred.'
 release_gate:
   blocker_bugs_cleared: false

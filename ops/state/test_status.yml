@@ -1,10 +1,16 @@
-last_run_at: "2026-04-24T01:52:46Z"
-last_result: failure
-current_focus: mail-root-alias-output-cleanup-followup
+last_run_at: "2026-04-24T02:31:43Z"
+last_result: passing
+current_focus: cliq-chat-test-isolation-followup
 suites:
   unit:
-    status: failed
+    status: passing
     notes:
+      - "focused cliq chat isolation reconfirmation rerun at 2026-04-24T02:31:43Z"
+      - "./.venv/bin/python -m pytest -q tests/test_cliq.py::test_cliq_client_chats tests/test_cliq.py::test_cliq_client_chats_scope_invalid_reports_hint tests/test_cliq.py::test_cliq_client_list_teams_three_strike_not_supported_deferred -> 3 passed in 0.09s"
+      - "./.venv/bin/python -m pytest -q tests/test_cli.py::test_attachment_content_with_filename tests/test_cli.py::test_folders_list tests/test_cliq.py::test_cliq_client_chats tests/test_cliq.py::test_cliq_client_chats_scope_invalid_reports_hint tests/test_cliq.py::test_cliq_client_list_teams_three_strike_not_supported_deferred -> 5 passed in 0.22s"
+      - "focused cliq chat regression follow-up at 2026-04-24T02:22:19Z"
+      - "test fixture isolation update: `tests/test_cliq.py::client` now forces a tmp unsupported-tracker path and clears unsupported env overrides so deferred tracker state does not leak across runs"
+      - "./.venv/bin/python -m pytest -q tests/test_cli.py::test_attachment_content_with_filename tests/test_cli.py::test_folders_list tests/test_cliq.py::test_cliq_client_chats tests/test_cliq.py::test_cliq_client_chats_scope_invalid_reports_hint tests/test_cliq.py::test_cliq_client_list_teams_three_strike_not_supported_deferred -> 5 passed in 0.20s"
       - "integration-loop medium-scope verification rerun at 2026-04-24T02:13:00Z"
       - "./.venv/bin/python -m pytest -q tests/test_registry.py tests/test_membrane_bridge.py -> 384 passed in 6.52s"
       - "./.venv/bin/python -m pytest -q tests/test_cli.py -k 'cliq_watch_context_from_channel or cliq_watch_act or watch_act_read_ack_latest or cliq_context_with_anchor or cliq_messages_from_channel or cliq_message_get_from_channel or cliq_bridge_run or crm_bridge_run' -> 288 passed, 415 deselected in 6.83s"

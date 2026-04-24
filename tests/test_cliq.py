@@ -45,7 +45,16 @@ def test_missing_cliq_export_scopes_reports_missing_values() -> None:
 
 
 @pytest.fixture
-def client() -> cliq.ZohoCliqClient:
+def client(
+    monkeypatch: pytest.MonkeyPatch,
+    tmp_path: Path,
+) -> cliq.ZohoCliqClient:
+    monkeypatch.setenv(
+        "ZOHO_CLIQ_UNSUPPORTED_TRACKER_PATH",
+        str(tmp_path / "cliq_unsupported_tracker.json"),
+    )
+    monkeypatch.delenv("ZOHO_CLIQ_UNSUPPORTED_THRESHOLD", raising=False)
+    monkeypatch.delenv("ZOHO_CLIQ_FORCE_UNSUPPORTED_RECHECK", raising=False)
     return cliq.ZohoCliqClient("fake-token", base_url="https://cliq.zoho.com/api/v2")
 
 

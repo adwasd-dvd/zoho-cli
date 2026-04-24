@@ -1,13 +1,14 @@
-last_run_at: "2026-04-24T06:27:43Z"
+last_run_at: "2026-04-24T06:46:42Z"
 last_result: passing
-current_focus: cliq-195-credential-fallback-unit-green-live-unread-filter-rerun-pending
+current_focus: cliq-195-live-unread-filter-rerun-green-next-thin-packaging-increment
 suites:
   unit:
     status: passing
     notes:
-      - "focused cliq-195 credential-path hardening at 2026-04-24T06:27:43Z"
-      - "./.venv/bin/python -m pytest -q tests/test_cli_credentials.py -> 3 passed in 0.05s"
-      - "live unread-filter rerun remains pending until ai-dev credentials are exported as ZOHO_CLIENT_ID/ZOHO_CLIENT_SECRET in this runtime"
+      - "focused cliq-195 live unread-filter rerun at 2026-04-24T06:46:42Z"
+      - "./.venv/bin/zoho --account ai-dev@happy-distro.co.uk cliq chats --network happydistrouklimited --unread-only --exclude-reacted-by-self -> count=0, unreadChatsCount=0, selfReactionFilter.excludedCount=0"
+      - "probe artifact: tests/auto_pilot/reports/cliq195_unread_filter_probe_20260424_064642.json"
+      - "./.venv/bin/python -m pytest -q tests/test_cli.py::test_cliq_chats_unread_only_filters_results tests/test_cli.py::test_cliq_chats_unread_only_exclude_reacted_by_self_filters_chat tests/test_cli.py::test_cliq_chats_unread_only_exclude_reacted_by_self_keeps_owner_mismatch -> 3 passed in 0.18s"
       - "integration-loop medium-scope verification rerun at 2026-04-24T06:09:01Z"
       - "./.venv/bin/python -m pytest -q tests/test_registry.py tests/test_membrane_bridge.py -> 387 passed in 6.73s"
       - "./.venv/bin/python -m pytest -q tests/test_cli.py -k 'cliq_watch_context_from_channel or cliq_watch_act or watch_act_read_ack_latest or cliq_context_with_anchor or cliq_messages_from_channel or cliq_message_get_from_channel or cliq_bridge_run or crm_bridge_run' -> 291 passed, 424 deselected in 7.07s"

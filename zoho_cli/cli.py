@@ -2213,6 +2213,26 @@ def cliq_bridge_run(
             (watch_payload.get("defaultAction"), "watchPayload.defaultAction"),
             (watch_payload.get("default_action"), "watchPayload.default_action"),
             (watch_payload.get("default-action"), "watchPayload.default-action"),
+            (
+                watch_payload.get("default-action-id"),
+                "watchPayload.default-action-id",
+            ),
+            (
+                watch_payload.get("default-action_id"),
+                "watchPayload.default-action_id",
+            ),
+            (
+                watch_payload.get("default-actionid"),
+                "watchPayload.default-actionid",
+            ),
+            (
+                watch_payload.get("default-actionId"),
+                "watchPayload.default-actionId",
+            ),
+            (
+                watch_payload.get("default-actionID"),
+                "watchPayload.default-actionID",
+            ),
             (watch_payload.get("defaultActionId"), "watchPayload.defaultActionId"),
             (watch_payload.get("defaultActionid"), "watchPayload.defaultActionid"),
             (watch_payload.get("defaultActionID"), "watchPayload.defaultActionID"),
@@ -11312,6 +11332,26 @@ def cliq_watch_act(
                 (watch_payload.get("defaultAction"), "watchPayload.defaultAction"),
                 (watch_payload.get("default_action"), "watchPayload.default_action"),
                 (watch_payload.get("default-action"), "watchPayload.default-action"),
+                (
+                    watch_payload.get("default-action-id"),
+                    "watchPayload.default-action-id",
+                ),
+                (
+                    watch_payload.get("default-action_id"),
+                    "watchPayload.default-action_id",
+                ),
+                (
+                    watch_payload.get("default-actionid"),
+                    "watchPayload.default-actionid",
+                ),
+                (
+                    watch_payload.get("default-actionId"),
+                    "watchPayload.default-actionId",
+                ),
+                (
+                    watch_payload.get("default-actionID"),
+                    "watchPayload.default-actionID",
+                ),
                 (
                     watch_payload.get("defaultActionId"),
                     "watchPayload.defaultActionId",

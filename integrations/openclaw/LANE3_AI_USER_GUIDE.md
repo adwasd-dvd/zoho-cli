@@ -11,7 +11,7 @@ This guide is for AI users who already have a working local `zoho` CLI and only 
 
 ## Skill-only update (no CLI upgrade)
 
-Use this when local CLI runtime is already working and aligned.
+Use this when local CLI runtime is already working and aligned. This is the default for `zoho-employee-test` in your current setup.
 
 ```bash
 bash integrations/openclaw/bin/pull_lane3_only.sh \
@@ -23,6 +23,7 @@ What it does:
 1. sparse-pulls lane3 paths from GitHub
 2. syncs `skill/` into `<workspace>/skills/zoho-cli-employee/`
 3. saves lane3 docs snapshot under `<workspace>/lane3-docs/`
+4. keeps CLI binary/runtime untouched
 
 ## Full update (CLI + skill)
 
@@ -41,3 +42,14 @@ bash integrations/openclaw/bin/pull_lane3_only.sh --workspace "$HOME/.openclaw/w
 3. inspect lane3 delta
 4. summarize command/flag/output and skill-usage changes
 5. sync lane3 locally
+
+## Required behavior support after lane3 sync
+
+After sync, ensure the AI user follows:
+
+- unread polling with self-reaction exclusion:
+  - `zoho cliq chats --unread-only --exclude-reacted-by-self`
+- reaction status lifecycle updates via:
+  - `zoho cliq status-react --status received|thinking|writing|testing|blocked|done|failed --clear-known`
+- context-before-reply in loops:
+  - `zoho cliq context ...` before `zoho cliq reply ...`

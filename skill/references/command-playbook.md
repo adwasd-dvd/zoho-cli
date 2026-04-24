@@ -22,7 +22,7 @@ zoho mail mark-read <message_id>
 zoho cliq status --check-auth --network happydistrouklimited
 zoho cliq capabilities --network happydistrouklimited
 
-# Unread intake loop
+# Unread intake loop (exclude messages already reacted by this account)
 zoho cliq chats --network happydistrouklimited --unread-only --exclude-reacted-by-self
 
 # Context + reply
@@ -31,6 +31,27 @@ zoho cliq reply --network happydistrouklimited --chat-id <chat_id> --message-id 
 
 # Acknowledge after handling
 zoho cliq mark-read --network happydistrouklimited --chat-id <chat_id> --latest
+```
+
+## Cliq reaction status lifecycle
+
+```bash
+# received
+zoho cliq status-react <msg_id> --status received --chat-id <chat_id> --network happydistrouklimited --clear-known
+
+# thinking
+zoho cliq status-react <msg_id> --status thinking --chat-id <chat_id> --network happydistrouklimited --clear-known
+
+# writing
+zoho cliq status-react <msg_id> --status writing --chat-id <chat_id> --network happydistrouklimited --clear-known
+
+# testing
+zoho cliq status-react <msg_id> --status testing --chat-id <chat_id> --network happydistrouklimited --clear-known
+
+# blocked / done / failed
+zoho cliq status-react <msg_id> --status blocked --chat-id <chat_id> --network happydistrouklimited --clear-known
+zoho cliq status-react <msg_id> --status done    --chat-id <chat_id> --network happydistrouklimited --clear-known
+zoho cliq status-react <msg_id> --status failed  --chat-id <chat_id> --network happydistrouklimited --clear-known
 ```
 
 ## CRM (read-first)

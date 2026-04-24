@@ -13,15 +13,18 @@
    - `zoho --version`
    - `zoho config show`
    - `zoho cliq status --check-auth --network happydistrouklimited`
-2. Read intake.
+2. Read context before acting.
+   - Conversation context: `zoho cliq context --network happydistrouklimited --chat-id <chat_id> --limit 20`
+   - Project/agent memory files if present (for example `memory/*.md`, `memory/daily/*.md`).
+3. Read intake.
    - Mail: `zoho mail list` / `zoho mail search`
-   - Cliq: `zoho cliq chats --network happydistrouklimited --unread-only`
-3. Build action plan.
+   - Cliq polling: `zoho cliq chats --network happydistrouklimited --unread-only --exclude-reacted-by-self`
+4. Build action plan.
    - Internal message reply
    - External escalation
    - Follow-up reminder or status note
-4. Execute one small action and verify result JSON.
-5. Record what changed and what is blocked.
+5. Execute one small action and verify result JSON.
+6. Record what changed, what is blocked, and local `processed_status`.
 
 ## Safety and behavior
 
@@ -29,6 +32,15 @@
 - For external communication, prepare draft text first unless user asks for immediate send.
 - For uncertain endpoints, run `zoho cliq capabilities` before repeated retries.
 - If endpoint is unsupported/scope-blocked, stop retry loops and return blocker evidence.
+- For message-handling loops, always expose lifecycle status with reactions:
+  - 👀 `received`
+  - 🤔 `thinking`
+  - ✏️ `writing`
+  - 🧪 `testing`
+  - ⚠️ `blocked`
+  - ✅ `done`
+  - ❌ `failed`
+- Before setting a new status, clear previous known status reactions from the same agent (`status-react --clear-known`).
 
 ## CRM expansion
 

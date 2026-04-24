@@ -34,6 +34,7 @@ def test_lane3_required_paths_exist() -> None:
         SKILL_ROOT / "references" / "command-playbook.md",
         SKILL_ROOT / "references" / "install-and-update.md",
         SKILL_ROOT / "references" / "maintenance-checklist.md",
+        SKILL_ROOT / "references" / "unread-status-workflow.md",
         SKILL_ROOT / "references" / "cli-help-snapshot.md",
         SKILL_ROOT / "scripts" / "refresh_cli_help_snapshot.py",
         REPO_ROOT / "integrations" / "openclaw" / "LANE3_AI_USER_GUIDE.md",
@@ -58,3 +59,23 @@ def test_lane3_docs_use_canonical_repo_url() -> None:
     for path in lane3_files:
         text = path.read_text(encoding="utf-8")
         assert old_url not in text, f"outdated repo url in {path}"
+
+
+def test_lane3_reaction_status_protocol_and_unread_filter_present() -> None:
+    workflow = (SKILL_ROOT / "references" / "unread-status-workflow.md").read_text(
+        encoding="utf-8"
+    )
+
+    for token in [
+        "received",
+        "thinking",
+        "writing",
+        "testing",
+        "blocked",
+        "done",
+        "failed",
+        "--exclude-reacted-by-self",
+        "status-react",
+        "--clear-known",
+    ]:
+        assert token in workflow

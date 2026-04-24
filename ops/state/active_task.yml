@@ -4,10 +4,10 @@ module: cliq
 stage: in_progress
 status: in_progress
 owner: coder
-updated_at: '2026-04-24T16:20:58Z'
+updated_at: '2026-04-24T16:37:39Z'
 success_criteria:
 - add an initial cliq-195 operator-workflow packaging contract to watch-context output without breaking existing watch-loop consumers
 - preserve the operator-workflow contract through watch-act action payload/result surfaces used by automation loops
 - keep focused watch-context/watch-act verification green while deferred external blockers stay capability-gated
 next_if_done: if focused and medium-scope cliq-195 verification remain green, continue the next operator-workflow packaging increment without regressing deferred capability-gated blockers.
-next_step: "thin cliq-195 compatibility increment completed at 2026-04-24T16:20:58Z: watch-act/bridge-run action inference now accepts `watchIntake.consume.bridge-action_id` with provenance preserved (`watchIntake.consume.bridge-action_id`), covered by focused regressions (`tests/test_cli.py::test_cliq_watch_act_uses_watch_intake_consume_bridge_action_kebab_snake_id_alias`, `tests/test_membrane_bridge.py::test_cliq_bridge_run_watch_file_infers_action_from_watch_intake_consume_bridge_action_kebab_snake_id_alias` -> `2 passed in 1.67s`). next best step is the next smallest cliq-195 watch-intake alias/provenance parity gap in shared watch-act + bridge-run paths."
+next_step: "thin cliq-195 compatibility increment completed at 2026-04-24T16:37:39Z: watch-act/bridge-run action inference now accepts `watchIntake.consume.bridge_actionid` with provenance preserved (`watchIntake.consume.bridge_actionid`), covered by focused regressions (`tests/test_cli.py::test_cliq_watch_act_uses_watch_intake_consume_bridge_action_snake_compact_id_alias`, `tests/test_membrane_bridge.py::test_cliq_bridge_run_watch_file_infers_action_from_watch_intake_consume_bridge_action_snake_compact_id_alias`, plus nearby kebab-snake parity checks -> `4 passed in 1.71s`). next best step is the next smallest cliq-195 watch-intake alias/provenance parity gap in shared watch-act + bridge-run paths."

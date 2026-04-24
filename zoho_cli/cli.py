@@ -2211,6 +2211,10 @@ def cliq_bridge_run(
                 watch_payload.get("bridge-actionid"),
                 "watchPayload.bridge-actionid",
             ),
+            (
+                watch_payload.get("bridge-actionId"),
+                "watchPayload.bridge-actionId",
+            ),
             (watch_payload.get("bridge_actionid"), "watchPayload.bridge_actionid"),
             (watch_payload.get("bridge_actionID"), "watchPayload.bridge_actionID"),
             (
@@ -11328,6 +11332,10 @@ def cliq_watch_act(
                 (
                     watch_payload.get("bridge-actionid"),
                     "watchPayload.bridge-actionid",
+                ),
+                (
+                    watch_payload.get("bridge-actionId"),
+                    "watchPayload.bridge-actionId",
                 ),
                 (
                     watch_payload.get("bridge_actionid"),

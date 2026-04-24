@@ -11326,11 +11326,7 @@ register_cliq_delete_react_commands(
     cliq_app,
     cliq_delete_command=cliq_delete,
     cliq_react_command=cliq_react,
-)
-
-register_cliq_status_reaction_commands(
-    cliq_app,
-    cliq_status_reaction_command=cliq_status_react,
+    cliq_status_react_command=cliq_status_react,
 )
 
 register_cliq_mark_read_commands(

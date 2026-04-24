@@ -325,10 +325,13 @@ def register_cliq_delete_react_commands(
     *,
     cliq_delete_command: Callable[..., None],
     cliq_react_command: Callable[..., None],
+    cliq_status_react_command: Callable[..., None] | None = None,
 ) -> None:
     """Register adjacent Cliq delete/react commands on ``cliq_app``."""
     cliq_app.command("delete")(cliq_delete_command)
     cliq_app.command("react")(cliq_react_command)
+    if cliq_status_react_command is not None:
+        cliq_app.command("status-react")(cliq_status_react_command)
 
 
 def register_cliq_mark_read_commands(
@@ -338,6 +341,15 @@ def register_cliq_mark_read_commands(
 ) -> None:
     """Register the Cliq mark-read command on ``cliq_app``."""
     cliq_app.command("mark-read")(cliq_mark_read_command)
+
+
+def register_cliq_status_reaction_commands(
+    cliq_app: typer.Typer,
+    *,
+    cliq_status_reaction_command: Callable[..., None],
+) -> None:
+    """Register the Cliq status-reaction command on ``cliq_app``."""
+    cliq_app.command("status-react")(cliq_status_reaction_command)
 
 
 def register_cliq_scheduled_lifecycle_commands(

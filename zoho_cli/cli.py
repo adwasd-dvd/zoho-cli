@@ -80,7 +80,6 @@ from zoho_cli.commands import (
     register_cliq_reply_edit_commands,
     register_cliq_delete_react_commands,
     register_cliq_mark_read_commands,
-    register_cliq_status_reaction_commands,
     register_cliq_mute_unmute_commands,
     register_cliq_pinned_commands,
     register_cliq_pin_unpin_commands,

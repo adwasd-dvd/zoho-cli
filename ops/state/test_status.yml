@@ -1,10 +1,14 @@
-last_run_at: "2026-04-24T14:26:12Z"
+last_run_at: "2026-04-24T14:35:32Z"
 last_result: passing
-current_focus: cliq-195-watch-intake-consume-bridge-actionid-alias-2026-04-24T142612Z
+current_focus: nightly-system-layer-verify-2026-04-24T143532Z
 suites:
   unit:
     status: passing
     notes:
+      - "nightly system-layer verification rerun at 2026-04-24T14:35:32Z"
+      - "make release-gate -> 1441 passed in 29.14s + wheel smoke (log: .tmp/nightly_release_gate_20260424T143348Z.log)"
+      - "make ci -> ruff format/check clean; pytest tests/ -v passed (log: .tmp/nightly_ci_20260424T143348Z.log)"
+      - "blocker found then fixed in same loop: ruff F401 unused import `register_cliq_status_reaction_commands` in zoho_cli/cli.py; tiny safe fix removed unused import and broad rerun stayed green"
       - "focused cliq-195 watch-loop alias parity increment at 2026-04-24T14:26:12Z"
       - "tiny behavior update: `zoho cliq watch-act` and `zoho cliq bridge-run --watch-file` now infer actions from compact kebab alias `watchIntake.consume.bridge-actionid` while preserving provenance"
       - "./.venv/bin/python -m pytest -q tests/test_cli.py::test_cliq_watch_act_uses_watch_intake_consume_bridge_action_kebab_compact_id_alias tests/test_membrane_bridge.py::test_cliq_bridge_run_watch_file_infers_action_from_watch_intake_consume_bridge_action_kebab_compact_id_alias -> 2 passed in 1.67s"

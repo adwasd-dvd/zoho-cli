@@ -14498,6 +14498,67 @@ def test_cliq_watch_act_uses_snake_case_workflow_camel_case_internal_loop_hint_w
 
 
 @respx.mock
+def test_cliq_watch_act_uses_snake_case_workflow_camel_case_internal_loop_hint_watch_act_action_kebab_aliases(
+    tmp_path: Path,
+    mock_config: Path,
+    mock_token_refresh: Any,
+) -> None:
+    watch_file = tmp_path / "watch.json"
+    watch_file.write_text(
+        json.dumps(
+            {
+                "chatId": "CT_1",
+                "channelId": "O1",
+                "operator_workflow": {
+                    "packageId": "cliq-195",
+                    "internalLoop": {
+                        "action_hint": {
+                            "watch-act-action": "read-ack-latest",
+                        }
+                    },
+                },
+                "newCount": 1,
+                "messages": [
+                    {"messageId": "M2", "senderId": "U2", "text": "latest"},
+                ],
+            }
+        )
+    )
+
+    route = respx.post("https://cliq.zoho.com/api/v2/chats/CT_1/messages/M2/read").mock(
+        return_value=httpx.Response(200, json={"data": {"id": "M2", "status": "ok"}})
+    )
+
+    result = runner.invoke(
+        app,
+        [
+            "cliq",
+            "watch-act",
+            "--watch-file",
+            str(watch_file),
+        ],
+        env=_cfg_env(mock_config),
+    )
+
+    assert result.exit_code == 0, result.output
+    assert route.called
+    payload = json.loads(result.output)
+    assert payload["action"] == "read-ack-latest"
+    assert payload["actionSource"] == "watch-loop-hint"
+    assert (
+        payload["actionSourcePath"]
+        == "operator_workflow.internalLoop.action_hint.watch-act-action"
+    )
+    assert payload["actionSourceMetadata"] == {
+        "source": "watch-loop-hint",
+        "sourcePath": "operator_workflow.internalLoop.action_hint.watch-act-action",
+        "fromWatchLoopHint": True,
+        "fromEscalationHint": False,
+        "fromExplicitOverride": False,
+    }
+
+
+@respx.mock
 def test_cliq_watch_act_uses_camel_case_workflow_snake_case_internal_loop_hint_action_id_aliases(
     tmp_path: Path,
     mock_config: Path,
@@ -14979,6 +15040,67 @@ def test_cliq_watch_act_uses_camel_case_workflow_snake_case_internal_loop_hint_b
     assert payload["actionSourceMetadata"] == {
         "source": "watch-loop-hint",
         "sourcePath": "operatorWorkflow.internal_loop.actionHint.bridge-action-id",
+        "fromWatchLoopHint": True,
+        "fromEscalationHint": False,
+        "fromExplicitOverride": False,
+    }
+
+
+@respx.mock
+def test_cliq_watch_act_uses_camel_case_workflow_snake_case_internal_loop_hint_bridge_action_kebab_snake_id_aliases(
+    tmp_path: Path,
+    mock_config: Path,
+    mock_token_refresh: Any,
+) -> None:
+    watch_file = tmp_path / "watch.json"
+    watch_file.write_text(
+        json.dumps(
+            {
+                "chatId": "CT_1",
+                "channelId": "O1",
+                "operatorWorkflow": {
+                    "packageId": "cliq-195",
+                    "internal_loop": {
+                        "actionHint": {
+                            "bridge-action_id": "read-ack-latest",
+                        }
+                    },
+                },
+                "newCount": 1,
+                "messages": [
+                    {"messageId": "M2", "senderId": "U2", "text": "latest"},
+                ],
+            }
+        )
+    )
+
+    route = respx.post("https://cliq.zoho.com/api/v2/chats/CT_1/messages/M2/read").mock(
+        return_value=httpx.Response(200, json={"data": {"id": "M2", "status": "ok"}})
+    )
+
+    result = runner.invoke(
+        app,
+        [
+            "cliq",
+            "watch-act",
+            "--watch-file",
+            str(watch_file),
+        ],
+        env=_cfg_env(mock_config),
+    )
+
+    assert result.exit_code == 0, result.output
+    assert route.called
+    payload = json.loads(result.output)
+    assert payload["action"] == "read-ack-latest"
+    assert payload["actionSource"] == "watch-loop-hint"
+    assert (
+        payload["actionSourcePath"]
+        == "operatorWorkflow.internal_loop.actionHint.bridge-action_id"
+    )
+    assert payload["actionSourceMetadata"] == {
+        "source": "watch-loop-hint",
+        "sourcePath": "operatorWorkflow.internal_loop.actionHint.bridge-action_id",
         "fromWatchLoopHint": True,
         "fromEscalationHint": False,
         "fromExplicitOverride": False,
@@ -18975,6 +19097,201 @@ def test_cliq_react_add(mock_config: Path, mock_token_refresh: Any) -> None:
 
 
 @respx.mock
+def test_cliq_status_react_sets_status_and_tracker(
+    tmp_path: Path, mock_config: Path, mock_token_refresh: Any
+) -> None:
+    respx.post("https://cliq.zoho.com/api/v2/chats/CT_1/messages/M1/reactions").mock(
+        return_value=httpx.Response(200, json={"data": {"status": "ok"}})
+    )
+
+    tracker_path = tmp_path / "cliq_status_tracker.json"
+    env = {
+        **_cfg_env(mock_config),
+        "ZOHO_CLIQ_STATUS_TRACKER_PATH": str(tracker_path),
+    }
+    result = runner.invoke(
+        app,
+        [
+            "cliq",
+            "status-react",
+            "M1",
+            "--chat-id",
+            "CT_1",
+            "--status",
+            "thinking",
+            "--keep-existing",
+        ],
+        env=env,
+    )
+    assert result.exit_code == 0, result.output
+    payload = json.loads(result.output)
+    assert payload["status"] == "ok"
+    assert payload["emoji"] == "🤔"
+    assert payload["previousStatus"] == ""
+
+    tracker = json.loads(tracker_path.read_text(encoding="utf-8"))
+    messages = tracker.get("messages", {})
+    assert isinstance(messages, dict)
+    entry = messages["https://cliq.zoho.com/api/v2::CT_1::::M1"]
+    assert entry["status"] == "thinking"
+    assert entry["emoji"] == "🤔"
+
+
+@respx.mock
+def test_cliq_status_react_replaces_tracked_previous_status(
+    tmp_path: Path, mock_config: Path, mock_token_refresh: Any
+) -> None:
+    respx.route(
+        method="DELETE",
+        url__regex=r"https://cliq\.zoho\.com/api/v2/chats/CT_1/messages/M1/reactions/.+",
+    ).mock(return_value=httpx.Response(204, text=""))
+    respx.post("https://cliq.zoho.com/api/v2/chats/CT_1/messages/M1/reactions").mock(
+        return_value=httpx.Response(200, json={"data": {"status": "ok"}})
+    )
+
+    tracker_path = tmp_path / "cliq_status_tracker.json"
+    tracker_path.write_text(
+        json.dumps(
+            {
+                "version": 1,
+                "messages": {
+                    "https://cliq.zoho.com/api/v2::CT_1::::M1": {
+                        "status": "received",
+                        "emoji": "👀",
+                    }
+                },
+            },
+            ensure_ascii=False,
+        ),
+        encoding="utf-8",
+    )
+
+    env = {
+        **_cfg_env(mock_config),
+        "ZOHO_CLIQ_STATUS_TRACKER_PATH": str(tracker_path),
+    }
+    result = runner.invoke(
+        app,
+        [
+            "cliq",
+            "status-react",
+            "M1",
+            "--chat-id",
+            "CT_1",
+            "--status",
+            "done",
+        ],
+        env=env,
+    )
+    assert result.exit_code == 0, result.output
+    payload = json.loads(result.output)
+    assert payload["status"] == "ok"
+    assert payload["previousStatus"] == "received"
+    assert payload["previousEmoji"] == "👀"
+    assert "👀" in payload["removed"]
+
+    tracker = json.loads(tracker_path.read_text(encoding="utf-8"))
+    entry = tracker["messages"]["https://cliq.zoho.com/api/v2::CT_1::::M1"]
+    assert entry["status"] == "done"
+    assert entry["emoji"] == "✅"
+
+
+def test_cliq_status_react_rejects_unknown_status(
+    mock_config: Path, mock_token_refresh: Any
+) -> None:
+    result = runner.invoke(
+        app,
+        [
+            "cliq",
+            "status-react",
+            "M1",
+            "--chat-id",
+            "CT_1",
+            "--status",
+            "unknown",
+        ],
+        env=_cfg_env(mock_config),
+    )
+    assert result.exit_code == 1
+    assert "invalid_status" in result.output
+
+
+@respx.mock
+def test_cliq_watch_act_status_flow_applies_lifecycle_reactions(
+    tmp_path: Path,
+    mock_config: Path,
+    mock_token_refresh: Any,
+) -> None:
+    watch_file = tmp_path / "watch_status_flow.json"
+    watch_file.write_text(
+        json.dumps(
+            {
+                "chatId": "CT_1",
+                "channelId": "O1",
+                "newCount": 1,
+                "messages": [
+                    {"messageId": "M2", "senderId": "U2", "text": "latest"},
+                ],
+            }
+        ),
+        encoding="utf-8",
+    )
+
+    respx.route(
+        method="DELETE",
+        url__regex=r"https://cliq\.zoho\.com/api/v2/chats/CT_1/messages/M2/reactions/.+",
+    ).mock(return_value=httpx.Response(204, text=""))
+    respx.post("https://cliq.zoho.com/api/v2/chats/CT_1/messages/M2/reactions").mock(
+        return_value=httpx.Response(200, json={"data": {"status": "ok"}})
+    )
+    reply_route = respx.post(
+        "https://cliq.zoho.com/api/v2/chats/CT_1/messages/M2/reply"
+    ).mock(return_value=httpx.Response(200, json={"data": {"id": "M3"}}))
+
+    tracker_path = tmp_path / "cliq_status_tracker.json"
+    env = {
+        **_cfg_env(mock_config),
+        "ZOHO_CLIQ_STATUS_TRACKER_PATH": str(tracker_path),
+    }
+    result = runner.invoke(
+        app,
+        [
+            "cliq",
+            "watch-act",
+            "--watch-file",
+            str(watch_file),
+            "--text",
+            "ack",
+            "--status-flow",
+        ],
+        env=env,
+    )
+
+    assert result.exit_code == 0, result.output
+    assert reply_route.called
+
+    payload = json.loads(result.output)
+    assert payload["status"] == "ok"
+    assert payload["statusFlow"]["enabled"] is True
+    assert payload["statusFlow"]["targetMessageId"] == "M2"
+
+    events = payload["statusFlow"]["events"]
+    assert [event["stage"] for event in events] == [
+        "received",
+        "thinking",
+        "writing",
+        "testing",
+        "done",
+    ]
+    assert all(event["applied"] is True for event in events)
+
+    tracker = json.loads(tracker_path.read_text(encoding="utf-8"))
+    entry = tracker["messages"]["https://cliq.zoho.com/api/v2::CT_1::O1::M2"]
+    assert entry["status"] == "done"
+    assert entry["emoji"] == "✅"
+
+
+@respx.mock
 def test_cliq_mark_read_message(mock_config: Path, mock_token_refresh: Any) -> None:
     respx.post("https://cliq.zoho.com/api/v2/chats/CT_1/messages/M1/read").mock(
         return_value=httpx.Response(200, json={"data": {"id": "M1", "status": "ok"}})
@@ -18991,9 +19308,13 @@ def test_cliq_mark_read_message(mock_config: Path, mock_token_refresh: Any) -> N
 
 
 @respx.mock
-def test_cliq_mark_read_latest_message(mock_config: Path, mock_token_refresh: Any) -> None:
+def test_cliq_mark_read_latest_message(
+    mock_config: Path, mock_token_refresh: Any
+) -> None:
     respx.get("https://cliq.zoho.com/api/v2/chats/CT_1/messages").mock(
-        return_value=httpx.Response(200, json={"data": [{"id": "M2", "text": "latest"}]})
+        return_value=httpx.Response(
+            200, json={"data": [{"id": "M2", "text": "latest"}]}
+        )
     )
     respx.post("https://cliq.zoho.com/api/v2/chats/CT_1/messages/M2/read").mock(
         return_value=httpx.Response(200, json={"data": {"id": "M2", "status": "ok"}})

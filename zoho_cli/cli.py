@@ -10,6 +10,7 @@ Output:
 
 from __future__ import annotations
 
+from datetime import datetime, timezone
 from functools import partial
 import json
 import os
@@ -77,6 +78,7 @@ from zoho_cli.commands import (
     register_cliq_reply_edit_commands,
     register_cliq_delete_react_commands,
     register_cliq_mark_read_commands,
+    register_cliq_status_reaction_commands,
     register_cliq_mute_unmute_commands,
     register_cliq_pinned_commands,
     register_cliq_pin_unpin_commands,
@@ -110,6 +112,211 @@ from zoho_cli.commands import (
 )
 from zoho_cli.crm import ZohoCrmClient
 from zoho_cli.registry import register_root_commands
+
+
+_CLIQ_STATUS_REACTION_MAP: dict[str, str] = {
+    "received": "👀",
+    "thinking": "🤔",
+    "writing": "✏️",
+    "testing": "🧪",
+    "blocked": "⚠️",
+    "done": "✅",
+    "failed": "❌",
+}
+_CLIQ_STATUS_REACTION_ALIASES: dict[str, str] = {
+    "seen": "received",
+    "read": "received",
+    "analyse": "thinking",
+    "analyze": "thinking",
+    "draft": "writing",
+    "verify": "testing",
+    "complete": "done",
+    "completed": "done",
+    "error": "failed",
+}
+
+
+def _cliq_status_tracker_path() -> Path:
+    override = (os.environ.get("ZOHO_CLIQ_STATUS_TRACKER_PATH") or "").strip()
+    if override:
+        return Path(override).expanduser()
+    return _config.config_path().parent / "cliq_message_status_tracker.json"
+
+
+def _read_cliq_status_tracker() -> dict[str, Any]:
+    path = _cliq_status_tracker_path()
+    if not path.exists():
+        return {"version": 1, "messages": {}}
+
+    try:
+        raw = path.read_text(encoding="utf-8", errors="replace").strip()
+    except OSError:
+        return {"version": 1, "messages": {}}
+
+    if not raw:
+        return {"version": 1, "messages": {}}
+
+    try:
+        payload = json.loads(raw)
+    except json.JSONDecodeError:
+        return {"version": 1, "messages": {}}
+
+    if not isinstance(payload, dict):
+        return {"version": 1, "messages": {}}
+
+    messages = payload.get("messages")
+    if not isinstance(messages, dict):
+        messages = {}
+
+    return {
+        "version": int(payload.get("version") or 1),
+        "messages": messages,
+    }
+
+
+def _write_cliq_status_tracker(payload: dict[str, Any]) -> None:
+    path = _cliq_status_tracker_path()
+    path.parent.mkdir(parents=True, exist_ok=True)
+    path.write_text(
+        json.dumps(payload, indent=2, ensure_ascii=False) + "\n",
+        encoding="utf-8",
+    )
+
+
+def _normalize_cliq_status_key(raw_status: str) -> str:
+    key = raw_status.strip().lower()
+    if not key:
+        return ""
+    if key in _CLIQ_STATUS_REACTION_MAP:
+        return key
+    return _CLIQ_STATUS_REACTION_ALIASES.get(key, "")
+
+
+def _cliq_status_tracker_key(
+    *, base_url: str, chat_id: str, channel_id: str, message_id: str
+) -> str:
+    return (
+        f"{base_url.strip()}::{chat_id.strip()}::{channel_id.strip()}::"
+        f"{message_id.strip()}"
+    )
+
+
+def _apply_cliq_status_reaction(
+    client: ZohoCliqClient,
+    *,
+    email: str,
+    message_id: str,
+    status: str,
+    chat_id: str,
+    channel_id: str,
+    clear_known: bool = True,
+) -> dict[str, Any]:
+    normalized_status = _normalize_cliq_status_key(status)
+    if not normalized_status:
+        utils.error_exit(
+            "invalid_status",
+            "Unsupported --status value. Use one of: received, thinking, writing, testing, blocked, done, failed.",
+        )
+
+    target_message_id = message_id.strip()
+    if not target_message_id:
+        utils.error_exit("invalid_message_id", "message_id cannot be empty")
+
+    target_emoji = _CLIQ_STATUS_REACTION_MAP[normalized_status]
+    tracker = _read_cliq_status_tracker()
+    messages = tracker.get("messages")
+    if not isinstance(messages, dict):
+        messages = {}
+
+    entry_key = _cliq_status_tracker_key(
+        base_url=client.base_url,
+        chat_id=chat_id,
+        channel_id=channel_id,
+        message_id=target_message_id,
+    )
+    current_entry = messages.get(entry_key)
+    if not isinstance(current_entry, dict):
+        current_entry = {}
+
+    previous_status = str(current_entry.get("status") or "")
+    previous_emoji = str(current_entry.get("emoji") or "")
+
+    tracked_emojis: list[str] = []
+    if previous_emoji:
+        tracked_emojis.append(previous_emoji)
+    if clear_known:
+        for known_emoji in sorted(set(_CLIQ_STATUS_REACTION_MAP.values())):
+            if known_emoji not in tracked_emojis:
+                tracked_emojis.append(known_emoji)
+
+    reaction_result = client.set_message_status_reaction(
+        target_message_id,
+        emoji=target_emoji,
+        tracked_status_emojis=tracked_emojis,
+        chat_id=chat_id,
+        channel_id=channel_id,
+    )
+    data = reaction_result.get("result", {})
+
+    now = datetime.now(tz=timezone.utc).isoformat(timespec="seconds")
+    messages[entry_key] = {
+        "status": normalized_status,
+        "emoji": target_emoji,
+        "updatedAt": now,
+        "messageId": target_message_id,
+        "chatId": chat_id,
+        "channelId": channel_id,
+        "account": email,
+    }
+    tracker["messages"] = messages
+    tracker["version"] = 1
+    _write_cliq_status_tracker(tracker)
+
+    return {
+        "messageId": target_message_id,
+        "statusKey": normalized_status,
+        "emoji": target_emoji,
+        "previousStatus": previous_status,
+        "previousEmoji": previous_emoji,
+        "removed": reaction_result.get("removed", []),
+        "removeErrors": reaction_result.get("removeFailures", []),
+        "result": data,
+    }
+
+
+def _apply_cliq_status_reaction_best_effort(
+    client: ZohoCliqClient,
+    *,
+    email: str,
+    message_id: str,
+    status: str,
+    chat_id: str,
+    channel_id: str,
+    clear_known: bool = True,
+) -> dict[str, Any]:
+    try:
+        payload = _apply_cliq_status_reaction(
+            client,
+            email=email,
+            message_id=message_id,
+            status=status,
+            chat_id=chat_id,
+            channel_id=channel_id,
+            clear_known=clear_known,
+        )
+        return {
+            "applied": True,
+            **payload,
+        }
+    except SystemExit as exc:
+        exit_code = exc.code if isinstance(exc.code, int) else 1
+        return {
+            "applied": False,
+            "messageId": message_id,
+            "statusKey": _normalize_cliq_status_key(status),
+            "error": "status_reaction_failed",
+            "exitCode": exit_code,
+        }
 
 
 def _get_version() -> str:
@@ -2191,6 +2398,10 @@ def cliq_bridge_run(
                                 f"{internal_hint_source_root}.bridge-actionID",
                             ),
                             (
+                                internal_hint.get("bridge-action_id"),
+                                f"{internal_hint_source_root}.bridge-action_id",
+                            ),
+                            (
                                 internal_hint.get("actionId"),
                                 f"{internal_hint_source_root}.actionId",
                             ),
@@ -2258,6 +2469,10 @@ def cliq_bridge_run(
                                 internal_hint.get("watch_act_action"),
                                 f"{internal_hint_source_root}.watch_act_action",
                             ),
+                            (
+                                internal_hint.get("watch-act-action"),
+                                f"{internal_hint_source_root}.watch-act-action",
+                            ),
                         ]
                     )
 
@@ -2310,6 +2525,10 @@ def cliq_bridge_run(
                         (
                             internal_loop.get("watch_act_action"),
                             f"{internal_loop_source_root}.watch_act_action",
+                        ),
+                        (
+                            internal_loop.get("watch-act-action"),
+                            f"{internal_loop_source_root}.watch-act-action",
                         ),
                     ]
                 )
@@ -2442,6 +2661,10 @@ def cliq_bridge_run(
                             escalation.get("watch_act_action"),
                             f"{escalation_source_root}.watch_act_action",
                         ),
+                        (
+                            escalation.get("watch-act-action"),
+                            f"{escalation_source_root}.watch-act-action",
+                        ),
                     ]
                 )
                 escalation_hint = escalation.get("actionHint")
@@ -2533,6 +2756,10 @@ def cliq_bridge_run(
                             (
                                 escalation_hint.get("watch_act_action"),
                                 f"{escalation_hint_source_root}.watch_act_action",
+                            ),
+                            (
+                                escalation_hint.get("watch-act-action"),
+                                f"{escalation_hint_source_root}.watch-act-action",
                             ),
                             (
                                 escalation_hint.get("defaultAction"),
@@ -9878,6 +10105,14 @@ def cliq_watch_act(
     network: Optional[str] = typer.Option(
         None, "--network", help="Cliq network slug (e.g. happydistrouklimited)."
     ),
+    status_flow: bool = typer.Option(
+        False,
+        "--status-flow/--no-status-flow",
+        help=(
+            "Auto-apply status reactions on the target message during watch-act "
+            "lifecycle (received/thinking/writing/testing/done/failed)."
+        ),
+    ),
 ) -> None:
     """Execute one deterministic action from watch payload."""
     raw = ""
@@ -9936,6 +10171,10 @@ def cliq_watch_act(
                     (
                         escalation.get("watch_act_action"),
                         f"{escalation_source_root}.watch_act_action",
+                    ),
+                    (
+                        escalation.get("watch-act-action"),
+                        f"{escalation_source_root}.watch-act-action",
                     ),
                     (
                         escalation.get("action"),
@@ -10065,6 +10304,10 @@ def cliq_watch_act(
                             (
                                 hint.get("watch_act_action"),
                                 f"{hint_source_root}.watch_act_action",
+                            ),
+                            (
+                                hint.get("watch-act-action"),
+                                f"{hint_source_root}.watch-act-action",
                             ),
                             (
                                 hint.get("action"),
@@ -10300,6 +10543,10 @@ def cliq_watch_act(
                         f"{internal_loop_source_root}.watch_act_action",
                     ),
                     (
+                        internal_loop.get("watch-act-action"),
+                        f"{internal_loop_source_root}.watch-act-action",
+                    ),
+                    (
                         internal_loop.get("bridgeActionId"),
                         f"{internal_loop_source_root}.bridgeActionId",
                     ),
@@ -10401,6 +10648,10 @@ def cliq_watch_act(
                                 f"{hint_source_root}.watch_act_action",
                             ),
                             (
+                                hint.get("watch-act-action"),
+                                f"{hint_source_root}.watch-act-action",
+                            ),
+                            (
                                 hint.get("action"),
                                 f"{hint_source_root}.action",
                             ),
@@ -10451,6 +10702,10 @@ def cliq_watch_act(
                             (
                                 hint.get("bridge-actionID"),
                                 f"{hint_source_root}.bridge-actionID",
+                            ),
+                            (
+                                hint.get("bridge-action_id"),
+                                f"{hint_source_root}.bridge-action_id",
                             ),
                             (
                                 hint.get("actionId"),
@@ -10643,6 +10898,7 @@ def cliq_watch_act(
             selected_action_source = "watch-loop-hint"
             selected_action_source_path = "default:reply-latest"
 
+    preview_action: dict[str, Any] = {}
     if selected_action == "reply-latest":
         reply_text = (text or "").strip()
         if not reply_text:
@@ -10650,14 +10906,14 @@ def cliq_watch_act(
                 "invalid_text",
                 "--text is required when --action reply-latest",
             )
-        result = client.execute_watch_reply_action(
+        preview_action = client.build_watch_reply_action(
             watch_payload,
             text=reply_text,
             chat_id=chat_id,
             channel_id=channel_id,
         )
     elif selected_action == "read-ack-latest":
-        result = client.execute_watch_read_ack_action(
+        preview_action = client.build_watch_read_ack_action(
             watch_payload,
             chat_id=chat_id,
             channel_id=channel_id,
@@ -10669,6 +10925,61 @@ def cliq_watch_act(
             "--action must be one of: reply-latest, read-ack-latest",
         )
 
+    status_flow_events: list[dict[str, Any]] = []
+    status_target_message_id = str(preview_action.get("targetMessageId") or "").strip()
+    status_target_chat = str(preview_action.get("chatId") or "").strip()
+    status_target_channel = str(preview_action.get("channelId") or "").strip()
+
+    def _emit_status(stage: str) -> None:
+        if not status_flow:
+            return
+        if not status_target_message_id:
+            return
+        event = _apply_cliq_status_reaction_best_effort(
+            client,
+            email=email,
+            message_id=status_target_message_id,
+            status=stage,
+            chat_id=status_target_chat,
+            channel_id=status_target_channel,
+            clear_known=False,
+        )
+        event["stage"] = stage
+        status_flow_events.append(event)
+
+    if status_flow and status_target_message_id:
+        _emit_status("received")
+        _emit_status("thinking")
+        if selected_action == "reply-latest":
+            _emit_status("writing")
+        else:
+            _emit_status("testing")
+
+    try:
+        if selected_action == "reply-latest":
+            result = client.execute_watch_reply_action(
+                watch_payload,
+                text=reply_text,
+                chat_id=chat_id,
+                channel_id=channel_id,
+            )
+            if status_flow and status_target_message_id:
+                _emit_status("testing")
+        else:
+            result = client.execute_watch_read_ack_action(
+                watch_payload,
+                chat_id=chat_id,
+                channel_id=channel_id,
+                message_id=message_id,
+            )
+
+        if status_flow and status_target_message_id:
+            _emit_status("done")
+    except BaseException:
+        if status_flow and status_target_message_id:
+            _emit_status("failed")
+        raise
+
     if isinstance(result, dict):
         result["actionSource"] = selected_action_source
         result["actionSourcePath"] = selected_action_source_path
@@ -10676,6 +10987,12 @@ def cliq_watch_act(
             selected_action_source,
             selected_action_source_path,
         )
+        if status_flow:
+            result["statusFlow"] = {
+                "enabled": True,
+                "targetMessageId": status_target_message_id,
+                "events": status_flow_events,
+            }
 
     utils.output(result)
 
@@ -10857,6 +11174,66 @@ def cliq_react(
     )
 
 
+def cliq_status_react(
+    message_id: str = typer.Argument(..., help="Target message id."),
+    status: str = typer.Option(
+        ...,
+        "--status",
+        help=(
+            "Status key (received, thinking, writing, testing, blocked, done, failed)."
+        ),
+    ),
+    channel_id: Optional[str] = typer.Option(
+        None, "--channel-id", help="Destination channel id (resolved to chat_id)."
+    ),
+    chat_id: Optional[str] = typer.Option(
+        None, "--chat-id", help="Destination chat id."
+    ),
+    network: Optional[str] = typer.Option(
+        None, "--network", help="Cliq network slug (e.g. happydistrouklimited)."
+    ),
+    clear_known: bool = typer.Option(
+        True,
+        "--clear-known/--keep-existing",
+        help="Clear known status emojis before setting the new one.",
+    ),
+) -> None:
+    """Set one agent-status reaction on a message (read fallback for operators/agents)."""
+    if not chat_id and not channel_id:
+        utils.error_exit("invalid_destination", "Provide --chat-id or --channel-id")
+
+    cfg = _cfg()
+    email = _require_account(cfg)
+    client = _get_cliq_client(cfg, email, network=network)
+
+    resolved_chat = (chat_id or "").strip() or client.resolve_chat_id(channel_id or "")
+    payload = _apply_cliq_status_reaction(
+        client,
+        email=email,
+        message_id=message_id,
+        status=status,
+        chat_id=resolved_chat or "",
+        channel_id=channel_id or "",
+        clear_known=clear_known,
+    )
+
+    utils.output_status(
+        "Cliq status reaction updated",
+        extra={
+            "chatId": resolved_chat or "",
+            "channelId": channel_id or "",
+            "messageId": payload["messageId"],
+            "statusKey": payload["statusKey"],
+            "emoji": payload["emoji"],
+            "previousStatus": payload["previousStatus"],
+            "previousEmoji": payload["previousEmoji"],
+            "removed": payload["removed"],
+            "removeErrors": payload["removeErrors"],
+            "result": payload["result"],
+        },
+    )
+
+
 def cliq_mark_read(
     message_id: Optional[str] = typer.Argument(
         None,
@@ -10949,6 +11326,11 @@ register_cliq_delete_react_commands(
     cliq_app,
     cliq_delete_command=cliq_delete,
     cliq_react_command=cliq_react,
+)
+
+register_cliq_status_reaction_commands(
+    cliq_app,
+    cliq_status_reaction_command=cliq_status_react,
 )
 
 register_cliq_mark_read_commands(

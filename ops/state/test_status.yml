@@ -1,14 +1,19 @@
-last_run_at: "2026-04-24T03:50:31Z"
+last_run_at: "2026-04-24T05:50:54Z"
 last_result: passing
-current_focus: cliq-195-status-flow-medium-verification
+current_focus: cliq-195-bridge-run-status-flow-focused-verification
 suites:
   unit:
     status: passing
     notes:
-      - "integration-loop medium-scope verification rerun at 2026-04-24T03:50:31Z"
-      - "./.venv/bin/python -m pytest -q tests/test_registry.py tests/test_membrane_bridge.py -> 387 passed in 6.56s"
-      - "./.venv/bin/python -m pytest -q tests/test_cli.py -k 'cliq_watch_context_from_channel or cliq_watch_act or watch_act_read_ack_latest or cliq_context_with_anchor or cliq_messages_from_channel or cliq_message_get_from_channel or cliq_bridge_run or crm_bridge_run' -> 291 passed, 421 deselected in 6.94s"
-      - "./.venv/bin/python -m pytest -q tests/test_cliq.py -k 'build_watch_context_seed or build_watch_reply_action or execute_watch_reply_action or build_watch_read_ack_action or execute_watch_read_ack_action or list_messages_from_channel_id or get_message_from_chat_id or get_message_from_channel_id or reply_message_success or edit_message_success or delete_message_success or react_message' -> 24 passed, 164 deselected in 0.11s"
+      - "focused cliq-195 bridge-run status-flow passthrough verification at 2026-04-24T05:50:54Z"
+      - "./.venv/bin/python -m pytest -q tests/test_membrane_bridge.py::test_cliq_bridge_run_watch_file_status_flow_passthrough_enabled tests/test_membrane_bridge.py::test_cliq_bridge_run_watch_file_forwards_watch_payload_and_action_hint tests/test_cli.py::test_cliq_watch_act_status_flow_applies_lifecycle_reactions -> 3 passed in 0.20s"
+      - "./.venv/bin/ruff format --check zoho_cli/cli.py tests/test_membrane_bridge.py -> 2 files already formatted"
+      - "integration-loop medium-scope verification rerun at 2026-04-24T04:25:38Z"
+      - "./.venv/bin/python -m pytest -q tests/test_registry.py tests/test_membrane_bridge.py -> 387 passed in 6.70s"
+      - "./.venv/bin/python -m pytest -q tests/test_cli.py -k 'cliq_watch_context_from_channel or cliq_watch_act or watch_act_read_ack_latest or cliq_context_with_anchor or cliq_messages_from_channel or cliq_message_get_from_channel or cliq_bridge_run or crm_bridge_run' -> 291 passed, 424 deselected in 7.08s"
+      - "./.venv/bin/python -m pytest -q tests/test_cliq.py -k 'build_watch_context_seed or build_watch_reply_action or execute_watch_reply_action or build_watch_read_ack_action or execute_watch_read_ack_action or list_messages_from_channel_id or get_message_from_chat_id or get_message_from_channel_id or reply_message_success or edit_message_success or delete_message_success or react_message' -> 24 passed, 165 deselected in 0.11s"
+      - "./.venv/bin/python -m zoho_cli --help >/tmp/zoho_help.txt && ./.venv/bin/python -m zoho_cli cliq --help >/tmp/zoho_cliq_help.txt && ./.venv/bin/python -m zoho_cli crm --help >/tmp/zoho_crm_help.txt && ./.venv/bin/python -m zoho_cli config --help >/tmp/zoho_config_help.txt && echo HELP_SMOKE_OK -> HELP_SMOKE_OK"
+      - "./.venv/bin/ruff format --check zoho_cli/cli.py tests/test_cli.py tests/test_membrane_bridge.py -> 3 files already formatted"
       - "focused cliq-195 status-flow watch-act lifecycle rerun at 2026-04-24T03:47:47Z"
       - "./.venv/bin/python -m pytest -q tests/test_cli.py::test_cliq_watch_act_replies_to_latest_message tests/test_cli.py::test_cliq_watch_act_status_flow_applies_lifecycle_reactions tests/test_cli.py::test_cliq_status_react_sets_status_and_tracker tests/test_cli.py::test_cliq_status_react_replaces_tracked_previous_status tests/test_cli.py::test_cliq_status_react_rejects_unknown_status tests/test_registry.py::test_register_cliq_status_reaction_commands_preserves_expected_command_names -> 6 passed in 1.22s"
       - "./.venv/bin/ruff format --check zoho_cli/cli.py tests/test_cli.py -> 2 files already formatted"

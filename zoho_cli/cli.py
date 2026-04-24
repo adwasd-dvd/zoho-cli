@@ -2144,6 +2144,14 @@ def cliq_bridge_run(
             "resolving action id from --watch-file metadata."
         ),
     ),
+    status_flow: bool = typer.Option(
+        False,
+        "--status-flow/--no-status-flow",
+        help=(
+            "Pass watch-act status-flow preference through bridge input when "
+            "--watch-file is provided."
+        ),
+    ),
 ) -> None:
     """Run one Cliq action through membrane bridge (explicit opt-in)."""
     if bridge.strip().lower() != "membrane":
@@ -3058,6 +3066,8 @@ def cliq_bridge_run(
                 operator_workflow if isinstance(operator_workflow, dict) else {}
             ),
         }
+        if status_flow:
+            resolved_watch_input["statusFlow"] = {"enabled": True}
 
         if input_json is None:
             resolved_input_text = json.dumps(resolved_watch_input, ensure_ascii=False)
@@ -3090,6 +3100,8 @@ def cliq_bridge_run(
                     resolved_action_source_path,
                 ),
             )
+            if status_flow:
+                merged_input.setdefault("statusFlow", {"enabled": True})
             resolved_input_text = json.dumps(merged_input, ensure_ascii=False)
 
     if resolved_input_text is not None:
@@ -3122,6 +3134,8 @@ def cliq_bridge_run(
         output_payload["operatorWorkflow"] = (
             operator_workflow if isinstance(operator_workflow, dict) else {}
         )
+        if status_flow:
+            output_payload["statusFlow"] = {"enabled": True}
 
     utils.output(output_payload)
 

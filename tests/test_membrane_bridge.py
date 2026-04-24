@@ -536,6 +536,59 @@ def test_cliq_bridge_run_watch_file_forwards_watch_payload_and_action_hint(
     }
 
 
+def test_cliq_bridge_run_watch_file_status_flow_passthrough_enabled(
+    tmp_path: Path,
+    mock_config: Path,
+) -> None:
+    seen: dict[str, Any] = {}
+
+    def _fake_run(*a, **kw):
+        seen["command"] = a[0]
+        return subprocess.CompletedProcess(
+            args=a[0],
+            returncode=0,
+            stdout=json.dumps({"ok": True}),
+            stderr="",
+        )
+
+    watch_payload = {
+        "chatId": "CT_1",
+        "watchIntake": {
+            "consume": {
+                "actionId": "watch-loop",
+            }
+        },
+    }
+    watch_file = tmp_path / "watch-context.json"
+    watch_file.write_text(json.dumps(watch_payload))
+
+    with pytest.MonkeyPatch.context() as monkeypatch:
+        monkeypatch.setattr(
+            "zoho_cli.cli.shutil.which", lambda _name: "/usr/local/bin/membrane"
+        )
+        monkeypatch.setattr("zoho_cli.cli.subprocess.run", _fake_run)
+
+        result = runner.invoke(
+            app,
+            [
+                "--config",
+                str(mock_config),
+                "cliq",
+                "bridge-run",
+                "--watch-file",
+                str(watch_file),
+                "--status-flow",
+            ],
+        )
+
+    assert result.exit_code == 0, result.output
+    forwarded_input = json.loads(seen["command"][7])
+    assert forwarded_input["statusFlow"] == {"enabled": True}
+
+    payload = json.loads(result.output)
+    assert payload["statusFlow"] == {"enabled": True}
+
+
 def test_cliq_bridge_run_watch_file_infers_action_from_top_level_watch_payload_bridge_action_id_aliases(
     tmp_path: Path,
     mock_config: Path,

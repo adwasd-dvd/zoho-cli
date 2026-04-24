@@ -4,10 +4,10 @@ module: cliq
 stage: in_progress
 status: in_progress
 owner: coder
-updated_at: '2026-04-24T04:20:04Z'
+updated_at: '2026-04-24T05:50:54Z'
 success_criteria:
 - add an initial cliq-195 operator-workflow packaging contract to watch-context output without breaking existing watch-loop consumers
 - preserve the operator-workflow contract through watch-act action payload/result surfaces used by automation loops
 - keep focused watch-context/watch-act verification green while deferred external blockers stay capability-gated
 next_if_done: if focused and medium-scope cliq-195 verification remain green, continue the next operator-workflow packaging increment without regressing deferred capability-gated blockers.
-next_step: "cliq unread polling now has owner-aware self-reaction suppression (`zoho cliq chats --unread-only --exclude-reacted-by-self`) and message-reaction retrieval support (`get_message_reactions`) verified at 2026-04-24T04:20:04Z (`./.venv/bin/python -m pytest -q tests/test_cliq.py::test_cliq_client_get_message_reactions tests/test_cli.py::test_cliq_mark_read_falls_back_to_status_reaction_when_read_ack_is_unsupported tests/test_cli.py::test_cliq_chats_unread_only_exclude_reacted_by_self_filters_chat tests/test_cli.py::test_cliq_chats_unread_only_exclude_reacted_by_self_keeps_owner_mismatch`: 4 passed in 1.36s; `./.venv/bin/ruff format --check zoho_cli/cli.py zoho_cli/cliq.py tests/test_cli.py tests/test_cliq.py`: 4 files already formatted), so the next best step is to validate this unread-filter path in a live ai-dev network poll loop and then continue the queued cliq-195 bridge-run passthrough toggle increment."
+next_step: "thin cliq-195 bridge-run status-flow passthrough increment landed at 2026-04-24T05:50:54Z (`zoho cliq bridge-run --watch-file ... --status-flow` now forwards/echoes `statusFlow.enabled` with focused checks: `./.venv/bin/python -m pytest -q tests/test_membrane_bridge.py::test_cliq_bridge_run_watch_file_status_flow_passthrough_enabled tests/test_membrane_bridge.py::test_cliq_bridge_run_watch_file_forwards_watch_payload_and_action_hint tests/test_cli.py::test_cliq_watch_act_status_flow_applies_lifecycle_reactions` -> `3 passed in 0.20s`; `./.venv/bin/ruff format --check zoho_cli/cli.py tests/test_membrane_bridge.py` -> `2 files already formatted`), so the next best step is one live ai-dev unread-only poll validation with `--exclude-reacted-by-self`, then a medium-scope cliq-195 integration rerun."

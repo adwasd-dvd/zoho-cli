@@ -76,6 +76,7 @@ from zoho_cli.commands import (
     register_cliq_voice_send_commands,
     register_cliq_reply_edit_commands,
     register_cliq_delete_react_commands,
+    register_cliq_mark_read_commands,
     register_cliq_mute_unmute_commands,
     register_cliq_pinned_commands,
     register_cliq_pin_unpin_commands,
@@ -10856,10 +10857,103 @@ def cliq_react(
     )
 
 
+def cliq_mark_read(
+    message_id: Optional[str] = typer.Argument(
+        None,
+        help="Target message id. Optional when using --latest.",
+    ),
+    latest: bool = typer.Option(
+        False,
+        "--latest",
+        help="Mark the latest fetched message in the chat/channel as read.",
+    ),
+    channel_id: Optional[str] = typer.Option(
+        None, "--channel-id", help="Destination channel id (resolved to chat_id)."
+    ),
+    chat_id: Optional[str] = typer.Option(
+        None, "--chat-id", help="Destination chat id."
+    ),
+    network: Optional[str] = typer.Option(
+        None, "--network", help="Cliq network slug (e.g. happydistrouklimited)."
+    ),
+) -> None:
+    """Mark one Cliq message as read/acknowledged."""
+    if not chat_id and not channel_id:
+        utils.error_exit("invalid_destination", "Provide --chat-id or --channel-id")
+
+    target_message_id = (message_id or "").strip()
+    if not target_message_id and not latest:
+        utils.error_exit(
+            "invalid_message_id",
+            "Provide message_id or use --latest to mark the newest message as read.",
+        )
+
+    cfg = _cfg()
+    email = _require_account(cfg)
+    client = _get_cliq_client(cfg, email, network=network)
+
+    resolved_chat = (chat_id or "").strip() or client.resolve_chat_id(channel_id or "")
+
+    resolved_via_latest = False
+    if not target_message_id:
+        messages_resp = client.list_messages(
+            chat_id=resolved_chat,
+            channel_id=channel_id,
+            limit=1,
+        )
+        data = messages_resp.get("data", messages_resp)
+        messages = data if isinstance(data, list) else []
+        if not messages:
+            utils.output_status(
+                "No messages found to mark as read",
+                extra={
+                    "chatId": resolved_chat or "",
+                    "channelId": channel_id or "",
+                    "messageId": "",
+                    "result": {"status": "noop"},
+                },
+            )
+            return
+
+        target_message_id = (
+            _cliq.ZohoCliqClient._extract_message_id(messages[0])
+            if isinstance(messages[0], dict)
+            else ""
+        )
+        if not target_message_id:
+            utils.error_exit(
+                "invalid_message_id",
+                "Unable to infer latest message id from chat payload.",
+            )
+        resolved_via_latest = True
+
+    resp = client.read_ack_message(
+        target_message_id,
+        chat_id=resolved_chat,
+        channel_id=channel_id,
+    )
+    data = resp.get("data", resp)
+    utils.output_status(
+        "Cliq message marked as read",
+        extra={
+            "chatId": resolved_chat or "",
+            "channelId": channel_id or "",
+            "messageId": target_message_id,
+            "viaLatest": resolved_via_latest,
+            "result": data,
+        },
+    )
+
+
 register_cliq_delete_react_commands(
     cliq_app,
     cliq_delete_command=cliq_delete,
     cliq_react_command=cliq_react,
+)
+
+register_cliq_mark_read_commands(
+    cliq_app,
+    cliq_mark_read_command=cliq_mark_read,
 )
 
 

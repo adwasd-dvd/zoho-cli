@@ -34,6 +34,7 @@ from zoho_cli.commands.cliq import register_cliq_watch_act_commands
 from zoho_cli.commands.cliq import register_cliq_voice_send_commands
 from zoho_cli.commands.cliq import register_cliq_reply_edit_commands
 from zoho_cli.commands.cliq import register_cliq_delete_react_commands
+from zoho_cli.commands.cliq import register_cliq_mark_read_commands
 from zoho_cli.commands.cliq import register_cliq_mute_unmute_commands
 from zoho_cli.commands.cliq import register_cliq_pinned_commands
 from zoho_cli.commands.cliq import register_cliq_pin_unpin_commands
@@ -166,6 +167,10 @@ def test_commands_package_exports_root_registrars() -> None:
     assert (
         commands_pkg.register_cliq_delete_react_commands
         is register_cliq_delete_react_commands
+    )
+    assert (
+        commands_pkg.register_cliq_mark_read_commands
+        is register_cliq_mark_read_commands
     )
     assert (
         commands_pkg.register_cliq_mute_unmute_commands
@@ -909,6 +914,22 @@ def test_register_cliq_delete_react_commands_preserves_expected_command_names() 
     assert [command.name for command in app.registered_commands] == [
         "delete",
         "react",
+    ]
+
+
+def test_register_cliq_mark_read_commands_preserves_expected_command_names() -> None:
+    app = typer.Typer(no_args_is_help=True)
+
+    def _mark_read_command() -> None:
+        return None
+
+    register_cliq_mark_read_commands(
+        app,
+        cliq_mark_read_command=_mark_read_command,
+    )
+
+    assert [command.name for command in app.registered_commands] == [
+        "mark-read",
     ]
 
 

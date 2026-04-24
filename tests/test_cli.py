@@ -18974,6 +18974,55 @@ def test_cliq_react_add(mock_config: Path, mock_token_refresh: Any) -> None:
     assert payload["status"] == "ok"
 
 
+@respx.mock
+def test_cliq_mark_read_message(mock_config: Path, mock_token_refresh: Any) -> None:
+    respx.post("https://cliq.zoho.com/api/v2/chats/CT_1/messages/M1/read").mock(
+        return_value=httpx.Response(200, json={"data": {"id": "M1", "status": "ok"}})
+    )
+
+    result = runner.invoke(
+        app,
+        ["cliq", "mark-read", "M1", "--chat-id", "CT_1"],
+        env=_cfg_env(mock_config),
+    )
+    assert result.exit_code == 0, result.output
+    payload = json.loads(result.output)
+    assert payload["status"] == "ok"
+
+
+@respx.mock
+def test_cliq_mark_read_latest_message(mock_config: Path, mock_token_refresh: Any) -> None:
+    respx.get("https://cliq.zoho.com/api/v2/chats/CT_1/messages").mock(
+        return_value=httpx.Response(200, json={"data": [{"id": "M2", "text": "latest"}]})
+    )
+    respx.post("https://cliq.zoho.com/api/v2/chats/CT_1/messages/M2/read").mock(
+        return_value=httpx.Response(200, json={"data": {"id": "M2", "status": "ok"}})
+    )
+
+    result = runner.invoke(
+        app,
+        ["cliq", "mark-read", "--chat-id", "CT_1", "--latest"],
+        env=_cfg_env(mock_config),
+    )
+    assert result.exit_code == 0, result.output
+    payload = json.loads(result.output)
+    assert payload["status"] == "ok"
+    assert payload["viaLatest"] is True
+    assert payload["messageId"] == "M2"
+
+
+def test_cliq_mark_read_requires_message_or_latest(
+    mock_config: Path, mock_token_refresh: Any
+) -> None:
+    result = runner.invoke(
+        app,
+        ["cliq", "mark-read", "--chat-id", "CT_1"],
+        env=_cfg_env(mock_config),
+    )
+    assert result.exit_code == 1
+    assert "invalid_message_id" in result.output
+
+
 def test_cliq_reply_requires_destination(
     mock_config: Path, mock_token_refresh: Any
 ) -> None:

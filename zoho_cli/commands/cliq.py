@@ -331,6 +331,15 @@ def register_cliq_delete_react_commands(
     cliq_app.command("react")(cliq_react_command)
 
 
+def register_cliq_mark_read_commands(
+    cliq_app: typer.Typer,
+    *,
+    cliq_mark_read_command: Callable[..., None],
+) -> None:
+    """Register the Cliq mark-read command on ``cliq_app``."""
+    cliq_app.command("mark-read")(cliq_mark_read_command)
+
+
 def register_cliq_scheduled_lifecycle_commands(
     cliq_app: typer.Typer,
     *,

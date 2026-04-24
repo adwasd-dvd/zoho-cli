@@ -2300,6 +2300,14 @@ def cliq_bridge_run(
                             bridge_cfg.get("bridge_actionId"),
                             f"{intake_source_root}.bridge.bridge_actionId",
                         ),
+                        (
+                            bridge_cfg.get("bridge-action-id"),
+                            f"{intake_source_root}.bridge.bridge-action-id",
+                        ),
+                        (
+                            bridge_cfg.get("bridge-actionID"),
+                            f"{intake_source_root}.bridge.bridge-actionID",
+                        ),
                     ]
                 )
             consume_cfg = intake.get("consume")
@@ -2329,6 +2337,10 @@ def cliq_bridge_run(
                         (
                             consume_cfg.get("bridge_actionid"),
                             f"{intake_source_root}.consume.bridge_actionid",
+                        ),
+                        (
+                            consume_cfg.get("bridge_actionID"),
+                            f"{intake_source_root}.consume.bridge_actionID",
                         ),
                         (
                             consume_cfg.get("bridge-action-id"),
@@ -11493,6 +11505,14 @@ def cliq_watch_act(
                                 bridge_cfg.get("bridge_actionId"),
                                 f"{intake_source_root}.bridge.bridge_actionId",
                             ),
+                            (
+                                bridge_cfg.get("bridge-action-id"),
+                                f"{intake_source_root}.bridge.bridge-action-id",
+                            ),
+                            (
+                                bridge_cfg.get("bridge-actionID"),
+                                f"{intake_source_root}.bridge.bridge-actionID",
+                            ),
                         ]
                     )
 
@@ -11523,6 +11543,10 @@ def cliq_watch_act(
                             (
                                 consume_cfg.get("bridge_actionid"),
                                 f"{intake_source_root}.consume.bridge_actionid",
+                            ),
+                            (
+                                consume_cfg.get("bridge_actionID"),
+                                f"{intake_source_root}.consume.bridge_actionID",
                             ),
                             (
                                 consume_cfg.get("bridge-action-id"),

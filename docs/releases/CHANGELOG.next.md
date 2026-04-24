@@ -3,6 +3,7 @@
 ## Unreleased
 
 ### Added
+- Refined cliq-195 watch-loop fallback compatibility so `zoho cliq watch-act` and `zoho cliq bridge-run --watch-file` now also accept `watchIntake.bridge.bridge-action-id`, `watchIntake.bridge.bridge-actionID`, and `watchIntake.consume.bridge_actionID` when inferring actions, while preserving `actionSourcePath` / `actionSourceMetadata` provenance.
 - Refined cliq-195 watch-loop fallback compatibility so `zoho cliq watch-act` and `zoho cliq bridge-run --watch-file` now also accept snake compact alias `watchIntake.consume.bridge_actionid` when inferring actions, while preserving `actionSourcePath` / `actionSourceMetadata` provenance.
 - Switched Cliq auto-pilot probe defaults to global config-first behavior: helper scripts now use the default Zoho config unless an explicit override is passed, and probe token bootstrap now supports default-config + `ZOHO_CLIENT_ID`/`ZOHO_CLIENT_SECRET` env fallback when `--config` is omitted.
 - Added optional watch-loop lifecycle automation via `zoho cliq watch-act --status-flow`, which now applies staged status reactions on the target message (`received -> thinking -> writing/testing -> done`, with `failed` on command failure) and returns `statusFlow` execution metadata for agent/operator feedback.

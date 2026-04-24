@@ -3257,22 +3257,181 @@ def cliq_chats(
 
     views: list[dict[str, Any]] = []
 
-    def _unread_count(row: dict[str, Any]) -> int:
+    def _unread_count(row: dict[str, Any]) -> tuple[int, bool]:
+        explicit_field_found = False
         for key in (
             "unread_message_count",
             "unreadMessageCount",
             "unreadCount",
         ):
+            if key not in row:
+                continue
+
+            explicit_field_found = True
             value = row.get(key)
             if isinstance(value, bool):
                 continue
             if isinstance(value, (int, float)):
-                return max(0, int(value))
+                return max(0, int(value)), True
             if isinstance(value, str):
                 parsed = value.strip()
                 if parsed.isdigit():
-                    return int(parsed)
-        return 0
+                    return int(parsed), True
+        return 0, explicit_field_found
+
+    self_identifier_sets: tuple[set[str], set[str]] | None = None
+
+    def _get_self_identifier_sets() -> tuple[set[str], set[str]]:
+        nonlocal self_identifier_sets
+        if self_identifier_sets is None:
+            identity: dict[str, Any] = {}
+            try:
+                identity = client.whoami(account_email=email)
+            except SystemExit:
+                identity = {}
+            self_identifier_sets = _self_identifier_sets(identity)
+        return self_identifier_sets
+
+    account_email_lc = email.strip().lower()
+    account_local_lc = (
+        account_email_lc.split("@", 1)[0] if "@" in account_email_lc else ""
+    )
+
+    def _looks_like_email(value: str) -> bool:
+        return "@" in value
+
+    def _has_non_email_identifier(values: set[str]) -> bool:
+        return any(token and not _looks_like_email(token) for token in values)
+
+    def _self_tokens_from_chat_row(row: dict[str, Any]) -> tuple[set[str], set[str]]:
+        exact: set[str] = set()
+        lowered: set[str] = set()
+
+        def _add(value: Any) -> None:
+            text = str(value or "").strip()
+            if not text:
+                return
+            exact.add(text)
+            lowered.add(text.lower())
+
+        def _matches_account(value: Any) -> bool:
+            text = str(value or "").strip().lower()
+            if not text:
+                return False
+            if account_email_lc and text == account_email_lc:
+                return True
+            if account_local_lc and text == account_local_lc:
+                return True
+            return False
+
+        recipients = row.get("recipients_summary")
+        if isinstance(recipients, list):
+            for recipient in recipients:
+                if not isinstance(recipient, dict):
+                    continue
+
+                matched = any(
+                    _matches_account(recipient.get(key))
+                    for key in (
+                        "email",
+                        "email_id",
+                        "emailId",
+                        "user_email",
+                        "userEmail",
+                        "name",
+                        "display_name",
+                        "displayName",
+                        "full_name",
+                        "fullName",
+                    )
+                )
+                if not matched:
+                    continue
+
+                for key in (
+                    "user_id",
+                    "userId",
+                    "id",
+                    "zuid",
+                    "email",
+                    "email_id",
+                    "emailId",
+                ):
+                    if key in recipient:
+                        _add(recipient.get(key))
+
+        return exact, lowered
+
+    def _extract_sender_tokens(message: Any) -> list[str]:
+        tokens: list[str] = []
+        seen: set[str] = set()
+
+        def _add(value: Any) -> None:
+            text = str(value or "").strip()
+            if not text or text in seen:
+                return
+            seen.add(text)
+            tokens.append(text)
+
+        if not isinstance(message, dict):
+            return tokens
+
+        for key in (
+            "sender_id",
+            "senderId",
+            "user_id",
+            "userId",
+            "zuid",
+            "email",
+            "email_id",
+            "emailId",
+        ):
+            if key in message:
+                _add(message.get(key))
+
+        sender = message.get("sender")
+        if isinstance(sender, dict):
+            for key in (
+                "id",
+                "zuid",
+                "user_id",
+                "userId",
+                "email",
+                "email_id",
+                "emailId",
+            ):
+                if key in sender:
+                    _add(sender.get(key))
+
+        return tokens
+
+    def _infer_unread_from_latest_sender(row: dict[str, Any]) -> bool:
+        last_message = row.get("last_message_info")
+        sender_tokens = _extract_sender_tokens(last_message)
+        if not sender_tokens:
+            return False
+
+        self_exact, self_lowered = _get_self_identifier_sets()
+        row_self_exact, row_self_lowered = _self_tokens_from_chat_row(row)
+        combined_exact = set(self_exact)
+        combined_exact.update(row_self_exact)
+        combined_lowered = set(self_lowered)
+        combined_lowered.update(row_self_lowered)
+
+        if any(
+            _token_matches_self(
+                token,
+                self_exact=combined_exact,
+                self_lowered=combined_lowered,
+            )
+            for token in sender_tokens
+        ):
+            return False
+
+        if not _has_non_email_identifier(combined_exact):
+            return False
+
+        return True
 
     def _extract_reaction_rows(payload: Any) -> list[dict[str, Any]]:
         queue: list[Any] = [payload]
@@ -3447,29 +3606,39 @@ def cliq_chats(
         first = data[0]
         return first if isinstance(first, dict) else {}
 
+    inferred_unread_count = 0
     for row in rows:
         if not isinstance(row, dict):
             continue
 
-        unread_count = _unread_count(row)
+        unread_count, unread_field_present = _unread_count(row)
+        unread_inferred = False
         if unread_only and unread_count <= 0:
-            continue
+            if unread_field_present:
+                continue
+            if not _infer_unread_from_latest_sender(row):
+                continue
+            unread_count = 1
+            unread_inferred = True
+            inferred_unread_count += 1
 
-        views.append(
-            {
-                "chatId": str(
-                    row.get("id") or row.get("chat_id") or row.get("chatId") or ""
-                ),
-                "name": str(
-                    row.get("name") or row.get("title") or row.get("display_name") or ""
-                ),
-                "type": str(
-                    row.get("type") or row.get("chat_type") or row.get("chatType") or ""
-                ),
-                "unreadCount": unread_count,
-                "raw": row,
-            }
-        )
+        item: dict[str, Any] = {
+            "chatId": str(
+                row.get("id") or row.get("chat_id") or row.get("chatId") or ""
+            ),
+            "name": str(
+                row.get("name") or row.get("title") or row.get("display_name") or ""
+            ),
+            "type": str(
+                row.get("type") or row.get("chat_type") or row.get("chatType") or ""
+            ),
+            "unreadCount": unread_count,
+            "raw": row,
+        }
+        if unread_inferred:
+            item["unreadInferred"] = True
+
+        views.append(item)
 
     filtered_by_self_reaction = 0
     if exclude_reacted_by_self and views:
@@ -3529,6 +3698,12 @@ def cliq_chats(
         "unreadChatsCount": len([item for item in views if item["unreadCount"] > 0]),
         "chats": views,
     }
+    if unread_only and inferred_unread_count > 0:
+        payload["unreadInference"] = {
+            "enabled": True,
+            "strategy": "latest_message_sender_not_self_when_unread_field_missing",
+            "inferredChatsCount": inferred_unread_count,
+        }
     if exclude_reacted_by_self:
         payload["selfReactionFilter"] = {
             "enabled": True,

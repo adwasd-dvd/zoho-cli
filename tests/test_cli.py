@@ -2755,6 +2755,57 @@ def test_cliq_watch_act_uses_top_level_watch_payload_default_action_snake_alias(
 
 
 @respx.mock
+def test_cliq_watch_act_uses_top_level_watch_payload_default_action_kebab_alias(
+    tmp_path: Path,
+    mock_config: Path,
+    mock_token_refresh: Any,
+) -> None:
+    watch_file = tmp_path / "watch.json"
+    watch_file.write_text(
+        json.dumps(
+            {
+                "chatId": "CT_1",
+                "channelId": "O1",
+                "default-action": "read-ack-latest",
+                "newCount": 1,
+                "messages": [
+                    {"messageId": "M2", "senderId": "U2", "text": "latest"},
+                ],
+            }
+        )
+    )
+
+    route = respx.post("https://cliq.zoho.com/api/v2/chats/CT_1/messages/M2/read").mock(
+        return_value=httpx.Response(200, json={"data": {"id": "M2", "status": "ok"}})
+    )
+
+    result = runner.invoke(
+        app,
+        [
+            "cliq",
+            "watch-act",
+            "--watch-file",
+            str(watch_file),
+        ],
+        env=_cfg_env(mock_config),
+    )
+
+    assert result.exit_code == 0, result.output
+    assert route.called
+    payload = json.loads(result.output)
+    assert payload["action"] == "read-ack-latest"
+    assert payload["actionSource"] == "watch-loop-hint"
+    assert payload["actionSourcePath"] == "watchPayload.default-action"
+    assert payload["actionSourceMetadata"] == {
+        "source": "watch-loop-hint",
+        "sourcePath": "watchPayload.default-action",
+        "fromWatchLoopHint": True,
+        "fromEscalationHint": False,
+        "fromExplicitOverride": False,
+    }
+
+
+@respx.mock
 def test_cliq_watch_act_uses_top_level_watch_payload_default_action_id_aliases(
     tmp_path: Path,
     mock_config: Path,
@@ -20515,6 +20566,181 @@ def test_cliq_chats_unread_only_filters_results(
     assert payload["count"] == 1
     assert payload["unreadChatsCount"] == 1
     assert payload["chats"][0]["chatId"] == "CT_10"
+
+
+@respx.mock
+def test_cliq_chats_unread_only_falls_back_to_latest_sender_when_unread_field_missing(
+    mock_config: Path, mock_token_refresh: Any
+) -> None:
+    respx.get("https://cliq.zoho.com/api/v2/chats").mock(
+        return_value=httpx.Response(
+            200,
+            json={
+                "chats": [
+                    {
+                        "chat_id": "CT_20",
+                        "name": "Incoming",
+                        "chat_type": "dm",
+                        "last_message_info": {
+                            "message_id": "M20",
+                            "sender_id": "U_OTHER",
+                        },
+                    },
+                    {
+                        "chat_id": "CT_21",
+                        "name": "Self Sent",
+                        "chat_type": "dm",
+                        "last_message_info": {
+                            "message_id": "M21",
+                            "sender_id": "U_SELF",
+                        },
+                    },
+                ]
+            },
+        )
+    )
+    respx.get("https://cliq.zoho.com/api/v2/users/me").mock(
+        return_value=httpx.Response(
+            200,
+            json={
+                "data": {
+                    "id": "U_SELF",
+                    "email": "test@example.com",
+                }
+            },
+        )
+    )
+
+    result = runner.invoke(
+        app,
+        ["cliq", "chats", "--unread-only", "--limit", "10"],
+        env=_cfg_env(mock_config),
+    )
+    assert result.exit_code == 0, result.output
+    payload = json.loads(result.output)
+    assert payload["count"] == 1
+    assert payload["unreadChatsCount"] == 1
+    assert payload["chats"][0]["chatId"] == "CT_20"
+    assert payload["chats"][0]["unreadCount"] == 1
+    assert payload["chats"][0]["unreadInferred"] is True
+    assert payload["unreadInference"]["enabled"] is True
+    assert payload["unreadInference"]["inferredChatsCount"] == 1
+
+
+@respx.mock
+def test_cliq_chats_unread_only_missing_unread_field_without_sender_stays_filtered(
+    mock_config: Path, mock_token_refresh: Any
+) -> None:
+    respx.get("https://cliq.zoho.com/api/v2/chats").mock(
+        return_value=httpx.Response(
+            200,
+            json={
+                "chats": [
+                    {
+                        "chat_id": "CT_22",
+                        "name": "No Sender",
+                        "chat_type": "dm",
+                        "last_message_info": {
+                            "message_id": "M22",
+                        },
+                    }
+                ]
+            },
+        )
+    )
+
+    result = runner.invoke(
+        app,
+        ["cliq", "chats", "--unread-only", "--limit", "10"],
+        env=_cfg_env(mock_config),
+    )
+    assert result.exit_code == 0, result.output
+    payload = json.loads(result.output)
+    assert payload["count"] == 0
+    assert payload["unreadChatsCount"] == 0
+    assert payload.get("unreadInference") is None
+
+
+@respx.mock
+def test_cliq_chats_unread_only_infers_self_from_recipients_when_whoami_unresolved(
+    mock_config: Path, mock_token_refresh: Any
+) -> None:
+    respx.get("https://cliq.zoho.com/api/v2/chats").mock(
+        return_value=httpx.Response(
+            200,
+            json={
+                "chats": [
+                    {
+                        "chat_id": "CT_30",
+                        "name": "Incoming DM",
+                        "chat_type": "dm",
+                        "recipients_summary": [
+                            {"user_id": "U_OTHER", "name": "Other"},
+                            {"user_id": "U_SELF", "name": "ai-dev"},
+                        ],
+                        "last_message_info": {
+                            "message_id": "M30",
+                            "sender_id": "U_OTHER",
+                        },
+                    },
+                    {
+                        "chat_id": "CT_31",
+                        "name": "Self Message",
+                        "chat_type": "dm",
+                        "recipients_summary": [
+                            {"user_id": "U_SELF", "name": "ai-dev"},
+                        ],
+                        "last_message_info": {
+                            "message_id": "M31",
+                            "sender_id": "U_SELF",
+                        },
+                    },
+                    {
+                        "chat_id": "CT_32",
+                        "name": "No Self Hint",
+                        "chat_type": "chat",
+                        "recipients_summary": [
+                            {"user_id": "U_OTHER", "name": "Other"},
+                        ],
+                        "last_message_info": {
+                            "message_id": "M32",
+                            "sender_id": "U_OTHER",
+                        },
+                    },
+                ]
+            },
+        )
+    )
+    for path in ("/users/me", "/users/self", "/users/current"):
+        respx.get(f"https://cliq.zoho.com/api/v2{path}").mock(
+            return_value=httpx.Response(
+                400,
+                json={"code": "accounts_server_failure"},
+            )
+        )
+    respx.get("https://cliq.zoho.com/api/v2/users").mock(
+        return_value=httpx.Response(200, json={"data": []})
+    )
+
+    result = runner.invoke(
+        app,
+        [
+            "--account",
+            "ai-dev@happy-distro.co.uk",
+            "cliq",
+            "chats",
+            "--unread-only",
+            "--limit",
+            "10",
+        ],
+        env=_cfg_env(mock_config),
+    )
+    assert result.exit_code == 0, result.output
+    payload = json.loads(result.output)
+    assert payload["count"] == 1
+    assert payload["unreadChatsCount"] == 1
+    assert payload["chats"][0]["chatId"] == "CT_30"
+    assert payload["chats"][0]["unreadInferred"] is True
 
 
 @respx.mock

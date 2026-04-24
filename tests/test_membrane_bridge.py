@@ -644,6 +644,61 @@ def test_cliq_bridge_run_watch_file_infers_action_from_top_level_watch_payload_b
     }
 
 
+def test_cliq_bridge_run_watch_file_infers_action_from_top_level_watch_payload_bridge_action_kebab_id_alias(
+    tmp_path: Path,
+    mock_config: Path,
+) -> None:
+    seen: dict[str, Any] = {}
+
+    def _fake_run(*a, **kw):
+        seen["command"] = a[0]
+        return subprocess.CompletedProcess(
+            args=a[0],
+            returncode=0,
+            stdout=json.dumps({"ok": True}),
+            stderr="",
+        )
+
+    watch_payload = {
+        "chatId": "CT_1",
+        "bridge-action-id": "watch-loop-route",
+    }
+    watch_file = tmp_path / "watch-context.json"
+    watch_file.write_text(json.dumps(watch_payload))
+
+    with pytest.MonkeyPatch.context() as monkeypatch:
+        monkeypatch.setattr(
+            "zoho_cli.cli.shutil.which", lambda _name: "/usr/local/bin/membrane"
+        )
+        monkeypatch.setattr("zoho_cli.cli.subprocess.run", _fake_run)
+
+        result = runner.invoke(
+            app,
+            [
+                "--config",
+                str(mock_config),
+                "cliq",
+                "bridge-run",
+                "--watch-file",
+                str(watch_file),
+            ],
+        )
+
+    assert result.exit_code == 0, result.output
+    assert seen["command"][4] == "watch-loop-route"
+    payload = json.loads(result.output)
+    assert payload["actionId"] == "watch-loop-route"
+    assert payload["actionSource"] == "watch-loop-hint"
+    assert payload["actionSourcePath"] == "watchPayload.bridge-action-id"
+    assert payload["actionSourceMetadata"] == {
+        "source": "watch-loop-hint",
+        "sourcePath": "watchPayload.bridge-action-id",
+        "fromWatchLoopHint": True,
+        "fromEscalationHint": False,
+        "fromExplicitOverride": False,
+    }
+
+
 def test_cliq_bridge_run_watch_file_infers_action_from_top_level_watch_payload_bridge_action_snake_id_aliases(
     tmp_path: Path,
     mock_config: Path,

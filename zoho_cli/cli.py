@@ -339,9 +339,9 @@ def _should_use_mark_read_status_fallback(
     if not isinstance(unsupported_entry_after, dict):
         return False
 
-    last_signal = str(
-        unsupported_entry_after.get("lastUnsupportedSignal") or ""
-    ).strip().lower()
+    last_signal = (
+        str(unsupported_entry_after.get("lastUnsupportedSignal") or "").strip().lower()
+    )
     if last_signal not in {"not_supported", "unsupported"}:
         return False
 
@@ -3211,6 +3211,11 @@ def cliq_chats(
         "--unread-only",
         help="Only return chats with unread messages.",
     ),
+    exclude_reacted_by_self: bool = typer.Option(
+        False,
+        "--exclude-reacted-by-self",
+        help="Exclude chats whose latest message already has a reaction from the current account.",
+    ),
     network: Optional[str] = typer.Option(
         None, "--network", help="Cliq network slug (e.g. happydistrouklimited)."
     ),
@@ -3255,6 +3260,179 @@ def cliq_chats(
                     return int(parsed)
         return 0
 
+    def _extract_reaction_rows(payload: Any) -> list[dict[str, Any]]:
+        queue: list[Any] = [payload]
+        visited_ids: set[int] = set()
+        reaction_keys = (
+            "emoji",
+            "emoji_code",
+            "emojiCode",
+            "users",
+            "user_ids",
+            "userId",
+            "user_id",
+            "owner",
+            "owners",
+            "reacted_users",
+            "reactedUsers",
+        )
+        container_keys = (
+            "data",
+            "reactions",
+            "reaction",
+            "messageactions",
+            "messageActions",
+            "items",
+            "results",
+            "records",
+            "payload",
+            "response",
+            "result",
+        )
+
+        while queue:
+            current = queue.pop(0)
+            marker = id(current)
+            if marker in visited_ids:
+                continue
+            visited_ids.add(marker)
+
+            if isinstance(current, list):
+                rows = [item for item in current if isinstance(item, dict)]
+                if rows and any(
+                    any(key in row for key in reaction_keys) for row in rows
+                ):
+                    return rows
+                queue.extend(rows)
+                continue
+
+            if not isinstance(current, dict):
+                continue
+
+            if any(key in current for key in reaction_keys):
+                return [current]
+
+            for key in container_keys:
+                nested = current.get(key)
+                if nested is not None:
+                    queue.append(nested)
+
+        return []
+
+    def _extract_reaction_owner_tokens(reaction: dict[str, Any]) -> list[str]:
+        tokens: list[str] = []
+        seen: set[str] = set()
+
+        def _add(value: Any) -> None:
+            text = str(value or "").strip()
+            if not text or text in seen:
+                return
+            seen.add(text)
+            tokens.append(text)
+
+        def _walk(value: Any) -> None:
+            if isinstance(value, dict):
+                for key in (
+                    "id",
+                    "zuid",
+                    "user_id",
+                    "userId",
+                    "owner_id",
+                    "ownerId",
+                    "email",
+                    "email_id",
+                    "emailId",
+                ):
+                    if key in value:
+                        _add(value.get(key))
+                for key in (
+                    "users",
+                    "user",
+                    "owners",
+                    "owner",
+                    "reacted_users",
+                    "reactedUsers",
+                    "members",
+                    "member",
+                    "participants",
+                    "participant",
+                    "users_info",
+                    "usersInfo",
+                    "user_ids",
+                    "userIds",
+                    "owner_ids",
+                    "ownerIds",
+                    "zuids",
+                    "emails",
+                ):
+                    if key in value:
+                        _walk(value.get(key))
+                return
+
+            if isinstance(value, (list, tuple, set)):
+                for item in value:
+                    _walk(item)
+                return
+
+            if isinstance(value, (str, int, float)):
+                _add(value)
+
+        _walk(reaction)
+        return tokens
+
+    def _self_identifier_sets(identity: dict[str, Any]) -> tuple[set[str], set[str]]:
+        exact: set[str] = set()
+        lowered: set[str] = set()
+
+        def _add_token(value: Any) -> None:
+            text = str(value or "").strip()
+            if not text:
+                return
+            exact.add(text)
+            lowered.add(text.lower())
+
+        user = identity.get("user") if isinstance(identity, dict) else {}
+        if isinstance(user, dict):
+            _add_token(user.get("userId"))
+            _add_token(user.get("email"))
+            raw = user.get("raw")
+            if isinstance(raw, dict):
+                for key in (
+                    "id",
+                    "zuid",
+                    "user_id",
+                    "userId",
+                    "email",
+                    "email_id",
+                    "emailId",
+                ):
+                    if key in raw:
+                        _add_token(raw.get(key))
+
+        _add_token(email)
+        return exact, lowered
+
+    def _token_matches_self(
+        token: str,
+        *,
+        self_exact: set[str],
+        self_lowered: set[str],
+    ) -> bool:
+        candidate = token.strip()
+        if not candidate:
+            return False
+        return candidate in self_exact or candidate.lower() in self_lowered
+
+    def _latest_message_for_chat(chat_identifier: str) -> dict[str, Any]:
+        if not chat_identifier:
+            return {}
+        response = client.list_messages(chat_id=chat_identifier, limit=1)
+        data = response.get("data", response)
+        if not isinstance(data, list) or not data:
+            return {}
+        first = data[0]
+        return first if isinstance(first, dict) else {}
+
     for row in rows:
         if not isinstance(row, dict):
             continue
@@ -3279,11 +3457,69 @@ def cliq_chats(
             }
         )
 
+    filtered_by_self_reaction = 0
+    if exclude_reacted_by_self and views:
+        identity = client.whoami(account_email=email)
+        self_exact, self_lowered = _self_identifier_sets(identity)
+
+        retained_views: list[dict[str, Any]] = []
+        for view in views:
+            chat_identifier = str(view.get("chatId") or "").strip()
+            if not chat_identifier:
+                retained_views.append(view)
+                continue
+
+            latest_message = _latest_message_for_chat(chat_identifier)
+            message_id = _cliq.ZohoCliqClient._extract_message_id(latest_message)
+            if not message_id:
+                retained_views.append(view)
+                continue
+
+            reactions_payload: Any
+            try:
+                reactions_payload = client.get_message_reactions(
+                    message_id,
+                    chat_id=chat_identifier,
+                )
+            except SystemExit:
+                reactions_payload = latest_message
+
+            reaction_rows = _extract_reaction_rows(reactions_payload)
+            if not reaction_rows:
+                reaction_rows = _extract_reaction_rows(latest_message)
+
+            reacted_by_self = False
+            for reaction in reaction_rows:
+                owner_tokens = _extract_reaction_owner_tokens(reaction)
+                if any(
+                    _token_matches_self(
+                        owner,
+                        self_exact=self_exact,
+                        self_lowered=self_lowered,
+                    )
+                    for owner in owner_tokens
+                ):
+                    reacted_by_self = True
+                    break
+
+            if reacted_by_self:
+                filtered_by_self_reaction += 1
+                continue
+
+            retained_views.append(view)
+
+        views = retained_views
+
     payload: dict[str, Any] = {
         "count": len(views),
         "unreadChatsCount": len([item for item in views if item["unreadCount"] > 0]),
         "chats": views,
     }
+    if exclude_reacted_by_self:
+        payload["selfReactionFilter"] = {
+            "enabled": True,
+            "excludedCount": filtered_by_self_reaction,
+        }
     if isinstance(resp, dict):
         has_more = resp.get("has_more")
         if isinstance(has_more, bool):

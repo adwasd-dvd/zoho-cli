@@ -20518,6 +20518,161 @@ def test_cliq_chats_unread_only_filters_results(
 
 
 @respx.mock
+def test_cliq_chats_unread_only_exclude_reacted_by_self_filters_chat(
+    mock_config: Path, mock_token_refresh: Any
+) -> None:
+    respx.get("https://cliq.zoho.com/api/v2/chats").mock(
+        return_value=httpx.Response(
+            200,
+            json={
+                "chats": [
+                    {
+                        "chat_id": "CT_10",
+                        "name": "Self Reacted",
+                        "chat_type": "dm",
+                        "unread_message_count": 2,
+                    },
+                    {
+                        "chat_id": "CT_11",
+                        "name": "Needs Action",
+                        "chat_type": "dm",
+                        "unread_message_count": 1,
+                    },
+                ]
+            },
+        )
+    )
+    respx.get("https://cliq.zoho.com/api/v2/users/me").mock(
+        return_value=httpx.Response(
+            200,
+            json={
+                "data": {
+                    "id": "U_SELF",
+                    "email": "test@example.com",
+                }
+            },
+        )
+    )
+    respx.get("https://cliq.zoho.com/api/v2/chats/CT_10/messages").mock(
+        return_value=httpx.Response(200, json={"data": [{"id": "M10"}]})
+    )
+    respx.get("https://cliq.zoho.com/api/v2/chats/CT_11/messages").mock(
+        return_value=httpx.Response(200, json={"data": [{"id": "M11"}]})
+    )
+    respx.get("https://cliq.zoho.com/api/v2/chats/CT_10/messages/M10/reactions").mock(
+        return_value=httpx.Response(
+            200,
+            json={
+                "data": [
+                    {
+                        "emoji_code": "👀",
+                        "users": [{"id": "U_SELF"}],
+                    }
+                ]
+            },
+        )
+    )
+    respx.get("https://cliq.zoho.com/api/v2/chats/CT_11/messages/M11/reactions").mock(
+        return_value=httpx.Response(
+            200,
+            json={
+                "data": [
+                    {
+                        "emoji_code": "👀",
+                        "users": [{"id": "U_OTHER"}],
+                    }
+                ]
+            },
+        )
+    )
+
+    result = runner.invoke(
+        app,
+        [
+            "cliq",
+            "chats",
+            "--unread-only",
+            "--exclude-reacted-by-self",
+            "--limit",
+            "10",
+        ],
+        env=_cfg_env(mock_config),
+    )
+    assert result.exit_code == 0, result.output
+    payload = json.loads(result.output)
+    assert payload["count"] == 1
+    assert payload["chats"][0]["chatId"] == "CT_11"
+    assert payload["selfReactionFilter"]["enabled"] is True
+    assert payload["selfReactionFilter"]["excludedCount"] == 1
+
+
+@respx.mock
+def test_cliq_chats_unread_only_exclude_reacted_by_self_keeps_owner_mismatch(
+    mock_config: Path, mock_token_refresh: Any
+) -> None:
+    respx.get("https://cliq.zoho.com/api/v2/chats").mock(
+        return_value=httpx.Response(
+            200,
+            json={
+                "chats": [
+                    {
+                        "chat_id": "CT_12",
+                        "name": "Unread Chat",
+                        "chat_type": "dm",
+                        "unread_message_count": 1,
+                    }
+                ]
+            },
+        )
+    )
+    respx.get("https://cliq.zoho.com/api/v2/users/me").mock(
+        return_value=httpx.Response(
+            200,
+            json={
+                "data": {
+                    "id": "U_SELF",
+                    "email": "test@example.com",
+                }
+            },
+        )
+    )
+    respx.get("https://cliq.zoho.com/api/v2/chats/CT_12/messages").mock(
+        return_value=httpx.Response(200, json={"data": [{"id": "M12"}]})
+    )
+    respx.get("https://cliq.zoho.com/api/v2/chats/CT_12/messages/M12/reactions").mock(
+        return_value=httpx.Response(
+            200,
+            json={
+                "data": [
+                    {
+                        "emoji_code": "👀",
+                        "users": [{"id": "U_OTHER"}],
+                    }
+                ]
+            },
+        )
+    )
+
+    result = runner.invoke(
+        app,
+        [
+            "cliq",
+            "chats",
+            "--unread-only",
+            "--exclude-reacted-by-self",
+            "--limit",
+            "10",
+        ],
+        env=_cfg_env(mock_config),
+    )
+    assert result.exit_code == 0, result.output
+    payload = json.loads(result.output)
+    assert payload["count"] == 1
+    assert payload["chats"][0]["chatId"] == "CT_12"
+    assert payload["selfReactionFilter"]["excludedCount"] == 0
+
+
+@respx.mock
 def test_cliq_users(mock_config: Path, mock_token_refresh: Any) -> None:
     respx.get("https://cliq.zoho.com/api/v2/users").mock(
         return_value=httpx.Response(200, json={"data": [{"id": "U1", "name": "Alice"}]})

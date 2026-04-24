@@ -2940,6 +2940,30 @@ def test_cliq_client_list_messages_from_channel_id(client: cliq.ZohoCliqClient) 
     assert dict(route.calls.last.request.url.params) == {"limit": "7"}
 
 
+@respx.mock
+def test_cliq_client_get_message_reactions(client: cliq.ZohoCliqClient) -> None:
+    route = respx.get(
+        "https://cliq.zoho.com/api/v2/chats/CT_1/messages/M1/reactions"
+    ).mock(
+        return_value=httpx.Response(
+            200,
+            json={
+                "data": [
+                    {
+                        "emoji_code": "👀",
+                        "users": [{"id": "U_SELF"}],
+                    }
+                ]
+            },
+        )
+    )
+
+    result = client.get_message_reactions("M1", chat_id="CT_1")
+
+    assert route.called
+    assert result["data"][0]["emoji_code"] == "👀"
+
+
 def test_build_watch_context_seed_with_cursor_found() -> None:
     payload = cliq.ZohoCliqClient.build_watch_context_seed(
         [

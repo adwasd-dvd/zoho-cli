@@ -1950,6 +1950,48 @@ class ZohoCliqClient:
         )
         return {}
 
+    def get_message_reactions(
+        self,
+        message_id: str,
+        *,
+        chat_id: str | None = None,
+        channel_id: str | None = None,
+    ) -> dict:
+        """Get reactions for one message in a chat/channel."""
+        resolved_chat = self._resolve_chat_destination(
+            chat_id=chat_id,
+            channel_id=channel_id,
+        )
+
+        mid = message_id.strip()
+        if not mid:
+            utils.error_exit("invalid_message_id", "message_id cannot be empty")
+
+        candidates: list[tuple[str, dict[str, Any] | None]] = [
+            (f"/chats/{resolved_chat}/messages/{mid}/reactions", None),
+            (f"/chats/{resolved_chat}/messageactions", {"message_id": mid}),
+            (f"/chats/{resolved_chat}/messageactions/{mid}", None),
+        ]
+
+        if channel_id:
+            candidates.extend(
+                [
+                    (f"/channels/{channel_id}/messages/{mid}/reactions", None),
+                    (
+                        f"/channels/{channel_id}/messageactions",
+                        {"message_id": mid},
+                    ),
+                    (f"/channels/{channel_id}/messageactions/{mid}", None),
+                ]
+            )
+
+        return self._get_with_candidates_and_not_supported(
+            candidates,
+            scope_hint="ZohoCliq.Messages.READ",
+            operation_label="message-reactions-get",
+            not_supported_message="Cliq message-reaction read endpoints are not available for this token/network endpoint. Run `zoho cliq capabilities --channel-id <id>` and confirm message-reaction operations for the target conversation.",
+        )
+
     def search_messages(
         self,
         query: str,

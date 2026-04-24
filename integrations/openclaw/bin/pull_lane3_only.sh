@@ -59,14 +59,13 @@ fi
 
 git -C "$SOURCE_DIR" fetch --prune origin
 
-if [[ ! -f "$SOURCE_DIR/.git/info/sparse-checkout" ]]; then
-  git -C "$SOURCE_DIR" sparse-checkout init --cone
-fi
+# Use non-cone mode so we can include one specific docs file path.
+git -C "$SOURCE_DIR" sparse-checkout init --no-cone
 
 git -C "$SOURCE_DIR" sparse-checkout set \
-  skill \
-  integrations/openclaw \
-  docs/DOCUMENTATION_LANES.md
+  /skill/ \
+  /integrations/openclaw/ \
+  /docs/DOCUMENTATION_LANES.md
 
 git -C "$SOURCE_DIR" checkout -B "$BRANCH" "origin/$BRANCH"
 

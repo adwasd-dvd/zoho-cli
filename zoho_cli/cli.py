@@ -523,7 +523,9 @@ def _require_account(cfg: dict) -> str:
 
 def _require_credentials(cfg: dict) -> tuple[str, str]:
     cid = (cfg.get("client_id") or os.environ.get("ZOHO_CLIENT_ID") or "").strip()
-    csec = (cfg.get("client_secret") or os.environ.get("ZOHO_CLIENT_SECRET") or "").strip()
+    csec = (
+        cfg.get("client_secret") or os.environ.get("ZOHO_CLIENT_SECRET") or ""
+    ).strip()
     if not cid or not csec:
         utils.error_exit(
             "missing_credentials",
@@ -2210,6 +2212,7 @@ def cliq_bridge_run(
             (watch_payload.get("bridge_actionId"), "watchPayload.bridge_actionId"),
             (watch_payload.get("defaultAction"), "watchPayload.defaultAction"),
             (watch_payload.get("default_action"), "watchPayload.default_action"),
+            (watch_payload.get("default-action"), "watchPayload.default-action"),
             (watch_payload.get("defaultActionId"), "watchPayload.defaultActionId"),
             (watch_payload.get("defaultActionid"), "watchPayload.defaultActionid"),
             (watch_payload.get("defaultActionID"), "watchPayload.defaultActionID"),
@@ -11308,6 +11311,7 @@ def cliq_watch_act(
                 ),
                 (watch_payload.get("defaultAction"), "watchPayload.defaultAction"),
                 (watch_payload.get("default_action"), "watchPayload.default_action"),
+                (watch_payload.get("default-action"), "watchPayload.default-action"),
                 (
                     watch_payload.get("defaultActionId"),
                     "watchPayload.defaultActionId",

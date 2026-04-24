@@ -181,25 +181,16 @@ Project state lives in `ops/state/*.yml`:
 
 ## OpenClaw automation
 
-This repo includes helpers for long-running development automation and reusable skill install/update.
+This repo includes helpers for long-running development automation:
 
 ```bash
-# workspace bootstrap
 bash integrations/openclaw/bin/bootstrap_openclaw_workspace.sh --repo "$(pwd)"
-
-# install skill into local OpenClaw
-bash integrations/openclaw/bin/install_openclaw_skill.sh --repo "$(pwd)" --skill-name zoho-cli-employee
-
-# pull latest repo + update CLI + reinstall skill
-bash integrations/openclaw/bin/update_openclaw_zoho_stack.sh --repo "$(pwd)"
 ```
 
 Key files:
-- `skill/SKILL.md` — canonical OpenClaw skill
-- `skill/references/` — employee workflow + install/update + command playbook
-- `integrations/openclaw/START_HERE.md` — workspace quickstart
-- `ops/prompts/` — agent prompts for consistent workflows
-- `ops/cron/README.md` — scheduled verification setup
+- `integrations/openclaw/START_HERE.md` — Quickstart guide
+- `ops/prompts/` — Agent prompts for consistent workflows
+- `ops/cron/README.md` — Scheduled verification setup
 
 ---
 

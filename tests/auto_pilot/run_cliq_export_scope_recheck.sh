@@ -4,12 +4,19 @@ set -uo pipefail
 ROOT_DIR="$(cd "$(dirname "$0")/../.." && pwd)"
 cd "$ROOT_DIR"
 
-CONFIG="${1:-/tmp/zoho-test-config.json}"
+CONFIG="${1:-${ZOHO_CONFIG:-}}"
 ACCOUNT="${2:-ai-dev@happy-distro.co.uk}"
 NETWORK="${3:-happydistrouklimited}"
 CHAT_ID="${4:-CT_1424657670787261966_911174541}"
 PYTHON_BIN="${PYTHON_BIN:-python3.11}"
 REPORT_DIR="${SCAP_REPORT_DIR:-$ROOT_DIR/tests/auto_pilot/reports}"
+CONFIG_LABEL="${CONFIG:-<default>}"
+
+BASE_CMD=("$PYTHON_BIN" -m zoho_cli)
+if [ -n "$CONFIG" ]; then
+  BASE_CMD+=(--config "$CONFIG")
+fi
+BASE_CMD+=(--account "$ACCOUNT")
 
 mkdir -p "$REPORT_DIR"
 TS="$(date +%Y%m%d_%H%M%S)"
@@ -19,9 +26,7 @@ OUT_CHAT="$REPORT_DIR/cliq_export_chat_scope_recheck_${TS}.json"
 OUT_SUMMARY="$REPORT_DIR/cliq_export_scope_recheck_summary_${TS}.json"
 
 echo "[SCAP] cliq status export-scope check -> ${OUT_STATUS}"
-"$PYTHON_BIN" -m zoho_cli \
-  --config "$CONFIG" \
-  --account "$ACCOUNT" \
+"${BASE_CMD[@]}" \
   cliq status \
   --check-auth \
   --network "$NETWORK" 2>&1 | tee "$OUT_STATUS"
@@ -30,9 +35,7 @@ STATUS_EXIT=${PIPESTATUS[0]}
 
 echo
 echo "[SCAP] cliq export-chats list probe -> ${OUT_LIST}"
-"$PYTHON_BIN" -m zoho_cli \
-  --config "$CONFIG" \
-  --account "$ACCOUNT" \
+"${BASE_CMD[@]}" \
   cliq export-chats \
   --network "$NETWORK" 2>&1 | tee "$OUT_LIST"
 
@@ -40,9 +43,7 @@ LIST_EXIT=${PIPESTATUS[0]}
 
 echo
 echo "[SCAP] cliq export-chats --chat-id probe -> ${OUT_CHAT}"
-"$PYTHON_BIN" -m zoho_cli \
-  --config "$CONFIG" \
-  --account "$ACCOUNT" \
+"${BASE_CMD[@]}" \
   cliq export-chats \
   --network "$NETWORK" \
   --chat-id "$CHAT_ID" 2>&1 | tee "$OUT_CHAT"
@@ -78,7 +79,7 @@ fi
 cat >"$OUT_SUMMARY" <<EOF
 {
   "summaryVersion": 3,
-  "config": "$CONFIG",
+  "config": "$CONFIG_LABEL",
   "account": "$ACCOUNT",
   "network": "$NETWORK",
   "chatId": "$CHAT_ID",
@@ -93,9 +94,9 @@ cat >"$OUT_SUMMARY" <<EOF
   "rateLimited": $RATE_LIMITED,
   "recommendedNext": "$RECOMMENDED_NEXT",
   "nextCommands": {
-    "reauth": "zoho --config <config> --account <account> login --with-cliq --with-cliq-export",
+    "reauth": "zoho [--config <config>] --account <account> login --with-cliq --with-cliq-export",
     "cooldown": "wait_for_zoho_refresh_cooldown_then_rerun",
-    "rerun": "tests/auto_pilot/run_cliq_export_scope_recheck.sh <config> <account> <network> <chat-id>"
+    "rerun": "tests/auto_pilot/run_cliq_export_scope_recheck.sh [config] [account] [network] [chat-id]"
   }
 }
 EOF

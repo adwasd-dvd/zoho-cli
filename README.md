@@ -126,6 +126,8 @@ pytest
 make release-gate   # Packaging + lint checks
 ```
 
+Live probe helpers under `tests/auto_pilot/` now default to the global Zoho config path (`zoho config path`) and only need `--config` when you want an override.
+
 ### State-driven workflow
 
 Project state lives in `ops/state/*.yml`:

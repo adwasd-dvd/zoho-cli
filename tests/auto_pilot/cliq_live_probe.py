@@ -37,17 +37,21 @@ def main() -> None:
     args = parser.parse_args()
 
     access_token = (args.access_token or "").strip()
-    if not access_token and args.config_path:
+    if not access_token:
         cfg = config.load(args.config_path)
         account = (args.account or cfg.get("default_account") or "").strip()
         if not account:
             raise SystemExit(
                 "Missing account. Use --account or set default_account in config."
             )
-        client_id = (cfg.get("client_id") or "").strip()
-        client_secret = (cfg.get("client_secret") or "").strip()
+        client_id = (cfg.get("client_id") or os.getenv("ZOHO_CLIENT_ID") or "").strip()
+        client_secret = (
+            cfg.get("client_secret") or os.getenv("ZOHO_CLIENT_SECRET") or ""
+        ).strip()
         if not client_id or not client_secret:
-            raise SystemExit("Config missing client_id/client_secret.")
+            raise SystemExit(
+                "Missing client credentials. Set client_id/client_secret in config or ZOHO_CLIENT_ID/ZOHO_CLIENT_SECRET in env."
+            )
         account_cfg = cfg.get("accounts", {}).get(account, {})
         access_token = auth.refresh_access_token(
             account,

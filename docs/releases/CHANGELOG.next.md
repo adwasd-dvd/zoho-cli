@@ -3,6 +3,7 @@
 ## Unreleased
 
 ### Added
+- Switched Cliq auto-pilot probe defaults to global config-first behavior: helper scripts now use the default Zoho config unless an explicit override is passed, and probe token bootstrap now supports default-config + `ZOHO_CLIENT_ID`/`ZOHO_CLIENT_SECRET` env fallback when `--config` is omitted.
 - Added optional watch-loop lifecycle automation via `zoho cliq watch-act --status-flow`, which now applies staged status reactions on the target message (`received -> thinking -> writing/testing -> done`, with `failed` on command failure) and returns `statusFlow` execution metadata for agent/operator feedback.
 - Added environment-variable credential fallback for auth bootstrap flows: `_require_credentials` now reads `ZOHO_CLIENT_ID` and `ZOHO_CLIENT_SECRET` when config `client_id`/`client_secret` are absent, so Cliq probes can run without mutating external config files.
 - Added optional status-flow passthrough for bridge watch payloads: `zoho cliq bridge-run --watch-file ... --status-flow` now forwards `statusFlow: {"enabled": true}` into membrane `--input` and echoes the same metadata in bridge-run output.

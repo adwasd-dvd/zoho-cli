@@ -17,4 +17,5 @@ Known recurring failure modes:
 
 Test account status:
 - `ai-dev@happy-distro.co.uk` Cliq auth now includes chat-read scope and `zoho cliq chats --network happydistrouklimited` succeeds (`count: 0`), but native local multipart sends/retrieval probes are still needed to close cliq-155
+- Live testing should default to real account cross-checks between `ai-dev` and `david` using the global/default Zoho config (only pass `--config` for explicit overrides)
 - CRM live verification is still blocked because this account is not in a CRM org (`OAUTH_SCOPE_MISMATCH` on CRM APIs)

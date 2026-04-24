@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import os
 import time
 from dataclasses import asdict, dataclass
 from typing import Any
@@ -29,13 +30,22 @@ class ProbeError(RuntimeError):
         self.details = details
 
 
-def _refresh_token(config_path: str, account: str) -> tuple[str, dict[str, Any]]:
+def _refresh_token(config_path: str | None, account: str) -> tuple[str, dict[str, Any]]:
     cfg = config.load(config_path)
     account_cfg = cfg.get("accounts", {}).get(account, {})
+    client_id = (cfg.get("client_id") or os.getenv("ZOHO_CLIENT_ID") or "").strip()
+    client_secret = (
+        cfg.get("client_secret") or os.getenv("ZOHO_CLIENT_SECRET") or ""
+    ).strip()
+    if not client_id or not client_secret:
+        raise ProbeError(
+            "missing_credentials",
+            "Missing client_id/client_secret in config or ZOHO_CLIENT_ID/ZOHO_CLIENT_SECRET in env.",
+        )
     token = auth.refresh_access_token(
         account,
-        (cfg.get("client_id") or "").strip(),
-        (cfg.get("client_secret") or "").strip(),
+        client_id,
+        client_secret,
         accounts_base_url=account_cfg.get("accounts_server"),
     )
     return token, account_cfg
@@ -45,7 +55,7 @@ def main() -> None:
     parser = argparse.ArgumentParser(
         description="Single-token Cliq local media matrix probe"
     )
-    parser.add_argument("--config", required=True)
+    parser.add_argument("--config", default=None)
     parser.add_argument("--account", required=True)
     parser.add_argument("--network", default=None)
     parser.add_argument("--channel-id", required=True)

@@ -1,10 +1,13 @@
-last_run_at: "2026-04-24T00:28:46Z"
+last_run_at: "2026-04-24T01:03:00Z"
 last_result: success
-current_focus: cliq-195-medium-scope-integration-refresh-rerun-20260424t002846z
+current_focus: cliq-195-focused-bridge-actionid-snake-lowercase-tail-alias-20260424t010300z
 suites:
   unit:
     status: success
     notes:
+      - "focused cliq-195 internal-loop action-hint snake lowercase-tail bridge_actionid alias increment at 2026-04-24T01:03:00Z"
+      - "./.venv/bin/python -m pytest -q tests/test_cli.py::test_cliq_watch_act_uses_snake_case_workflow_camel_case_internal_loop_hint_bridge_action_snake_lowercase_tail_id_aliases tests/test_membrane_bridge.py::test_cliq_bridge_run_watch_file_infers_action_from_snake_case_workflow_camel_case_internal_loop_hint_bridge_action_snake_lowercase_tail_id_aliases -> 2 passed in 0.16s"
+      - "./.venv/bin/ruff format --check zoho_cli/cli.py tests/test_cli.py tests/test_membrane_bridge.py -> 3 files already formatted"
       - "integration-loop medium-scope verification rerun at 2026-04-24T00:28:46Z"
       - "./.venv/bin/python -m pytest -q tests/test_registry.py tests/test_membrane_bridge.py -> 383 passed in 6.63s"
       - "./.venv/bin/python -m pytest -q tests/test_cli.py -k 'cliq_watch_context_from_channel or cliq_watch_act or watch_act_read_ack_latest or cliq_context_with_anchor or cliq_messages_from_channel or cliq_message_get_from_channel or cliq_bridge_run or crm_bridge_run' -> 287 passed, 415 deselected in 6.67s"

@@ -2065,6 +2065,10 @@ def cliq_bridge_run(
                             f"{internal_loop_source_root}.bridgeActionID",
                         ),
                         (
+                            internal_loop.get("bridgeActionid"),
+                            f"{internal_loop_source_root}.bridgeActionid",
+                        ),
+                        (
                             internal_loop.get("bridgeAction_id"),
                             f"{internal_loop_source_root}.bridgeAction_id",
                         ),
@@ -2079,6 +2083,10 @@ def cliq_bridge_run(
                         (
                             internal_loop.get("bridge_actionId"),
                             f"{internal_loop_source_root}.bridge_actionId",
+                        ),
+                        (
+                            internal_loop.get("bridge_actionid"),
+                            f"{internal_loop_source_root}.bridge_actionid",
                         ),
                         (
                             internal_loop.get("bridge-action-id"),
@@ -2142,6 +2150,10 @@ def cliq_bridge_run(
                                 f"{internal_hint_source_root}.bridgeActionID",
                             ),
                             (
+                                internal_hint.get("bridgeActionid"),
+                                f"{internal_hint_source_root}.bridgeActionid",
+                            ),
+                            (
                                 internal_hint.get("bridgeAction_id"),
                                 f"{internal_hint_source_root}.bridgeAction_id",
                             ),
@@ -2156,6 +2168,10 @@ def cliq_bridge_run(
                             (
                                 internal_hint.get("bridge_actionId"),
                                 f"{internal_hint_source_root}.bridge_actionId",
+                            ),
+                            (
+                                internal_hint.get("bridge_actionid"),
+                                f"{internal_hint_source_root}.bridge_actionid",
                             ),
                             (
                                 internal_hint.get("bridge-action-id"),
@@ -10291,6 +10307,10 @@ def cliq_watch_act(
                         f"{internal_loop_source_root}.bridgeActionID",
                     ),
                     (
+                        internal_loop.get("bridgeActionid"),
+                        f"{internal_loop_source_root}.bridgeActionid",
+                    ),
+                    (
                         internal_loop.get("bridgeAction_id"),
                         f"{internal_loop_source_root}.bridgeAction_id",
                     ),
@@ -10305,6 +10325,10 @@ def cliq_watch_act(
                     (
                         internal_loop.get("bridge_actionId"),
                         f"{internal_loop_source_root}.bridge_actionId",
+                    ),
+                    (
+                        internal_loop.get("bridge_actionid"),
+                        f"{internal_loop_source_root}.bridge_actionid",
                     ),
                     (
                         internal_loop.get("bridge-action-id"),
@@ -10388,6 +10412,10 @@ def cliq_watch_act(
                                 f"{hint_source_root}.bridgeActionID",
                             ),
                             (
+                                hint.get("bridgeActionid"),
+                                f"{hint_source_root}.bridgeActionid",
+                            ),
+                            (
                                 hint.get("bridgeAction_id"),
                                 f"{hint_source_root}.bridgeAction_id",
                             ),
@@ -10402,6 +10430,10 @@ def cliq_watch_act(
                             (
                                 hint.get("bridge_actionId"),
                                 f"{hint_source_root}.bridge_actionId",
+                            ),
+                            (
+                                hint.get("bridge_actionid"),
+                                f"{hint_source_root}.bridge_actionid",
                             ),
                             (
                                 hint.get("bridge-action-id"),

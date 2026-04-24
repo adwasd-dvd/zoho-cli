@@ -19305,6 +19305,48 @@ def test_cliq_mark_read_message(mock_config: Path, mock_token_refresh: Any) -> N
     assert result.exit_code == 0, result.output
     payload = json.loads(result.output)
     assert payload["status"] == "ok"
+    assert payload["fallbackUsed"] is False
+
+
+@respx.mock
+def test_cliq_mark_read_falls_back_to_status_reaction_when_read_ack_is_unsupported(
+    mock_config: Path,
+    mock_token_refresh: Any,
+) -> None:
+    not_supported_resp = httpx.Response(
+        404,
+        json={"code": "request_url_invalid", "message": "unsupported"},
+    )
+    respx.post("https://cliq.zoho.com/api/v2/chats/CT_1/messages/M1/read").mock(
+        return_value=not_supported_resp
+    )
+    respx.post("https://cliq.zoho.com/api/v2/chats/CT_1/messages/M1/ack").mock(
+        return_value=not_supported_resp
+    )
+    respx.put("https://cliq.zoho.com/api/v2/chats/CT_1/messages/M1/read").mock(
+        return_value=not_supported_resp
+    )
+    respx.post("https://cliq.zoho.com/api/v2/chats/CT_1/messages/read").mock(
+        return_value=not_supported_resp
+    )
+    reaction_route = respx.post(
+        "https://cliq.zoho.com/api/v2/chats/CT_1/messages/M1/reactions"
+    ).mock(return_value=httpx.Response(200, json={"data": {"status": "ok"}}))
+
+    result = runner.invoke(
+        app,
+        ["cliq", "mark-read", "M1", "--chat-id", "CT_1"],
+        env=_cfg_env(mock_config),
+    )
+    assert result.exit_code == 0, result.output
+    assert reaction_route.called
+
+    payload = json.loads(result.output)
+    assert payload["status"] == "ok"
+    assert payload["fallbackUsed"] is True
+    assert payload["readAckSupported"] is False
+    assert payload["statusReaction"]["statusKey"] == "received"
+    assert payload["statusReaction"]["emoji"] == "👀"
 
 
 @respx.mock

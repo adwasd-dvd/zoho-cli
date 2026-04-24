@@ -10,8 +10,10 @@ Output:
 
 from __future__ import annotations
 
+import contextlib
 from datetime import datetime, timezone
 from functools import partial
+import io
 import json
 import os
 import shlex
@@ -317,6 +319,38 @@ def _apply_cliq_status_reaction_best_effort(
             "error": "status_reaction_failed",
             "exitCode": exit_code,
         }
+
+
+def _unsupported_counter(entry: dict[str, Any]) -> int:
+    try:
+        return max(0, int(entry.get("unsupportedConsecutiveCount") or 0))
+    except (TypeError, ValueError):
+        return 0
+
+
+def _should_use_mark_read_status_fallback(
+    client: ZohoCliqClient,
+    *,
+    unsupported_entry_before: dict[str, Any],
+) -> bool:
+    unsupported_entry_after = client._read_operation_unsupported_entry(  # noqa: SLF001
+        "message-read-ack"
+    )
+    if not isinstance(unsupported_entry_after, dict):
+        return False
+
+    last_signal = str(
+        unsupported_entry_after.get("lastUnsupportedSignal") or ""
+    ).strip().lower()
+    if last_signal not in {"not_supported", "unsupported"}:
+        return False
+
+    if bool(unsupported_entry_after.get("postReleaseDeferred")):
+        return True
+
+    return _unsupported_counter(unsupported_entry_after) > _unsupported_counter(
+        unsupported_entry_before
+    )
 
 
 def _get_version() -> str:
@@ -11304,20 +11338,69 @@ def cliq_mark_read(
             )
         resolved_via_latest = True
 
-    resp = client.read_ack_message(
-        target_message_id,
-        chat_id=resolved_chat,
-        channel_id=channel_id,
+    unsupported_entry_before = client._read_operation_unsupported_entry(  # noqa: SLF001
+        "message-read-ack"
     )
-    data = resp.get("data", resp)
+    read_ack_stderr = io.StringIO()
+
+    try:
+        with contextlib.redirect_stderr(read_ack_stderr):
+            resp = client.read_ack_message(
+                target_message_id,
+                chat_id=resolved_chat,
+                channel_id=channel_id,
+            )
+        data = resp.get("data", resp)
+        utils.output_status(
+            "Cliq message marked as read",
+            extra={
+                "chatId": resolved_chat or "",
+                "channelId": channel_id or "",
+                "messageId": target_message_id,
+                "viaLatest": resolved_via_latest,
+                "fallbackUsed": False,
+                "readAckSupported": True,
+                "result": data,
+            },
+        )
+        return
+    except SystemExit:
+        if not _should_use_mark_read_status_fallback(
+            client,
+            unsupported_entry_before=unsupported_entry_before,
+        ):
+            stderr_payload = read_ack_stderr.getvalue()
+            if stderr_payload:
+                print(stderr_payload, end="", file=sys.stderr)
+            raise
+
+    fallback_payload = _apply_cliq_status_reaction(
+        client,
+        email=email,
+        message_id=target_message_id,
+        status="received",
+        chat_id=resolved_chat or "",
+        channel_id=channel_id or "",
+        clear_known=False,
+    )
     utils.output_status(
-        "Cliq message marked as read",
+        "Cliq read-ack unsupported, applied reaction fallback",
         extra={
             "chatId": resolved_chat or "",
             "channelId": channel_id or "",
             "messageId": target_message_id,
             "viaLatest": resolved_via_latest,
-            "result": data,
+            "fallbackUsed": True,
+            "readAckSupported": False,
+            "statusReaction": {
+                "statusKey": fallback_payload["statusKey"],
+                "emoji": fallback_payload["emoji"],
+                "previousStatus": fallback_payload["previousStatus"],
+                "previousEmoji": fallback_payload["previousEmoji"],
+                "removed": fallback_payload["removed"],
+                "removeErrors": fallback_payload["removeErrors"],
+                "result": fallback_payload["result"],
+            },
         },
     )
 

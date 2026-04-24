@@ -4,10 +4,10 @@ module: cliq
 stage: in_progress
 status: in_progress
 owner: coder
-updated_at: '2026-04-24T14:35:32Z'
+updated_at: '2026-04-24T15:13:32Z'
 success_criteria:
 - add an initial cliq-195 operator-workflow packaging contract to watch-context output without breaking existing watch-loop consumers
 - preserve the operator-workflow contract through watch-act action payload/result surfaces used by automation loops
 - keep focused watch-context/watch-act verification green while deferred external blockers stay capability-gated
 next_if_done: if focused and medium-scope cliq-195 verification remain green, continue the next operator-workflow packaging increment without regressing deferred capability-gated blockers.
-next_step: "nightly system-layer verification at 2026-04-24T14:35:32Z reran broad gates (`make release-gate` + `make ci`), found one blocker (`ruff F401` unused import `register_cliq_status_reaction_commands` in `zoho_cli/cli.py`), applied tiny safe fix (remove unused import), and reran both gates to green (`1441 passed` + wheel smoke; ci fmt/lint + full pytest green; logs `.tmp/nightly_release_gate_20260424T143348Z.log`, `.tmp/nightly_ci_20260424T143348Z.log`). next best step is resume one thin cliq-195 alias-parity increment with focused watch-act/bridge-run coverage."
+next_step: "medium-scope cliq-195 integration refresh rerun at 2026-04-24T15:13:32Z stayed green (`./.venv/bin/python -m pytest -q tests/test_registry.py tests/test_membrane_bridge.py` -> `399 passed in 6.99s`) after the mixed-case kebab consume alias increment, so no adjacent regression is detected. next best step is one thin alias-parity increment for uppercase-tail kebab intake consume fallback `watchIntake.consume.bridge-actionID` with focused watch-act/bridge-run checks."

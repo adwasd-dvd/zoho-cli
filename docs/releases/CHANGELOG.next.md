@@ -3,6 +3,7 @@
 ## Unreleased
 
 ### Added
+- Kept legacy root mail aliases (`zoho attachment ...`, `zoho folders ...`, `zoho labels ...`) hidden for compatibility without Typer deprecation preamble noise so machine-readable command output stays JSON-clean.
 - Added module-scoped Cliq network targeting: `zoho cliq --network <slug> ...` now applies a default network across Cliq subcommands for that invocation, with per-command `--network` still taking precedence.
 - Added Cliq target discovery in `zoho cliq status`: `--list-networks` lists configured network slugs from account defaults, and `--list-accounts` lists configured account choices with their `cliq_network` defaults.
 - Fixed `zoho cliq chats` response normalization for live network payloads that return top-level `chats` (instead of `data`), which previously surfaced false `count: 0`/empty results despite real conversations being present.

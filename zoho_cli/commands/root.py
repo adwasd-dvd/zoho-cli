@@ -53,19 +53,16 @@ def register_mail_support_root_typers(
         attachment_app,
         name="attachment",
         hidden=True,
-        deprecated=True,
     )
     root_app.add_typer(
         folders_app,
         name="folders",
         hidden=True,
-        deprecated=True,
     )
     root_app.add_typer(
         labels_app,
         name="labels",
         hidden=True,
-        deprecated=True,
     )
 
 

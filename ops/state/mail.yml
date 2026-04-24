@@ -1,5 +1,5 @@
 module: Mail
-updated_at: "2026-04-08T05:28:47Z"
+updated_at: "2026-04-24T01:52:46Z"
 status: completed
 blockers: []
-next_small_step: mail release-gate verification is closed; continue cliq-003 live send/notify verification after OAuth cooldown
+next_small_step: keep legacy hidden root aliases output-clean for machine consumers; mail alias JSON regressions are green in focused rerun while broader release-gate follow-up continues on remaining cliq failures.

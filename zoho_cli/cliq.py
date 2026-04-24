@@ -2497,6 +2497,181 @@ class ZohoCliqClient:
             operation_label="reaction",
         )
 
+    def _remove_reaction_best_effort(
+        self,
+        message_id: str,
+        emoji: str,
+        *,
+        chat_id: str | None = None,
+        channel_id: str | None = None,
+    ) -> dict[str, Any]:
+        """Try to remove one reaction, but do not hard-fail when absent."""
+        resolved_chat = self._resolve_chat_destination(
+            chat_id=chat_id, channel_id=channel_id
+        )
+        mid = message_id.strip()
+        if not mid:
+            utils.error_exit("invalid_message_id", "message_id cannot be empty")
+        icon = emoji.strip()
+        if not icon:
+            utils.error_exit("invalid_emoji", "emoji cannot be empty")
+
+        candidates = [
+            (
+                "DELETE",
+                f"/chats/{resolved_chat}/messages/{mid}/reactions/{icon}",
+                None,
+            ),
+            (
+                "POST",
+                f"/chats/{resolved_chat}/messages/{mid}/reactions/remove",
+                {"emoji_code": icon},
+            ),
+            (
+                "POST",
+                f"/chats/{resolved_chat}/messageactions/delete",
+                {"message_id": mid, "emoji_code": icon},
+            ),
+        ]
+
+        retryable_error_codes = {
+            "param_missing",
+            "invalid_data",
+            "operation_failed",
+            "operation_not_allowed",
+            "extra_key_found",
+            "request_method_invalid",
+            "extra_param_found",
+        }
+        last_error: tuple[int, str, str, str] | None = None
+        saw_scope_invalid = False
+
+        for method, path, payload in candidates:
+            resp = httpx.request(
+                method,
+                f"{self.base_url}{path}",
+                headers=self._headers,
+                json=payload,
+                timeout=httpx.Timeout(30.0),
+            )
+            if resp.is_success:
+                return {
+                    "removed": True,
+                    "result": self._decode_success_response(resp),
+                    "method": method,
+                    "path": path,
+                }
+
+            body = resp.text or ""
+            lowered = body.lower()
+            scope_invalid = "oauthtoken_scope_invalid" in lowered
+            if scope_invalid:
+                saw_scope_invalid = True
+
+            error_code = ""
+            try:
+                parsed = resp.json()
+                if isinstance(parsed, dict):
+                    error_code = str(
+                        parsed.get("code") or parsed.get("error") or ""
+                    ).lower()
+            except ValueError:
+                pass
+
+            last_error = (resp.status_code, method, path, body)
+            if (
+                resp.status_code in (404, 405)
+                or "request_url_invalid" in lowered
+                or "not found" in lowered
+                or error_code in retryable_error_codes
+            ):
+                continue
+
+            return {
+                "removed": False,
+                "method": method,
+                "path": path,
+                "statusCode": resp.status_code,
+                "error": body,
+            }
+
+        if saw_scope_invalid:
+            utils.error_exit(
+                "oauth_scope_invalid",
+                "Cliq token is missing required scope for reaction cleanup. Re-run `zoho login --with-cliq --scope ZohoCliq.messageactions.CREATE` and retry.",
+            )
+
+        if last_error is None:
+            return {"removed": False}
+
+        status, method, path, body = last_error
+        return {
+            "removed": False,
+            "method": method,
+            "path": path,
+            "statusCode": status,
+            "error": body,
+        }
+
+    def set_message_status_reaction(
+        self,
+        message_id: str,
+        *,
+        emoji: str,
+        tracked_status_emojis: list[str] | None = None,
+        chat_id: str | None = None,
+        channel_id: str | None = None,
+    ) -> dict[str, Any]:
+        """Replace any known status reaction with the requested status emoji."""
+        tracked: list[str] = []
+        for icon in tracked_status_emojis or []:
+            normalized = str(icon or "").strip()
+            if normalized and normalized not in tracked:
+                tracked.append(normalized)
+
+        target_emoji = emoji.strip()
+        if not target_emoji:
+            utils.error_exit("invalid_emoji", "emoji cannot be empty")
+
+        removed: list[str] = []
+        remove_failures: list[dict[str, Any]] = []
+        for icon in tracked:
+            if icon == target_emoji:
+                continue
+            outcome = self._remove_reaction_best_effort(
+                message_id,
+                icon,
+                chat_id=chat_id,
+                channel_id=channel_id,
+            )
+            if outcome.get("removed"):
+                removed.append(icon)
+            elif outcome.get("error"):
+                remove_failures.append(
+                    {
+                        "emoji": icon,
+                        "statusCode": outcome.get("statusCode", 0),
+                        "method": outcome.get("method", ""),
+                        "path": outcome.get("path", ""),
+                        "error": outcome.get("error", ""),
+                    }
+                )
+
+        applied = self.react_message(
+            message_id,
+            target_emoji,
+            remove=False,
+            chat_id=chat_id,
+            channel_id=channel_id,
+        )
+
+        return {
+            "emoji": target_emoji,
+            "removed": removed,
+            "removeFailures": remove_failures,
+            "result": applied.get("data", applied),
+        }
+
     def create_thread(
         self,
         message_id: str,

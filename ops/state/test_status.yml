@@ -1,10 +1,18 @@
-last_run_at: "2026-04-24T11:54:31Z"
+last_run_at: "2026-04-24T13:31:22Z"
 last_result: passing
-current_focus: cliq-195-medium-scope-integration-refresh-green-2026-04-24T115431Z
+current_focus: cliq-195-focused-watch-loop-alias-parity-2026-04-24T133122Z
 suites:
   unit:
     status: passing
     notes:
+      - "focused cliq-195 watch-loop alias parity increment at 2026-04-24T13:31:22Z"
+      - "tiny behavior update: `zoho cliq watch-act` and `zoho cliq bridge-run --watch-file` now infer actions from `watchPayload.bridge-action_id` and `watchIntake.consume.bridgeActionID` aliases while preserving provenance"
+      - "./.venv/bin/python -m pytest -q tests/test_cli.py::test_cliq_watch_act_uses_top_level_watch_payload_bridge_action_kebab_snake_id_alias tests/test_cli.py::test_cliq_watch_act_uses_watch_intake_consume_bridge_action_id_alias tests/test_cli.py::test_cliq_watch_act_uses_watch_intake_consume_bridge_action_uppercase_tail_id_alias tests/test_membrane_bridge.py::test_cliq_bridge_run_watch_file_infers_action_from_top_level_watch_payload_bridge_action_kebab_snake_id_alias tests/test_membrane_bridge.py::test_cliq_bridge_run_watch_file_infers_action_from_watch_intake_consume_bridge_action_uppercase_tail_id_alias -> 5 passed in 0.21s"
+      - "./.venv/bin/ruff format --check zoho_cli/cli.py tests/test_cli.py tests/test_membrane_bridge.py -> 3 files already formatted"
+      - "focused cliq-195 watch-act watch-intake consume alias parity increment at 2026-04-24T12:53:00Z"
+      - "tiny behavior update: `zoho cliq watch-act` now infers actions from `watchIntake.consume` / `watch_intake.consume` action-id + bridge-action-id aliases when higher-priority watch-loop hints are absent"
+      - "./.venv/bin/python -m pytest -q tests/test_cli.py::test_cliq_watch_act_uses_top_level_watch_payload_bridge_action_id_aliases tests/test_cli.py::test_cliq_watch_act_uses_watch_intake_consume_bridge_action_id_alias -> 2 passed in 0.16s"
+      - "./.venv/bin/ruff format zoho_cli/cli.py tests/test_cli.py && ./.venv/bin/ruff format --check zoho_cli/cli.py tests/test_cli.py -> 2 files already formatted"
       - "integration-loop medium-scope cliq-195 rerun at 2026-04-24T11:54:31Z"
       - "./.venv/bin/python -m pytest -q tests/test_registry.py tests/test_membrane_bridge.py -> 394 passed in 6.90s"
       - "./.venv/bin/python -m pytest -q tests/test_cli.py -k 'cliq_watch_context_from_channel or cliq_watch_act or watch_act_read_ack_latest or cliq_context_with_anchor or cliq_messages_from_channel or cliq_message_get_from_channel or cliq_bridge_run or crm_bridge_run' -> 298 passed, 427 deselected in 7.31s"

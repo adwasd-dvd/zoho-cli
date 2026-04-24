@@ -2208,6 +2208,10 @@ def cliq_bridge_run(
                 "watchPayload.bridge-action-id",
             ),
             (
+                watch_payload.get("bridge-action_id"),
+                "watchPayload.bridge-action_id",
+            ),
+            (
                 watch_payload.get("bridge-actionid"),
                 "watchPayload.bridge-actionid",
             ),
@@ -2306,6 +2310,10 @@ def cliq_bridge_run(
                         (
                             consume_cfg.get("bridgeActionId"),
                             f"{intake_source_root}.consume.bridgeActionId",
+                        ),
+                        (
+                            consume_cfg.get("bridgeActionID"),
+                            f"{intake_source_root}.consume.bridgeActionID",
                         ),
                         (
                             consume_cfg.get("bridgeAction_id"),
@@ -11334,6 +11342,10 @@ def cliq_watch_act(
                     "watchPayload.bridge-action-id",
                 ),
                 (
+                    watch_payload.get("bridge-action_id"),
+                    "watchPayload.bridge-action_id",
+                ),
+                (
                     watch_payload.get("bridge-actionid"),
                     "watchPayload.bridge-actionid",
                 ),
@@ -11423,6 +11435,85 @@ def cliq_watch_act(
                     watch_loop_hint = value
                     watch_loop_hint_path = source_path
                     break
+
+        if not watch_loop_hint:
+            intake, intake_source_root = _extract_watch_intake_with_source(
+                watch_payload
+            )
+            if isinstance(intake, dict):
+                intake_candidates: list[tuple[Any, str]] = []
+                bridge_cfg = intake.get("bridge")
+                if isinstance(bridge_cfg, dict):
+                    intake_candidates.extend(
+                        [
+                            (
+                                bridge_cfg.get("actionId"),
+                                f"{intake_source_root}.bridge.actionId",
+                            ),
+                            (
+                                bridge_cfg.get("action_id"),
+                                f"{intake_source_root}.bridge.action_id",
+                            ),
+                            (
+                                bridge_cfg.get("bridgeActionId"),
+                                f"{intake_source_root}.bridge.bridgeActionId",
+                            ),
+                            (
+                                bridge_cfg.get("bridgeAction_id"),
+                                f"{intake_source_root}.bridge.bridgeAction_id",
+                            ),
+                            (
+                                bridge_cfg.get("bridge_action_id"),
+                                f"{intake_source_root}.bridge.bridge_action_id",
+                            ),
+                            (
+                                bridge_cfg.get("bridge_actionId"),
+                                f"{intake_source_root}.bridge.bridge_actionId",
+                            ),
+                        ]
+                    )
+
+                consume_cfg = intake.get("consume")
+                if isinstance(consume_cfg, dict):
+                    intake_candidates.extend(
+                        [
+                            (
+                                consume_cfg.get("bridgeActionId"),
+                                f"{intake_source_root}.consume.bridgeActionId",
+                            ),
+                            (
+                                consume_cfg.get("bridgeActionID"),
+                                f"{intake_source_root}.consume.bridgeActionID",
+                            ),
+                            (
+                                consume_cfg.get("bridgeAction_id"),
+                                f"{intake_source_root}.consume.bridgeAction_id",
+                            ),
+                            (
+                                consume_cfg.get("bridge_action_id"),
+                                f"{intake_source_root}.consume.bridge_action_id",
+                            ),
+                            (
+                                consume_cfg.get("bridge_actionId"),
+                                f"{intake_source_root}.consume.bridge_actionId",
+                            ),
+                            (
+                                consume_cfg.get("actionId"),
+                                f"{intake_source_root}.consume.actionId",
+                            ),
+                            (
+                                consume_cfg.get("action_id"),
+                                f"{intake_source_root}.consume.action_id",
+                            ),
+                        ]
+                    )
+
+                for candidate, source_path in intake_candidates:
+                    value = str(candidate or "").strip().lower()
+                    if value:
+                        watch_loop_hint = value
+                        watch_loop_hint_path = source_path
+                        break
 
         if watch_loop_hint:
             selected_action = watch_loop_hint

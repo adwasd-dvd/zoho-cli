@@ -1,22 +1,25 @@
-# OpenClaw integration helpers
+# OpenClaw integration helpers (Lane 3)
 
-This folder contains OpenClaw-facing skill docs and operational helpers.
+This directory contains AI-user-facing skill docs/scripts for OpenClaw.
 
-## Included
+## Canonical skill source
 
-- `SKILL.md` — OpenClaw skill-facing document copy
-- `SKILL_INDEX.md` — maintainer workflow + alignment checklist
-- `bin/run-scan.example.sh` — example long-running mail scan wrapper
-- `quick_test.sh` — generic smoke test that auto-finds a message with attachments
-- `repair_pipx_install.sh` — patch helper for an already-installed pipx copy
+- `skill/SKILL.md`
+- `skill/references/*`
+- `skill/scripts/*`
 
-## Contract
+`integrations/openclaw/SKILL.md` is only a pointer file to avoid duplicate maintenance.
 
-- Canonical skill file in this repository: `skill/SKILL.md`.
-- Keep this folder aligned when CLI commands/flags/install/update behavior changes.
-- Follow `docs/DOCUMENTATION_LANES.md` and update both human docs and AI docs in the same change slice.
+## Lane 3 docs and scripts
 
-## Safety notes
+- `LANE3_AI_USER_GUIDE.md` — AI-user update and sync workflow
+- `SKILL_INDEX.md` — maintainers checklist for lane3 alignment
+- `bin/pull_lane3_only.sh` — pull/sync only lane3 content (skill/docs/scripts) from GitHub
+- `bin/run-scan.example.sh` — optional scan example
+- `quick_test.sh` — lightweight smoke example
 
-- Keep real account names, tokens, and message IDs out of committed docs/scripts.
-- Do not publish local absolute machine-specific paths.
+## Rules
+
+1. Keep lane3 content aligned with CLI behavior changes.
+2. Keep repo URL/package references accurate (`adwasd-dvd/zoho-mail-cli-zomacli`).
+3. For isolated agents, install skill locally inside the agent workspace, not global `~/.openclaw/skills`.

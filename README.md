@@ -186,6 +186,8 @@ This repo includes OpenClaw-facing skill and helper docs/scripts:
 - `skill/SKILL.md` — canonical AI skill file
 - `integrations/openclaw/SKILL.md` — integration copy for OpenClaw workflows
 - `integrations/openclaw/SKILL_INDEX.md` — maintainer checklist/index
+- `integrations/openclaw/LANE3_AI_USER_GUIDE.md` — AI-user lane3 sync/update guide
+- `integrations/openclaw/bin/pull_lane3_only.sh` — lane3-only pull/sync script
 - `integrations/openclaw/bin/run-scan.example.sh` — long-running scan example
 - `integrations/openclaw/quick_test.sh` — lightweight attachment smoke test
 

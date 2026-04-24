@@ -1,30 +1,33 @@
-# Zoho CLI + OpenClaw index
+# Lane3 AI-skill index
 
-## Status
+## Scope
 
-- Core repo: `zoho-mail-cli-zomacli`
-- Maintained fork: `adwasd-dvd/zoho-mail-cli-zomacli`
-- Canonical skill file: `skill/SKILL.md`
-- OpenClaw helper files: `integrations/openclaw/`
+Lane3 = AI-user-facing skill/docs/scripts for this repository.
 
-## Required maintenance workflow
+Primary paths:
+- `skill/SKILL.md`
+- `skill/references/*`
+- `skill/scripts/*`
+- `integrations/openclaw/*`
 
-1. Make CLI/test changes in `zoho_cli/` and `tests/`.
-2. Update human-facing docs (`README.md`, `docs/*`) for any user-visible change.
-3. Update AI-facing docs (`skill/SKILL.md`, `integrations/openclaw/*`) for command/install/update changes.
-4. Keep `docs/DOCUMENTATION_LANES.md` contract satisfied before merge.
+## Update contract for every CLI change
 
-## AI-user update alignment checklist (after GitHub pull)
+1. Update lane2 human docs (`README.md`, `docs/releases/CHANGELOG.next.md`) when user-visible behavior changes.
+2. Update lane3 skill/docs/scripts for AI usage changes.
+3. Verify command examples still match current CLI surface.
+4. Keep install/update flows approval-gated for high-impact operations.
 
-1. Compare code changes (`git log --oneline <old>..HEAD`).
-2. Compare human-impact docs (`README.md`, `docs/releases/CHANGELOG.next.md`).
-3. Compare AI-impact docs (`skill/SKILL.md`, `integrations/openclaw/*`).
-4. Summarize CLI changes + skill usage changes.
-5. Confirm understanding, then update local CLI + local skill together.
+## AI-user pull alignment (GitHub)
 
-## Safety checks before pushing
+Before local update, compare:
+1. code delta (`git log --oneline <old>..HEAD`)
+2. human docs delta (`README.md`, `docs/releases/CHANGELOG.next.md`)
+3. lane3 delta (`skill/*`, `integrations/openclaw/*`)
 
-- Search for real email addresses or message IDs.
-- Search for local absolute paths.
-- Search for `client_secret`, `refresh_token`, `access_token`.
-- Run focused tests relevant to the changed surface.
+Then summarize command/skill changes and apply local lane3 sync.
+
+## Safety checks
+
+- no secrets/tokens in committed lane3 docs/scripts
+- no machine-specific absolute paths unless explicitly template/example-scoped
+- repo/package URLs must target `adwasd-dvd/zoho-mail-cli-zomacli`

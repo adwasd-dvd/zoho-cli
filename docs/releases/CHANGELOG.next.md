@@ -4,6 +4,7 @@
 
 ### Added
 - Added optional watch-loop lifecycle automation via `zoho cliq watch-act --status-flow`, which now applies staged status reactions on the target message (`received -> thinking -> writing/testing -> done`, with `failed` on command failure) and returns `statusFlow` execution metadata for agent/operator feedback.
+- Added environment-variable credential fallback for auth bootstrap flows: `_require_credentials` now reads `ZOHO_CLIENT_ID` and `ZOHO_CLIENT_SECRET` when config `client_id`/`client_secret` are absent, so Cliq probes can run without mutating external config files.
 - Added optional status-flow passthrough for bridge watch payloads: `zoho cliq bridge-run --watch-file ... --status-flow` now forwards `statusFlow: {"enabled": true}` into membrane `--input` and echoes the same metadata in bridge-run output.
 - Restored cliq-195 watch-loop action-hint compatibility so `zoho cliq watch-act` again accepts kebab-snake alias `bridge-action_id` under mixed internal-loop hint roots (`operatorWorkflow.internal_loop.actionHint` and `operator_workflow.internalLoop.action_hint`).
 - Added Cliq reaction-status fallback command `zoho cliq status-react` for read-ack-unsupported conversations, with built-in status→emoji mapping (`received=👀`, `thinking=🤔`, `writing=✏️`, `testing=🧪`, `blocked=⚠️`, `done=✅`, `failed=❌`) and tracked previous-status cleanup so operators/agents can expose lifecycle progress directly on the message thread.

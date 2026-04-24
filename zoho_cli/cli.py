@@ -522,8 +522,8 @@ def _require_account(cfg: dict) -> str:
 
 
 def _require_credentials(cfg: dict) -> tuple[str, str]:
-    cid = (cfg.get("client_id") or "").strip()
-    csec = (cfg.get("client_secret") or "").strip()
+    cid = (cfg.get("client_id") or os.environ.get("ZOHO_CLIENT_ID") or "").strip()
+    csec = (cfg.get("client_secret") or os.environ.get("ZOHO_CLIENT_SECRET") or "").strip()
     if not cid or not csec:
         utils.error_exit(
             "missing_credentials",

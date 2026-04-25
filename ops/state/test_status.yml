@@ -1,6 +1,6 @@
-last_run_at: "2026-04-25T16:11:00Z"
+last_run_at: "2026-04-25T16:45:10Z"
 last_result: passing
-current_focus: cliq-195-focused-bridge-action-snake-mid-kebab-tail-upper-tail-alias-increment-2026-04-25T161100Z
+current_focus: cliq-195-medium-scope-integration-refresh-rerun-2026-04-25T164510Z
 suites:
   unit:
     status: passing

@@ -3,6 +3,8 @@
 ## Unreleased
 
 ### Added
+- Refined cliq-195 watch-loop fallback compatibility so `zoho cliq watch-act` and `zoho cliq bridge-run --watch-file` now also accept Pascal-head snake-mid upper-snake-tail consume bridge alias `watchIntake.consume.Bridge_Action_ID` when inferring actions, while preserving `actionSourcePath` / `actionSourceMetadata` provenance.
+- Refined cliq-195 watch-loop fallback compatibility so `zoho cliq watch-act` and `zoho cliq bridge-run --watch-file` now also accept Pascal-head snake-mid lowercase-tail consume bridge alias `watchIntake.consume.Bridge_Actionid` when inferring actions, while preserving `actionSourcePath` / `actionSourceMetadata` provenance.
 - Refined cliq-195 watch-loop fallback compatibility so `zoho cliq watch-act` and `zoho cliq bridge-run --watch-file` now also accept Pascal-head snake-mid snake-tail consume bridge alias `watchIntake.consume.Bridge_Action_id` when inferring actions, while preserving `actionSourcePath` / `actionSourceMetadata` provenance.
 - Refined cliq-195 watch-loop fallback compatibility so `zoho cliq watch-act` and `zoho cliq bridge-run --watch-file` now also accept Pascal-head snake-mid kebab-tail consume bridge alias `watchIntake.consume.Bridge_Action-id` when inferring actions, while preserving `actionSourcePath` / `actionSourceMetadata` provenance.
 - Refined cliq-195 watch-loop fallback compatibility so `zoho cliq watch-act` and `zoho cliq bridge-run --watch-file` now also accept Pascal-head snake-mid uppercase-tail consume bridge alias `watchIntake.consume.Bridge_ActionID` when inferring actions, while preserving `actionSourcePath` / `actionSourceMetadata` provenance.

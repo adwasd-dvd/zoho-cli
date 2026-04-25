@@ -1,5 +1,5 @@
 module: Mail
-updated_at: "2026-04-24T01:52:46Z"
+updated_at: "2026-04-25T09:05:59Z"
 status: completed
 blockers: []
-next_small_step: keep legacy hidden root aliases output-clean for machine consumers; mail alias JSON regressions are green in focused rerun while broader release-gate follow-up continues on remaining cliq failures.
+next_small_step: focused hidden legacy root mail alias regression rerun is still green (`test_attachment_content_with_filename`, `test_folders_list`, `test_legacy_mail_support_root_aliases_still_work`, `test_root_help_is_module_first_and_hides_mail_support_aliases`, `test_mail_help_includes_support_subgroups_under_mail`); continue with next cliq-195 medium-scope integration refresh rerun.

@@ -3,6 +3,7 @@
 ## Unreleased
 
 ### Added
+- Refined cliq-195 watch-loop fallback compatibility so `zoho cliq watch-act` and `zoho cliq bridge-run --watch-file` now also accept uppercase consume alias `watchIntake.consume.ACTIONID` when inferring actions, while preserving `actionSourcePath` / `actionSourceMetadata` provenance.
 - Refined cliq-195 watch-loop fallback compatibility so `zoho cliq watch-act` and `zoho cliq bridge-run --watch-file` now also accept Pascal lowercase-tail consume alias `watchIntake.consume.Actionid` when inferring actions, while preserving `actionSourcePath` / `actionSourceMetadata` provenance.
 - Refined cliq-195 watch-loop fallback compatibility so `zoho cliq watch-act` and `zoho cliq bridge-run --watch-file` now also accept Pascal snake-tail consume alias `watchIntake.consume.Action_id` when inferring actions, while preserving `actionSourcePath` / `actionSourceMetadata` provenance.
 - Refined cliq-195 watch-loop fallback compatibility so `zoho cliq watch-act` and `zoho cliq bridge-run --watch-file` now also accept Pascal uppercase-tail consume alias `watchIntake.consume.ActionID` when inferring actions, while preserving `actionSourcePath` / `actionSourceMetadata` provenance.
@@ -464,16 +465,19 @@
 - Removed duplicate CRM `fields` command/client definitions so the CRM read-only surface now has one canonical `fields` implementation.
 
 ### Release readiness
-- Assessed at 2026-04-24T01:40:22Z: release is **not ready**.
+- Assessed at 2026-04-25T01:57:49Z: release is **not ready**.
 - Fresh gate evidence:
-  - Broad release-gate run failed in `.tmp/nightly_release_gate_20260424T013912Z.log` (`./ops/scripts/release_gate.sh full` -> `4 failed, 1388 passed in 28.68s`).
-  - Current failing tests from that gate run: `tests/test_cli.py::test_attachment_content_with_filename`, `tests/test_cli.py::test_folders_list`, `tests/test_cliq.py::test_cliq_client_chats`, and `tests/test_cliq.py::test_cliq_client_chats_scope_invalid_reports_hint`.
-  - Blocker backlog remains open: `ops/state/bug_backlog.yml` still lists 29 blockers, with repeated cliq-193 live app-command verification failures (`appCommandsError: empty_output`; stderr `error: not_supported`) and latest listed evidence `tests/auto_pilot/reports/cliq193_app_commands_probe_summary_20260417_121801.json` plus `tests/auto_pilot/reports/cliq193_status_20260417_121801.json`.
-  - Milestone state is still incomplete: `ops/state/active_task.yml` is `id: cliq-195`, `stage: in_progress`, `updated_at: 2026-04-24T01:35:12Z`; `ops/state/release_status.yml` keeps `current_milestone_complete: false`.
+  - Current milestone-focused verification is green in this run:
+    - `./.venv/bin/python -m pytest -q tests/test_cli.py::test_cliq_watch_act_uses_watch_intake_consume_action_pascal_lowercase_tail_id_alias tests/test_membrane_bridge.py::test_cliq_bridge_run_watch_file_infers_action_from_watch_intake_consume_action_pascal_lowercase_tail_id_alias` -> `2 passed in 0.15s`.
+    - `./.venv/bin/python -m pytest -q tests/test_cli.py -k 'cliq_watch_context_from_channel or cliq_watch_act or watch_act_read_ack_latest or cliq_context_with_anchor or cliq_messages_from_channel or cliq_message_get_from_channel or cliq_bridge_run or crm_bridge_run'` -> `326 passed, 427 deselected in 8.06s`.
+    - `./.venv/bin/python -m pytest -q tests/test_registry.py tests/test_membrane_bridge.py` -> `421 passed in 7.56s`.
+    - `./.venv/bin/python -m pytest -q tests/test_cliq.py -k 'build_watch_context_seed or build_watch_reply_action or execute_watch_reply_action or build_watch_read_ack_action or execute_watch_read_ack_action or list_messages_from_channel_id or get_message_from_chat_id or get_message_from_channel_id or reply_message_success or edit_message_success or delete_message_success or react_message'` -> `24 passed, 165 deselected in 0.11s`.
+    - `./.venv/bin/python -m zoho_cli --help`, `cliq --help`, `crm --help`, `config --help` -> `HELP_SMOKE_OK`; `./.venv/bin/ruff format --check zoho_cli/cli.py tests/test_cli.py tests/test_membrane_bridge.py` -> `3 files already formatted`.
+  - Blocker backlog remains open: `ops/state/bug_backlog.yml` continues to carry repeated cliq-193 live app-command endpoint failures (`appCommandsError: empty_output`; stderr `error: not_supported`) with latest listed evidence `tests/auto_pilot/reports/cliq193_app_commands_probe_summary_20260417_121801.json` and `tests/auto_pilot/reports/cliq193_status_20260417_121801.json`.
+  - Milestone state is still incomplete: `ops/state/active_task.yml` is `id: cliq-195`, `stage: in_progress`, `updated_at: 2026-04-25T00:56:00Z`; `ops/state/release_status.yml` keeps `current_milestone_complete: false`.
   - Integration gate is still not pass/skip for release (`release_gate.integration_tests_passed_or_explicitly_skipped: false`) because focused live blocker checks remain externally blocked/deferred.
   - Changelog draft and release state were refreshed for this assessment; no publish actions were performed.
 - Remaining release blockers:
   - blocker bugs are **not** clear.
   - current focus milestone `cliq-expansion-phase` is **not complete**.
-  - relevant tests are **not** green for release.
   - relevant integration checks are **not** fully releasable (`release_gate.integration_tests_passed_or_explicitly_skipped: false`).

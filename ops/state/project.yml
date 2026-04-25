@@ -1,5 +1,5 @@
 project: zoho-cli
-updated_at: '2026-04-25T04:31:00Z'
+updated_at: '2026-04-25T04:52:00Z'
 status: v1-architecture-and-queue-optimization
 canonical_workspace: /Users/adwasd/.openclaw/workspace-coder
 project_root: /Users/adwasd/.openclaw/workspace-coder/job/zoho-cli
@@ -7,7 +7,7 @@ module_order:
 - Mail
 - Cliq
 - CRM
-current_focus: "Fast-track v1.0 AI-employee release: focused cliq-195 watch-intake consume snake-case alias coverage increment at 2026-04-25T04:31:00Z stayed green (`watchIntake.consume.action_id` parity tests for watch-act + bridge-run), so the next move is one thin no-behavior-change operator-workflow packaging increment."
+current_focus: "Fast-track v1.0 AI-employee release: focused cliq-195 watch-intake consume camel-tail alias coverage increment at 2026-04-25T04:52:00Z stayed green (`watchIntake.consume.actionId` parity tests for watch-act + bridge-run), so the next move is one thin no-behavior-change operator-workflow packaging increment."
 primary_blockers:
 - cliq live unread-filter probe now authenticates successfully but returned zero unread chats (`count=0`), so behavioral validation against real reacted unread traffic remains pending fresh unread activity
 - crm live read-only verification remains blocked by account-level CRM org access

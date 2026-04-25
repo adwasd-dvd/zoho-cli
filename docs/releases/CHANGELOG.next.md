@@ -3,6 +3,7 @@
 ## Unreleased
 
 ### Added
+- Refined cliq-195 watch-loop fallback compatibility so `zoho cliq watch-act` and `zoho cliq bridge-run --watch-file` now also accept Pascal lowercase-tail consume alias `watchIntake.consume.Actionid` when inferring actions, while preserving `actionSourcePath` / `actionSourceMetadata` provenance.
 - Refined cliq-195 watch-loop fallback compatibility so `zoho cliq watch-act` and `zoho cliq bridge-run --watch-file` now also accept Pascal snake-tail consume alias `watchIntake.consume.Action_id` when inferring actions, while preserving `actionSourcePath` / `actionSourceMetadata` provenance.
 - Refined cliq-195 watch-loop fallback compatibility so `zoho cliq watch-act` and `zoho cliq bridge-run --watch-file` now also accept Pascal uppercase-tail consume alias `watchIntake.consume.ActionID` when inferring actions, while preserving `actionSourcePath` / `actionSourceMetadata` provenance.
 - Refined cliq-195 watch-loop fallback compatibility so `zoho cliq watch-act` and `zoho cliq bridge-run --watch-file` now also accept Pascal-head consume alias `watchIntake.consume.ActionId` when inferring actions, while preserving `actionSourcePath` / `actionSourceMetadata` provenance.

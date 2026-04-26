@@ -7279,6 +7279,61 @@ def test_cliq_watch_act_uses_watch_intake_consume_bridge_action_kebab_pascal_cam
 
 
 @respx.mock
+def test_cliq_watch_act_uses_watch_intake_consume_bridge_action_snake_pascal_camel_tail_id_alias(
+    tmp_path: Path,
+    mock_config: Path,
+    mock_token_refresh: Any,
+) -> None:
+    watch_file = tmp_path / "watch.json"
+    watch_file.write_text(
+        json.dumps(
+            {
+                "chatId": "CT_1",
+                "channelId": "O1",
+                "watchIntake": {
+                    "consume": {
+                        "bridge_ActionId": "read-ack-latest",
+                    }
+                },
+                "newCount": 1,
+                "messages": [
+                    {"messageId": "M2", "senderId": "U2", "text": "latest"},
+                ],
+            }
+        )
+    )
+
+    route = respx.post("https://cliq.zoho.com/api/v2/chats/CT_1/messages/M2/read").mock(
+        return_value=httpx.Response(200, json={"data": {"id": "M2", "status": "ok"}})
+    )
+
+    result = runner.invoke(
+        app,
+        [
+            "cliq",
+            "watch-act",
+            "--watch-file",
+            str(watch_file),
+        ],
+        env=_cfg_env(mock_config),
+    )
+
+    assert result.exit_code == 0, result.output
+    assert route.called
+    payload = json.loads(result.output)
+    assert payload["action"] == "read-ack-latest"
+    assert payload["actionSource"] == "watch-loop-hint"
+    assert payload["actionSourcePath"] == "watchIntake.consume.bridge_ActionId"
+    assert payload["actionSourceMetadata"] == {
+        "source": "watch-loop-hint",
+        "sourcePath": "watchIntake.consume.bridge_ActionId",
+        "fromWatchLoopHint": True,
+        "fromEscalationHint": False,
+        "fromExplicitOverride": False,
+    }
+
+
+@respx.mock
 def test_cliq_watch_act_uses_watch_intake_consume_bridge_action_kebab_pascal_uppercase_tail_id_alias(
     tmp_path: Path,
     mock_config: Path,

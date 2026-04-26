@@ -12,6 +12,7 @@
 - No publish, version bump, or tagging actions were performed.
 
 ### Added
+- Refined cliq-195 watch-loop fallback compatibility so `zoho cliq watch-act` and `zoho cliq bridge-run --watch-file` now also accept kebab-Pascal upper-snake-tail consume bridge aliases `watchIntake.consume.Bridge-Action_ID` and `watchIntake.consume.bridge-Action_ID` when inferring actions, while preserving `actionSourcePath` / `actionSourceMetadata` provenance.
 - Refined cliq-195 watch-loop fallback compatibility so `zoho cliq watch-act` and `zoho cliq bridge-run --watch-file` now also accept kebab-Pascal-kebab uppercase-tail consume bridge aliases `watchIntake.consume.Bridge-Action-ID` and `watchIntake.consume.bridge-Action-ID` when inferring actions, while preserving `actionSourcePath` / `actionSourceMetadata` provenance.
 - Refined cliq-195 watch-intake parsing compatibility so watch reply/read-ack builder flows now also accept kebab-case root alias `watch-intake` (in addition to `watchIntake`/`watch_intake`) while preserving consume ack metadata and read-ack behavior.
 - Refined cliq-195 watch-loop fallback compatibility so `zoho cliq watch-act` and `zoho cliq bridge-run --watch-file` now also accept Pascal-kebab snake-title-tail consume bridge alias `watchIntake.consume.Bridge-Action_Id` when inferring actions, while preserving `actionSourcePath` / `actionSourceMetadata` provenance.

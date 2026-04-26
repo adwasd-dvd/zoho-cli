@@ -1,10 +1,21 @@
-last_run_at: "2026-04-26T03:52:51Z"
+last_run_at: "2026-04-26T04:08:49Z"
 last_result: passing
-current_focus: cliq-195-focused-bridge-action-id-aliases-20260426T035251Z
+current_focus: cliq-195-focused-watch-intake-kebab-alias-20260426T040849Z
 suites:
   unit:
     status: passing
     notes:
+      - "focused cliq-195 watch-intake root alias increment at 2026-04-26T04:08:49Z"
+      - "tiny behavior update: watch reply/read-ack builder flows now accept kebab-case `watch-intake` and preserve consume ack metadata"
+      - "./.venv/bin/python -m pytest -q tests/test_cliq.py::test_build_watch_reply_action_accepts_kebab_case_watch_intake_alias tests/test_cliq.py::test_build_watch_read_ack_action_accepts_kebab_case_watch_intake_alias tests/test_cliq.py::test_execute_watch_reply_action_marks_read_when_kebab_case_watch_intake_requires_ack -> 3 passed in 0.04s"
+      - "./.venv/bin/ruff format --check zoho_cli/cliq.py tests/test_cliq.py -> 2 files already formatted"
+      - "integration-loop medium-scope cliq-195 rerun at 2026-04-26T04:03:52Z"
+      - "no behavior change; medium-scope watch-context/watch-act/bridge-run verification stayed green"
+      - "./.venv/bin/python -m pytest -q tests/test_registry.py tests/test_membrane_bridge.py -> 455 passed in 8.34s"
+      - "./.venv/bin/python -m pytest -q tests/test_cli.py -k 'cliq_watch_context_from_channel or cliq_watch_act or watch_act_read_ack_latest or cliq_context_with_anchor or cliq_messages_from_channel or cliq_message_get_from_channel or cliq_bridge_run or crm_bridge_run' -> 359 passed, 427 deselected in 8.94s"
+      - "./.venv/bin/python -m pytest -q tests/test_cliq.py -k 'build_watch_context_seed or build_watch_reply_action or execute_watch_reply_action or build_watch_read_ack_action or execute_watch_read_ack_action or list_messages_from_channel_id or get_message_from_chat_id or get_message_from_channel_id or reply_message_success or edit_message_success or delete_message_success or react_message' -> 27 passed, 165 deselected in 0.12s"
+      - "./.venv/bin/python -m zoho_cli --help >/tmp/zoho_help.txt && ./.venv/bin/python -m zoho_cli cliq --help >/tmp/zoho_cliq_help.txt && ./.venv/bin/python -m zoho_cli crm --help >/tmp/zoho_crm_help.txt && ./.venv/bin/python -m zoho_cli config --help >/tmp/zoho_config_help.txt && echo HELP_SMOKE_OK -> HELP_SMOKE_OK"
+      - "./.venv/bin/ruff format --check zoho_cli/cli.py tests/test_cli.py tests/test_membrane_bridge.py -> 3 files already formatted"
       - "focused cliq-195 alias increment at 2026-04-26T03:52:51Z"
       - "tiny behavior update: `zoho cliq watch-act` and `zoho cliq bridge-run --watch-file` now infer actions from `watchIntake.consume.Bridge-ActionId` and `watchIntake.consume.bridgeAction-id` while preserving action-source provenance"
       - "./.venv/bin/python -m pytest -q tests/test_cli.py::test_cliq_watch_act_uses_watch_intake_consume_bridge_action_camel_kebab_lower_tail_id_alias tests/test_cli.py::test_cliq_watch_act_uses_watch_intake_consume_bridge_action_pascal_kebab_camel_tail_id_alias tests/test_membrane_bridge.py::test_cliq_bridge_run_watch_file_infers_action_from_watch_intake_consume_bridge_action_camel_kebab_lower_tail_id_alias tests/test_membrane_bridge.py::test_cliq_bridge_run_watch_file_infers_action_from_watch_intake_consume_bridge_action_pascal_kebab_camel_tail_id_alias -> 4 passed in 0.20s"

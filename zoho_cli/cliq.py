@@ -1108,6 +1108,10 @@ class ZohoCliqClient:
         if isinstance(snake_intake, dict):
             return snake_intake
 
+        kebab_intake = watch_payload.get("watch-intake")
+        if isinstance(kebab_intake, dict):
+            return kebab_intake
+
         return {}
 
     @staticmethod

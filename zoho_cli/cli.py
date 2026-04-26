@@ -2495,6 +2495,10 @@ def cliq_bridge_run(
                             f"{intake_source_root}.consume.bridge_ActionID",
                         ),
                         (
+                            consume_cfg.get("bridge_Actionid"),
+                            f"{intake_source_root}.consume.bridge_Actionid",
+                        ),
+                        (
                             consume_cfg.get("bridgeAction-Id"),
                             f"{intake_source_root}.consume.bridgeAction-Id",
                         ),
@@ -11951,6 +11955,10 @@ def cliq_watch_act(
                             (
                                 consume_cfg.get("bridge_ActionID"),
                                 f"{intake_source_root}.consume.bridge_ActionID",
+                            ),
+                            (
+                                consume_cfg.get("bridge_Actionid"),
+                                f"{intake_source_root}.consume.bridge_Actionid",
                             ),
                             (
                                 consume_cfg.get("bridgeAction-Id"),

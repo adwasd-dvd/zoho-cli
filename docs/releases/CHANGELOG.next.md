@@ -3,6 +3,7 @@
 ## Unreleased
 
 ### Added
+- Refined cliq-195 watch-loop fallback compatibility so `zoho cliq watch-act` and `zoho cliq bridge-run --watch-file` now also accept mixed-snake consume bridge aliases `watchIntake.consume.bridgeAction_Id` and `watchIntake.consume.BridgeAction_ID` when inferring actions, while preserving `actionSourcePath` / `actionSourceMetadata` provenance.
 - Refined cliq-195 watch-loop fallback compatibility so `zoho cliq watch-act` and `zoho cliq bridge-run --watch-file` now also accept camel-head kebab uppercase-tail consume bridge alias `watchIntake.consume.bridgeAction-ID` when inferring actions, while preserving `actionSourcePath` / `actionSourceMetadata` provenance.
 - Refined cliq-195 watch-loop fallback compatibility so `zoho cliq watch-act` and `zoho cliq bridge-run --watch-file` now also accept mixed-tail kebab consume alias `watchIntake.consume.action-Id` when inferring actions, while preserving `actionSourcePath` / `actionSourceMetadata` provenance.
 - Refined cliq-195 watch-loop fallback compatibility so `zoho cliq watch-act` and `zoho cliq bridge-run --watch-file` now also accept camel-head kebab-tail mixed-tail consume bridge alias `watchIntake.consume.bridgeAction-Id` when inferring actions, while preserving `actionSourcePath` / `actionSourceMetadata` provenance.

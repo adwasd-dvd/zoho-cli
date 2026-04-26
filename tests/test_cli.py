@@ -1286,6 +1286,9 @@ def test_cliq_capabilities_with_message_probe(
     respx.get("https://cliq.zoho.com/api/v2/chats/CT_1/messages/M1").mock(
         return_value=httpx.Response(200, json={"data": {"id": "M1"}})
     )
+    respx.get("https://cliq.zoho.com/api/v2/chats/CT_1/messages/M1/messages").mock(
+        return_value=httpx.Response(404, text="request_url_invalid")
+    )
     respx.get("https://cliq.zoho.com/api/v2/chats/CT_1/messages/M1/files").mock(
         return_value=httpx.Response(404, text="request_url_invalid")
     )
@@ -1318,7 +1321,7 @@ def test_cliq_capabilities_with_message_probe(
 
     payload = json.loads(result.output)
     assert payload["inputs"]["messageId"] == "M1"
-    assert payload["summary"]["total"] == 11
+    assert payload["summary"]["total"] == 12
 
 
 def test_cliq_capabilities_message_probe_requires_channel(

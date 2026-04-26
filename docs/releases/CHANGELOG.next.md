@@ -12,6 +12,7 @@
 - No publish, version bump, or tagging actions were performed.
 
 ### Added
+- Refined Cliq message retrieval compatibility using reference OpenAPI patterns: `zoho cliq message` now falls back to `/chats/{chat_id}/messages/{message_id}/messages` (and channel variants) when primary message-get endpoints are unavailable, and `zoho cliq capabilities --message-id` now probes the alt path (`chats.messages.get.alt`) to surface endpoint drift earlier.
 - Refined cliq-195 watch-loop fallback compatibility so `zoho cliq watch-act` and `zoho cliq bridge-run --watch-file` now also accept camel-snake upper-snake-tail consume bridge alias `watchIntake.consume.bridgeAction_ID` when inferring actions, while preserving `actionSourcePath` / `actionSourceMetadata` provenance.
 - Refined cliq-195 watch-loop fallback compatibility so `zoho cliq watch-act` and `zoho cliq bridge-run --watch-file` now also accept snake-Pascal snake-title-tail consume bridge alias `watchIntake.consume.bridge_Action_Id` when inferring actions, while preserving `actionSourcePath` / `actionSourceMetadata` provenance.
 - Refined cliq-195 watch-loop fallback compatibility so `zoho cliq watch-act` and `zoho cliq bridge-run --watch-file` now also accept snake-Pascal snake-tail consume bridge alias `watchIntake.consume.bridge_Action_id` when inferring actions, while preserving `actionSourcePath` / `actionSourceMetadata` provenance.

@@ -1923,7 +1923,7 @@ class ZohoCliqClient:
         chat_id: str | None = None,
         channel_id: str | None = None,
     ) -> dict:
-        """Fetch one message by id for a chat (or a resolvable channel id)."""
+        """Fetch one message by id with endpoint fallbacks."""
         resolved_chat = self._resolve_chat_destination(
             chat_id=chat_id,
             channel_id=channel_id,
@@ -1933,26 +1933,26 @@ class ZohoCliqClient:
         if not mid:
             utils.error_exit("invalid_message_id", "message_id cannot be empty")
 
-        resp = httpx.get(
-            f"{self.base_url}/chats/{resolved_chat}/messages/{mid}",
-            headers=self._headers,
-            timeout=httpx.Timeout(30.0),
-        )
-        if resp.is_success:
-            return resp.json()
+        candidates: list[tuple[str, dict[str, Any] | None]] = [
+            (f"/chats/{resolved_chat}/messages/{mid}", None),
+            (f"/chats/{resolved_chat}/messages/{mid}/messages", None),
+        ]
 
-        body = resp.text or ""
-        lowered = body.lower()
-        if "oauthtoken_scope_invalid" in lowered:
-            utils.error_exit(
-                "oauth_scope_invalid",
-                "Cliq token is missing message-read scope. Re-run `zoho login --with-cliq --scope ZohoCliq.Messages.READ` and retry.",
+        target_channel = (channel_id or "").strip()
+        if target_channel:
+            candidates.extend(
+                [
+                    (f"/channels/{target_channel}/messages/{mid}", None),
+                    (f"/channels/{target_channel}/messages/{mid}/messages", None),
+                ]
             )
-        utils.error_exit(
-            "api_error",
-            f"HTTP {resp.status_code} GET /chats/{resolved_chat}/messages/{mid}: {body}",
+
+        return self._get_with_candidates_and_not_supported(
+            candidates,
+            scope_hint="ZohoCliq.Messages.READ",
+            operation_label="message-get",
+            not_supported_message="Cliq message retrieval endpoints are not available for this token/network endpoint. Run `zoho cliq capabilities --channel-id <id> --message-id <mid>` to confirm message-get operations for the target conversation.",
         )
-        return {}
 
     def get_message_reactions(
         self,
@@ -5156,6 +5156,13 @@ class ZohoCliqClient:
                             "kind": "read",
                             "method": "GET",
                             "path": f"/chats/{target_chat}/messages/{probe_message_id}",
+                            "params": {},
+                        },
+                        {
+                            "name": "chats.messages.get.alt",
+                            "kind": "read",
+                            "method": "GET",
+                            "path": f"/chats/{target_chat}/messages/{probe_message_id}/messages",
                             "params": {},
                         },
                         {

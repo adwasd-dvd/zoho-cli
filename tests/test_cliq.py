@@ -4436,6 +4436,24 @@ def test_cliq_client_get_message_from_chat_id(client: cliq.ZohoCliqClient) -> No
 
 
 @respx.mock
+def test_cliq_client_get_message_falls_back_to_openapi_alt_path(
+    client: cliq.ZohoCliqClient,
+) -> None:
+    primary = respx.get("https://cliq.zoho.com/api/v2/chats/CT_1/messages/M1").mock(
+        return_value=httpx.Response(404, text="request_url_invalid")
+    )
+    fallback = respx.get(
+        "https://cliq.zoho.com/api/v2/chats/CT_1/messages/M1/messages"
+    ).mock(return_value=httpx.Response(200, json={"data": {"id": "M1", "text": "ok"}}))
+
+    result = client.get_message("M1", chat_id="CT_1")
+
+    assert primary.called
+    assert fallback.called
+    assert result["data"]["id"] == "M1"
+
+
+@respx.mock
 def test_cliq_client_get_message_from_channel_id(client: cliq.ZohoCliqClient) -> None:
     descriptor = respx.get("https://cliq.zoho.com/api/v2/channels/O1").mock(
         return_value=httpx.Response(200, json={"data": {"chat_id": "CT_1"}})
@@ -5284,6 +5302,9 @@ def test_cliq_client_probe_capabilities_with_message_context(
     respx.get("https://cliq.zoho.com/api/v2/chats/CT_1/messages/M1").mock(
         return_value=httpx.Response(200, json={"data": {"id": "M1"}})
     )
+    respx.get("https://cliq.zoho.com/api/v2/chats/CT_1/messages/M1/messages").mock(
+        return_value=httpx.Response(404, text="request_url_invalid")
+    )
     respx.get("https://cliq.zoho.com/api/v2/chats/CT_1/messages/M1/files").mock(
         return_value=httpx.Response(404, text="request_url_invalid")
     )
@@ -5304,6 +5325,7 @@ def test_cliq_client_probe_capabilities_with_message_context(
 
     checks = {item["name"]: item for item in result["checks"]}
     assert checks["chats.messages.get"]["ok"] is True
+    assert checks["chats.messages.get.alt"]["status"] == "not_supported"
     assert checks["chats.messages.files"]["status"] == "not_supported"
     assert checks["chats.messages.attachments"]["status"] == "forbidden_or_scope"
     assert checks["channels.messages.attachments"]["ok"] is True

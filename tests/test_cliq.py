@@ -1,5 +1,6 @@
 """Tests for zoho_cli.cliq helpers."""
 
+import itertools
 import json
 from pathlib import Path
 import httpx
@@ -4212,6 +4213,252 @@ def test_watch_actions_preserve_nested_envelope_defaults_alias_source_paths() ->
         reply_action["escalationEnvelopeMetadata"]["fieldSources"]["body"]["sourcePath"]
         == "operator_workflow.external_escalation.handoff.envelope_defaults.reason"
     )
+
+
+def test_watch_actions_nested_envelope_defaults_alias_matrix_invariants() -> None:
+    workflow_aliases = (
+        "operatorWorkflow",
+        "operator_workflow",
+        "operator-workflow",
+    )
+    external_aliases = (
+        "externalEscalation",
+        "external_escalation",
+        "external-escalation",
+    )
+    handoff_aliases = ("envelopeDefaults", "envelope_defaults", "envelope-defaults")
+    to_aliases = ("to", "recipient")
+    subject_aliases = ("subject", "summary")
+    body_aliases = ("body", "reason")
+
+    target = {
+        "kind": "external-contact",
+        "channel": "mail",
+        "defaultAction": "notify-mail",
+    }
+
+    for (
+        workflow_alias,
+        external_alias,
+        handoff_alias,
+        to_alias,
+        subject_alias,
+        body_alias,
+    ) in itertools.product(
+        workflow_aliases,
+        external_aliases,
+        handoff_aliases,
+        to_aliases,
+        subject_aliases,
+        body_aliases,
+    ):
+        to_value = f"to-via-{to_alias}"
+        subject_value = f"subject-via-{subject_alias}"
+        body_value = f"body-via-{body_alias}"
+
+        watch_payload = {
+            "chatId": "CT_1",
+            "channelId": "O1",
+            workflow_alias: {
+                external_alias: {
+                    "handoff": {
+                        handoff_alias: {
+                            "target": target,
+                            to_alias: to_value,
+                            subject_alias: subject_value,
+                            body_alias: body_value,
+                        }
+                    }
+                }
+            },
+            "messages": [{"messageId": "M1", "senderId": "U1", "text": "latest"}],
+        }
+
+        reply_action = cliq.ZohoCliqClient.build_watch_reply_action(
+            watch_payload,
+            text="ack",
+        )
+        read_ack_action = cliq.ZohoCliqClient.build_watch_read_ack_action(watch_payload)
+
+        expected_envelope = {
+            "target": target,
+            "to": to_value,
+            "subject": subject_value,
+            "body": body_value,
+        }
+        expected_metadata = {
+            "source": "nested-fallback",
+            "sourcePath": f"{workflow_alias}.{external_alias}.handoff",
+            "fromTopLevelAlias": False,
+            "fromNestedFallback": True,
+            "usedFieldFallback": True,
+            "fieldSources": {
+                "target": {
+                    "source": "nested-envelope-defaults",
+                    "sourcePath": (
+                        f"{workflow_alias}.{external_alias}.handoff.{handoff_alias}.target"
+                    ),
+                    "fromTopLevelAlias": False,
+                    "fromNestedFallback": True,
+                    "usedFallback": True,
+                },
+                "to": {
+                    "source": "nested-envelope-defaults",
+                    "sourcePath": (
+                        f"{workflow_alias}.{external_alias}.handoff.{handoff_alias}.{to_alias}"
+                    ),
+                    "fromTopLevelAlias": False,
+                    "fromNestedFallback": True,
+                    "usedFallback": True,
+                },
+                "subject": {
+                    "source": "nested-envelope-defaults",
+                    "sourcePath": (
+                        f"{workflow_alias}.{external_alias}.handoff.{handoff_alias}.{subject_alias}"
+                    ),
+                    "fromTopLevelAlias": False,
+                    "fromNestedFallback": True,
+                    "usedFallback": True,
+                },
+                "body": {
+                    "source": "nested-envelope-defaults",
+                    "sourcePath": (
+                        f"{workflow_alias}.{external_alias}.handoff.{handoff_alias}.{body_alias}"
+                    ),
+                    "fromTopLevelAlias": False,
+                    "fromNestedFallback": True,
+                    "usedFallback": True,
+                },
+            },
+        }
+
+        assert reply_action["escalationEnvelope"] == expected_envelope
+        assert read_ack_action["escalationEnvelope"] == expected_envelope
+        assert reply_action["escalationEnvelopeMetadata"] == expected_metadata
+        assert read_ack_action["escalationEnvelopeMetadata"] == expected_metadata
+
+
+def test_watch_actions_nested_payload_template_alias_matrix_invariants() -> None:
+    workflow_aliases = (
+        "operatorWorkflow",
+        "operator_workflow",
+        "operator-workflow",
+    )
+    external_aliases = (
+        "externalEscalation",
+        "external_escalation",
+        "external-escalation",
+    )
+    handoff_aliases = ("payloadTemplate", "payload_template", "payload-template")
+    to_aliases = ("recipient", "to")
+    subject_aliases = ("summary", "subject")
+    body_aliases = ("reason", "body")
+
+    target = {
+        "kind": "external-contact",
+        "channel": "mail",
+        "defaultAction": "notify-mail",
+    }
+
+    for (
+        workflow_alias,
+        external_alias,
+        handoff_alias,
+        to_alias,
+        subject_alias,
+        body_alias,
+    ) in itertools.product(
+        workflow_aliases,
+        external_aliases,
+        handoff_aliases,
+        to_aliases,
+        subject_aliases,
+        body_aliases,
+    ):
+        to_value = f"to-via-{to_alias}"
+        subject_value = f"subject-via-{subject_alias}"
+        body_value = f"body-via-{body_alias}"
+
+        watch_payload = {
+            "chatId": "CT_1",
+            "channelId": "O1",
+            workflow_alias: {
+                external_alias: {
+                    "handoff": {
+                        handoff_alias: {
+                            "target": target,
+                            to_alias: to_value,
+                            subject_alias: subject_value,
+                            body_alias: body_value,
+                        }
+                    }
+                }
+            },
+            "messages": [{"messageId": "M1", "senderId": "U1", "text": "latest"}],
+        }
+
+        reply_action = cliq.ZohoCliqClient.build_watch_reply_action(
+            watch_payload,
+            text="ack",
+        )
+        read_ack_action = cliq.ZohoCliqClient.build_watch_read_ack_action(watch_payload)
+
+        expected_envelope = {
+            "target": target,
+            "to": to_value,
+            "subject": subject_value,
+            "body": body_value,
+        }
+        expected_metadata = {
+            "source": "nested-fallback",
+            "sourcePath": f"{workflow_alias}.{external_alias}.handoff",
+            "fromTopLevelAlias": False,
+            "fromNestedFallback": True,
+            "usedFieldFallback": True,
+            "fieldSources": {
+                "target": {
+                    "source": "nested-payload-template",
+                    "sourcePath": (
+                        f"{workflow_alias}.{external_alias}.handoff.{handoff_alias}.target"
+                    ),
+                    "fromTopLevelAlias": False,
+                    "fromNestedFallback": True,
+                    "usedFallback": True,
+                },
+                "to": {
+                    "source": "nested-payload-template",
+                    "sourcePath": (
+                        f"{workflow_alias}.{external_alias}.handoff.{handoff_alias}.{to_alias}"
+                    ),
+                    "fromTopLevelAlias": False,
+                    "fromNestedFallback": True,
+                    "usedFallback": True,
+                },
+                "subject": {
+                    "source": "nested-payload-template",
+                    "sourcePath": (
+                        f"{workflow_alias}.{external_alias}.handoff.{handoff_alias}.{subject_alias}"
+                    ),
+                    "fromTopLevelAlias": False,
+                    "fromNestedFallback": True,
+                    "usedFallback": True,
+                },
+                "body": {
+                    "source": "nested-payload-template",
+                    "sourcePath": (
+                        f"{workflow_alias}.{external_alias}.handoff.{handoff_alias}.{body_alias}"
+                    ),
+                    "fromTopLevelAlias": False,
+                    "fromNestedFallback": True,
+                    "usedFallback": True,
+                },
+            },
+        }
+
+        assert reply_action["escalationEnvelope"] == expected_envelope
+        assert read_ack_action["escalationEnvelope"] == expected_envelope
+        assert reply_action["escalationEnvelopeMetadata"] == expected_metadata
+        assert read_ack_action["escalationEnvelopeMetadata"] == expected_metadata
 
 
 def test_build_watch_reply_action_selects_latest_message() -> None:

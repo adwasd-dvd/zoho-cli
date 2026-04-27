@@ -1159,13 +1159,16 @@ class ZohoCliqClient:
         if not isinstance(consume, dict):
             consume = intake.get("consume_policy")
         if not isinstance(consume, dict):
+            consume = intake.get("consume-policy")
+        if not isinstance(consume, dict):
             return False
 
-        required_raw = (
-            consume.get("ackRequired")
-            if "ackRequired" in consume
-            else consume.get("ack_required")
-        )
+        if "ackRequired" in consume:
+            required_raw = consume.get("ackRequired")
+        elif "ack_required" in consume:
+            required_raw = consume.get("ack_required")
+        else:
+            required_raw = consume.get("ack-required")
         required_flag = cls._coerce_bool_flag(required_raw)
         if required_flag is not None:
             return required_flag

@@ -4,7 +4,7 @@ module: cliq
 stage: in_progress
 status: in_progress
 owner: coder
-updated_at: '2026-04-27T12:20:56Z'
+updated_at: '2026-04-27T12:22:44Z'
 execution_mode: turbo_10x
 throughput_policy_ref: ops/state/execution_policy.yml
 success_criteria:
@@ -12,4 +12,4 @@ success_criteria:
 - preserve the operator-workflow contract through watch-act action payload/result surfaces used by automation loops
 - keep focused watch-context/watch-act verification green while deferred external blockers stay capability-gated
 next_if_done: if focused and medium-scope cliq-195 verification remain green, continue the next operator-workflow packaging increment without regressing deferred capability-gated blockers.
-next_step: "Single-source consume-contract hardening landed for watch-context packaging; run the adjacent medium-scope cliq-195 integration refresh rerun across watch-context/watch-act/bridge-run surfaces in turbo batch mode."
+next_step: "Medium-scope cliq-195 integration refresh rerun is green after single-source consume-contract hardening; continue the next focused non-alias packaging increment in turbo batch mode."

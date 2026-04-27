@@ -1,5 +1,5 @@
 project: zoho-cli
-updated_at: '2026-04-27T12:13:41Z'
+updated_at: '2026-04-27T12:22:44Z'
 status: v1-architecture-and-queue-optimization
 throughput_mode: turbo_10x
 throughput_policy_ref: ops/state/execution_policy.yml
@@ -9,7 +9,7 @@ module_order:
 - Mail
 - Cliq
 - CRM
-current_focus: "Turbo execution mode active: 10x throughput for cliq-195 and other in-progress lanes with controlled 3-fail backoff."
+current_focus: "Turbo mode active: cliq-195 single-source consume-contract hardening landed and adjacent medium-scope refresh rerun is green."
 primary_blockers:
 - cliq live unread-filter probe now authenticates successfully but returned zero unread chats (`count=0`), so behavioral validation against real reacted unread traffic remains pending fresh unread activity
 - crm live read-only verification remains blocked by account-level CRM org access

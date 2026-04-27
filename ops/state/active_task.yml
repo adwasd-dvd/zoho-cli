@@ -4,7 +4,7 @@ module: cliq
 stage: in_progress
 status: in_progress
 owner: coder
-updated_at: '2026-04-27T15:17:50Z'
+updated_at: '2026-04-27T16:49:06Z'
 execution_mode: turbo_10x
 throughput_policy_ref: ops/state/execution_policy.yml
 success_criteria:
@@ -12,4 +12,4 @@ success_criteria:
 - preserve the operator-workflow contract through watch-act action payload/result surfaces used by automation loops
 - keep focused watch-context/watch-act verification green while deferred external blockers stay capability-gated
 next_if_done: if focused and medium-scope cliq-195 verification remain green, continue the next operator-workflow packaging increment without regressing deferred capability-gated blockers.
-next_step: "Focused non-alias cliq-195 packaging increment at 2026-04-27T15:17:50Z added explicit external-escalation read-ack action-hint metadata in watch-context packaging; run the adjacent medium-scope integration refresh rerun for watch-context/watch-act/bridge-run surfaces."
+next_step: "Focused cliq-195 consume-contract increment at 2026-04-27T16:49:06Z broadened watch-reply read-ack inference to honor operator-workflow external-escalation read-ack action hints; run the adjacent medium-scope integration refresh rerun."

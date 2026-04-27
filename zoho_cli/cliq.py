@@ -1262,10 +1262,14 @@ class ZohoCliqClient:
 
             external_hint = external_escalation.get("actionHint")
             if isinstance(external_hint, dict):
-                watch_act_action = str(external_hint.get("watchActAction") or "")
-                watch_act_action_value = watch_act_action.strip().lower()
-                if watch_act_action_value:
-                    return watch_act_action_value == "read-ack-latest"
+                external_hint_actions = cls._collect_alias_values(
+                    external_hint,
+                    ("watchactaction", "readackaction"),
+                )
+                for action_raw in external_hint_actions:
+                    action_value = str(action_raw or "").strip().lower()
+                    if action_value:
+                        return action_value == "read-ack-latest"
 
         return False
 

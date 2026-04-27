@@ -1178,29 +1178,10 @@ class ZohoCliqClient:
         return values
 
     @classmethod
-    def _watch_consume_requires_read_ack(cls, watch_payload: dict[str, Any]) -> bool:
-        intake = cls._extract_watch_intake(watch_payload)
-        if not isinstance(intake, dict):
-            return False
-
-        consume = intake.get("consume")
-        if not isinstance(consume, dict):
-            consume = intake.get("consumePolicy")
-        if not isinstance(consume, dict):
-            consume = intake.get("consume_policy")
-        if not isinstance(consume, dict):
-            consume = intake.get("consume-policy")
-        if not isinstance(consume, dict):
-            for key, candidate in intake.items():
-                if not isinstance(key, str) or not isinstance(candidate, dict):
-                    continue
-                normalized_key = cls._normalize_alias_key(key)
-                if normalized_key in {"consume", "consumepolicy"}:
-                    consume = candidate
-                    break
-        if not isinstance(consume, dict):
-            return False
-
+    def _consume_contract_requires_read_ack(
+        cls,
+        consume: dict[str, Any],
+    ) -> bool | None:
         required_candidates = cls._collect_alias_values(
             consume,
             ("ackrequired",),
@@ -1218,6 +1199,73 @@ class ZohoCliqClient:
             value = str(candidate or "").strip().lower()
             if value:
                 return value == "read-ack-latest"
+
+        return None
+
+    @classmethod
+    def _watch_consume_requires_read_ack(cls, watch_payload: dict[str, Any]) -> bool:
+        intake = cls._extract_watch_intake(watch_payload)
+
+        consume: dict[str, Any] | None = None
+        if isinstance(intake, dict):
+            consume = intake.get("consume")
+            if not isinstance(consume, dict):
+                consume = intake.get("consumePolicy")
+            if not isinstance(consume, dict):
+                consume = intake.get("consume_policy")
+            if not isinstance(consume, dict):
+                consume = intake.get("consume-policy")
+            if not isinstance(consume, dict):
+                for key, candidate in intake.items():
+                    if not isinstance(key, str) or not isinstance(candidate, dict):
+                        continue
+                    normalized_key = cls._normalize_alias_key(key)
+                    if normalized_key in {"consume", "consumepolicy"}:
+                        consume = candidate
+                        break
+
+        if isinstance(consume, dict):
+            read_ack_required = cls._consume_contract_requires_read_ack(consume)
+            if read_ack_required is not None:
+                return read_ack_required
+
+        operator_workflow = cls._extract_operator_workflow(watch_payload)
+        if not isinstance(operator_workflow, dict):
+            return False
+
+        internal_loop = operator_workflow.get("internalLoop")
+        if isinstance(internal_loop, dict):
+            internal_consume = internal_loop.get("consumePolicy")
+            if isinstance(internal_consume, dict):
+                read_ack_required = cls._consume_contract_requires_read_ack(
+                    internal_consume
+                )
+                if read_ack_required is not None:
+                    return read_ack_required
+
+            internal_hint = internal_loop.get("actionHint")
+            if isinstance(internal_hint, dict):
+                read_ack_action = str(internal_hint.get("readAckAction") or "")
+                read_ack_action_value = read_ack_action.strip().lower()
+                if read_ack_action_value:
+                    return read_ack_action_value == "read-ack-latest"
+
+        external_escalation = operator_workflow.get("externalEscalation")
+        if isinstance(external_escalation, dict):
+            external_consume = external_escalation.get("consumePolicy")
+            if isinstance(external_consume, dict):
+                read_ack_required = cls._consume_contract_requires_read_ack(
+                    external_consume
+                )
+                if read_ack_required is not None:
+                    return read_ack_required
+
+            external_hint = external_escalation.get("actionHint")
+            if isinstance(external_hint, dict):
+                watch_act_action = str(external_hint.get("watchActAction") or "")
+                watch_act_action_value = watch_act_action.strip().lower()
+                if watch_act_action_value:
+                    return watch_act_action_value == "read-ack-latest"
 
         return False
 

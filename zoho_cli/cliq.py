@@ -1448,6 +1448,12 @@ class ZohoCliqClient:
             if isinstance(snake_alias, dict):
                 alias = snake_alias
                 alias_source_root = snake_alias_source_root
+        if not isinstance(alias, dict):
+            kebab_alias_source_root = "escalation-envelope"
+            kebab_alias = watch_payload.get(kebab_alias_source_root)
+            if isinstance(kebab_alias, dict):
+                alias = kebab_alias
+                alias_source_root = kebab_alias_source_root
         fallback, fallback_sources = (
             cls._extract_external_handoff_envelope_defaults_with_metadata(watch_payload)
         )

@@ -3700,6 +3700,59 @@ def test_watch_actions_accept_snake_case_escalation_envelope_alias() -> None:
     }
 
 
+def test_watch_actions_accept_kebab_case_escalation_envelope_alias() -> None:
+    watch_payload = {
+        "chatId": "CT_1",
+        "channelId": "O1",
+        "escalation-envelope": {
+            "to": "ops@happy-distro.co.uk",
+        },
+        "operatorWorkflow": {
+            "externalEscalation": {
+                "handoff": {
+                    "envelopeDefaults": {
+                        "target": {
+                            "kind": "external-contact",
+                            "channel": "mail",
+                            "defaultAction": "notify-mail",
+                        },
+                        "to": "fallback@happy-distro.co.uk",
+                        "subject": "Fallback subject",
+                        "body": "Fallback body",
+                    }
+                }
+            }
+        },
+        "messages": [
+            {"messageId": "M1", "senderId": "U1", "text": "latest"},
+        ],
+    }
+
+    reply_action = cliq.ZohoCliqClient.build_watch_reply_action(
+        watch_payload,
+        text="ack",
+    )
+
+    assert reply_action["escalationEnvelope"] == {
+        "target": {
+            "kind": "external-contact",
+            "channel": "mail",
+            "defaultAction": "notify-mail",
+        },
+        "to": "ops@happy-distro.co.uk",
+        "subject": "Fallback subject",
+        "body": "Fallback body",
+    }
+    assert reply_action["escalationEnvelopeMetadata"]["source"] == "mixed"
+    assert reply_action["escalationEnvelopeMetadata"]["fieldSources"]["to"] == {
+        "source": "top-level-alias",
+        "sourcePath": "escalation-envelope.to",
+        "fromTopLevelAlias": True,
+        "fromNestedFallback": False,
+        "usedFallback": False,
+    }
+
+
 def test_watch_actions_accept_top_level_payload_template_field_aliases() -> None:
     watch_payload = {
         "chatId": "CT_1",

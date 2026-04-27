@@ -1,10 +1,14 @@
-last_run_at: "2026-04-27T01:04:41Z"
+last_run_at: "2026-04-27T01:12:29Z"
 last_result: passing
-current_focus: cliq-195-medium-scope-integration-refresh-20260427T010441Z
+current_focus: cliq-195-focused-kebab-top-level-escalation-envelope-alias-20260427T011229Z
 suites:
   unit:
     status: passing
     notes:
+      - "focused cliq-195 increment at 2026-04-27T01:12:29Z"
+      - "tiny behavior update: watch builders now accept top-level kebab-case escalation-envelope alias root (`escalation-envelope`) while preserving field-source metadata provenance"
+      - "./.venv/bin/python -m pytest -q tests/test_cliq.py::test_watch_actions_accept_snake_case_escalation_envelope_alias tests/test_cliq.py::test_watch_actions_accept_kebab_case_escalation_envelope_alias tests/test_cliq.py::test_watch_actions_accept_top_level_payload_template_field_aliases -> 3 passed in 0.17s"
+      - "./.venv/bin/ruff format --check zoho_cli/cliq.py tests/test_cliq.py -> 2 files already formatted"
       - "integration-loop medium-scope cliq-195 rerun at 2026-04-27T01:04:41Z"
       - "no behavior change; medium-scope watch-context/watch-act/bridge-run verification stayed green after kebab-case handoff fallback source-path marker support for escalation-envelope metadata roots"
       - "./.venv/bin/python -m pytest -q tests/test_registry.py tests/test_membrane_bridge.py -> 484 passed in 8.98s"

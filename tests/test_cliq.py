@@ -3045,6 +3045,7 @@ def test_build_watch_context_seed_includes_watch_intake_contract_metadata() -> N
         payload["operatorWorkflow"]["packageContractId"]
         == "cliq-195-operator-workflow-v1"
     )
+    assert payload["operatorWorkflow"]["packageScope"] == "operator-workflows"
     assert (
         payload["operatorWorkflow"]["internalLoop"]["contractId"]
         == "cliq-195-internal-loop-v1"
@@ -3304,6 +3305,7 @@ def test_build_watch_reply_action_preserves_watch_intake_metadata() -> None:
         action["operatorWorkflow"]["packageContractId"]
         == "cliq-195-operator-workflow-v1"
     )
+    assert action["operatorWorkflow"]["packageScope"] == "operator-workflows"
     assert (
         action["operatorWorkflow"]["externalEscalation"]["defaultAction"]
         == "notify-mail"
@@ -3560,6 +3562,7 @@ def test_build_watch_read_ack_action_preserves_watch_intake_metadata() -> None:
         action["operatorWorkflow"]["packageContractId"]
         == "cliq-195-operator-workflow-v1"
     )
+    assert action["operatorWorkflow"]["packageScope"] == "operator-workflows"
     assert action["operatorWorkflow"]["internalLoop"]["defaultAction"] == "reply-latest"
     assert action["operatorWorkflow"]["externalEscalation"]["consumePolicy"] == {
         "ackAction": "read-ack-latest",

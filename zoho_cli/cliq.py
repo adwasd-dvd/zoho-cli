@@ -1310,7 +1310,16 @@ class ZohoCliqClient:
         workflow, _source_root = cls._extract_operator_workflow_with_source(
             watch_payload
         )
-        return workflow
+        if not isinstance(workflow, dict):
+            return {}
+
+        normalized_workflow = dict(workflow)
+        package_id = str(normalized_workflow.get("packageId") or "").strip().lower()
+        package_scope = str(normalized_workflow.get("packageScope") or "").strip()
+        if package_id == "cliq-195" and not package_scope:
+            normalized_workflow["packageScope"] = "operator-workflows"
+
+        return normalized_workflow
 
     @staticmethod
     def _extract_handoff_source_path(

@@ -12,6 +12,7 @@
 - No publish, version bump, or tagging actions were performed.
 
 ### Added
+- Hardened cliq-195 operator-workflow packaging resilience so watch-reply/read-ack/watch-act now backfill `operatorWorkflow.packageScope=operator-workflows` when cliq-195 workflow metadata is present but package-scope metadata is omitted, preserving a stable package contract surface for downstream automation loops.
 - Expanded the cliq-195 watch-context operator-workflow contract with explicit package contract metadata (`operatorWorkflow.packageContractId=cliq-195-operator-workflow-v1`), and preserved it through watch-reply/read-ack builder outputs and `zoho cliq watch-act` result surfaces for stable downstream contract negotiation.
 - Expanded the cliq-195 watch-context operator-workflow contract with explicit package version metadata (`operatorWorkflow.packageVersion=v1`), and preserved it through watch-reply/read-ack builder outputs and `zoho cliq watch-act` result surfaces for stable downstream contract negotiation.
 - Refined cliq-195 watch-reply read-ack precedence so `operatorWorkflow.externalEscalation.actionHint.readAckAction` is evaluated before `watchActAction`, ensuring explicit read-ack intent still applies when escalation watch-action hints point at non-ack actions.

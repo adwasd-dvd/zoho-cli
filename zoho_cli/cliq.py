@@ -1693,6 +1693,7 @@ class ZohoCliqClient:
                     "defaultAction": "reply-latest",
                     "actionHint": {
                         "watchActAction": "reply-latest",
+                        "readAckAction": "read-ack-latest",
                         "bridgeActionId": "reply-latest",
                     },
                 },

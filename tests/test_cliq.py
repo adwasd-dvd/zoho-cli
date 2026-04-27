@@ -3052,6 +3052,10 @@ def test_build_watch_context_seed_includes_watch_intake_contract_metadata() -> N
         == "reply-latest"
     )
     assert (
+        payload["operatorWorkflow"]["internalLoop"]["actionHint"]["readAckAction"]
+        == "read-ack-latest"
+    )
+    assert (
         payload["operatorWorkflow"]["internalLoop"]["actionHint"]["bridgeActionId"]
         == "reply-latest"
     )

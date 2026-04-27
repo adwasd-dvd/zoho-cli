@@ -1696,6 +1696,10 @@ def test_cliq_watch_context_from_channel(
         == "reply-latest"
     )
     assert (
+        payload["operatorWorkflow"]["internalLoop"]["actionHint"]["readAckAction"]
+        == "read-ack-latest"
+    )
+    assert (
         payload["operatorWorkflow"]["internalLoop"]["actionHint"]["bridgeActionId"]
         == "reply-latest"
     )

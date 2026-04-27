@@ -1,10 +1,14 @@
-last_run_at: "2026-04-27T10:46:28Z"
+last_run_at: "2026-04-27T11:06:20Z"
 last_result: passing
-current_focus: cliq-195-medium-scope-integration-refresh-rerun-20260427T104628Z
+current_focus: cliq-195-focused-consume-policy-parity-hardening-20260427T110620Z
 suites:
   unit:
     status: passing
     notes:
+      - "focused non-alias cliq-195 hardening increment at 2026-04-27T11:06:20Z"
+      - "no behavior change; added consume-policy parity regression guard ensuring watch-context internal-loop consume policy stays aligned with watch-intake consume metadata"
+      - "./.venv/bin/python -m pytest -q tests/test_cliq.py::test_build_watch_context_seed_internal_loop_consume_policy_matches_watch_intake_consume -> 1 passed in 0.19s"
+      - "./.venv/bin/ruff format tests/test_cliq.py && ./.venv/bin/ruff format --check tests/test_cliq.py -> 1 file reformatted, then 1 file already formatted"
       - "integration-loop medium-scope cliq-195 refresh rerun at 2026-04-27T10:46:28Z"
       - "no behavior change; watch-context/watch-act/bridge-run verification stayed green after internal-loop consume-policy action-id metadata increment"
       - "./.venv/bin/python -m pytest -q tests/test_registry.py tests/test_membrane_bridge.py -> 489 passed in 9.04s"

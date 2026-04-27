@@ -3175,6 +3175,21 @@ def test_build_watch_context_seed_includes_watch_intake_contract_metadata() -> N
     }
 
 
+def test_build_watch_context_seed_internal_loop_consume_policy_matches_watch_intake_consume() -> (
+    None
+):
+    payload = cliq.ZohoCliqClient.build_watch_context_seed(
+        [{"id": "M2", "text": "latest"}, {"id": "M1", "text": "older"}],
+        since_message_id="M1",
+        max_messages=5,
+    )
+
+    watch_consume = payload["watchIntake"]["consume"]
+    internal_loop = payload["operatorWorkflow"]["internalLoop"]
+    assert internal_loop["consumePolicy"] == watch_consume
+    assert internal_loop["actionHint"]["readAckAction"] == watch_consume["ackAction"]
+
+
 def test_build_watch_reply_action_preserves_watch_intake_metadata() -> None:
     action = cliq.ZohoCliqClient.build_watch_reply_action(
         {

@@ -3068,6 +3068,11 @@ def test_build_watch_context_seed_includes_watch_intake_contract_metadata() -> N
         payload["operatorWorkflow"]["externalEscalation"]["defaultAction"]
         == "notify-mail"
     )
+    assert payload["operatorWorkflow"]["externalEscalation"]["consumePolicy"] == {
+        "ackRequired": True,
+        "ackAction": "read-ack-latest",
+        "actionId": "watch-loop",
+    }
     assert (
         payload["operatorWorkflow"]["externalEscalation"]["actionHint"][
             "watchActAction"
@@ -3200,6 +3205,7 @@ def test_build_watch_context_seed_internal_loop_consume_policy_matches_watch_int
         external_escalation["actionHint"]["watchActAction"]
         == watch_consume["ackAction"]
     )
+    assert external_escalation["consumePolicy"] == watch_consume
     assert (
         external_escalation["actionHint"]["bridgeActionId"]
         == external_escalation["defaultAction"]
@@ -3219,6 +3225,10 @@ def test_build_watch_reply_action_preserves_watch_intake_metadata() -> None:
                 "packageId": "cliq-195",
                 "externalEscalation": {
                     "defaultAction": "notify-mail",
+                    "consumePolicy": {
+                        "ackAction": "read-ack-latest",
+                        "ackRequired": True,
+                    },
                     "actionHint": {
                         "watchActAction": "read-ack-latest",
                         "bridgeActionId": "notify-mail",
@@ -3272,6 +3282,10 @@ def test_build_watch_reply_action_preserves_watch_intake_metadata() -> None:
         action["operatorWorkflow"]["externalEscalation"]["defaultAction"]
         == "notify-mail"
     )
+    assert action["operatorWorkflow"]["externalEscalation"]["consumePolicy"] == {
+        "ackAction": "read-ack-latest",
+        "ackRequired": True,
+    }
     assert (
         action["operatorWorkflow"]["externalEscalation"]["actionHint"]["bridgeActionId"]
         == "notify-mail"
@@ -3462,6 +3476,10 @@ def test_build_watch_read_ack_action_preserves_watch_intake_metadata() -> None:
                 "internalLoop": {"defaultAction": "reply-latest"},
                 "externalEscalation": {
                     "defaultAction": "notify-mail",
+                    "consumePolicy": {
+                        "ackAction": "read-ack-latest",
+                        "ackRequired": True,
+                    },
                     "actionHint": {
                         "watchActAction": "read-ack-latest",
                         "bridgeActionId": "notify-mail",
@@ -3510,6 +3528,10 @@ def test_build_watch_read_ack_action_preserves_watch_intake_metadata() -> None:
     assert action["watchIntake"]["consume"]["ackRequired"] is True
     assert action["operatorWorkflow"]["packageId"] == "cliq-195"
     assert action["operatorWorkflow"]["internalLoop"]["defaultAction"] == "reply-latest"
+    assert action["operatorWorkflow"]["externalEscalation"]["consumePolicy"] == {
+        "ackAction": "read-ack-latest",
+        "ackRequired": True,
+    }
     assert (
         action["operatorWorkflow"]["externalEscalation"]["handoff"]["contractId"]
         == "cliq-195-escalation-handoff-v1"

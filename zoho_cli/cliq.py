@@ -1705,8 +1705,10 @@ class ZohoCliqClient:
                     },
                 },
                 "externalEscalation": {
+                    "contractId": "cliq-195-external-escalation-v1",
                     "mode": "human-review",
                     "defaultAction": external_default_action,
+                    "consumePolicy": watch_consume,
                     "actionHint": {
                         "watchActAction": watch_ack_action,
                         "bridgeActionId": external_default_action,

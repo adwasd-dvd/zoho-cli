@@ -1714,6 +1714,11 @@ def test_cliq_watch_context_from_channel(
         ]
         == "notify-mail"
     )
+    assert payload["operatorWorkflow"]["externalEscalation"]["consumePolicy"] == {
+        "ackRequired": True,
+        "ackAction": "read-ack-latest",
+        "actionId": "watch-loop",
+    }
     assert (
         payload["operatorWorkflow"]["externalEscalation"]["handoff"]["contractId"]
         == "cliq-195-escalation-handoff-v1"
@@ -2022,6 +2027,10 @@ def test_cliq_watch_act_preserves_watch_intake_metadata_in_result(
                     "packageId": "cliq-195",
                     "externalEscalation": {
                         "defaultAction": "notify-mail",
+                        "consumePolicy": {
+                            "ackAction": "read-ack-latest",
+                            "ackRequired": True,
+                        },
                         "actionHint": {
                             "watchActAction": "read-ack-latest",
                             "bridgeActionId": "notify-mail",
@@ -2101,6 +2110,10 @@ def test_cliq_watch_act_preserves_watch_intake_metadata_in_result(
         payload["operatorWorkflow"]["externalEscalation"]["defaultAction"]
         == "notify-mail"
     )
+    assert payload["operatorWorkflow"]["externalEscalation"]["consumePolicy"] == {
+        "ackAction": "read-ack-latest",
+        "ackRequired": True,
+    }
     assert (
         payload["operatorWorkflow"]["externalEscalation"]["actionHint"][
             "watchActAction"

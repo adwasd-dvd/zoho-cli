@@ -5111,6 +5111,82 @@ def test_execute_watch_reply_action_honors_kebab_consume_policy_alias(
     assert result["readAck"]["applied"] is True
 
 
+@respx.mock
+def test_execute_watch_reply_action_honors_ack_action_id_alias(
+    client: cliq.ZohoCliqClient,
+) -> None:
+    reply_route = respx.post(
+        "https://cliq.zoho.com/api/v2/chats/CT_1/messages/M2/reply"
+    ).mock(return_value=httpx.Response(200, json={"data": {"id": "M3"}}))
+    read_route = respx.post(
+        "https://cliq.zoho.com/api/v2/chats/CT_1/messages/M2/read"
+    ).mock(
+        return_value=httpx.Response(200, json={"data": {"id": "M2", "status": "ok"}})
+    )
+
+    result = client.execute_watch_reply_action(
+        {
+            "chatId": "CT_1",
+            "channelId": "O1",
+            "watchIntake": {
+                "consume": {
+                    "ackActionId": "read-ack-latest",
+                }
+            },
+            "messages": [
+                {"messageId": "M1", "senderId": "U1", "text": "first"},
+                {"messageId": "M2", "senderId": "U2", "text": "latest"},
+            ],
+        },
+        text="ack",
+    )
+
+    assert reply_route.called
+    assert read_route.called
+    assert result["status"] == "ok"
+    assert result["applied"] is True
+    assert result["readAck"]["required"] is True
+    assert result["readAck"]["applied"] is True
+
+
+@respx.mock
+def test_execute_watch_reply_action_honors_kebab_ack_action_id_alias(
+    client: cliq.ZohoCliqClient,
+) -> None:
+    reply_route = respx.post(
+        "https://cliq.zoho.com/api/v2/chats/CT_1/messages/M2/reply"
+    ).mock(return_value=httpx.Response(200, json={"data": {"id": "M3"}}))
+    read_route = respx.post(
+        "https://cliq.zoho.com/api/v2/chats/CT_1/messages/M2/read"
+    ).mock(
+        return_value=httpx.Response(200, json={"data": {"id": "M2", "status": "ok"}})
+    )
+
+    result = client.execute_watch_reply_action(
+        {
+            "chatId": "CT_1",
+            "channelId": "O1",
+            "watch-intake": {
+                "consume-policy": {
+                    "ack-action-id": "read-ack-latest",
+                }
+            },
+            "messages": [
+                {"messageId": "M1", "senderId": "U1", "text": "first"},
+                {"messageId": "M2", "senderId": "U2", "text": "latest"},
+            ],
+        },
+        text="ack",
+    )
+
+    assert reply_route.called
+    assert read_route.called
+    assert result["status"] == "ok"
+    assert result["applied"] is True
+    assert result["readAck"]["required"] is True
+    assert result["readAck"]["applied"] is True
+
+
 def test_execute_watch_reply_action_no_messages_returns_noop(
     client: cliq.ZohoCliqClient,
 ) -> None:

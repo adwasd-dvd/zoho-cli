@@ -1688,6 +1688,18 @@ def test_cliq_watch_context_from_channel(
     assert payload["watchIntake"]["consume"]["actionId"] == "watch-loop"
     assert payload["operatorWorkflow"]["packageId"] == "cliq-195"
     assert (
+        payload["operatorWorkflow"]["internalLoop"]["contractId"]
+        == "cliq-195-internal-loop-v1"
+    )
+    assert (
+        payload["operatorWorkflow"]["internalLoop"]["actionHint"]["watchActAction"]
+        == "reply-latest"
+    )
+    assert (
+        payload["operatorWorkflow"]["internalLoop"]["actionHint"]["bridgeActionId"]
+        == "reply-latest"
+    )
+    assert (
         payload["operatorWorkflow"]["externalEscalation"]["actionHint"][
             "bridgeActionId"
         ]

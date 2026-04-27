@@ -1688,8 +1688,13 @@ class ZohoCliqClient:
                 "packageId": "cliq-195",
                 "packageScope": "operator-workflows",
                 "internalLoop": {
+                    "contractId": "cliq-195-internal-loop-v1",
                     "mode": "watch-loop",
                     "defaultAction": "reply-latest",
+                    "actionHint": {
+                        "watchActAction": "reply-latest",
+                        "bridgeActionId": "reply-latest",
+                    },
                 },
                 "externalEscalation": {
                     "mode": "human-review",

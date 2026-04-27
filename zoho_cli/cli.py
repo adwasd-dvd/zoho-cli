@@ -2092,6 +2092,10 @@ def _extract_watch_intake_with_source(
     if isinstance(snake_watch_intake, dict):
         return snake_watch_intake, "watch_intake"
 
+    kebab_watch_intake = watch_payload.get("watch-intake")
+    if isinstance(kebab_watch_intake, dict):
+        return kebab_watch_intake, "watch-intake"
+
     return {}, ""
 
 

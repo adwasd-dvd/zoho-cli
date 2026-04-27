@@ -12,6 +12,7 @@
 - No publish, version bump, or tagging actions were performed.
 
 ### Added
+- Refined cliq-195 watch-loop packaging compatibility so CLI watch payload extraction now accepts kebab-case root alias `watch-intake` (in addition to `watchIntake` and `watch_intake`) for watch-act and bridge-run action inference while preserving `actionSourcePath` / `actionSourceMetadata` provenance.
 - Refined cliq-195 operator-workflow packaging compatibility so nested fallback watch-action extraction now also accepts non-canonical handoff aliases (`hand_off` and `hand-off`) when resolving `envelopeDefaults`/`payloadTemplate` metadata source paths, preserving canonical escalation-envelope field values and provenance.
 - Added property-style alias-matrix invariant coverage for cliq-195 watch-action escalation metadata, asserting stable `escalationEnvelope` and `escalationEnvelopeMetadata.sourcePath` behavior across camel/snake/kebab operator-workflow and external-escalation alias roots for nested envelope-defaults and payload-template paths.
 - Refined cliq-195 escalation-envelope metadata internals by centralizing nested handoff field-source path derivation for `envelopeDefaults`/`envelope_defaults`/`envelope-defaults` and `payloadTemplate`/`payload_template`/`payload-template` alias families, with behavior unchanged and explicit regression coverage for the no-alias/no-fallback envelope path.

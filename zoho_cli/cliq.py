@@ -74,6 +74,15 @@ def infer_cliq_base_url(
 class ZohoCliqClient:
     """Minimal Cliq client shell for phase-1 scaffolding."""
 
+    _HANDOFF_SOURCE_PATH_MARKERS: tuple[str, ...] = (
+        ".handoff.envelopeDefaults",
+        ".handoff.envelope_defaults",
+        ".handoff.envelope-defaults",
+        ".handoff.payloadTemplate",
+        ".handoff.payload_template",
+        ".handoff.payload-template",
+    )
+
     def __init__(self, access_token: str, base_url: str | None = None) -> None:
         self.base_url = (base_url or infer_cliq_base_url()).rstrip("/")
         parsed_base = urlparse(self.base_url)
@@ -1204,14 +1213,6 @@ class ZohoCliqClient:
     def _extract_handoff_source_path(
         field_sources: dict[str, dict[str, Any]],
     ) -> str:
-        markers = (
-            ".handoff.envelopeDefaults",
-            ".handoff.envelope_defaults",
-            ".handoff.envelope-defaults",
-            ".handoff.payloadTemplate",
-            ".handoff.payload_template",
-            ".handoff.payload-template",
-        )
         for key in ("target", "to", "subject", "body"):
             source = field_sources.get(key)
             if not isinstance(source, dict):
@@ -1219,11 +1220,32 @@ class ZohoCliqClient:
             source_path = str(source.get("sourcePath") or "")
             if not source_path:
                 continue
-            for marker in markers:
+            for marker in ZohoCliqClient._HANDOFF_SOURCE_PATH_MARKERS:
                 marker_index = source_path.find(marker)
                 if marker_index >= 0:
                     return source_path[: marker_index + len(".handoff")]
         return ""
+
+    @classmethod
+    def _build_nested_handoff_field_sources(
+        cls,
+        *,
+        source: str,
+        source_root: str,
+        payload: dict[str, Any],
+        field_alias_keys: dict[str, tuple[str, ...]],
+    ) -> dict[str, dict[str, Any]]:
+        return {
+            key: cls._build_escalation_envelope_field_source_metadata(
+                source=source,
+                source_path=(
+                    f"{source_root}.{cls._select_existing_alias_key(payload, alias_keys)}"
+                ),
+                from_top_level_alias=False,
+                from_nested_fallback=True,
+            )
+            for key, alias_keys in field_alias_keys.items()
+        }
 
     @staticmethod
     def _build_external_handoff_envelope_defaults(
@@ -1338,23 +1360,12 @@ class ZohoCliqClient:
                 "subject": ("subject", "summary"),
                 "body": ("body", "reason"),
             }
-
-            def _source_path_for(field: str) -> str:
-                selected = cls._select_existing_alias_key(
-                    envelope_defaults,
-                    envelope_field_keys[field],
-                )
-                return f"{source_root}.{selected}"
-
-            field_sources = {
-                key: cls._build_escalation_envelope_field_source_metadata(
-                    source="nested-envelope-defaults",
-                    source_path=_source_path_for(key),
-                    from_top_level_alias=False,
-                    from_nested_fallback=True,
-                )
-                for key in ("target", "to", "subject", "body")
-            }
+            field_sources = cls._build_nested_handoff_field_sources(
+                source="nested-envelope-defaults",
+                source_root=source_root,
+                payload=envelope_defaults,
+                field_alias_keys=envelope_field_keys,
+            )
 
             return (
                 cls._normalize_external_handoff_envelope_defaults(envelope_defaults),
@@ -1376,23 +1387,12 @@ class ZohoCliqClient:
                 "subject": ("summary", "subject"),
                 "body": ("reason", "body"),
             }
-
-            def _source_path_for(field: str) -> str:
-                selected = cls._select_existing_alias_key(
-                    payload_template,
-                    payload_template_field_keys[field],
-                )
-                return f"{source_root}.{selected}"
-
-            field_sources = {
-                key: cls._build_escalation_envelope_field_source_metadata(
-                    source="nested-payload-template",
-                    source_path=_source_path_for(key),
-                    from_top_level_alias=False,
-                    from_nested_fallback=True,
-                )
-                for key in ("target", "to", "subject", "body")
-            }
+            field_sources = cls._build_nested_handoff_field_sources(
+                source="nested-payload-template",
+                source_root=source_root,
+                payload=payload_template,
+                field_alias_keys=payload_template_field_keys,
+            )
 
             return (
                 cls._build_external_handoff_envelope_defaults(payload_template),

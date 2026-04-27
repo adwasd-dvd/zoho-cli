@@ -3512,6 +3512,36 @@ def test_build_watch_read_ack_action_preserves_watch_intake_metadata() -> None:
     }
 
 
+def test_watch_actions_leave_escalation_envelope_empty_without_alias_or_fallback() -> (
+    None
+):
+    watch_payload = {
+        "chatId": "CT_1",
+        "channelId": "O1",
+        "messages": [{"messageId": "M1", "senderId": "U1", "text": "latest"}],
+    }
+
+    reply_action = cliq.ZohoCliqClient.build_watch_reply_action(
+        watch_payload,
+        text="ack",
+    )
+    read_ack_action = cliq.ZohoCliqClient.build_watch_read_ack_action(watch_payload)
+
+    expected_metadata = {
+        "source": "",
+        "sourcePath": "",
+        "fromTopLevelAlias": False,
+        "fromNestedFallback": False,
+        "usedFieldFallback": False,
+        "fieldSources": {},
+    }
+
+    assert reply_action["escalationEnvelope"] == {}
+    assert read_ack_action["escalationEnvelope"] == {}
+    assert reply_action["escalationEnvelopeMetadata"] == expected_metadata
+    assert read_ack_action["escalationEnvelopeMetadata"] == expected_metadata
+
+
 def test_watch_actions_prefer_top_level_escalation_envelope_with_nested_fallback() -> (
     None
 ):

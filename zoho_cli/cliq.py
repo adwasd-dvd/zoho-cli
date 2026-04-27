@@ -1180,8 +1180,11 @@ class ZohoCliqClient:
             consume.get("ack_action"),
             consume.get("ack-action"),
             consume.get("ackActionId"),
+            consume.get("ackActionID"),
             consume.get("ack_action_id"),
+            consume.get("ack_action_ID"),
             consume.get("ack-action-id"),
+            consume.get("ack-action-ID"),
         )
         for candidate in ack_action_candidates:
             value = str(candidate or "").strip().lower()

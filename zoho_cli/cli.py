@@ -2117,6 +2117,43 @@ def _extract_operator_workflow_with_source(
     return {}, ""
 
 
+def _extract_watch_consume_with_source(
+    watch_intake: dict[str, Any],
+    watch_intake_source_root: str,
+) -> tuple[dict[str, Any], str]:
+    for alias in ("consume", "consumePolicy", "consume_policy", "consume-policy"):
+        candidate = watch_intake.get(alias)
+        if isinstance(candidate, dict):
+            return candidate, f"{watch_intake_source_root}.{alias}"
+    return {}, ""
+
+
+def _collect_action_id_like_candidates(
+    payload: dict[str, Any],
+    source_root: str,
+) -> list[tuple[Any, str]]:
+    if not isinstance(payload, dict) or not source_root:
+        return []
+
+    buckets: dict[str, list[tuple[Any, str]]] = {
+        "bridgeactionid": [],
+        "actionid": [],
+        "defaultactionid": [],
+    }
+
+    for key, value in payload.items():
+        if not isinstance(key, str):
+            continue
+        normalized = "".join(ch for ch in key.lower() if ch.isalnum())
+        if normalized in buckets:
+            buckets[normalized].append((value, f"{source_root}.{key}"))
+
+    candidates: list[tuple[Any, str]] = []
+    for normalized in ("bridgeactionid", "actionid", "defaultactionid"):
+        candidates.extend(buckets[normalized])
+    return candidates
+
+
 def cliq_bridge_run(
     action_id: Optional[str] = typer.Argument(
         None,
@@ -2694,6 +2731,16 @@ def cliq_bridge_run(
                         ),
                     ]
                 )
+
+            consume_alias_cfg, consume_alias_source_root = (
+                _extract_watch_consume_with_source(intake, intake_source_root)
+            )
+            watch_candidates.extend(
+                _collect_action_id_like_candidates(
+                    consume_alias_cfg,
+                    consume_alias_source_root,
+                )
+            )
 
         escalation_candidates: list[tuple[Any, str]] = []
         workflow, workflow_source_root = _extract_operator_workflow_with_source(
@@ -12219,6 +12266,16 @@ def cliq_watch_act(
                             ),
                         ]
                     )
+
+                consume_alias_cfg, consume_alias_source_root = (
+                    _extract_watch_consume_with_source(intake, intake_source_root)
+                )
+                intake_candidates.extend(
+                    _collect_action_id_like_candidates(
+                        consume_alias_cfg,
+                        consume_alias_source_root,
+                    )
+                )
 
                 for candidate, source_path in intake_candidates:
                     value = str(candidate or "").strip().lower()

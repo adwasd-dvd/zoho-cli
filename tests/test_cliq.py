@@ -4044,6 +4044,148 @@ def test_watch_actions_accept_kebab_case_payload_template_alias_source_paths() -
     )
 
 
+def test_watch_actions_accept_kebab_case_payload_template_envelope_field_aliases() -> (
+    None
+):
+    watch_payload = {
+        "chatId": "CT_1",
+        "channelId": "O1",
+        "operator-workflow": {
+            "external-escalation": {
+                "handoff": {
+                    "payload-template": {
+                        "target": {
+                            "kind": "external-contact",
+                            "channel": "mail",
+                            "defaultAction": "notify-mail",
+                        },
+                        "to": "fallback@happy-distro.co.uk",
+                        "subject": "Fallback subject",
+                        "body": "Fallback body",
+                    }
+                }
+            }
+        },
+        "messages": [
+            {"messageId": "M1", "senderId": "U1", "text": "latest"},
+        ],
+    }
+
+    reply_action = cliq.ZohoCliqClient.build_watch_reply_action(
+        watch_payload,
+        text="ack",
+    )
+
+    assert reply_action["escalationEnvelope"] == {
+        "target": {
+            "kind": "external-contact",
+            "channel": "mail",
+            "defaultAction": "notify-mail",
+        },
+        "to": "fallback@happy-distro.co.uk",
+        "subject": "Fallback subject",
+        "body": "Fallback body",
+    }
+    assert (
+        reply_action["escalationEnvelopeMetadata"]["fieldSources"]["to"]["sourcePath"]
+        == "operator-workflow.external-escalation.handoff.payload-template.to"
+    )
+    assert (
+        reply_action["escalationEnvelopeMetadata"]["fieldSources"]["subject"][
+            "sourcePath"
+        ]
+        == "operator-workflow.external-escalation.handoff.payload-template.subject"
+    )
+    assert (
+        reply_action["escalationEnvelopeMetadata"]["fieldSources"]["body"]["sourcePath"]
+        == "operator-workflow.external-escalation.handoff.payload-template.body"
+    )
+
+
+def test_watch_actions_nested_fallback_metadata_source_path_with_kebab_envelope_defaults() -> (
+    None
+):
+    watch_payload = {
+        "chatId": "CT_1",
+        "channelId": "O1",
+        "operator-workflow": {
+            "external-escalation": {
+                "handoff": {
+                    "envelope-defaults": {
+                        "target": {
+                            "kind": "external-contact",
+                            "channel": "mail",
+                            "defaultAction": "notify-mail",
+                        },
+                        "to": "fallback@happy-distro.co.uk",
+                        "subject": "Fallback subject",
+                        "body": "Fallback body",
+                    }
+                }
+            }
+        },
+        "messages": [
+            {"messageId": "M1", "senderId": "U1", "text": "latest"},
+        ],
+    }
+
+    reply_action = cliq.ZohoCliqClient.build_watch_reply_action(
+        watch_payload,
+        text="ack",
+    )
+
+    assert reply_action["escalationEnvelopeMetadata"]["source"] == "nested-fallback"
+    assert (
+        reply_action["escalationEnvelopeMetadata"]["sourcePath"]
+        == "operator-workflow.external-escalation.handoff"
+    )
+    assert reply_action["escalationEnvelopeMetadata"]["fromTopLevelAlias"] is False
+    assert reply_action["escalationEnvelopeMetadata"]["fromNestedFallback"] is True
+    assert reply_action["escalationEnvelopeMetadata"]["usedFieldFallback"] is True
+
+
+def test_watch_actions_nested_fallback_metadata_source_path_with_kebab_payload_template() -> (
+    None
+):
+    watch_payload = {
+        "chatId": "CT_1",
+        "channelId": "O1",
+        "operator-workflow": {
+            "external-escalation": {
+                "handoff": {
+                    "payload-template": {
+                        "target": {
+                            "kind": "external-contact",
+                            "channel": "mail",
+                            "defaultAction": "notify-mail",
+                        },
+                        "recipient": "fallback@happy-distro.co.uk",
+                        "summary": "Fallback subject",
+                        "reason": "Fallback body",
+                    }
+                }
+            }
+        },
+        "messages": [
+            {"messageId": "M1", "senderId": "U1", "text": "latest"},
+        ],
+    }
+
+    reply_action = cliq.ZohoCliqClient.build_watch_reply_action(
+        watch_payload,
+        text="ack",
+    )
+
+    assert reply_action["escalationEnvelopeMetadata"]["source"] == "nested-fallback"
+    assert (
+        reply_action["escalationEnvelopeMetadata"]["sourcePath"]
+        == "operator-workflow.external-escalation.handoff"
+    )
+    assert reply_action["escalationEnvelopeMetadata"]["fromTopLevelAlias"] is False
+    assert reply_action["escalationEnvelopeMetadata"]["fromNestedFallback"] is True
+    assert reply_action["escalationEnvelopeMetadata"]["usedFieldFallback"] is True
+
+
 def test_watch_actions_preserve_nested_envelope_defaults_alias_source_paths() -> None:
     watch_payload = {
         "chatId": "CT_1",

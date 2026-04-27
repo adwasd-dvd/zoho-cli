@@ -1195,8 +1195,10 @@ class ZohoCliqClient:
         markers = (
             ".handoff.envelopeDefaults",
             ".handoff.envelope_defaults",
+            ".handoff.envelope-defaults",
             ".handoff.payloadTemplate",
             ".handoff.payload_template",
+            ".handoff.payload-template",
         )
         for key in ("target", "to", "subject", "body"):
             source = field_sources.get(key)
@@ -1216,11 +1218,26 @@ class ZohoCliqClient:
         payload_template: dict[str, Any],
     ) -> dict[str, Any]:
         target = payload_template.get("target")
+        to_value = (
+            payload_template.get("recipient")
+            if "recipient" in payload_template
+            else payload_template.get("to")
+        )
+        subject_value = (
+            payload_template.get("summary")
+            if "summary" in payload_template
+            else payload_template.get("subject")
+        )
+        body_value = (
+            payload_template.get("reason")
+            if "reason" in payload_template
+            else payload_template.get("body")
+        )
         return {
             "target": dict(target) if isinstance(target, dict) else {},
-            "to": str(payload_template.get("recipient") or ""),
-            "subject": str(payload_template.get("summary") or ""),
-            "body": str(payload_template.get("reason") or ""),
+            "to": str(to_value or ""),
+            "subject": str(subject_value or ""),
+            "body": str(body_value or ""),
         }
 
     @staticmethod
@@ -1368,30 +1385,49 @@ class ZohoCliqClient:
 
         if isinstance(payload_template, dict):
             source_root = f"{escalation_source_root}.handoff.{payload_template_key}"
+            payload_template_field_keys: dict[str, tuple[str, ...]] = {
+                "target": ("target",),
+                "to": ("recipient", "to"),
+                "subject": ("summary", "subject"),
+                "body": ("reason", "body"),
+            }
+
+            def _source_path_for(field: str) -> str:
+                candidates = payload_template_field_keys[field]
+                selected = next(
+                    (
+                        candidate
+                        for candidate in candidates
+                        if candidate in payload_template
+                    ),
+                    candidates[0],
+                )
+                return f"{source_root}.{selected}"
+
             return (
                 cls._build_external_handoff_envelope_defaults(payload_template),
                 {
                     "target": cls._build_escalation_envelope_field_source_metadata(
                         source="nested-payload-template",
-                        source_path=f"{source_root}.target",
+                        source_path=_source_path_for("target"),
                         from_top_level_alias=False,
                         from_nested_fallback=True,
                     ),
                     "to": cls._build_escalation_envelope_field_source_metadata(
                         source="nested-payload-template",
-                        source_path=f"{source_root}.recipient",
+                        source_path=_source_path_for("to"),
                         from_top_level_alias=False,
                         from_nested_fallback=True,
                     ),
                     "subject": cls._build_escalation_envelope_field_source_metadata(
                         source="nested-payload-template",
-                        source_path=f"{source_root}.summary",
+                        source_path=_source_path_for("subject"),
                         from_top_level_alias=False,
                         from_nested_fallback=True,
                     ),
                     "body": cls._build_escalation_envelope_field_source_metadata(
                         source="nested-payload-template",
-                        source_path=f"{source_root}.reason",
+                        source_path=_source_path_for("body"),
                         from_top_level_alias=False,
                         from_nested_fallback=True,
                     ),

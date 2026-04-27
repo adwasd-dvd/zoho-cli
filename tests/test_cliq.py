@@ -2964,6 +2964,23 @@ def test_cliq_client_get_message_reactions(client: cliq.ZohoCliqClient) -> None:
     assert result["data"][0]["emoji_code"] == "👀"
 
 
+@respx.mock
+def test_cliq_client_get_message_reactions_falls_back_to_openapi_alt_path(
+    client: cliq.ZohoCliqClient,
+) -> None:
+    respx.get("https://cliq.zoho.com/api/v2/chats/CT_1/messages/M1/reactions").mock(
+        return_value=httpx.Response(404, text="request_url_invalid")
+    )
+    route = respx.get(
+        "https://cliq.zoho.com/api/v2/chats/CT_1/messages/M1/messages/reactions"
+    ).mock(return_value=httpx.Response(200, json={"data": [{"emoji_code": "🔥"}]}))
+
+    result = client.get_message_reactions("M1", chat_id="CT_1")
+
+    assert route.called
+    assert result["data"][0]["emoji_code"] == "🔥"
+
+
 def test_build_watch_context_seed_with_cursor_found() -> None:
     payload = cliq.ZohoCliqClient.build_watch_context_seed(
         [
@@ -4741,6 +4758,49 @@ def test_cliq_client_create_thread(client: cliq.ZohoCliqClient) -> None:
 
 
 @respx.mock
+def test_cliq_client_create_thread_falls_back_to_openapi_channel_message(
+    client: cliq.ZohoCliqClient,
+) -> None:
+    respx.get("https://cliq.zoho.com/api/v2/channels/O1").mock(
+        return_value=httpx.Response(200, json={"data": {"chat_id": "CT_1"}})
+    )
+    respx.post(url__regex=r"https://cliq\.zoho\.com/api/v2/chats/CT_1/.*").mock(
+        return_value=httpx.Response(404, text="request_url_invalid")
+    )
+    respx.post(
+        url__regex=r"https://cliq\.zoho\.com/api/v2/channels/O1/messages/M1/.*"
+    ).mock(return_value=httpx.Response(404, text="request_url_invalid"))
+    respx.post("https://cliq.zoho.com/api/v2/channels/O1/threads").mock(
+        return_value=httpx.Response(404, text="request_url_invalid")
+    )
+    route = respx.post("https://cliq.zoho.com/api/v2/channels/O1/message").mock(
+        return_value=httpx.Response(200, json={"data": {"thread_id": "T2"}})
+    )
+
+    payload = client.create_thread("M1", "hello thread", channel_id="O1")
+
+    assert route.called
+    assert payload["data"]["thread_id"] == "T2"
+
+
+@respx.mock
+def test_cliq_client_reply_thread_falls_back_to_openapi_thread_chat_message(
+    client: cliq.ZohoCliqClient,
+) -> None:
+    respx.post(url__regex=r"https://cliq\.zoho\.com/api/v2/chats/C1/.*").mock(
+        return_value=httpx.Response(404, text="request_url_invalid")
+    )
+    route = respx.post("https://cliq.zoho.com/api/v2/chats/CT_THREAD_1/message").mock(
+        return_value=httpx.Response(200, json={"data": {"id": "TM1"}})
+    )
+
+    payload = client.reply_thread("CT_THREAD_1", "hello", chat_id="C1")
+
+    assert route.called
+    assert payload["data"]["id"] == "TM1"
+
+
+@respx.mock
 def test_cliq_client_list_threads_falls_back_to_thread_path(
     client: cliq.ZohoCliqClient,
 ) -> None:
@@ -4760,6 +4820,43 @@ def test_cliq_client_list_threads_falls_back_to_thread_path(
     payload = client.list_threads(chat_id="C1", limit=5)
     assert route.called
     assert payload["data"][0]["id"] == "T1"
+
+
+@respx.mock
+def test_cliq_client_list_thread_followers_falls_back_to_root_threads_endpoint(
+    client: cliq.ZohoCliqClient,
+) -> None:
+    respx.get("https://cliq.zoho.com/api/v2/chats/C1/threads/T1/followers").mock(
+        return_value=httpx.Response(404, text="request_url_invalid")
+    )
+    route = respx.get("https://cliq.zoho.com/api/v2/threads/T1/followers").mock(
+        return_value=httpx.Response(200, json={"data": [{"user_id": "U1"}]})
+    )
+
+    payload = client.list_thread_followers("T1", chat_id="C1")
+
+    assert route.called
+    assert payload["data"][0]["user_id"] == "U1"
+
+
+@respx.mock
+def test_cliq_client_get_thread_state_falls_back_to_root_threads_endpoint(
+    client: cliq.ZohoCliqClient,
+) -> None:
+    respx.get("https://cliq.zoho.com/api/v2/chats/C1/threads/T1/state").mock(
+        return_value=httpx.Response(404, text="request_url_invalid")
+    )
+    respx.get("https://cliq.zoho.com/api/v2/chats/C1/threads/T1").mock(
+        return_value=httpx.Response(404, text="request_url_invalid")
+    )
+    route = respx.get("https://cliq.zoho.com/api/v2/threads/T1").mock(
+        return_value=httpx.Response(200, json={"data": {"state": "open"}})
+    )
+
+    payload = client.get_thread_state("T1", chat_id="C1")
+
+    assert route.called
+    assert payload["data"]["state"] == "open"
 
 
 @respx.mock
@@ -5238,6 +5335,32 @@ def test_cliq_client_update_thread_state(client: cliq.ZohoCliqClient) -> None:
 
 
 @respx.mock
+def test_cliq_client_update_thread_state_falls_back_to_root_threads_put(
+    client: cliq.ZohoCliqClient,
+) -> None:
+    respx.post("https://cliq.zoho.com/api/v2/chats/C1/threads/T1/state").mock(
+        return_value=httpx.Response(404, text="request_url_invalid")
+    )
+    respx.put("https://cliq.zoho.com/api/v2/chats/C1/threads/T1/state").mock(
+        return_value=httpx.Response(404, text="request_url_invalid")
+    )
+    respx.patch("https://cliq.zoho.com/api/v2/chats/C1/threads/T1/state").mock(
+        return_value=httpx.Response(404, text="request_url_invalid")
+    )
+    respx.post("https://cliq.zoho.com/api/v2/chats/C1/threads/T1").mock(
+        return_value=httpx.Response(404, text="request_url_invalid")
+    )
+    route = respx.put("https://cliq.zoho.com/api/v2/threads/T1").mock(
+        return_value=httpx.Response(200, json={"data": {"state": "closed"}})
+    )
+
+    payload = client.update_thread_state("T1", "closed", chat_id="C1")
+
+    assert route.called
+    assert payload["data"]["state"] == "closed"
+
+
+@respx.mock
 def test_cliq_client_probe_capabilities_baseline(client: cliq.ZohoCliqClient) -> None:
     respx.get("https://cliq.zoho.com/api/v2/channels").mock(
         return_value=httpx.Response(200, json={"data": []})
@@ -5271,6 +5394,12 @@ def test_cliq_client_probe_capabilities_with_channel_context(
     respx.get("https://cliq.zoho.com/api/v2/channels/O1/messages").mock(
         return_value=httpx.Response(401, json={"code": "oauthtoken_scope_invalid"})
     )
+    respx.get("https://cliq.zoho.com/api/v2/chats/O1/threads").mock(
+        return_value=httpx.Response(404, text="request_url_invalid")
+    )
+    respx.get("https://cliq.zoho.com/api/v2/channels/O1/threads").mock(
+        return_value=httpx.Response(404, text="request_url_invalid")
+    )
 
     result = client.probe_capabilities(channel_id="O1")
 
@@ -5299,6 +5428,12 @@ def test_cliq_client_probe_capabilities_with_message_context(
     respx.get("https://cliq.zoho.com/api/v2/channels/O1/messages").mock(
         return_value=httpx.Response(200, json={"data": []})
     )
+    respx.get("https://cliq.zoho.com/api/v2/chats/CT_1/threads").mock(
+        return_value=httpx.Response(404, text="request_url_invalid")
+    )
+    respx.get("https://cliq.zoho.com/api/v2/channels/O1/threads").mock(
+        return_value=httpx.Response(404, text="request_url_invalid")
+    )
     respx.get("https://cliq.zoho.com/api/v2/chats/CT_1/messages/M1").mock(
         return_value=httpx.Response(200, json={"data": {"id": "M1"}})
     )
@@ -5308,15 +5443,30 @@ def test_cliq_client_probe_capabilities_with_message_context(
     respx.get("https://cliq.zoho.com/api/v2/chats/CT_1/messages/M1/files").mock(
         return_value=httpx.Response(404, text="request_url_invalid")
     )
+    respx.get("https://cliq.zoho.com/api/v2/chats/CT_1/messages/M1/reactions").mock(
+        return_value=httpx.Response(404, text="request_url_invalid")
+    )
+    respx.get(
+        "https://cliq.zoho.com/api/v2/chats/CT_1/messages/M1/messages/reactions"
+    ).mock(return_value=httpx.Response(404, text="request_url_invalid"))
     respx.get("https://cliq.zoho.com/api/v2/chats/CT_1/messages/M1/attachments").mock(
         return_value=httpx.Response(401, json={"code": "oauthtoken_scope_invalid"})
     )
     respx.get("https://cliq.zoho.com/api/v2/channels/O1/messages/M1").mock(
         return_value=httpx.Response(200, json={"data": {"id": "M1"}})
     )
+    respx.get("https://cliq.zoho.com/api/v2/channels/O1/messages/M1/messages").mock(
+        return_value=httpx.Response(404, text="request_url_invalid")
+    )
     respx.get("https://cliq.zoho.com/api/v2/channels/O1/messages/M1/files").mock(
         return_value=httpx.Response(404, text="request_url_invalid")
     )
+    respx.get("https://cliq.zoho.com/api/v2/channels/O1/messages/M1/reactions").mock(
+        return_value=httpx.Response(404, text="request_url_invalid")
+    )
+    respx.get(
+        "https://cliq.zoho.com/api/v2/channels/O1/messages/M1/messages/reactions"
+    ).mock(return_value=httpx.Response(404, text="request_url_invalid"))
     respx.get("https://cliq.zoho.com/api/v2/channels/O1/messages/M1/attachments").mock(
         return_value=httpx.Response(200, json={"data": []})
     )
@@ -5326,6 +5476,8 @@ def test_cliq_client_probe_capabilities_with_message_context(
     checks = {item["name"]: item for item in result["checks"]}
     assert checks["chats.messages.get"]["ok"] is True
     assert checks["chats.messages.get.alt"]["status"] == "not_supported"
+    assert checks["chats.messages.reactions"]["status"] == "not_supported"
+    assert checks["channels.messages.get.alt"]["status"] == "not_supported"
     assert checks["chats.messages.files"]["status"] == "not_supported"
     assert checks["chats.messages.attachments"]["status"] == "forbidden_or_scope"
     assert checks["channels.messages.attachments"]["ok"] is True

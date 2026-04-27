@@ -1283,6 +1283,12 @@ def test_cliq_capabilities_with_message_probe(
     respx.get("https://cliq.zoho.com/api/v2/channels/O1/messages").mock(
         return_value=httpx.Response(200, json={"data": []})
     )
+    respx.get("https://cliq.zoho.com/api/v2/chats/CT_1/threads").mock(
+        return_value=httpx.Response(404, text="request_url_invalid")
+    )
+    respx.get("https://cliq.zoho.com/api/v2/channels/O1/threads").mock(
+        return_value=httpx.Response(404, text="request_url_invalid")
+    )
     respx.get("https://cliq.zoho.com/api/v2/chats/CT_1/messages/M1").mock(
         return_value=httpx.Response(200, json={"data": {"id": "M1"}})
     )
@@ -1292,15 +1298,30 @@ def test_cliq_capabilities_with_message_probe(
     respx.get("https://cliq.zoho.com/api/v2/chats/CT_1/messages/M1/files").mock(
         return_value=httpx.Response(404, text="request_url_invalid")
     )
+    respx.get("https://cliq.zoho.com/api/v2/chats/CT_1/messages/M1/reactions").mock(
+        return_value=httpx.Response(404, text="request_url_invalid")
+    )
+    respx.get(
+        "https://cliq.zoho.com/api/v2/chats/CT_1/messages/M1/messages/reactions"
+    ).mock(return_value=httpx.Response(404, text="request_url_invalid"))
     respx.get("https://cliq.zoho.com/api/v2/chats/CT_1/messages/M1/attachments").mock(
         return_value=httpx.Response(200, json={"data": []})
     )
     respx.get("https://cliq.zoho.com/api/v2/channels/O1/messages/M1").mock(
         return_value=httpx.Response(200, json={"data": {"id": "M1"}})
     )
+    respx.get("https://cliq.zoho.com/api/v2/channels/O1/messages/M1/messages").mock(
+        return_value=httpx.Response(404, text="request_url_invalid")
+    )
     respx.get("https://cliq.zoho.com/api/v2/channels/O1/messages/M1/files").mock(
         return_value=httpx.Response(404, text="request_url_invalid")
     )
+    respx.get("https://cliq.zoho.com/api/v2/channels/O1/messages/M1/reactions").mock(
+        return_value=httpx.Response(404, text="request_url_invalid")
+    )
+    respx.get(
+        "https://cliq.zoho.com/api/v2/channels/O1/messages/M1/messages/reactions"
+    ).mock(return_value=httpx.Response(404, text="request_url_invalid"))
     respx.get("https://cliq.zoho.com/api/v2/channels/O1/messages/M1/attachments").mock(
         return_value=httpx.Response(200, json={"data": []})
     )
@@ -1321,7 +1342,7 @@ def test_cliq_capabilities_with_message_probe(
 
     payload = json.loads(result.output)
     assert payload["inputs"]["messageId"] == "M1"
-    assert payload["summary"]["total"] == 12
+    assert payload["summary"]["total"] == 19
 
 
 def test_cliq_capabilities_message_probe_requires_channel(

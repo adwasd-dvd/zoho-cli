@@ -1973,6 +1973,7 @@ class ZohoCliqClient:
 
         candidates: list[tuple[str, dict[str, Any] | None]] = [
             (f"/chats/{resolved_chat}/messages/{mid}/reactions", None),
+            (f"/chats/{resolved_chat}/messages/{mid}/messages/reactions", None),
             (f"/chats/{resolved_chat}/messageactions", {"message_id": mid}),
             (f"/chats/{resolved_chat}/messageactions/{mid}", None),
         ]
@@ -1981,6 +1982,10 @@ class ZohoCliqClient:
             candidates.extend(
                 [
                     (f"/channels/{channel_id}/messages/{mid}/reactions", None),
+                    (
+                        f"/channels/{channel_id}/messages/{mid}/messages/reactions",
+                        None,
+                    ),
                     (
                         f"/channels/{channel_id}/messageactions",
                         {"message_id": mid},
@@ -2746,6 +2751,8 @@ class ZohoCliqClient:
             {"text": body, "parent_message_id": parent_message_id},
             {"text": body, "parentMessageId": parent_message_id},
             {"text": body, "message_id": parent_message_id},
+            {"text": body, "thread_message_id": parent_message_id},
+            {"text": body, "threadMessageId": parent_message_id},
         ]
 
         candidates: list[tuple[str, str, dict[str, Any] | None]] = []
@@ -2786,6 +2793,16 @@ class ZohoCliqClient:
                         (
                             "POST",
                             f"/channels/{channel_id}/threads",
+                            payload,
+                        ),
+                        (
+                            "POST",
+                            f"/channels/{channel_id}/message",
+                            payload,
+                        ),
+                        (
+                            "POST",
+                            f"/channels/{channel_id}/messages",
                             payload,
                         ),
                     ]
@@ -2844,6 +2861,16 @@ class ZohoCliqClient:
                     (
                         "POST",
                         f"/chats/{resolved_chat}/messages/{target_thread}/reply",
+                        payload,
+                    ),
+                    (
+                        "POST",
+                        f"/chats/{target_thread}/message",
+                        payload,
+                    ),
+                    (
+                        "POST",
+                        f"/chats/{target_thread}/messages",
                         payload,
                     ),
                 ]
@@ -3490,7 +3517,15 @@ class ZohoCliqClient:
                 {"limit": limit_value},
             ),
             (
+                f"/threads/{target_thread}/followers",
+                {"limit": limit_value},
+            ),
+            (
                 f"/chats/{resolved_chat}/threads/{target_thread}/subscribers",
+                {"limit": limit_value},
+            ),
+            (
+                f"/threads/{target_thread}/nonfollowers",
                 {"limit": limit_value},
             ),
             (
@@ -3543,6 +3578,7 @@ class ZohoCliqClient:
         candidates: list[tuple[str, dict[str, Any] | None]] = [
             (f"/chats/{resolved_chat}/threads/{target_thread}/state", None),
             (f"/chats/{resolved_chat}/threads/{target_thread}", None),
+            (f"/threads/{target_thread}", None),
             (f"/chats/{resolved_chat}/messages/{target_thread}/thread/state", None),
         ]
         if channel_id:
@@ -3610,6 +3646,11 @@ class ZohoCliqClient:
                     (
                         "POST",
                         f"/chats/{resolved_chat}/threads/{target_thread}",
+                        payload,
+                    ),
+                    (
+                        "PUT",
+                        f"/threads/{target_thread}",
                         payload,
                     ),
                 ]
@@ -5142,6 +5183,20 @@ class ZohoCliqClient:
                         "path": f"/channels/{channel_id}/messages",
                         "params": {"limit": 1},
                     },
+                    {
+                        "name": "chats.threads.list",
+                        "kind": "read",
+                        "method": "GET",
+                        "path": f"/chats/{resolved_chat_id or channel_id}/threads",
+                        "params": {"limit": 1},
+                    },
+                    {
+                        "name": "channels.threads.list",
+                        "kind": "read",
+                        "method": "GET",
+                        "path": f"/channels/{channel_id}/threads",
+                        "params": {"limit": 1},
+                    },
                 ]
             )
 
@@ -5173,6 +5228,20 @@ class ZohoCliqClient:
                             "params": {},
                         },
                         {
+                            "name": "chats.messages.reactions",
+                            "kind": "read",
+                            "method": "GET",
+                            "path": f"/chats/{target_chat}/messages/{probe_message_id}/reactions",
+                            "params": {},
+                        },
+                        {
+                            "name": "chats.messages.reactions.alt",
+                            "kind": "read",
+                            "method": "GET",
+                            "path": f"/chats/{target_chat}/messages/{probe_message_id}/messages/reactions",
+                            "params": {},
+                        },
+                        {
                             "name": "chats.messages.attachments",
                             "kind": "read",
                             "method": "GET",
@@ -5193,10 +5262,31 @@ class ZohoCliqClient:
                             "params": {},
                         },
                         {
+                            "name": "channels.messages.get.alt",
+                            "kind": "read",
+                            "method": "GET",
+                            "path": f"/channels/{channel_id}/messages/{probe_message_id}/messages",
+                            "params": {},
+                        },
+                        {
                             "name": "channels.messages.files",
                             "kind": "read",
                             "method": "GET",
                             "path": f"/channels/{channel_id}/messages/{probe_message_id}/files",
+                            "params": {},
+                        },
+                        {
+                            "name": "channels.messages.reactions",
+                            "kind": "read",
+                            "method": "GET",
+                            "path": f"/channels/{channel_id}/messages/{probe_message_id}/reactions",
+                            "params": {},
+                        },
+                        {
+                            "name": "channels.messages.reactions.alt",
+                            "kind": "read",
+                            "method": "GET",
+                            "path": f"/channels/{channel_id}/messages/{probe_message_id}/messages/reactions",
                             "params": {},
                         },
                         {

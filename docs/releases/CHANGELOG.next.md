@@ -12,6 +12,7 @@
 - No publish, version bump, or tagging actions were performed.
 
 ### Added
+- Refined Cliq threads/reactions compatibility using reference OpenAPI patterns: added fallback endpoints for thread creation/reply/followers/state (`/channels/{channel_id}/message`, `/chats/{thread_chat_id}/message`, `/threads/{thread_chat_id}/followers`, `/threads/{thread_chat_id}`) and extended `zoho cliq capabilities --message-id` coverage for thread-list plus message-reaction probes (including alt reaction paths).
 - Refined cliq-195 watch-loop fallback compatibility so `zoho cliq watch-act` and `zoho cliq bridge-run --watch-file` now also accept kebab-Pascal-kebab lowercase-tail consume bridge alias `watchIntake.consume.bridge-Action-id` when inferring actions, while preserving `actionSourcePath` / `actionSourceMetadata` provenance.
 - Refined cliq-195 watch-loop fallback compatibility so `zoho cliq watch-act` and `zoho cliq bridge-run --watch-file` now also accept kebab-Pascal-kebab title-tail consume bridge alias `watchIntake.consume.bridge-Action-Id` when inferring actions, while preserving `actionSourcePath` / `actionSourceMetadata` provenance.
 - Refined cliq-195 watch-loop fallback compatibility so `zoho cliq watch-act` and `zoho cliq bridge-run --watch-file` now also accept kebab-kebab uppercase-tail consume bridge alias `watchIntake.consume.bridge-action-ID` when inferring actions, while preserving `actionSourcePath` / `actionSourceMetadata` provenance.

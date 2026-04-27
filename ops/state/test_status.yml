@@ -1,10 +1,14 @@
-last_run_at: "2026-04-27T06:53:23Z"
+last_run_at: "2026-04-27T07:27:21Z"
 last_result: passing
-current_focus: cliq-195-normalized-read-ack-alias-20260427T065323Z
+current_focus: cliq-195-mixed-consume-policy-root-alias-20260427T072721Z
 suites:
   unit:
     status: passing
     notes:
+      - "focused cliq-195 final alias-audit increment at 2026-04-27T07:27:21Z"
+      - "behavior increment: mixed consume-policy root aliases (for example `consume-Poli_cy`) now resolve in watch-act/bridge-run action inference and watch-reply read-ack inference without per-alias patches"
+      - "./.venv/bin/python -m pytest -q tests/test_cliq.py::test_execute_watch_reply_action_honors_mixed_consume_policy_alias tests/test_cli.py::test_cliq_watch_act_accepts_mixed_consume_policy_action_alias tests/test_membrane_bridge.py::test_cliq_bridge_run_watch_file_accepts_mixed_consume_policy_action_alias -> 3 passed in 2.25s"
+      - "./.venv/bin/ruff format --check zoho_cli/cliq.py zoho_cli/cli.py tests/test_cliq.py tests/test_cli.py tests/test_membrane_bridge.py -> 5 files already formatted"
       - "focused cliq-195 normalization increment at 2026-04-27T06:53:23Z"
       - "behavior increment: read-ack consume alias extraction now uses normalized-key matching, covering mixed delimiter/case variants (for example ack-Req_uired and action-ID) without per-alias patches"
       - "./.venv/bin/python -m pytest -q tests/test_cliq.py -k 'honors_uppercase_tail_ack_action_id_alias or honors_kebab_uppercase_tail_ack_action_id_alias or honors_mixed_ack_required_alias or honors_mixed_action_id_alias or honors_ack_action_id_alias or honors_kebab_ack_action_id_alias' -> 6 passed, 216 deselected in 0.26s"

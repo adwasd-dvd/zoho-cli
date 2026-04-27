@@ -1191,6 +1191,14 @@ class ZohoCliqClient:
         if not isinstance(consume, dict):
             consume = intake.get("consume-policy")
         if not isinstance(consume, dict):
+            for key, candidate in intake.items():
+                if not isinstance(key, str) or not isinstance(candidate, dict):
+                    continue
+                normalized_key = cls._normalize_alias_key(key)
+                if normalized_key in {"consume", "consumepolicy"}:
+                    consume = candidate
+                    break
+        if not isinstance(consume, dict):
             return False
 
         required_candidates = cls._collect_alias_values(

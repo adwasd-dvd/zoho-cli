@@ -2125,6 +2125,22 @@ def _extract_watch_consume_with_source(
         candidate = watch_intake.get(alias)
         if isinstance(candidate, dict):
             return candidate, f"{watch_intake_source_root}.{alias}"
+
+    buckets: dict[str, list[tuple[dict[str, Any], str]]] = {
+        "consume": [],
+        "consumepolicy": [],
+    }
+    for key, value in watch_intake.items():
+        if not isinstance(key, str) or not isinstance(value, dict):
+            continue
+        normalized_key = "".join(ch for ch in key.lower() if ch.isalnum())
+        if normalized_key in buckets:
+            buckets[normalized_key].append((value, key))
+
+    for normalized_key in ("consume", "consumepolicy"):
+        for candidate, source_key in buckets[normalized_key]:
+            return candidate, f"{watch_intake_source_root}.{source_key}"
+
     return {}, ""
 
 

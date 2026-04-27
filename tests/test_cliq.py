@@ -3042,6 +3042,10 @@ def test_build_watch_context_seed_includes_watch_intake_contract_metadata() -> N
     assert payload["operatorWorkflow"]["packageId"] == "cliq-195"
     assert payload["operatorWorkflow"]["packageVersion"] == "v1"
     assert (
+        payload["operatorWorkflow"]["packageContractId"]
+        == "cliq-195-operator-workflow-v1"
+    )
+    assert (
         payload["operatorWorkflow"]["internalLoop"]["contractId"]
         == "cliq-195-internal-loop-v1"
     )
@@ -3239,6 +3243,7 @@ def test_build_watch_reply_action_preserves_watch_intake_metadata() -> None:
             "operatorWorkflow": {
                 "packageId": "cliq-195",
                 "packageVersion": "v1",
+                "packageContractId": "cliq-195-operator-workflow-v1",
                 "externalEscalation": {
                     "defaultAction": "notify-mail",
                     "consumePolicy": {
@@ -3295,6 +3300,10 @@ def test_build_watch_reply_action_preserves_watch_intake_metadata() -> None:
     assert action["watchIntake"]["consume"]["ackAction"] == "read-ack-latest"
     assert action["operatorWorkflow"]["packageId"] == "cliq-195"
     assert action["operatorWorkflow"]["packageVersion"] == "v1"
+    assert (
+        action["operatorWorkflow"]["packageContractId"]
+        == "cliq-195-operator-workflow-v1"
+    )
     assert (
         action["operatorWorkflow"]["externalEscalation"]["defaultAction"]
         == "notify-mail"
@@ -3491,6 +3500,7 @@ def test_build_watch_read_ack_action_preserves_watch_intake_metadata() -> None:
             "operatorWorkflow": {
                 "packageId": "cliq-195",
                 "packageVersion": "v1",
+                "packageContractId": "cliq-195-operator-workflow-v1",
                 "internalLoop": {"defaultAction": "reply-latest"},
                 "externalEscalation": {
                     "defaultAction": "notify-mail",
@@ -3546,6 +3556,10 @@ def test_build_watch_read_ack_action_preserves_watch_intake_metadata() -> None:
     assert action["watchIntake"]["consume"]["ackRequired"] is True
     assert action["operatorWorkflow"]["packageId"] == "cliq-195"
     assert action["operatorWorkflow"]["packageVersion"] == "v1"
+    assert (
+        action["operatorWorkflow"]["packageContractId"]
+        == "cliq-195-operator-workflow-v1"
+    )
     assert action["operatorWorkflow"]["internalLoop"]["defaultAction"] == "reply-latest"
     assert action["operatorWorkflow"]["externalEscalation"]["consumePolicy"] == {
         "ackAction": "read-ack-latest",

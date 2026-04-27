@@ -1689,6 +1689,12 @@ class ZohoCliqClient:
 
         internal_default_action = "reply-latest"
         external_default_action = "notify-mail"
+        operator_workflow_package_id = "cliq-195"
+        operator_workflow_package_version = "v1"
+        operator_workflow_package_contract_id = (
+            f"{operator_workflow_package_id}-operator-workflow-"
+            f"{operator_workflow_package_version}"
+        )
 
         payload_template = {
             "target": {
@@ -1746,8 +1752,9 @@ class ZohoCliqClient:
                 "consume": watch_intake_consume,
             },
             "operatorWorkflow": {
-                "packageId": "cliq-195",
-                "packageVersion": "v1",
+                "packageId": operator_workflow_package_id,
+                "packageVersion": operator_workflow_package_version,
+                "packageContractId": operator_workflow_package_contract_id,
                 "packageScope": "operator-workflows",
                 "internalLoop": {
                     "contractId": "cliq-195-internal-loop-v1",

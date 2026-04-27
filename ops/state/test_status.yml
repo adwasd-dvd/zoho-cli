@@ -1,10 +1,14 @@
-last_run_at: "2026-04-27T20:01:33Z"
+last_run_at: "2026-04-27T21:04:00Z"
 last_result: passing
-current_focus: cliq-195-medium-scope-boundary-rerun-20260427T200133Z
+current_focus: cliq-195-focused-package-contract-increment-20260427T210400Z
 suites:
   unit:
     status: passing
     notes:
+      - "focused cliq-195 package-contract increment at 2026-04-27T21:04:00Z"
+      - "behavior increment: watch-context now emits `operatorWorkflow.packageContractId=cliq-195-operator-workflow-v1` and watch-reply/read-ack/watch-act surfaces preserve it"
+      - "./.venv/bin/python -m pytest -q tests/test_cliq.py::test_build_watch_context_seed_includes_watch_intake_contract_metadata tests/test_cliq.py::test_build_watch_reply_action_preserves_watch_intake_metadata tests/test_cliq.py::test_build_watch_read_ack_action_preserves_watch_intake_metadata tests/test_cli.py::test_cliq_watch_context_from_channel tests/test_cli.py::test_cliq_watch_act_preserves_watch_intake_metadata_in_result -> 5 passed in 1.50s"
+      - "./.venv/bin/ruff format --check zoho_cli/cliq.py tests/test_cliq.py tests/test_cli.py -> 3 files already formatted"
       - "integration-loop medium-scope cliq-195 refresh rerun at 2026-04-27T20:01:33Z"
       - "no behavior change; watch-context/watch-act/bridge-run verification stayed green"
       - "./.venv/bin/python -m pytest -q tests/test_registry.py tests/test_membrane_bridge.py -> 489 passed in 8.60s"

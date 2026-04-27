@@ -12,6 +12,7 @@
 - No publish, version bump, or tagging actions were performed.
 
 ### Added
+- Expanded cliq-195 watch-context operator-workflow packaging metadata with explicit internal-loop consume policy (`operatorWorkflow.internalLoop.consumePolicy.ackRequired=true`, `ackAction=read-ack-latest`) so operators can read consume/read-ack requirements directly from the internal-loop contract block.
 - Expanded cliq-195 watch-context internal-loop packaging metadata with explicit read-ack guidance (`operatorWorkflow.internalLoop.actionHint.readAckAction=read-ack-latest`) so watch operators can consume reply and read-ack intent from one stable contract block.
 - Expanded cliq-195 watch-context packaging contract with explicit internal-loop metadata (`operatorWorkflow.internalLoop.contractId` plus `actionHint.watchActAction` and `actionHint.bridgeActionId`, all set to `reply-latest`) so downstream watch operators can consume a stable internal-loop action contract without relying on fallback defaults.
 - Refined cliq-195 watch-intake consume-policy compatibility by normalizing mixed root alias lookup in both watch-loop action inference and read-ack inference, so non-canonical roots like `consume-Poli_cy` now resolve in `zoho cliq watch-act`, `zoho cliq bridge-run --watch-file`, and watch-reply auto-read behavior while preserving `actionSourcePath` provenance.

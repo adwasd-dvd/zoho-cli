@@ -1691,6 +1691,10 @@ def test_cliq_watch_context_from_channel(
         payload["operatorWorkflow"]["internalLoop"]["contractId"]
         == "cliq-195-internal-loop-v1"
     )
+    assert payload["operatorWorkflow"]["internalLoop"]["consumePolicy"] == {
+        "ackRequired": True,
+        "ackAction": "read-ack-latest",
+    }
     assert (
         payload["operatorWorkflow"]["internalLoop"]["actionHint"]["watchActAction"]
         == "reply-latest"

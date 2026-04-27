@@ -3047,6 +3047,10 @@ def test_build_watch_context_seed_includes_watch_intake_contract_metadata() -> N
     assert (
         payload["operatorWorkflow"]["internalLoop"]["defaultAction"] == "reply-latest"
     )
+    assert payload["operatorWorkflow"]["internalLoop"]["consumePolicy"] == {
+        "ackRequired": True,
+        "ackAction": "read-ack-latest",
+    }
     assert (
         payload["operatorWorkflow"]["internalLoop"]["actionHint"]["watchActAction"]
         == "reply-latest"

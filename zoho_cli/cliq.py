@@ -1691,6 +1691,10 @@ class ZohoCliqClient:
                     "contractId": "cliq-195-internal-loop-v1",
                     "mode": "watch-loop",
                     "defaultAction": "reply-latest",
+                    "consumePolicy": {
+                        "ackRequired": True,
+                        "ackAction": "read-ack-latest",
+                    },
                     "actionHint": {
                         "watchActAction": "reply-latest",
                         "readAckAction": "read-ack-latest",

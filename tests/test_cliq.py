@@ -3791,6 +3791,220 @@ def test_watch_actions_accept_top_level_payload_template_field_aliases() -> None
     }
 
 
+def test_watch_actions_top_level_escalation_envelope_alias_matrix_invariants() -> None:
+    envelope_aliases = (
+        "escalationEnvelope",
+        "escalation_envelope",
+        "escalation-envelope",
+    )
+    to_aliases = ("to", "recipient")
+    subject_aliases = ("subject", "summary")
+    body_aliases = ("body", "reason")
+
+    for envelope_alias, to_alias, subject_alias, body_alias in itertools.product(
+        envelope_aliases,
+        to_aliases,
+        subject_aliases,
+        body_aliases,
+    ):
+        target = {
+            "kind": "external-contact",
+            "channel": "mail",
+            "defaultAction": "notify-mail",
+        }
+        to_value = f"to-via-{to_alias}"
+        subject_value = f"subject-via-{subject_alias}"
+        body_value = f"body-via-{body_alias}"
+
+        watch_payload = {
+            "chatId": "CT_1",
+            "channelId": "O1",
+            envelope_alias: {
+                "target": target,
+                to_alias: to_value,
+                subject_alias: subject_value,
+                body_alias: body_value,
+            },
+            "messages": [{"messageId": "M1", "senderId": "U1", "text": "latest"}],
+        }
+
+        reply_action = cliq.ZohoCliqClient.build_watch_reply_action(
+            watch_payload,
+            text="ack",
+        )
+        read_ack_action = cliq.ZohoCliqClient.build_watch_read_ack_action(watch_payload)
+
+        expected_envelope = {
+            "target": target,
+            "to": to_value,
+            "subject": subject_value,
+            "body": body_value,
+        }
+        expected_metadata = {
+            "source": "top-level-alias",
+            "sourcePath": envelope_alias,
+            "fromTopLevelAlias": True,
+            "fromNestedFallback": False,
+            "usedFieldFallback": False,
+            "fieldSources": {
+                "target": {
+                    "source": "top-level-alias",
+                    "sourcePath": f"{envelope_alias}.target",
+                    "fromTopLevelAlias": True,
+                    "fromNestedFallback": False,
+                    "usedFallback": False,
+                },
+                "to": {
+                    "source": "top-level-alias",
+                    "sourcePath": f"{envelope_alias}.{to_alias}",
+                    "fromTopLevelAlias": True,
+                    "fromNestedFallback": False,
+                    "usedFallback": False,
+                },
+                "subject": {
+                    "source": "top-level-alias",
+                    "sourcePath": f"{envelope_alias}.{subject_alias}",
+                    "fromTopLevelAlias": True,
+                    "fromNestedFallback": False,
+                    "usedFallback": False,
+                },
+                "body": {
+                    "source": "top-level-alias",
+                    "sourcePath": f"{envelope_alias}.{body_alias}",
+                    "fromTopLevelAlias": True,
+                    "fromNestedFallback": False,
+                    "usedFallback": False,
+                },
+            },
+        }
+
+        assert reply_action["escalationEnvelope"] == expected_envelope
+        assert read_ack_action["escalationEnvelope"] == expected_envelope
+        assert reply_action["escalationEnvelopeMetadata"] == expected_metadata
+        assert read_ack_action["escalationEnvelopeMetadata"] == expected_metadata
+
+
+def test_watch_actions_mixed_source_alias_matrix_invariants() -> None:
+    envelope_aliases = (
+        "escalationEnvelope",
+        "escalation_envelope",
+        "escalation-envelope",
+    )
+    workflow_aliases = (
+        "operatorWorkflow",
+        "operator_workflow",
+        "operator-workflow",
+    )
+    escalation_aliases = (
+        "externalEscalation",
+        "external_escalation",
+        "external-escalation",
+    )
+    envelope_defaults_aliases = (
+        "envelopeDefaults",
+        "envelope_defaults",
+        "envelope-defaults",
+    )
+
+    for (
+        envelope_alias,
+        workflow_alias,
+        escalation_alias,
+        envelope_defaults_alias,
+    ) in itertools.product(
+        envelope_aliases,
+        workflow_aliases,
+        escalation_aliases,
+        envelope_defaults_aliases,
+    ):
+        target = {
+            "kind": "external-contact",
+            "channel": "mail",
+            "defaultAction": "notify-mail",
+        }
+
+        watch_payload = {
+            "chatId": "CT_1",
+            "channelId": "O1",
+            envelope_alias: {
+                "recipient": "ops@happy-distro.co.uk",
+                "summary": "Escalation subject",
+                "reason": "Escalation body",
+            },
+            workflow_alias: {
+                escalation_alias: {
+                    "handoff": {
+                        envelope_defaults_alias: {
+                            "target": target,
+                            "to": "fallback@happy-distro.co.uk",
+                            "subject": "Fallback subject",
+                            "body": "Fallback body",
+                        }
+                    }
+                }
+            },
+            "messages": [{"messageId": "M1", "senderId": "U1", "text": "latest"}],
+        }
+
+        reply_action = cliq.ZohoCliqClient.build_watch_reply_action(
+            watch_payload,
+            text="ack",
+        )
+        read_ack_action = cliq.ZohoCliqClient.build_watch_read_ack_action(watch_payload)
+
+        expected_envelope = {
+            "target": target,
+            "to": "ops@happy-distro.co.uk",
+            "subject": "Escalation subject",
+            "body": "Escalation body",
+        }
+        fallback_source_root = (
+            f"{workflow_alias}.{escalation_alias}.handoff.{envelope_defaults_alias}"
+        )
+        expected_metadata = {
+            "source": "mixed",
+            "sourcePath": "mixed",
+            "fromTopLevelAlias": True,
+            "fromNestedFallback": True,
+            "usedFieldFallback": True,
+            "fieldSources": {
+                "target": {
+                    "source": "nested-envelope-defaults",
+                    "sourcePath": f"{fallback_source_root}.target",
+                    "fromTopLevelAlias": False,
+                    "fromNestedFallback": True,
+                    "usedFallback": True,
+                },
+                "to": {
+                    "source": "top-level-alias",
+                    "sourcePath": f"{envelope_alias}.recipient",
+                    "fromTopLevelAlias": True,
+                    "fromNestedFallback": False,
+                    "usedFallback": False,
+                },
+                "subject": {
+                    "source": "top-level-alias",
+                    "sourcePath": f"{envelope_alias}.summary",
+                    "fromTopLevelAlias": True,
+                    "fromNestedFallback": False,
+                    "usedFallback": False,
+                },
+                "body": {
+                    "source": "top-level-alias",
+                    "sourcePath": f"{envelope_alias}.reason",
+                    "fromTopLevelAlias": True,
+                    "fromNestedFallback": False,
+                    "usedFallback": False,
+                },
+            },
+        }
+
+        assert reply_action["escalationEnvelope"] == expected_envelope
+        assert read_ack_action["escalationEnvelope"] == expected_envelope
+        assert reply_action["escalationEnvelopeMetadata"] == expected_metadata
+        assert read_ack_action["escalationEnvelopeMetadata"] == expected_metadata
+
+
 def test_watch_actions_accept_snake_case_nested_envelope_defaults_alias() -> None:
     watch_payload = {
         "chatId": "CT_1",

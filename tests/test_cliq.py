@@ -5658,7 +5658,9 @@ def test_cliq_client_list_thread_followers_scope_invalid_reports_hint(
     client: cliq.ZohoCliqClient,
     capsys: pytest.CaptureFixture[str],
 ) -> None:
-    respx.get(url__regex=r"https://cliq\.zoho\.com/api/v2/chats/C1/.*").mock(
+    respx.get(
+        url__regex=r"https://cliq\.zoho\.com/api/v2/(chats/C1/.*|threads/T1/.*)"
+    ).mock(
         return_value=httpx.Response(
             401,
             json={

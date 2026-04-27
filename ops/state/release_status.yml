@@ -3,18 +3,19 @@ next_version: 0.2.1
 release_candidate: false
 last_release_tag: v0.1.9
 current_train: cliq-expansion
-assessed_at: '2026-04-26T15:02:24Z'
+assessed_at: '2026-04-27T02:03:33Z'
 current_milestone: cliq-expansion-phase
 current_milestone_complete: false
 missing_requirements:
+  - 'full release gate has not been rerun after the focused thread-followers regression fix; focused verification remains green on latest rerun at 2026-04-27T02:03:33Z (`./.venv/bin/python -m pytest -q tests/test_cliq.py::test_cliq_client_list_thread_followers_falls_back_to_root_threads_endpoint tests/test_cliq.py::test_cliq_client_list_thread_followers_scope_invalid_reports_hint` -> `2 passed in 0.06s`), but `./ops/scripts/release_gate.sh full` must be rerun before release readiness can be marked pass.'
   - 'blocker backlog is not clear: `ops/state/bug_backlog.yml` still carries repeated cliq-193 live app-command verification failures (`appCommandsError: empty_output`; CLI stderr `error: not_supported`) with latest listed evidence `tests/auto_pilot/reports/cliq193_app_commands_probe_summary_20260417_121801.json` and `tests/auto_pilot/reports/cliq193_status_20260417_121801.json`.'
-  - 'current focus milestone is incomplete: `cliq-expansion-phase` remains in progress (`ops/state/active_task.yml` -> `id: cliq-195`, `stage: in_progress`, `updated_at: 2026-04-26T15:02:24Z`; `current_milestone_complete: false`).'
+  - 'current focus milestone is incomplete: `cliq-expansion-phase` remains in progress (`ops/state/active_task.yml` -> `id: cliq-195`, `stage: in_progress`, `updated_at: 2026-04-27T02:03:33Z`; `current_milestone_complete: false`).'
   - 'relevant integration readiness is still not marked pass/skip for release (`release_gate.integration_tests_passed_or_explicitly_skipped: false`) because focused live blocker checks remain externally blocked/deferred.'
 release_gate:
   blocker_bugs_cleared: false
-  unit_tests_passed: true
+  unit_tests_passed: false
   integration_tests_passed_or_explicitly_skipped: false
   changelog_updated: true
   version_bumped: false
-  release_gate_script_passed: true
-  ci_passed: true
+  release_gate_script_passed: false
+  ci_passed: false

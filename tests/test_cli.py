@@ -1714,6 +1714,10 @@ def test_cliq_watch_context_from_channel(
         ]
         == "notify-mail"
     )
+    assert (
+        payload["operatorWorkflow"]["externalEscalation"]["actionHint"]["readAckAction"]
+        == "read-ack-latest"
+    )
     assert payload["operatorWorkflow"]["externalEscalation"]["consumePolicy"] == {
         "ackRequired": True,
         "ackAction": "read-ack-latest",

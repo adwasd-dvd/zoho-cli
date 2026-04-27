@@ -3080,6 +3080,10 @@ def test_build_watch_context_seed_includes_watch_intake_contract_metadata() -> N
         == "read-ack-latest"
     )
     assert (
+        payload["operatorWorkflow"]["externalEscalation"]["actionHint"]["readAckAction"]
+        == "read-ack-latest"
+    )
+    assert (
         payload["operatorWorkflow"]["externalEscalation"]["actionHint"][
             "bridgeActionId"
         ]
@@ -3204,6 +3208,9 @@ def test_build_watch_context_seed_internal_loop_consume_policy_matches_watch_int
     assert (
         external_escalation["actionHint"]["watchActAction"]
         == watch_consume["ackAction"]
+    )
+    assert (
+        external_escalation["actionHint"]["readAckAction"] == watch_consume["ackAction"]
     )
     assert external_escalation["consumePolicy"] == watch_consume
     assert (

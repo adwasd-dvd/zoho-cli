@@ -1759,6 +1759,7 @@ class ZohoCliqClient:
                     "consumePolicy": watch_consume,
                     "actionHint": {
                         "watchActAction": watch_ack_action,
+                        "readAckAction": watch_ack_action,
                         "bridgeActionId": external_default_action,
                     },
                     "handoff": {

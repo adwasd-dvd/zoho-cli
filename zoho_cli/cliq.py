@@ -1694,6 +1694,7 @@ class ZohoCliqClient:
                     "consumePolicy": {
                         "ackRequired": True,
                         "ackAction": "read-ack-latest",
+                        "actionId": "watch-loop",
                     },
                     "actionHint": {
                         "watchActAction": "reply-latest",

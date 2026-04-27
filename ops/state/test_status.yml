@@ -1,10 +1,14 @@
-last_run_at: "2026-04-27T09:24:19Z"
+last_run_at: "2026-04-27T09:37:00Z"
 last_result: passing
-current_focus: cliq-195-medium-scope-refresh-rerun-20260427T092419Z
+current_focus: cliq-195-focused-consume-policy-actionid-increment-20260427T093700Z
 suites:
   unit:
     status: passing
     notes:
+      - "focused non-alias cliq-195 packaging increment at 2026-04-27T09:37:00Z"
+      - "behavior increment: watch-context payload now publishes explicit internal-loop consume-policy action id metadata (`operatorWorkflow.internalLoop.consumePolicy.actionId=watch-loop`)"
+      - "./.venv/bin/python -m pytest -q tests/test_cliq.py::test_build_watch_context_seed_includes_watch_intake_contract_metadata tests/test_cli.py::test_cliq_watch_context_from_channel -> 2 passed in 1.47s"
+      - "./.venv/bin/ruff format --check zoho_cli/cliq.py tests/test_cliq.py tests/test_cli.py -> 3 files already formatted"
       - "integration-loop medium-scope cliq-195 refresh rerun at 2026-04-27T09:24:19Z"
       - "no behavior change; watch-context/watch-act/bridge-run verification stayed green after internal-loop consume-policy metadata increment"
       - "./.venv/bin/python -m pytest -q tests/test_registry.py tests/test_membrane_bridge.py -> 489 passed in 9.02s"

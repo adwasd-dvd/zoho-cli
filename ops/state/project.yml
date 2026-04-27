@@ -1,13 +1,15 @@
 project: zoho-cli
-updated_at: '2026-04-27T12:04:49Z'
+updated_at: '2026-04-27T12:13:41Z'
 status: v1-architecture-and-queue-optimization
+throughput_mode: turbo_10x
+throughput_policy_ref: ops/state/execution_policy.yml
 canonical_workspace: /Users/adwasd/.openclaw/workspace-coder
 project_root: /Users/adwasd/.openclaw/workspace-coder/job/zoho-cli
 module_order:
 - Mail
 - Cliq
 - CRM
-current_focus: "Medium-scope cliq-195 integration refresh rerun is green at 2026-04-27T12:04:49Z across watch-context/watch-act/bridge-run verification with no behavior change."
+current_focus: "Turbo execution mode active: 10x throughput for cliq-195 and other in-progress lanes with controlled 3-fail backoff."
 primary_blockers:
 - cliq live unread-filter probe now authenticates successfully but returned zero unread chats (`count=0`), so behavioral validation against real reacted unread traffic remains pending fresh unread activity
 - crm live read-only verification remains blocked by account-level CRM org access
@@ -30,8 +32,9 @@ primary_blockers:
   returns `not_supported`)
 - calls/meetings endpoints are unsupported on current token/network (`cliq meetings`
   now returns `not_supported` in focused live verification)
-next_step: "continue the next focused non-alias cliq-195 packaging increment, then rerun the adjacent medium-scope cliq-195 integration refresh slice."
+next_step: "run larger dependency-safe batches across active lanes; only shrink a lane after 3 consecutive failures by 30%; keep medium regression at batch boundaries."
 additional_info:
+- "2026-04-27 throughput directive applied: enabled turbo 10x execution policy (`ops/state/execution_policy.yml`) for cliq-195 and all in-progress tasks, with adaptive backoff after 3 consecutive failures and 30% batch-size reduction per backoff step."
 - "2026-04-27 medium-scope cliq-195 integration refresh rerun at 2026-04-27T12:04:49Z stayed green across watch-context/watch-act/bridge-run surfaces with no behavior change (`./.venv/bin/python -m pytest -q tests/test_registry.py tests/test_membrane_bridge.py` -> `489 passed in 9.06s`; `./.venv/bin/python -m pytest -q tests/test_cli.py -k 'cliq_watch_context_from_channel or cliq_watch_act or watch_act_read_ack_latest or cliq_context_with_anchor or cliq_messages_from_channel or cliq_message_get_from_channel or cliq_bridge_run or crm_bridge_run'` -> `393 passed, 427 deselected in 9.37s`; `./.venv/bin/python -m pytest -q tests/test_cliq.py -k 'build_watch_context_seed or build_watch_reply_action or execute_watch_reply_action or build_watch_read_ack_action or execute_watch_read_ack_action or list_messages_from_channel_id or get_message_from_chat_id or get_message_from_channel_id or reply_message_success or edit_message_success or delete_message_success or react_message'` -> `38 passed, 186 deselected in 0.20s`; help smoke `HELP_SMOKE_OK`; `./.venv/bin/ruff format --check zoho_cli/cli.py zoho_cli/cliq.py tests/test_cli.py tests/test_membrane_bridge.py tests/test_cliq.py` -> `5 files already formatted`), so adjacent regressions remain clear and the next focused non-alias packaging increment is unblocked."
 - "2026-04-27 medium-scope cliq-195 integration refresh rerun at 2026-04-27T11:54:42Z stayed green across watch-context/watch-act/bridge-run surfaces after the watch-consume single-source hardening increment (`./.venv/bin/python -m pytest -q tests/test_registry.py tests/test_membrane_bridge.py` -> `489 passed in 9.12s`; `./.venv/bin/python -m pytest -q tests/test_cli.py -k 'cliq_watch_context_from_channel or cliq_watch_act or watch_act_read_ack_latest or cliq_context_with_anchor or cliq_messages_from_channel or cliq_message_get_from_channel or cliq_bridge_run or crm_bridge_run'` -> `393 passed, 427 deselected in 9.81s`; `./.venv/bin/python -m pytest -q tests/test_cliq.py -k 'build_watch_context_seed or build_watch_reply_action or execute_watch_reply_action or build_watch_read_ack_action or execute_watch_read_ack_action or list_messages_from_channel_id or get_message_from_chat_id or get_message_from_channel_id or reply_message_success or edit_message_success or delete_message_success or react_message'` -> `38 passed, 186 deselected in 0.21s`; help smoke `HELP_SMOKE_OK`; `./.venv/bin/ruff format --check zoho_cli/cli.py zoho_cli/cliq.py tests/test_cli.py tests/test_membrane_bridge.py tests/test_cliq.py` -> `5 files already formatted`), so adjacent regressions remain clear and the next focused non-alias packaging increment is unblocked."
 - "2026-04-27 focused non-alias cliq-195 hardening increment at 2026-04-27T11:06:20Z added consume-policy parity regression coverage in `tests/test_cliq.py::test_build_watch_context_seed_internal_loop_consume_policy_matches_watch_intake_consume`, locking that `operatorWorkflow.internalLoop.consumePolicy` stays aligned with `watchIntake.consume` and `actionHint.readAckAction` mirrors consume `ackAction`, with focused verification green (`./.venv/bin/python -m pytest -q tests/test_cliq.py::test_build_watch_context_seed_internal_loop_consume_policy_matches_watch_intake_consume` -> `1 passed in 0.19s`; `./.venv/bin/ruff format tests/test_cliq.py && ./.venv/bin/ruff format --check tests/test_cliq.py` -> `1 file reformatted`, then `1 file already formatted`)."

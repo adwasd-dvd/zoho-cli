@@ -1,0 +1,33 @@
+updated_at: '2026-04-27T12:13:41Z'
+mode: turbo_10x
+summary: >-
+  Throughput-first execution mode requested by user. Use larger coherent batches and
+  parallel lanes, with controlled backoff only after repeated failures.
+
+rules:
+  batch_multiplier_target: 10
+  reduce_after_consecutive_failures: 3
+  failure_backoff_percent: 30
+  backoff_scope: current_lane_only
+  lane_recovery_requires_consecutive_green_runs: 2
+  lane_recovery_step_percent: 15
+
+cliq_195:
+  strategy: non-alias slices only until done line
+  focused_gate: required
+  medium_gate: required_at_slice_boundary
+  oversized_slice_definition:
+    min_files_touched: 4
+    min_assertions_added: 3
+
+global_parallel_lanes:
+  enabled: true
+  max_active_lanes: 3
+  lane_order:
+    - cliq-195
+    - platform-204
+    - platform-203
+
+notes:
+  - Keep status updates concise; avoid giant repetitive evidence dumps per increment.
+  - Preserve blocker gating for unsupported live endpoints.

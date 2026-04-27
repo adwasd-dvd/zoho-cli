@@ -12,6 +12,7 @@
 - No publish, version bump, or tagging actions were performed.
 
 ### Added
+- Refined cliq-195 watch-intake read-ack compatibility by normalizing consume alias keys in `ZohoCliqClient._watch_consume_requires_read_ack`, so mixed delimiter/case variants (for example `ack-Req_uired` and `action-ID`) now resolve without one-off per-alias additions while preserving existing explicit alias behavior.
 - Refined cliq-195 watch-loop packaging compatibility by borrowing normalization-style alias extraction for watch intake consume metadata, so watch-act and bridge-run now infer action ids from `consumePolicy`/`consume_policy`/`consume-policy` roots and mixed-tail key variants (for example `action-iD`) without one-off alias expansions.
 - Refined cliq-195 watch-intake read-ack compatibility so watch-reply auto-read inference now accepts kebab consume-policy aliases (`consume-policy` and `ack-required`) in addition to existing camel/snake forms.
 - Refined cliq-195 watch-intake read-ack compatibility so watch-reply auto-read inference now also accepts camel consume-policy alias `watchIntake.consumePolicy` (with `ackRequired`) alongside `consume`, `consume_policy`, and `consume-policy`.

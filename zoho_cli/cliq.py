@@ -1149,6 +1149,34 @@ class ZohoCliqClient:
                 return False
         return None
 
+    @staticmethod
+    def _normalize_alias_key(key: str) -> str:
+        return "".join(ch for ch in key.lower() if ch.isalnum())
+
+    @classmethod
+    def _collect_alias_values(
+        cls,
+        payload: dict[str, Any],
+        ordered_normalized_keys: tuple[str, ...],
+    ) -> list[Any]:
+        if not isinstance(payload, dict):
+            return []
+
+        buckets: dict[str, list[Any]] = {
+            normalized_key: [] for normalized_key in ordered_normalized_keys
+        }
+        for key, value in payload.items():
+            if not isinstance(key, str):
+                continue
+            normalized_key = cls._normalize_alias_key(key)
+            if normalized_key in buckets:
+                buckets[normalized_key].append(value)
+
+        values: list[Any] = []
+        for normalized_key in ordered_normalized_keys:
+            values.extend(buckets[normalized_key])
+        return values
+
     @classmethod
     def _watch_consume_requires_read_ack(cls, watch_payload: dict[str, Any]) -> bool:
         intake = cls._extract_watch_intake(watch_payload)
@@ -1165,26 +1193,18 @@ class ZohoCliqClient:
         if not isinstance(consume, dict):
             return False
 
-        if "ackRequired" in consume:
-            required_raw = consume.get("ackRequired")
-        elif "ack_required" in consume:
-            required_raw = consume.get("ack_required")
-        else:
-            required_raw = consume.get("ack-required")
-        required_flag = cls._coerce_bool_flag(required_raw)
-        if required_flag is not None:
-            return required_flag
+        required_candidates = cls._collect_alias_values(
+            consume,
+            ("ackrequired",),
+        )
+        for required_raw in required_candidates:
+            required_flag = cls._coerce_bool_flag(required_raw)
+            if required_flag is not None:
+                return required_flag
 
-        ack_action_candidates = (
-            consume.get("ackAction"),
-            consume.get("ack_action"),
-            consume.get("ack-action"),
-            consume.get("ackActionId"),
-            consume.get("ackActionID"),
-            consume.get("ack_action_id"),
-            consume.get("ack_action_ID"),
-            consume.get("ack-action-id"),
-            consume.get("ack-action-ID"),
+        ack_action_candidates = cls._collect_alias_values(
+            consume,
+            ("ackaction", "ackactionid", "actionid", "defaultactionid"),
         )
         for candidate in ack_action_candidates:
             value = str(candidate or "").strip().lower()

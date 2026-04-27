@@ -2693,6 +2693,9 @@ def cliq_bridge_run(
             if not isinstance(internal_loop, dict):
                 internal_loop = workflow.get("internal_loop")
                 internal_loop_source_root = f"{workflow_source_root}.internal_loop"
+            if not isinstance(internal_loop, dict):
+                internal_loop = workflow.get("internal-loop")
+                internal_loop_source_root = f"{workflow_source_root}.internal-loop"
             if isinstance(internal_loop, dict):
                 watch_candidates.extend(
                     [
@@ -2777,6 +2780,11 @@ def cliq_bridge_run(
                     internal_hint = internal_loop.get("action_hint")
                     internal_hint_source_root = (
                         f"{internal_loop_source_root}.action_hint"
+                    )
+                if not isinstance(internal_hint, dict):
+                    internal_hint = internal_loop.get("action-hint")
+                    internal_hint_source_root = (
+                        f"{internal_loop_source_root}.action-hint"
                     )
                 if isinstance(internal_hint, dict):
                     watch_candidates.extend(
@@ -11388,6 +11396,9 @@ def cliq_watch_act(
             if not isinstance(internal_loop, dict):
                 internal_loop = workflow.get("internal_loop")
                 internal_loop_source_root = f"{workflow_source_root}.internal_loop"
+            if not isinstance(internal_loop, dict):
+                internal_loop = workflow.get("internal-loop")
+                internal_loop_source_root = f"{workflow_source_root}.internal-loop"
             if isinstance(internal_loop, dict):
                 candidates: list[tuple[Any, str]] = [
                     (
@@ -11492,6 +11503,9 @@ def cliq_watch_act(
                 if not isinstance(hint, dict):
                     hint = internal_loop.get("action_hint")
                     hint_source_root = f"{internal_loop_source_root}.action_hint"
+                if not isinstance(hint, dict):
+                    hint = internal_loop.get("action-hint")
+                    hint_source_root = f"{internal_loop_source_root}.action-hint"
                 if isinstance(hint, dict):
                     candidates.extend(
                         [

@@ -12,6 +12,7 @@
 - No publish, version bump, or tagging actions were performed.
 
 ### Added
+- Refined cliq-195 operator-workflow packaging compatibility so `zoho cliq watch-act` and `zoho cliq bridge-run --watch-file` now also accept kebab-case internal loop hint paths under kebab root aliases (`operator-workflow.internal-loop.action-hint.*`) while preserving `actionSourcePath` / `actionSourceMetadata` provenance.
 - Refined cliq-195 operator-workflow packaging compatibility so `zoho cliq watch-act --escalation-action` and `zoho cliq bridge-run --watch-file` now also accept kebab-case escalation hint paths under kebab root aliases (`operator-workflow.external-escalation.action-hint.*`) while preserving `actionSourcePath` / `actionSourceMetadata` provenance.
 - Refined cliq-195 operator-workflow packaging compatibility: watch builders, `zoho cliq watch-act`, and `zoho cliq bridge-run --watch-file` now also accept kebab-case root alias `operator-workflow` (in addition to `operatorWorkflow`/`operator_workflow`) while preserving `actionSourcePath` and escalation-envelope source metadata.
 - Refined Cliq threads/reactions compatibility using reference OpenAPI patterns: added fallback endpoints for thread creation/reply/followers/state (`/channels/{channel_id}/message`, `/chats/{thread_chat_id}/message`, `/threads/{thread_chat_id}/followers`, `/threads/{thread_chat_id}`) and extended `zoho cliq capabilities --message-id` coverage for thread-list plus message-reaction probes (including alt reaction paths).

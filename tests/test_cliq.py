@@ -3186,8 +3186,13 @@ def test_build_watch_context_seed_internal_loop_consume_policy_matches_watch_int
 
     watch_consume = payload["watchIntake"]["consume"]
     internal_loop = payload["operatorWorkflow"]["internalLoop"]
+    external_escalation = payload["operatorWorkflow"]["externalEscalation"]
     assert internal_loop["consumePolicy"] == watch_consume
     assert internal_loop["actionHint"]["readAckAction"] == watch_consume["ackAction"]
+    assert (
+        external_escalation["actionHint"]["watchActAction"]
+        == watch_consume["ackAction"]
+    )
 
 
 def test_build_watch_reply_action_preserves_watch_intake_metadata() -> None:

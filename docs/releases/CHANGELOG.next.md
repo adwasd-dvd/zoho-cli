@@ -12,6 +12,7 @@
 - No publish, version bump, or tagging actions were performed.
 
 ### Added
+- Refined cliq-195 watch-context packaging to single-source consume metadata (`watchIntake.consume`) and reuse it across internal-loop/external-escalation hints, keeping read-ack and watch-loop action contracts aligned without duplicate literals.
 - Expanded cliq-195 watch-context internal-loop consume-policy metadata with explicit `actionId=watch-loop` (`operatorWorkflow.internalLoop.consumePolicy.actionId`) so operator workflows can consume a stable loop-action identifier directly from the internal-loop contract block.
 - Expanded cliq-195 watch-context operator-workflow packaging metadata with explicit internal-loop consume policy (`operatorWorkflow.internalLoop.consumePolicy.ackRequired=true`, `ackAction=read-ack-latest`) so operators can read consume/read-ack requirements directly from the internal-loop contract block.
 - Expanded cliq-195 watch-context internal-loop packaging metadata with explicit read-ack guidance (`operatorWorkflow.internalLoop.actionHint.readAckAction=read-ack-latest`) so watch operators can consume reply and read-ack intent from one stable contract block.

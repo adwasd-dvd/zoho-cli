@@ -1661,6 +1661,13 @@ class ZohoCliqClient:
         handoff_envelope_defaults = cls._normalize_external_handoff_envelope_defaults(
             escalation_envelope
         )
+        watch_consume = {
+            "ackAction": "read-ack-latest",
+            "ackRequired": True,
+            "actionId": "watch-loop",
+        }
+        watch_loop_action = watch_consume["actionId"]
+        watch_ack_action = watch_consume["ackAction"]
 
         payload = {
             "sinceMessageId": since,
@@ -1678,27 +1685,19 @@ class ZohoCliqClient:
                     "transport": "api-poll",
                     "cursorField": "cursor.nextSinceMessageId",
                 },
-                "consume": {
-                    "ackAction": "read-ack-latest",
-                    "ackRequired": True,
-                    "actionId": "watch-loop",
-                },
+                "consume": watch_consume,
             },
             "operatorWorkflow": {
                 "packageId": "cliq-195",
                 "packageScope": "operator-workflows",
                 "internalLoop": {
                     "contractId": "cliq-195-internal-loop-v1",
-                    "mode": "watch-loop",
+                    "mode": watch_loop_action,
                     "defaultAction": "reply-latest",
-                    "consumePolicy": {
-                        "ackRequired": True,
-                        "ackAction": "read-ack-latest",
-                        "actionId": "watch-loop",
-                    },
+                    "consumePolicy": watch_consume,
                     "actionHint": {
                         "watchActAction": "reply-latest",
-                        "readAckAction": "read-ack-latest",
+                        "readAckAction": watch_consume["ackAction"],
                         "bridgeActionId": "reply-latest",
                     },
                 },
@@ -1706,7 +1705,7 @@ class ZohoCliqClient:
                     "mode": "human-review",
                     "defaultAction": "notify-mail",
                     "actionHint": {
-                        "watchActAction": "read-ack-latest",
+                        "watchActAction": watch_ack_action,
                         "bridgeActionId": "notify-mail",
                     },
                     "handoff": {

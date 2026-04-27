@@ -12,6 +12,7 @@
 - No publish, version bump, or tagging actions were performed.
 
 ### Added
+- Refined cliq-195 watch-reply read-ack precedence so `operatorWorkflow.externalEscalation.actionHint.readAckAction` is evaluated before `watchActAction`, ensuring explicit read-ack intent still applies when escalation watch-action hints point at non-ack actions.
 - Hardened cliq-195 watch-context consume-contract packaging so `watchIntake.consume`, `operatorWorkflow.internalLoop.consumePolicy`, and `operatorWorkflow.externalEscalation.consumePolicy` are emitted as value-equal but independently mutable objects, preventing accidental cross-branch mutation bleed while preserving the existing contract shape.
 - Hardened cliq-195 watch-reply consume behavior so read-ack auto-apply now also honors `operatorWorkflow.externalEscalation.actionHint.readAckAction` (alias-compatible with existing external `watchActAction` handling) when `watchIntake.consume` is absent, preserving read-ack semantics for operator-workflow-only escalation payloads.
 - Expanded cliq-195 watch-context external-escalation action-hint metadata with explicit read-ack guidance (`operatorWorkflow.externalEscalation.actionHint.readAckAction=read-ack-latest`) single-sourced from the same consume contract as `watchActAction`, so downstream operator workflows can consume escalation read-ack intent directly from one stable contract block.

@@ -5069,6 +5069,50 @@ def test_execute_watch_reply_action_honors_operator_workflow_external_read_ack_a
 
 
 @respx.mock
+def test_execute_watch_reply_action_prefers_external_read_ack_action_hint_over_watch_act_action(
+    client: cliq.ZohoCliqClient,
+) -> None:
+    reply_route = respx.post(
+        "https://cliq.zoho.com/api/v2/chats/CT_1/messages/M2/reply"
+    ).mock(return_value=httpx.Response(200, json={"data": {"id": "M3"}}))
+    read_route = respx.post(
+        "https://cliq.zoho.com/api/v2/chats/CT_1/messages/M2/read"
+    ).mock(
+        return_value=httpx.Response(200, json={"data": {"id": "M2", "status": "ok"}})
+    )
+
+    result = client.execute_watch_reply_action(
+        {
+            "chatId": "CT_1",
+            "channelId": "O1",
+            "operatorWorkflow": {
+                "externalEscalation": {
+                    "actionHint": {
+                        "watchActAction": "notify-mail",
+                        "readAckAction": "read-ack-latest",
+                    }
+                }
+            },
+            "messages": [
+                {"messageId": "M1", "senderId": "U1", "text": "first"},
+                {"messageId": "M2", "senderId": "U2", "text": "latest"},
+            ],
+        },
+        text="ack",
+    )
+
+    assert reply_route.called
+    assert read_route.called
+    assert result["status"] == "ok"
+    assert result["applied"] is True
+    assert result["targetMessageId"] == "M2"
+    assert result["readAck"]["required"] is True
+    assert result["readAck"]["applied"] is True
+    assert result["readAck"]["messageId"] == "M2"
+    assert result["readAck"]["result"]["status"] == "ok"
+
+
+@respx.mock
 def test_watch_context_seed_end_to_end_reply_read_ack_and_cursor_dedupe(
     client: cliq.ZohoCliqClient,
 ) -> None:

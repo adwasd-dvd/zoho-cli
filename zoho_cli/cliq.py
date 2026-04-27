@@ -1264,7 +1264,7 @@ class ZohoCliqClient:
             if isinstance(external_hint, dict):
                 external_hint_actions = cls._collect_alias_values(
                     external_hint,
-                    ("watchactaction", "readackaction"),
+                    ("readackaction", "watchactaction"),
                 )
                 for action_raw in external_hint_actions:
                     action_value = str(action_raw or "").strip().lower()

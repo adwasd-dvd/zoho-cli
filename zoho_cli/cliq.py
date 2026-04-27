@@ -1747,6 +1747,7 @@ class ZohoCliqClient:
             },
             "operatorWorkflow": {
                 "packageId": "cliq-195",
+                "packageVersion": "v1",
                 "packageScope": "operator-workflows",
                 "internalLoop": {
                     "contractId": "cliq-195-internal-loop-v1",

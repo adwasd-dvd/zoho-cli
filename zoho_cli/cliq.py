@@ -78,9 +78,21 @@ class ZohoCliqClient:
         ".handoff.envelopeDefaults",
         ".handoff.envelope_defaults",
         ".handoff.envelope-defaults",
+        ".hand_off.envelopeDefaults",
+        ".hand_off.envelope_defaults",
+        ".hand_off.envelope-defaults",
+        ".hand-off.envelopeDefaults",
+        ".hand-off.envelope_defaults",
+        ".hand-off.envelope-defaults",
         ".handoff.payloadTemplate",
         ".handoff.payload_template",
         ".handoff.payload-template",
+        ".hand_off.payloadTemplate",
+        ".hand_off.payload_template",
+        ".hand_off.payload-template",
+        ".hand-off.payloadTemplate",
+        ".hand-off.payload_template",
+        ".hand-off.payload-template",
     )
 
     def __init__(self, access_token: str, base_url: str | None = None) -> None:
@@ -1223,7 +1235,8 @@ class ZohoCliqClient:
             for marker in ZohoCliqClient._HANDOFF_SOURCE_PATH_MARKERS:
                 marker_index = source_path.find(marker)
                 if marker_index >= 0:
-                    return source_path[: marker_index + len(".handoff")]
+                    handoff_root = marker.rsplit(".", 1)[0]
+                    return source_path[: marker_index + len(handoff_root)]
         return ""
 
     @classmethod
@@ -1341,8 +1354,11 @@ class ZohoCliqClient:
             return {}, {}
         escalation_source_root = f"{workflow_source_root}.{escalation_key}"
 
-        handoff = escalation.get("handoff")
-        if not isinstance(handoff, dict):
+        handoff, handoff_key = cls._extract_first_dict_alias_with_source(
+            escalation,
+            ("handoff", "hand_off", "hand-off"),
+        )
+        if not handoff_key:
             return {}, {}
 
         envelope_defaults, envelope_defaults_key = (
@@ -1353,7 +1369,9 @@ class ZohoCliqClient:
         )
 
         if envelope_defaults_key:
-            source_root = f"{escalation_source_root}.handoff.{envelope_defaults_key}"
+            source_root = (
+                f"{escalation_source_root}.{handoff_key}.{envelope_defaults_key}"
+            )
             envelope_field_keys: dict[str, tuple[str, ...]] = {
                 "target": ("target",),
                 "to": ("to", "recipient"),
@@ -1380,7 +1398,9 @@ class ZohoCliqClient:
         )
 
         if payload_template_key:
-            source_root = f"{escalation_source_root}.handoff.{payload_template_key}"
+            source_root = (
+                f"{escalation_source_root}.{handoff_key}.{payload_template_key}"
+            )
             payload_template_field_keys: dict[str, tuple[str, ...]] = {
                 "target": ("target",),
                 "to": ("recipient", "to"),

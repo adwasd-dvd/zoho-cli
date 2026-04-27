@@ -4,10 +4,10 @@ module: cliq
 stage: in_progress
 status: in_progress
 owner: coder
-updated_at: '2026-04-27T04:30:00Z'
+updated_at: '2026-04-27T05:03:35Z'
 success_criteria:
 - add an initial cliq-195 operator-workflow packaging contract to watch-context output without breaking existing watch-loop consumers
 - preserve the operator-workflow contract through watch-act action payload/result surfaces used by automation loops
 - keep focused watch-context/watch-act verification green while deferred external blockers stay capability-gated
 next_if_done: if focused and medium-scope cliq-195 verification remain green, continue the next operator-workflow packaging increment without regressing deferred capability-gated blockers.
-next_step: "focused cliq-195 property-style hardening increment at 2026-04-27T04:30:00Z added top-level and mixed-source escalation-envelope alias matrix invariant coverage so reply/read-ack watch builders preserve canonical envelope values plus metadata/sourcePath provenance across camel/snake/kebab roots and recipient/summary/reason field aliases with no behavior change (`./.venv/bin/python -m pytest -q tests/test_cliq.py::test_watch_actions_top_level_escalation_envelope_alias_matrix_invariants tests/test_cliq.py::test_watch_actions_mixed_source_alias_matrix_invariants` -> `2 passed in 0.02s`; `./.venv/bin/ruff format --check tests/test_cliq.py` -> `1 file already formatted`); next best step is one more focused cliq-195 operator-workflow packaging increment, then rerun the same medium-scope integration slice."
+next_step: "focused cliq-195 operator-workflow packaging increment at 2026-04-27T05:03:35Z expanded non-canonical handoff alias compatibility (`hand_off`, `hand-off`) for nested fallback escalation-envelope metadata/sourcePath resolution in `zoho_cli/cliq.py` and added focused regression coverage in `tests/test_cliq.py` (`./.venv/bin/python -m pytest -q tests/test_cliq.py::test_watch_actions_nested_fallback_metadata_source_path_with_kebab_payload_template tests/test_cliq.py::test_watch_actions_nested_fallback_metadata_source_path_with_noncanonical_handoff_aliases tests/test_cliq.py::test_watch_actions_top_level_escalation_envelope_alias_matrix_invariants tests/test_cliq.py::test_watch_actions_mixed_source_alias_matrix_invariants` -> `5 passed in 0.03s`; `./.venv/bin/ruff format --check zoho_cli/cliq.py tests/test_cliq.py` -> `2 files already formatted`); next best step is one adjacent medium-scope cliq-195 integration refresh rerun to reconfirm watch-context/watch-act/bridge-run surfaces."

@@ -1,10 +1,14 @@
-last_run_at: "2026-04-27T04:14:03Z"
+last_run_at: "2026-04-27T05:03:35Z"
 last_result: passing
-current_focus: cliq-195-medium-scope-integration-refresh-20260427T041403Z
+current_focus: cliq-195-focused-handoff-alias-packaging-20260427T050335Z
 suites:
   unit:
     status: passing
     notes:
+      - "focused cliq-195 operator-workflow packaging increment at 2026-04-27T05:03:35Z"
+      - "tiny behavior update: watch-action nested fallback now accepts non-canonical handoff aliases (`hand_off`, `hand-off`) while preserving escalationEnvelopeMetadata sourcePath roots and field-level provenance"
+      - "./.venv/bin/python -m pytest -q tests/test_cliq.py::test_watch_actions_nested_fallback_metadata_source_path_with_kebab_payload_template tests/test_cliq.py::test_watch_actions_nested_fallback_metadata_source_path_with_noncanonical_handoff_aliases tests/test_cliq.py::test_watch_actions_top_level_escalation_envelope_alias_matrix_invariants tests/test_cliq.py::test_watch_actions_mixed_source_alias_matrix_invariants -> 5 passed in 0.03s"
+      - "./.venv/bin/ruff format --check zoho_cli/cliq.py tests/test_cliq.py -> 2 files already formatted"
       - "integration-loop medium-scope cliq-195 rerun at 2026-04-27T04:14:03Z"
       - "no behavior change; medium-scope watch-context/watch-act/bridge-run verification stayed green after property-style alias-matrix invariant additions"
       - "./.venv/bin/python -m pytest -q tests/test_registry.py tests/test_membrane_bridge.py -> 486 passed in 8.99s"

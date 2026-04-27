@@ -1723,6 +1723,9 @@ class ZohoCliqClient:
         }
         watch_loop_action = watch_consume["actionId"]
         watch_ack_action = watch_consume["ackAction"]
+        watch_intake_consume = dict(watch_consume)
+        internal_consume_policy = dict(watch_consume)
+        external_consume_policy = dict(watch_consume)
 
         payload = {
             "sinceMessageId": since,
@@ -1740,7 +1743,7 @@ class ZohoCliqClient:
                     "transport": "api-poll",
                     "cursorField": "cursor.nextSinceMessageId",
                 },
-                "consume": watch_consume,
+                "consume": watch_intake_consume,
             },
             "operatorWorkflow": {
                 "packageId": "cliq-195",
@@ -1749,7 +1752,7 @@ class ZohoCliqClient:
                     "contractId": "cliq-195-internal-loop-v1",
                     "mode": watch_loop_action,
                     "defaultAction": internal_default_action,
-                    "consumePolicy": watch_consume,
+                    "consumePolicy": internal_consume_policy,
                     "actionHint": {
                         "watchActAction": internal_default_action,
                         "readAckAction": watch_consume["ackAction"],
@@ -1760,7 +1763,7 @@ class ZohoCliqClient:
                     "contractId": "cliq-195-external-escalation-v1",
                     "mode": "human-review",
                     "defaultAction": external_default_action,
-                    "consumePolicy": watch_consume,
+                    "consumePolicy": external_consume_policy,
                     "actionHint": {
                         "watchActAction": watch_ack_action,
                         "readAckAction": watch_ack_action,

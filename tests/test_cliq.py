@@ -3217,6 +3217,13 @@ def test_build_watch_context_seed_internal_loop_consume_policy_matches_watch_int
         external_escalation["actionHint"]["bridgeActionId"]
         == external_escalation["defaultAction"]
     )
+    assert internal_loop["consumePolicy"] is not watch_consume
+    assert external_escalation["consumePolicy"] is not watch_consume
+    assert external_escalation["consumePolicy"] is not internal_loop["consumePolicy"]
+
+    internal_loop["consumePolicy"]["ackRequired"] = False
+    assert watch_consume["ackRequired"] is True
+    assert external_escalation["consumePolicy"]["ackRequired"] is True
 
 
 def test_build_watch_reply_action_preserves_watch_intake_metadata() -> None:

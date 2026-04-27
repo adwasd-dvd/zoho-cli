@@ -12,6 +12,7 @@
 - No publish, version bump, or tagging actions were performed.
 
 ### Added
+- Refined cliq-195 watch-action alias extraction internals to a table-driven helper model (operator-workflow roots, escalation roots, handoff envelope/payload roots, and top-level escalation envelope aliases) and reduced duplicate non-camel alias regressions by parameterizing alias-matrix tests, with behavior unchanged.
 - Refined cliq-195 watch-loop fallback compatibility so `zoho cliq watch-act` and `zoho cliq bridge-run --watch-file` now also accept kebab-kebab mixed-tail consume bridge alias `watchIntake.consume.bridge-action-iD` when inferring actions, while preserving `actionSourcePath` / `actionSourceMetadata` provenance.
 - Refined cliq-195 watch-loop fallback compatibility so `zoho cliq watch-act` and `zoho cliq bridge-run --watch-file` now also accept kebab-Pascal-kebab mixed-tail consume bridge alias `watchIntake.consume.bridge-Action-iD` when inferring actions, while preserving `actionSourcePath` / `actionSourceMetadata` provenance.
 - Refined cliq-195 operator-workflow packaging compatibility so watch-action builders now also accept kebab-case top-level envelope alias root `escalation-envelope` (in addition to `escalationEnvelope`/`escalation_envelope`) while preserving per-field source metadata provenance.

@@ -1162,22 +1162,34 @@ class ZohoCliqClient:
         return False
 
     @staticmethod
+    def _extract_first_dict_alias_with_source(
+        payload: dict[str, Any],
+        alias_keys: tuple[str, ...],
+    ) -> tuple[dict[str, Any], str]:
+        for alias_key in alias_keys:
+            value = payload.get(alias_key)
+            if isinstance(value, dict):
+                return value, alias_key
+        return {}, ""
+
+    @staticmethod
+    def _select_existing_alias_key(
+        payload: dict[str, Any],
+        alias_keys: tuple[str, ...],
+    ) -> str:
+        for alias_key in alias_keys:
+            if alias_key in payload:
+                return alias_key
+        return alias_keys[0] if alias_keys else ""
+
+    @staticmethod
     def _extract_operator_workflow_with_source(
         watch_payload: dict[str, Any],
     ) -> tuple[dict[str, Any], str]:
-        workflow = watch_payload.get("operatorWorkflow")
-        if isinstance(workflow, dict):
-            return workflow, "operatorWorkflow"
-
-        snake_workflow = watch_payload.get("operator_workflow")
-        if isinstance(snake_workflow, dict):
-            return snake_workflow, "operator_workflow"
-
-        kebab_workflow = watch_payload.get("operator-workflow")
-        if isinstance(kebab_workflow, dict):
-            return kebab_workflow, "operator-workflow"
-
-        return {}, ""
+        return ZohoCliqClient._extract_first_dict_alias_with_source(
+            watch_payload,
+            ("operatorWorkflow", "operator_workflow", "operator-workflow"),
+        )
 
     @classmethod
     def _extract_operator_workflow(
@@ -1299,31 +1311,26 @@ class ZohoCliqClient:
         if not workflow_source_root:
             return {}, {}
 
-        escalation = workflow.get("externalEscalation")
-        escalation_source_root = f"{workflow_source_root}.externalEscalation"
-        if not isinstance(escalation, dict):
-            escalation = workflow.get("external_escalation")
-            escalation_source_root = f"{workflow_source_root}.external_escalation"
-        if not isinstance(escalation, dict):
-            escalation = workflow.get("external-escalation")
-            escalation_source_root = f"{workflow_source_root}.external-escalation"
-        if not isinstance(escalation, dict):
+        escalation, escalation_key = cls._extract_first_dict_alias_with_source(
+            workflow,
+            ("externalEscalation", "external_escalation", "external-escalation"),
+        )
+        if not escalation_key:
             return {}, {}
+        escalation_source_root = f"{workflow_source_root}.{escalation_key}"
 
         handoff = escalation.get("handoff")
         if not isinstance(handoff, dict):
             return {}, {}
 
-        envelope_defaults = handoff.get("envelopeDefaults")
-        envelope_defaults_key = "envelopeDefaults"
-        if not isinstance(envelope_defaults, dict):
-            envelope_defaults = handoff.get("envelope_defaults")
-            envelope_defaults_key = "envelope_defaults"
-        if not isinstance(envelope_defaults, dict):
-            envelope_defaults = handoff.get("envelope-defaults")
-            envelope_defaults_key = "envelope-defaults"
+        envelope_defaults, envelope_defaults_key = (
+            cls._extract_first_dict_alias_with_source(
+                handoff,
+                ("envelopeDefaults", "envelope_defaults", "envelope-defaults"),
+            )
+        )
 
-        if isinstance(envelope_defaults, dict):
+        if envelope_defaults_key:
             source_root = f"{escalation_source_root}.handoff.{envelope_defaults_key}"
             envelope_field_keys: dict[str, tuple[str, ...]] = {
                 "target": ("target",),
@@ -1333,57 +1340,35 @@ class ZohoCliqClient:
             }
 
             def _source_path_for(field: str) -> str:
-                candidates = envelope_field_keys[field]
-                selected = next(
-                    (
-                        candidate
-                        for candidate in candidates
-                        if candidate in envelope_defaults
-                    ),
-                    candidates[0],
+                selected = cls._select_existing_alias_key(
+                    envelope_defaults,
+                    envelope_field_keys[field],
                 )
                 return f"{source_root}.{selected}"
 
+            field_sources = {
+                key: cls._build_escalation_envelope_field_source_metadata(
+                    source="nested-envelope-defaults",
+                    source_path=_source_path_for(key),
+                    from_top_level_alias=False,
+                    from_nested_fallback=True,
+                )
+                for key in ("target", "to", "subject", "body")
+            }
+
             return (
                 cls._normalize_external_handoff_envelope_defaults(envelope_defaults),
-                {
-                    "target": cls._build_escalation_envelope_field_source_metadata(
-                        source="nested-envelope-defaults",
-                        source_path=_source_path_for("target"),
-                        from_top_level_alias=False,
-                        from_nested_fallback=True,
-                    ),
-                    "to": cls._build_escalation_envelope_field_source_metadata(
-                        source="nested-envelope-defaults",
-                        source_path=_source_path_for("to"),
-                        from_top_level_alias=False,
-                        from_nested_fallback=True,
-                    ),
-                    "subject": cls._build_escalation_envelope_field_source_metadata(
-                        source="nested-envelope-defaults",
-                        source_path=_source_path_for("subject"),
-                        from_top_level_alias=False,
-                        from_nested_fallback=True,
-                    ),
-                    "body": cls._build_escalation_envelope_field_source_metadata(
-                        source="nested-envelope-defaults",
-                        source_path=_source_path_for("body"),
-                        from_top_level_alias=False,
-                        from_nested_fallback=True,
-                    ),
-                },
+                field_sources,
             )
 
-        payload_template = handoff.get("payloadTemplate")
-        payload_template_key = "payloadTemplate"
-        if not isinstance(payload_template, dict):
-            payload_template = handoff.get("payload_template")
-            payload_template_key = "payload_template"
-        if not isinstance(payload_template, dict):
-            payload_template = handoff.get("payload-template")
-            payload_template_key = "payload-template"
+        payload_template, payload_template_key = (
+            cls._extract_first_dict_alias_with_source(
+                handoff,
+                ("payloadTemplate", "payload_template", "payload-template"),
+            )
+        )
 
-        if isinstance(payload_template, dict):
+        if payload_template_key:
             source_root = f"{escalation_source_root}.handoff.{payload_template_key}"
             payload_template_field_keys: dict[str, tuple[str, ...]] = {
                 "target": ("target",),
@@ -1393,45 +1378,25 @@ class ZohoCliqClient:
             }
 
             def _source_path_for(field: str) -> str:
-                candidates = payload_template_field_keys[field]
-                selected = next(
-                    (
-                        candidate
-                        for candidate in candidates
-                        if candidate in payload_template
-                    ),
-                    candidates[0],
+                selected = cls._select_existing_alias_key(
+                    payload_template,
+                    payload_template_field_keys[field],
                 )
                 return f"{source_root}.{selected}"
 
+            field_sources = {
+                key: cls._build_escalation_envelope_field_source_metadata(
+                    source="nested-payload-template",
+                    source_path=_source_path_for(key),
+                    from_top_level_alias=False,
+                    from_nested_fallback=True,
+                )
+                for key in ("target", "to", "subject", "body")
+            }
+
             return (
                 cls._build_external_handoff_envelope_defaults(payload_template),
-                {
-                    "target": cls._build_escalation_envelope_field_source_metadata(
-                        source="nested-payload-template",
-                        source_path=_source_path_for("target"),
-                        from_top_level_alias=False,
-                        from_nested_fallback=True,
-                    ),
-                    "to": cls._build_escalation_envelope_field_source_metadata(
-                        source="nested-payload-template",
-                        source_path=_source_path_for("to"),
-                        from_top_level_alias=False,
-                        from_nested_fallback=True,
-                    ),
-                    "subject": cls._build_escalation_envelope_field_source_metadata(
-                        source="nested-payload-template",
-                        source_path=_source_path_for("subject"),
-                        from_top_level_alias=False,
-                        from_nested_fallback=True,
-                    ),
-                    "body": cls._build_escalation_envelope_field_source_metadata(
-                        source="nested-payload-template",
-                        source_path=_source_path_for("body"),
-                        from_top_level_alias=False,
-                        from_nested_fallback=True,
-                    ),
-                },
+                field_sources,
             )
         return {}, {}
 
@@ -1440,20 +1405,15 @@ class ZohoCliqClient:
         cls,
         watch_payload: dict[str, Any],
     ) -> tuple[dict[str, Any], dict[str, Any]]:
-        alias_source_root = "escalationEnvelope"
-        alias = watch_payload.get(alias_source_root)
-        if not isinstance(alias, dict):
-            snake_alias_source_root = "escalation_envelope"
-            snake_alias = watch_payload.get(snake_alias_source_root)
-            if isinstance(snake_alias, dict):
-                alias = snake_alias
-                alias_source_root = snake_alias_source_root
-        if not isinstance(alias, dict):
-            kebab_alias_source_root = "escalation-envelope"
-            kebab_alias = watch_payload.get(kebab_alias_source_root)
-            if isinstance(kebab_alias, dict):
-                alias = kebab_alias
-                alias_source_root = kebab_alias_source_root
+        alias_payload, alias_source_root = cls._extract_first_dict_alias_with_source(
+            watch_payload,
+            ("escalationEnvelope", "escalation_envelope", "escalation-envelope"),
+        )
+        alias: dict[str, Any] | None
+        if alias_source_root:
+            alias = alias_payload
+        else:
+            alias = None
         fallback, fallback_sources = (
             cls._extract_external_handoff_envelope_defaults_with_metadata(watch_payload)
         )
@@ -1490,11 +1450,11 @@ class ZohoCliqClient:
         }
 
         for key in fields:
-            alias_key = ""
-            for candidate in alias_field_keys[key]:
-                if candidate in alias:
-                    alias_key = candidate
-                    break
+            selected_alias_key = cls._select_existing_alias_key(
+                alias,
+                alias_field_keys[key],
+            )
+            alias_key = selected_alias_key if selected_alias_key in alias else ""
 
             if alias_key:
                 resolved[key] = normalized_alias[key]

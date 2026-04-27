@@ -3610,101 +3610,21 @@ def test_watch_actions_prefer_top_level_escalation_envelope_with_nested_fallback
     assert read_ack_action["escalationEnvelopeMetadata"] == expected_metadata
 
 
-def test_watch_actions_accept_snake_case_escalation_envelope_alias() -> None:
+@pytest.mark.parametrize(
+    ("alias_key", "expected_to_source_path"),
+    [
+        ("escalation_envelope", "escalation_envelope.to"),
+        ("escalation-envelope", "escalation-envelope.to"),
+    ],
+)
+def test_watch_actions_accept_non_camel_escalation_envelope_aliases(
+    alias_key: str,
+    expected_to_source_path: str,
+) -> None:
     watch_payload = {
         "chatId": "CT_1",
         "channelId": "O1",
-        "escalation_envelope": {
-            "to": "ops@happy-distro.co.uk",
-        },
-        "operatorWorkflow": {
-            "externalEscalation": {
-                "handoff": {
-                    "envelopeDefaults": {
-                        "target": {
-                            "kind": "external-contact",
-                            "channel": "mail",
-                            "defaultAction": "notify-mail",
-                        },
-                        "to": "fallback@happy-distro.co.uk",
-                        "subject": "Fallback subject",
-                        "body": "Fallback body",
-                    }
-                }
-            }
-        },
-        "messages": [
-            {"messageId": "M1", "senderId": "U1", "text": "latest"},
-        ],
-    }
-
-    reply_action = cliq.ZohoCliqClient.build_watch_reply_action(
-        watch_payload,
-        text="ack",
-    )
-
-    assert reply_action["escalationEnvelope"] == {
-        "target": {
-            "kind": "external-contact",
-            "channel": "mail",
-            "defaultAction": "notify-mail",
-        },
-        "to": "ops@happy-distro.co.uk",
-        "subject": "Fallback subject",
-        "body": "Fallback body",
-    }
-    assert reply_action["escalationEnvelopeMetadata"] == {
-        "source": "mixed",
-        "sourcePath": "mixed",
-        "fromTopLevelAlias": True,
-        "fromNestedFallback": True,
-        "usedFieldFallback": True,
-        "fieldSources": {
-            "target": {
-                "source": "nested-envelope-defaults",
-                "sourcePath": (
-                    "operatorWorkflow.externalEscalation.handoff."
-                    "envelopeDefaults.target"
-                ),
-                "fromTopLevelAlias": False,
-                "fromNestedFallback": True,
-                "usedFallback": True,
-            },
-            "to": {
-                "source": "top-level-alias",
-                "sourcePath": "escalation_envelope.to",
-                "fromTopLevelAlias": True,
-                "fromNestedFallback": False,
-                "usedFallback": False,
-            },
-            "subject": {
-                "source": "nested-envelope-defaults",
-                "sourcePath": (
-                    "operatorWorkflow.externalEscalation.handoff."
-                    "envelopeDefaults.subject"
-                ),
-                "fromTopLevelAlias": False,
-                "fromNestedFallback": True,
-                "usedFallback": True,
-            },
-            "body": {
-                "source": "nested-envelope-defaults",
-                "sourcePath": (
-                    "operatorWorkflow.externalEscalation.handoff.envelopeDefaults.body"
-                ),
-                "fromTopLevelAlias": False,
-                "fromNestedFallback": True,
-                "usedFallback": True,
-            },
-        },
-    }
-
-
-def test_watch_actions_accept_kebab_case_escalation_envelope_alias() -> None:
-    watch_payload = {
-        "chatId": "CT_1",
-        "channelId": "O1",
-        "escalation-envelope": {
+        alias_key: {
             "to": "ops@happy-distro.co.uk",
         },
         "operatorWorkflow": {
@@ -3746,7 +3666,7 @@ def test_watch_actions_accept_kebab_case_escalation_envelope_alias() -> None:
     assert reply_action["escalationEnvelopeMetadata"]["source"] == "mixed"
     assert reply_action["escalationEnvelopeMetadata"]["fieldSources"]["to"] == {
         "source": "top-level-alias",
-        "sourcePath": "escalation-envelope.to",
+        "sourcePath": expected_to_source_path,
         "fromTopLevelAlias": True,
         "fromNestedFallback": False,
         "usedFallback": False,
@@ -3894,14 +3814,30 @@ def test_watch_actions_accept_snake_case_nested_envelope_defaults_alias() -> Non
     }
 
 
-def test_watch_actions_accept_snake_case_operator_workflow_alias() -> None:
+@pytest.mark.parametrize(
+    ("workflow_alias_key", "expected_target_source_path"),
+    [
+        (
+            "operator_workflow",
+            "operator_workflow.external_escalation.handoff.envelope_defaults.target",
+        ),
+        (
+            "operator-workflow",
+            "operator-workflow.external_escalation.handoff.envelope_defaults.target",
+        ),
+    ],
+)
+def test_watch_actions_accept_non_camel_operator_workflow_aliases(
+    workflow_alias_key: str,
+    expected_target_source_path: str,
+) -> None:
     watch_payload = {
         "chatId": "CT_1",
         "channelId": "O1",
         "escalation_envelope": {
             "to": "ops@happy-distro.co.uk",
         },
-        "operator_workflow": {
+        workflow_alias_key: {
             "external_escalation": {
                 "handoff": {
                     "envelope_defaults": {
@@ -3927,57 +3863,10 @@ def test_watch_actions_accept_snake_case_operator_workflow_alias() -> None:
         text="ack",
     )
 
-    assert reply_action["operatorWorkflow"] == watch_payload["operator_workflow"]
+    assert reply_action["operatorWorkflow"] == watch_payload[workflow_alias_key]
     assert reply_action["escalationEnvelopeMetadata"]["fieldSources"]["target"] == {
         "source": "nested-envelope-defaults",
-        "sourcePath": (
-            "operator_workflow.external_escalation.handoff.envelope_defaults.target"
-        ),
-        "fromTopLevelAlias": False,
-        "fromNestedFallback": True,
-        "usedFallback": True,
-    }
-
-
-def test_watch_actions_accept_kebab_case_operator_workflow_alias() -> None:
-    watch_payload = {
-        "chatId": "CT_1",
-        "channelId": "O1",
-        "escalation_envelope": {
-            "to": "ops@happy-distro.co.uk",
-        },
-        "operator-workflow": {
-            "external_escalation": {
-                "handoff": {
-                    "envelope_defaults": {
-                        "target": {
-                            "kind": "external-contact",
-                            "channel": "mail",
-                            "defaultAction": "notify-mail",
-                        },
-                        "to": "fallback@happy-distro.co.uk",
-                        "subject": "Fallback subject",
-                        "body": "Fallback body",
-                    }
-                }
-            }
-        },
-        "messages": [
-            {"messageId": "M1", "senderId": "U1", "text": "latest"},
-        ],
-    }
-
-    reply_action = cliq.ZohoCliqClient.build_watch_reply_action(
-        watch_payload,
-        text="ack",
-    )
-
-    assert reply_action["operatorWorkflow"] == watch_payload["operator-workflow"]
-    assert reply_action["escalationEnvelopeMetadata"]["fieldSources"]["target"] == {
-        "source": "nested-envelope-defaults",
-        "sourcePath": (
-            "operator-workflow.external_escalation.handoff.envelope_defaults.target"
-        ),
+        "sourcePath": expected_target_source_path,
         "fromTopLevelAlias": False,
         "fromNestedFallback": True,
         "usedFallback": True,

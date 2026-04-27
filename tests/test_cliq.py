@@ -3243,8 +3243,6 @@ def test_build_watch_reply_action_preserves_watch_intake_metadata() -> None:
             },
             "operatorWorkflow": {
                 "packageId": "cliq-195",
-                "packageVersion": "v1",
-                "packageContractId": "cliq-195-operator-workflow-v1",
                 "externalEscalation": {
                     "defaultAction": "notify-mail",
                     "consumePolicy": {
@@ -3501,8 +3499,6 @@ def test_build_watch_read_ack_action_preserves_watch_intake_metadata() -> None:
             },
             "operatorWorkflow": {
                 "packageId": "cliq-195",
-                "packageVersion": "v1",
-                "packageContractId": "cliq-195-operator-workflow-v1",
                 "internalLoop": {"defaultAction": "reply-latest"},
                 "externalEscalation": {
                     "defaultAction": "notify-mail",

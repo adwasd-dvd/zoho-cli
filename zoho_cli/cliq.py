@@ -1315,9 +1315,21 @@ class ZohoCliqClient:
 
         normalized_workflow = dict(workflow)
         package_id = str(normalized_workflow.get("packageId") or "").strip().lower()
+        package_version = str(normalized_workflow.get("packageVersion") or "").strip()
+        package_contract_id = str(
+            normalized_workflow.get("packageContractId") or ""
+        ).strip()
         package_scope = str(normalized_workflow.get("packageScope") or "").strip()
-        if package_id == "cliq-195" and not package_scope:
-            normalized_workflow["packageScope"] = "operator-workflows"
+        if package_id == "cliq-195":
+            if not package_version:
+                package_version = "v1"
+                normalized_workflow["packageVersion"] = package_version
+            if not package_contract_id:
+                normalized_workflow["packageContractId"] = (
+                    f"{package_id}-operator-workflow-{package_version}"
+                )
+            if not package_scope:
+                normalized_workflow["packageScope"] = "operator-workflows"
 
         return normalized_workflow
 

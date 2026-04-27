@@ -13,6 +13,7 @@
 
 ### Added
 - Refined cliq-195 watch-intake read-ack compatibility so watch-reply auto-read inference now accepts kebab consume-policy aliases (`consume-policy` and `ack-required`) in addition to existing camel/snake forms.
+- Refined cliq-195 watch-intake read-ack compatibility so watch-reply auto-read inference now also accepts camel consume-policy alias `watchIntake.consumePolicy` (with `ackRequired`) alongside `consume`, `consume_policy`, and `consume-policy`.
 - Refined cliq-195 watch-loop packaging compatibility so CLI watch payload extraction now accepts kebab-case root alias `watch-intake` (in addition to `watchIntake` and `watch_intake`) for watch-act and bridge-run action inference while preserving `actionSourcePath` / `actionSourceMetadata` provenance.
 - Refined cliq-195 operator-workflow packaging compatibility so nested fallback watch-action extraction now also accepts non-canonical handoff aliases (`hand_off` and `hand-off`) when resolving `envelopeDefaults`/`payloadTemplate` metadata source paths, preserving canonical escalation-envelope field values and provenance.
 - Added property-style alias-matrix invariant coverage for cliq-195 watch-action escalation metadata, asserting stable `escalationEnvelope` and `escalationEnvelopeMetadata.sourcePath` behavior across camel/snake/kebab operator-workflow and external-escalation alias roots for nested envelope-defaults and payload-template paths.

@@ -1157,6 +1157,8 @@ class ZohoCliqClient:
 
         consume = intake.get("consume")
         if not isinstance(consume, dict):
+            consume = intake.get("consumePolicy")
+        if not isinstance(consume, dict):
             consume = intake.get("consume_policy")
         if not isinstance(consume, dict):
             consume = intake.get("consume-policy")

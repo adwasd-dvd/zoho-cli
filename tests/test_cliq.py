@@ -3370,6 +3370,33 @@ def test_build_watch_reply_action_preserves_watch_intake_metadata() -> None:
     }
 
 
+def test_build_watch_reply_action_backfills_package_id_from_contract_id() -> None:
+    action = cliq.ZohoCliqClient.build_watch_reply_action(
+        {
+            "chatId": "CT_1",
+            "channelId": "O1",
+            "operatorWorkflow": {
+                "packageContractId": " cliq-195-operator-workflow-v1 ",
+                "externalEscalation": {
+                    "defaultAction": "notify-mail",
+                },
+            },
+            "messages": [
+                {"messageId": "M1", "senderId": "U1", "text": "latest"},
+            ],
+        },
+        text="ack",
+    )
+
+    assert action["operatorWorkflow"]["packageId"] == "cliq-195"
+    assert action["operatorWorkflow"]["packageVersion"] == "v1"
+    assert (
+        action["operatorWorkflow"]["packageContractId"]
+        == "cliq-195-operator-workflow-v1"
+    )
+    assert action["operatorWorkflow"]["packageScope"] == "operator-workflows"
+
+
 def test_build_watch_reply_action_accepts_snake_case_watch_intake_alias() -> None:
     action = cliq.ZohoCliqClient.build_watch_reply_action(
         {
@@ -3617,6 +3644,32 @@ def test_build_watch_read_ack_action_preserves_watch_intake_metadata() -> None:
         "subject": "",
         "body": "",
     }
+
+
+def test_build_watch_read_ack_action_backfills_package_id_from_contract_id() -> None:
+    action = cliq.ZohoCliqClient.build_watch_read_ack_action(
+        {
+            "chatId": "CT_1",
+            "channelId": "O1",
+            "operatorWorkflow": {
+                "packageContractId": "cliq-195-operator-workflow-v1",
+                "externalEscalation": {
+                    "defaultAction": "notify-mail",
+                },
+            },
+            "messages": [
+                {"messageId": "M1", "senderId": "U1", "text": "latest"},
+            ],
+        }
+    )
+
+    assert action["operatorWorkflow"]["packageId"] == "cliq-195"
+    assert action["operatorWorkflow"]["packageVersion"] == "v1"
+    assert (
+        action["operatorWorkflow"]["packageContractId"]
+        == "cliq-195-operator-workflow-v1"
+    )
+    assert action["operatorWorkflow"]["packageScope"] == "operator-workflows"
 
 
 def test_watch_actions_leave_escalation_envelope_empty_without_alias_or_fallback() -> (

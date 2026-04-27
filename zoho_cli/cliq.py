@@ -1320,16 +1320,39 @@ class ZohoCliqClient:
             normalized_workflow.get("packageContractId") or ""
         ).strip()
         package_scope = str(normalized_workflow.get("packageScope") or "").strip()
+
+        cliq_195_contract_prefix = "cliq-195-operator-workflow-"
+        contract_lower = package_contract_id.lower()
+        if not package_id and contract_lower.startswith(cliq_195_contract_prefix):
+            package_id = "cliq-195"
+            normalized_workflow["packageId"] = package_id
+            if not package_version:
+                derived_version = package_contract_id[
+                    len(cliq_195_contract_prefix) :
+                ].strip()
+                if derived_version:
+                    package_version = derived_version
+                    normalized_workflow["packageVersion"] = package_version
+
         if package_id == "cliq-195":
+            normalized_workflow["packageId"] = package_id
             if not package_version:
                 package_version = "v1"
                 normalized_workflow["packageVersion"] = package_version
+            else:
+                normalized_workflow["packageVersion"] = package_version
+
             if not package_contract_id:
                 normalized_workflow["packageContractId"] = (
                     f"{package_id}-operator-workflow-{package_version}"
                 )
+            else:
+                normalized_workflow["packageContractId"] = package_contract_id
+
             if not package_scope:
                 normalized_workflow["packageScope"] = "operator-workflows"
+            else:
+                normalized_workflow["packageScope"] = package_scope
 
         return normalized_workflow
 

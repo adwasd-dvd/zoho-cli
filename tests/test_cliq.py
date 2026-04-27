@@ -3931,6 +3931,119 @@ def test_watch_actions_accept_kebab_case_operator_workflow_alias() -> None:
     }
 
 
+def test_watch_actions_accept_kebab_case_external_escalation_envelope_defaults_aliases() -> (
+    None
+):
+    watch_payload = {
+        "chatId": "CT_1",
+        "channelId": "O1",
+        "escalation_envelope": {
+            "to": "ops@happy-distro.co.uk",
+        },
+        "operator-workflow": {
+            "external-escalation": {
+                "handoff": {
+                    "envelope-defaults": {
+                        "target": {
+                            "kind": "external-contact",
+                            "channel": "mail",
+                            "defaultAction": "notify-mail",
+                        },
+                        "to": "fallback@happy-distro.co.uk",
+                        "subject": "Fallback subject",
+                        "body": "Fallback body",
+                    }
+                }
+            }
+        },
+        "messages": [
+            {"messageId": "M1", "senderId": "U1", "text": "latest"},
+        ],
+    }
+
+    reply_action = cliq.ZohoCliqClient.build_watch_reply_action(
+        watch_payload,
+        text="ack",
+    )
+
+    assert reply_action["operatorWorkflow"] == watch_payload["operator-workflow"]
+    assert reply_action["escalationEnvelope"] == {
+        "target": {
+            "kind": "external-contact",
+            "channel": "mail",
+            "defaultAction": "notify-mail",
+        },
+        "to": "ops@happy-distro.co.uk",
+        "subject": "Fallback subject",
+        "body": "Fallback body",
+    }
+    assert reply_action["escalationEnvelopeMetadata"]["fieldSources"]["target"] == {
+        "source": "nested-envelope-defaults",
+        "sourcePath": (
+            "operator-workflow.external-escalation.handoff.envelope-defaults.target"
+        ),
+        "fromTopLevelAlias": False,
+        "fromNestedFallback": True,
+        "usedFallback": True,
+    }
+
+
+def test_watch_actions_accept_kebab_case_payload_template_alias_source_paths() -> None:
+    watch_payload = {
+        "chatId": "CT_1",
+        "channelId": "O1",
+        "operator-workflow": {
+            "external-escalation": {
+                "handoff": {
+                    "payload-template": {
+                        "target": {
+                            "kind": "external-contact",
+                            "channel": "mail",
+                            "defaultAction": "notify-mail",
+                        },
+                        "recipient": "fallback@happy-distro.co.uk",
+                        "summary": "Fallback subject",
+                        "reason": "Fallback body",
+                    }
+                }
+            }
+        },
+        "messages": [
+            {"messageId": "M1", "senderId": "U1", "text": "latest"},
+        ],
+    }
+
+    reply_action = cliq.ZohoCliqClient.build_watch_reply_action(
+        watch_payload,
+        text="ack",
+    )
+
+    assert reply_action["escalationEnvelope"] == {
+        "target": {
+            "kind": "external-contact",
+            "channel": "mail",
+            "defaultAction": "notify-mail",
+        },
+        "to": "fallback@happy-distro.co.uk",
+        "subject": "Fallback subject",
+        "body": "Fallback body",
+    }
+    assert (
+        reply_action["escalationEnvelopeMetadata"]["fieldSources"]["to"]["sourcePath"]
+        == "operator-workflow.external-escalation.handoff.payload-template.recipient"
+    )
+    assert (
+        reply_action["escalationEnvelopeMetadata"]["fieldSources"]["subject"][
+            "sourcePath"
+        ]
+        == "operator-workflow.external-escalation.handoff.payload-template.summary"
+    )
+    assert (
+        reply_action["escalationEnvelopeMetadata"]["fieldSources"]["body"]["sourcePath"]
+        == "operator-workflow.external-escalation.handoff.payload-template.reason"
+    )
+
+
 def test_watch_actions_preserve_nested_envelope_defaults_alias_source_paths() -> None:
     watch_payload = {
         "chatId": "CT_1",

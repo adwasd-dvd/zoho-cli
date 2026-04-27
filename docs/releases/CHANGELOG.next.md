@@ -12,6 +12,7 @@
 - No publish, version bump, or tagging actions were performed.
 
 ### Added
+- Refined cliq-195 operator-workflow packaging compatibility so watch-action builders now also accept kebab-case nested envelope aliases under kebab escalation roots (`operator-workflow.external-escalation.handoff.envelope-defaults` and `operator-workflow.external-escalation.handoff.payload-template`) while preserving escalation-envelope source metadata provenance.
 - Refined cliq-195 operator-workflow packaging compatibility so `zoho cliq watch-act` and `zoho cliq bridge-run --watch-file` now also accept kebab-case internal loop hint paths under kebab root aliases (`operator-workflow.internal-loop.action-hint.*`) while preserving `actionSourcePath` / `actionSourceMetadata` provenance.
 - Refined cliq-195 operator-workflow packaging compatibility so `zoho cliq watch-act --escalation-action` and `zoho cliq bridge-run --watch-file` now also accept kebab-case escalation hint paths under kebab root aliases (`operator-workflow.external-escalation.action-hint.*`) while preserving `actionSourcePath` / `actionSourceMetadata` provenance.
 - Refined cliq-195 operator-workflow packaging compatibility: watch builders, `zoho cliq watch-act`, and `zoho cliq bridge-run --watch-file` now also accept kebab-case root alias `operator-workflow` (in addition to `operatorWorkflow`/`operator_workflow`) while preserving `actionSourcePath` and escalation-envelope source metadata.

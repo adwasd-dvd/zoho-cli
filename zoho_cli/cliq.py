@@ -1288,6 +1288,9 @@ class ZohoCliqClient:
             escalation = workflow.get("external_escalation")
             escalation_source_root = f"{workflow_source_root}.external_escalation"
         if not isinstance(escalation, dict):
+            escalation = workflow.get("external-escalation")
+            escalation_source_root = f"{workflow_source_root}.external-escalation"
+        if not isinstance(escalation, dict):
             return {}, {}
 
         handoff = escalation.get("handoff")
@@ -1299,6 +1302,9 @@ class ZohoCliqClient:
         if not isinstance(envelope_defaults, dict):
             envelope_defaults = handoff.get("envelope_defaults")
             envelope_defaults_key = "envelope_defaults"
+        if not isinstance(envelope_defaults, dict):
+            envelope_defaults = handoff.get("envelope-defaults")
+            envelope_defaults_key = "envelope-defaults"
 
         if isinstance(envelope_defaults, dict):
             source_root = f"{escalation_source_root}.handoff.{envelope_defaults_key}"
@@ -1356,6 +1362,9 @@ class ZohoCliqClient:
         if not isinstance(payload_template, dict):
             payload_template = handoff.get("payload_template")
             payload_template_key = "payload_template"
+        if not isinstance(payload_template, dict):
+            payload_template = handoff.get("payload-template")
+            payload_template_key = "payload-template"
 
         if isinstance(payload_template, dict):
             source_root = f"{escalation_source_root}.handoff.{payload_template_key}"

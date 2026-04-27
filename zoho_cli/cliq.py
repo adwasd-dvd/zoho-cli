@@ -1173,6 +1173,10 @@ class ZohoCliqClient:
         if isinstance(snake_workflow, dict):
             return snake_workflow, "operator_workflow"
 
+        kebab_workflow = watch_payload.get("operator-workflow")
+        if isinstance(kebab_workflow, dict):
+            return kebab_workflow, "operator-workflow"
+
         return {}, ""
 
     @classmethod

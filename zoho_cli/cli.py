@@ -2095,6 +2095,24 @@ def _extract_watch_intake_with_source(
     return {}, ""
 
 
+def _extract_operator_workflow_with_source(
+    watch_payload: dict[str, Any],
+) -> tuple[dict[str, Any], str]:
+    workflow = watch_payload.get("operatorWorkflow")
+    if isinstance(workflow, dict):
+        return workflow, "operatorWorkflow"
+
+    snake_workflow = watch_payload.get("operator_workflow")
+    if isinstance(snake_workflow, dict):
+        return snake_workflow, "operator_workflow"
+
+    kebab_workflow = watch_payload.get("operator-workflow")
+    if isinstance(kebab_workflow, dict):
+        return kebab_workflow, "operator-workflow"
+
+    return {}, ""
+
+
 def cliq_bridge_run(
     action_id: Optional[str] = typer.Argument(
         None,
@@ -2666,12 +2684,10 @@ def cliq_bridge_run(
                 )
 
         escalation_candidates: list[tuple[Any, str]] = []
-        workflow_source_root = "operatorWorkflow"
-        workflow = watch_payload.get(workflow_source_root)
-        if not isinstance(workflow, dict):
-            workflow_source_root = "operator_workflow"
-            workflow = watch_payload.get(workflow_source_root)
-        if isinstance(workflow, dict):
+        workflow, workflow_source_root = _extract_operator_workflow_with_source(
+            watch_payload
+        )
+        if workflow_source_root:
             internal_loop = workflow.get("internalLoop")
             internal_loop_source_root = f"{workflow_source_root}.internalLoop"
             if not isinstance(internal_loop, dict):
@@ -3414,9 +3430,7 @@ def cliq_bridge_run(
     resolved_input_text: Optional[str] = input_json
     if watch_payload is not None:
         watch_intake, _ = _extract_watch_intake_with_source(watch_payload)
-        operator_workflow = watch_payload.get("operatorWorkflow")
-        if not isinstance(operator_workflow, dict):
-            operator_workflow = watch_payload.get("operator_workflow")
+        operator_workflow, _ = _extract_operator_workflow_with_source(watch_payload)
         escalation_envelope = _cliq.ZohoCliqClient.extract_escalation_envelope_alias(
             watch_payload
         )
@@ -3497,9 +3511,7 @@ def cliq_bridge_run(
     }
     if watch_payload is not None:
         watch_intake, _ = _extract_watch_intake_with_source(watch_payload)
-        operator_workflow = watch_payload.get("operatorWorkflow")
-        if not isinstance(operator_workflow, dict):
-            operator_workflow = watch_payload.get("operator_workflow")
+        operator_workflow, _ = _extract_operator_workflow_with_source(watch_payload)
         output_payload["escalationEnvelope"] = escalation_envelope
         output_payload["escalationEnvelopeMetadata"] = escalation_envelope_metadata
         output_payload["watchIntake"] = (
@@ -10973,13 +10985,10 @@ def cliq_watch_act(
     selected_action = (action or "").strip().lower()
     selected_action_source = ""
     selected_action_source_path = ""
-    workflow_source_root = "operatorWorkflow"
-    workflow = watch_payload.get(workflow_source_root)
-    if not isinstance(workflow, dict):
-        workflow_source_root = "operator_workflow"
-        workflow = watch_payload.get(workflow_source_root)
-    if not isinstance(workflow, dict):
-        workflow_source_root = ""
+    workflow, workflow_source_root = _extract_operator_workflow_with_source(
+        watch_payload
+    )
+    if not workflow_source_root:
         workflow = {}
 
     if selected_action:

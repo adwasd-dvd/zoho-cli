@@ -1,5 +1,5 @@
 project: zoho-cli
-updated_at: '2026-04-27T00:23:10Z'
+updated_at: '2026-04-27T00:29:26Z'
 status: v1-architecture-and-queue-optimization
 canonical_workspace: /Users/adwasd/.openclaw/workspace-coder
 project_root: /Users/adwasd/.openclaw/workspace-coder/job/zoho-cli
@@ -7,7 +7,7 @@ module_order:
 - Mail
 - Cliq
 - CRM
-current_focus: "Medium-scope cliq-195 integration refresh rerun at 2026-04-27T00:23:10Z stayed green after adding operator-workflow kebab-case root alias support across watch builders/watch-act/bridge-run."
+current_focus: "Medium-scope cliq-195 integration refresh rerun at 2026-04-27T00:29:26Z stayed green after adding kebab-case escalation-hint alias support (`operator-workflow.external-escalation.action-hint.*`) across watch-act and bridge-run inference flows."
 primary_blockers:
 - cliq live unread-filter probe now authenticates successfully but returned zero unread chats (`count=0`), so behavioral validation against real reacted unread traffic remains pending fresh unread activity
 - crm live read-only verification remains blocked by account-level CRM org access

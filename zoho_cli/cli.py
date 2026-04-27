@@ -2970,6 +2970,9 @@ def cliq_bridge_run(
             if not isinstance(escalation, dict):
                 escalation = workflow.get("external_escalation")
                 escalation_source_root = f"{workflow_source_root}.external_escalation"
+            if not isinstance(escalation, dict):
+                escalation = workflow.get("external-escalation")
+                escalation_source_root = f"{workflow_source_root}.external-escalation"
             if isinstance(escalation, dict):
                 escalation_candidates.extend(
                     [
@@ -3105,6 +3108,11 @@ def cliq_bridge_run(
                     escalation_hint = escalation.get("action_hint")
                     escalation_hint_source_root = (
                         f"{escalation_source_root}.action_hint"
+                    )
+                if not isinstance(escalation_hint, dict):
+                    escalation_hint = escalation.get("action-hint")
+                    escalation_hint_source_root = (
+                        f"{escalation_source_root}.action-hint"
                     )
                 if isinstance(escalation_hint, dict):
                     escalation_candidates.extend(
@@ -11004,6 +11012,9 @@ def cliq_watch_act(
             if not isinstance(escalation, dict):
                 escalation = workflow.get("external_escalation")
                 escalation_source_root = f"{workflow_source_root}.external_escalation"
+            if not isinstance(escalation, dict):
+                escalation = workflow.get("external-escalation")
+                escalation_source_root = f"{workflow_source_root}.external-escalation"
             if isinstance(escalation, dict):
                 candidates: list[tuple[Any, str]] = [
                     (
@@ -11136,6 +11147,9 @@ def cliq_watch_act(
                 if not isinstance(hint, dict):
                     hint = escalation.get("action_hint")
                     hint_source_root = f"{escalation_source_root}.action_hint"
+                if not isinstance(hint, dict):
+                    hint = escalation.get("action-hint")
+                    hint_source_root = f"{escalation_source_root}.action-hint"
                 if isinstance(hint, dict):
                     candidates.extend(
                         [

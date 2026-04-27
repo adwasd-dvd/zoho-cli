@@ -1635,11 +1635,14 @@ class ZohoCliqClient:
                 }
             )
 
+        internal_default_action = "reply-latest"
+        external_default_action = "notify-mail"
+
         payload_template = {
             "target": {
                 "kind": "external-contact",
                 "channel": "mail",
-                "defaultAction": "notify-mail",
+                "defaultAction": external_default_action,
             },
             "recipient": "",
             "summary": "",
@@ -1693,20 +1696,20 @@ class ZohoCliqClient:
                 "internalLoop": {
                     "contractId": "cliq-195-internal-loop-v1",
                     "mode": watch_loop_action,
-                    "defaultAction": "reply-latest",
+                    "defaultAction": internal_default_action,
                     "consumePolicy": watch_consume,
                     "actionHint": {
-                        "watchActAction": "reply-latest",
+                        "watchActAction": internal_default_action,
                         "readAckAction": watch_consume["ackAction"],
-                        "bridgeActionId": "reply-latest",
+                        "bridgeActionId": internal_default_action,
                     },
                 },
                 "externalEscalation": {
                     "mode": "human-review",
-                    "defaultAction": "notify-mail",
+                    "defaultAction": external_default_action,
                     "actionHint": {
                         "watchActAction": watch_ack_action,
-                        "bridgeActionId": "notify-mail",
+                        "bridgeActionId": external_default_action,
                     },
                     "handoff": {
                         "contractId": "cliq-195-escalation-handoff-v1",

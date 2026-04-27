@@ -3188,10 +3188,21 @@ def test_build_watch_context_seed_internal_loop_consume_policy_matches_watch_int
     internal_loop = payload["operatorWorkflow"]["internalLoop"]
     external_escalation = payload["operatorWorkflow"]["externalEscalation"]
     assert internal_loop["consumePolicy"] == watch_consume
+    assert internal_loop["mode"] == watch_consume["actionId"]
+    assert (
+        internal_loop["actionHint"]["watchActAction"] == internal_loop["defaultAction"]
+    )
+    assert (
+        internal_loop["actionHint"]["bridgeActionId"] == internal_loop["defaultAction"]
+    )
     assert internal_loop["actionHint"]["readAckAction"] == watch_consume["ackAction"]
     assert (
         external_escalation["actionHint"]["watchActAction"]
         == watch_consume["ackAction"]
+    )
+    assert (
+        external_escalation["actionHint"]["bridgeActionId"]
+        == external_escalation["defaultAction"]
     )
 
 

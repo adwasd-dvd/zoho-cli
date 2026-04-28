@@ -1328,9 +1328,6 @@ def test_register_builtin_root_typers_preserves_expected_group_names() -> None:
 
     assert [group.name for group in app.registered_groups] == [
         "mail",
-        "attachment",
-        "folders",
-        "labels",
         "cliq",
         "crm",
         "config",
@@ -1372,9 +1369,6 @@ def test_register_mail_root_typers_preserves_expected_group_names() -> None:
 
     assert [group.name for group in app.registered_groups] == [
         "mail",
-        "attachment",
-        "folders",
-        "labels",
     ]
 
 
@@ -1542,9 +1536,6 @@ def test_register_config_root_typers_preserves_expected_group_names() -> None:
 def test_cli_app_root_group_names_match_expected_defaults() -> None:
     assert [group.name for group in cli_app.registered_groups] == [
         "mail",
-        "attachment",
-        "folders",
-        "labels",
         "cliq",
         "crm",
         "config",

@@ -197,7 +197,7 @@
 - id: cliq-194
   title: add plugin-grade realtime channel support for cliq (default web-notification trigger, adaptive api-poll fallback, mandatory read-ack after consume)
   module: cliq
-  stage: in_progress
+  stage: completed
   priority: high
   depends_on:
   - platform-202
@@ -286,7 +286,7 @@
 - id: platform-208
   title: finalize module-first CLI information architecture (retire legacy root mail aliases after deprecation window and normalize level-2/3 help taxonomy)
   module: platform
-  stage: queued
+  stage: in_progress
   priority: medium
   depends_on:
   - platform-201

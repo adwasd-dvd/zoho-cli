@@ -157,6 +157,7 @@ Project state lives in `ops/state/*.yml`:
 | `platform-206` interop contract | ✅ Completed | Contract locked and now consumed by operator runbook docs for platform-207 handoff. |
 | `mail-010` workflow package | ✅ Completed | Workflow contract now includes end-to-end operator transcript and focused verification evidence for platform-207 consumption. |
 | `platform-207` RC package | ✅ Completed | Docs package consolidated and RC/version checkpoint executed (decision: defer RC flip). |
+| `platform-208` CLI information architecture | 🚧 In progress | Module-first help taxonomy cleanup is the active forward lane while capability-gated blockers remain deferred. |
 
 ### Current release posture
 
@@ -167,16 +168,16 @@ Project state lives in `ops/state/*.yml`:
 
 ### Active blockers (highest impact)
 
-- Cliq-194 live read-ack execution is currently unsupported on active network/token (`zoho cliq watch-act --action read-ack-latest` -> `not_supported`).
+- Cliq-194 live read-ack endpoint is still unsupported on active network/token, but runtime continuity is capability-gated (watch-act falls back safely instead of hard-failing).
 - Cliq maintenance export verification (`cliq-165`) is blocked by API-side `inactive_appaccount_user`.
 - Several Cliq endpoints are still unsupported on the current org/network (`not_supported`) or require extra scopes.
 - CRM live verification remains blocked until CRM org access is granted to the test account.
 
 ### Near-term plan
 
-1. Continue `cliq-194` realtime intake baseline and refresh live evidence for next RC review.
+1. Execute `platform-208` module-first CLI information-architecture cleanup.
 2. Keep unsupported Cliq endpoints capability-gated so they do not stall v1 internal-loop readiness.
-3. Revisit RC/version decision after refreshed cliq-194 evidence.
+3. Revisit RC/version decision after platform-208 first cleanup slice lands green.
 4. Resume CRM live verification when CRM org access is available.
 
 ---

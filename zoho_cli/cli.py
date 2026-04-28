@@ -847,7 +847,8 @@ def _resolve_label_id(
         if lbl.get("labelName", "").lower() == name_or_id.lower():
             return str(lbl["labelId"])
     utils.error_exit(
-        "label_not_found", f"Label '{name_or_id}' not found. Run: zoho labels list"
+        "label_not_found",
+        f"Label '{name_or_id}' not found. Run: zoho mail labels list",
     )
     return ""  # unreachable
 
@@ -1211,7 +1212,7 @@ def login(
     if utils.is_md_mode():
         _stderr(f"\n✓  Connected as {email}  (accountId: {account_id})\n")
         _stderr("Next steps:\n")
-        _stderr("  zoho folders list")
+        _stderr("  zoho mail folders list")
         _stderr("  zoho mail list")
         _stderr('  zoho mail search "invoice"')
         _stderr("  zoho mail list | jq '.[].subject'")

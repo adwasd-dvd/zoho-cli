@@ -1,15 +1,15 @@
-id: cliq-194
-title: add plugin-grade realtime channel support for cliq (default web-notification trigger, adaptive api-poll fallback, mandatory read-ack after consume)
-module: cliq
+id: platform-208
+title: finalize module-first CLI information architecture (retire legacy root mail aliases after deprecation window and normalize level-2/3 help taxonomy)
+module: platform
 stage: in_progress
 status: in_progress
 owner: coder
-updated_at: '2026-04-28T23:04:56Z'
+updated_at: '2026-04-28T23:49:57Z'
 execution_mode: turbo_20x
 throughput_policy_ref: ops/state/execution_policy.yml
 success_criteria:
-- stabilize realtime intake path with web-trigger default and adaptive polling fallback
-- ensure mandatory read-ack/mark-read after consume with dedupe safety for loop correctness
-- collect fresh live-validation evidence sufficient for next RC checkpoint
-next_if_done: return to RC checkpoint for release_candidate/version decision refresh.
-next_step: "Explicit blocker-gate signoff + version-bump readiness decision packet is now documented under deferred RC posture; keep `release_candidate=false`, keep `version_bumped=false`, and wait for endpoint support change or next RC checkpoint window before bump execution."
+- remove legacy root mail alias exposure from operator-facing help hierarchy after the documented deprecation window
+- keep module-first command taxonomy consistent across level-2/level-3 help surfaces
+- leave a concise operator-facing IA contract that matches current module order and release state
+next_if_done: queue RC checkpoint refresh packet with updated operator IA references.
+next_step: "First slice landed: retired root-level mail support aliases and moved operator examples to module-first paths. Next: normalize any remaining level-2/level-3 help wording drift and re-run focused IA checks."

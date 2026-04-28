@@ -24,12 +24,6 @@ def register_mail_root_typers(
         folders_app=folders_app,
         labels_app=labels_app,
     )
-    register_mail_support_root_typers(
-        root_app,
-        attachment_app=attachment_app,
-        folders_app=folders_app,
-        labels_app=labels_app,
-    )
 
 
 def register_mail_primary_root_typers(

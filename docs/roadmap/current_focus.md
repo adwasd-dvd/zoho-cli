@@ -8,9 +8,9 @@
 5. **External blockers remain deferred**: `cliq-165` (`inactive_appaccount_user`) and `cliq-193` (`not_supported`) stay capability-gated under 3-strike policy.
 
 ## Next
-1. Continue `cliq-194` realtime intake baseline lane (web-trigger default + adaptive polling fallback).
-2. Resolve or explicitly capability-gate the current read-ack live gap (`watch-act --action read-ack-latest` -> `not_supported`) on happydistrouklimited.
-3. Revisit RC/version checkpoint after cliq-194 evidence refresh.
+1. Execute `platform-208` CLI information-architecture cleanup (module-first help taxonomy normalization).
+2. Keep cliq-194 read-ack endpoint limitation in capability-gated deferred mode (non-blocking for forward platform work).
+3. Revisit RC/version checkpoint after platform-208 first cleanup slice lands green.
 4. Keep platform-207 runbook/quickstart tied directly to platform-206 interop + platform-205 gate contracts.
 5. Keep deferred blocker evidence current without letting it stall core v1 flow.
 

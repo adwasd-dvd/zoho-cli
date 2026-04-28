@@ -3,11 +3,11 @@ next_version: 0.2.1
 release_candidate: false
 last_release_tag: v0.1.9
 current_train: ai-employee-v1
-assessed_at: '2026-04-28T22:24:40Z'
-current_milestone: cliq-194-realtime-baseline
-current_milestone_complete: true
+assessed_at: '2026-04-28T23:42:49Z'
+current_milestone: platform-208-cli-information-architecture
+current_milestone_complete: false
 missing_requirements:
-  - 'Release-candidate posture remains deferred after RC checkpoint refresh because external blocker posture is still active (`release_gate.blocker_bugs_cleared: false`), even though latest cliq-194 live evidence is continuity-safe (`status=ok`, `fallbackUsed=true`, `readAckSupported=false`, `reason=read_ack_not_supported`).'
+  - 'Release-candidate posture remains deferred after RC checkpoint refresh because external blocker posture is still active (`release_gate.blocker_bugs_cleared: false`), even though latest cliq-194 live evidence is continuity-safe (`status=ok`, `fallbackUsed=true`, `readAckSupported=false`, `reason=read_ack_not_supported`). This is now treated as capability-gated deferred, not an execution blocker for forward platform work.'
   - 'Version bump remains pending (`release_gate.version_bumped: false`) by explicit blocker-gate signoff under the current deferred RC posture; focused fallback regression stayed green at 2026-04-28T22:24:40Z (`./.venv/bin/python -m pytest -q tests/test_cli.py::test_cliq_watch_act_read_ack_latest_falls_back_when_read_ack_is_unsupported` -> `1 passed in 0.15s`).'
 rc_package:
   gate_contract_ready: true
@@ -21,7 +21,7 @@ release_candidate_decision:
   decision: defer
   reason: RC checkpoint refreshed with latest cliq-194 fallback evidence; keep defer because external blocker picture remains active and `release_gate.blocker_bugs_cleared` is still false.
   revisit_after:
-    - cliq-194
+    - platform-208
   checkpoint:
     checklist: docs/releases/AI_EMPLOYEE_V1_RC_CHECKLIST.md
     owner: coder

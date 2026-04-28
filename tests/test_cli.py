@@ -120,11 +120,11 @@ def test_mail_help_includes_support_subgroups_under_mail() -> None:
     assert "labels" in result.output
 
 
-def test_legacy_mail_support_root_aliases_still_work() -> None:
+def test_legacy_mail_support_root_aliases_are_retired() -> None:
     result = runner.invoke(app, ["attachment", "--help"])
 
-    assert result.exit_code == 0, result.output
-    assert "Download and display content of an attachment." in result.output
+    assert result.exit_code != 0
+    assert "No such command 'attachment'" in result.output
 
 
 def test_login_no_browser_defaults_to_localhost_redirect_when_unset(
@@ -944,7 +944,15 @@ def test_attachment_content_with_filename(
     with patch("zoho_cli.parse.parse_attachment", return_value="parsed attachment"):
         result = runner.invoke(
             app,
-            ["attachment", "content", "M1", "report.txt", "--folder-id", "F1"],
+            [
+                "mail",
+                "attachment",
+                "content",
+                "M1",
+                "report.txt",
+                "--folder-id",
+                "F1",
+            ],
             env=_cfg_env(mock_config),
         )
 
@@ -983,7 +991,15 @@ def test_attachment_content_missing_filename_returns_not_found(
 
     result = runner.invoke(
         app,
-        ["attachment", "content", "M1", "missing.txt", "--folder-id", "F1"],
+        [
+            "mail",
+            "attachment",
+            "content",
+            "M1",
+            "missing.txt",
+            "--folder-id",
+            "F1",
+        ],
         env=_cfg_env(mock_config),
     )
 
@@ -997,8 +1013,8 @@ def test_attachment_content_missing_filename_returns_not_found(
 
 
 @respx.mock
-def test_folders_list(mock_config: Path, mock_token_refresh: Any) -> None:
-    """folders list returns exit code 0 and a JSON list of formatted folder objects."""
+def test_mail_folders_list(mock_config: Path, mock_token_refresh: Any) -> None:
+    """mail folders list returns exit code 0 and a JSON list of formatted folder objects."""
     respx.get(f"{MAIL_BASE}/accounts/{ACCOUNT_ID}/folders").mock(
         return_value=httpx.Response(
             200,
@@ -1024,7 +1040,7 @@ def test_folders_list(mock_config: Path, mock_token_refresh: Any) -> None:
             },
         )
     )
-    result = runner.invoke(app, ["folders", "list"], env=_cfg_env(mock_config))
+    result = runner.invoke(app, ["mail", "folders", "list"], env=_cfg_env(mock_config))
     assert result.exit_code == 0, result.output
     folders = json.loads(result.output)
     assert isinstance(folders, list)
@@ -38295,7 +38311,7 @@ def test_no_account_id_exits(tmp_path: Path, mock_token_refresh: Any) -> None:
     }
     cfg_path = tmp_path / "config.json"
     cfg_path.write_text(json.dumps(cfg))
-    result = runner.invoke(app, ["folders", "list"], env=_cfg_env(cfg_path))
+    result = runner.invoke(app, ["mail", "folders", "list"], env=_cfg_env(cfg_path))
     assert result.exit_code == 1
     assert "no_account_id" in result.output
 

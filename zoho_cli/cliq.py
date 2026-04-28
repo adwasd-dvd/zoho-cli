@@ -1311,10 +1311,12 @@ class ZohoCliqClient:
 
         if package_version.startswith(("V", "v")):
             normalized_suffix = package_version[1:].strip()
+            if normalized_suffix.isdigit():
+                normalized_suffix = str(int(normalized_suffix))
             return f"v{normalized_suffix}" if normalized_suffix else ""
 
         if package_version.isdigit():
-            return f"v{package_version}"
+            return f"v{int(package_version)}"
 
         return package_version
 

@@ -3,17 +3,27 @@ next_version: 0.2.1
 release_candidate: false
 last_release_tag: v0.1.9
 current_train: ai-employee-v1
-assessed_at: '2026-04-28T16:51:02Z'
+assessed_at: '2026-04-28T16:54:18Z'
 current_milestone: platform-205-release-gate
 current_milestone_complete: false
 missing_requirements:
-  - 'platform-205 checklist core items are executed, but final signoff is pending explicit integration pass/skip mapping for externally blocked capabilities.'
-  - 'integration readiness remains unset (`release_gate.integration_tests_passed_or_explicitly_skipped: false`) until the pass/skip mapping is committed.'
   - 'version bump and release-candidate flip are still pending (`release_gate.version_bumped: false`, `release_candidate: false`).'
+integration_pass_skip_mapping:
+  - area: cliq-watch-context-watch-act-bridge
+    status: pass
+    evidence: 'ops/state/test_status.yml last_run_at=2026-04-28T15:48:50Z, focused+medium boundary checks stayed green (registry/membrane_bridge/cli/cliq slices + help smoke).'
+  - area: cliq-unsupported-or-scope-gated-live-endpoints
+    status: skip_deferred
+    policy: capability_gated_3_strike
+    evidence: 'ops/state/project.yml primary_blockers + WAITING_ON.md document repeated not_supported / inactive_appaccount_user / scope-gated outcomes; explicitly deferred post-v1.'
+  - area: crm-live-read-verification
+    status: skip_deferred
+    policy: capability_gated_external_org_block
+    evidence: 'ops/state/project.yml and ops/state/module_status.yml record CRM org access blocker for the test account.'
 release_gate:
   blocker_bugs_cleared: false
   unit_tests_passed: true
-  integration_tests_passed_or_explicitly_skipped: false
+  integration_tests_passed_or_explicitly_skipped: true
   changelog_updated: true
   version_bumped: false
   release_gate_script_passed: true

@@ -1,7 +1,7 @@
 module: Platform
-updated_at: "2026-04-28T16:24:34Z"
+updated_at: "2026-04-28T16:54:18Z"
 status: in_progress
 execution_mode: turbo_20x
 throughput_policy_ref: ops/state/execution_policy.yml
 blockers: []
-next_small_step: finalize platform-205 integration pass/skip mapping and update release-status gate flags for signoff.
+next_small_step: decide release-candidate/version-bump timing, then close platform-205 signoff and move to platform-206.

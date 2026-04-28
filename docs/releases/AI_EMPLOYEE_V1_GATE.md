@@ -54,5 +54,5 @@ Primary references:
 
 ## Remaining signoff items
 
-- [ ] Finalize integration pass/skip mapping for externally blocked capabilities into `ops/state/release_status.yml`.
+- [x] Finalize integration pass/skip mapping for externally blocked capabilities into `ops/state/release_status.yml`.
 - [ ] Decide `release_candidate` flip + version bump timing after gate signoff.

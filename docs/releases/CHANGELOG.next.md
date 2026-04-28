@@ -12,6 +12,7 @@
 - No publish, version bump, or tagging actions were performed.
 
 ### Added
+- Hardened cliq-195 operator-workflow package canonicalization so watch-reply/read-ack/watch-act now normalize leading-decimal zero package versions (for example `.0` and contract-derived `V.0`) to canonical `v0` before package-contract rewrite/backfill, preserving stable package metadata across action/result surfaces.
 - Hardened cliq-195 operator-workflow package canonicalization so watch-reply/read-ack/watch-act now normalize leading-decimal scientific whole-number package versions (for example `.5e1` and `V.5E1`) to canonical `v*` forms before package-contract rewrite/backfill, preserving stable package metadata across action/result surfaces.
 - Hardened cliq-195 operator-workflow package canonicalization so watch-reply/read-ack/watch-act now normalize decimal scientific whole-number versions (for example `3.5e1` and `V3.5E1`) to canonical `v*` forms before package-contract rewrite/backfill, preserving stable package metadata across action/result surfaces.
 - Hardened cliq-195 operator-workflow package canonicalization so watch-reply/read-ack/watch-act now treat non-finite scientific whole-number versions (for example `V1E309`) as non-normalizable instead of crashing during integer coercion, preserving canonical `v1E309` metadata flow through contract-id rewrite/backfill.

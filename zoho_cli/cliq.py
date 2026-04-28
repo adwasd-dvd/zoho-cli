@@ -1327,6 +1327,8 @@ class ZohoCliqClient:
 
             if re.fullmatch(r"\d+\.0+", normalized_candidate):
                 return str(int(normalized_candidate.split(".", 1)[0]))
+            if re.fullmatch(r"\.0+", normalized_candidate):
+                return "0"
             if normalized_candidate.isdigit():
                 return str(int(normalized_candidate))
             if re.fullmatch(

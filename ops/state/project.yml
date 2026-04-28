@@ -1,5 +1,5 @@
 project: zoho-cli
-updated_at: '2026-04-28T13:51:27Z'
+updated_at: '2026-04-28T15:24:00Z'
 status: v1-architecture-and-queue-optimization
 throughput_mode: turbo_20x
 throughput_policy_ref: ops/state/execution_policy.yml
@@ -9,7 +9,7 @@ module_order:
 - Mail
 - Cliq
 - CRM
-current_focus: "Turbo 20x mode active: adjacent medium watch-context/watch-act/bridge-run boundary gate rerun stayed green at 2026-04-28T13:51:27Z; continue the next focused non-alias cliq-195 packaging increment."
+current_focus: "Turbo 20x mode active: focused cliq-195 leading-decimal zero package-version canonicalization increment landed at 2026-04-28T15:24:00Z; continue the next focused non-alias packaging increment, then rerun the adjacent medium boundary gate per every-2-boundary cadence."
 primary_blockers:
 - cliq live unread-filter probe now authenticates successfully but returned zero unread chats (`count=0`), so behavioral validation against real reacted unread traffic remains pending fresh unread activity
 - crm live read-only verification remains blocked by account-level CRM org access

@@ -1,10 +1,14 @@
-last_run_at: "2026-04-28T13:51:27Z"
+last_run_at: "2026-04-28T15:24:00Z"
 last_result: passing
-current_focus: cliq-195-medium-boundary-rerun-20260428T135127Z
+current_focus: cliq-195-leading-decimal-zero-package-version-canonicalization-20260428T152400Z
 suites:
   unit:
     status: passing
     notes:
+      - "focused cliq-195 leading-decimal zero package-version canonicalization increment at 2026-04-28T15:24:00Z"
+      - "behavior increment: `_normalize_operator_workflow_package_version` now canonicalizes leading-decimal zero values (for example `.0` and contract-derived `V.0`) to canonical `v0` before package-contract rewrite/backfill"
+      - "./.venv/bin/python -m pytest -q tests/test_cliq.py::test_build_watch_reply_action_normalizes_leading_decimal_zero_package_version tests/test_cliq.py::test_build_watch_read_ack_action_normalizes_derived_leading_decimal_zero_contract_version tests/test_cli.py::test_cliq_watch_act_normalizes_leading_decimal_zero_package_version_in_result -> 3 passed in 1.50s"
+      - "./.venv/bin/ruff format --check zoho_cli/cliq.py tests/test_cliq.py tests/test_cli.py -> 3 files already formatted"
       - "adjacent medium-scope cliq-195 integration boundary rerun at 2026-04-28T13:51:27Z"
       - "no behavior change; watch-context/watch-act/bridge-run verification stayed green"
       - "./.venv/bin/python -m pytest -q tests/test_registry.py tests/test_membrane_bridge.py -> 489 passed in 8.83s"
@@ -4875,6 +4879,9 @@ suites:
   ci:
     status: passing
     notes:
+      - "nightly system-layer verification at 2026-04-28T14:18:15Z"
+      - "make ci -> ruff format/check clean + full pytest gate (`1706 passed in 33.87s`)"
+      - "evidence log: .tmp/nightly_ci_20260428T141815Z.log"
       - "nightly system-layer verification at 2026-04-27T14:33:33Z"
       - "make ci -> ruff format/check clean + full pytest gate (`1659 passed in 33.68s`)"
       - "evidence log: .tmp/nightly_ci_20260427T143333Z.log"
@@ -4945,6 +4952,9 @@ suites:
   packaging:
     status: passing
     notes:
+      - "nightly system-layer verification at 2026-04-28T14:18:15Z"
+      - "make release-gate -> unit suite `1706 passed in 34.71s` + wheel smoke `ok: wheel smoke passed (0.2.0)`"
+      - "evidence log: .tmp/nightly_release_gate_20260428T141815Z.log"
       - "nightly system-layer verification at 2026-04-27T14:32:49Z"
       - "make release-gate -> unit suite `1659 passed in 34.08s` + wheel smoke `ok: wheel smoke passed (0.2.0)`"
       - "evidence log: .tmp/nightly_release_gate_20260427T143249Z.log"

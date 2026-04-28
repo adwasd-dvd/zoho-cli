@@ -1,10 +1,22 @@
-last_run_at: "2026-04-28T10:32:26Z"
+last_run_at: "2026-04-28T11:49:30Z"
 last_result: passing
-current_focus: cliq-195-focused-decimal-scientific-canonicalization-20260428T103226Z
+current_focus: cliq-195-adjacent-medium-boundary-rerun-20260428T114930Z
 suites:
   unit:
     status: passing
     notes:
+      - "adjacent medium-scope cliq-195 integration boundary rerun at 2026-04-28T11:49:30Z"
+      - "no behavior change; watch-context/watch-act/bridge-run verification stayed green"
+      - "./.venv/bin/python -m pytest -q tests/test_registry.py tests/test_membrane_bridge.py -> 489 passed in 8.86s"
+      - "./.venv/bin/python -m pytest -q tests/test_cli.py -k 'cliq_watch_context_from_channel or cliq_watch_act or watch_act_read_ack_latest or cliq_context_with_anchor or cliq_messages_from_channel or cliq_message_get_from_channel or cliq_bridge_run or crm_bridge_run' -> 407 passed, 427 deselected in 9.89s"
+      - "./.venv/bin/python -m pytest -q tests/test_cliq.py -k 'build_watch_context_seed or build_watch_reply_action or execute_watch_reply_action or build_watch_read_ack_action or execute_watch_read_ack_action or list_messages_from_channel_id or get_message_from_chat_id or get_message_from_channel_id or reply_message_success or edit_message_success or delete_message_success or react_message' -> 69 passed, 186 deselected in 0.25s"
+      - "./.venv/bin/python -m zoho_cli.cli --help >/dev/null && echo HELP_SMOKE_OK -> HELP_SMOKE_OK"
+      - "adjacent medium-scope cliq-195 integration boundary rerun at 2026-04-28T10:50:56Z"
+      - "no behavior change; watch-context/watch-act/bridge-run verification stayed green"
+      - "./.venv/bin/python -m pytest -q tests/test_registry.py tests/test_membrane_bridge.py -> 489 passed in 8.67s"
+      - "./.venv/bin/python -m pytest -q tests/test_cli.py -k 'cliq_watch_context_from_channel or cliq_watch_act or watch_act_read_ack_latest or cliq_context_with_anchor or cliq_messages_from_channel or cliq_message_get_from_channel or cliq_bridge_run or crm_bridge_run' -> 407 passed, 427 deselected in 9.66s"
+      - "./.venv/bin/python -m pytest -q tests/test_cliq.py -k 'build_watch_context_seed or build_watch_reply_action or execute_watch_reply_action or build_watch_read_ack_action or execute_watch_read_ack_action or list_messages_from_channel_id or get_message_from_chat_id or get_message_from_channel_id or reply_message_success or edit_message_success or delete_message_success or react_message' -> 69 passed, 186 deselected in 0.24s"
+      - "./.venv/bin/python -m zoho_cli.cli --help >/dev/null && echo HELP_SMOKE_OK -> HELP_SMOKE_OK"
       - "focused cliq-195 decimal-scientific whole-number package-version canonicalization increment at 2026-04-28T10:32:26Z"
       - "behavior increment: `_normalize_operator_workflow_package_version` now canonicalizes decimal scientific whole-number values (for example `3.5e1` and `V3.5E1`) to canonical lowercase `v*` before package-contract rewrite/backfill"
       - "./.venv/bin/python -m pytest -q tests/test_cliq.py::test_build_watch_reply_action_normalizes_decimal_scientific_whole_number_package_version tests/test_cliq.py::test_build_watch_read_ack_action_normalizes_decimal_scientific_whole_number_package_version tests/test_cli.py::test_cliq_watch_act_normalizes_decimal_scientific_whole_number_package_version_in_result -> 3 passed in 0.15s"

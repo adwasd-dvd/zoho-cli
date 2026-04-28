@@ -8,10 +8,10 @@
 5. **External blockers remain deferred**: `cliq-165` (`inactive_appaccount_user`) and `cliq-193` (`not_supported`) stay capability-gated under 3-strike policy.
 
 ## Next
-1. Land and wire `platform-206` interoperability contract into operator-facing runbook docs.
-2. Start `mail-010` operator workflow package.
+1. Start `mail-010` operator workflow package (triage/draft/reply/safe-send contract slice).
+2. Prepare `platform-207` release-candidate docs/runbook package from the now-locked platform-206 interop contract.
 3. Continue `cliq-194` realtime intake baseline lane (web-trigger default + adaptive polling fallback).
-4. Prepare `platform-207` release-candidate docs/runbook once gate + workflow lanes are green.
+4. Keep platform-207 runbook/quickstart tied directly to platform-206 interop + platform-205 gate contracts.
 5. Keep deferred blocker evidence current without letting it stall core v1 flow.
 
 ## Delivery estimate (v1.0 first cut)

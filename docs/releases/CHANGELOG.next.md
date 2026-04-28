@@ -12,6 +12,7 @@
 - No publish, version bump, or tagging actions were performed.
 
 ### Added
+- Added `docs/releases/AI_EMPLOYEE_V1_OPERATOR_RUNBOOK.md` and wired it directly to `docs/architecture/CROSS_CHANNEL_INTEROP_CONTRACT.md`, completing the platform-206 handoff requirement that platform-207 operator procedures consume the same interop contract.
 - Added `docs/architecture/CROSS_CHANNEL_INTEROP_CONTRACT.md` as the platform-206 contract baseline, locking canonical external escalation envelope shape, internal-first/capability-gated routing semantics, and adapter audit outcome classes (`pass`/`skip_deferred`/`fail`) for platform-207 runbook handoff.
 - Closed platform-205 signoff with an explicit release-candidate/version-bump defer decision (wait for one more green development slice), marked platform-205 complete, and moved active execution to platform-206 interoperability contract work.
 - Finalized platform-205 integration pass/skip mapping in `ops/state/release_status.yml` (core Cliq watch/context/bridge integration marked pass from latest green boundary evidence; externally blocked Cliq/CRM live capabilities explicitly marked skip-deferred under capability-gated policy), and flipped `release_gate.integration_tests_passed_or_explicitly_skipped` to `true`.

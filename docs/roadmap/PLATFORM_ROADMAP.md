@@ -66,7 +66,7 @@ Definition of done:
 - read-ack/dedupe behavior is an explicit pass condition
 - deferred/unsupported endpoint policy is an explicit pass condition boundary
 
-### Phase B4 — cross-channel interoperability contract (in progress)
+### Phase B4 — cross-channel interoperability contract (completed)
 
 Goals:
 - define a canonical escalation envelope for external communication adapters

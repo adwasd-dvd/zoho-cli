@@ -1,15 +1,15 @@
-id: platform-206
-title: define cross-channel interoperability contract (internal cliq + external communication channels)
-module: platform
+id: mail-010
+title: package mail workflows for agent operation (triage, draft/reply assist, safe-send guardrails)
+module: mail
 stage: in_progress
 status: in_progress
 owner: coder
-updated_at: '2026-04-28T17:09:04Z'
+updated_at: '2026-04-28T17:24:10Z'
 execution_mode: turbo_20x
 throughput_policy_ref: ops/state/execution_policy.yml
 success_criteria:
-- define a concrete interoperability contract between internal cliq workflow surfaces and external communication adapters
-- keep contract boundaries compatible with platform-204 architecture and platform-205 gate decisions
-- provide explicit handoff points for platform-207 release-candidate runbook documentation
+- package a practical operator workflow for mail triage/search/read -> draft/reply assist -> safe-send path
+- keep workflow contract auditable and consistent with current release-gate/state model
+- land minimal runnable examples that platform-207 can reference directly
 next_if_done: move to platform-207 release-candidate package docs/quickstart/runbook preparation.
-next_step: "Interop contract draft is landed at docs/architecture/CROSS_CHANNEL_INTEROP_CONTRACT.md; wire operator-facing runbook references and close platform-206 once platform-207 docs consume it."
+next_step: "Start the first mail-010 thin slice by drafting the operator workflow contract sections and mapping existing command surfaces to triage/draft/reply/safe-send steps."

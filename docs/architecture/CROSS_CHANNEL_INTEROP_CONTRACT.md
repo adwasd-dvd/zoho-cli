@@ -80,11 +80,12 @@ Every external escalation attempt must be traceable via:
 - [x] Routing contract (internal-first, external-gated) is explicit.
 - [x] Capability statuses and defer semantics are explicit.
 - [x] Audit trace requirements are explicit and state-driven.
-- [ ] Platform-207 runbook references this contract directly for operator procedures.
+- [x] Platform-207 runbook references this contract directly for operator procedures (`docs/releases/AI_EMPLOYEE_V1_OPERATOR_RUNBOOK.md`).
 
 ## References
 
 - `docs/architecture/MULTI_PRODUCT_PLAN.md`
 - `docs/releases/AI_EMPLOYEE_V1_GATE.md`
+- `docs/releases/AI_EMPLOYEE_V1_OPERATOR_RUNBOOK.md`
 - `ops/state/release_status.yml`
 - `ops/state/project.yml`

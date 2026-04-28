@@ -246,7 +246,7 @@
 - id: mail-010
   title: package mail workflows for agent operation (triage, draft/reply assist, safe-send guardrails)
   module: mail
-  stage: queued
+  stage: in_progress
   priority: high
   depends_on:
   - platform-205
@@ -262,7 +262,7 @@
 - id: platform-206
   title: define cross-channel interoperability contract (internal cliq + external communication channels)
   module: platform
-  stage: in_progress
+  stage: completed
   priority: high
   depends_on:
   - cliq-195

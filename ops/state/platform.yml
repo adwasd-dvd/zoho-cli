@@ -1,7 +1,7 @@
 module: Platform
-updated_at: "2026-04-28T23:49:57Z"
+updated_at: "2026-04-28T23:57:09Z"
 status: in_progress
 execution_mode: turbo_20x
 throughput_policy_ref: ops/state/execution_policy.yml
 blockers: []
-next_small_step: Continue platform-208 after the first slice (legacy root mail alias retirement), then normalize remaining level-2/level-3 help wording drift and revalidate IA-focused tests.
+next_small_step: Platform-208 alias-retirement integration boundary is green; continue with remaining level-2/level-3 help wording drift normalization, then rerun IA-focused tests.

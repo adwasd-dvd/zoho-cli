@@ -1,10 +1,20 @@
-last_run_at: "2026-04-28T23:04:56Z"
+last_run_at: "2026-04-28T23:57:09Z"
 last_result: passing
-current_focus: cliq-194-blocker-gate-posture-revalidation-20260428T230456Z
+current_focus: platform-208-ia-alias-retirement-integration-rerun-20260428T235709Z
 suites:
   unit:
     status: passing
     notes:
+      - "platform-208 medium-scope integration rerun at 2026-04-28T23:57:09Z"
+      - "no behavior change; alias-retirement slice stayed integration-green"
+      - "./.venv/bin/python -m pytest -q tests/test_registry.py tests/test_membrane_bridge.py -> 489 passed in 8.85s"
+      - "./.venv/bin/python -m pytest -q tests/test_cli.py -k 'mail_help_includes_support_subgroups_under_mail or legacy_mail_support_root_aliases_are_retired or mail_folders_list or attachment_content_with_filename or attachment_content_missing_filename_returns_not_found or no_account_id_exits or cliq_bridge_run or crm_bridge_run' -> 6 passed, 831 deselected in 0.25s"
+      - "./.venv/bin/python -m zoho_cli.cli --help >/dev/null && ./.venv/bin/python -m zoho_cli.cli mail --help >/dev/null && ./.venv/bin/python -m zoho_cli.cli cliq --help >/dev/null && ./.venv/bin/python -m zoho_cli.cli crm --help >/dev/null && ./.venv/bin/python -m zoho_cli.cli config --help >/dev/null && echo HELP_SMOKE_OK -> HELP_SMOKE_OK"
+      - "platform-208 medium-scope integration rerun at 2026-04-28T23:52:59Z"
+      - "root-alias retirement slice stayed integration-green; no new regression detected"
+      - "./.venv/bin/python -m pytest -q tests/test_registry.py tests/test_membrane_bridge.py -> 489 passed in 8.55s"
+      - "./.venv/bin/python -m pytest -q tests/test_cli.py -k 'mail_help_includes_support_subgroups_under_mail or legacy_mail_support_root_aliases_are_retired or mail_folders_list or attachment_content_with_filename or attachment_content_missing_filename_returns_not_found or no_account_id_exits or cliq_bridge_run or crm_bridge_run' -> 6 passed, 831 deselected in 0.24s"
+      - "./.venv/bin/python -m zoho_cli.cli --help >/dev/null && ./.venv/bin/python -m zoho_cli.cli mail --help >/dev/null && ./.venv/bin/python -m zoho_cli.cli cliq --help >/dev/null && ./.venv/bin/python -m zoho_cli.cli crm --help >/dev/null && ./.venv/bin/python -m zoho_cli.cli config --help >/dev/null && echo HELP_SMOKE_OK -> HELP_SMOKE_OK"
       - "focused cliq-194 blocker-gate posture revalidation at 2026-04-28T23:04:56Z"
       - "no behavior change; capability-gated read-ack fallback regression remained green"
       - "./.venv/bin/python -m pytest -q tests/test_cli.py::test_cliq_watch_act_read_ack_latest_falls_back_when_read_ack_is_unsupported -> 1 passed in 0.14s"

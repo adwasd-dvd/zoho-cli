@@ -12,6 +12,8 @@
 - No publish, version bump, or tagging actions were performed.
 
 ### Added
+- Completed the second `mail-010` slice in `docs/releases/MAIL_010_OPERATOR_WORKFLOW.md` by adding an end-to-end operator transcript (triage -> inspect -> safe-send -> reply -> state hygiene) and focused verification evidence (`MAIL_COMMAND_HELP_OK` plus 6 focused Mail CLI tests passing).
+- Marked `mail-010` workflow packaging complete in state/roadmap docs and moved active execution to `platform-207` release-candidate package consolidation.
 - Added `docs/releases/MAIL_010_OPERATOR_WORKFLOW.md` as the first `mail-010` operator workflow contract slice, mapping Mail triage/search/read -> draft/reply assist -> safe-send command surfaces with explicit guardrails and minimal runnable examples for platform-207 consumption.
 - Added `docs/releases/AI_EMPLOYEE_V1_OPERATOR_RUNBOOK.md` and wired it directly to `docs/architecture/CROSS_CHANNEL_INTEROP_CONTRACT.md`, completing the platform-206 handoff requirement that platform-207 operator procedures consume the same interop contract.
 - Added `docs/architecture/CROSS_CHANNEL_INTEROP_CONTRACT.md` as the platform-206 contract baseline, locking canonical external escalation envelope shape, internal-first/capability-gated routing semantics, and adapter audit outcome classes (`pass`/`skip_deferred`/`fail`) for platform-207 runbook handoff.

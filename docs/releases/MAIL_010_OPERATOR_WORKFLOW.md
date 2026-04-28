@@ -66,12 +66,48 @@ Command surfaces:
 3. safety pass:
    - execute recipient/content check before send
 
+## End-to-end operator example transcript (v1)
+
+Scenario: inbound customer message needs acknowledgement + follow-up reply.
+
+1. Triage inbox
+   - run: `python -m zoho_cli mail list --folder Inbox --limit 20`
+   - operator picks candidate `message_id=<msg_123>`
+2. Inspect full message
+   - run: `python -m zoho_cli mail get <msg_123>`
+   - operator intent: `reply`
+3. Draft reply content
+   - draft body prepared with required context and next action
+4. Safe-send check (mandatory)
+   - verify recipient target and subject intent
+   - verify no unintended sensitive data in body/attachments
+5. Send reply
+   - run: `python -m zoho_cli mail reply <msg_123> --text "Thanks, received. We will follow up by EOD." --quote`
+6. Post-action hygiene
+   - run: `python -m zoho_cli mail mark-read <msg_123>`
+   - optional run: `python -m zoho_cli mail tag <msg_123> follow-up`
+
+Expected outcome:
+- one clear audited action path (triage -> inspect -> safe-send -> reply -> state hygiene)
+- message state reflects handled status for future loops
+
+## Focused verification evidence
+
+- 2026-04-28T17:35:11Z command surface smoke:
+  - `python -m zoho_cli mail --help`
+  - `python -m zoho_cli mail reply --help`
+  - `python -m zoho_cli mail send --help`
+  - result: `MAIL_COMMAND_HELP_OK`
+- 2026-04-28T17:35:11Z focused mail CLI behavior checks:
+  - `./.venv/bin/python -m pytest -q tests/test_cli.py::test_mail_help_includes_support_subgroups_under_mail tests/test_cli.py::test_mail_search_valid tests/test_cli.py::test_mail_list tests/test_cli.py::test_mail_get_normalizes_nested_content_response tests/test_cli.py::test_mail_send_plaintext tests/test_cli.py::test_mail_reply_sends_prefixed_payload_and_status`
+  - result: `6 passed in 0.25s`
+
 ## Acceptance checklist (mail-010)
 
 - [x] Workflow contract sections are documented.
 - [x] Current CLI command surfaces are mapped to each workflow phase.
-- [ ] Add one end-to-end operator example transcript suitable for platform-207 quickstart.
-- [ ] Add focused verification notes/evidence for this workflow package in state/changelog.
+- [x] Add one end-to-end operator example transcript suitable for platform-207 quickstart.
+- [x] Add focused verification notes/evidence for this workflow package in state/changelog.
 
 ## References
 

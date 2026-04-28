@@ -155,7 +155,8 @@ Project state lives in `ops/state/*.yml`:
 | `platform-204` architecture contract | ✅ Completed | Mail+Cliq core, control/execution/escalation boundaries locked in docs. |
 | `platform-205` release gate | ✅ Completed | Gate checklist executed, integration pass/skip mapping recorded, RC/version bump intentionally deferred until one more green development slice. |
 | `platform-206` interop contract | ✅ Completed | Contract locked and now consumed by operator runbook docs for platform-207 handoff. |
-| `mail-010` workflow package | 🚧 In progress | First contract slice landed in `docs/releases/MAIL_010_OPERATOR_WORKFLOW.md`; next is end-to-end example + verification notes. |
+| `mail-010` workflow package | ✅ Completed | Workflow contract now includes end-to-end operator transcript and focused verification evidence for platform-207 consumption. |
+| `platform-207` RC package | 🚧 In progress | Consolidating release-candidate docs/quickstart/runbook from locked contracts. |
 
 ### Current release posture
 
@@ -172,8 +173,8 @@ Project state lives in `ops/state/*.yml`:
 
 ### Near-term plan
 
-1. Extend `mail-010` from contract draft to end-to-end operator example + verification notes.
-2. Consolidate `platform-207` release-candidate docs/quickstart/runbook around platform-205 + platform-206 contracts.
+1. Consolidate `platform-207` release-candidate docs/quickstart/runbook around platform-205 + platform-206 + mail-010 contracts.
+2. Run the RC/version decision checkpoint after package consolidation.
 3. Keep unsupported Cliq endpoints capability-gated so they do not stall v1 internal-loop readiness.
 4. Resume CRM live verification when CRM org access is available.
 

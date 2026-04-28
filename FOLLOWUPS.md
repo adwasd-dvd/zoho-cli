@@ -5,9 +5,9 @@
 - [ ] Close `platform-202` next extraction slice (no behavior change, parity tests green).
 - [x] Land `platform-204` architecture brief (Mail+Cliq core, persona/memory/work contract, post-v1 CRM/Books boundary).
 - [x] Land `platform-205` v1.0 acceptance gate for AI-employee workflow.
-- [ ] Deliver `mail-010` operator workflow package (triage/draft/reply/safe-send guardrails).
+- [x] Deliver `mail-010` operator workflow package (triage/draft/reply/safe-send guardrails).
   - [x] Draft contract slice landed (`docs/releases/MAIL_010_OPERATOR_WORKFLOW.md`).
-  - [ ] Add end-to-end operator example transcript + verification evidence.
+  - [x] End-to-end operator example transcript + verification evidence landed.
 - [ ] Deliver `cliq-194` realtime intake baseline (web-trigger default + adaptive API polling fallback) with mandatory mark-as-read/read-ack after consume to prevent looped re-processing.
 - [x] Deliver `cliq-195` operator workflow package (internal loop + external-contact escalation path), then defer non-critical tail hardening to post-v1 backlog.
 - [x] Land `platform-206` cross-channel interoperability contract (Cliq internal + external comm adapters).

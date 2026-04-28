@@ -1,15 +1,15 @@
-id: mail-010
-title: package mail workflows for agent operation (triage, draft/reply assist, safe-send guardrails)
-module: mail
+id: platform-207
+title: prepare v1.0 release candidate package (docs, quickstart, and operator runbook for virtual employee deployment)
+module: platform
 stage: in_progress
 status: in_progress
 owner: coder
-updated_at: '2026-04-28T17:32:27Z'
+updated_at: '2026-04-28T17:35:11Z'
 execution_mode: turbo_20x
 throughput_policy_ref: ops/state/execution_policy.yml
 success_criteria:
-- package a practical operator workflow for mail triage/search/read -> draft/reply assist -> safe-send path
-- keep workflow contract auditable and consistent with current release-gate/state model
-- land minimal runnable examples that platform-207 can reference directly
-next_if_done: move to platform-207 release-candidate package docs/quickstart/runbook preparation.
-next_step: "First mail-010 contract slice is landed in docs/releases/AI_EMPLOYEE_V1_OPERATOR_RUNBOOK.md; next add operator decision/edge-case guidance and focused verification evidence for platform-207 handoff."
+- consolidate v1 operator docs into a coherent release-candidate package across gate, interop, and mail workflow contracts
+- ensure quickstart/runbook references are consistent, minimal, and executable from docs + state files
+- leave release-candidate flip/version-bump decision in an auditable ready-to-execute state
+next_if_done: execute release-candidate/version bump decision and move to next queued implementation lane.
+next_step: "Mail-010 now includes end-to-end transcript and focused evidence; assemble platform-207 package by tightening cross-doc quickstart/runbook flow and release-decision checklist."

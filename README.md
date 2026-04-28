@@ -156,14 +156,14 @@ Project state lives in `ops/state/*.yml`:
 | `platform-205` release gate | ✅ Completed | Gate checklist executed, integration pass/skip mapping recorded, RC/version bump intentionally deferred until one more green development slice. |
 | `platform-206` interop contract | ✅ Completed | Contract locked and now consumed by operator runbook docs for platform-207 handoff. |
 | `mail-010` workflow package | ✅ Completed | Workflow contract now includes end-to-end operator transcript and focused verification evidence for platform-207 consumption. |
-| `platform-207` RC package | 🚧 In progress | Consolidating release-candidate docs/quickstart/runbook from locked contracts. |
+| `platform-207` RC package | 🚧 In progress | Docs package is consolidated (runbook + quickstart + RC checklist); RC/version decision checkpoint is next. |
 
 ### Current release posture
 
 - Current version: `0.2.0`
 - Next version target: `0.2.1`
 - Release candidate: `false`
-- Broad automated gate: latest `make release-gate && make ci` is green, but release is still blocked by unresolved live integration blockers and pending integration gate closure.
+- Broad automated gate: latest `make release-gate && make ci` is green, but release is still blocked by unresolved live external blockers plus pending RC/version decision checkpoint.
 
 ### Active blockers (highest impact)
 
@@ -173,8 +173,8 @@ Project state lives in `ops/state/*.yml`:
 
 ### Near-term plan
 
-1. Consolidate `platform-207` release-candidate docs/quickstart/runbook around platform-205 + platform-206 + mail-010 contracts.
-2. Run the RC/version decision checkpoint after package consolidation.
+1. Execute the RC/version decision checkpoint using `docs/releases/AI_EMPLOYEE_V1_RC_CHECKLIST.md`.
+2. Record the decision in `ops/state/release_status.yml`, then proceed with RC flip/version bump only if approved.
 3. Keep unsupported Cliq endpoints capability-gated so they do not stall v1 internal-loop readiness.
 4. Resume CRM live verification when CRM org access is available.
 

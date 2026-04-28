@@ -13,6 +13,8 @@
 - [x] Land `platform-206` cross-channel interoperability contract (Cliq internal + external comm adapters).
 - [x] Wire `platform-206` contract into `platform-207` operator runbook references.
 - [ ] Land `platform-207` release-candidate docs + quickstart + runbook.
+  - [x] Docs package consolidated (`AI_EMPLOYEE_V1_OPERATOR_RUNBOOK.md`, `AI_EMPLOYEE_V1_QUICKSTART.md`, `AI_EMPLOYEE_V1_RC_CHECKLIST.md`).
+  - [ ] Execute and record RC/version decision checkpoint in `ops/state/release_status.yml`.
 - [ ] Queue `platform-208` full CLI information-architecture cleanup (module-first hierarchy hardening, remove legacy root mail aliases after deprecation window, and normalize level-2/level-3 help taxonomy for human + AI operators).
 
 ## Blocker handling (do not stall release)

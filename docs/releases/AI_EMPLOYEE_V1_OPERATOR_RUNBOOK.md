@@ -12,6 +12,7 @@ This runbook is the operator-facing baseline for v1 release-candidate preparatio
 - Release gate baseline: `docs/releases/AI_EMPLOYEE_V1_GATE.md`
 - Cross-channel interop baseline: `docs/architecture/CROSS_CHANNEL_INTEROP_CONTRACT.md`
 - Release state baseline: `ops/state/release_status.yml`
+- Quickstart baseline: `docs/releases/AI_EMPLOYEE_V1_QUICKSTART.md`
 
 ## Operator procedure: mail workflow contract (mail-010 thin slice)
 

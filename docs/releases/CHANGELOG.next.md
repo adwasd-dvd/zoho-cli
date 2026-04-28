@@ -12,6 +12,8 @@
 - No publish, version bump, or tagging actions were performed.
 
 ### Added
+- Added `docs/releases/AI_EMPLOYEE_V1_QUICKSTART.md` as the minimal platform-207 operator entrypoint, linking Mail workflow execution, interop escalation rules, and the RC decision checkpoint path.
+- Added `docs/releases/AI_EMPLOYEE_V1_RC_CHECKLIST.md` to formalize platform-207 package completeness and the explicit RC/version decision checkpoint contract.
 - Extended `docs/releases/AI_EMPLOYEE_V1_OPERATOR_RUNBOOK.md` with a second `mail-010` thin slice for operator edge-case handling and a pre-send/pre-escalation decision checkpoint, then aligned platform-207 handoff wording to this updated contract.
 - Completed the second `mail-010` slice in `docs/releases/MAIL_010_OPERATOR_WORKFLOW.md` by adding an end-to-end operator transcript (triage -> inspect -> safe-send -> reply -> state hygiene) and focused verification evidence (`MAIL_COMMAND_HELP_OK` plus 6 focused Mail CLI tests passing).
 - Marked `mail-010` workflow packaging complete in state/roadmap docs and moved active execution to `platform-207` release-candidate package consolidation.

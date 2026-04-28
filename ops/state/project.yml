@@ -1,5 +1,5 @@
 project: zoho-cli
-updated_at: '2026-04-28T18:21:02Z'
+updated_at: '2026-04-28T18:26:46Z'
 status: v1-architecture-and-queue-optimization
 throughput_mode: turbo_20x
 throughput_policy_ref: ops/state/execution_policy.yml
@@ -11,6 +11,7 @@ module_order:
 - CRM
 current_focus: "Turbo 20x mode active: cliq-195 is intentionally closed for now (remaining tail deferred); platform-205/206, mail-010, and platform-207 package consolidation are complete, and RC decision remains deferred pending refreshed cliq-194 realtime evidence."
 primary_blockers:
+- cliq-194 live read-ack step is currently unsupported on happydistrouklimited for the active token (`zoho cliq watch-act --action read-ack-latest` -> `not_supported`), so RC flip stays deferred until capability-gated handling is explicitly accepted or endpoint support changes
 - cliq live unread-filter probe now authenticates successfully but returned zero unread chats (`count=0`), so behavioral validation against real reacted unread traffic remains pending fresh unread activity
 - crm live read-only verification remains blocked by account-level CRM org access
 - cliq databases live verification currently requires additional scope (`ZohoCliq.Databases.READ`) on the active token despite healthy baseline auth/export readiness

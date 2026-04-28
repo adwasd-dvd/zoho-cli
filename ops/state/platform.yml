@@ -1,7 +1,7 @@
 module: Platform
-updated_at: "2026-04-28T18:21:02Z"
+updated_at: "2026-04-28T18:26:46Z"
 status: in_progress
 execution_mode: turbo_20x
 throughput_policy_ref: ops/state/execution_policy.yml
 blockers: []
-next_small_step: platform-207 RC checkpoint has been executed with a defer decision; continue cliq-194 realtime validation work before the next RC review.
+next_small_step: platform-207 RC checkpoint has been executed with a defer decision; close or capability-gate the cliq-194 live read-ack `not_supported` gap before the next RC review.

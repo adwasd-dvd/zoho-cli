@@ -9,7 +9,7 @@
 
 ## Next
 1. Continue `cliq-194` realtime intake baseline lane (web-trigger default + adaptive polling fallback).
-2. Refresh live-evidence quality for unread consume/read-ack behavior and endpoint fallback outcomes.
+2. Resolve or explicitly capability-gate the current read-ack live gap (`watch-act --action read-ack-latest` -> `not_supported`) on happydistrouklimited.
 3. Revisit RC/version checkpoint after cliq-194 evidence refresh.
 4. Keep platform-207 runbook/quickstart tied directly to platform-206 interop + platform-205 gate contracts.
 5. Keep deferred blocker evidence current without letting it stall core v1 flow.

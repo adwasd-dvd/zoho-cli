@@ -9,6 +9,8 @@
   - [x] Draft contract slice landed (`docs/releases/MAIL_010_OPERATOR_WORKFLOW.md`).
   - [x] End-to-end operator example transcript + verification evidence landed.
 - [ ] Deliver `cliq-194` realtime intake baseline (web-trigger default + adaptive API polling fallback) with mandatory mark-as-read/read-ack after consume to prevent looped re-processing.
+  - [x] Refresh live watch-context evidence (`tests/auto_pilot/reports/cliq194_watch_context_20260428_112542.json`).
+  - [ ] Close/read-ack capability gap (`watch-act --action read-ack-latest` currently `not_supported` on active network/token).
 - [x] Deliver `cliq-195` operator workflow package (internal loop + external-contact escalation path), then defer non-critical tail hardening to post-v1 backlog.
 - [x] Land `platform-206` cross-channel interoperability contract (Cliq internal + external comm adapters).
 - [x] Wire `platform-206` contract into `platform-207` operator runbook references.

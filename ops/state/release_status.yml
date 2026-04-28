@@ -3,11 +3,11 @@ next_version: 0.2.1
 release_candidate: false
 last_release_tag: v0.1.9
 current_train: ai-employee-v1
-assessed_at: '2026-04-28T18:21:02Z'
+assessed_at: '2026-04-28T18:26:46Z'
 current_milestone: cliq-194-realtime-baseline
 current_milestone_complete: false
 missing_requirements:
-  - 'release-candidate remains deferred after RC checkpoint; require refreshed cliq-194 realtime live-validation evidence and blocker-backlog clarity update before flipping.'
+  - 'release-candidate remains deferred after RC checkpoint; latest cliq-194 live run shows watch-context contract is healthy but read-ack execution is still unsupported (`tests/auto_pilot/reports/cliq194_watch_context_20260428_112542.json`, `tests/auto_pilot/reports/cliq194_watch_act_read_ack_20260428_112542.stderr`).'
   - 'version bump remains pending (`release_gate.version_bumped: false`) and will follow the release-candidate decision.'
 rc_package:
   gate_contract_ready: true

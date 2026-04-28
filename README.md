@@ -167,6 +167,7 @@ Project state lives in `ops/state/*.yml`:
 
 ### Active blockers (highest impact)
 
+- Cliq-194 live read-ack execution is currently unsupported on active network/token (`zoho cliq watch-act --action read-ack-latest` -> `not_supported`).
 - Cliq maintenance export verification (`cliq-165`) is blocked by API-side `inactive_appaccount_user`.
 - Several Cliq endpoints are still unsupported on the current org/network (`not_supported`) or require extra scopes.
 - CRM live verification remains blocked until CRM org access is granted to the test account.

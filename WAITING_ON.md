@@ -5,6 +5,7 @@
 - Cron prompt and workspace root may still need manual alignment in `jobs.json`.
 - Membrane bridge commands are now wired in CLI, but local runtime still needs Membrane CLI install (`npm install -g @membranehq/cli`) before live bridge execution.
 - Cliq native local multipart sends (voice/image/file) still fail on tested user/channel targets with endpoint-level `request_url_invalid` / `operation_failed`; endpoint+field matrix evidence is still being collected for cliq-155 closure.
+- Latest cliq-194 live watch validation (`tests/auto_pilot/reports/cliq194_watch_context_20260428_112542.json`) confirms realtime watch-context contract output, but `watch-act --action read-ack-latest` is still endpoint-unsupported (`tests/auto_pilot/reports/cliq194_watch_act_read_ack_20260428_112542.stderr`: `not_supported`).
 - Zoho token refresh can still throttle (`Access Denied` too many requests) during bursty live probe batches; retrieval probes need cooldown-safe reruns.
 - Cliq maintenance export verification is blocked by API-side `inactive_appaccount_user` even after maintenance export scopes (`ZohoCliq.OrganizationChats.READ` + `ZohoCliq.OrganizationMessages.READ`) were granted; `cliq export-chats` list + `--chat-id` both hit this blocker.
 - Latest focused Cliq status probe (`tests/auto_pilot/reports/cliq193_status_20260417_140826.json`) shows Cliq auth/export readiness remains healthy (`oauthReady: true`, `exportOauthReady: true`); no additional auth action is currently pending for comparable live verification.

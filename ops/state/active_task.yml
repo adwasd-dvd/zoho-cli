@@ -4,7 +4,7 @@ module: cliq
 stage: in_progress
 status: in_progress
 owner: coder
-updated_at: '2026-04-28T18:21:02Z'
+updated_at: '2026-04-28T18:26:46Z'
 execution_mode: turbo_20x
 throughput_policy_ref: ops/state/execution_policy.yml
 success_criteria:
@@ -12,4 +12,4 @@ success_criteria:
 - ensure mandatory read-ack/mark-read after consume with dedupe safety for loop correctness
 - collect fresh live-validation evidence sufficient for next RC checkpoint
 next_if_done: return to RC checkpoint for release_candidate/version decision refresh.
-next_step: "RC checkpoint was executed and deferred; now run the next cliq-194 realtime validation slice and capture auditable live evidence for the next RC review."
+next_step: "Latest live slice confirms watch-context contract output, but read-ack execution is still `not_supported`; close or capability-gate this gap before next RC review."

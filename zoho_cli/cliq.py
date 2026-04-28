@@ -1312,9 +1312,14 @@ class ZohoCliqClient:
         if not package_version:
             return ""
 
+        if re.fullmatch(r"\d+\.0+", package_version):
+            return f"v{int(package_version.split('.', 1)[0])}"
+
         if package_version.startswith(("V", "v")):
             normalized_suffix = package_version[1:].strip()
-            if normalized_suffix.isdigit():
+            if re.fullmatch(r"\d+\.0+", normalized_suffix):
+                normalized_suffix = str(int(normalized_suffix.split(".", 1)[0]))
+            elif normalized_suffix.isdigit():
                 normalized_suffix = str(int(normalized_suffix))
             return f"v{normalized_suffix}" if normalized_suffix else ""
 

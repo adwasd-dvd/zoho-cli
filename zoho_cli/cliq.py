@@ -1313,13 +1313,19 @@ class ZohoCliqClient:
             return ""
 
         def _normalize_whole_number_version_candidate(candidate: str) -> str:
-            if re.fullmatch(r"\d+\.0+", candidate):
-                return str(int(candidate.split(".", 1)[0]))
-            if candidate.isdigit():
-                return str(int(candidate))
-            if re.fullmatch(r"\d+(?:\.0+)?[eE][+-]?\d+", candidate):
+            normalized_candidate = candidate.strip()
+            if normalized_candidate.startswith("+"):
+                normalized_candidate = normalized_candidate[1:].strip()
+            if not normalized_candidate:
+                return ""
+
+            if re.fullmatch(r"\d+\.0+", normalized_candidate):
+                return str(int(normalized_candidate.split(".", 1)[0]))
+            if normalized_candidate.isdigit():
+                return str(int(normalized_candidate))
+            if re.fullmatch(r"\d+(?:\.0+)?[eE][+-]?\d+", normalized_candidate):
                 try:
-                    numeric_value = float(candidate)
+                    numeric_value = float(normalized_candidate)
                 except ValueError:
                     return ""
                 if numeric_value.is_integer():

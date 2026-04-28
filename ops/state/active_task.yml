@@ -1,15 +1,15 @@
-id: platform-207
-title: prepare v1.0 release candidate package (docs, quickstart, and operator runbook for virtual employee deployment)
-module: platform
+id: cliq-194
+title: add plugin-grade realtime channel support for cliq (default web-notification trigger, adaptive api-poll fallback, mandatory read-ack after consume)
+module: cliq
 stage: in_progress
 status: in_progress
 owner: coder
-updated_at: '2026-04-28T18:05:00Z'
+updated_at: '2026-04-28T18:21:02Z'
 execution_mode: turbo_20x
 throughput_policy_ref: ops/state/execution_policy.yml
 success_criteria:
-- consolidate v1 operator docs into a coherent release-candidate package across gate, interop, and mail workflow contracts
-- ensure quickstart/runbook references are consistent, minimal, and executable from docs + state files
-- leave release-candidate flip/version-bump decision in an auditable ready-to-execute state
-next_if_done: execute release-candidate/version bump decision and move to next queued implementation lane.
-next_step: "Mail-010 now includes edge-case/decision guidance in the operator runbook; assemble platform-207 package by tightening cross-doc quickstart/runbook flow and release-decision checklist."
+- stabilize realtime intake path with web-trigger default and adaptive polling fallback
+- ensure mandatory read-ack/mark-read after consume with dedupe safety for loop correctness
+- collect fresh live-validation evidence sufficient for next RC checkpoint
+next_if_done: return to RC checkpoint for release_candidate/version decision refresh.
+next_step: "RC checkpoint was executed and deferred; now run the next cliq-194 realtime validation slice and capture auditable live evidence for the next RC review."

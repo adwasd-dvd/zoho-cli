@@ -269,7 +269,7 @@
 - id: platform-207
   title: prepare v1.0 release candidate package (docs, quickstart, and operator runbook for virtual employee deployment)
   module: platform
-  stage: in_progress
+  stage: completed
   priority: high
   depends_on:
   - mail-010

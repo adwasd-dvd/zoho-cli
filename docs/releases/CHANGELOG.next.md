@@ -12,6 +12,7 @@
 - No publish, version bump, or tagging actions were performed.
 
 ### Added
+- Executed the platform-207 RC/version checkpoint using `docs/releases/AI_EMPLOYEE_V1_RC_CHECKLIST.md`, recorded a conservative defer decision in `ops/state/release_status.yml`, and moved active execution focus back to `cliq-194` realtime evidence refresh before the next RC review.
 - Added `docs/releases/AI_EMPLOYEE_V1_QUICKSTART.md` as the minimal platform-207 operator entrypoint, linking Mail workflow execution, interop escalation rules, and the RC decision checkpoint path.
 - Added `docs/releases/AI_EMPLOYEE_V1_RC_CHECKLIST.md` to formalize platform-207 package completeness and the explicit RC/version decision checkpoint contract.
 - Extended `docs/releases/AI_EMPLOYEE_V1_OPERATOR_RUNBOOK.md` with a second `mail-010` thin slice for operator edge-case handling and a pre-send/pre-escalation decision checkpoint, then aligned platform-207 handoff wording to this updated contract.

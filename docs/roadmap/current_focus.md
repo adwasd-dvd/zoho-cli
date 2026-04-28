@@ -8,9 +8,9 @@
 5. **External blockers remain deferred**: `cliq-165` (`inactive_appaccount_user`) and `cliq-193` (`not_supported`) stay capability-gated under 3-strike policy.
 
 ## Next
-1. Execute the RC/version decision checkpoint using the consolidated platform-207 package.
-2. Record RC flip (or defer) decision explicitly in `ops/state/release_status.yml`.
-3. Continue `cliq-194` realtime intake baseline lane (web-trigger default + adaptive polling fallback).
+1. Continue `cliq-194` realtime intake baseline lane (web-trigger default + adaptive polling fallback).
+2. Refresh live-evidence quality for unread consume/read-ack behavior and endpoint fallback outcomes.
+3. Revisit RC/version checkpoint after cliq-194 evidence refresh.
 4. Keep platform-207 runbook/quickstart tied directly to platform-206 interop + platform-205 gate contracts.
 5. Keep deferred blocker evidence current without letting it stall core v1 flow.
 

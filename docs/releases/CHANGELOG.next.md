@@ -12,6 +12,7 @@
 - No publish, version bump, or tagging actions were performed.
 
 ### Added
+- Hardened cliq-195 operator-workflow package canonicalization so watch-reply/read-ack/watch-act now normalize scientific whole-number package versions (for example `3e0` and `V3E0`) to canonical `v*` forms before contract-id rewrite/backfill, keeping package metadata stable across action/result surfaces.
 - Hardened cliq-195 operator-workflow package canonicalization so watch-reply/read-ack/watch-act now normalize float-style whole-number package versions (for example `3.0` and `V3.0`) to canonical `v*` forms before contract-id rewrite/backfill, keeping package metadata stable across action/result surfaces.
 - Hardened cliq-195 operator-workflow package canonicalization so watch-reply/read-ack/watch-act now preserve numeric zero package versions as canonical `v0` and rewrite non-canonical `operatorWorkflow.packageScope` values to the fixed contract scope `operator-workflows`, keeping package metadata stable across action/result surfaces.
 - Escalated execution throughput policy from turbo 10x to turbo 20x (`ops/state/execution_policy.yml`), raising target batch multiplier to 20, lane cap to 5, and medium-gate cadence to every 2 boundaries while preserving the existing 3-failure/30%-off adaptive backoff rule.

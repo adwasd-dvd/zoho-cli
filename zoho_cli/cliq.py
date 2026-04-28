@@ -1312,19 +1312,34 @@ class ZohoCliqClient:
         if not package_version:
             return ""
 
-        if re.fullmatch(r"\d+\.0+", package_version):
-            return f"v{int(package_version.split('.', 1)[0])}"
+        def _normalize_whole_number_version_candidate(candidate: str) -> str:
+            if re.fullmatch(r"\d+\.0+", candidate):
+                return str(int(candidate.split(".", 1)[0]))
+            if candidate.isdigit():
+                return str(int(candidate))
+            if re.fullmatch(r"\d+(?:\.0+)?[eE][+-]?\d+", candidate):
+                try:
+                    numeric_value = float(candidate)
+                except ValueError:
+                    return ""
+                if numeric_value.is_integer():
+                    return str(int(numeric_value))
+            return ""
 
         if package_version.startswith(("V", "v")):
             normalized_suffix = package_version[1:].strip()
-            if re.fullmatch(r"\d+\.0+", normalized_suffix):
-                normalized_suffix = str(int(normalized_suffix.split(".", 1)[0]))
-            elif normalized_suffix.isdigit():
-                normalized_suffix = str(int(normalized_suffix))
+            normalized_numeric_suffix = _normalize_whole_number_version_candidate(
+                normalized_suffix
+            )
+            if normalized_numeric_suffix:
+                normalized_suffix = normalized_numeric_suffix
             return f"v{normalized_suffix}" if normalized_suffix else ""
 
-        if package_version.isdigit():
-            return f"v{int(package_version)}"
+        normalized_numeric_version = _normalize_whole_number_version_candidate(
+            package_version
+        )
+        if normalized_numeric_version:
+            return f"v{normalized_numeric_version}"
 
         return package_version
 

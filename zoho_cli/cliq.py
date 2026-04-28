@@ -1312,6 +1312,11 @@ class ZohoCliqClient:
         if not package_version:
             return ""
 
+        if package_version.startswith("+"):
+            plus_trimmed_version = package_version[1:].strip()
+            if plus_trimmed_version.startswith(("V", "v")):
+                package_version = plus_trimmed_version
+
         def _normalize_whole_number_version_candidate(candidate: str) -> str:
             normalized_candidate = candidate.strip()
             if normalized_candidate.startswith("+"):

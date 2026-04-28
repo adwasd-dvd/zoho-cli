@@ -12,6 +12,7 @@
 - No publish, version bump, or tagging actions were performed.
 
 ### Added
+- Hardened cliq-195 operator-workflow package canonicalization so watch-reply/read-ack/watch-act now normalize plus-prefixed `v` package versions and contract suffixes (for example `+v03` and `...-+V03`) to canonical `v*` forms before contract-id rewrite/backfill, keeping package metadata stable across action/result surfaces.
 - Hardened cliq-195 operator-workflow package canonicalization so watch-reply/read-ack/watch-act now normalize plus-prefixed whole-number package versions (for example `+03` and `+3.0`) to canonical `v*` forms before contract-id rewrite/backfill, keeping package metadata stable across action/result surfaces.
 - Hardened cliq-195 operator-workflow package canonicalization so watch-reply/read-ack/watch-act now normalize scientific whole-number package versions (for example `3e0` and `V3E0`) to canonical `v*` forms before contract-id rewrite/backfill, keeping package metadata stable across action/result surfaces.
 - Hardened cliq-195 operator-workflow package canonicalization so watch-reply/read-ack/watch-act now normalize float-style whole-number package versions (for example `3.0` and `V3.0`) to canonical `v*` forms before contract-id rewrite/backfill, keeping package metadata stable across action/result surfaces.

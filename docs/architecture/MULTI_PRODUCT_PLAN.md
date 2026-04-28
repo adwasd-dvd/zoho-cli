@@ -89,3 +89,12 @@ This section is the lock point for `platform-204` and the handoff baseline for `
 2. mandatory read-ack/dedupe behavior for consumed intake
 3. capability-gated behavior when unsupported endpoints are encountered
 4. reproducible operator run contract from docs + state files only
+
+### Platform-206 handoff requirements
+
+`platform-206` must lock the cross-channel interop layer for `platform-207`:
+
+1. canonical external escalation envelope contract (field shape + provenance metadata)
+2. internal-first routing and capability-gated external adapter behavior
+3. explicit adapter outcome semantics (`pass`, `skip_deferred`, `fail`) with evidence trail
+4. operator runbook-ready references so platform-207 can document procedures without redefining adapter behavior

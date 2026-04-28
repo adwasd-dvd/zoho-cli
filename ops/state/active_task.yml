@@ -4,7 +4,7 @@ module: platform
 stage: in_progress
 status: in_progress
 owner: coder
-updated_at: '2026-04-28T17:02:29Z'
+updated_at: '2026-04-28T17:09:04Z'
 execution_mode: turbo_20x
 throughput_policy_ref: ops/state/execution_policy.yml
 success_criteria:
@@ -12,4 +12,4 @@ success_criteria:
 - keep contract boundaries compatible with platform-204 architecture and platform-205 gate decisions
 - provide explicit handoff points for platform-207 release-candidate runbook documentation
 next_if_done: move to platform-207 release-candidate package docs/quickstart/runbook preparation.
-next_step: "Draft the platform-206 interoperability contract and wire references into roadmap/release docs so platform-207 can consume a stable operator-facing contract."
+next_step: "Interop contract draft is landed at docs/architecture/CROSS_CHANNEL_INTEROP_CONTRACT.md; wire operator-facing runbook references and close platform-206 once platform-207 docs consume it."

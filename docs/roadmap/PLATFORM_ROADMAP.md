@@ -66,6 +66,18 @@ Definition of done:
 - read-ack/dedupe behavior is an explicit pass condition
 - deferred/unsupported endpoint policy is an explicit pass condition boundary
 
+### Phase B4 — cross-channel interoperability contract (in progress)
+
+Goals:
+- define a canonical escalation envelope for external communication adapters
+- lock internal-first routing and capability-gated external delivery semantics
+- require auditable adapter outcome tracking (`pass` / `skip_deferred` / `fail`)
+
+Definition of done:
+- interoperability contract doc is landed and referenced by release docs
+- platform-207 runbook procedures consume the same contract directly
+- unsupported external adapter capabilities remain explicit deferred boundaries, not hidden failures
+
 ## Milestones
 
 - `mail-core-extraction`

@@ -1,7 +1,7 @@
 module: Platform
-updated_at: "2026-04-28T17:02:29Z"
+updated_at: "2026-04-28T17:09:04Z"
 status: in_progress
 execution_mode: turbo_20x
 throughput_policy_ref: ops/state/execution_policy.yml
 blockers: []
-next_small_step: platform-205 signoff is closed with an explicit release-candidate defer decision; now draft platform-206 interoperability contract for platform-207 handoff.
+next_small_step: platform-206 interop contract draft is landed; wire it into platform-207 operator runbook references and then close platform-206.

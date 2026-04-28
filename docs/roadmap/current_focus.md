@@ -8,7 +8,7 @@
 5. **External blockers remain deferred**: `cliq-165` (`inactive_appaccount_user`) and `cliq-193` (`not_supported`) stay capability-gated under 3-strike policy.
 
 ## Next
-1. Execute `platform-206` interoperability contract definition for internal Cliq + external channel adapters.
+1. Land and wire `platform-206` interoperability contract into operator-facing runbook docs.
 2. Start `mail-010` operator workflow package.
 3. Continue `cliq-194` realtime intake baseline lane (web-trigger default + adaptive polling fallback).
 4. Prepare `platform-207` release-candidate docs/runbook once gate + workflow lanes are green.

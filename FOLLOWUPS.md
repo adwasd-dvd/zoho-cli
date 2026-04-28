@@ -8,7 +8,8 @@
 - [ ] Deliver `mail-010` operator workflow package (triage/draft/reply/safe-send guardrails).
 - [ ] Deliver `cliq-194` realtime intake baseline (web-trigger default + adaptive API polling fallback) with mandatory mark-as-read/read-ack after consume to prevent looped re-processing.
 - [x] Deliver `cliq-195` operator workflow package (internal loop + external-contact escalation path), then defer non-critical tail hardening to post-v1 backlog.
-- [ ] Land `platform-206` cross-channel interoperability contract (Cliq internal + external comm adapters).
+- [x] Land `platform-206` cross-channel interoperability contract (Cliq internal + external comm adapters).
+- [ ] Wire `platform-206` contract into `platform-207` operator runbook references.
 - [ ] Land `platform-207` release-candidate docs + quickstart + runbook.
 - [ ] Queue `platform-208` full CLI information-architecture cleanup (module-first hierarchy hardening, remove legacy root mail aliases after deprecation window, and normalize level-2/level-3 help taxonomy for human + AI operators).
 

@@ -4,4 +4,4 @@ status: in_progress
 execution_mode: turbo_20x
 throughput_policy_ref: ops/state/execution_policy.yml
 blockers: []
-next_small_step: execute and mark the platform-205 acceptance checklist (`docs/releases/AI_EMPLOYEE_V1_GATE.md`), then update release-status gate flags from evidence.
+next_small_step: finalize platform-205 integration pass/skip mapping and update release-status gate flags for signoff.

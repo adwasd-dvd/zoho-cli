@@ -11,8 +11,8 @@ This file is the executable acceptance contract for the v1 AI-employee release c
 
 ### 1) Control contract
 
-- [ ] Persona/memory/work-instruction contract is documented and current.
-- [ ] Runtime behavior is traceable via `ops/state/*` without hidden side channels.
+- [x] Persona/memory/work-instruction contract is documented and current.
+- [x] Runtime behavior is traceable via `ops/state/*` without hidden side channels.
 
 Primary references:
 - `docs/architecture/MULTI_PRODUCT_PLAN.md` (platform-204 lock section)
@@ -21,8 +21,8 @@ Primary references:
 
 ### 2) Execution contract
 
-- [ ] Cliq intake -> decision -> action path is validated for the current CLI contract.
-- [ ] Consumed intake requires read-ack/mark-read and cursor-based dedupe behavior.
+- [x] Cliq intake -> decision -> action path is validated for the current CLI contract.
+- [x] Consumed intake requires read-ack/mark-read and cursor-based dedupe behavior.
 
 Primary references:
 - `ops/state/test_status.yml` (focused+medium gate evidence)
@@ -30,8 +30,8 @@ Primary references:
 
 ### 3) Escalation and blocker contract
 
-- [ ] Capability-gated deferred endpoints are explicitly listed and do not block unrelated v1 checks.
-- [ ] 3-strike defer policy is applied consistently to unsupported endpoints.
+- [x] Capability-gated deferred endpoints are explicitly listed and do not block unrelated v1 checks.
+- [x] 3-strike defer policy is applied consistently to unsupported endpoints.
 
 Primary references:
 - `WAITING_ON.md`
@@ -39,8 +39,8 @@ Primary references:
 
 ### 4) Build/release baseline
 
-- [ ] Unit/broad gate status is green or explicitly documented with bounded exceptions.
-- [ ] Changelog and release-status state are in sync with current milestone.
+- [x] Unit/broad gate status is green or explicitly documented with bounded exceptions.
+- [x] Changelog and release-status state are in sync with current milestone.
 
 Primary references:
 - `ops/state/release_status.yml`
@@ -52,3 +52,7 @@ Primary references:
 - Owner: `coder`
 - Active task: `platform-205`
 
+## Remaining signoff items
+
+- [ ] Finalize integration pass/skip mapping for externally blocked capabilities into `ops/state/release_status.yml`.
+- [ ] Decide `release_candidate` flip + version bump timing after gate signoff.

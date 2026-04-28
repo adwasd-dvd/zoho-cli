@@ -12,6 +12,7 @@
 - No publish, version bump, or tagging actions were performed.
 
 ### Added
+- Executed the core platform-205 gate checklist in `docs/releases/AI_EMPLOYEE_V1_GATE.md` (control/execution/escalation/build baseline items marked complete) and narrowed remaining work to final integration pass/skip mapping plus release-candidate/version-bump signoff.
 - Added `docs/releases/AI_EMPLOYEE_V1_GATE.md` as the platform-205 executable acceptance checklist (control/execution/escalation/build gate criteria), and synced release-status milestone framing to `platform-205-release-gate`.
 - Refreshed `README.md` status/roadmap section to match current ops state: `cliq-195` closed for this milestone (tail deferred), `platform-204` completed, and `platform-205` now active as the AI-employee release-gate lane.
 - Closed cliq-195 for the current milestone after repeated green boundary gates, promoted remaining non-critical cliq-195 tail hardening to post-v1 backlog, and shifted active execution focus to platform-204 (v1 AI-employee architecture brief) for immediate next-lane progression.

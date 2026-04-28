@@ -4,7 +4,7 @@ module: cliq
 stage: in_progress
 status: in_progress
 owner: coder
-updated_at: '2026-04-28T20:43:02Z'
+updated_at: '2026-04-28T21:18:00Z'
 execution_mode: turbo_20x
 throughput_policy_ref: ops/state/execution_policy.yml
 success_criteria:
@@ -12,4 +12,4 @@ success_criteria:
 - ensure mandatory read-ack/mark-read after consume with dedupe safety for loop correctness
 - collect fresh live-validation evidence sufficient for next RC checkpoint
 next_if_done: return to RC checkpoint for release_candidate/version decision refresh.
-next_step: "Fresh live `happydistrouklimited` watch-act read-ack evidence is now captured (`fallbackUsed=true`, `readAckSupported=false`); refresh the RC checkpoint decision and version-bump readiness using the new artifacts."
+next_step: "RC checkpoint decision is now refreshed against fresh cliq-194 live evidence (`fallbackUsed=true`, `readAckSupported=false`); keep release-candidate deferred and drive blocker-gate + version-bump readiness follow-through."

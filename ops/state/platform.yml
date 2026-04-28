@@ -1,7 +1,7 @@
 module: Platform
-updated_at: "2026-04-28T18:26:46Z"
+updated_at: "2026-04-28T21:18:00Z"
 status: in_progress
 execution_mode: turbo_20x
 throughput_policy_ref: ops/state/execution_policy.yml
 blockers: []
-next_small_step: platform-207 RC checkpoint has been executed with a defer decision; close or capability-gate the cliq-194 live read-ack `not_supported` gap before the next RC review.
+next_small_step: RC checkpoint decision has been refreshed with the latest cliq-194 fallback evidence; keep `release_candidate=false` and complete blocker-gate/version-bump readiness follow-through.

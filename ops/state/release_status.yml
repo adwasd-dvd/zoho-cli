@@ -3,12 +3,12 @@ next_version: 0.2.1
 release_candidate: false
 last_release_tag: v0.1.9
 current_train: ai-employee-v1
-assessed_at: '2026-04-28T20:43:02Z'
+assessed_at: '2026-04-28T21:18:00Z'
 current_milestone: cliq-194-realtime-baseline
 current_milestone_complete: true
 missing_requirements:
-  - 'RC checkpoint decision refresh is still pending after fresh cliq-194 live evidence capture (`tests/auto_pilot/reports/cliq194_watch_act_read_ack_summary_20260428_204216.json` shows `status=ok`, `fallbackUsed=true`, `readAckSupported=false`, `reason=read_ack_not_supported`).'
-  - 'version bump remains pending (`release_gate.version_bumped: false`) and will follow the release-candidate decision.'
+  - 'Release-candidate posture remains deferred after RC checkpoint refresh because external blocker posture is still active (`release_gate.blocker_bugs_cleared: false`), even though latest cliq-194 live evidence is continuity-safe (`status=ok`, `fallbackUsed=true`, `readAckSupported=false`, `reason=read_ack_not_supported`).'
+  - 'Version bump remains pending (`release_gate.version_bumped: false`) and requires explicit blocker-gate signoff under the current deferred RC posture.'
 rc_package:
   gate_contract_ready: true
   interop_contract_ready: true
@@ -17,9 +17,9 @@ rc_package:
   quickstart_ready: true
   checklist_ready: true
 release_candidate_decision:
-  decided_at: '2026-04-28T18:21:02Z'
+  decided_at: '2026-04-28T21:18:00Z'
   decision: defer
-  reason: RC checkpoint executed, but live external blocker picture remains active and `release_gate.blocker_bugs_cleared` is still false.
+  reason: RC checkpoint refreshed with latest cliq-194 fallback evidence; keep defer because external blocker picture remains active and `release_gate.blocker_bugs_cleared` is still false.
   revisit_after:
     - cliq-194
   checkpoint:

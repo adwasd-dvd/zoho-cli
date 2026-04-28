@@ -1,10 +1,12 @@
-last_run_at: "2026-04-28T17:50:31Z"
+last_run_at: "2026-04-28T21:18:00Z"
 last_result: passing
-current_focus: cliq-195-medium-scope-integration-boundary-rerun-20260428T175031Z
+current_focus: cliq-194-rc-refresh-read-ack-fallback-verification-20260428T211800Z
 suites:
   unit:
     status: passing
     notes:
+      - "focused cliq-194 RC-refresh verification at 2026-04-28T21:18:00Z"
+      - "./.venv/bin/python -m pytest -q tests/test_cli.py::test_cliq_watch_act_read_ack_latest_falls_back_when_read_ack_is_unsupported -> 1 passed in 0.15s"
       - "adjacent medium-scope cliq-195 integration boundary rerun at 2026-04-28T17:50:31Z"
       - "no behavior change; watch-context/watch-act/bridge-run verification stayed green"
       - "./.venv/bin/python -m pytest -q tests/test_registry.py tests/test_membrane_bridge.py -> 489 passed in 8.84s"

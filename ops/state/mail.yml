@@ -1,5 +1,5 @@
 module: Mail
-updated_at: "2026-04-26T07:17:47Z"
-status: completed
+updated_at: "2026-04-28T17:30:48Z"
+status: in_progress
 blockers: []
-next_small_step: focused hidden legacy root mail alias regression rerun remains green (`test_attachment_content_with_filename`, `test_folders_list`, `test_legacy_mail_support_root_aliases_still_work`, `test_root_help_is_module_first_and_hides_mail_support_aliases`, `test_mail_help_includes_support_subgroups_under_mail`); latest cliq-195 medium-scope integration refresh rerun is green, so continue with the next focused cliq-195 alias increment.
+next_small_step: first mail-010 thin slice is landed in `docs/releases/AI_EMPLOYEE_V1_OPERATOR_RUNBOOK.md` (triage/search/read -> draft/reply assist -> safe-send mapping plus guardrails/examples); run the second thin slice for operator edge-case/decision guidance and keep platform-207 handoff references aligned.

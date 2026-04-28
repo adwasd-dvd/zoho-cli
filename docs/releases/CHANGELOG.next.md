@@ -12,6 +12,7 @@
 - No publish, version bump, or tagging actions were performed.
 
 ### Added
+- Expanded `docs/releases/AI_EMPLOYEE_V1_OPERATOR_RUNBOOK.md` with the first `mail-010` operator workflow contract thin slice, mapping Mail triage/search/read -> draft/reply assist -> safe-send command surfaces with explicit guardrails and minimal runnable examples for platform-207 consumption.
 - Added `docs/releases/AI_EMPLOYEE_V1_OPERATOR_RUNBOOK.md` and wired it directly to `docs/architecture/CROSS_CHANNEL_INTEROP_CONTRACT.md`, completing the platform-206 handoff requirement that platform-207 operator procedures consume the same interop contract.
 - Added `docs/architecture/CROSS_CHANNEL_INTEROP_CONTRACT.md` as the platform-206 contract baseline, locking canonical external escalation envelope shape, internal-first/capability-gated routing semantics, and adapter audit outcome classes (`pass`/`skip_deferred`/`fail`) for platform-207 runbook handoff.
 - Closed platform-205 signoff with an explicit release-candidate/version-bump defer decision (wait for one more green development slice), marked platform-205 complete, and moved active execution to platform-206 interoperability contract work.

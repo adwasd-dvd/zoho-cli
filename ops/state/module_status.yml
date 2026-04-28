@@ -1,9 +1,9 @@
 mail:
   priority: 1
-  status: completed
-  phase: stabilization_complete
-  target_release: v0.2.0
-  current_milestone: mail-release-gate
+  status: in_progress
+  phase: operator_workflow_packaging
+  target_release: v1.0.0
+  current_milestone: mail-010-workflow-package
   blockers: []
 
 cliq:

@@ -4,7 +4,7 @@ module: mail
 stage: in_progress
 status: in_progress
 owner: coder
-updated_at: '2026-04-28T17:24:10Z'
+updated_at: '2026-04-28T17:32:27Z'
 execution_mode: turbo_20x
 throughput_policy_ref: ops/state/execution_policy.yml
 success_criteria:
@@ -12,4 +12,4 @@ success_criteria:
 - keep workflow contract auditable and consistent with current release-gate/state model
 - land minimal runnable examples that platform-207 can reference directly
 next_if_done: move to platform-207 release-candidate package docs/quickstart/runbook preparation.
-next_step: "Start the first mail-010 thin slice by drafting the operator workflow contract sections and mapping existing command surfaces to triage/draft/reply/safe-send steps."
+next_step: "First mail-010 contract slice is landed in docs/releases/AI_EMPLOYEE_V1_OPERATOR_RUNBOOK.md; next add operator decision/edge-case guidance and focused verification evidence for platform-207 handoff."

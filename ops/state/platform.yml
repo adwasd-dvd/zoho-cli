@@ -1,7 +1,7 @@
 module: Platform
-updated_at: "2026-04-28T17:24:10Z"
+updated_at: "2026-04-28T17:30:48Z"
 status: in_progress
 execution_mode: turbo_20x
 throughput_policy_ref: ops/state/execution_policy.yml
 blockers: []
-next_small_step: platform-206 is now complete (runbook wiring landed); active execution moves to mail-010 packaging so platform-207 can consume mail workflow procedures.
+next_small_step: first mail-010 runbook contract slice is now landed; continue mail-010 thin slices until workflow package signoff, then advance platform-207 release-candidate docs/quickstart/runbook assembly.

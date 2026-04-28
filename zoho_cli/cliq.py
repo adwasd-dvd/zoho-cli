@@ -1303,6 +1303,13 @@ class ZohoCliqClient:
             ("operatorWorkflow", "operator_workflow", "operator-workflow"),
         )
 
+    @staticmethod
+    def _normalize_operator_workflow_package_version(value: Any) -> str:
+        package_version = str(value or "").strip()
+        if package_version.startswith("V"):
+            return f"v{package_version[1:]}"
+        return package_version
+
     @classmethod
     def _extract_operator_workflow(
         cls, watch_payload: dict[str, Any]
@@ -1315,7 +1322,9 @@ class ZohoCliqClient:
 
         normalized_workflow = dict(workflow)
         package_id = str(normalized_workflow.get("packageId") or "").strip().lower()
-        package_version = str(normalized_workflow.get("packageVersion") or "").strip()
+        package_version = cls._normalize_operator_workflow_package_version(
+            normalized_workflow.get("packageVersion")
+        )
         package_contract_id = str(
             normalized_workflow.get("packageContractId") or ""
         ).strip()
@@ -1331,7 +1340,9 @@ class ZohoCliqClient:
                     len(cliq_195_contract_prefix) :
                 ].strip()
                 if derived_version:
-                    package_version = derived_version
+                    package_version = cls._normalize_operator_workflow_package_version(
+                        derived_version
+                    )
                     normalized_workflow["packageVersion"] = package_version
 
         if package_id == "cliq-195":
@@ -1342,15 +1353,19 @@ class ZohoCliqClient:
                     derived_version = package_contract_id[
                         len(cliq_195_contract_prefix) :
                     ].strip()
-                package_version = derived_version or "v1"
+                package_version = (
+                    cls._normalize_operator_workflow_package_version(derived_version)
+                    or "v1"
+                )
                 normalized_workflow["packageVersion"] = package_version
             else:
                 normalized_workflow["packageVersion"] = package_version
 
+            canonical_contract_id = f"{package_id}-operator-workflow-{package_version}"
             if not package_contract_id:
-                normalized_workflow["packageContractId"] = (
-                    f"{package_id}-operator-workflow-{package_version}"
-                )
+                normalized_workflow["packageContractId"] = canonical_contract_id
+            elif package_contract_id != canonical_contract_id:
+                normalized_workflow["packageContractId"] = canonical_contract_id
             else:
                 normalized_workflow["packageContractId"] = package_contract_id
 

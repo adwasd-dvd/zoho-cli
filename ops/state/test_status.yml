@@ -1,10 +1,14 @@
-last_run_at: "2026-04-28T11:49:30Z"
+last_run_at: "2026-04-28T12:16:56Z"
 last_result: passing
-current_focus: cliq-195-adjacent-medium-boundary-rerun-20260428T114930Z
+current_focus: cliq-195-leading-decimal-scientific-canonicalization-rerun-20260428T121656Z
 suites:
   unit:
     status: passing
     notes:
+      - "focused cliq-195 leading-decimal scientific whole-number package-version canonicalization increment at 2026-04-28T12:14:49Z"
+      - "behavior increment: `_normalize_operator_workflow_package_version` now canonicalizes leading-decimal scientific whole-number values (for example `.5e1` and `V.5E1`) to canonical lowercase `v*` before package-contract rewrite/backfill"
+      - "./.venv/bin/python -m pytest -q tests/test_cliq.py::test_build_watch_reply_action_normalizes_leading_decimal_scientific_whole_number_package_version tests/test_cliq.py::test_build_watch_read_ack_action_normalizes_leading_decimal_scientific_whole_number_package_version tests/test_cli.py::test_cliq_watch_act_normalizes_leading_decimal_scientific_whole_number_package_version_in_result -> 3 passed in 0.13s"
+      - "./.venv/bin/ruff format --check zoho_cli/cliq.py tests/test_cliq.py tests/test_cli.py -> 3 files already formatted"
       - "adjacent medium-scope cliq-195 integration boundary rerun at 2026-04-28T11:49:30Z"
       - "no behavior change; watch-context/watch-act/bridge-run verification stayed green"
       - "./.venv/bin/python -m pytest -q tests/test_registry.py tests/test_membrane_bridge.py -> 489 passed in 8.86s"

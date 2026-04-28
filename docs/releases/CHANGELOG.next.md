@@ -12,6 +12,7 @@
 - No publish, version bump, or tagging actions were performed.
 
 ### Added
+- Hardened cliq-195 operator-workflow packaging resilience so watch-reply/read-ack/watch-act now derive missing `operatorWorkflow.packageVersion` from the `operatorWorkflow.packageContractId` suffix when `operatorWorkflow.packageId=cliq-195` is already present (for example `cliq-195-operator-workflow-v2` -> `v2`) before defaulting to `v1`.
 - Hardened cliq-195 operator-workflow packaging resilience so watch-reply/read-ack/watch-act now derive missing `operatorWorkflow.packageId=cliq-195` from `operatorWorkflow.packageContractId=cliq-195-operator-workflow-v1`, trim cliq-195 package metadata fields, and preserve package-scope defaults for contract-only workflow payloads.
 - Hardened cliq-195 operator-workflow packaging resilience so watch-reply/read-ack/watch-act now backfill missing `operatorWorkflow.packageVersion=v1` and derived `operatorWorkflow.packageContractId=cliq-195-operator-workflow-v1` whenever cliq-195 workflow metadata is present without those package fields, preserving a stable package contract across action surfaces.
 - Hardened cliq-195 operator-workflow packaging resilience so watch-reply/read-ack/watch-act now backfill `operatorWorkflow.packageScope=operator-workflows` when cliq-195 workflow metadata is present but package-scope metadata is omitted, preserving a stable package contract surface for downstream automation loops.

@@ -1337,7 +1337,12 @@ class ZohoCliqClient:
         if package_id == "cliq-195":
             normalized_workflow["packageId"] = package_id
             if not package_version:
-                package_version = "v1"
+                derived_version = ""
+                if contract_lower.startswith(cliq_195_contract_prefix):
+                    derived_version = package_contract_id[
+                        len(cliq_195_contract_prefix) :
+                    ].strip()
+                package_version = derived_version or "v1"
                 normalized_workflow["packageVersion"] = package_version
             else:
                 normalized_workflow["packageVersion"] = package_version

@@ -1,5 +1,5 @@
 project: zoho-cli
-updated_at: '2026-04-27T23:49:24Z'
+updated_at: '2026-04-28T00:09:03Z'
 status: v1-architecture-and-queue-optimization
 throughput_mode: turbo_10x
 throughput_policy_ref: ops/state/execution_policy.yml
@@ -9,7 +9,7 @@ module_order:
 - Mail
 - Cliq
 - CRM
-current_focus: "Turbo mode active: adjacent medium-scope cliq-195 watch-context/watch-act/bridge-run boundary rerun stayed green at 2026-04-27T23:49:24Z; continue the next focused non-alias packaging increment."
+current_focus: "Turbo mode active: adjacent medium-scope cliq-195 watch-context/watch-act/bridge-run boundary rerun stayed green at 2026-04-28T00:09:03Z; continue the next focused non-alias packaging increment."
 primary_blockers:
 - cliq live unread-filter probe now authenticates successfully but returned zero unread chats (`count=0`), so behavioral validation against real reacted unread traffic remains pending fresh unread activity
 - crm live read-only verification remains blocked by account-level CRM org access
@@ -32,7 +32,7 @@ primary_blockers:
   returns `not_supported`)
 - calls/meetings endpoints are unsupported on current token/network (`cliq meetings`
   now returns `not_supported` in focused live verification)
-next_step: "ship the next focused non-alias cliq-195 packaging increment, then rerun the adjacent medium-scope watch-context/watch-act/bridge-run boundary slice."
+next_step: "ship the next focused non-alias cliq-195 packaging increment, then rerun the adjacent medium-scope watch-context/watch-act/bridge-run boundary slice (latest green rerun: 2026-04-28T00:09:03Z)."
 additional_info:
 - "2026-04-27 medium-scope cliq-195 integration boundary rerun at 2026-04-27T23:49:24Z stayed green across watch-context/watch-act/bridge-run surfaces with no behavior change (`./.venv/bin/python -m pytest -q tests/test_registry.py tests/test_membrane_bridge.py` -> `489 passed in 8.84s`; `./.venv/bin/python -m pytest -q tests/test_cli.py -k 'cliq_watch_context_from_channel or cliq_watch_act or watch_act_read_ack_latest or cliq_context_with_anchor or cliq_messages_from_channel or cliq_message_get_from_channel or cliq_bridge_run or crm_bridge_run'` -> `395 passed, 427 deselected in 9.57s`; `./.venv/bin/python -m pytest -q tests/test_cliq.py -k 'build_watch_context_seed or build_watch_reply_action or execute_watch_reply_action or build_watch_read_ack_action or execute_watch_read_ack_action or list_messages_from_channel_id or get_message_from_chat_id or get_message_from_channel_id or reply_message_success or edit_message_success or delete_message_success or react_message'` -> `45 passed, 186 deselected in 0.24s`), so adjacent regressions remain clear and the next focused non-alias packaging increment is unblocked."
 - "2026-04-27 focused cliq-195 package-version derivation increment at 2026-04-27T23:25:44Z hardened `_extract_operator_workflow` so watch-reply/read-ack/watch-act now derive `operatorWorkflow.packageVersion` from the `packageContractId` suffix when `operatorWorkflow.packageId=cliq-195` and `packageVersion` is missing (for example `cliq-195-operator-workflow-v2` -> `v2`) before defaulting to `v1`; focused verification is green (`./.venv/bin/python -m pytest -q tests/test_cliq.py::test_build_watch_reply_action_backfills_package_version_from_contract_id_when_package_id_present tests/test_cliq.py::test_build_watch_read_ack_action_backfills_package_version_from_contract_id_when_package_id_present tests/test_cli.py::test_cliq_watch_act_backfills_package_version_from_contract_id_when_package_id_present_in_result` -> `3 passed in 0.13s`; `./.venv/bin/python -m pytest -q tests/test_cliq.py -k 'backfills_package_id_from_contract_id or backfills_package_version_from_contract_id' tests/test_cli.py -k 'backfills_package_id_from_contract_id or backfills_package_version_from_contract_id'` -> `6 passed, 1047 deselected in 0.16s`; `./.venv/bin/ruff format --check zoho_cli/cliq.py tests/test_cliq.py tests/test_cli.py` -> `3 files already formatted`), so the adjacent medium-scope boundary rerun is now the next gate."

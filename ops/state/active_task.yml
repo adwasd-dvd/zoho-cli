@@ -4,7 +4,7 @@ module: platform
 stage: in_progress
 status: in_progress
 owner: coder
-updated_at: '2026-04-28T17:35:11Z'
+updated_at: '2026-04-28T18:05:00Z'
 execution_mode: turbo_20x
 throughput_policy_ref: ops/state/execution_policy.yml
 success_criteria:
@@ -12,4 +12,4 @@ success_criteria:
 - ensure quickstart/runbook references are consistent, minimal, and executable from docs + state files
 - leave release-candidate flip/version-bump decision in an auditable ready-to-execute state
 next_if_done: execute release-candidate/version bump decision and move to next queued implementation lane.
-next_step: "Mail-010 now includes end-to-end transcript and focused evidence; assemble platform-207 package by tightening cross-doc quickstart/runbook flow and release-decision checklist."
+next_step: "Mail-010 now includes edge-case/decision guidance in the operator runbook; assemble platform-207 package by tightening cross-doc quickstart/runbook flow and release-decision checklist."

@@ -50,6 +50,21 @@ zoho mail get 17a4... --folder-id 3266...
 zoho mail reply 17a4... --folder-id 3266... --text "Thanks, received. We will follow up by 17:00 UTC." --quote
 ```
 
+### Edge-case and decision guidance
+
+1. Missing context: if `mail get` lacks enough thread context, pause send actions and run one extra `mail search` to confirm recipient and intent before drafting.
+2. Ambiguous recipient intent: if multiple plausible recipients exist, draft first and require explicit human confirmation before `mail send`.
+3. Sensitive content or attachment uncertainty: do not infer. Keep draft state, list open questions, and request confirmation.
+4. Scope/auth failures (`oauth_scope_invalid`, `oauthReady: false`): stop retries, capture exact command/output, and route to auth remediation.
+5. External escalation collision: if internal handling is still viable, defer escalation and keep work in the internal loop to avoid duplicate outbound messaging.
+
+### Operator decision checkpoint before send/escalate
+
+- Is the action reversible? If no, require stricter confirmation.
+- Is evidence sufficient for audit (message id, folder, intent, outcome)?
+- Is there any active blocker state that should force `skip_deferred` instead of execution?
+- Should this remain internal, or is cross-channel escalation contractually required?
+
 ## Operator procedure: cross-channel escalation
 
 1. Confirm escalation is needed and internal-first handling is insufficient.
@@ -71,4 +86,4 @@ zoho mail reply 17a4... --folder-id 3266... --text "Thanks, received. We will fo
 ## Platform-207 handoff marker
 
 - This runbook now consumes the platform-206 interoperability contract directly.
-- Mail workflow contract thin slice is now documented for platform-207 consumption.
+- Mail workflow package now includes edge-case/decision guidance for platform-207 consumption.

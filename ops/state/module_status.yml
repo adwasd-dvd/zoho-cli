@@ -1,7 +1,7 @@
 mail:
   priority: 1
-  status: in_progress
-  phase: operator_workflow_packaging
+  status: completed
+  phase: operator_workflow_packaging_complete
   target_release: v1.0.0
   current_milestone: mail-010-workflow-package
   blockers: []

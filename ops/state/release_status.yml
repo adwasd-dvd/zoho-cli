@@ -2,14 +2,14 @@ current_version: 0.2.0
 next_version: 0.2.1
 release_candidate: false
 last_release_tag: v0.1.9
-current_train: cliq-expansion
-assessed_at: '2026-04-27T14:39:07Z'
-current_milestone: cliq-expansion-phase
+current_train: ai-employee-v1
+assessed_at: '2026-04-28T16:38:51Z'
+current_milestone: platform-205-release-gate
 current_milestone_complete: false
 missing_requirements:
-  - 'blocker backlog is not clear: `ops/state/bug_backlog.yml` still carries repeated cliq-193 live app-command verification failures (`appCommandsError: empty_output`; CLI stderr `error: not_supported`) with latest listed evidence `tests/auto_pilot/reports/cliq193_app_commands_probe_summary_20260417_121801.json` and `tests/auto_pilot/reports/cliq193_status_20260417_121801.json`.'
-  - 'current focus milestone is incomplete: `cliq-expansion-phase` remains in progress (`ops/state/active_task.yml` -> `id: cliq-195`, `stage: in_progress`).'
-  - 'relevant integration readiness is still not marked pass/skip for release (`release_gate.integration_tests_passed_or_explicitly_skipped: false`) because focused live blocker checks remain externally blocked/deferred.'
+  - 'platform-205 release-gate checklist is now defined but not fully executed/signoff-complete (`docs/releases/AI_EMPLOYEE_V1_GATE.md`).'
+  - 'integration readiness remains unset (`release_gate.integration_tests_passed_or_explicitly_skipped: false`) pending explicit pass/skip mapping for externally blocked capabilities.'
+  - 'version bump and release-candidate flip are still pending (`release_gate.version_bumped: false`, `release_candidate: false`).'
 release_gate:
   blocker_bugs_cleared: false
   unit_tests_passed: true

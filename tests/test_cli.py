@@ -3410,6 +3410,79 @@ def test_cliq_watch_act_read_ack_latest(
 
 
 @respx.mock
+def test_cliq_watch_act_read_ack_latest_falls_back_when_read_ack_is_unsupported(
+    tmp_path: Path,
+    mock_config: Path,
+    mock_token_refresh: Any,
+) -> None:
+    watch_file = tmp_path / "watch.json"
+    watch_file.write_text(
+        json.dumps(
+            {
+                "chatId": "CT_1",
+                "channelId": "O1",
+                "newCount": 1,
+                "messages": [
+                    {"messageId": "M2", "senderId": "U2", "text": "latest"},
+                ],
+            }
+        )
+    )
+
+    not_supported_resp = httpx.Response(
+        404,
+        json={"code": "request_url_invalid", "message": "unsupported"},
+    )
+    respx.post("https://cliq.zoho.com/api/v2/chats/CT_1/messages/M2/read").mock(
+        return_value=not_supported_resp
+    )
+    respx.post("https://cliq.zoho.com/api/v2/chats/CT_1/messages/M2/ack").mock(
+        return_value=not_supported_resp
+    )
+    respx.put("https://cliq.zoho.com/api/v2/chats/CT_1/messages/M2/read").mock(
+        return_value=not_supported_resp
+    )
+    respx.post("https://cliq.zoho.com/api/v2/chats/CT_1/messages/read").mock(
+        return_value=not_supported_resp
+    )
+    respx.post("https://cliq.zoho.com/api/v2/channels/O1/messages/M2/read").mock(
+        return_value=not_supported_resp
+    )
+    respx.post("https://cliq.zoho.com/api/v2/channels/O1/messages/M2/ack").mock(
+        return_value=not_supported_resp
+    )
+
+    reaction_route = respx.post(
+        "https://cliq.zoho.com/api/v2/chats/CT_1/messages/M2/reactions"
+    ).mock(return_value=httpx.Response(200, json={"data": {"status": "ok"}}))
+
+    result = runner.invoke(
+        app,
+        [
+            "cliq",
+            "watch-act",
+            "--watch-file",
+            str(watch_file),
+            "--action",
+            "read-ack-latest",
+        ],
+        env=_cfg_env(mock_config),
+    )
+
+    assert result.exit_code == 0, result.output
+    assert reaction_route.called
+    payload = json.loads(result.output)
+    assert payload["status"] == "ok"
+    assert payload["action"] == "read-ack-latest"
+    assert payload["applied"] is False
+    assert payload["reason"] == "read_ack_not_supported"
+    assert payload["fallbackUsed"] is True
+    assert payload["readAckSupported"] is False
+    assert payload["statusReaction"]["statusKey"] == "received"
+    assert payload["statusReaction"]["emoji"] == "👀"
+
+
+@respx.mock
 def test_cliq_watch_act_uses_top_level_watch_payload_action_id_aliases(
     tmp_path: Path,
     mock_config: Path,

@@ -12,6 +12,7 @@
 - No publish, version bump, or tagging actions were performed.
 
 ### Added
+- Added capability-gated fallback for `zoho cliq watch-act --action read-ack-latest`: when Cliq read-ack endpoints are endpoint-unsupported (`not_supported`/`unsupported` tracker signal), watch-act now returns success with `fallbackUsed=true`, `readAckSupported=false`, and applies the existing status-reaction fallback (`received`) instead of hard-failing the consume loop.
 - Ran a focused cliq-194 live validation slice and archived evidence: watch-context contract output is present (`tests/auto_pilot/reports/cliq194_watch_context_20260428_112542.json`), while read-ack execution remains endpoint-unsupported (`tests/auto_pilot/reports/cliq194_watch_act_read_ack_20260428_112542.stderr`, `not_supported`).
 - Executed the platform-207 RC/version checkpoint using `docs/releases/AI_EMPLOYEE_V1_RC_CHECKLIST.md`, recorded a conservative defer decision in `ops/state/release_status.yml`, and moved active execution focus back to `cliq-194` realtime evidence refresh before the next RC review.
 - Added `docs/releases/AI_EMPLOYEE_V1_QUICKSTART.md` as the minimal platform-207 operator entrypoint, linking Mail workflow execution, interop escalation rules, and the RC decision checkpoint path.

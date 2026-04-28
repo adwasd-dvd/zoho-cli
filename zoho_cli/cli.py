@@ -12377,12 +12377,58 @@ def cliq_watch_act(
             if status_flow and status_target_message_id:
                 _emit_status("testing")
         else:
-            result = client.execute_watch_read_ack_action(
-                watch_payload,
-                chat_id=chat_id,
-                channel_id=channel_id,
-                message_id=message_id,
+            unsupported_entry_before = client._read_operation_unsupported_entry(  # noqa: SLF001
+                "message-read-ack"
             )
+            read_ack_stderr = io.StringIO()
+            try:
+                with contextlib.redirect_stderr(read_ack_stderr):
+                    result = client.execute_watch_read_ack_action(
+                        watch_payload,
+                        chat_id=chat_id,
+                        channel_id=channel_id,
+                        message_id=message_id,
+                    )
+                if isinstance(result, dict):
+                    result.setdefault("fallbackUsed", False)
+                    result.setdefault("readAckSupported", True)
+            except SystemExit:
+                if not _should_use_mark_read_status_fallback(
+                    client,
+                    unsupported_entry_before=unsupported_entry_before,
+                ):
+                    stderr_payload = read_ack_stderr.getvalue()
+                    if stderr_payload:
+                        print(stderr_payload, end="", file=sys.stderr)
+                    raise
+
+                fallback_payload = _apply_cliq_status_reaction(
+                    client,
+                    email=email,
+                    message_id=status_target_message_id,
+                    status="received",
+                    chat_id=status_target_chat,
+                    channel_id=status_target_channel,
+                    clear_known=False,
+                )
+                result = {
+                    "status": "ok",
+                    **preview_action,
+                    "applied": False,
+                    "reason": "read_ack_not_supported",
+                    "result": {},
+                    "fallbackUsed": True,
+                    "readAckSupported": False,
+                    "statusReaction": {
+                        "statusKey": fallback_payload["statusKey"],
+                        "emoji": fallback_payload["emoji"],
+                        "previousStatus": fallback_payload["previousStatus"],
+                        "previousEmoji": fallback_payload["previousEmoji"],
+                        "removed": fallback_payload["removed"],
+                        "removeErrors": fallback_payload["removeErrors"],
+                        "result": fallback_payload["result"],
+                    },
+                }
 
         if status_flow and status_target_message_id:
             _emit_status("done")

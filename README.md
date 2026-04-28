@@ -138,22 +138,30 @@ Project state lives in `ops/state/*.yml`:
 
 ---
 
-## Development status and roadmap (from `ops/state`, updated 2026-04-14)
+## Development status and roadmap (from `ops/state`, updated 2026-04-28)
 
 ### Current progress
 
 | Module | Status | Current phase | Notes |
 | --- | --- | --- | --- |
 | Mail | ✅ Completed | stabilization_complete | Shipping baseline is stable. |
-| Cliq | 🚧 In progress | cliq-expansion-phase | Active task is `cliq-193` app-governance hardening. |
+| Cliq | 🚧 In progress | cliq-expansion-phase | `cliq-195` core package is closed for this milestone; non-critical tail is deferred post-v1. |
 | CRM | ⛔ Blocked | phase_1_read_only_commands_implemented | Live org access is missing for the test account. |
+
+### Current platform lane (AI-employee v1)
+
+| Task | Status | Notes |
+| --- | --- | --- |
+| `platform-204` architecture contract | ✅ Completed | Mail+Cliq core, control/execution/escalation boundaries locked in docs. |
+| `platform-205` release gate | 🚧 In progress | Defining auditable acceptance checks from docs + `ops/state/*`. |
+| `mail-010` workflow package | ⏳ Queued | Starts after `platform-205`. |
 
 ### Current release posture
 
 - Current version: `0.2.0`
 - Next version target: `0.2.1`
 - Release candidate: `false`
-- Broad automated gate: latest `make release-gate && make ci` is green, but release is still blocked by unresolved live integration blockers.
+- Broad automated gate: latest `make release-gate && make ci` is green, but release is still blocked by unresolved live integration blockers and pending integration gate closure.
 
 ### Active blockers (highest impact)
 
@@ -163,9 +171,9 @@ Project state lives in `ops/state/*.yml`:
 
 ### Near-term plan
 
-1. Continue `cliq-193` with the next smallest output-hardening slice + focused tests.
-2. Re-run one matching focused live verification per slice and archive evidence.
-3. Recheck `cliq-165` export once app-account activation changes.
+1. Finish `platform-205` acceptance gate definition and wire it to release-state tracking.
+2. Start `mail-010` operator workflow package after gate contract is locked.
+3. Keep unsupported Cliq endpoints capability-gated so they do not stall v1 internal-loop readiness.
 4. Resume CRM live verification when CRM org access is available.
 
 ---

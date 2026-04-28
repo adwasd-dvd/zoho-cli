@@ -1329,7 +1329,7 @@ class ZohoCliqClient:
                 return str(int(normalized_candidate.split(".", 1)[0]))
             if normalized_candidate.isdigit():
                 return str(int(normalized_candidate))
-            if re.fullmatch(r"\d+(?:\.0+)?[eE][+-]?\d+", normalized_candidate):
+            if re.fullmatch(r"\d+(?:\.\d+)?[eE][+-]?\d+", normalized_candidate):
                 try:
                     numeric_value = float(normalized_candidate)
                 except ValueError:

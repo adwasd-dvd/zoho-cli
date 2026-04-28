@@ -1305,7 +1305,10 @@ class ZohoCliqClient:
 
     @staticmethod
     def _normalize_operator_workflow_package_version(value: Any) -> str:
-        package_version = str(value or "").strip()
+        if value is None or isinstance(value, bool):
+            return ""
+
+        package_version = str(value).strip()
         if not package_version:
             return ""
 
@@ -1380,6 +1383,8 @@ class ZohoCliqClient:
                 normalized_workflow["packageContractId"] = package_contract_id
 
             if not package_scope:
+                normalized_workflow["packageScope"] = "operator-workflows"
+            elif package_scope != "operator-workflows":
                 normalized_workflow["packageScope"] = "operator-workflows"
             else:
                 normalized_workflow["packageScope"] = package_scope

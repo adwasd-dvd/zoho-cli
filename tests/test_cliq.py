@@ -3516,6 +3516,35 @@ def test_build_watch_reply_action_normalizes_numeric_package_version() -> None:
     assert action["operatorWorkflow"]["packageScope"] == "operator-workflows"
 
 
+def test_build_watch_reply_action_normalizes_zero_numeric_package_version() -> None:
+    action = cliq.ZohoCliqClient.build_watch_reply_action(
+        {
+            "chatId": "CT_1",
+            "channelId": "O1",
+            "operatorWorkflow": {
+                "packageId": "cliq-195",
+                "packageVersion": 0,
+                "packageContractId": "legacy-contract",
+                "externalEscalation": {
+                    "defaultAction": "notify-mail",
+                },
+            },
+            "messages": [
+                {"messageId": "M1", "senderId": "U1", "text": "latest"},
+            ],
+        },
+        text="ack",
+    )
+
+    assert action["operatorWorkflow"]["packageId"] == "cliq-195"
+    assert action["operatorWorkflow"]["packageVersion"] == "v0"
+    assert (
+        action["operatorWorkflow"]["packageContractId"]
+        == "cliq-195-operator-workflow-v0"
+    )
+    assert action["operatorWorkflow"]["packageScope"] == "operator-workflows"
+
+
 def test_build_watch_reply_action_normalizes_zero_padded_numeric_package_version() -> (
     None
 ):
@@ -3544,6 +3573,30 @@ def test_build_watch_reply_action_normalizes_zero_padded_numeric_package_version
         action["operatorWorkflow"]["packageContractId"]
         == "cliq-195-operator-workflow-v3"
     )
+    assert action["operatorWorkflow"]["packageScope"] == "operator-workflows"
+
+
+def test_build_watch_reply_action_rewrites_package_scope_when_mismatched() -> None:
+    action = cliq.ZohoCliqClient.build_watch_reply_action(
+        {
+            "chatId": "CT_1",
+            "channelId": "O1",
+            "operatorWorkflow": {
+                "packageId": "cliq-195",
+                "packageVersion": "v3",
+                "packageContractId": "cliq-195-operator-workflow-v3",
+                "packageScope": "legacy-scope",
+                "externalEscalation": {
+                    "defaultAction": "notify-mail",
+                },
+            },
+            "messages": [
+                {"messageId": "M1", "senderId": "U1", "text": "latest"},
+            ],
+        },
+        text="ack",
+    )
+
     assert action["operatorWorkflow"]["packageScope"] == "operator-workflows"
 
 
@@ -3937,6 +3990,34 @@ def test_build_watch_read_ack_action_normalizes_derived_numeric_contract_version
     assert action["operatorWorkflow"]["packageScope"] == "operator-workflows"
 
 
+def test_build_watch_read_ack_action_normalizes_zero_numeric_package_version() -> None:
+    action = cliq.ZohoCliqClient.build_watch_read_ack_action(
+        {
+            "chatId": "CT_1",
+            "channelId": "O1",
+            "operatorWorkflow": {
+                "packageId": "cliq-195",
+                "packageVersion": 0,
+                "packageContractId": "legacy-contract",
+                "externalEscalation": {
+                    "defaultAction": "notify-mail",
+                },
+            },
+            "messages": [
+                {"messageId": "M1", "senderId": "U1", "text": "latest"},
+            ],
+        }
+    )
+
+    assert action["operatorWorkflow"]["packageId"] == "cliq-195"
+    assert action["operatorWorkflow"]["packageVersion"] == "v0"
+    assert (
+        action["operatorWorkflow"]["packageContractId"]
+        == "cliq-195-operator-workflow-v0"
+    )
+    assert action["operatorWorkflow"]["packageScope"] == "operator-workflows"
+
+
 def test_build_watch_read_ack_action_normalizes_derived_zero_padded_numeric_contract_version() -> (
     None
 ):
@@ -3962,6 +4043,29 @@ def test_build_watch_read_ack_action_normalizes_derived_zero_padded_numeric_cont
         action["operatorWorkflow"]["packageContractId"]
         == "cliq-195-operator-workflow-v3"
     )
+    assert action["operatorWorkflow"]["packageScope"] == "operator-workflows"
+
+
+def test_build_watch_read_ack_action_rewrites_package_scope_when_mismatched() -> None:
+    action = cliq.ZohoCliqClient.build_watch_read_ack_action(
+        {
+            "chatId": "CT_1",
+            "channelId": "O1",
+            "operatorWorkflow": {
+                "packageId": "cliq-195",
+                "packageVersion": "v3",
+                "packageContractId": "cliq-195-operator-workflow-v3",
+                "packageScope": "legacy-scope",
+                "externalEscalation": {
+                    "defaultAction": "notify-mail",
+                },
+            },
+            "messages": [
+                {"messageId": "M1", "senderId": "U1", "text": "latest"},
+            ],
+        }
+    )
+
     assert action["operatorWorkflow"]["packageScope"] == "operator-workflows"
 
 

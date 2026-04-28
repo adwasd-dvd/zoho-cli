@@ -1,10 +1,13 @@
-last_run_at: "2026-04-28T22:24:40Z"
+last_run_at: "2026-04-28T22:43:18Z"
 last_result: passing
-current_focus: cliq-194-blocker-gate-signoff-packet-20260428T222440Z
+current_focus: cliq-194-blocker-gate-posture-revalidation-20260428T224318Z
 suites:
   unit:
     status: passing
     notes:
+      - "focused cliq-194 blocker-gate posture revalidation at 2026-04-28T22:43:18Z"
+      - "no behavior change; capability-gated read-ack fallback regression remained green"
+      - "./.venv/bin/python -m pytest -q tests/test_cli.py::test_cliq_watch_act_read_ack_latest_falls_back_when_read_ack_is_unsupported -> 1 passed in 0.16s"
       - "focused cliq-194 blocker-gate signoff packet refresh at 2026-04-28T22:24:40Z"
       - "no behavior change; capability-gated read-ack fallback regression remained green"
       - "./.venv/bin/python -m pytest -q tests/test_cli.py::test_cliq_watch_act_read_ack_latest_falls_back_when_read_ack_is_unsupported -> 1 passed in 0.15s"

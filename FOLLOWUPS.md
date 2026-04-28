@@ -26,7 +26,7 @@
 
 ## Throughput policy (turbo)
 
-- [ ] Run `cliq-195` in 10x batch mode (larger coherent slices, fewer micro-commits).
+- [ ] Run `cliq-195` in 20x batch mode (larger coherent slices, fewer micro-commits).
 - [ ] Run all in-progress tasks in parallel lanes where dependency-safe (`cliq-195`, `platform-204`, `platform-203`).
 - [ ] Apply adaptive backoff: only reduce scope after 3 consecutive failed attempts, and cut current batch size by 30% each time.
-- [ ] Keep medium-scope regression gate at lane boundaries (not after every tiny change).
+- [ ] Keep medium-scope regression gate every 2 lane boundaries (not after every tiny change).

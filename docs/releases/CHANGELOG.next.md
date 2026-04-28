@@ -12,6 +12,7 @@
 - No publish, version bump, or tagging actions were performed.
 
 ### Added
+- Escalated execution throughput policy from turbo 10x to turbo 20x (`ops/state/execution_policy.yml`), raising target batch multiplier to 20, lane cap to 5, and medium-gate cadence to every 2 boundaries while preserving the existing 3-failure/30%-off adaptive backoff rule.
 - Hardened cliq-195 operator-workflow package canonicalization so watch-reply/read-ack/watch-act now normalize numeric package versions and numeric contract-id suffixes into canonical `v*` forms (for example `3` -> `v3`) before contract-id rewrite/backfill, ensuring stable `cliq-195-operator-workflow-v*` metadata across action/result surfaces.
 - Hardened cliq-195 operator-workflow package canonicalization so uppercase package versions now normalize to lowercase `v*` before contract-id rewrite/backfill, ensuring watch-reply/read-ack/watch-act surfaces emit canonical `cliq-195-operator-workflow-v*` metadata even when incoming payloads provide uppercase version forms.
 - Hardened cliq-195 operator-workflow packaging resilience so watch-reply/read-ack/watch-act now rewrite mismatched `operatorWorkflow.packageContractId` values to canonical `cliq-195-operator-workflow-{packageVersion}` whenever `packageId=cliq-195`, keeping package contract metadata stable across action/result surfaces while preserving existing package-id/version backfills.

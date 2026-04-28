@@ -4,12 +4,12 @@ module: cliq
 stage: in_progress
 status: in_progress
 owner: coder
-updated_at: '2026-04-28T02:39:09Z'
-execution_mode: turbo_10x
+updated_at: '2026-04-28T02:47:11Z'
+execution_mode: turbo_20x
 throughput_policy_ref: ops/state/execution_policy.yml
 success_criteria:
 - add an initial cliq-195 operator-workflow packaging contract to watch-context output without breaking existing watch-loop consumers
 - preserve the operator-workflow contract through watch-act action payload/result surfaces used by automation loops
 - keep focused watch-context/watch-act verification green while deferred external blockers stay capability-gated
 next_if_done: if focused and medium-scope cliq-195 verification remain green, continue the next operator-workflow packaging increment without regressing deferred capability-gated blockers.
-next_step: "Adjacent medium-scope cliq-195 boundary rerun at 2026-04-28T02:39:09Z stayed green across watch-context/watch-act/bridge-run surfaces with no behavior change (`489 passed`; `398 passed, 427 deselected`; `51 passed, 186 deselected`; help smoke OK); next run should ship the next focused non-alias cliq-195 operator-workflow packaging increment while keeping deferred capability-gated blockers unchanged."
+next_step: "Turbo 20x mode active: ship the next focused non-alias cliq-195 operator-workflow packaging increment in larger coherent batches; run the medium watch-context/watch-act/bridge-run gate every 2 slice boundaries; only downshift after 3 consecutive failures (30% each)."

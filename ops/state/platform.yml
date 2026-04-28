@@ -1,7 +1,7 @@
 module: Platform
-updated_at: "2026-04-27T12:19:05Z"
+updated_at: "2026-04-28T02:47:11Z"
 status: in_progress
-execution_mode: turbo_10x
+execution_mode: turbo_20x
 throughput_policy_ref: ops/state/execution_policy.yml
 blockers: []
-next_small_step: run platform-204 and platform-203 as parallel dependency-safe lanes under turbo policy, using larger coherent slices and boundary-only regression gates.
+next_small_step: run platform-204 and platform-203 as parallel dependency-safe lanes under turbo 20x policy, using larger coherent slices and medium regression gates every 2 slice boundaries.

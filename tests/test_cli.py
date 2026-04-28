@@ -2603,6 +2603,65 @@ def test_cliq_watch_act_normalizes_scientific_whole_number_package_version_in_re
 
 
 @respx.mock
+def test_cliq_watch_act_preserves_large_scientific_package_version_in_result(
+    tmp_path: Path,
+    mock_config: Path,
+    mock_token_refresh: Any,
+) -> None:
+    watch_file = tmp_path / "watch.json"
+    watch_file.write_text(
+        json.dumps(
+            {
+                "chatId": "CT_1",
+                "channelId": "O1",
+                "operatorWorkflow": {
+                    "packageId": "cliq-195",
+                    "packageVersion": "V1E309",
+                    "packageContractId": "legacy-contract",
+                    "externalEscalation": {
+                        "defaultAction": "notify-mail",
+                        "actionHint": {
+                            "watchActAction": "read-ack-latest",
+                        },
+                    },
+                },
+                "newCount": 1,
+                "messages": [
+                    {"messageId": "M2", "senderId": "U2", "text": "latest"},
+                ],
+            }
+        )
+    )
+
+    route = respx.post("https://cliq.zoho.com/api/v2/chats/CT_1/messages/M2/read").mock(
+        return_value=httpx.Response(200, json={"data": {"id": "M2", "status": "ok"}})
+    )
+
+    result = runner.invoke(
+        app,
+        [
+            "cliq",
+            "watch-act",
+            "--watch-file",
+            str(watch_file),
+            "--escalation-action",
+        ],
+        env=_cfg_env(mock_config),
+    )
+
+    assert result.exit_code == 0, result.output
+    assert route.called
+    payload = json.loads(result.output)
+    assert payload["operatorWorkflow"]["packageId"] == "cliq-195"
+    assert payload["operatorWorkflow"]["packageVersion"] == "v1E309"
+    assert (
+        payload["operatorWorkflow"]["packageContractId"]
+        == "cliq-195-operator-workflow-v1E309"
+    )
+    assert payload["operatorWorkflow"]["packageScope"] == "operator-workflows"
+
+
+@respx.mock
 def test_cliq_watch_act_normalizes_plus_prefixed_numeric_package_version_in_result(
     tmp_path: Path,
     mock_config: Path,

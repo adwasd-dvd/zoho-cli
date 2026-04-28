@@ -3576,6 +3576,35 @@ def test_build_watch_reply_action_normalizes_scientific_whole_number_package_ver
     assert action["operatorWorkflow"]["packageScope"] == "operator-workflows"
 
 
+def test_build_watch_reply_action_preserves_large_scientific_package_version() -> None:
+    action = cliq.ZohoCliqClient.build_watch_reply_action(
+        {
+            "chatId": "CT_1",
+            "channelId": "O1",
+            "operatorWorkflow": {
+                "packageId": "cliq-195",
+                "packageVersion": "V1E309",
+                "packageContractId": "legacy-contract",
+                "externalEscalation": {
+                    "defaultAction": "notify-mail",
+                },
+            },
+            "messages": [
+                {"messageId": "M1", "senderId": "U1", "text": "latest"},
+            ],
+        },
+        text="ack",
+    )
+
+    assert action["operatorWorkflow"]["packageId"] == "cliq-195"
+    assert action["operatorWorkflow"]["packageVersion"] == "v1E309"
+    assert (
+        action["operatorWorkflow"]["packageContractId"]
+        == "cliq-195-operator-workflow-v1E309"
+    )
+    assert action["operatorWorkflow"]["packageScope"] == "operator-workflows"
+
+
 def test_build_watch_reply_action_normalizes_plus_prefixed_numeric_package_version() -> (
     None
 ):
@@ -4220,6 +4249,36 @@ def test_build_watch_read_ack_action_normalizes_scientific_whole_number_package_
     assert (
         action["operatorWorkflow"]["packageContractId"]
         == "cliq-195-operator-workflow-v3"
+    )
+    assert action["operatorWorkflow"]["packageScope"] == "operator-workflows"
+
+
+def test_build_watch_read_ack_action_preserves_large_scientific_package_version() -> (
+    None
+):
+    action = cliq.ZohoCliqClient.build_watch_read_ack_action(
+        {
+            "chatId": "CT_1",
+            "channelId": "O1",
+            "operatorWorkflow": {
+                "packageId": "cliq-195",
+                "packageVersion": "V1E309",
+                "packageContractId": "legacy-contract",
+                "externalEscalation": {
+                    "defaultAction": "notify-mail",
+                },
+            },
+            "messages": [
+                {"messageId": "M1", "senderId": "U1", "text": "latest"},
+            ],
+        }
+    )
+
+    assert action["operatorWorkflow"]["packageId"] == "cliq-195"
+    assert action["operatorWorkflow"]["packageVersion"] == "v1E309"
+    assert (
+        action["operatorWorkflow"]["packageContractId"]
+        == "cliq-195-operator-workflow-v1E309"
     )
     assert action["operatorWorkflow"]["packageScope"] == "operator-workflows"
 

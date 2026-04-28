@@ -4,7 +4,7 @@ module: cliq
 stage: in_progress
 status: in_progress
 owner: coder
-updated_at: '2026-04-28T07:52:22Z'
+updated_at: '2026-04-28T08:03:57Z'
 execution_mode: turbo_20x
 throughput_policy_ref: ops/state/execution_policy.yml
 success_criteria:
@@ -12,4 +12,4 @@ success_criteria:
 - preserve the operator-workflow contract through watch-act action payload/result surfaces used by automation loops
 - keep focused watch-context/watch-act verification green while deferred external blockers stay capability-gated
 next_if_done: if focused and medium-scope cliq-195 verification remain green, continue the next operator-workflow packaging increment without regressing deferred capability-gated blockers.
-next_step: "Turbo 20x mode active: adjacent medium-scope cliq-195 integration boundary rerun landed at 2026-04-28T07:52:22Z with no behavior change and all medium gates green; continue the next focused non-alias packaging increment, then rerun medium gates every 2 slice boundaries; only downshift after 3 consecutive failures (30% each)."
+next_step: "Turbo 20x mode active: focused cliq-195 non-finite scientific package-version hardening landed at 2026-04-28T08:03:57Z with focused tests green; run the adjacent medium watch-context/watch-act/bridge-run boundary rerun next, then continue the next focused non-alias increment (every-2-boundary medium cadence, 3-failure/30% downshift)."

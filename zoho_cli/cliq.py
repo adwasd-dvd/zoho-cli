@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import json
+import math
 import mimetypes
 import os
 import re
@@ -1333,8 +1334,13 @@ class ZohoCliqClient:
                     numeric_value = float(normalized_candidate)
                 except ValueError:
                     return ""
+                if not math.isfinite(numeric_value):
+                    return ""
                 if numeric_value.is_integer():
-                    return str(int(numeric_value))
+                    try:
+                        return str(int(numeric_value))
+                    except (OverflowError, ValueError):
+                        return ""
             return ""
 
         if package_version.startswith(("V", "v")):

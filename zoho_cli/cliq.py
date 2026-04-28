@@ -1306,8 +1306,16 @@ class ZohoCliqClient:
     @staticmethod
     def _normalize_operator_workflow_package_version(value: Any) -> str:
         package_version = str(value or "").strip()
-        if package_version.startswith("V"):
-            return f"v{package_version[1:]}"
+        if not package_version:
+            return ""
+
+        if package_version.startswith(("V", "v")):
+            normalized_suffix = package_version[1:].strip()
+            return f"v{normalized_suffix}" if normalized_suffix else ""
+
+        if package_version.isdigit():
+            return f"v{package_version}"
+
         return package_version
 
     @classmethod

@@ -2,16 +2,17 @@
 
 ## Unreleased
 
-### Release readiness (2026-04-26T01:36:00Z)
+### Release readiness (2026-04-28T01:52:00Z)
 - Assessed from current milestone and system state: **not release-ready**.
 - Gate evidence:
-  - Blocker backlog is not clear, `ops/state/bug_backlog.yml` still carries repeated cliq-193 live app-command failures (`appCommandsError: empty_output`, CLI stderr `error: not_supported`) with latest listed evidence `tests/auto_pilot/reports/cliq193_app_commands_probe_summary_20260417_121801.json` and `tests/auto_pilot/reports/cliq193_status_20260417_121801.json`.
-  - Relevant tests are passing in latest release-gate evidence, `.tmp/nightly_release_gate_20260425T143206Z.log` reports `1523 passed in 31.30s` and wheel smoke passed (`ok: wheel smoke passed (0.2.0)`).
-  - Changelog draft is updated.
-  - Current focus milestone is incomplete, `ops/state/release_status.yml` has `current_milestone_complete: false` and `ops/state/active_task.yml` remains `id: cliq-195`, `stage: in_progress`, `updated_at: 2026-04-26T00:55:20Z`.
+  - Blocker backlog is not clear, `ops/state/bug_backlog.yml` still has 29 blocker entries led by repeated cliq-193 live app-command failures (`appCommandsError: empty_output`, CLI stderr `error: not_supported`) with latest listed evidence `tests/auto_pilot/reports/cliq193_app_commands_probe_summary_20260417_121801.json` and `tests/auto_pilot/reports/cliq193_status_20260417_121801.json`.
+  - Relevant unit/CI checks are passing (`ops/state/test_status.yml`: `last_result: passing`, `last_run_at: 2026-04-28T01:50:13Z`), but integration release readiness is still not pass/skip (`ops/state/release_status.yml`: `release_gate.integration_tests_passed_or_explicitly_skipped: false`).
+  - Changelog draft is updated (`ops/state/release_status.yml`: `release_gate.changelog_updated: true`).
+  - Current focus milestone is incomplete, `ops/state/release_status.yml` has `current_milestone_complete: false` and `ops/state/active_task.yml` remains `id: cliq-195`, `stage: in_progress`, `updated_at: 2026-04-28T01:50:13Z`.
 - No publish, version bump, or tagging actions were performed.
 
 ### Added
+- Hardened cliq-195 operator-workflow package canonicalization so watch-reply/read-ack/watch-act now normalize numeric package versions and numeric contract-id suffixes into canonical `v*` forms (for example `3` -> `v3`) before contract-id rewrite/backfill, ensuring stable `cliq-195-operator-workflow-v*` metadata across action/result surfaces.
 - Hardened cliq-195 operator-workflow package canonicalization so uppercase package versions now normalize to lowercase `v*` before contract-id rewrite/backfill, ensuring watch-reply/read-ack/watch-act surfaces emit canonical `cliq-195-operator-workflow-v*` metadata even when incoming payloads provide uppercase version forms.
 - Hardened cliq-195 operator-workflow packaging resilience so watch-reply/read-ack/watch-act now rewrite mismatched `operatorWorkflow.packageContractId` values to canonical `cliq-195-operator-workflow-{packageVersion}` whenever `packageId=cliq-195`, keeping package contract metadata stable across action/result surfaces while preserving existing package-id/version backfills.
 - Hardened cliq-195 operator-workflow packaging resilience so watch-reply/read-ack/watch-act now derive missing `operatorWorkflow.packageVersion` from the `operatorWorkflow.packageContractId` suffix when `operatorWorkflow.packageId=cliq-195` is already present (for example `cliq-195-operator-workflow-v2` -> `v2`) before defaulting to `v1`.

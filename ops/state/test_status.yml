@@ -1,10 +1,14 @@
-last_run_at: "2026-04-28T02:05:01Z"
+last_run_at: "2026-04-28T02:10:00Z"
 last_result: passing
-current_focus: cliq-195-boundary-rerun-20260428T020501Z
+current_focus: cliq-195-package-version-numeric-canonicalization-20260428T021000Z
 suites:
   unit:
     status: passing
     notes:
+      - "focused cliq-195 package-version numeric canonicalization increment at 2026-04-28T02:10:00Z"
+      - "behavior increment: `_extract_operator_workflow` now canonicalizes numeric package versions and numeric package-contract suffixes to lowercase `v*` forms (for example `3` -> `v3`) before contract-id rewrite/backfill"
+      - "./.venv/bin/python -m pytest -q tests/test_cliq.py::test_build_watch_reply_action_normalizes_uppercase_package_version_prefix tests/test_cliq.py::test_build_watch_reply_action_normalizes_numeric_package_version tests/test_cliq.py::test_build_watch_read_ack_action_normalizes_derived_uppercase_contract_version tests/test_cliq.py::test_build_watch_read_ack_action_normalizes_derived_numeric_contract_version tests/test_cli.py::test_cliq_watch_act_normalizes_uppercase_package_version_prefix_in_result tests/test_cli.py::test_cliq_watch_act_normalizes_numeric_package_version_in_result -> 6 passed in 0.16s"
+      - "./.venv/bin/ruff format --check zoho_cli/cliq.py tests/test_cliq.py tests/test_cli.py -> 3 files already formatted"
       - "integration-loop medium-scope cliq-195 boundary rerun at 2026-04-28T02:05:01Z"
       - "no behavior change; watch-context/watch-act/bridge-run verification stayed green"
       - "./.venv/bin/python -m pytest -q tests/test_registry.py tests/test_membrane_bridge.py -> 489 passed in 8.68s"

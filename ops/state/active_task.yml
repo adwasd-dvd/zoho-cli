@@ -1,15 +1,15 @@
-id: platform-205
-title: define v1.0 release gate for AI-employee use case (persona/memory/work contract + acceptance checks)
+id: platform-206
+title: define cross-channel interoperability contract (internal cliq + external communication channels)
 module: platform
 stage: in_progress
 status: in_progress
 owner: coder
-updated_at: '2026-04-28T16:54:18Z'
+updated_at: '2026-04-28T17:02:29Z'
 execution_mode: turbo_20x
 throughput_policy_ref: ops/state/execution_policy.yml
 success_criteria:
-- codify AI-employee release-gate checks directly from the platform-204 architecture contract
-- make acceptance checks executable/auditable from docs + state files only
-- keep capability-gated blockers explicit so unsupported endpoints do not false-fail release readiness
-next_if_done: move to platform-206 cross-channel interoperability contract and release-candidate runbook preparation.
-next_step: "Integration pass/skip mapping is now recorded and gate boolean synced; next is release-candidate/version-bump decision and then platform-205 signoff closure."
+- define a concrete interoperability contract between internal cliq workflow surfaces and external communication adapters
+- keep contract boundaries compatible with platform-204 architecture and platform-205 gate decisions
+- provide explicit handoff points for platform-207 release-candidate runbook documentation
+next_if_done: move to platform-207 release-candidate package docs/quickstart/runbook preparation.
+next_step: "Draft the platform-206 interoperability contract and wire references into roadmap/release docs so platform-207 can consume a stable operator-facing contract."

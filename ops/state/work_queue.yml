@@ -239,7 +239,7 @@
 - id: platform-205
   title: define v1.0 release gate for AI-employee use case (persona/memory/work contract + acceptance checks)
   module: platform
-  stage: in_progress
+  stage: completed
   priority: high
   depends_on:
   - platform-204
@@ -262,7 +262,7 @@
 - id: platform-206
   title: define cross-channel interoperability contract (internal cliq + external communication channels)
   module: platform
-  stage: queued
+  stage: in_progress
   priority: high
   depends_on:
   - cliq-195

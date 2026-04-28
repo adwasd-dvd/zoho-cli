@@ -4,7 +4,7 @@
 
 - [ ] Close `platform-202` next extraction slice (no behavior change, parity tests green).
 - [x] Land `platform-204` architecture brief (Mail+Cliq core, persona/memory/work contract, post-v1 CRM/Books boundary).
-- [ ] Land `platform-205` v1.0 acceptance gate for AI-employee workflow.
+- [x] Land `platform-205` v1.0 acceptance gate for AI-employee workflow.
 - [ ] Deliver `mail-010` operator workflow package (triage/draft/reply/safe-send guardrails).
 - [ ] Deliver `cliq-194` realtime intake baseline (web-trigger default + adaptive API polling fallback) with mandatory mark-as-read/read-ack after consume to prevent looped re-processing.
 - [x] Deliver `cliq-195` operator workflow package (internal loop + external-contact escalation path), then defer non-critical tail hardening to post-v1 backlog.
@@ -26,6 +26,6 @@
 
 ## Throughput policy (turbo)
 
-- [ ] Run all in-progress tasks in parallel lanes where dependency-safe (`platform-204`, `platform-203`, then `platform-205`).
+- [ ] Run all in-progress tasks in parallel lanes where dependency-safe (`platform-206`, `platform-203`, then `mail-010`).
 - [ ] Apply adaptive backoff: only reduce scope after 3 consecutive failed attempts, and cut current batch size by 30% each time.
 - [ ] Keep medium-scope regression gate every 2 lane boundaries (not after every tiny change).

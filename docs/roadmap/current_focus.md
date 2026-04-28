@@ -3,12 +3,12 @@
 ## Immediate
 1. **v1.0 target is fixed**: AI-employee-first release using Mail + Cliq as the core workspace.
 2. **Architecture lock is complete**: `platform-204` contract is landed and now drives gate execution.
-3. **Release-gate lane is active**: execute `platform-205` acceptance checks from docs + state evidence.
+3. **Release-gate lane is closed**: `platform-205` signoff is complete, with explicit release-candidate defer decision recorded.
 4. **Workflow packaging status**: `cliq-195` is closed for this milestone; non-critical tail is deferred post-v1.
 5. **External blockers remain deferred**: `cliq-165` (`inactive_appaccount_user`) and `cliq-193` (`not_supported`) stay capability-gated under 3-strike policy.
 
 ## Next
-1. Finish `platform-205` checklist execution and update `ops/state/release_status.yml` gate flags.
+1. Execute `platform-206` interoperability contract definition for internal Cliq + external channel adapters.
 2. Start `mail-010` operator workflow package.
 3. Continue `cliq-194` realtime intake baseline lane (web-trigger default + adaptive polling fallback).
 4. Prepare `platform-207` release-candidate docs/runbook once gate + workflow lanes are green.

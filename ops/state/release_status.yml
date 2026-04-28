@@ -3,11 +3,19 @@ next_version: 0.2.1
 release_candidate: false
 last_release_tag: v0.1.9
 current_train: ai-employee-v1
-assessed_at: '2026-04-28T16:54:18Z'
-current_milestone: platform-205-release-gate
+assessed_at: '2026-04-28T17:02:29Z'
+current_milestone: platform-206-interoperability
 current_milestone_complete: false
 missing_requirements:
-  - 'version bump and release-candidate flip are still pending (`release_gate.version_bumped: false`, `release_candidate: false`).'
+  - 'release-candidate flip is intentionally deferred until one additional development slice lands green (mail-010 or platform-206).'
+  - 'version bump remains pending (`release_gate.version_bumped: false`) and will follow the release-candidate decision.'
+release_candidate_decision:
+  decided_at: '2026-04-28T17:02:29Z'
+  decision: defer
+  reason: avoid state-leading release signaling before another concrete development slice lands green
+  revisit_after:
+    - mail-010
+    - platform-206
 integration_pass_skip_mapping:
   - area: cliq-watch-context-watch-act-bridge
     status: pass

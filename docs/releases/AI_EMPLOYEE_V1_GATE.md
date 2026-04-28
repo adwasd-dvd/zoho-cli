@@ -48,11 +48,11 @@ Primary references:
 
 ## Gate decision
 
-- Current result: **in progress**
+- Current result: **complete (with release-candidate defer decision recorded)**
 - Owner: `coder`
-- Active task: `platform-205`
+- Signoff task: `platform-205` (closed)
 
 ## Remaining signoff items
 
 - [x] Finalize integration pass/skip mapping for externally blocked capabilities into `ops/state/release_status.yml`.
-- [ ] Decide `release_candidate` flip + version bump timing after gate signoff.
+- [x] Decide `release_candidate` flip + version bump timing after gate signoff (decision: defer flip until one more green development slice, then revisit).

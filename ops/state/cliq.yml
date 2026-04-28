@@ -1,6 +1,6 @@
 module: Cliq
-updated_at: '2026-04-28T15:48:50Z'
-status: in_progress
+updated_at: '2026-04-28T16:22:20Z'
+status: deferred_tail
 execution_mode: turbo_20x
 throughput_policy_ref: ops/state/execution_policy.yml
 blockers:

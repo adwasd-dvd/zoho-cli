@@ -59,3 +59,33 @@ Unify product work around one operator-facing flow:
 - Patch releases must not mix in new modules.
 - All cron/agents read and write the same state files in `ops/state/`.
 - Unsupported external endpoints follow 3-strike deferred policy and must not stall unrelated v1.0 slices.
+
+## Platform-204 architecture contract (v1 cut)
+
+This section is the lock point for `platform-204` and the handoff baseline for `platform-205`.
+
+### Core operating contract
+
+1. **Control contract**
+   - persona, memory, and work instructions are first-class runtime inputs
+   - one canonical state plane in `ops/state/*` drives automation decisions and recovery
+2. **Execution contract**
+   - intake starts in Cliq (`cliq-194`/`cliq-195` path), then routes to Mail/Cliq actions
+   - consumed intake must always read-ack/mark-read with dedupe protection before next loop step
+3. **Escalation contract**
+   - internal loop closes first when possible
+   - external communication is adapter-driven and capability-gated, never a blocker for internal-loop correctness
+
+### Explicit v1 boundaries
+
+- **In v1**: Mail + Cliq operational core, persona/memory/work contract, focused acceptance gates.
+- **Post-v1**: CRM deep workflows, Books surface, unsupported Cliq endpoints, and non-critical cliq-195 tail hardening.
+
+### Platform-205 handoff requirements
+
+`platform-205` acceptance must validate:
+
+1. end-to-end AI-employee happy path (Cliq intake -> decision -> Mail/Cliq action -> audit trail)
+2. mandatory read-ack/dedupe behavior for consumed intake
+3. capability-gated behavior when unsupported endpoints are encountered
+4. reproducible operator run contract from docs + state files only

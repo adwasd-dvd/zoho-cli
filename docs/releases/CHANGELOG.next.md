@@ -12,6 +12,8 @@
 - No publish, version bump, or tagging actions were performed.
 
 ### Added
+- Closed cliq-195 for the current milestone after repeated green boundary gates, promoted remaining non-critical cliq-195 tail hardening to post-v1 backlog, and shifted active execution focus to platform-204 (v1 AI-employee architecture brief) for immediate next-lane progression.
+- Landed a platform-204 architecture lock section in `docs/architecture/MULTI_PRODUCT_PLAN.md` that defines the v1 control/execution/escalation contracts, explicit in-v1 vs post-v1 boundaries, and concrete handoff requirements for platform-205 acceptance-gate authoring.
 - Hardened cliq-195 operator-workflow package canonicalization so watch-reply/read-ack/watch-act now normalize leading-decimal zero package versions (for example `.0` and contract-derived `V.0`) to canonical `v0` before package-contract rewrite/backfill, preserving stable package metadata across action/result surfaces.
 - Hardened cliq-195 operator-workflow package canonicalization so watch-reply/read-ack/watch-act now normalize leading-decimal scientific whole-number package versions (for example `.5e1` and `V.5E1`) to canonical `v*` forms before package-contract rewrite/backfill, preserving stable package metadata across action/result surfaces.
 - Hardened cliq-195 operator-workflow package canonicalization so watch-reply/read-ack/watch-act now normalize decimal scientific whole-number versions (for example `3.5e1` and `V3.5E1`) to canonical `v*` forms before package-contract rewrite/backfill, preserving stable package metadata across action/result surfaces.

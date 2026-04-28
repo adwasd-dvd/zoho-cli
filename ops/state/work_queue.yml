@@ -232,14 +232,14 @@
 - id: platform-204
   title: codify v1.0 agent-employee architecture (Mail+Cliq core, multi-channel interoperability, post-v1 CRM/Books expansion)
   module: platform
-  stage: in_progress
+  stage: completed
   priority: high
   depends_on:
   - platform-202
 - id: platform-205
   title: define v1.0 release gate for AI-employee use case (persona/memory/work contract + acceptance checks)
   module: platform
-  stage: queued
+  stage: in_progress
   priority: high
   depends_on:
   - platform-204
@@ -254,7 +254,7 @@
 - id: cliq-195
   title: package cliq workflows for agent operation (internal loop + external-contact escalation path)
   module: cliq
-  stage: in_progress
+  stage: completed
   priority: high
   depends_on:
   - cliq-194

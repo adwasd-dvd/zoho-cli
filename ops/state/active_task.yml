@@ -1,15 +1,15 @@
-id: cliq-195
-title: package cliq workflows for agent operation (internal loop + external-contact escalation path)
-module: cliq
+id: platform-205
+title: define v1.0 release gate for AI-employee use case (persona/memory/work contract + acceptance checks)
+module: platform
 stage: in_progress
 status: in_progress
 owner: coder
-updated_at: '2026-04-28T15:48:50Z'
+updated_at: '2026-04-28T16:24:34Z'
 execution_mode: turbo_20x
 throughput_policy_ref: ops/state/execution_policy.yml
 success_criteria:
-- add an initial cliq-195 operator-workflow packaging contract to watch-context output without breaking existing watch-loop consumers
-- preserve the operator-workflow contract through watch-act action payload/result surfaces used by automation loops
-- keep focused watch-context/watch-act verification green while deferred external blockers stay capability-gated
-next_if_done: if focused and medium-scope cliq-195 verification remain green, continue the next operator-workflow packaging increment without regressing deferred capability-gated blockers.
-next_step: "Adjacent medium-scope cliq-195 integration boundary rerun at 2026-04-28T15:48:50Z stayed green across watch-context/watch-act/bridge-run surfaces with no behavior change (`tests/test_registry.py` + `tests/test_membrane_bridge.py`: `489 passed in 8.65s`; `tests/test_cli.py` watch/context/bridge slice: `409 passed, 427 deselected in 9.72s`; `tests/test_cliq.py` watch action slice: `73 passed, 186 deselected in 0.24s`; help smoke `HELP_SMOKE_OK`), so continue the next focused non-alias packaging increment per cadence."
+- codify AI-employee release-gate checks directly from the platform-204 architecture contract
+- make acceptance checks executable/auditable from docs + state files only
+- keep capability-gated blockers explicit so unsupported endpoints do not false-fail release readiness
+next_if_done: move to platform-206 cross-channel interoperability contract and release-candidate runbook preparation.
+next_step: "Draft platform-205 acceptance checks using docs/architecture/MULTI_PRODUCT_PLAN.md lock section as source, then sync roadmap/followups and release-status gate wording."

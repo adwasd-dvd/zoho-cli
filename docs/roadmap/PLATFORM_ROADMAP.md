@@ -54,6 +54,18 @@ Definition of done:
 - metadata and record read paths stable
 - tests cover common org/module edge cases
 
+### Phase B3 — v1 AI-employee release gate (in progress)
+
+Goals:
+- convert the platform-204 architecture contract into explicit acceptance checks (`platform-205`)
+- verify end-to-end AI-employee happy path (Cliq intake -> decision -> Mail/Cliq action -> audit trail)
+- enforce capability-gated handling so unsupported endpoints are deferred, not treated as v1 hard failures
+
+Definition of done:
+- release-gate checklist is documented, reproducible, and linked to `ops/state/*`
+- read-ack/dedupe behavior is an explicit pass condition
+- deferred/unsupported endpoint policy is an explicit pass condition boundary
+
 ## Milestones
 
 - `mail-core-extraction`

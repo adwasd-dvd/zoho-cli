@@ -3,12 +3,12 @@ next_version: 0.2.1
 release_candidate: false
 last_release_tag: v0.1.9
 current_train: ai-employee-v1
-assessed_at: '2026-04-28T22:05:25Z'
+assessed_at: '2026-04-28T22:24:40Z'
 current_milestone: cliq-194-realtime-baseline
 current_milestone_complete: true
 missing_requirements:
   - 'Release-candidate posture remains deferred after RC checkpoint refresh because external blocker posture is still active (`release_gate.blocker_bugs_cleared: false`), even though latest cliq-194 live evidence is continuity-safe (`status=ok`, `fallbackUsed=true`, `readAckSupported=false`, `reason=read_ack_not_supported`).'
-  - 'Version bump remains pending (`release_gate.version_bumped: false`) and requires explicit blocker-gate signoff under the current deferred RC posture; focused fallback regression stayed green at 2026-04-28T22:05:25Z (`./.venv/bin/python -m pytest -q tests/test_cli.py::test_cliq_watch_act_read_ack_latest_falls_back_when_read_ack_is_unsupported` -> `1 passed in 0.14s`).'
+  - 'Version bump remains pending (`release_gate.version_bumped: false`) by explicit blocker-gate signoff under the current deferred RC posture; focused fallback regression stayed green at 2026-04-28T22:24:40Z (`./.venv/bin/python -m pytest -q tests/test_cli.py::test_cliq_watch_act_read_ack_latest_falls_back_when_read_ack_is_unsupported` -> `1 passed in 0.15s`).'
 rc_package:
   gate_contract_ready: true
   interop_contract_ready: true
@@ -26,10 +26,14 @@ release_candidate_decision:
     checklist: docs/releases/AI_EMPLOYEE_V1_RC_CHECKLIST.md
     owner: coder
     next_review_after: '2026-04-30T00:00:00Z'
+  blocker_gate_signoff:
+    signed_off_at: '2026-04-28T22:24:40Z'
+    decision: defer_version_bump
+    rationale: keep `release_candidate=false` and `version_bumped=false` until blocker posture changes or the next RC checkpoint window is reached
 integration_pass_skip_mapping:
   - area: cliq-watch-context-watch-act-bridge
     status: pass
-    evidence: 'ops/state/test_status.yml last_run_at=2026-04-28T22:05:25Z; focused cliq-194 blocker-gate fallback check stayed green (`tests/test_cli.py::test_cliq_watch_act_read_ack_latest_falls_back_when_read_ack_is_unsupported` -> `1 passed in 0.14s`) after the latest medium boundary pass.'
+    evidence: 'ops/state/test_status.yml last_run_at=2026-04-28T22:24:40Z; focused cliq-194 blocker-gate fallback check stayed green (`tests/test_cli.py::test_cliq_watch_act_read_ack_latest_falls_back_when_read_ack_is_unsupported` -> `1 passed in 0.15s`) after the latest medium boundary pass.'
   - area: cliq-unsupported-or-scope-gated-live-endpoints
     status: skip_deferred
     policy: capability_gated_3_strike

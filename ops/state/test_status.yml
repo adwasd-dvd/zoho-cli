@@ -1,13 +1,13 @@
-last_run_at: "2026-04-28T22:05:25Z"
+last_run_at: "2026-04-28T22:24:40Z"
 last_result: passing
-current_focus: cliq-194-blocker-gate-readiness-follow-through-20260428T220525Z
+current_focus: cliq-194-blocker-gate-signoff-packet-20260428T222440Z
 suites:
   unit:
     status: passing
     notes:
-      - "focused cliq-194 blocker-gate/version-bump readiness follow-through at 2026-04-28T22:05:25Z"
+      - "focused cliq-194 blocker-gate signoff packet refresh at 2026-04-28T22:24:40Z"
       - "no behavior change; capability-gated read-ack fallback regression remained green"
-      - "./.venv/bin/python -m pytest -q tests/test_cli.py::test_cliq_watch_act_read_ack_latest_falls_back_when_read_ack_is_unsupported -> 1 passed in 0.14s"
+      - "./.venv/bin/python -m pytest -q tests/test_cli.py::test_cliq_watch_act_read_ack_latest_falls_back_when_read_ack_is_unsupported -> 1 passed in 0.15s"
       - "integration-loop cliq-194 medium-scope boundary rerun at 2026-04-28T21:56:40Z"
       - "no behavior change; watch-context/watch-act/bridge-run verification stayed green"
       - "./.venv/bin/python -m pytest -q tests/test_registry.py tests/test_membrane_bridge.py -> 489 passed in 8.86s"

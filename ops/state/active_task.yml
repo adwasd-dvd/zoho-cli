@@ -4,7 +4,7 @@ module: cliq
 stage: in_progress
 status: in_progress
 owner: coder
-updated_at: '2026-04-28T22:05:25Z'
+updated_at: '2026-04-28T22:24:40Z'
 execution_mode: turbo_20x
 throughput_policy_ref: ops/state/execution_policy.yml
 success_criteria:
@@ -12,4 +12,4 @@ success_criteria:
 - ensure mandatory read-ack/mark-read after consume with dedupe safety for loop correctness
 - collect fresh live-validation evidence sufficient for next RC checkpoint
 next_if_done: return to RC checkpoint for release_candidate/version decision refresh.
-next_step: "Focused blocker-gate follow-through check is now refreshed (`./.venv/bin/python -m pytest -q tests/test_cli.py::test_cliq_watch_act_read_ack_latest_falls_back_when_read_ack_is_unsupported` -> `1 passed in 0.14s`); keep release-candidate deferred and complete explicit blocker signoff + version-bump readiness decision packet."
+next_step: "Explicit blocker-gate signoff + version-bump readiness decision packet is now documented under deferred RC posture; keep `release_candidate=false`, keep `version_bumped=false`, and wait for endpoint support change or next RC checkpoint window before bump execution."

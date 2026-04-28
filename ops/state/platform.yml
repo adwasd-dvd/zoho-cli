@@ -1,7 +1,7 @@
 module: Platform
-updated_at: "2026-04-28T21:18:00Z"
+updated_at: "2026-04-28T22:24:40Z"
 status: in_progress
 execution_mode: turbo_20x
 throughput_policy_ref: ops/state/execution_policy.yml
 blockers: []
-next_small_step: RC checkpoint decision has been refreshed with the latest cliq-194 fallback evidence; keep `release_candidate=false` and complete blocker-gate/version-bump readiness follow-through.
+next_small_step: Blocker-gate signoff + version-bump readiness decision packet is now recorded; keep `release_candidate=false`, hold `version_bumped=false`, and re-evaluate on blocker posture change or at next RC checkpoint.

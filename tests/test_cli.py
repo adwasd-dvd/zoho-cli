@@ -127,6 +127,14 @@ def test_legacy_mail_support_root_aliases_are_retired() -> None:
     assert "No such command 'attachment'" in result.output
 
 
+def test_cliq_teams_help_hides_internal_slice_labels() -> None:
+    result = runner.invoke(app, ["cliq", "teams", "--help"])
+
+    assert result.exit_code == 0, result.output
+    assert "List Cliq org-admin teams." in result.output
+    assert "phase-1 slice" not in result.output
+
+
 def test_login_no_browser_defaults_to_localhost_redirect_when_unset(
     mock_config: Path, monkeypatch: pytest.MonkeyPatch
 ) -> None:

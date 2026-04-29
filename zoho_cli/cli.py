@@ -4227,7 +4227,7 @@ def cliq_teams(
         None, "--network", help="Cliq network slug (e.g. happydistrouklimited)."
     ),
 ) -> None:
-    """List Cliq org-admin teams (cliq-190 phase-1 slice)."""
+    """List Cliq org-admin teams."""
     cfg = _cfg()
     email = _require_account(cfg)
     client = _get_cliq_client(cfg, email, network=network)
@@ -4281,7 +4281,7 @@ def cliq_departments(
         None, "--network", help="Cliq network slug (e.g. happydistrouklimited)."
     ),
 ) -> None:
-    """List Cliq org-admin departments (cliq-190 phase-1 slice)."""
+    """List Cliq org-admin departments."""
     cfg = _cfg()
     email = _require_account(cfg)
     client = _get_cliq_client(cfg, email, network=network)
@@ -4328,7 +4328,7 @@ def cliq_roles(
         None, "--network", help="Cliq network slug (e.g. happydistrouklimited)."
     ),
 ) -> None:
-    """List Cliq org-admin roles (cliq-190 phase-1 slice)."""
+    """List Cliq org-admin roles."""
     cfg = _cfg()
     email = _require_account(cfg)
     client = _get_cliq_client(cfg, email, network=network)
@@ -4382,7 +4382,7 @@ def cliq_designations(
         None, "--network", help="Cliq network slug (e.g. happydistrouklimited)."
     ),
 ) -> None:
-    """List Cliq org-admin designations (cliq-190 phase-1 slice)."""
+    """List Cliq org-admin designations."""
     cfg = _cfg()
     email = _require_account(cfg)
     client = _get_cliq_client(cfg, email, network=network)
@@ -4431,7 +4431,7 @@ def cliq_user_status(
         None, "--network", help="Cliq network slug (e.g. happydistrouklimited)."
     ),
 ) -> None:
-    """List Cliq org-admin user-status values (cliq-190 phase-1 slice)."""
+    """List Cliq org-admin user-status values."""
     cfg = _cfg()
     email = _require_account(cfg)
     client = _get_cliq_client(cfg, email, network=network)
@@ -4488,7 +4488,7 @@ def cliq_userfields(
         None, "--network", help="Cliq network slug (e.g. happydistrouklimited)."
     ),
 ) -> None:
-    """List Cliq org-admin userfields (cliq-190 phase-1 slice)."""
+    """List Cliq org-admin userfields."""
     cfg = _cfg()
     email = _require_account(cfg)
     client = _get_cliq_client(cfg, email, network=network)

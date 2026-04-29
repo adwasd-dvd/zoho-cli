@@ -1,10 +1,13 @@
-last_run_at: "2026-04-28T23:57:09Z"
+last_run_at: "2026-04-29T00:03:32Z"
 last_result: passing
-current_focus: platform-208-ia-alias-retirement-integration-rerun-20260428T235709Z
+current_focus: cliq-194-blocker-gate-posture-revalidation-20260429T000332Z
 suites:
   unit:
     status: passing
     notes:
+      - "focused cliq-194 blocker-gate posture revalidation at 2026-04-29T00:03:32Z"
+      - "no behavior change; capability-gated read-ack fallback regression remained green"
+      - "./.venv/bin/python -m pytest -q tests/test_cli.py::test_cliq_watch_act_read_ack_latest_falls_back_when_read_ack_is_unsupported -> 1 passed in 0.15s"
       - "platform-208 medium-scope integration rerun at 2026-04-28T23:57:09Z"
       - "no behavior change; alias-retirement slice stayed integration-green"
       - "./.venv/bin/python -m pytest -q tests/test_registry.py tests/test_membrane_bridge.py -> 489 passed in 8.85s"

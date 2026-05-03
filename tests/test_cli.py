@@ -181,6 +181,14 @@ def test_cliq_help_hides_internal_slice_labels(
     assert "slice" not in result.output
 
 
+def test_cliq_help_hides_scaffold_wording() -> None:
+    result = runner.invoke(app, ["cliq", "--help"])
+
+    assert result.exit_code == 0, result.output
+    assert "Show Cliq auth readiness and inferred API" in result.output
+    assert "scaffold" not in result.output
+
+
 def test_crm_help_hides_scaffold_wording() -> None:
     result = runner.invoke(app, ["crm", "--help"])
 

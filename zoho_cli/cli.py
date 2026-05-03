@@ -1961,7 +1961,7 @@ def cliq_status(
         help="List configured account options and their default Cliq network.",
     ),
 ) -> None:
-    """Show Cliq scaffold readiness and inferred API endpoint."""
+    """Show Cliq auth readiness and inferred API endpoint."""
     cfg = _cfg()
     email = _S.account or _config.default_account(cfg)
     account_cfg = cfg.get("accounts", {}).get(email, {}) if email else {}

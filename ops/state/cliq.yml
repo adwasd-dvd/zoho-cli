@@ -1,9 +1,10 @@
 module: Cliq
-updated_at: '2026-05-03T03:22:47Z'
+updated_at: '2026-05-03T04:00:58Z'
 status: completed
 execution_mode: turbo_20x
 throughput_policy_ref: ops/state/execution_policy.yml
 blockers:
+- "focused cliq-194 blocker-gate posture revalidation at 2026-05-03T04:00:58Z reran the smallest regression for capability-gated read-ack fallback (`./.venv/bin/python -m pytest -q tests/test_cli.py::test_cliq_watch_act_read_ack_latest_falls_back_when_read_ack_is_unsupported` -> `1 passed in 0.14s`) with no behavior change; deferred RC posture remains intact and next step stays RC checkpoint refresh unless endpoint support changes."
 - "focused cliq-194 blocker-gate posture revalidation at 2026-05-03T03:22:47Z reran the smallest regression for capability-gated read-ack fallback (`./.venv/bin/python -m pytest -q tests/test_cli.py::test_cliq_watch_act_read_ack_latest_falls_back_when_read_ack_is_unsupported` -> `1 passed in 0.14s`) with no behavior change; deferred RC posture remains intact and next step stays RC checkpoint refresh unless endpoint support changes."
 - "platform-208 help-IA wording slice at 2026-04-29T00:36:44Z removed internal `cliq-190 phase-1 slice` labels from Cliq org-admin level-2 help descriptions (`teams|departments|roles|designations|user-status|userfields`) and validated focused help coverage (`./.venv/bin/python -m pytest -q tests/test_cli.py::test_cliq_teams_help_hides_internal_slice_labels tests/test_cli.py::test_root_help_is_module_first_and_hides_mail_support_aliases tests/test_cli.py::test_mail_help_includes_support_subgroups_under_mail tests/test_cli.py::test_legacy_mail_support_root_aliases_are_retired` -> `4 passed in 0.18s`); remaining blocker posture is unchanged and capability-gated read-ack defer remains in effect."
 - "focused cliq-194 blocker-gate posture revalidation at 2026-04-29T00:10:12Z reran the smallest regression for capability-gated read-ack fallback (`./.venv/bin/python -m pytest -q tests/test_cli.py::test_cliq_watch_act_read_ack_latest_falls_back_when_read_ack_is_unsupported` -> `1 passed in 0.15s`) with no behavior change; deferred RC posture remains intact and next step stays endpoint-support-change or next RC checkpoint recheck."

@@ -1,10 +1,13 @@
-last_run_at: "2026-05-03T03:04:37Z"
+last_run_at: "2026-05-03T03:22:47Z"
 last_result: passing
-current_focus: platform-208-crm-help-wording-cleanup-20260503T030437Z
+current_focus: cliq-194-focused-blocker-gate-revalidation-20260503T032247Z
 suites:
   unit:
     status: passing
     notes:
+      - "focused cliq-194 blocker-gate posture revalidation at 2026-05-03T03:22:47Z"
+      - "no behavior change; capability-gated read-ack fallback regression remained green while RC defer posture stays unchanged"
+      - "./.venv/bin/python -m pytest -q tests/test_cli.py::test_cliq_watch_act_read_ack_latest_falls_back_when_read_ack_is_unsupported -> 1 passed in 0.14s"
       - "platform-208 focused CRM help-wording cleanup verification at 2026-05-03T03:04:37Z"
       - "behavior change: removed scaffold-centric wording from `zoho crm --help` status/modules descriptions and added a guard test to keep operator-facing wording release-clean"
       - "./.venv/bin/python -m pytest -q tests/test_cli.py::test_crm_help_hides_scaffold_wording -> 1 passed in 1.32s"

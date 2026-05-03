@@ -1,10 +1,13 @@
-last_run_at: "2026-05-03T05:55:58Z"
+last_run_at: "2026-05-03T06:03:11Z"
 last_result: passing
-current_focus: platform-208-integration-loop-rerun-20260503T055558Z
+current_focus: cliq-194-focused-blocker-gate-rerun-20260503T060311Z
 suites:
   unit:
     status: passing
     notes:
+      - "focused cliq-194 blocker-gate posture revalidation at 2026-05-03T06:03:11Z"
+      - "no behavior change; capability-gated read-ack fallback regression remained green while RC checkpoint reassessment stays deferred"
+      - "./.venv/bin/python -m pytest -q tests/test_cli.py::test_cliq_watch_act_read_ack_latest_falls_back_when_read_ack_is_unsupported -> 1 passed in 0.14s"
       - "platform-208 integration-loop medium-scope rerun at 2026-05-03T05:55:58Z"
       - "no behavior change; module-first help + bridge + watch-action boundary checks remained green"
       - "./.venv/bin/python -m pytest -q tests/test_registry.py tests/test_membrane_bridge.py -> 489 passed in 8.68s"

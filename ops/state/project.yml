@@ -1,5 +1,5 @@
 project: zoho-cli
-updated_at: '2026-05-03T02:40:36Z'
+updated_at: '2026-05-03T02:46:00Z'
 status: v1-architecture-and-queue-optimization
 throughput_mode: turbo_20x
 throughput_policy_ref: ops/state/execution_policy.yml

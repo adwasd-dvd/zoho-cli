@@ -2,18 +2,19 @@
 
 ## Unreleased
 
-### Release readiness (2026-04-28T01:52:00Z)
+### Release readiness (2026-05-03T02:29:00Z)
 - Assessed from current milestone and system state: **not release-ready**.
 - Gate evidence:
-  - Blocker backlog is not clear, `ops/state/bug_backlog.yml` still has 29 blocker entries led by repeated cliq-193 live app-command failures (`appCommandsError: empty_output`, CLI stderr `error: not_supported`) with latest listed evidence `tests/auto_pilot/reports/cliq193_app_commands_probe_summary_20260417_121801.json` and `tests/auto_pilot/reports/cliq193_status_20260417_121801.json`.
-  - Relevant unit/CI checks are passing (`ops/state/test_status.yml`: `last_result: passing`, `last_run_at: 2026-04-28T01:50:13Z`), but integration release readiness is still not pass/skip (`ops/state/release_status.yml`: `release_gate.integration_tests_passed_or_explicitly_skipped: false`).
-  - Changelog draft is updated (`ops/state/release_status.yml`: `release_gate.changelog_updated: true`).
-  - Current focus milestone is incomplete, `ops/state/release_status.yml` has `current_milestone_complete: false` and `ops/state/active_task.yml` remains `id: cliq-195`, `stage: in_progress`, `updated_at: 2026-04-28T01:50:13Z`.
+  - Blocker backlog is not clear: `ops/state/bug_backlog.yml` still contains 29 blocker entries, led by repeated cliq-193 live app-command endpoint failures (`appCommandsError: empty_output`, CLI stderr `error: not_supported`) with latest listed evidence `tests/auto_pilot/reports/cliq193_app_commands_probe_summary_20260417_121801.json` and `tests/auto_pilot/reports/cliq193_status_20260417_121801.json`.
+  - Relevant tests are passing: `ops/state/test_status.yml` shows `last_result: passing` at `last_run_at: 2026-04-29T00:36:44Z`.
+  - Changelog draft is updated and this release-readiness section has been refreshed.
+  - Current focus milestone is incomplete: `ops/state/release_status.yml` keeps `current_milestone_complete: false`, and `ops/state/active_task.yml` is still `id: platform-208`, `stage: in_progress`, `updated_at: 2026-04-29T00:36:44Z`.
 - No publish, version bump, or tagging actions were performed.
 
 ### Added
 - Accepted cliq-194 read-ack endpoint limitation as capability-gated deferred (non-blocking), marked cliq-194 lane complete, and shifted active execution to platform-208 CLI information-architecture cleanup.
 - Landed the first platform-208 IA cleanup slice: retired legacy root mail support aliases (`zoho attachment ...`, `zoho folders ...`, `zoho labels ...`) from default root registration, moved coverage to module-first paths (`zoho mail attachment|folders|labels ...`), and updated operator-facing CLI hint text accordingly.
+- Landed an additional platform-208 mail IA refinement slice: expanded retired-root-alias coverage to assert all three legacy root commands (`attachment`, `folders`, `labels`) are unavailable at root, and normalized mail help wording to explicit module-first paths (`zoho mail attachment|folders|labels`).
 - Landed a second platform-208 IA wording-normalization slice for Cliq level-2 help: removed internal rollout labels (`cliq-190 phase-1 slice`) from `zoho cliq teams|departments|roles|designations|user-status|userfields --help` command descriptions and added focused regression coverage to keep operator-facing help text release-clean.
 - Added capability-gated fallback for `zoho cliq watch-act --action read-ack-latest`: when Cliq read-ack endpoints are endpoint-unsupported (`not_supported`/`unsupported` tracker signal), watch-act now returns success with `fallbackUsed=true`, `readAckSupported=false`, and applies the existing status-reaction fallback (`received`) instead of hard-failing the consume loop.
 - Ran a focused cliq-194 live validation slice and archived evidence: watch-context contract output is present (`tests/auto_pilot/reports/cliq194_watch_context_20260428_112542.json`), while read-ack execution remains endpoint-unsupported (`tests/auto_pilot/reports/cliq194_watch_act_read_ack_20260428_112542.stderr`, `not_supported`).

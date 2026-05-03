@@ -378,7 +378,8 @@ mail_app = typer.Typer(
     no_args_is_help=True,
     help=(
         "Mail module commands. Includes message operations plus mail support "
-        "subgroups (`mail attachment`, `mail folders`, `mail labels`)."
+        "subgroups (`zoho mail attachment`, `zoho mail folders`, "
+        "`zoho mail labels`)."
     ),
 )
 attachment_subapp = typer.Typer(

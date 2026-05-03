@@ -106,6 +106,7 @@ def test_root_help_is_module_first_and_hides_mail_support_aliases() -> None:
     assert "mail" in result.output
     assert "cliq" in result.output
     assert "crm" in result.output
+    assert "zoho mail attachment" in result.output
     assert " attachment  " not in result.output
     assert " folders     " not in result.output
     assert " labels      " not in result.output
@@ -115,16 +116,18 @@ def test_mail_help_includes_support_subgroups_under_mail() -> None:
     result = runner.invoke(app, ["mail", "--help"])
 
     assert result.exit_code == 0, result.output
+    assert "zoho mail attachment" in result.output
     assert "attachment" in result.output
     assert "folders" in result.output
     assert "labels" in result.output
 
 
 def test_legacy_mail_support_root_aliases_are_retired() -> None:
-    result = runner.invoke(app, ["attachment", "--help"])
+    for command in ("attachment", "folders", "labels"):
+        result = runner.invoke(app, [command, "--help"])
 
-    assert result.exit_code != 0
-    assert "No such command 'attachment'" in result.output
+        assert result.exit_code != 0
+        assert f"No such command '{command}'" in result.output
 
 
 def test_cliq_teams_help_hides_internal_slice_labels() -> None:

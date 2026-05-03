@@ -1,7 +1,7 @@
 module: Platform
-updated_at: "2026-05-03T02:40:36Z"
+updated_at: "2026-05-03T02:46:00Z"
 status: in_progress
 execution_mode: turbo_20x
 throughput_policy_ref: ops/state/execution_policy.yml
 blockers: []
-next_small_step: Platform-208 medium-scope integration rerun stayed green with no behavior change; proceed with the remaining CRM-level wording drift checks, then rerun IA-focused integration tests.
+next_small_step: Platform-208 mail IA refinement slice is now in (explicit `zoho mail ...` subgroup help wording + full retired-root-alias coverage for attachment/folders/labels); proceed with the remaining CRM-level wording drift checks, then rerun IA-focused integration tests.

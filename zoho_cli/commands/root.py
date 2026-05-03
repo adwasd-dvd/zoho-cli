@@ -42,7 +42,7 @@ def register_mail_support_root_typers(
     folders_app: typer.Typer,
     labels_app: typer.Typer,
 ) -> None:
-    """Register legacy mail support aliases at root level on ``root_app``."""
+    """Register deprecated mail support aliases at root level on ``root_app``."""
     root_app.add_typer(
         attachment_app,
         name="attachment",

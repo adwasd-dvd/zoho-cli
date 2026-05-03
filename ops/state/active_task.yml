@@ -4,7 +4,7 @@ module: platform
 stage: in_progress
 status: in_progress
 owner: coder
-updated_at: '2026-05-03T07:34:25Z'
+updated_at: '2026-05-03T07:51:17Z'
 execution_mode: turbo_20x
 throughput_policy_ref: ops/state/execution_policy.yml
 success_criteria:
@@ -12,4 +12,4 @@ success_criteria:
 - keep module-first command taxonomy consistent across level-2/level-3 help surfaces
 - leave a concise operator-facing IA contract that matches current module order and release state
 next_if_done: queue RC checkpoint refresh packet with updated operator IA references.
-next_step: "Focused cliq-194 blocker-gate revalidation at 2026-05-03T07:34:25Z stayed green with no behavior change (`tests/test_cli.py::test_cliq_teams_help_hides_internal_slice_labels` + `tests/test_cli.py::test_cliq_help_hides_internal_slice_labels`), so keep platform-208 in progress and preserve RC defer posture unless blocker-bug gate changes."
+next_step: "Platform-208 medium-scope integration rerun at 2026-05-03T07:51:17Z stayed green with no behavior change (`tests/test_registry.py` + `tests/test_membrane_bridge.py` + focused CLI/Cliq boundary filters + help smokes), so keep platform-208 in progress and preserve RC defer posture unless blocker-bug gate changes."

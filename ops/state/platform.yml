@@ -1,7 +1,7 @@
 module: Platform
-updated_at: "2026-05-03T08:48:54Z"
+updated_at: "2026-05-03T09:05:28Z"
 status: in_progress
 execution_mode: turbo_20x
 throughput_policy_ref: ops/state/execution_policy.yml
 blockers: []
-next_small_step: Focused cliq-194 blocker-gate revalidation at 2026-05-03T08:48:54Z reran `./.venv/bin/python -m pytest -q tests/test_cli.py::test_cliq_watch_act_read_ack_latest_falls_back_when_read_ack_is_unsupported` (`1 passed in 0.15s`) with no behavior change; keep platform-208 in progress and preserve RC defer posture unless blocker-bug gate changes.
+next_small_step: Focused cliq-194 blocker-gate revalidation at 2026-05-03T09:05:28Z reran `./.venv/bin/python -m pytest -q tests/test_cli.py::test_cliq_watch_act_read_ack_latest_falls_back_when_read_ack_is_unsupported` (`1 passed in 0.14s`) with no behavior change; keep platform-208 in progress and preserve RC defer posture unless blocker-bug gate changes.

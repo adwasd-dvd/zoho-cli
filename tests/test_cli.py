@@ -193,6 +193,14 @@ def test_cliq_help_hides_scaffold_wording() -> None:
     assert "governance" not in result.output
 
 
+def test_cliq_watch_context_help_hides_internal_openclaw_wording() -> None:
+    result = runner.invoke(app, ["cliq", "watch-context", "--help"])
+
+    assert result.exit_code == 0, result.output
+    assert "Emit a stable incremental context payload for watch loops." in result.output
+    assert "OpenClaw-style" not in result.output
+
+
 def test_crm_help_hides_scaffold_wording() -> None:
     result = runner.invoke(app, ["crm", "--help"])
 

@@ -10941,7 +10941,7 @@ def cliq_watch_context(
         None, "--network", help="Cliq network slug (e.g. happydistrouklimited)."
     ),
 ) -> None:
-    """Emit a stable incremental context payload for OpenClaw-style watch loops."""
+    """Emit a stable incremental context payload for watch loops."""
     if not chat_id and not channel_id:
         utils.error_exit("invalid_destination", "Provide --chat-id or --channel-id")
     if limit < 1 or max_messages < 1:

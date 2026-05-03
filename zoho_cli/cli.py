@@ -4228,7 +4228,7 @@ def cliq_teams(
         None, "--network", help="Cliq network slug (e.g. happydistrouklimited)."
     ),
 ) -> None:
-    """List Cliq org-admin teams."""
+    """List Cliq organization teams."""
     cfg = _cfg()
     email = _require_account(cfg)
     client = _get_cliq_client(cfg, email, network=network)
@@ -4282,7 +4282,7 @@ def cliq_departments(
         None, "--network", help="Cliq network slug (e.g. happydistrouklimited)."
     ),
 ) -> None:
-    """List Cliq org-admin departments."""
+    """List Cliq organization departments."""
     cfg = _cfg()
     email = _require_account(cfg)
     client = _get_cliq_client(cfg, email, network=network)
@@ -4329,7 +4329,7 @@ def cliq_roles(
         None, "--network", help="Cliq network slug (e.g. happydistrouklimited)."
     ),
 ) -> None:
-    """List Cliq org-admin roles."""
+    """List Cliq organization roles."""
     cfg = _cfg()
     email = _require_account(cfg)
     client = _get_cliq_client(cfg, email, network=network)
@@ -4383,7 +4383,7 @@ def cliq_designations(
         None, "--network", help="Cliq network slug (e.g. happydistrouklimited)."
     ),
 ) -> None:
-    """List Cliq org-admin designations."""
+    """List Cliq organization designations."""
     cfg = _cfg()
     email = _require_account(cfg)
     client = _get_cliq_client(cfg, email, network=network)
@@ -4432,7 +4432,7 @@ def cliq_user_status(
         None, "--network", help="Cliq network slug (e.g. happydistrouklimited)."
     ),
 ) -> None:
-    """List Cliq org-admin user-status values."""
+    """List Cliq organization user-status values."""
     cfg = _cfg()
     email = _require_account(cfg)
     client = _get_cliq_client(cfg, email, network=network)
@@ -4489,7 +4489,7 @@ def cliq_userfields(
         None, "--network", help="Cliq network slug (e.g. happydistrouklimited)."
     ),
 ) -> None:
-    """List Cliq org-admin userfields."""
+    """List Cliq organization user fields."""
     cfg = _cfg()
     email = _require_account(cfg)
     client = _get_cliq_client(cfg, email, network=network)
@@ -4751,7 +4751,7 @@ def cliq_databases(
         None, "--network", help="Cliq network slug (e.g. happydistrouklimited)."
     ),
 ) -> None:
-    """List Cliq platform-extension databases."""
+    """List Cliq platform databases."""
     cfg = _cfg()
     email = _require_account(cfg)
     client = _get_cliq_client(cfg, email, network=network)
@@ -4812,7 +4812,7 @@ def cliq_widgets(
         None, "--network", help="Cliq network slug (e.g. happydistrouklimited)."
     ),
 ) -> None:
-    """List Cliq platform-extension widgets."""
+    """List Cliq platform widgets."""
     cfg = _cfg()
     email = _require_account(cfg)
     client = _get_cliq_client(cfg, email, network=network)

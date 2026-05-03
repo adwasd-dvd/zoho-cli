@@ -1,7 +1,7 @@
 module: Platform
-updated_at: "2026-05-03T22:38:24Z"
+updated_at: "2026-05-03T23:15:35Z"
 status: in_progress
 execution_mode: turbo_20x
 throughput_policy_ref: ops/state/execution_policy.yml
 blockers: []
-next_small_step: Platform-208 focused Cliq help-taxonomy cleanup at 2026-05-03T22:38:24Z removed internal governance wording from `app-permissions`, `app-installs`, `app-commands`, and `app-command-get` help descriptions (`./.venv/bin/python -m pytest -q tests/test_cli.py::test_cliq_help_hides_internal_slice_labels tests/test_cli.py::test_cliq_help_hides_scaffold_wording` -> `17 passed in 1.64s`); keep RC checkpoint refresh queued unless blocker posture changes.
+next_small_step: Platform-208 focused Cliq help-taxonomy cleanup at 2026-05-03T23:15:35Z removed internal taxonomy wording from `teams`, `departments`, `roles`, `designations`, `user-status`, `userfields`, `databases`, and `widgets` help descriptions (`./.venv/bin/python -m pytest -q tests/test_cli.py::test_cliq_teams_help_hides_internal_slice_labels tests/test_cli.py::test_cliq_help_hides_internal_slice_labels` -> `17 passed in 1.66s`); keep RC checkpoint refresh queued unless blocker posture changes.

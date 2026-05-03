@@ -134,7 +134,7 @@ def test_cliq_teams_help_hides_internal_slice_labels() -> None:
     result = runner.invoke(app, ["cliq", "teams", "--help"])
 
     assert result.exit_code == 0, result.output
-    assert "List Cliq org-admin teams." in result.output
+    assert "List Cliq organization teams." in result.output
     assert "phase-1 slice" not in result.output
 
 
@@ -144,8 +144,8 @@ def test_cliq_teams_help_hides_internal_slice_labels() -> None:
         (["events"], "List Cliq collaboration events."),
         (["reminders"], "List Cliq collaboration reminders."),
         (["meetings"], "List Cliq collaboration calls and meetings."),
-        (["databases"], "List Cliq platform-extension databases."),
-        (["widgets"], "List Cliq platform-extension widgets."),
+        (["databases"], "List Cliq platform databases."),
+        (["widgets"], "List Cliq platform widgets."),
         (["map-tickers"], "List Cliq platform map tickers."),
         (["custom-domains"], "List Cliq platform custom domains."),
         (["custom-emails"], "List Cliq platform custom emails."),
@@ -179,6 +179,8 @@ def test_cliq_help_hides_internal_slice_labels(
     assert result.exit_code == 0, result.output
     assert expected in result.output
     assert "slice" not in result.output
+    assert "org-admin" not in result.output
+    assert "platform-extension" not in result.output
 
 
 def test_cliq_help_hides_scaffold_wording() -> None:

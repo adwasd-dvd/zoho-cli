@@ -3,12 +3,12 @@ next_version: 0.2.1
 release_candidate: false
 last_release_tag: v0.1.9
 current_train: ai-employee-v1
-assessed_at: '2026-05-03T20:21:00Z'
+assessed_at: '2026-05-03T22:06:51Z'
 current_milestone: platform-208-cli-information-architecture
 current_milestone_complete: false
 missing_requirements:
   - 'Blocker-bug gate is still open: `ops/state/bug_backlog.yml` currently carries 29 blocker entries (repeated cliq-193 `appCommandsError: empty_output` / `error: not_supported` evidence), so `release_gate.blocker_bugs_cleared` remains false.'
-  - 'Current focus milestone is still incomplete: `current_milestone_complete: false` and `ops/state/active_task.yml` remains `id: platform-208`, `stage: in_progress`, `updated_at: 2026-05-03T20:21:00Z`.'
+  - 'Current focus milestone is still incomplete: `current_milestone_complete: false` and `ops/state/active_task.yml` remains `id: platform-208`, `stage: in_progress`, `updated_at: 2026-05-03T22:06:51Z`.'
   - 'Version bump remains pending under deferred RC posture (`release_candidate: false`, `release_gate.version_bumped: false`).'
 rc_package:
   gate_contract_ready: true
@@ -34,7 +34,7 @@ release_candidate_decision:
 integration_pass_skip_mapping:
   - area: cliq-watch-context-watch-act-bridge
     status: pass
-    evidence: 'ops/state/test_status.yml now reports `last_result: passing` at `last_run_at=2026-05-03T20:21:00Z`; latest focused cliq-194 blocker-gate revalidation stayed green with no behavior change while RC defer posture remains active.'
+    evidence: 'ops/state/test_status.yml now reports `last_result: passing` at `last_run_at=2026-05-03T22:06:51Z`; latest platform-208 medium-scope integration rerun stayed green with no behavior change while RC defer posture remains active.'
   - area: cliq-unsupported-or-scope-gated-live-endpoints
     status: skip_deferred
     policy: capability_gated_3_strike

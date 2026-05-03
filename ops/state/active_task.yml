@@ -4,7 +4,7 @@ module: platform
 stage: in_progress
 status: in_progress
 owner: coder
-updated_at: '2026-05-03T09:05:28Z'
+updated_at: '2026-05-03T09:56:02Z'
 execution_mode: turbo_20x
 throughput_policy_ref: ops/state/execution_policy.yml
 success_criteria:
@@ -12,4 +12,4 @@ success_criteria:
 - keep module-first command taxonomy consistent across level-2/level-3 help surfaces
 - leave a concise operator-facing IA contract that matches current module order and release state
 next_if_done: queue RC checkpoint refresh packet with updated operator IA references.
-next_step: "Focused cliq-194 blocker-gate revalidation at 2026-05-03T09:05:28Z reran `./.venv/bin/python -m pytest -q tests/test_cli.py::test_cliq_watch_act_read_ack_latest_falls_back_when_read_ack_is_unsupported` (`1 passed in 0.14s`) with no behavior change; keep platform-208 in progress and preserve RC defer posture unless blocker-bug gate changes."
+next_step: "Focused platform-208 Cliq help-wording normalization at 2026-05-03T09:56:02Z removed internal `app-governance` wording from `zoho cliq --help` command descriptions for apps/app-get/app-permission-get/app-install-get and kept focused guards green (`./.venv/bin/python -m pytest -q tests/test_cli.py::test_cliq_teams_help_hides_internal_slice_labels tests/test_cli.py::test_cliq_help_hides_scaffold_wording` -> `2 passed in 0.14s`); next gate is a focused cliq-194 blocker posture revalidation unless new Cliq blocker evidence appears."

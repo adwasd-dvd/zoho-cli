@@ -12,6 +12,7 @@
 - No publish, version bump, or tagging actions were performed.
 
 ### Added
+- Landed a focused platform-208 Cliq help-wording normalization slice: replaced internal `app-governance` wording in operator-facing `zoho cliq --help` descriptions for `apps`, `app-get`, `app-permission-get`, and `app-install-get`, and extended focused CLI help guards to keep that internal label out of top-level Cliq help output.
 - Accepted cliq-194 read-ack endpoint limitation as capability-gated deferred (non-blocking), marked cliq-194 lane complete, and shifted active execution to platform-208 CLI information-architecture cleanup.
 - Landed the first platform-208 IA cleanup slice: retired legacy root mail support aliases (`zoho attachment ...`, `zoho folders ...`, `zoho labels ...`) from default root registration, moved coverage to module-first paths (`zoho mail attachment|folders|labels ...`), and updated operator-facing CLI hint text accordingly.
 - Landed an additional platform-208 mail IA refinement slice: expanded retired-root-alias coverage to assert all three legacy root commands (`attachment`, `folders`, `labels`) are unavailable at root, and normalized mail help wording to explicit module-first paths (`zoho mail attachment|folders|labels`).

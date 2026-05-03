@@ -1,5 +1,5 @@
 project: zoho-cli
-updated_at: '2026-05-03T09:05:28Z'
+updated_at: '2026-05-03T09:56:02Z'
 status: v1-architecture-and-queue-optimization
 throughput_mode: turbo_20x
 throughput_policy_ref: ops/state/execution_policy.yml
@@ -33,8 +33,9 @@ primary_blockers:
   returns `not_supported`)
 - calls/meetings endpoints are unsupported on current token/network (`cliq meetings`
   now returns `not_supported` in focused live verification)
-next_step: "Focused cliq-194 blocker-gate revalidation at 2026-05-03T09:05:28Z reran `./.venv/bin/python -m pytest -q tests/test_cli.py::test_cliq_watch_act_read_ack_latest_falls_back_when_read_ack_is_unsupported` (`1 passed in 0.14s`) with no behavior change; keep platform-208 in progress and preserve defer posture until blocker-bug gate changes."
+next_step: "Focused cliq-194 blocker-gate revalidation after the 2026-05-03T09:56:02Z Cliq help-wording normalization slice (`app-governance` removed from operator-facing Cliq help for apps/app-get/app-permission-get/app-install-get; focused tests passed)."
 additional_info:
+- "2026-05-03 platform-208 focused Cliq help-wording normalization at 2026-05-03T09:56:02Z removed internal `app-governance` wording from operator-facing `zoho cliq --help` command descriptions for `apps`, `app-get`, `app-permission-get`, and `app-install-get`, and focused coverage stayed green (`./.venv/bin/python -m pytest -q tests/test_cli.py::test_cliq_teams_help_hides_internal_slice_labels tests/test_cli.py::test_cliq_help_hides_scaffold_wording` -> `2 passed in 0.14s`)."
 - "2026-05-03 focused cliq-194 blocker-gate rerun at 2026-05-03T09:05:28Z stayed green with no behavior change (`./.venv/bin/python -m pytest -q tests/test_cli.py::test_cliq_watch_act_read_ack_latest_falls_back_when_read_ack_is_unsupported` -> `1 passed in 0.14s`), so RC defer posture remains unchanged and platform-208 stays in progress."
 - "2026-05-03 focused cliq-194 blocker-gate rerun at 2026-05-03T08:48:54Z stayed green with no behavior change (`./.venv/bin/python -m pytest -q tests/test_cli.py::test_cliq_watch_act_read_ack_latest_falls_back_when_read_ack_is_unsupported` -> `1 passed in 0.15s`), so RC defer posture remains unchanged and platform-208 stays in progress."
 - "2026-05-03 focused cliq-194 blocker-gate rerun at 2026-05-03T08:46:23Z stayed green with no behavior change (`./.venv/bin/python -m pytest -q tests/test_cli.py::test_cliq_watch_act_read_ack_latest_falls_back_when_read_ack_is_unsupported` -> `1 passed in 0.14s`), so RC defer posture remains unchanged and platform-208 stays in progress."

@@ -1,7 +1,7 @@
 module: Platform
-updated_at: "2026-05-03T09:05:28Z"
+updated_at: "2026-05-03T09:56:02Z"
 status: in_progress
 execution_mode: turbo_20x
 throughput_policy_ref: ops/state/execution_policy.yml
 blockers: []
-next_small_step: Focused cliq-194 blocker-gate revalidation at 2026-05-03T09:05:28Z reran `./.venv/bin/python -m pytest -q tests/test_cli.py::test_cliq_watch_act_read_ack_latest_falls_back_when_read_ack_is_unsupported` (`1 passed in 0.14s`) with no behavior change; keep platform-208 in progress and preserve RC defer posture unless blocker-bug gate changes.
+next_small_step: Focused cliq-194 blocker-gate revalidation after the 2026-05-03T09:56:02Z Cliq help-wording normalization slice (apps/app-get/app-permission-get/app-install-get descriptions now avoid internal `app-governance` wording; `./.venv/bin/python -m pytest -q tests/test_cli.py::test_cliq_teams_help_hides_internal_slice_labels tests/test_cli.py::test_cliq_help_hides_scaffold_wording` -> `2 passed in 0.14s`).

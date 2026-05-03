@@ -149,20 +149,20 @@ def test_cliq_teams_help_hides_internal_slice_labels() -> None:
         (["map-tickers"], "List Cliq platform map tickers."),
         (["custom-domains"], "List Cliq platform custom domains."),
         (["custom-emails"], "List Cliq platform custom emails."),
-        (["apps"], "List Cliq app-governance apps."),
-        (["app-get", "APP_TEST"], "Get one Cliq app-governance app by id."),
+        (["apps"], "List Cliq apps."),
+        (["app-get", "APP_TEST"], "Get one Cliq app by id."),
         (
             ["app-permissions", "APP_TEST"],
             "List one app's governance permissions and scopes.",
         ),
         (
             ["app-permission-get", "APP_TEST", "PERM_TEST"],
-            "Get one app-governance permission by id.",
+            "Get one app permission by id.",
         ),
         (["app-installs", "APP_TEST"], "List one app's governance installs."),
         (
             ["app-install-get", "APP_TEST", "INSTALL_TEST"],
-            "Get one app-governance install by id.",
+            "Get one app install by id.",
         ),
         (["app-commands", "APP_TEST"], "List one app's governance commands."),
         (
@@ -187,6 +187,7 @@ def test_cliq_help_hides_scaffold_wording() -> None:
     assert result.exit_code == 0, result.output
     assert "Show Cliq auth readiness and inferred API" in result.output
     assert "scaffold" not in result.output
+    assert "app-governance" not in result.output
 
 
 def test_crm_help_hides_scaffold_wording() -> None:

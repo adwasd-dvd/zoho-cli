@@ -5054,7 +5054,7 @@ def cliq_apps(
         None, "--network", help="Cliq network slug (e.g. happydistrouklimited)."
     ),
 ) -> None:
-    """List Cliq app-governance apps."""
+    """List Cliq apps."""
 
     def _unwrap_app_row(row: dict[str, Any]) -> dict[str, Any]:
         current = row
@@ -5249,7 +5249,7 @@ def cliq_app_get(
         None, "--network", help="Cliq network slug (e.g. happydistrouklimited)."
     ),
 ) -> None:
-    """Get one Cliq app-governance app by id."""
+    """Get one Cliq app by id."""
 
     def _unwrap_app_row(row: dict[str, Any]) -> dict[str, Any]:
         current = row
@@ -5884,7 +5884,7 @@ def cliq_app_permission_get(
         None, "--network", help="Cliq network slug (e.g. happydistrouklimited)."
     ),
 ) -> None:
-    """Get one app-governance permission by id."""
+    """Get one app permission by id."""
 
     def _extract_permission_row(payload: Any) -> dict[str, Any]:
         def _unwrap_permission_row(row: dict[str, Any]) -> dict[str, Any]:
@@ -6349,7 +6349,7 @@ def cliq_app_install_get(
         None, "--network", help="Cliq network slug (e.g. happydistrouklimited)."
     ),
 ) -> None:
-    """Get one app-governance install by id."""
+    """Get one app install by id."""
 
     def _extract_install_row(payload: Any) -> dict[str, Any]:
         def _unwrap_install_row(row: dict[str, Any]) -> dict[str, Any]:

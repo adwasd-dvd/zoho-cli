@@ -1,9 +1,10 @@
 module: Cliq
-updated_at: '2026-05-03T19:19:50Z'
+updated_at: '2026-05-03T19:25:13Z'
 status: completed
 execution_mode: turbo_20x
 throughput_policy_ref: ops/state/execution_policy.yml
 blockers:
+- "focused cliq-194 blocker-gate posture revalidation at 2026-05-03T19:25:13Z reran the smallest regression for capability-gated read-ack fallback (`./.venv/bin/python -m pytest -q tests/test_cli.py::test_cliq_watch_act_read_ack_latest_falls_back_when_read_ack_is_unsupported` -> `1 passed in 0.14s`) with no behavior change; deferred RC posture remains intact and next step stays RC checkpoint refresh unless blocker-bug gate changes."
 - "focused cliq-194 blocker-gate posture revalidation at 2026-05-03T19:19:50Z reran the smallest regression for capability-gated read-ack fallback (`./.venv/bin/python -m pytest -q tests/test_cli.py::test_cliq_watch_act_read_ack_latest_falls_back_when_read_ack_is_unsupported` -> `1 passed in 0.16s`) with no behavior change; deferred RC posture remains intact and next step stays RC checkpoint refresh unless blocker-bug gate changes."
 - "focused cliq-194 blocker-gate posture revalidation at 2026-05-03T19:00:11Z reran the smallest regression for capability-gated read-ack fallback (`./.venv/bin/python -m pytest -q tests/test_cli.py::test_cliq_watch_act_read_ack_latest_falls_back_when_read_ack_is_unsupported` -> `1 passed in 0.15s`) with no behavior change; deferred RC posture remains intact and next step stays RC checkpoint refresh unless blocker-bug gate changes."
 - "focused cliq-194 blocker-gate posture revalidation at 2026-05-03T10:39:17Z reran the smallest regression for capability-gated read-ack fallback (`./.venv/bin/python -m pytest -q tests/test_cli.py::test_cliq_watch_act_read_ack_latest_falls_back_when_read_ack_is_unsupported` -> `1 passed in 0.16s`) with no behavior change; deferred RC posture remains intact and next step stays RC checkpoint refresh unless blocker-bug gate changes."

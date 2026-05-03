@@ -138,6 +138,15 @@ def test_cliq_teams_help_hides_internal_slice_labels() -> None:
     assert "phase-1 slice" not in result.output
 
 
+def test_crm_help_hides_scaffold_wording() -> None:
+    result = runner.invoke(app, ["crm", "--help"])
+
+    assert result.exit_code == 0, result.output
+    assert "Show CRM auth readiness and inferred API endpoint." in result.output
+    assert "List CRM modules available to the account." in result.output
+    assert "scaffold" not in result.output
+
+
 def test_login_no_browser_defaults_to_localhost_redirect_when_unset(
     mock_config: Path, monkeypatch: pytest.MonkeyPatch
 ) -> None:

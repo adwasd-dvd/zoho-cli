@@ -1,7 +1,7 @@
 module: Platform
-updated_at: "2026-05-03T02:46:00Z"
+updated_at: "2026-05-03T03:04:37Z"
 status: in_progress
 execution_mode: turbo_20x
 throughput_policy_ref: ops/state/execution_policy.yml
 blockers: []
-next_small_step: Platform-208 mail IA refinement slice is now in (explicit `zoho mail ...` subgroup help wording + full retired-root-alias coverage for attachment/folders/labels); proceed with the remaining CRM-level wording drift checks, then rerun IA-focused integration tests.
+next_small_step: Platform-208 CRM wording cleanup is now in (removed scaffold wording from `zoho crm --help` status/modules command descriptions and added focused regression coverage); rerun IA-focused integration tests next.

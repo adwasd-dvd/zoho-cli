@@ -13116,7 +13116,7 @@ def crm_status(
         False, "--check-auth", help="Verify OAuth refresh for the selected account."
     ),
 ) -> None:
-    """Show CRM scaffold readiness and inferred API endpoint."""
+    """Show CRM auth readiness and inferred API endpoint."""
     cfg = _cfg()
     email = _S.account or _config.default_account(cfg)
     account_cfg = cfg.get("accounts", {}).get(email, {}) if email else {}
@@ -13166,7 +13166,7 @@ def crm_modules(
     limit: int = typer.Option(50, "--limit", "-n", help="Max modules to return."),
     page: int = typer.Option(1, "--page", help="Result page number."),
 ) -> None:
-    """List CRM modules (read-only scaffold endpoint)."""
+    """List CRM modules available to the account."""
     cfg = _cfg()
     email = _require_account(cfg)
     client = _get_crm_client(cfg, email)

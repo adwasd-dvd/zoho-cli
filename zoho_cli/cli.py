@@ -4549,7 +4549,7 @@ def cliq_events(
         None, "--network", help="Cliq network slug (e.g. happydistrouklimited)."
     ),
 ) -> None:
-    """List Cliq collaboration events (cliq-191 first slice)."""
+    """List Cliq collaboration events."""
     cfg = _cfg()
     email = _require_account(cfg)
     client = _get_cliq_client(cfg, email, network=network)
@@ -4612,7 +4612,7 @@ def cliq_reminders(
         None, "--network", help="Cliq network slug (e.g. happydistrouklimited)."
     ),
 ) -> None:
-    """List Cliq collaboration reminders (cliq-191 second slice)."""
+    """List Cliq collaboration reminders."""
     cfg = _cfg()
     email = _require_account(cfg)
     client = _get_cliq_client(cfg, email, network=network)
@@ -4677,7 +4677,7 @@ def cliq_meetings(
         None, "--network", help="Cliq network slug (e.g. happydistrouklimited)."
     ),
 ) -> None:
-    """List Cliq collaboration calls/meetings (cliq-191 third slice)."""
+    """List Cliq collaboration calls and meetings."""
     cfg = _cfg()
     email = _require_account(cfg)
     client = _get_cliq_client(cfg, email, network=network)
@@ -4751,7 +4751,7 @@ def cliq_databases(
         None, "--network", help="Cliq network slug (e.g. happydistrouklimited)."
     ),
 ) -> None:
-    """List Cliq platform-extension databases (cliq-192 first slice)."""
+    """List Cliq platform-extension databases."""
     cfg = _cfg()
     email = _require_account(cfg)
     client = _get_cliq_client(cfg, email, network=network)
@@ -4812,7 +4812,7 @@ def cliq_widgets(
         None, "--network", help="Cliq network slug (e.g. happydistrouklimited)."
     ),
 ) -> None:
-    """List Cliq platform-extension widgets (cliq-192 second slice)."""
+    """List Cliq platform-extension widgets."""
     cfg = _cfg()
     email = _require_account(cfg)
     client = _get_cliq_client(cfg, email, network=network)
@@ -4872,7 +4872,7 @@ def cliq_map_tickers(
         None, "--network", help="Cliq network slug (e.g. happydistrouklimited)."
     ),
 ) -> None:
-    """List Cliq platform map tickers (cliq-192 third slice)."""
+    """List Cliq platform map tickers."""
     cfg = _cfg()
     email = _require_account(cfg)
     client = _get_cliq_client(cfg, email, network=network)
@@ -4941,7 +4941,7 @@ def cliq_custom_domains(
         None, "--network", help="Cliq network slug (e.g. happydistrouklimited)."
     ),
 ) -> None:
-    """List Cliq platform custom domains (cliq-192 fourth slice)."""
+    """List Cliq platform custom domains."""
     cfg = _cfg()
     email = _require_account(cfg)
     client = _get_cliq_client(cfg, email, network=network)
@@ -4994,7 +4994,7 @@ def cliq_custom_emails(
         None, "--network", help="Cliq network slug (e.g. happydistrouklimited)."
     ),
 ) -> None:
-    """List Cliq platform custom emails (cliq-192 fifth slice)."""
+    """List Cliq platform custom emails."""
     cfg = _cfg()
     email = _require_account(cfg)
     client = _get_cliq_client(cfg, email, network=network)
@@ -5054,7 +5054,7 @@ def cliq_apps(
         None, "--network", help="Cliq network slug (e.g. happydistrouklimited)."
     ),
 ) -> None:
-    """List Cliq app-governance apps (cliq-193 first slice)."""
+    """List Cliq app-governance apps."""
 
     def _unwrap_app_row(row: dict[str, Any]) -> dict[str, Any]:
         current = row
@@ -5249,7 +5249,7 @@ def cliq_app_get(
         None, "--network", help="Cliq network slug (e.g. happydistrouklimited)."
     ),
 ) -> None:
-    """Get one Cliq app-governance app by id (cliq-193 second slice)."""
+    """Get one Cliq app-governance app by id."""
 
     def _unwrap_app_row(row: dict[str, Any]) -> dict[str, Any]:
         current = row
@@ -5671,7 +5671,7 @@ def cliq_app_permissions(
         None, "--network", help="Cliq network slug (e.g. happydistrouklimited)."
     ),
 ) -> None:
-    """List one app's governance permissions/scopes (cliq-193 third slice)."""
+    """List one app's governance permissions and scopes."""
 
     def _unwrap_permission_row(row: dict[str, Any]) -> dict[str, Any]:
         current = row
@@ -5884,7 +5884,7 @@ def cliq_app_permission_get(
         None, "--network", help="Cliq network slug (e.g. happydistrouklimited)."
     ),
 ) -> None:
-    """Get one app-governance permission by id (cliq-193 eighth slice)."""
+    """Get one app-governance permission by id."""
 
     def _extract_permission_row(payload: Any) -> dict[str, Any]:
         def _unwrap_permission_row(row: dict[str, Any]) -> dict[str, Any]:
@@ -6090,7 +6090,7 @@ def cliq_app_installs(
         None, "--network", help="Cliq network slug (e.g. happydistrouklimited)."
     ),
 ) -> None:
-    """List one app's governance installs (cliq-193 fourth slice)."""
+    """List one app's governance installs."""
 
     def _unwrap_install_row(row: dict[str, Any]) -> dict[str, Any]:
         current = row
@@ -6349,7 +6349,7 @@ def cliq_app_install_get(
         None, "--network", help="Cliq network slug (e.g. happydistrouklimited)."
     ),
 ) -> None:
-    """Get one app-governance install by id (cliq-193 seventh slice)."""
+    """Get one app-governance install by id."""
 
     def _extract_install_row(payload: Any) -> dict[str, Any]:
         def _unwrap_install_row(row: dict[str, Any]) -> dict[str, Any]:
@@ -7105,7 +7105,7 @@ def cliq_app_commands(
         None, "--network", help="Cliq network slug (e.g. happydistrouklimited)."
     ),
 ) -> None:
-    """List one app's governance commands (cliq-193 fifth slice)."""
+    """List one app's governance commands."""
 
     def _unwrap_command_row(row: dict[str, Any]) -> dict[str, Any]:
         current = row
@@ -8052,7 +8052,7 @@ def cliq_app_command_get(
         None, "--network", help="Cliq network slug (e.g. happydistrouklimited)."
     ),
 ) -> None:
-    """Get one app's governance command by id (cliq-193 sixth slice)."""
+    """Get one app's governance command by id."""
 
     def _extract_command_row(payload: Any) -> dict[str, Any]:
         command_hints = (

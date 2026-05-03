@@ -1,7 +1,7 @@
 module: Platform
-updated_at: "2026-05-03T07:05:57Z"
+updated_at: "2026-05-03T07:34:25Z"
 status: in_progress
 execution_mode: turbo_20x
 throughput_policy_ref: ops/state/execution_policy.yml
 blockers: []
-next_small_step: Focused cliq-194 blocker-gate posture revalidation at 2026-05-03T07:05:57Z stayed green with no behavior change; keep platform-208 in progress until blocker-bug gate posture changes.
+next_small_step: Focused cliq-194 blocker-gate revalidation at 2026-05-03T07:34:25Z stayed green with no behavior change (`tests/test_cli.py::test_cliq_teams_help_hides_internal_slice_labels` + `tests/test_cli.py::test_cliq_help_hides_internal_slice_labels`); keep platform-208 in progress and preserve RC defer posture unless blocker-bug gate changes.

@@ -138,6 +138,49 @@ def test_cliq_teams_help_hides_internal_slice_labels() -> None:
     assert "phase-1 slice" not in result.output
 
 
+@pytest.mark.parametrize(
+    "subcommand,expected",
+    [
+        (["events"], "List Cliq collaboration events."),
+        (["reminders"], "List Cliq collaboration reminders."),
+        (["meetings"], "List Cliq collaboration calls and meetings."),
+        (["databases"], "List Cliq platform-extension databases."),
+        (["widgets"], "List Cliq platform-extension widgets."),
+        (["map-tickers"], "List Cliq platform map tickers."),
+        (["custom-domains"], "List Cliq platform custom domains."),
+        (["custom-emails"], "List Cliq platform custom emails."),
+        (["apps"], "List Cliq app-governance apps."),
+        (["app-get", "APP_TEST"], "Get one Cliq app-governance app by id."),
+        (
+            ["app-permissions", "APP_TEST"],
+            "List one app's governance permissions and scopes.",
+        ),
+        (
+            ["app-permission-get", "APP_TEST", "PERM_TEST"],
+            "Get one app-governance permission by id.",
+        ),
+        (["app-installs", "APP_TEST"], "List one app's governance installs."),
+        (
+            ["app-install-get", "APP_TEST", "INSTALL_TEST"],
+            "Get one app-governance install by id.",
+        ),
+        (["app-commands", "APP_TEST"], "List one app's governance commands."),
+        (
+            ["app-command-get", "APP_TEST", "CMD_TEST"],
+            "Get one app's governance command by id.",
+        ),
+    ],
+)
+def test_cliq_help_hides_internal_slice_labels(
+    subcommand: list[str], expected: str
+) -> None:
+    result = runner.invoke(app, ["cliq", *subcommand, "--help"])
+
+    assert result.exit_code == 0, result.output
+    assert expected in result.output
+    assert "slice" not in result.output
+
+
 def test_crm_help_hides_scaffold_wording() -> None:
     result = runner.invoke(app, ["crm", "--help"])
 

@@ -3,12 +3,13 @@ next_version: 0.2.1
 release_candidate: false
 last_release_tag: v0.1.9
 current_train: ai-employee-v1
-assessed_at: '2026-04-28T23:42:49Z'
+assessed_at: '2026-05-03T03:53:21Z'
 current_milestone: platform-208-cli-information-architecture
 current_milestone_complete: false
 missing_requirements:
-  - 'Release-candidate posture remains deferred after RC checkpoint refresh because external blocker posture is still active (`release_gate.blocker_bugs_cleared: false`), even though latest cliq-194 live evidence is continuity-safe (`status=ok`, `fallbackUsed=true`, `readAckSupported=false`, `reason=read_ack_not_supported`). This is now treated as capability-gated deferred, not an execution blocker for forward platform work.'
-  - 'Version bump remains pending (`release_gate.version_bumped: false`) by explicit blocker-gate signoff under the current deferred RC posture; focused fallback regression stayed green at 2026-04-28T22:24:40Z (`./.venv/bin/python -m pytest -q tests/test_cli.py::test_cliq_watch_act_read_ack_latest_falls_back_when_read_ack_is_unsupported` -> `1 passed in 0.15s`).'
+  - 'Blocker-bug gate is still open: `ops/state/bug_backlog.yml` currently carries 29 blocker entries (repeated cliq-193 `appCommandsError: empty_output` / `error: not_supported` evidence), so `release_gate.blocker_bugs_cleared` remains false.'
+  - 'Current focus milestone is still incomplete: `current_milestone_complete: false` and `ops/state/active_task.yml` remains `id: platform-208`, `stage: in_progress`, `updated_at: 2026-05-03T03:53:21Z`.'
+  - 'Version bump remains pending under deferred RC posture (`release_candidate: false`, `release_gate.version_bumped: false`).'
 rc_package:
   gate_contract_ready: true
   interop_contract_ready: true
@@ -17,23 +18,23 @@ rc_package:
   quickstart_ready: true
   checklist_ready: true
 release_candidate_decision:
-  decided_at: '2026-04-28T21:18:00Z'
+  decided_at: '2026-05-03T02:29:00Z'
   decision: defer
-  reason: RC checkpoint refreshed with latest cliq-194 fallback evidence; keep defer because external blocker picture remains active and `release_gate.blocker_bugs_cleared` is still false.
+  reason: Release-readiness reassessed against current gates; blockers are still open and the current milestone is still in progress, so RC remains deferred.
   revisit_after:
     - platform-208
   checkpoint:
     checklist: docs/releases/AI_EMPLOYEE_V1_RC_CHECKLIST.md
     owner: coder
-    next_review_after: '2026-04-30T00:00:00Z'
+    next_review_after: '2026-05-05T00:00:00Z'
   blocker_gate_signoff:
-    signed_off_at: '2026-04-28T22:24:40Z'
+    signed_off_at: '2026-05-03T02:29:00Z'
     decision: defer_version_bump
-    rationale: keep `release_candidate=false` and `version_bumped=false` until blocker posture changes or the next RC checkpoint window is reached
+    rationale: keep `release_candidate=false` and `version_bumped=false` until blocker posture changes and the milestone is complete.
 integration_pass_skip_mapping:
   - area: cliq-watch-context-watch-act-bridge
     status: pass
-    evidence: 'ops/state/test_status.yml last_run_at=2026-04-28T22:24:40Z; focused cliq-194 blocker-gate fallback check stayed green (`tests/test_cli.py::test_cliq_watch_act_read_ack_latest_falls_back_when_read_ack_is_unsupported` -> `1 passed in 0.15s`) after the latest medium boundary pass.'
+    evidence: 'ops/state/test_status.yml now reports `last_result: passing` at `last_run_at=2026-05-03T03:53:21Z`, with platform-208 integration-loop medium-scope rerun green across registry/bridge/watch-action boundaries and help smokes.'
   - area: cliq-unsupported-or-scope-gated-live-endpoints
     status: skip_deferred
     policy: capability_gated_3_strike

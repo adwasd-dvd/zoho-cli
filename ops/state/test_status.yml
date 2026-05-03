@@ -1,10 +1,15 @@
-last_run_at: "2026-04-29T00:36:44Z"
+last_run_at: "2026-05-03T02:40:36Z"
 last_result: passing
-current_focus: platform-208-cliq-help-wording-normalization-20260429T003644Z
+current_focus: platform-208-integration-boundary-rerun-20260503T024036Z
 suites:
   unit:
     status: passing
     notes:
+      - "platform-208 medium-scope integration rerun at 2026-05-03T02:40:36Z"
+      - "no behavior change; module-first help + bridge boundary checks stayed green while CRM-level wording drift remains the next active slice"
+      - "./.venv/bin/python -m pytest -q tests/test_registry.py tests/test_membrane_bridge.py -> 489 passed in 8.68s"
+      - "./.venv/bin/python -m pytest -q tests/test_cli.py -k 'root_help_is_module_first_and_hides_mail_support_aliases or mail_help_includes_support_subgroups_under_mail or legacy_mail_support_root_aliases_are_retired or cliq_teams_help_hides_internal_slice_labels or cliq_bridge_run or crm_bridge_run or mail_folders_list or attachment_content_with_filename or attachment_content_missing_filename_returns_not_found or no_account_id_exits' -> 8 passed, 830 deselected in 0.31s"
+      - "./.venv/bin/python -m zoho_cli.cli --help >/dev/null && ./.venv/bin/python -m zoho_cli.cli mail --help >/dev/null && ./.venv/bin/python -m zoho_cli.cli cliq --help >/dev/null && ./.venv/bin/python -m zoho_cli.cli crm --help >/dev/null && ./.venv/bin/python -m zoho_cli.cli config --help >/dev/null && echo HELP_SMOKE_OK -> HELP_SMOKE_OK"
       - "platform-208 focused cliq help-wording normalization verification at 2026-04-29T00:36:44Z"
       - "behavior change: removed internal rollout labels from Cliq org-admin level-2 help descriptions and kept module-first IA assertions green"
       - "./.venv/bin/python -m pytest -q tests/test_cli.py::test_cliq_teams_help_hides_internal_slice_labels tests/test_cli.py::test_root_help_is_module_first_and_hides_mail_support_aliases tests/test_cli.py::test_mail_help_includes_support_subgroups_under_mail tests/test_cli.py::test_legacy_mail_support_root_aliases_are_retired -> 4 passed in 0.18s"

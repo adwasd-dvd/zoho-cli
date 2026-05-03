@@ -1,7 +1,7 @@
 module: Platform
-updated_at: "2026-04-29T00:36:44Z"
+updated_at: "2026-05-03T02:40:36Z"
 status: in_progress
 execution_mode: turbo_20x
 throughput_policy_ref: ops/state/execution_policy.yml
 blockers: []
-next_small_step: Mail remains complete and a focused Cliq wording-normalization slice is now landed (internal cliq-190 rollout labels removed from level-2 help descriptions with focused help regressions green); continue with remaining platform-208 CRM-level wording drift checks, then rerun IA-focused tests.
+next_small_step: Platform-208 medium-scope integration rerun stayed green with no behavior change; proceed with the remaining CRM-level wording drift checks, then rerun IA-focused integration tests.

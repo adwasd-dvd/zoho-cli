@@ -5671,7 +5671,7 @@ def cliq_app_permissions(
         None, "--network", help="Cliq network slug (e.g. happydistrouklimited)."
     ),
 ) -> None:
-    """List one app's governance permissions and scopes."""
+    """List one app's permissions and scopes."""
 
     def _unwrap_permission_row(row: dict[str, Any]) -> dict[str, Any]:
         current = row
@@ -6090,7 +6090,7 @@ def cliq_app_installs(
         None, "--network", help="Cliq network slug (e.g. happydistrouklimited)."
     ),
 ) -> None:
-    """List one app's governance installs."""
+    """List one app's installs."""
 
     def _unwrap_install_row(row: dict[str, Any]) -> dict[str, Any]:
         current = row
@@ -7105,7 +7105,7 @@ def cliq_app_commands(
         None, "--network", help="Cliq network slug (e.g. happydistrouklimited)."
     ),
 ) -> None:
-    """List one app's governance commands."""
+    """List one app's commands."""
 
     def _unwrap_command_row(row: dict[str, Any]) -> dict[str, Any]:
         current = row
@@ -8052,7 +8052,7 @@ def cliq_app_command_get(
         None, "--network", help="Cliq network slug (e.g. happydistrouklimited)."
     ),
 ) -> None:
-    """Get one app's governance command by id."""
+    """Get one app command by id."""
 
     def _extract_command_row(payload: Any) -> dict[str, Any]:
         command_hints = (

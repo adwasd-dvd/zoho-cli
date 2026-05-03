@@ -1,10 +1,13 @@
-last_run_at: "2026-05-03T22:06:51Z"
+last_run_at: "2026-05-03T22:38:24Z"
 last_result: passing
-current_focus: platform-208-integration-loop-medium-scope-rerun-20260503T220651Z
+current_focus: platform-208-cliq-help-taxonomy-governance-wording-cleanup-20260503T223824Z
 suites:
   unit:
     status: passing
     notes:
+      - "platform-208 focused Cliq help-taxonomy cleanup at 2026-05-03T22:38:24Z"
+      - "behavior change: removed internal governance wording from operator-facing app-permissions/app-installs/app-commands/app-command-get help descriptions"
+      - "./.venv/bin/python -m pytest -q tests/test_cli.py::test_cliq_help_hides_internal_slice_labels tests/test_cli.py::test_cliq_help_hides_scaffold_wording -> 17 passed in 1.64s"
       - "platform-208 integration-loop medium-scope rerun at 2026-05-03T22:06:51Z"
       - "no behavior change; module-first help + bridge + watch-action boundary checks remained green"
       - "./.venv/bin/python -m pytest -q tests/test_registry.py tests/test_membrane_bridge.py -> 489 passed in 8.40s"

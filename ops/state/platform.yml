@@ -1,7 +1,7 @@
 module: Platform
-updated_at: "2026-05-03T20:21:00Z"
+updated_at: "2026-05-03T20:41:00Z"
 status: in_progress
 execution_mode: turbo_20x
 throughput_policy_ref: ops/state/execution_policy.yml
 blockers: []
-next_small_step: Focused cliq-194 blocker-gate posture revalidation at 2026-05-03T20:21:00Z stayed green with no behavior change (`./.venv/bin/python -m pytest -q tests/test_cli.py::test_cliq_watch_act_read_ack_latest_falls_back_when_read_ack_is_unsupported` -> `1 passed in 0.16s`); keep RC checkpoint refresh queued unless blocker posture changes.
+next_small_step: Focused cliq-194 blocker-gate posture revalidation at 2026-05-03T20:41:00Z stayed green with no behavior change (`./.venv/bin/python -m pytest -q tests/test_cli.py::test_cliq_watch_act_read_ack_latest_falls_back_when_read_ack_is_unsupported` -> `1 passed in 0.14s`); keep RC checkpoint refresh queued unless blocker posture changes.

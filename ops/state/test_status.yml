@@ -1,10 +1,13 @@
-last_run_at: "2026-05-04T15:51:44Z"
+last_run_at: "2026-05-04T16:09:45Z"
 last_result: passing
-current_focus: platform208-integration-rerun-20260504T155144Z
+current_focus: cliq193-summary-guard-extension-20260504T160945Z
 suites:
   unit:
     status: passing
     notes:
+      - "focused cliq-193 blocker-accounting guard extension at 2026-05-04T16:09:45Z"
+      - "no product behavior change; added coverage that mixed top-level error-object hints still resolve to strongest canonical unsupported signal (`not_supported`)"
+      - "./.venv/bin/python -m pytest -q tests/test_cliq193_probe_summary.py -> 11 passed in 0.01s"
       - "platform integration-loop medium-scope rerun at 2026-05-04T15:51:44Z"
       - "no behavior change; registry/bridge + focused CLI/Cliq boundary checks remained green while RC defer posture is unchanged"
       - "./.venv/bin/python -m pytest -q tests/test_registry.py tests/test_membrane_bridge.py -> 489 passed in 8.52s"

@@ -1,10 +1,19 @@
-last_run_at: "2026-05-04T14:21:28Z"
+last_run_at: "2026-05-04T15:43:12Z"
 last_result: passing
-current_focus: nightly-broad-verification-20260504T142128Z
+current_focus: cliq193-archived-summary-replay-20260504T154312Z
 suites:
   unit:
     status: passing
     notes:
+      - "focused cliq-193 archived-summary replay at 2026-05-04T15:43:12Z"
+      - "no code behavior change; regenerated non-20260417 archived summary `tests/auto_pilot/reports/cliq193_app_commands_probe_summary_20260416_152430.json` so `appCommandsError` now normalizes to canonical `not_supported` instead of stale `empty_output` while defer posture stays unchanged"
+      - "./.venv/bin/python -m pytest -q tests/test_cliq193_probe_summary.py -> 11 passed in 0.01s"
+      - "focused cliq-193 archived-summary replay at 2026-05-04T15:39:58Z"
+      - "no code behavior change; regenerated archived summary `tests/auto_pilot/reports/cliq193_app_commands_probe_summary_20260417_060112.json` so `appCommandsError` now normalizes to canonical `not_supported` instead of stale `empty_output` while defer posture stays unchanged"
+      - "./.venv/bin/python -m pytest -q tests/test_cliq193_probe_summary.py -> 11 passed in 0.02s"
+      - "focused cliq-193 archived-summary replay at 2026-05-04T14:55:00Z"
+      - "no code behavior change; regenerated representative archived summary so `appCommandsError` now normalizes to canonical `not_supported` instead of stale `empty_output` while defer posture stays unchanged"
+      - "./.venv/bin/python -m pytest -q tests/test_cliq193_probe_summary.py -> 11 passed in 0.02s"
       - "nightly system-layer verification at 2026-05-04T14:21:28Z"
       - "no behavior change; broad release-gate + ci checks stayed green with no new regressions"
       - "make release-gate -> unit suite `1747 passed in 34.30s` + wheel smoke `ok: wheel smoke passed (0.2.0)`"

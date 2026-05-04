@@ -1,10 +1,13 @@
-last_run_at: "2026-05-04T16:09:45Z"
+last_run_at: "2026-05-04T16:26:05Z"
 last_result: passing
-current_focus: cliq193-summary-guard-extension-20260504T160945Z
+current_focus: cliq193-archived-summary-replay-20260417_052039-20260504T162605Z
 suites:
   unit:
     status: passing
     notes:
+      - "focused cliq-193 archived-summary replay at 2026-05-04T16:26:05Z"
+      - "no product behavior change; regenerated `tests/auto_pilot/reports/cliq193_app_commands_probe_summary_20260417_052039.json` so `appCommandsError` now canonicalizes to `not_supported` instead of stale `empty_output` while defer posture remains unchanged"
+      - "./.venv/bin/python -m pytest -q tests/test_cliq193_probe_summary.py -> 11 passed in 0.02s"
       - "focused cliq-193 blocker-accounting guard extension at 2026-05-04T16:09:45Z"
       - "no product behavior change; added coverage that mixed top-level error-object hints still resolve to strongest canonical unsupported signal (`not_supported`)"
       - "./.venv/bin/python -m pytest -q tests/test_cliq193_probe_summary.py -> 11 passed in 0.01s"

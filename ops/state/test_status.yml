@@ -1,10 +1,13 @@
-last_run_at: "2026-05-04T02:51:11Z"
+last_run_at: "2026-05-04T03:17:26Z"
 last_result: passing
-current_focus: platform-208-cliq-roles-help-wording-20260504T025111Z
+current_focus: platform-208-cliq-designations-help-wording-20260504T031726Z
 suites:
   unit:
     status: passing
     notes:
+      - "platform-208 focused Cliq help-wording cleanup at 2026-05-04T03:17:26Z"
+      - "behavior change: normalized `zoho cliq designations --help` from `List Cliq organization designations.` to `List Cliq designations.`"
+      - "./.venv/bin/python -m pytest -q tests/test_cli.py::test_cliq_help_hides_internal_slice_labels -> 20 passed in 0.49s"
       - "platform-208 focused Cliq help-wording cleanup at 2026-05-04T02:51:11Z"
       - "behavior change: normalized `zoho cliq roles --help` from `List Cliq organization roles.` to `List Cliq roles.`"
       - "./.venv/bin/python -m pytest -q tests/test_cli.py::test_cliq_help_hides_internal_slice_labels -> 19 passed in 1.68s"

@@ -179,6 +179,14 @@ from zoho_cli.commands.cliq_bots import (
     build_cliq_post_to_bot_command,
     build_cliq_trigger_bot_command,
 )
+from zoho_cli.commands.cliq_message_retrieval import (
+    CliqMessageRetrievalContext,
+    build_cliq_context_command,
+    build_cliq_message_command,
+    build_cliq_messages_command,
+    build_cliq_search_command,
+    build_cliq_watch_context_command,
+)
 from zoho_cli.commands.cliq_org_admin import (
     CliqOrgAdminContext,
     build_cliq_departments_command,
@@ -8729,68 +8737,18 @@ register_cliq_thread_state_commands(
 )
 
 
-def cliq_search(
-    query: str = typer.Argument(..., help="Search query text."),
-    channel_id: Optional[str] = typer.Option(
-        None, "--channel-id", help="Source channel id (resolved to chat_id)."
-    ),
-    chat_id: Optional[str] = typer.Option(None, "--chat-id", help="Source chat id."),
-    limit: int = typer.Option(50, "--limit", "-n", help="Max results to return."),
-    from_time: Optional[str] = typer.Option(
-        None,
-        "--from-time",
-        help="Search window start (passed through to Cliq API).",
-    ),
-    to_time: Optional[str] = typer.Option(
-        None,
-        "--to-time",
-        help="Search window end (passed through to Cliq API).",
-    ),
-    network: Optional[str] = typer.Option(
-        None, "--network", help="Cliq network slug (e.g. happydistrouklimited)."
-    ),
-) -> None:
-    """Search messages for a channel/chat with keyword + optional time window."""
-    if not chat_id and not channel_id:
-        utils.error_exit("invalid_destination", "Provide --chat-id or --channel-id")
+_cliq_message_retrieval_context = CliqMessageRetrievalContext(
+    load_config=_cfg,
+    require_account=lambda cfg: _require_account(cfg),
+    get_cliq_client=lambda *args, **kwargs: _get_cliq_client(*args, **kwargs),
+    infer_message_types=_cliq.ZohoCliqClient.infer_message_types,
+    extract_message_id=_cliq.ZohoCliqClient._extract_message_id,
+    build_watch_context_seed=_cliq.ZohoCliqClient.build_watch_context_seed,
+    typed_messages=_cliq_typed_messages,
+)
 
-    cfg = _cfg()
-    email = _require_account(cfg)
-    client = _get_cliq_client(cfg, email, network=network)
 
-    resolved_chat = (chat_id or "").strip() or client.resolve_chat_id(channel_id or "")
-    resp = client.search_messages(
-        query,
-        chat_id=resolved_chat,
-        channel_id=channel_id,
-        limit=limit,
-        from_time=from_time,
-        to_time=to_time,
-    )
-    data = resp.get("data", resp)
-    messages: list[dict] = []
-    if isinstance(data, list):
-        messages = [item for item in data if isinstance(item, dict)]
-    elif isinstance(data, dict):
-        for key in ("messages", "results", "items", "data"):
-            candidate = data.get(key)
-            if isinstance(candidate, list):
-                messages = [item for item in candidate if isinstance(item, dict)]
-                break
-
-    utils.output(
-        {
-            "chatId": resolved_chat or "",
-            "channelId": channel_id or "",
-            "query": query,
-            "window": {
-                "fromTime": from_time or "",
-                "toTime": to_time or "",
-            },
-            "count": len(messages),
-            "messages": messages,
-        }
-    )
+cliq_search = build_cliq_search_command(_cliq_message_retrieval_context)
 
 
 register_cliq_message_discovery_commands(
@@ -9006,76 +8964,8 @@ register_cliq_file_voice_commands(
 )
 
 
-def cliq_messages(
-    channel_id: Optional[str] = typer.Option(
-        None, "--channel-id", help="Source channel id (resolved to chat_id)."
-    ),
-    chat_id: Optional[str] = typer.Option(None, "--chat-id", help="Source chat id."),
-    limit: int = typer.Option(50, "--limit", "-n", help="Max messages to return."),
-    network: Optional[str] = typer.Option(
-        None, "--network", help="Cliq network slug (e.g. happydistrouklimited)."
-    ),
-) -> None:
-    """List messages for a channel/chat."""
-    if not chat_id and not channel_id:
-        utils.error_exit("invalid_destination", "Provide --chat-id or --channel-id")
-
-    cfg = _cfg()
-    email = _require_account(cfg)
-    client = _get_cliq_client(cfg, email, network=network)
-
-    resolved_chat = (chat_id or "").strip() or client.resolve_chat_id(channel_id or "")
-    resp = client.list_messages(
-        chat_id=resolved_chat, channel_id=channel_id, limit=limit
-    )
-    messages = resp.get("data", resp)
-    if not isinstance(messages, list):
-        messages = []
-
-    utils.output(
-        {
-            "chatId": resolved_chat or "",
-            "channelId": channel_id or "",
-            "count": len(messages),
-            "messages": messages,
-            "typedMessages": _cliq_typed_messages(messages),
-        }
-    )
-
-
-def cliq_message(
-    message_id: str = typer.Argument(..., help="Cliq message id."),
-    channel_id: Optional[str] = typer.Option(
-        None, "--channel-id", help="Source channel id (resolved to chat_id)."
-    ),
-    chat_id: Optional[str] = typer.Option(None, "--chat-id", help="Source chat id."),
-    network: Optional[str] = typer.Option(
-        None, "--network", help="Cliq network slug (e.g. happydistrouklimited)."
-    ),
-) -> None:
-    """Get one message by id from a channel/chat."""
-    if not chat_id and not channel_id:
-        utils.error_exit("invalid_destination", "Provide --chat-id or --channel-id")
-
-    cfg = _cfg()
-    email = _require_account(cfg)
-    client = _get_cliq_client(cfg, email, network=network)
-
-    resolved_chat = (chat_id or "").strip() or client.resolve_chat_id(channel_id or "")
-    resp = client.get_message(message_id, chat_id=resolved_chat, channel_id=channel_id)
-    message = resp.get("data", resp)
-    if isinstance(message, list):
-        message = message[0] if message else {}
-    utils.output(
-        {
-            "chatId": resolved_chat or "",
-            "channelId": channel_id or "",
-            "message": message,
-            "messageTypes": _cliq.ZohoCliqClient.infer_message_types(
-                message if isinstance(message, dict) else {}
-            ),
-        }
-    )
+cliq_messages = build_cliq_messages_command(_cliq_message_retrieval_context)
+cliq_message = build_cliq_message_command(_cliq_message_retrieval_context)
 
 
 register_cliq_messages_message_commands(
@@ -9085,156 +8975,8 @@ register_cliq_messages_message_commands(
 )
 
 
-def cliq_context(
-    channel_id: Optional[str] = typer.Option(
-        None, "--channel-id", help="Source channel id (resolved to chat_id)."
-    ),
-    chat_id: Optional[str] = typer.Option(None, "--chat-id", help="Source chat id."),
-    message_id: Optional[str] = typer.Option(
-        None, "--message-id", help="Anchor message id (optional)."
-    ),
-    before: int = typer.Option(3, "--before", help="Messages before anchor."),
-    after: int = typer.Option(3, "--after", help="Messages after anchor."),
-    limit: int = typer.Option(40, "--limit", "-n", help="Max messages to fetch."),
-    network: Optional[str] = typer.Option(
-        None, "--network", help="Cliq network slug (e.g. happydistrouklimited)."
-    ),
-) -> None:
-    """Build a local context window for a channel/chat (optionally around one message)."""
-    if not chat_id and not channel_id:
-        utils.error_exit("invalid_destination", "Provide --chat-id or --channel-id")
-    if before < 0 or after < 0:
-        utils.error_exit("invalid_window", "--before/--after must be >= 0")
-
-    cfg = _cfg()
-    email = _require_account(cfg)
-    client = _get_cliq_client(cfg, email, network=network)
-
-    resolved_chat = (chat_id or "").strip() or client.resolve_chat_id(channel_id or "")
-    resp = client.list_messages(
-        chat_id=resolved_chat, channel_id=channel_id, limit=limit
-    )
-    messages = resp.get("data", resp)
-    if not isinstance(messages, list):
-        messages = []
-
-    anchor: dict | None = None
-    anchor_idx: int | None = None
-    if message_id:
-        msg_resp = client.get_message(
-            message_id, chat_id=resolved_chat, channel_id=channel_id
-        )
-        anchor_data = msg_resp.get("data", msg_resp)
-        if isinstance(anchor_data, list):
-            anchor = anchor_data[0] if anchor_data else None
-        elif isinstance(anchor_data, dict):
-            anchor = anchor_data
-
-        for idx, item in enumerate(messages):
-            if not isinstance(item, dict):
-                continue
-            if _cliq.ZohoCliqClient._extract_message_id(item) == message_id:
-                anchor_idx = idx
-                break
-
-    if anchor_idx is None:
-        slice_size = before + after + 1
-        context_messages = messages[:slice_size]
-    else:
-        start = max(0, anchor_idx - before)
-        end = anchor_idx + after + 1
-        context_messages = messages[start:end]
-
-    utils.output(
-        {
-            "chatId": resolved_chat or "",
-            "channelId": channel_id or "",
-            "anchorMessageId": message_id or "",
-            "anchorInWindow": anchor_idx is not None,
-            "window": {"before": before, "after": after},
-            "totalFetched": len(messages),
-            "anchor": anchor or {},
-            "anchorTypes": _cliq.ZohoCliqClient.infer_message_types(
-                anchor if isinstance(anchor, dict) else {}
-            ),
-            "messages": context_messages,
-            "typedMessages": _cliq_typed_messages(
-                [item for item in context_messages if isinstance(item, dict)]
-            ),
-        }
-    )
-
-
-def cliq_watch_context(
-    channel_id: Optional[str] = typer.Option(
-        None, "--channel-id", help="Source channel id (resolved to chat_id)."
-    ),
-    chat_id: Optional[str] = typer.Option(None, "--chat-id", help="Source chat id."),
-    since_message_id: Optional[str] = typer.Option(
-        None,
-        "--since-message-id",
-        help="Last processed message id cursor from a previous watch pass.",
-    ),
-    limit: int = typer.Option(50, "--limit", "-n", help="Max messages to fetch."),
-    max_messages: int = typer.Option(
-        20,
-        "--max-messages",
-        help="Max new messages to emit in one watch payload.",
-    ),
-    network: Optional[str] = typer.Option(
-        None, "--network", help="Cliq network slug (e.g. happydistrouklimited)."
-    ),
-) -> None:
-    """Emit a stable incremental context payload for watch loops."""
-    if not chat_id and not channel_id:
-        utils.error_exit("invalid_destination", "Provide --chat-id or --channel-id")
-    if limit < 1 or max_messages < 1:
-        utils.error_exit("invalid_limit", "--limit/--max-messages must be >= 1")
-
-    cfg = _cfg()
-    email = _require_account(cfg)
-    client = _get_cliq_client(cfg, email, network=network)
-
-    fetch_limit = max(limit, max_messages)
-    resolved_chat = (chat_id or "").strip() or client.resolve_chat_id(channel_id or "")
-    resp = client.list_messages(
-        chat_id=resolved_chat,
-        channel_id=channel_id,
-        limit=fetch_limit,
-    )
-    data = resp.get("data", resp)
-    messages = (
-        [item for item in data if isinstance(item, dict)]
-        if isinstance(data, list)
-        else []
-    )
-
-    watch = _cliq.ZohoCliqClient.build_watch_context_seed(
-        messages,
-        since_message_id=since_message_id,
-        max_messages=max_messages,
-    )
-
-    utils.output(
-        {
-            "chatId": resolved_chat or "",
-            "channelId": channel_id or "",
-            "cursor": {
-                "sinceMessageId": watch["sinceMessageId"],
-                "cursorFound": watch["cursorFound"],
-                "latestMessageId": watch["latestMessageId"],
-                "nextSinceMessageId": watch["nextSinceMessageId"],
-            },
-            "totalFetched": watch["totalFetched"],
-            "newCount": watch["newCount"],
-            "truncated": watch["truncated"],
-            "escalationEnvelope": watch["escalationEnvelope"],
-            "escalationEnvelopeMetadata": watch["escalationEnvelopeMetadata"],
-            "watchIntake": watch["watchIntake"],
-            "operatorWorkflow": watch["operatorWorkflow"],
-            "messages": watch["messages"],
-        }
-    )
+cliq_context = build_cliq_context_command(_cliq_message_retrieval_context)
+cliq_watch_context = build_cliq_watch_context_command(_cliq_message_retrieval_context)
 
 
 register_cliq_context_watch_context_commands(

@@ -59,6 +59,7 @@ Each migration slice must be small enough for one coding cycle:
 - `zoho_cli/commands/cliq_threading.py` owns thread commands: `thread-create`, `thread-reply`, `threads`, `thread-followers`, and `thread-state`.
 - `zoho_cli/commands/cliq_scheduling.py` owns scheduled-message commands: `schedule`, `scheduled`, `scheduled-get`, and `scheduled-cancel`.
 - `zoho_cli/commands/cliq_bots.py` owns bot commands: `post-to-bot`, `bot-subscribers`, and `trigger-bot`.
+- `zoho_cli/commands/cliq_message_retrieval.py` owns message retrieval/context commands: `search`, `messages`, `message`, `context`, and `watch-context`.
 - Preserve command names, help text, JSON shape, and monkeypatch-friendly module lookups when moving additional Cliq surfaces.
 
 ## Sequencing policy

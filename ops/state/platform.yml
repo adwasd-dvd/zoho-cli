@@ -1,7 +1,7 @@
 module: Platform
-updated_at: "2026-05-04T20:41:04Z"
+updated_at: "2026-05-04T20:47:46Z"
 status: in_progress
 execution_mode: turbo_20x
 throughput_policy_ref: ops/state/execution_policy.yml
 blockers: []
-next_small_step: "`cliq-210` has extracted readiness, identity, org-directory, org-admin list, productivity list, platform-extension list, channel-management/chat-control, threading, scheduled-message, and bot command bodies (`cliq_readiness.py`, `cliq_identity.py`, `cliq_org_directory.py`, `cliq_org_admin.py`, `cliq_productivity.py`, `cliq_platform_extensions.py`, `cliq_channel_management.py`, `cliq_threading.py`, `cliq_scheduling.py`, `cliq_bots.py`); continue the next low-risk Cliq API-surface split with JSON/help parity checks."
+next_small_step: "`cliq-210` has extracted readiness, identity, org-directory, org-admin list, productivity list, platform-extension list, channel-management/chat-control, threading, scheduled-message, bot, and message retrieval/context command bodies (`cliq_readiness.py`, `cliq_identity.py`, `cliq_org_directory.py`, `cliq_org_admin.py`, `cliq_productivity.py`, `cliq_platform_extensions.py`, `cliq_channel_management.py`, `cliq_threading.py`, `cliq_scheduling.py`, `cliq_bots.py`, `cliq_message_retrieval.py`); continue the next low-risk Cliq API-surface split with JSON/help parity checks."

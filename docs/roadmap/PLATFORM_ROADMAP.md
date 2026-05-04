@@ -96,6 +96,7 @@ Current progress:
 - tenth slice extracted thread commands (`zoho cliq thread-create`, `thread-reply`, `threads`, `thread-followers`, `thread-state`) into `zoho_cli/commands/cliq_threading.py` with behavior parity checks green
 - eleventh slice extracted scheduled-message commands (`zoho cliq schedule`, `scheduled`, `scheduled-get`, `scheduled-cancel`) into `zoho_cli/commands/cliq_scheduling.py` with behavior parity checks green
 - twelfth slice extracted bot commands (`zoho cliq post-to-bot`, `bot-subscribers`, `trigger-bot`) into `zoho_cli/commands/cliq_bots.py` with behavior parity checks green
+- thirteenth slice extracted message retrieval/context commands (`zoho cliq search`, `messages`, `message`, `context`, `watch-context`) into `zoho_cli/commands/cliq_message_retrieval.py` with behavior parity checks green
 
 ### Phase B6 — OpenClaw native Cliq channel (v0.4)
 

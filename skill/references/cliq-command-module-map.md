@@ -12,5 +12,6 @@ Use this map before editing Cliq commands so agents read the smallest relevant f
 - `zoho_cli/commands/cliq_threading.py`: `thread-create`, `thread-reply`, `threads`, `thread-followers`, `thread-state`
 - `zoho_cli/commands/cliq_scheduling.py`: `schedule`, `scheduled`, `scheduled-get`, `scheduled-cancel`
 - `zoho_cli/commands/cliq_bots.py`: `post-to-bot`, `bot-subscribers`, `trigger-bot`
+- `zoho_cli/commands/cliq_message_retrieval.py`: `search`, `messages`, `message`, `context`, `watch-context`
 
 Keep command names, help text, JSON shape, and monkeypatch-friendly runtime hooks stable when moving additional command bodies.

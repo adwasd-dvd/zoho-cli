@@ -12,5 +12,6 @@ OpenClaw agents should use this map to jump directly to the smallest Cliq comman
 - `zoho_cli/commands/cliq_threading.py`: thread create/reply/list/followers/state commands
 - `zoho_cli/commands/cliq_scheduling.py`: scheduled-message create/list/get/cancel commands
 - `zoho_cli/commands/cliq_bots.py`: bot post/subscriber/trigger commands
+- `zoho_cli/commands/cliq_message_retrieval.py`: message search/list/get/context/watch-context commands
 
 `zoho_cli/cli.py` remains the Typer entry point and dependency-injection/registration layer for extracted command builders.

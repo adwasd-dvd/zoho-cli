@@ -3,12 +3,12 @@ next_version: 0.2.1
 release_candidate: false
 last_release_tag: v0.1.9
 current_train: ai-employee-v1
-assessed_at: '2026-05-03T22:06:51Z'
+assessed_at: '2026-05-04T06:45:37Z'
 current_milestone: platform-208-cli-information-architecture
 current_milestone_complete: false
 missing_requirements:
   - 'Blocker-bug gate is still open: `ops/state/bug_backlog.yml` currently carries 29 blocker entries (repeated cliq-193 `appCommandsError: empty_output` / `error: not_supported` evidence), so `release_gate.blocker_bugs_cleared` remains false.'
-  - 'Current focus milestone is still incomplete: `current_milestone_complete: false` and `ops/state/active_task.yml` remains `id: platform-208`, `stage: in_progress`, `updated_at: 2026-05-03T22:06:51Z`.'
+  - 'Current focus milestone is still incomplete: `current_milestone_complete: false` and `ops/state/active_task.yml` remains `id: platform-208`, `stage: in_progress`, pending completion before RC flip.'
   - 'Version bump remains pending under deferred RC posture (`release_candidate: false`, `release_gate.version_bumped: false`).'
 rc_package:
   gate_contract_ready: true
@@ -25,6 +25,7 @@ release_candidate_decision:
     - platform-208
   checkpoint:
     checklist: docs/releases/AI_EMPLOYEE_V1_RC_CHECKLIST.md
+    packet: docs/releases/AI_EMPLOYEE_V1_RC_CHECKPOINT_2026-05-04.md
     owner: coder
     next_review_after: '2026-05-05T00:00:00Z'
   blocker_gate_signoff:

@@ -12,9 +12,10 @@ Use this checklist to complete the platform-207 package and run the RC/version d
 
 ## State alignment
 
-- [x] `ops/state/release_status.yml` reflects current milestone `platform-207-release-candidate-package`
-- [x] `ops/state/active_task.yml` is set to `platform-207`
-- [x] Changelog includes platform-207 package progress (`docs/releases/CHANGELOG.next.md`)
+- [x] `ops/state/release_status.yml` reflects current milestone `platform-208-cli-information-architecture`
+- [x] `ops/state/active_task.yml` is set to `platform-208`
+- [x] RC checkpoint refresh evidence is linked (`docs/releases/AI_EMPLOYEE_V1_RC_CHECKPOINT_2026-05-04.md`)
+- [x] Changelog includes platform-208 progress (`docs/releases/CHANGELOG.next.md`)
 
 ## RC/version decision checkpoint
 

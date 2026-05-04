@@ -39,6 +39,7 @@ def test_openclaw_cliq_channel_contract_uses_current_sdk_seams():
         "defineSetupPluginEntry",
         "createChannelPluginBase",
         "createChatChannelPlugin",
+        "setupWizard",
         "resolveInboundMentionDecision",
         "approvalCapability",
         "resolveSessionConversation",

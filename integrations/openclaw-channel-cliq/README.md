@@ -2,8 +2,9 @@
 
 Native OpenClaw channel package for Zoho Cliq, backed by `zoho-cli`.
 
-This package includes the `cliq-channel-401` installable skeleton and the
-`cliq-channel-402` config/SecretRef/setup slice. It declares the plugin/channel
+This package includes the `cliq-channel-401` installable skeleton,
+`cliq-channel-402` config/SecretRef/setup slice, and `cliq-channel-416` human
+setup UX slice. It declares the plugin/channel
 metadata, setup/runtime entrypoints, configured/auth-state probes, a minimal
 OpenClaw channel object, config schema metadata, and a typed `zoho cliq send`
 argument contract. Security hardening, process execution, inbound delivery, and
@@ -20,6 +21,9 @@ outbound behavior follow in later slices.
 
 The source of truth is
 `../../docs/architecture/OPENCLAW_CLIQ_CHANNEL_SDK_CONTRACT.md`.
+
+Human setup and troubleshooting live in
+`../../docs/releases/OPENCLAW_CLIQ_CHANNEL_SETUP.md`.
 
 ## Config example
 
@@ -75,6 +79,21 @@ openclaw plugins doctor
 
 Use a host satisfying `>=2026.5.3-1` for inspect/install validation. The local
 `OpenClaw 2026.4.15` install is too old for this package.
+
+## Setup UX
+
+The setup wizard exposes these operator states: `host_too_old`,
+`zoho_missing`, `not_logged_in`, `missing_scope`, `network_missing`,
+`webhook_unverified`, and `allowlist_empty`.
+
+The wizard offers:
+
+- text inputs for account label, Zoho account email, Cliq network, `zoho`
+  command path, zoho-cli config path, and default target
+- env shortcut for `ZOHO_ACCOUNT`, `ZOHO_CONFIG`, `ZOHO_TOKEN_PASSWORD`, and
+  `ZOHO_CLIQ_WEBHOOK_SECRET`
+- DM allowlist entry handling
+- account disable behavior for OpenClaw setup surfaces
 
 ## Runtime boundary
 

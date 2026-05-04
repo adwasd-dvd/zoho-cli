@@ -1,0 +1,128 @@
+# OpenClaw Zoho Cliq channel setup
+
+This runbook is for the native OpenClaw `cliq` channel package in
+`integrations/openclaw-channel-cliq/`.
+
+## Current readiness
+
+- Config/auth smoke testing is ready now.
+- Real outbound message testing waits for `cliq-channel-404` and
+  `cliq-channel-405`.
+- Inbound webhook or polling tests wait for `cliq-channel-406` and
+  `cliq-channel-407`.
+- Production testing waits for pairing, allowlist, scoped employee mode, loop
+  prevention, and observability slices.
+
+## Requirements
+
+- OpenClaw `>=2026.5.3-1`.
+- `zoho-cli` installed and available as `zoho`.
+- One interactive bootstrap login:
+
+```bash
+zoho login --with-cliq
+zoho cliq status --check-auth --network <network>
+```
+
+Use `ZOHO_CONFIG` for the config file and `ZOHO_TOKEN_PASSWORD` for encrypted
+file fallback. Do not paste OAuth tokens or webhook secrets into setup prompts.
+
+## Install from the workspace
+
+```bash
+npm --prefix integrations/openclaw-channel-cliq install --ignore-scripts
+npm --prefix integrations/openclaw-channel-cliq run build
+openclaw plugins install ./integrations/openclaw-channel-cliq --link
+openclaw plugins inspect zoho-cliq --json
+openclaw plugins doctor
+```
+
+The local global OpenClaw may be older than the plugin target. For validation in
+this repository, use package-local OpenClaw with a throwaway home:
+
+```bash
+HOME="$PWD/.tmp/openclaw-home-2026.5.3-1" \
+  npm --prefix integrations/openclaw-channel-cliq run openclaw:install
+HOME="$PWD/.tmp/openclaw-home-2026.5.3-1" \
+  npm --prefix integrations/openclaw-channel-cliq run inspect
+HOME="$PWD/.tmp/openclaw-home-2026.5.3-1" \
+  npm --prefix integrations/openclaw-channel-cliq run doctor
+```
+
+## Config baseline
+
+```json
+{
+  "channels": {
+    "cliq": {
+      "enabled": true,
+      "defaultAccount": "default",
+      "accounts": {
+        "default": {
+          "accountEmail": "bot@example.com",
+          "network": "happydistrouklimited",
+          "cliPath": "zoho",
+          "configPath": {
+            "source": "env",
+            "provider": "default",
+            "id": "ZOHO_CONFIG"
+          },
+          "tokenPassword": {
+            "source": "env",
+            "provider": "default",
+            "id": "ZOHO_TOKEN_PASSWORD"
+          },
+          "webhookSecret": {
+            "source": "env",
+            "provider": "default",
+            "id": "ZOHO_CLIQ_WEBHOOK_SECRET"
+          },
+          "dmPolicy": "allowlist",
+          "allowFrom": ["<trusted_cliq_user_id>"],
+          "defaultTo": "channel:<channel_id>"
+        }
+      }
+    }
+  }
+}
+```
+
+## Setup states
+
+| State | Meaning | Next action |
+| --- | --- | --- |
+| `host_too_old` | OpenClaw is too old. | Upgrade OpenClaw to `>=2026.5.3-1`. |
+| `zoho_missing` | `zoho` was not found. | Install `zoho-cli` and put `zoho` on `PATH`. |
+| `not_logged_in` | Zoho auth/config is missing. | Run `zoho login --with-cliq`. |
+| `missing_scope` | Cliq scopes are incomplete. | Re-auth and rerun `zoho cliq status --check-auth`. |
+| `network_missing` | Cliq network is not set. | Set `channels.cliq.accounts.<id>.network`. |
+| `webhook_unverified` | Inbound webhook is not verified. | Configure `webhookSecret` or wait for polling fallback. |
+| `allowlist_empty` | No trusted Cliq senders are configured. | Add trusted user ids to `allowFrom`. |
+
+## Disable, uninstall, and recovery
+
+Disable the plugin:
+
+```bash
+openclaw plugins disable zoho-cliq
+```
+
+Disable or remove the channel account:
+
+```bash
+openclaw channels remove --channel cliq --account default
+```
+
+Uninstall the plugin:
+
+```bash
+openclaw plugins uninstall zoho-cliq
+```
+
+Recovery checklist:
+
+1. Rebuild the package: `npm --prefix integrations/openclaw-channel-cliq run build`.
+2. Reinstall with `openclaw plugins install ./integrations/openclaw-channel-cliq --link`.
+3. Run `openclaw plugins inspect zoho-cliq --json` and `openclaw plugins doctor`.
+4. Re-run `zoho cliq status --check-auth --network <network>`.
+5. Keep real send tests paused until the outbound delivery slice lands.

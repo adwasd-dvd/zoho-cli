@@ -65,7 +65,8 @@ Follow the stack from the architecture plan:
    `openclaw@2026.5.3-1`)
 3. `cliq-channel-402` config, SecretRef, and setup (complete; manifest/runtime
    schema covers account/config refs plus SecretRef credentials)
-4. `cliq-channel-416` human install and setup UX
+4. `cliq-channel-416` human install and setup UX (complete; setup wizard exposes
+   operator states, env shortcut, text inputs, allowFrom, and disable behavior)
 5. `cliq-channel-403` security, pairing, and scoped employee mode
 6. `cliq-channel-414` native SDK policy seams
 7. `cliq-channel-404` CLI adapter
@@ -186,6 +187,8 @@ The OpenClaw setup flow should be usable by a non-developer operator.
 - Provide one primary fix for each failed setup state.
 - Hide raw JSON schema and stack traces behind advanced/details views.
 - Include disable/uninstall and upgrade/recovery instructions.
+- Keep `docs/releases/OPENCLAW_CLIQ_CHANNEL_SETUP.md` aligned with setup wizard
+  state copy in `src/setup-wizard.ts`.
 
 Recommended setup-state copy should stay short:
 

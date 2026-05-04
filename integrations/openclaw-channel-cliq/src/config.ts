@@ -425,6 +425,41 @@ export function hasCliqAuthState(params?: {
   });
 }
 
+export function patchCliqAccountConfig(params: {
+  cfg: OpenClawConfig;
+  accountId: string;
+  patch: CliqAccountConfig;
+}): OpenClawConfig {
+  const next = { ...(params.cfg as ConfigWithChannels) } as ConfigWithChannels;
+  next.channels = { ...(next.channels ?? {}) };
+  const section = {
+    ...(isRecord(next.channels[CLIQ_CHANNEL_ID])
+      ? (next.channels[CLIQ_CHANNEL_ID] as Record<string, unknown>)
+      : {}),
+  } as CliqChannelConfig;
+  const accounts = { ...readAccounts(section) };
+  accounts[params.accountId] = {
+    ...(accounts[params.accountId] ?? {}),
+    ...params.patch,
+  };
+  section.accounts = accounts;
+  section.defaultAccount = section.defaultAccount ?? params.accountId;
+  next.channels[CLIQ_CHANNEL_ID] = section;
+  return next as OpenClawConfig;
+}
+
+export function setCliqAccountEnabled(params: {
+  cfg: OpenClawConfig;
+  accountId: string;
+  enabled: boolean;
+}): OpenClawConfig {
+  return patchCliqAccountConfig({
+    cfg: params.cfg,
+    accountId: params.accountId,
+    patch: { enabled: params.enabled },
+  });
+}
+
 export function applyCliqAccountConfig(params: {
   cfg: OpenClawConfig;
   accountId: string;

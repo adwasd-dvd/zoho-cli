@@ -745,11 +745,18 @@ OpenClaw:
 - Implement OpenClaw setup/onboarding surfaces for install source, host
   compatibility, Zoho CLI detection, auth/scopes, network selection,
   webhook/polling choice, security defaults, employee scope, and test message.
-- Normalize setup failures into actionable user-facing states.
+  Complete for setup wizard status, env shortcut, text inputs, allowFrom, and
+  disable behavior; employee scope and test message stay linked to later
+  security/outbound slices.
+- Normalize setup failures into actionable user-facing states. Complete for
+  `host_too_old`, `zoho_missing`, `not_logged_in`, `missing_scope`,
+  `network_missing`, `webhook_unverified`, and `allowlist_empty`.
 - Add human install guide, troubleshooting table, uninstall/disable flow, and
-  upgrade/integrity recovery guidance.
-- Acceptance: a human operator can install, configure, test, disable, and
-  diagnose the channel from UI/setup surfaces and docs without reading source.
+  upgrade/integrity recovery guidance. Complete in
+  `docs/releases/OPENCLAW_CLIQ_CHANNEL_SETUP.md`.
+- Acceptance: a human operator can install, configure, disable, uninstall, and
+  diagnose config/auth smoke from UI/setup surfaces and docs without reading
+  source; real sends remain gated by `cliq-channel-404` and `cliq-channel-405`.
 
 ### cliq-channel-403: Security, pairing, and scoped employee mode
 

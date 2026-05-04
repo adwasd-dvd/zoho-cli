@@ -20,6 +20,8 @@
 - Completed `cliq-channel-402` by expanding the channel config schema beyond the empty skeleton: `defaultAccount/accounts`, `accountEmail`, `configPath`, `network`, `cliPath`, `dmPolicy`, `allowFrom`, and `defaultTo` are now declared in both `openclaw.plugin.json` and runtime config metadata.
 - Added env SecretRef support for `ZOHO_TOKEN_PASSWORD` and `ZOHO_CLIQ_WEBHOOK_SECRET`, allowed Zoho account/config values to be direct strings or SecretRef/env references, and hardened setup validation so plaintext token/password/secret-style fields are rejected.
 - Rebuilt the package runtime and revalidated package-local OpenClaw install/inspect/doctor with `openclaw@2026.5.3-1`; process execution is still intentionally deferred to `cliq-channel-404`, so real outbound message delivery starts after `cliq-channel-404` + `cliq-channel-405`.
+- Completed `cliq-channel-416` by adding setup wizard metadata for operator status lines, env shortcut, text inputs, allowlist handling, completion guidance, and account disable behavior without introducing process execution.
+- Added `docs/releases/OPENCLAW_CLIQ_CHANNEL_SETUP.md` with install, config/auth smoke, setup-state troubleshooting, disable/uninstall, and recovery guidance; real outbound testing remains gated by `cliq-channel-404` and `cliq-channel-405`.
 
 ### Architecture / modularization (2026-05-04T18:19:47Z)
 - Started `cliq-210` post-RC modularization by extracting the `zoho cliq status` and `zoho cliq capabilities` command bodies into `zoho_cli/commands/cliq_readiness.py`, leaving `zoho_cli/cli.py` with runtime dependency injection plus existing Typer registration only. Command names, help text, and JSON output are unchanged.

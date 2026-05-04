@@ -338,7 +338,7 @@
 - id: cliq-channel-416
   title: implement human install onboarding setup-state copy disable uninstall and recovery UX
   module: openclaw_cliq_channel
-  stage: queued
+  stage: completed
   priority: high
   depends_on:
   - cliq-channel-402

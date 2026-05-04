@@ -58,7 +58,8 @@ uv tool install .
 
 - Package: `integrations/openclaw-channel-cliq/` (`@adwasd/openclaw-zoho-cliq`, plugin id `zoho-cliq`, channel id `cliq`)
 - Host target: OpenClaw `>=2026.5.3-1`; the local global `OpenClaw 2026.4.15` is too old, so package-local validation uses a throwaway `openclaw@2026.5.3-1` home.
-- Current slice: `cliq-channel-402` is complete; channel config now covers `defaultAccount/accounts`, `accountEmail`, `configPath`, `network`, `cliPath`, env/SecretRef fields for `ZOHO_TOKEN_PASSWORD` and `ZOHO_CLIQ_WEBHOOK_SECRET`, setup validation rejects plaintext token-style inputs, and install/inspect/doctor validation stays green.
+- Current slice: `cliq-channel-416` is complete; setup wizard metadata now exposes operator states, env shortcut, text inputs, allowlist handling, and disable behavior on top of the `cliq-channel-402` config/SecretRef schema.
+- Setup runbook: `docs/releases/OPENCLAW_CLIQ_CHANNEL_SETUP.md`.
 - Not live-send ready yet: process execution remains deferred to `cliq-channel-404`, then outbound delivery lands in `cliq-channel-405`.
 
 ### 🚧 Zoho CRM (read-only scaffold implemented)

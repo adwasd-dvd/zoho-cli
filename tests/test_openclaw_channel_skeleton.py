@@ -99,6 +99,7 @@ def test_openclaw_cliq_channel_sources_use_locked_sdk_surfaces() -> None:
             read("auth-presence.ts"),
             read("src/channel.ts"),
             read("src/config.ts"),
+            read("src/setup-wizard.ts"),
             read("src/zoho-cli.ts"),
         ]
     )
@@ -113,6 +114,8 @@ def test_openclaw_cliq_channel_sources_use_locked_sdk_surfaces() -> None:
         "openclaw/plugin-sdk/channel-core",
         "openclaw/plugin-sdk/channel-inbound",
         "openclaw/plugin-sdk/secret-ref-runtime",
+        "setupWizard",
+        "cliqSetupWizard",
     ]:
         assert marker in source
 
@@ -158,6 +161,7 @@ def test_openclaw_cliq_channel_dist_runtime_outputs_exist() -> None:
         "dist/src/channel.js",
         "dist/src/config.js",
         "dist/src/constants.js",
+        "dist/src/setup-wizard.js",
         "dist/src/zoho-cli.js",
     ]:
         assert (PLUGIN_ROOT / path).exists(), f"missing build output: {path}"
@@ -167,7 +171,31 @@ def test_openclaw_cliq_channel_dist_runtime_outputs_exist() -> None:
             read("dist/index.js"),
             read("dist/setup-entry.js"),
             read("dist/src/channel.js"),
+            read("dist/src/setup-wizard.js"),
             read("dist/src/zoho-cli.js"),
         ]
     )
     assert "child_process" not in built
+
+
+def test_openclaw_cliq_channel_setup_wizard_has_operator_states() -> None:
+    source = read("src/setup-wizard.ts")
+
+    for marker in [
+        "CLIQ_SETUP_STATE_COPY",
+        "host_too_old",
+        "zoho_missing",
+        "not_logged_in",
+        "missing_scope",
+        "network_missing",
+        "webhook_unverified",
+        "allowlist_empty",
+        "envShortcut",
+        "disable:",
+        "resolveCliqSetupStatusLines",
+        "ZOHO_ACCOUNT",
+        "ZOHO_CONFIG",
+        "ZOHO_TOKEN_PASSWORD",
+        "ZOHO_CLIQ_WEBHOOK_SECRET",
+    ]:
+        assert marker in source

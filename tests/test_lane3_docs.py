@@ -45,6 +45,7 @@ def test_lane3_required_paths_exist() -> None:
         REPO_ROOT / "integrations" / "openclaw-channel-cliq" / "package.json",
         REPO_ROOT / "integrations" / "openclaw-channel-cliq" / "openclaw.plugin.json",
         REPO_ROOT / "integrations" / "openclaw-channel-cliq" / "skill" / "SKILL.md",
+        REPO_ROOT / "docs" / "releases" / "OPENCLAW_CLIQ_CHANNEL_SETUP.md",
     ]
 
     for path in required:

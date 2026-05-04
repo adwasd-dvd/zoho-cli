@@ -329,6 +329,31 @@ export function hasCliqAuthState(params) {
             hasConfiguredInput(account.configPath));
     });
 }
+export function patchCliqAccountConfig(params) {
+    const next = { ...params.cfg };
+    next.channels = { ...(next.channels ?? {}) };
+    const section = {
+        ...(isRecord(next.channels[CLIQ_CHANNEL_ID])
+            ? next.channels[CLIQ_CHANNEL_ID]
+            : {}),
+    };
+    const accounts = { ...readAccounts(section) };
+    accounts[params.accountId] = {
+        ...(accounts[params.accountId] ?? {}),
+        ...params.patch,
+    };
+    section.accounts = accounts;
+    section.defaultAccount = section.defaultAccount ?? params.accountId;
+    next.channels[CLIQ_CHANNEL_ID] = section;
+    return next;
+}
+export function setCliqAccountEnabled(params) {
+    return patchCliqAccountConfig({
+        cfg: params.cfg,
+        accountId: params.accountId,
+        patch: { enabled: params.enabled },
+    });
+}
 export function applyCliqAccountConfig(params) {
     const next = { ...params.cfg };
     next.channels = { ...(next.channels ?? {}) };

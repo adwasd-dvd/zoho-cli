@@ -14,6 +14,7 @@ Native channel planning:
 - `docs/architecture/OPENCLAW_CLIQ_CHANNEL_0_4_PLAN.md`
 - `integrations/openclaw/CLIQ_CHANNEL_DEVELOPMENT_GUIDE.md`
 - `integrations/openclaw-channel-cliq/`
+- `docs/releases/OPENCLAW_CLIQ_CHANNEL_SETUP.md`
 - `skill/references/openclaw-cliq-channel.md`
 
 GitHub intake:

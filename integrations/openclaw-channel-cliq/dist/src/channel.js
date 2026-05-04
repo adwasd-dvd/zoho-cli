@@ -2,6 +2,7 @@ import { buildChannelOutboundSessionRoute, createChannelPluginBase, createChatCh
 import { implicitMentionKindWhen, matchesMentionWithExplicit, resolveInboundMentionDecision, } from "openclaw/plugin-sdk/channel-inbound";
 import { applyCliqAccountConfig, cliqChannelConfigSchema, defaultCliqAccountId, describeCliqAccount, hasCliqAuthState, hasCliqConfiguredState, isCliqAccountConfigured, listCliqAccountIds, resolveCliqAccount, validateCliqSetupInput, } from "./config.js";
 import { CLIQ_CHANNEL_ID, CLIQ_PLUGIN_ID } from "./constants.js";
+import { cliqSetupWizard } from "./setup-wizard.js";
 function normalizeCliqTarget(raw) {
     const stripped = stripTargetKindPrefix(stripChannelTargetPrefix(raw.trim(), "cliq", "zoho-cliq", "zoho"));
     return stripped || undefined;
@@ -113,6 +114,7 @@ const cliqBase = {
             applyAccountConfig: applyCliqAccountConfig,
             validateInput: ({ input }) => validateCliqSetupInput({ input }),
         },
+        setupWizard: cliqSetupWizard,
         groups: {
             resolveRequireMention: () => true,
             resolveGroupIntroHint: () => "Mention the configured Zoho Cliq bot before asking OpenClaw to act.",

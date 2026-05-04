@@ -14,7 +14,9 @@ entrypoints, and was discovered by package-local `openclaw@2026.5.3-1` as
 plugin `zoho-cliq` with channel `cliq`. `cliq-channel-402` is complete: the
 channel now has schema-backed account/config metadata, env SecretRef references
 for token password and webhook secret, and setup validation that rejects
-plaintext token-style fields.
+plaintext token-style fields. `cliq-channel-416` is complete: setup wizard
+metadata now exposes operator state copy, env shortcut, setup text inputs,
+allowlist handling, and disable behavior.
 
 The v0.4 plugin targets OpenClaw `>=2026.5.3-1`. The local
 `OpenClaw 2026.4.15` install is too old for plugin install/inspect validation,
@@ -56,6 +58,12 @@ openclaw security audit --json
 zoho cliq status --check-auth --network <network>
 ```
 
+Human setup runbook:
+
+```text
+docs/releases/OPENCLAW_CLIQ_CHANNEL_SETUP.md
+```
+
 Human setup checkpoints:
 
 - OpenClaw host version is compatible.
@@ -69,6 +77,16 @@ Human setup checkpoints:
 - Pairing/allowlist/mention gating are enabled.
 - Scoped employee mode has a work-scope profile.
 - Test message or dry-run fixture succeeds.
+
+Setup state codes:
+
+- `host_too_old`: upgrade OpenClaw to `>=2026.5.3-1`.
+- `zoho_missing`: install `zoho-cli` and put `zoho` on `PATH`.
+- `not_logged_in`: run `zoho login --with-cliq`.
+- `missing_scope`: re-auth and rerun `zoho cliq status --check-auth`.
+- `network_missing`: set `channels.cliq.accounts.<id>.network`.
+- `webhook_unverified`: configure webhook secret or wait for polling fallback.
+- `allowlist_empty`: add trusted Cliq user ids to `allowFrom`.
 
 Config reference shape:
 

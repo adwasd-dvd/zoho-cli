@@ -26,6 +26,7 @@ import {
   validateCliqSetupInput,
 } from "./config.js";
 import { CLIQ_CHANNEL_ID, CLIQ_PLUGIN_ID } from "./constants.js";
+import { cliqSetupWizard } from "./setup-wizard.js";
 
 function normalizeCliqTarget(raw: string): string | undefined {
   const stripped = stripTargetKindPrefix(
@@ -153,6 +154,7 @@ const cliqBase: ChannelPlugin<CliqResolvedAccount> = {
       applyAccountConfig: applyCliqAccountConfig,
       validateInput: ({ input }) => validateCliqSetupInput({ input }),
     },
+    setupWizard: cliqSetupWizard,
     groups: {
       resolveRequireMention: () => true,
       resolveGroupIntroHint: () =>

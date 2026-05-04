@@ -26,6 +26,16 @@ zoho cliq capabilities --network <network>
 If readiness fails, report the failing `zoho-cli` command, exit code, and
 redacted stderr summary.
 
+## Setup states
+
+- `host_too_old`: upgrade OpenClaw to `>=2026.5.3-1`.
+- `zoho_missing`: install `zoho-cli` and put `zoho` on `PATH`.
+- `not_logged_in`: run `zoho login --with-cliq`.
+- `missing_scope`: re-auth and rerun `zoho cliq status --check-auth`.
+- `network_missing`: set the Cliq network.
+- `webhook_unverified`: configure webhook secret or choose polling later.
+- `allowlist_empty`: add trusted Cliq user ids to `allowFrom`.
+
 ## Config shape
 
 ```json

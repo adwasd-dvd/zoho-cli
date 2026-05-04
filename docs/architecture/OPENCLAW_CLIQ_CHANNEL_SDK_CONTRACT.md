@@ -257,6 +257,8 @@ Required runtime surfaces:
 
 - `createChannelPluginBase(...)` for id, meta, config/setup, status, doctor, and
   lightweight capabilities.
+- `setupWizard` for human setup status lines, env shortcut, text inputs,
+  allowlist handling, completion guidance, and disable behavior.
 - `createChatChannelPlugin(...)` for DM security, pairing, threading, and
   outbound delivery composition.
 - `defineChannelPluginEntry(...)` for the full runtime entry.
@@ -294,6 +296,23 @@ Plain env values remain supported through `channelEnvVars`, but committed docs
 and examples must prefer SecretRef/env references over plaintext secrets.
 Setup input must reject plaintext `token`, `accessToken`, `password`,
 `privateKey`, `secret`, `botToken`, and `appToken` fields.
+
+## Setup UX contract
+
+`src/setup-wizard.ts` owns human setup metadata. It must expose these setup
+states with one clear next action each:
+
+- `host_too_old`
+- `zoho_missing`
+- `not_logged_in`
+- `missing_scope`
+- `network_missing`
+- `webhook_unverified`
+- `allowlist_empty`
+
+The wizard must not perform process execution before `cliq-channel-404`; it only
+describes status, writes config patches, and points operators at the relevant
+`zoho` / `openclaw` commands.
 
 ## CLI contract
 

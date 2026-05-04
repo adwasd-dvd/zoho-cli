@@ -48,6 +48,16 @@ export declare function hasCliqAuthState(params?: {
     cfg?: OpenClawConfig;
     env?: NodeJS.ProcessEnv;
 }): boolean;
+export declare function patchCliqAccountConfig(params: {
+    cfg: OpenClawConfig;
+    accountId: string;
+    patch: CliqAccountConfig;
+}): OpenClawConfig;
+export declare function setCliqAccountEnabled(params: {
+    cfg: OpenClawConfig;
+    accountId: string;
+    enabled: boolean;
+}): OpenClawConfig;
 export declare function applyCliqAccountConfig(params: {
     cfg: OpenClawConfig;
     accountId: string;

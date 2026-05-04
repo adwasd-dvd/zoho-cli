@@ -1,10 +1,13 @@
-last_run_at: "2026-05-04T02:12:49Z"
+last_run_at: "2026-05-04T02:29:26Z"
 last_result: passing
-current_focus: platform-208-cliq-teams-help-wording-20260504T021249Z
+current_focus: platform-208-cliq-departments-help-wording-20260504T022926Z
 suites:
   unit:
     status: passing
     notes:
+      - "platform-208 focused Cliq help-wording cleanup at 2026-05-04T02:29:26Z"
+      - "behavior change: normalized `zoho cliq departments --help` from `List Cliq organization departments.` to `List Cliq departments.`"
+      - "./.venv/bin/python -m pytest -q tests/test_cli.py::test_cliq_help_hides_internal_slice_labels -> 18 passed in 1.70s"
       - "platform-208 focused Cliq help-wording cleanup at 2026-05-04T02:12:49Z"
       - "behavior change: normalized `zoho cliq teams --help` from `List Cliq organization teams.` to `List Cliq teams.`"
       - "./.venv/bin/python -m pytest -q tests/test_cli.py::test_cliq_teams_help_hides_internal_slice_labels -> 1 passed in 1.32s"

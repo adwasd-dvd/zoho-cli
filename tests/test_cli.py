@@ -142,6 +142,7 @@ def test_cliq_teams_help_hides_internal_slice_labels() -> None:
 @pytest.mark.parametrize(
     "subcommand,expected",
     [
+        (["departments"], "List Cliq departments."),
         (["events"], "List Cliq collaboration events."),
         (["reminders"], "List Cliq collaboration reminders."),
         (["meetings"], "List Cliq collaboration calls and meetings."),

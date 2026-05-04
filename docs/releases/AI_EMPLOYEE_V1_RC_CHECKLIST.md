@@ -19,9 +19,11 @@ Use this checklist to complete the platform-207 package and run the RC/version d
 
 ## RC/version decision checkpoint
 
-- [x] Decide `release_candidate` flip (`true` or keep `false`) with explicit reason (current decision: keep `false`, defer).
-- [ ] If flip approved, execute version bump workflow and mark `release_gate.version_bumped=true`.
-- [x] If flip deferred, record concrete unblock condition and next checkpoint owner/time.
+- [x] Decide `release_candidate` flip (`true` or keep `false`) with explicit reason (current decision: `true`, approve `0.2.1rc1` with deferred external blockers).
+- [x] If flip approved, execute version bump workflow and mark `release_gate.version_bumped=true`.
+- [x] If flip deferred, record concrete unblock condition and next checkpoint owner/time. Not applicable for the current approved RC posture.
+- [x] Run post-flip `make release-gate && make ci` before tag/publish.
+- [ ] Tag/publish `v0.2.1rc1`.
 
 ## Decision rule
 

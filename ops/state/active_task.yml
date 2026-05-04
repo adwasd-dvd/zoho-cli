@@ -1,15 +1,17 @@
-id: platform-208
-title: finalize module-first CLI information architecture (retire legacy root mail aliases after deprecation window and normalize level-2/3 help taxonomy)
+id: platform-209
+title: cut v0.2.1rc1 for Mail+Cliq AI-employee core and hand off post-RC Cliq modularization
 module: platform
 stage: completed
 status: completed
 owner: coder
-updated_at: '2026-05-04T17:57:40Z'
+updated_at: '2026-05-04T18:02:41Z'
 execution_mode: turbo_20x
 throughput_policy_ref: ops/state/execution_policy.yml
 success_criteria:
-- remove legacy root mail alias exposure from operator-facing help hierarchy after the documented deprecation window
-- keep module-first command taxonomy consistent across level-2/level-3 help surfaces
-- leave a concise operator-facing IA contract that matches current module order and release state
-next_if_done: reassess RC/version gate posture with blocker-bug policy unchanged.
-next_step: "Platform-208 closure reassessment remains complete: latest medium-scope integration rerun is still green (`./.venv/bin/python -m pytest -q tests/test_registry.py tests/test_membrane_bridge.py` -> `489 passed in 9.19s`; focused CLI selector -> `202 passed, 665 deselected in 4.19s`; focused Cliq selector -> `69 passed, 190 deselected in 0.74s`; help smokes -> `HELP_SMOKE_OK`). Next best step is to keep RC deferred until blocker-bug gate changes, then re-run release-candidate decision."
+  - package/runtime version metadata is bumped to 0.2.1rc1
+  - deferred external Zoho blockers are explicitly non-blocking for RC
+  - release-status, human docs, and lane3/operator docs are aligned with RC posture
+  - dirty workspace is reduced to intentional, committable changes
+  - final RC gate is run before tag/publish
+next_if_done: begin post-RC Cliq API-surface modularization before expanding CRM.
+next_step: Post-flip RC gate is green; tag/publish `v0.2.1rc1` from `autobot/zoho-platform`, then begin post-RC Cliq API-surface modularization.

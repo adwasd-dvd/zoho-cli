@@ -2,6 +2,17 @@
 
 ## Unreleased
 
+### Release readiness (2026-05-04T18:02:41Z)
+- Approved the fast RC posture for `0.2.1rc1`.
+- External Zoho live blockers that repeatedly return `not_supported`, missing scopes, `inactive_appaccount_user`, or missing CRM org access are now explicitly treated as capability-gated deferred blockers, not RC blockers.
+- Bumped package/runtime version metadata to `0.2.1rc1` (`pyproject.toml`, `uv.lock`, and `zoho_cli.__version__`).
+- Added release hygiene for the RC cut: auto-pilot report sidecars (`.stderr`, `.exitcode`, `.env`, `.txt`) are now ignored by default, and the Homebrew bump workflow now pushes to the matching `adwasd-dvd/homebrew-tap` repository.
+- Post-flip verification is green: `make release-gate` passed (`1749 passed` + wheel smoke `0.2.1rc1`) and `make ci` passed (`1749 passed`, ruff clean). Final tag/publish is the remaining release action.
+
+### Changed
+- Accepted post-RC Cliq modularization as the next high-priority engineering lane: split Cliq by API surface after RC to reduce AI context load before deeper CRM expansion.
+- Moved the markdown update smoke from a top-level ad hoc script into `tests/test_markdown_update.py`.
+
 ### Release readiness (2026-05-03T02:29:00Z)
 - Assessed from current milestone and system state: **not release-ready**.
 - Gate evidence:

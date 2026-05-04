@@ -1,0 +1,63 @@
+# On every release, update the formula in adwasd-dvd/tap:
+#   1. Patch the URL and SHA256 to the new tarball
+#   2. Run `brew update-python-resources` to regenerate ALL resource stanzas
+#      (this ensures transitive deps like `idna` are never missing)
+#
+# Required secret: HOMEBREW_TAP_TOKEN — PAT with `public_repo` + `workflow` scope
+name: Bump Homebrew formula
+
+on:
+  release:
+    types: [published]
+
+jobs:
+  bump:
+    runs-on: macos-latest
+    steps:
+      - name: Set up Homebrew
+        uses: Homebrew/actions/setup-homebrew@master
+
+      - name: Tap adwasd-dvd/tap
+        run: brew tap adwasd-dvd/tap
+
+      - name: Compute tarball SHA-256
+        id: info
+        run: |
+          TAG="${{ github.event.release.tag_name }}"
+          URL="https://github.com/${{ github.repository }}/archive/refs/tags/${TAG}.tar.gz"
+          SHA=$(curl -fsSL "$URL" | shasum -a 256 | awk '{print $1}')
+          VERSION="${TAG#v}"
+          echo "tag=$TAG"       >> "$GITHUB_OUTPUT"
+          echo "url=$URL"       >> "$GITHUB_OUTPUT"
+          echo "sha=$SHA"       >> "$GITHUB_OUTPUT"
+          echo "version=$VERSION" >> "$GITHUB_OUTPUT"
+
+      - name: Patch formula URL + SHA
+        run: |
+          FORMULA="$(brew formula adwasd-dvd/tap/zoho-cli)"
+          python3 - "$FORMULA" "${{ steps.info.outputs.url }}" "${{ steps.info.outputs.sha }}" <<'PY'
+          import sys, re
+          path, url, sha = sys.argv[1], sys.argv[2], sys.argv[3]
+          text = open(path).read()
+          # Replace only the top-level url (first occurrence, before any resource block)
+          text = re.sub(r'(?m)^  url "https://github\.com/[^"]*"', f'  url "{url}"', text, count=1)
+          # Replace only the top-level sha256 (first occurrence)
+          text = re.sub(r'(?m)^  sha256 "[0-9a-f]+"', f'  sha256 "{sha}"', text, count=1)
+          open(path, 'w').write(text)
+          PY
+
+      - name: Regenerate all Python resource stanzas
+        run: brew update-python-resources adwasd-dvd/tap/zoho-cli
+
+      - name: Commit and push to tap
+        env:
+          HOMEBREW_TAP_TOKEN: ${{ secrets.HOMEBREW_TAP_TOKEN }}
+        run: |
+          REPO_DIR="$(brew --repo adwasd-dvd/tap)"
+          cd "$REPO_DIR"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git config user.name "github-actions[bot]"
+          git add Formula/zoho-cli.rb
+          git diff --staged --quiet && echo "No changes." && exit 0
+          git commit -m "zoho-cli ${{ steps.info.outputs.version }}"
+          git push "https://x-access-token:${HOMEBREW_TAP_TOKEN}@github.com/adwasd-dvd/homebrew-tap.git" HEAD:main

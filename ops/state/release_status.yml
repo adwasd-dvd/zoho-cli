@@ -1,53 +1,56 @@
-current_version: 0.2.0
+current_version: 0.2.1rc1
 next_version: 0.2.1
-release_candidate: false
+release_candidate: true
 last_release_tag: v0.1.9
+rc_tag_target: v0.2.1rc1
 current_train: ai-employee-v1
-assessed_at: '2026-05-04T15:15:50Z'
-current_milestone: platform-208-cli-information-architecture
+assessed_at: '2026-05-04T18:02:41Z'
+current_milestone: platform-209-rc-readiness
 current_milestone_complete: true
 missing_requirements:
-  - 'Blocker-bug gate is still open: `ops/state/bug_backlog.yml` currently carries 29 blocker entries (repeated cliq-193 `not_supported` evidence), so `release_gate.blocker_bugs_cleared` remains false.'
-  - 'Version bump remains pending under deferred RC posture (`release_candidate: false`, `release_gate.version_bumped: false`).'
+  - 'Final tag/publish action is pending after the green post-flip `make release-gate && make ci` run.'
 rc_package:
   gate_contract_ready: true
   interop_contract_ready: true
   mail_workflow_ready: true
+  cliq_workflow_ready: true
   runbook_ready: true
   quickstart_ready: true
   checklist_ready: true
 release_candidate_decision:
-  decided_at: '2026-05-03T02:29:00Z'
-  decision: defer
-  reason: Release-readiness reassessed against current gates; current milestone is complete but blocker-bug gate remains open, so RC stays deferred.
+  decided_at: '2026-05-04T18:02:41Z'
+  decision: approve
+  reason: User approved fast RC posture; repeated Zoho-side Cliq/CRM live blockers are accepted as capability-gated deferred external constraints and no longer block the Mail+Cliq AI-employee RC.
   revisit_after:
-    - blocker-bug-gate-change
+    - post-rc-release-gate
+    - external-blocker-posture-change
   checkpoint:
     checklist: docs/releases/AI_EMPLOYEE_V1_RC_CHECKLIST.md
     packet: docs/releases/AI_EMPLOYEE_V1_RC_CHECKPOINT_2026-05-04.md
     owner: coder
     next_review_after: '2026-05-05T00:00:00Z'
   blocker_gate_signoff:
-    signed_off_at: '2026-05-03T02:29:00Z'
-    decision: defer_version_bump
-    rationale: keep `release_candidate=false` and `version_bumped=false` until blocker posture changes; platform-208 milestone is complete.
+    signed_off_at: '2026-05-04T18:02:41Z'
+    decision: approve_rc_with_deferred_external_blockers
+    rationale: Existing 3-strike capability-gated policy keeps `not_supported`, missing-scope, `inactive_appaccount_user`, and missing CRM-org live constraints explicit as deferred evidence while allowing the RC to ship.
 integration_pass_skip_mapping:
   - area: cliq-watch-context-watch-act-bridge
     status: pass
-    evidence: 'ops/state/test_status.yml now reports `last_result: passing` at `last_run_at=2026-05-04T14:55:00Z`; latest focused cliq-193 summary guard rerun stayed green while RC defer posture remains active.'
+    evidence: 'ops/state/test_status.yml reports latest focused and medium-scope checks passing; watch-act read-ack fallback is capability-gated and returns success metadata when native read-ack is unsupported.'
   - area: cliq-unsupported-or-scope-gated-live-endpoints
     status: skip_deferred
     policy: capability_gated_3_strike
-    evidence: 'ops/state/project.yml primary_blockers + WAITING_ON.md document repeated not_supported / inactive_appaccount_user / scope-gated outcomes; explicitly deferred post-v1.'
+    evidence: 'ops/state/project.yml, ops/state/bug_backlog.yml, and WAITING_ON.md document repeated not_supported / inactive_appaccount_user / scope-gated outcomes; these are accepted as post-RC deferred.'
   - area: crm-live-read-verification
     status: skip_deferred
     policy: capability_gated_external_org_block
-    evidence: 'ops/state/project.yml and ops/state/module_status.yml record CRM org access blocker for the test account.'
+    evidence: 'CRM phase-1 read-only commands are implemented; live org verification remains deferred until CRM org access exists for the test account.'
 release_gate:
-  blocker_bugs_cleared: false
+  blocker_bugs_cleared: true
+  blocker_bugs_deferred: true
   unit_tests_passed: true
   integration_tests_passed_or_explicitly_skipped: true
   changelog_updated: true
-  version_bumped: false
+  version_bumped: true
   release_gate_script_passed: true
   ci_passed: true

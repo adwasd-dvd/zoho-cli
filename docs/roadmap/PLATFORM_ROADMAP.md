@@ -54,7 +54,7 @@ Definition of done:
 - metadata and record read paths stable
 - tests cover common org/module edge cases
 
-### Phase B3 — v1 AI-employee release gate (in progress)
+### Phase B3 — v1 AI-employee release gate (RC)
 
 Goals:
 - convert the platform-204 architecture contract into explicit acceptance checks (`platform-205`)
@@ -65,6 +65,18 @@ Definition of done:
 - release-gate checklist is documented, reproducible, and linked to `ops/state/*`
 - read-ack/dedupe behavior is an explicit pass condition
 - deferred/unsupported endpoint policy is an explicit pass condition boundary
+
+### Phase B5 — post-RC Cliq modularization (next)
+
+Goals:
+- split the large Cliq command/client surfaces by API family so AI agents can inspect smaller files
+- keep command JSON schemas and help output stable while moving code
+- prioritize Mail + Cliq operator workflows over new CRM depth until the RC is cut
+
+Definition of done:
+- each extracted Cliq API family has focused parity tests
+- `zoho_cli/cli.py` stops receiving new large command bodies
+- no file created by the modularization path crosses the 800-line split threshold
 
 ### Phase B4 — cross-channel interoperability contract (completed)
 

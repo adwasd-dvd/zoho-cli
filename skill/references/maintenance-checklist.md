@@ -17,4 +17,5 @@ Run this whenever command surfaces or workflows change.
    ```bash
    ./.venv/bin/python -m pytest -q tests/test_lane3_docs.py
    ```
-6. Update changelog and state files for traceability.
+6. For RC updates, verify `zoho --version` matches the approved RC version before syncing AI-user skill files.
+7. Update changelog and state files for traceability.

@@ -8,16 +8,16 @@ This document describes how AI agents and automated systems should interact with
 
 | Context | Behaviour |
 |---|---|
-| Terminal (TTY) | Rich tables, coloured output |
+| Terminal (TTY) | JSON to stdout by default |
 | Pipe / script | JSON to stdout automatically |
-| `--json` flag | Force JSON even in a terminal |
+| `--md` flag | Markdown tables/text for human-readable terminal output |
 | `--debug` flag | HTTP + internal logs to stderr only |
 
-**Always pipe stdout for JSON:**
+**Always treat stdout as JSON unless `--md` is explicitly set:**
 
 ```bash
 zoho mail list | jq '.[0].messageId'
-zoho --json folders list | jq '.[].folderName'
+zoho mail folders list | jq '.[].folderName'
 ```
 
 Errors are always written to **stderr** as JSON when piped, so stdout stays clean:

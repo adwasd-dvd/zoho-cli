@@ -51,6 +51,10 @@ tests/auto_pilot/reports/*.json
 tests/auto_pilot/reports/*.md
 tests/auto_pilot/reports/*.xml
 tests/auto_pilot/reports/*.log
+tests/auto_pilot/reports/*.stderr
+tests/auto_pilot/reports/*.exitcode
+tests/auto_pilot/reports/*.env
+tests/auto_pilot/reports/*.txt
 
 # Archives / macOS zip noise
 __MACOSX/

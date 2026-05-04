@@ -138,47 +138,46 @@ Project state lives in `ops/state/*.yml`:
 
 ---
 
-## Development status and roadmap (from `ops/state`, updated 2026-04-28)
+## Development status and roadmap (from `ops/state`, updated 2026-05-04)
 
 ### Current progress
 
 | Module | Status | Current phase | Notes |
 | --- | --- | --- | --- |
 | Mail | ✅ Completed | stabilization_complete | Shipping baseline is stable. |
-| Cliq | 🚧 In progress | cliq-expansion-phase | `cliq-195` core package is closed for this milestone; non-critical tail is deferred post-v1. |
-| CRM | ⛔ Blocked | phase_1_read_only_commands_implemented | Live org access is missing for the test account. |
+| Cliq | ✅ Completed for RC | workflow_packaging_complete_with_deferred_external_blockers | Mail+Cliq AI-employee core is ready for RC; endpoint-limited tail is deferred post-RC. |
+| CRM | ✅ Completed for phase 1 | phase_1_read_only_commands_implemented | Read-only scaffold is present; deeper CRM work resumes after RC. |
 
 ### Current platform lane (AI-employee v1)
 
 | Task | Status | Notes |
 | --- | --- | --- |
 | `platform-204` architecture contract | ✅ Completed | Mail+Cliq core, control/execution/escalation boundaries locked in docs. |
-| `platform-205` release gate | ✅ Completed | Gate checklist executed, integration pass/skip mapping recorded, RC/version bump intentionally deferred until one more green development slice. |
+| `platform-205` release gate | ✅ Completed | Gate checklist executed, integration pass/skip mapping recorded, deferred external blockers accepted as non-blocking for RC. |
 | `platform-206` interop contract | ✅ Completed | Contract locked and now consumed by operator runbook docs for platform-207 handoff. |
 | `mail-010` workflow package | ✅ Completed | Workflow contract now includes end-to-end operator transcript and focused verification evidence for platform-207 consumption. |
-| `platform-207` RC package | ✅ Completed | Docs package consolidated and RC/version checkpoint executed (decision: defer RC flip). |
-| `platform-208` CLI information architecture | 🚧 In progress | Module-first help taxonomy cleanup is the active forward lane while capability-gated blockers remain deferred. |
+| `platform-207` RC package | ✅ Completed | Docs package consolidated and RC/version checkpoint refreshed for RC approval. |
+| `platform-208` CLI information architecture | ✅ Completed | Module-first help taxonomy cleanup is complete; remaining endpoint limitations are capability-gated. |
 
 ### Current release posture
 
-- Current version: `0.2.0`
-- Next version target: `0.2.1`
-- Release candidate: `false`
-- Broad automated gate: latest `make release-gate && make ci` is green, but release is still blocked by unresolved live external blockers and deferred RC flip posture.
+- Current version: `0.2.1rc1`
+- Next final target: `0.2.1`
+- Release candidate: `true`
+- Broad automated gate: post-flip `make release-gate && make ci` is green for `0.2.1rc1`; tag/publish is the remaining RC action.
 
-### Active blockers (highest impact)
+### Deferred external blockers (do not block RC)
 
 - Cliq-194 live read-ack endpoint is still unsupported on active network/token, but runtime continuity is capability-gated (watch-act falls back safely instead of hard-failing).
 - Cliq maintenance export verification (`cliq-165`) is blocked by API-side `inactive_appaccount_user`.
 - Several Cliq endpoints are still unsupported on the current org/network (`not_supported`) or require extra scopes.
-- CRM live verification remains blocked until CRM org access is granted to the test account.
+- CRM live verification remains deferred until CRM org access is granted to the test account.
 
 ### Near-term plan
 
-1. Execute `platform-208` module-first CLI information-architecture cleanup.
-2. Keep unsupported Cliq endpoints capability-gated so they do not stall v1 internal-loop readiness.
-3. Revisit RC/version decision after platform-208 first cleanup slice lands green.
-4. Resume CRM live verification when CRM org access is available.
+1. Tag/publish `v0.2.1rc1`.
+2. Keep unsupported Cliq endpoints capability-gated so they do not stall AI-employee internal-loop readiness.
+3. After RC, split Cliq by API surface to reduce AI context load, then plan deeper CRM.
 
 ---
 
@@ -187,7 +186,8 @@ Project state lives in `ops/state/*.yml`:
 | Version | Milestone | Status |
 | --- | --- | --- |
 | v0.2.0 | Mail stabilized + shared core extracted | ✅ Released |
-| v0.2.1 | Cliq expansion hardening + blocker burn-down | 🚧 Active |
+| v0.2.1rc1 | Mail+Cliq AI-employee RC with deferred external blockers | 🚧 RC |
+| v0.2.1 | Cliq expansion hardening + blocker burn-down | ⏳ Final after RC validation |
 | v0.3.x | Cliq live parity and export unblock closure | ⏳ Pending external unblock |
 | v0.4.x | CRM live validation and follow-on CRM work | 📋 Planned |
 

@@ -2,7 +2,7 @@
 
 ## Scope of this refresh
 
-This packet refreshes the RC checkpoint evidence after platform-208 CLI information-architecture wording cleanup slices.
+This packet refreshes the RC checkpoint evidence after platform-208 CLI information-architecture wording cleanup slices and the 2026-05-04 decision to cut `0.2.1rc1`.
 
 ## Latest IA evidence (platform-208)
 
@@ -16,12 +16,14 @@ This packet refreshes the RC checkpoint evidence after platform-208 CLI informat
 
 ## RC decision posture
 
-- **Decision remains deferred** (`release_candidate: false`).
-- Blocker posture is materially unchanged for deferred external Cliq/CRM constraints and blocker-bug gate remains open.
-- No version bump action is queued in this refresh.
+- **Decision is approved** (`release_candidate: true`).
+- Version metadata is bumped to `0.2.1rc1`.
+- Deferred external Cliq/CRM constraints are accepted as capability-gated non-blockers for RC.
+- Post-flip gate is green: `make release-gate` passed (`1749 passed` + wheel smoke `0.2.1rc1`) and `make ci` passed (`1749 passed`, ruff clean).
+- Tag/publish is the remaining release action.
 
 ## Next checkpoint trigger
 
 Re-run RC checkpoint after one of:
-1. blocker-bug gate posture changes materially, or
-2. platform-208 is marked complete.
+1. external blocker posture changes materially, or
+2. the RC is tagged/published.

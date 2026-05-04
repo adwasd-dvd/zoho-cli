@@ -56,6 +56,9 @@ Each migration slice must be small enough for one coding cycle:
 - `zoho_cli/commands/cliq_productivity.py` owns productivity/platform list commands: `events`, `reminders`, `meetings`, and `databases`.
 - `zoho_cli/commands/cliq_platform_extensions.py` owns platform-extension list commands: `widgets`, `map-tickers`, `custom-domains`, and `custom-emails`.
 - `zoho_cli/commands/cliq_channel_management.py` owns channel lifecycle/member/chat-control commands: `members`, `channel-create`, `channel-rename`, `channel-topic`, `member-add`, `member-remove`, `channel-archive`, `channel-delete`, `channel-unarchive`, `leave`, `mute`, `unmute`, `pin`, `unpin`, and `pinned`.
+- `zoho_cli/commands/cliq_threading.py` owns thread commands: `thread-create`, `thread-reply`, `threads`, `thread-followers`, and `thread-state`.
+- `zoho_cli/commands/cliq_scheduling.py` owns scheduled-message commands: `schedule`, `scheduled`, `scheduled-get`, and `scheduled-cancel`.
+- `zoho_cli/commands/cliq_bots.py` owns bot commands: `post-to-bot`, `bot-subscribers`, and `trigger-bot`.
 - Preserve command names, help text, JSON shape, and monkeypatch-friendly module lookups when moving additional Cliq surfaces.
 
 ## Sequencing policy

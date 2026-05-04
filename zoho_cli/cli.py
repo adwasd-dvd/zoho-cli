@@ -158,6 +158,27 @@ from zoho_cli.commands.cliq_channel_management import (
     build_cliq_unpin_command,
     build_cliq_unmute_command,
 )
+from zoho_cli.commands.cliq_threading import (
+    CliqThreadingContext,
+    build_cliq_thread_create_command,
+    build_cliq_thread_followers_command,
+    build_cliq_thread_reply_command,
+    build_cliq_thread_state_command,
+    build_cliq_threads_command,
+)
+from zoho_cli.commands.cliq_scheduling import (
+    CliqSchedulingContext,
+    build_cliq_schedule_command,
+    build_cliq_scheduled_cancel_command,
+    build_cliq_scheduled_command,
+    build_cliq_scheduled_get_command,
+)
+from zoho_cli.commands.cliq_bots import (
+    CliqBotsContext,
+    build_cliq_bot_subscribers_command,
+    build_cliq_post_to_bot_command,
+    build_cliq_trigger_bot_command,
+)
 from zoho_cli.commands.cliq_org_admin import (
     CliqOrgAdminContext,
     build_cliq_departments_command,
@@ -8571,84 +8592,15 @@ register_cliq_channel_unarchive_commands(
 )
 
 
-def cliq_thread_create(
-    message_id: str = typer.Argument(..., help="Parent message id to anchor thread."),
-    text: str = typer.Option(..., "--text", "-t", help="Thread message text."),
-    channel_id: Optional[str] = typer.Option(
-        None, "--channel-id", help="Destination channel id (resolved to chat_id)."
-    ),
-    chat_id: Optional[str] = typer.Option(
-        None, "--chat-id", help="Destination chat id."
-    ),
-    network: Optional[str] = typer.Option(
-        None, "--network", help="Cliq network slug (e.g. happydistrouklimited)."
-    ),
-) -> None:
-    """Create/send a thread message anchored to one parent message."""
-    if not chat_id and not channel_id:
-        utils.error_exit("invalid_destination", "Provide --chat-id or --channel-id")
-
-    cfg = _cfg()
-    email = _require_account(cfg)
-    client = _get_cliq_client(cfg, email, network=network)
-
-    resolved_chat = (chat_id or "").strip() or client.resolve_chat_id(channel_id or "")
-    resp = client.create_thread(
-        message_id,
-        text,
-        chat_id=resolved_chat,
-        channel_id=channel_id,
-    )
-    data = resp.get("data", resp)
-    utils.output_status(
-        "Cliq thread message sent",
-        extra={
-            "chatId": resolved_chat or "",
-            "channelId": channel_id or "",
-            "parentMessageId": message_id,
-            "result": data,
-        },
-    )
+_cliq_threading_context = CliqThreadingContext(
+    load_config=_cfg,
+    require_account=lambda cfg: _require_account(cfg),
+    get_cliq_client=lambda *args, **kwargs: _get_cliq_client(*args, **kwargs),
+)
 
 
-def cliq_thread_reply(
-    thread_id: str = typer.Argument(..., help="Thread id."),
-    text: str = typer.Option(..., "--text", "-t", help="Reply text."),
-    channel_id: Optional[str] = typer.Option(
-        None, "--channel-id", help="Destination channel id (resolved to chat_id)."
-    ),
-    chat_id: Optional[str] = typer.Option(
-        None, "--chat-id", help="Destination chat id."
-    ),
-    network: Optional[str] = typer.Option(
-        None, "--network", help="Cliq network slug (e.g. happydistrouklimited)."
-    ),
-) -> None:
-    """Reply to a Cliq thread."""
-    if not chat_id and not channel_id:
-        utils.error_exit("invalid_destination", "Provide --chat-id or --channel-id")
-
-    cfg = _cfg()
-    email = _require_account(cfg)
-    client = _get_cliq_client(cfg, email, network=network)
-
-    resolved_chat = (chat_id or "").strip() or client.resolve_chat_id(channel_id or "")
-    resp = client.reply_thread(
-        thread_id,
-        text,
-        chat_id=resolved_chat,
-        channel_id=channel_id,
-    )
-    data = resp.get("data", resp)
-    utils.output_status(
-        "Cliq thread reply sent",
-        extra={
-            "chatId": resolved_chat or "",
-            "channelId": channel_id or "",
-            "threadId": thread_id,
-            "result": data,
-        },
-    )
+cliq_thread_create = build_cliq_thread_create_command(_cliq_threading_context)
+cliq_thread_reply = build_cliq_thread_reply_command(_cliq_threading_context)
 
 
 register_cliq_thread_commands(
@@ -8658,57 +8610,7 @@ register_cliq_thread_commands(
 )
 
 
-def cliq_threads(
-    channel_id: Optional[str] = typer.Option(
-        None, "--channel-id", help="Destination channel id (resolved to chat_id)."
-    ),
-    chat_id: Optional[str] = typer.Option(None, "--chat-id", help="Chat id."),
-    message_id: Optional[str] = typer.Option(
-        None,
-        "--message-id",
-        help="Optional parent message id for one-thread family listing.",
-    ),
-    limit: int = typer.Option(50, "--limit", "-n", help="Max rows to return."),
-    network: Optional[str] = typer.Option(
-        None, "--network", help="Cliq network slug (e.g. happydistrouklimited)."
-    ),
-) -> None:
-    """List threads for one chat/channel, optionally scoped to one parent message."""
-    if not chat_id and not channel_id:
-        utils.error_exit("invalid_destination", "Provide --chat-id or --channel-id")
-
-    cfg = _cfg()
-    email = _require_account(cfg)
-    client = _get_cliq_client(cfg, email, network=network)
-
-    resolved_chat = (chat_id or "").strip() or client.resolve_chat_id(channel_id or "")
-    resp = client.list_threads(
-        chat_id=resolved_chat,
-        channel_id=channel_id,
-        message_id=message_id,
-        limit=limit,
-    )
-
-    data = resp.get("data", resp)
-    threads: list[dict[str, Any]] = []
-    if isinstance(data, list):
-        threads = [item for item in data if isinstance(item, dict)]
-    elif isinstance(data, dict):
-        for key in ("threads", "data", "list", "items", "messages"):
-            candidate = data.get(key)
-            if isinstance(candidate, list):
-                threads = [item for item in candidate if isinstance(item, dict)]
-                break
-
-    utils.output(
-        {
-            "chatId": resolved_chat or "",
-            "channelId": channel_id or "",
-            "messageId": (message_id or "").strip(),
-            "count": len(threads),
-            "threads": threads,
-        }
-    )
+cliq_threads = build_cliq_threads_command(_cliq_threading_context)
 
 
 register_cliq_threads_commands(
@@ -8717,95 +8619,24 @@ register_cliq_threads_commands(
 )
 
 
-def cliq_schedule(
-    text: str = typer.Option(..., "--text", "-t", help="Message text."),
-    when: str = typer.Option(
-        ...,
-        "--when",
-        help="Scheduled send time (ISO-8601 or provider-accepted timestamp).",
-    ),
-    channel_id: Optional[str] = typer.Option(
-        None, "--channel-id", help="Destination channel id (resolved to chat_id)."
-    ),
-    chat_id: Optional[str] = typer.Option(None, "--chat-id", help="Chat id."),
-    network: Optional[str] = typer.Option(
-        None, "--network", help="Cliq network slug (e.g. happydistrouklimited)."
-    ),
-) -> None:
-    """Schedule one message for a chat/channel."""
-    if not chat_id and not channel_id:
-        utils.error_exit("invalid_destination", "Provide --chat-id or --channel-id")
-
-    cfg = _cfg()
-    email = _require_account(cfg)
-    client = _get_cliq_client(cfg, email, network=network)
-
-    resolved_chat = (chat_id or "").strip() or client.resolve_chat_id(channel_id or "")
-    resp = client.schedule_message(
-        text,
-        when,
-        chat_id=resolved_chat,
-        channel_id=channel_id,
-    )
-
-    data = resp.get("data", resp)
-    scheduled_id = ""
-    if isinstance(data, dict):
-        for key in ("scheduled_id", "scheduledId", "id", "message_id", "messageId"):
-            value = data.get(key)
-            if isinstance(value, str) and value.strip():
-                scheduled_id = value.strip()
-                break
-
-    utils.output_status(
-        "Cliq message scheduled",
-        extra={
-            "chatId": resolved_chat or "",
-            "channelId": channel_id or "",
-            "scheduledAt": when.strip(),
-            "scheduledId": scheduled_id,
-            "result": data,
-        },
-    )
+_cliq_scheduling_context = CliqSchedulingContext(
+    load_config=_cfg,
+    require_account=lambda cfg: _require_account(cfg),
+    get_cliq_client=lambda *args, **kwargs: _get_cliq_client(*args, **kwargs),
+)
 
 
-def cliq_post_to_bot(
-    bot_id: str = typer.Argument(..., help="Bot id or unique name."),
-    text: str = typer.Option(..., "--text", "-t", help="Message text."),
-    title: Optional[str] = typer.Option(
-        None,
-        "--title",
-        help="Optional title/context field for bot message payloads.",
-    ),
-    network: Optional[str] = typer.Option(
-        None, "--network", help="Cliq network slug (e.g. happydistrouklimited)."
-    ),
-) -> None:
-    """Post one message to a bot."""
-    cfg = _cfg()
-    email = _require_account(cfg)
-    client = _get_cliq_client(cfg, email, network=network)
+cliq_schedule = build_cliq_schedule_command(_cliq_scheduling_context)
 
-    target_bot = bot_id.strip()
-    resp = client.post_to_bot(target_bot, text, title=title)
-    data = resp.get("data", resp)
 
-    message_id = ""
-    if isinstance(data, dict):
-        for key in ("message_id", "messageId", "id"):
-            value = data.get(key)
-            if isinstance(value, str) and value.strip():
-                message_id = value.strip()
-                break
+_cliq_bots_context = CliqBotsContext(
+    load_config=_cfg,
+    require_account=lambda cfg: _require_account(cfg),
+    get_cliq_client=lambda *args, **kwargs: _get_cliq_client(*args, **kwargs),
+)
 
-    utils.output_status(
-        "Cliq bot message sent",
-        extra={
-            "botId": target_bot,
-            "messageId": message_id,
-            "result": data,
-        },
-    )
+
+cliq_post_to_bot = build_cliq_post_to_bot_command(_cliq_bots_context)
 
 
 register_cliq_post_to_bot_commands(
@@ -8814,39 +8645,7 @@ register_cliq_post_to_bot_commands(
 )
 
 
-def cliq_bot_subscribers(
-    bot_id: str = typer.Argument(..., help="Bot id or unique name."),
-    limit: int = typer.Option(50, "--limit", "-n", help="Max rows to return."),
-    network: Optional[str] = typer.Option(
-        None, "--network", help="Cliq network slug (e.g. happydistrouklimited)."
-    ),
-) -> None:
-    """List subscribers/followers for one bot."""
-    cfg = _cfg()
-    email = _require_account(cfg)
-    client = _get_cliq_client(cfg, email, network=network)
-
-    target_bot = bot_id.strip()
-    resp = client.list_bot_subscribers(target_bot, limit=limit)
-    data = resp.get("data", resp)
-
-    subscribers: list[dict[str, Any]] = []
-    if isinstance(data, list):
-        subscribers = [item for item in data if isinstance(item, dict)]
-    elif isinstance(data, dict):
-        for key in ("subscribers", "followers", "members", "data", "list", "items"):
-            candidate = data.get(key)
-            if isinstance(candidate, list):
-                subscribers = [item for item in candidate if isinstance(item, dict)]
-                break
-
-    utils.output(
-        {
-            "botId": target_bot,
-            "count": len(subscribers),
-            "subscribers": subscribers,
-        }
-    )
+cliq_bot_subscribers = build_cliq_bot_subscribers_command(_cliq_bots_context)
 
 
 register_cliq_bot_subscribers_commands(
@@ -8855,61 +8654,7 @@ register_cliq_bot_subscribers_commands(
 )
 
 
-def cliq_trigger_bot(
-    bot_id: str = typer.Argument(..., help="Bot id or unique name."),
-    call_name: str = typer.Argument(..., help="Bot call/action name."),
-    inputs_json: Optional[str] = typer.Option(
-        None,
-        "--inputs-json",
-        help="Optional JSON object payload for bot call inputs.",
-    ),
-    network: Optional[str] = typer.Option(
-        None, "--network", help="Cliq network slug (e.g. happydistrouklimited)."
-    ),
-) -> None:
-    """Trigger one named bot call/action."""
-    cfg = _cfg()
-    email = _require_account(cfg)
-    client = _get_cliq_client(cfg, email, network=network)
-
-    payload_inputs: dict[str, Any] = {}
-    raw_inputs = (inputs_json or "").strip()
-    if raw_inputs:
-        try:
-            parsed = json.loads(raw_inputs)
-        except ValueError as exc:
-            utils.error_exit(
-                "invalid_inputs_json", f"inputs-json must be valid JSON: {exc}"
-            )
-        if not isinstance(parsed, dict):
-            utils.error_exit(
-                "invalid_inputs_json",
-                "inputs-json must decode to a JSON object",
-            )
-        payload_inputs = parsed
-
-    target_bot = bot_id.strip()
-    target_call = call_name.strip()
-    resp = client.trigger_bot_call(target_bot, target_call, inputs=payload_inputs)
-    data = resp.get("data", resp)
-
-    call_id = ""
-    if isinstance(data, dict):
-        for key in ("call_id", "callId", "id"):
-            value = data.get(key)
-            if isinstance(value, str) and value.strip():
-                call_id = value.strip()
-                break
-
-    utils.output_status(
-        "Cliq bot call triggered",
-        extra={
-            "botId": target_bot,
-            "callName": target_call,
-            "callId": call_id,
-            "result": data,
-        },
-    )
+cliq_trigger_bot = build_cliq_trigger_bot_command(_cliq_bots_context)
 
 
 register_cliq_trigger_bot_commands(
@@ -8918,96 +8663,8 @@ register_cliq_trigger_bot_commands(
 )
 
 
-def cliq_scheduled(
-    channel_id: Optional[str] = typer.Option(
-        None, "--channel-id", help="Destination channel id (resolved to chat_id)."
-    ),
-    chat_id: Optional[str] = typer.Option(None, "--chat-id", help="Chat id."),
-    limit: int = typer.Option(50, "--limit", "-n", help="Max rows to return."),
-    network: Optional[str] = typer.Option(
-        None, "--network", help="Cliq network slug (e.g. happydistrouklimited)."
-    ),
-) -> None:
-    """List scheduled messages for one chat/channel."""
-    if not chat_id and not channel_id:
-        utils.error_exit("invalid_destination", "Provide --chat-id or --channel-id")
-
-    cfg = _cfg()
-    email = _require_account(cfg)
-    client = _get_cliq_client(cfg, email, network=network)
-
-    resolved_chat = (chat_id or "").strip() or client.resolve_chat_id(channel_id or "")
-    resp = client.list_scheduled_messages(
-        chat_id=resolved_chat,
-        channel_id=channel_id,
-        limit=limit,
-    )
-
-    data = resp.get("data", resp)
-    scheduled: list[dict[str, Any]] = []
-    if isinstance(data, list):
-        scheduled = [item for item in data if isinstance(item, dict)]
-    elif isinstance(data, dict):
-        for key in ("scheduled", "messages", "data", "list", "items"):
-            candidate = data.get(key)
-            if isinstance(candidate, list):
-                scheduled = [item for item in candidate if isinstance(item, dict)]
-                break
-
-    utils.output(
-        {
-            "chatId": resolved_chat or "",
-            "channelId": channel_id or "",
-            "count": len(scheduled),
-            "scheduled": scheduled,
-        }
-    )
-
-
-def cliq_scheduled_get(
-    scheduled_id: str = typer.Argument(..., help="Scheduled message id."),
-    channel_id: Optional[str] = typer.Option(
-        None, "--channel-id", help="Destination channel id (resolved to chat_id)."
-    ),
-    chat_id: Optional[str] = typer.Option(None, "--chat-id", help="Chat id."),
-    network: Optional[str] = typer.Option(
-        None, "--network", help="Cliq network slug (e.g. happydistrouklimited)."
-    ),
-) -> None:
-    """Get one scheduled message by id."""
-    if not chat_id and not channel_id:
-        utils.error_exit("invalid_destination", "Provide --chat-id or --channel-id")
-
-    cfg = _cfg()
-    email = _require_account(cfg)
-    client = _get_cliq_client(cfg, email, network=network)
-
-    resolved_chat = (chat_id or "").strip() or client.resolve_chat_id(channel_id or "")
-    resp = client.get_scheduled_message(
-        scheduled_id,
-        chat_id=resolved_chat,
-        channel_id=channel_id,
-    )
-
-    data = resp.get("data", resp)
-    scheduled: dict[str, Any] | Any = data
-    if isinstance(data, dict):
-        for key in ("scheduled", "message", "item", "data"):
-            candidate = data.get(key)
-            if isinstance(candidate, dict):
-                scheduled = candidate
-                break
-    elif isinstance(data, list):
-        scheduled = next((item for item in data if isinstance(item, dict)), {})
-
-    utils.output(
-        {
-            "chatId": resolved_chat or "",
-            "channelId": channel_id or "",
-            "scheduledId": scheduled_id,
-            "scheduled": scheduled,
-        }
-    )
+cliq_scheduled = build_cliq_scheduled_command(_cliq_scheduling_context)
+cliq_scheduled_get = build_cliq_scheduled_get_command(_cliq_scheduling_context)
 
 
 register_cliq_scheduled_lifecycle_commands(
@@ -9017,41 +8674,7 @@ register_cliq_scheduled_lifecycle_commands(
 )
 
 
-def cliq_scheduled_cancel(
-    scheduled_id: str = typer.Argument(..., help="Scheduled message id."),
-    channel_id: Optional[str] = typer.Option(
-        None, "--channel-id", help="Destination channel id (resolved to chat_id)."
-    ),
-    chat_id: Optional[str] = typer.Option(None, "--chat-id", help="Chat id."),
-    network: Optional[str] = typer.Option(
-        None, "--network", help="Cliq network slug (e.g. happydistrouklimited)."
-    ),
-) -> None:
-    """Cancel one scheduled message by id."""
-    if not chat_id and not channel_id:
-        utils.error_exit("invalid_destination", "Provide --chat-id or --channel-id")
-
-    cfg = _cfg()
-    email = _require_account(cfg)
-    client = _get_cliq_client(cfg, email, network=network)
-
-    resolved_chat = (chat_id or "").strip() or client.resolve_chat_id(channel_id or "")
-    resp = client.cancel_scheduled_message(
-        scheduled_id,
-        chat_id=resolved_chat,
-        channel_id=channel_id,
-    )
-    data = resp.get("data", resp)
-
-    utils.output_status(
-        "Cliq scheduled message cancelled",
-        extra={
-            "chatId": resolved_chat or "",
-            "channelId": channel_id or "",
-            "scheduledId": scheduled_id,
-            "result": data,
-        },
-    )
+cliq_scheduled_cancel = build_cliq_scheduled_cancel_command(_cliq_scheduling_context)
 
 
 cliq_leave = build_cliq_leave_command(_cliq_channel_management_context)
@@ -9095,124 +8718,8 @@ register_cliq_pinned_commands(
 )
 
 
-def cliq_thread_followers(
-    thread_id: str = typer.Argument(..., help="Thread id."),
-    channel_id: Optional[str] = typer.Option(
-        None, "--channel-id", help="Destination channel id (resolved to chat_id)."
-    ),
-    chat_id: Optional[str] = typer.Option(None, "--chat-id", help="Chat id."),
-    limit: int = typer.Option(50, "--limit", "-n", help="Max rows to return."),
-    network: Optional[str] = typer.Option(
-        None, "--network", help="Cliq network slug (e.g. happydistrouklimited)."
-    ),
-) -> None:
-    """List followers/subscribers for one thread."""
-    if not chat_id and not channel_id:
-        utils.error_exit("invalid_destination", "Provide --chat-id or --channel-id")
-
-    cfg = _cfg()
-    email = _require_account(cfg)
-    client = _get_cliq_client(cfg, email, network=network)
-
-    resolved_chat = (chat_id or "").strip() or client.resolve_chat_id(channel_id or "")
-    resp = client.list_thread_followers(
-        thread_id,
-        chat_id=resolved_chat,
-        channel_id=channel_id,
-        limit=limit,
-    )
-
-    data = resp.get("data", resp)
-    followers: list[dict[str, Any]] = []
-    if isinstance(data, list):
-        followers = [item for item in data if isinstance(item, dict)]
-    elif isinstance(data, dict):
-        for key in ("followers", "members", "subscribers", "data", "list", "items"):
-            candidate = data.get(key)
-            if isinstance(candidate, list):
-                followers = [item for item in candidate if isinstance(item, dict)]
-                break
-
-    utils.output(
-        {
-            "chatId": resolved_chat or "",
-            "channelId": channel_id or "",
-            "threadId": thread_id,
-            "count": len(followers),
-            "followers": followers,
-        }
-    )
-
-
-def cliq_thread_state(
-    thread_id: str = typer.Argument(..., help="Thread id."),
-    state: Optional[str] = typer.Option(
-        None,
-        "--state",
-        help="Target state to set (omit to read current state payload).",
-    ),
-    channel_id: Optional[str] = typer.Option(
-        None, "--channel-id", help="Destination channel id (resolved to chat_id)."
-    ),
-    chat_id: Optional[str] = typer.Option(None, "--chat-id", help="Chat id."),
-    network: Optional[str] = typer.Option(
-        None, "--network", help="Cliq network slug (e.g. happydistrouklimited)."
-    ),
-) -> None:
-    """Get or set thread state."""
-    if not chat_id and not channel_id:
-        utils.error_exit("invalid_destination", "Provide --chat-id or --channel-id")
-
-    cfg = _cfg()
-    email = _require_account(cfg)
-    client = _get_cliq_client(cfg, email, network=network)
-
-    resolved_chat = (chat_id or "").strip() or client.resolve_chat_id(channel_id or "")
-    if (state or "").strip():
-        resp = client.update_thread_state(
-            thread_id,
-            (state or "").strip(),
-            chat_id=resolved_chat,
-            channel_id=channel_id,
-        )
-        data = resp.get("data", resp)
-        utils.output_status(
-            "Cliq thread state updated",
-            extra={
-                "chatId": resolved_chat or "",
-                "channelId": channel_id or "",
-                "threadId": thread_id,
-                "state": (state or "").strip(),
-                "result": data,
-            },
-        )
-        return
-
-    resp = client.get_thread_state(
-        thread_id,
-        chat_id=resolved_chat,
-        channel_id=channel_id,
-    )
-    data = resp.get("data", resp)
-    state_view = ""
-    if isinstance(data, dict):
-        state_view = str(
-            data.get("state")
-            or data.get("thread_state")
-            or data.get("threadState")
-            or data.get("status")
-            or ""
-        )
-
-    utils.output(
-        {
-            "chatId": resolved_chat or "",
-            "channelId": channel_id or "",
-            "threadId": thread_id,
-            "state": state_view,
-            "thread": data,
-        }
-    )
+cliq_thread_followers = build_cliq_thread_followers_command(_cliq_threading_context)
+cliq_thread_state = build_cliq_thread_state_command(_cliq_threading_context)
 
 
 register_cliq_thread_state_commands(

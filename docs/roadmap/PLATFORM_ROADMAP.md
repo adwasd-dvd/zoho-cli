@@ -93,6 +93,9 @@ Current progress:
 - seventh slice extracted `zoho cliq widgets`, `zoho cliq map-tickers`, `zoho cliq custom-domains`, and `zoho cliq custom-emails` into `zoho_cli/commands/cliq_platform_extensions.py` with behavior parity checks green
 - eighth slice extracted `zoho cliq members`, channel lifecycle/member commands, and chat-control commands (`leave`, `mute`, `unmute`) into `zoho_cli/commands/cliq_channel_management.py` with behavior parity checks green
 - ninth slice moved pinned chat-control commands (`zoho cliq pin`, `zoho cliq unpin`, `zoho cliq pinned`) into `zoho_cli/commands/cliq_channel_management.py` with behavior parity checks green
+- tenth slice extracted thread commands (`zoho cliq thread-create`, `thread-reply`, `threads`, `thread-followers`, `thread-state`) into `zoho_cli/commands/cliq_threading.py` with behavior parity checks green
+- eleventh slice extracted scheduled-message commands (`zoho cliq schedule`, `scheduled`, `scheduled-get`, `scheduled-cancel`) into `zoho_cli/commands/cliq_scheduling.py` with behavior parity checks green
+- twelfth slice extracted bot commands (`zoho cliq post-to-bot`, `bot-subscribers`, `trigger-bot`) into `zoho_cli/commands/cliq_bots.py` with behavior parity checks green
 
 ### Phase B6 — OpenClaw native Cliq channel (v0.4)
 

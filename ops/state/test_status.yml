@@ -1,10 +1,19 @@
-last_run_at: "2026-05-04T19:10:14Z"
+last_run_at: "2026-05-04T20:41:04Z"
 last_result: passing
-current_focus: cliq-210-pinned-command-extraction-20260504T191014Z
+current_focus: cliq-210-thread-schedule-bot-command-extraction-20260504T204104Z
 suites:
   unit:
     status: passing
     notes:
+      - "cliq-210 thread/scheduled/bot extraction at 2026-05-04T20:41:04Z"
+      - "no behavior change; thread commands moved to `zoho_cli/commands/cliq_threading.py`, scheduled-message commands moved to `zoho_cli/commands/cliq_scheduling.py`, and bot commands moved to `zoho_cli/commands/cliq_bots.py`"
+      - "./.venv/bin/ruff format zoho_cli/cli.py zoho_cli/commands/cliq_threading.py zoho_cli/commands/cliq_scheduling.py zoho_cli/commands/cliq_bots.py -> 4 files left unchanged"
+      - "./.venv/bin/ruff check zoho_cli/cli.py zoho_cli/commands/cliq_threading.py zoho_cli/commands/cliq_scheduling.py zoho_cli/commands/cliq_bots.py -> All checks passed!"
+      - "./.venv/bin/python -m pytest -q tests/test_cli.py -k 'cliq_thread_create_from_channel or cliq_threads_from_channel or cliq_thread_followers or cliq_thread_state_update or cliq_thread_state_read or cliq_scheduled_from_channel or cliq_schedule_from_channel or cliq_scheduled_get_from_channel or cliq_scheduled_cancel_from_channel or cliq_post_to_bot or cliq_bot_subscribers or cliq_trigger_bot or cliq_trigger_bot_rejects_invalid_inputs_json' -> 13 passed, 854 deselected in 0.43s"
+      - "./.venv/bin/python -m pytest -q tests/test_registry.py -k 'thread_commands or threads_commands or thread_state_commands or scheduled_lifecycle_commands or scheduled_cancel_leave_commands or post_to_bot_commands or bot_subscribers_commands or trigger_bot_commands or message_discovery_commands or commands_package_exports_root_registrars' -> 10 passed, 56 deselected in 0.08s"
+      - "post-doc sync aggregate: focused extracted Cliq command surfaces -> 62 passed, 805 deselected in 1.71s"
+      - "post-doc sync aggregate: registry + lane3 + markdown tests -> 74 passed in 0.06s; Ruby YAML parse -> YAML_PARSE_OK"
+      - "post-doc sync aggregate: `wc -l` -> `cliq_readiness.py` 224, `cliq_identity.py` 79, `cliq_org_directory.py` 97, `cliq_org_admin.py` 304, `cliq_productivity.py` 267, `cliq_platform_extensions.py` 248, `cliq_channel_management.py` 572, `cliq_threading.py` 307, `cliq_scheduling.py` 236, `cliq_bots.py` 175"
       - "cliq-210 pinned command extraction at 2026-05-04T19:10:14Z"
       - "no behavior change; `zoho cliq pin`, `zoho cliq unpin`, and `zoho cliq pinned` moved to `zoho_cli/commands/cliq_channel_management.py`"
       - "./.venv/bin/ruff format zoho_cli/cli.py zoho_cli/commands/cliq_channel_management.py -> 2 files left unchanged"

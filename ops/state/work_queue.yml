@@ -286,7 +286,7 @@
 - id: platform-208
   title: finalize module-first CLI information architecture (retire legacy root mail aliases after deprecation window and normalize level-2/3 help taxonomy)
   module: platform
-  stage: in_progress
+  stage: completed
   priority: medium
   depends_on:
   - platform-201

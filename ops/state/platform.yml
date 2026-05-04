@@ -1,7 +1,7 @@
 module: Platform
-updated_at: "2026-05-04T06:45:37Z"
+updated_at: "2026-05-04T15:15:50Z"
 status: in_progress
 execution_mode: turbo_20x
 throughput_policy_ref: ops/state/execution_policy.yml
 blockers: []
-next_small_step: RC checkpoint refresh packet is queued at `docs/releases/AI_EMPLOYEE_V1_RC_CHECKPOINT_2026-05-04.md`, with focused IA guard coverage still green (`./.venv/bin/python -m pytest -q tests/test_cli.py::test_cliq_help_hides_internal_slice_labels` -> `24 passed in 0.58s`). Next best step is platform-208 IA closure reassessment and milestone-complete decision unless blocker posture changes.
+next_small_step: Platform-208 milestone closure is reflected across state; keep RC deferred while blocker-bug gate remains open, then rerun release-candidate decision.

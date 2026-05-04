@@ -7,8 +7,9 @@ current_train: ai-employee-v1
 assessed_at: '2026-05-04T18:02:41Z'
 current_milestone: platform-209-rc-readiness
 current_milestone_complete: true
-missing_requirements:
-  - 'Final tag/publish action is pending after the green post-flip `make release-gate && make ci` run.'
+published_at: '2026-05-04T18:07:27Z'
+release_url: https://github.com/adwasd-dvd/zoho-mail-cli-zomacli/releases/tag/v0.2.1rc1
+missing_requirements: []
 rc_package:
   gate_contract_ready: true
   interop_contract_ready: true
@@ -54,3 +55,7 @@ release_gate:
   version_bumped: true
   release_gate_script_passed: true
   ci_passed: true
+  tag_pushed: true
+  github_prerelease_published: true
+  homebrew_bump_workflow_status: failed_private_tap_clone
+  homebrew_bump_followup: workflow tap step now uses HOMEBREW_TAP_TOKEN for private tap clone; rerun/manual tap bump remains pending outside the published RC artifact.

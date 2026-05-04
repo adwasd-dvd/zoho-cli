@@ -19,7 +19,7 @@
   - [x] Execute and record RC/version decision checkpoint in `ops/state/release_status.yml` (decision: defer).
 - [x] Execute `platform-208` full CLI information-architecture cleanup (module-first hierarchy hardening, remove legacy root mail aliases after deprecation window, and normalize level-2/level-3 help taxonomy for human + AI operators).
 - [x] Approve `0.2.1rc1` by treating repeated external Zoho endpoint blockers as deferred/non-blocking under the existing capability-gated policy.
-- [ ] Run final RC gate (`make release-gate && make ci`) and tag/publish after green verification.
+- [x] Run final RC gate (`make release-gate && make ci`) and tag/publish after green verification.
 - [ ] Start post-RC Cliq API-surface modularization to reduce AI context load before expanding CRM.
 
 ## Blocker handling (do not stall release)

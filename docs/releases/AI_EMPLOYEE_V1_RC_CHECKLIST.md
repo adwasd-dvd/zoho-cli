@@ -23,7 +23,7 @@ Use this checklist to complete the platform-207 package and run the RC/version d
 - [x] If flip approved, execute version bump workflow and mark `release_gate.version_bumped=true`.
 - [x] If flip deferred, record concrete unblock condition and next checkpoint owner/time. Not applicable for the current approved RC posture.
 - [x] Run post-flip `make release-gate && make ci` before tag/publish.
-- [ ] Tag/publish `v0.2.1rc1`.
+- [x] Tag/publish `v0.2.1rc1`.
 
 ## Decision rule
 

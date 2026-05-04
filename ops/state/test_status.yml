@@ -5,6 +5,10 @@ suites:
   unit:
     status: passing
     notes:
+      - "focused cliq-193 invalid-json stderr fallback at 2026-05-04T18:07:27Z"
+      - "behavior change: probe-summary now uses sidecar stderr unsupported hints when app-command JSON is invalid, not only empty"
+      - "./.venv/bin/python -m pytest -q tests/test_cliq193_probe_summary.py -> 12 passed in 0.02s"
+      - "./.venv/bin/ruff format --check tests/auto_pilot/cliq193_probe_summary.py tests/test_cliq193_probe_summary.py -> 2 files already formatted"
       - "v0.2.1rc1 post-flip RC gate at 2026-05-04T18:02:41Z"
       - "release candidate posture approved; external Zoho blockers are deferred/non-blocking and package/runtime version metadata is `0.2.1rc1`"
       - "./.venv/bin/zoho --version -> 0.2.1rc1"

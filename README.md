@@ -164,7 +164,7 @@ Project state lives in `ops/state/*.yml`:
 - Current version: `0.2.1rc1`
 - Next final target: `0.2.1`
 - Release candidate: `true`
-- Broad automated gate: post-flip `make release-gate && make ci` is green for `0.2.1rc1`; tag/publish is the remaining RC action.
+- Broad automated gate: post-flip `make release-gate && make ci` is green for `0.2.1rc1`; [v0.2.1rc1](https://github.com/adwasd-dvd/zoho-mail-cli-zomacli/releases/tag/v0.2.1rc1) is published as a GitHub prerelease.
 
 ### Deferred external blockers (do not block RC)
 
@@ -175,9 +175,9 @@ Project state lives in `ops/state/*.yml`:
 
 ### Near-term plan
 
-1. Tag/publish `v0.2.1rc1`.
-2. Keep unsupported Cliq endpoints capability-gated so they do not stall AI-employee internal-loop readiness.
-3. After RC, split Cliq by API surface to reduce AI context load, then plan deeper CRM.
+1. Keep unsupported Cliq endpoints capability-gated so they do not stall AI-employee internal-loop readiness.
+2. Split Cliq by API surface to reduce AI context load.
+3. Plan deeper CRM after the Cliq split lane is stable.
 
 ---
 
@@ -186,7 +186,7 @@ Project state lives in `ops/state/*.yml`:
 | Version | Milestone | Status |
 | --- | --- | --- |
 | v0.2.0 | Mail stabilized + shared core extracted | ✅ Released |
-| v0.2.1rc1 | Mail+Cliq AI-employee RC with deferred external blockers | 🚧 RC |
+| v0.2.1rc1 | Mail+Cliq AI-employee RC with deferred external blockers | ✅ Published prerelease |
 | v0.2.1 | Cliq expansion hardening + blocker burn-down | ⏳ Final after RC validation |
 | v0.3.x | Cliq live parity and export unblock closure | ⏳ Pending external unblock |
 | v0.4.x | CRM live validation and follow-on CRM work | 📋 Planned |

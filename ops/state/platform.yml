@@ -1,7 +1,7 @@
 module: Platform
-updated_at: "2026-05-04T18:02:41Z"
+updated_at: "2026-05-04T18:07:27Z"
 status: in_progress
 execution_mode: turbo_20x
 throughput_policy_ref: ops/state/execution_policy.yml
 blockers: []
-next_small_step: "`0.2.1rc1` post-flip release gate is green; tag/publish the RC, then begin post-RC Cliq API-surface modularization."
+next_small_step: "`v0.2.1rc1` is published as a GitHub prerelease; begin post-RC Cliq API-surface modularization."

@@ -200,7 +200,7 @@ def build_summary(
     oauth_ready = bool(status_payload.get("oauthReady")) or auth_ok
     export_oauth_ready = bool(status_payload.get("exportOauthReady"))
     app_commands_error = _extract_app_error(app_payload)
-    if app_commands_error == "empty_output":
+    if app_commands_error in {"empty_output", "invalid_json_output"}:
         stderr_error = _extract_app_error_from_stderr(app_commands_file)
         if stderr_error:
             app_commands_error = stderr_error

@@ -1,17 +1,17 @@
-id: platform-209
-title: cut v0.2.1rc1 for Mail+Cliq AI-employee core and hand off post-RC Cliq modularization
-module: platform
-stage: completed
-status: completed
+id: cliq-210
+title: split Cliq command and client code by API surface to reduce AI context load
+module: cliq
+stage: in_progress
+status: in_progress
 owner: coder
-updated_at: '2026-05-04T18:02:41Z'
+updated_at: '2026-05-04T18:10:25Z'
 execution_mode: turbo_20x
 throughput_policy_ref: ops/state/execution_policy.yml
 success_criteria:
-  - package/runtime version metadata is bumped to 0.2.1rc1
-  - deferred external Zoho blockers are explicitly non-blocking for RC
-  - release-status, human docs, and lane3/operator docs are aligned with RC posture
-  - dirty workspace is reduced to intentional, committable changes
-  - final RC gate is run before tag/publish
-next_if_done: begin post-RC Cliq API-surface modularization before expanding CRM.
-next_step: Post-flip RC gate is green; tag/publish `v0.2.1rc1` from `autobot/zoho-platform`, then begin post-RC Cliq API-surface modularization.
+  - define Cliq API-surface module boundaries around existing command families
+  - extract one low-risk Cliq surface without changing JSON output or help text
+  - keep each extracted file below the documented 800-line split threshold
+  - add focused parity tests for the extracted surface
+  - leave CRM expansion queued until the post-RC Cliq split plan is stable
+next_if_done: continue extracting the next Cliq API surface, then plan CRM read/write expansion.
+next_step: Continue the smallest low-risk Cliq surface extraction after blocker-accounting hardening (`invalid_json_output` now falls back to stderr unsupported hints).

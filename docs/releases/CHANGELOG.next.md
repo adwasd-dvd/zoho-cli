@@ -7,7 +7,10 @@
 - External Zoho live blockers that repeatedly return `not_supported`, missing scopes, `inactive_appaccount_user`, or missing CRM org access are now explicitly treated as capability-gated deferred blockers, not RC blockers.
 - Bumped package/runtime version metadata to `0.2.1rc1` (`pyproject.toml`, `uv.lock`, and `zoho_cli.__version__`).
 - Added release hygiene for the RC cut: auto-pilot report sidecars (`.stderr`, `.exitcode`, `.env`, `.txt`) are now ignored by default, and the Homebrew bump workflow now pushes to the matching `adwasd-dvd/homebrew-tap` repository.
-- Post-flip verification is green: `make release-gate` passed (`1749 passed` + wheel smoke `0.2.1rc1`) and `make ci` passed (`1749 passed`, ruff clean). Final tag/publish is the remaining release action.
+- Post-flip verification is green: `make release-gate` passed (`1749 passed` + wheel smoke `0.2.1rc1`) and `make ci` passed (`1749 passed`, ruff clean).
+- Published GitHub prerelease `v0.2.1rc1`: https://github.com/adwasd-dvd/zoho-mail-cli-zomacli/releases/tag/v0.2.1rc1
+- Fixed the Homebrew bump workflow tap step to clone the private `adwasd-dvd/homebrew-tap` tap with `HOMEBREW_TAP_TOKEN`; the release-triggered run failed before this fix while cloning the private tap.
+- Hardened cliq-193 probe-summary blocker accounting so invalid app-command JSON output also falls back to sidecar stderr hints, preserving canonical `not_supported` classification for malformed live evidence captures.
 
 ### Changed
 - Accepted post-RC Cliq modularization as the next high-priority engineering lane: split Cliq by API surface after RC to reduce AI context load before deeper CRM expansion.
@@ -23,6 +26,7 @@
 - No publish, version bump, or tagging actions were performed.
 
 ### Added
+- Landed a focused cliq-193 blocker-accounting increment: probe-summary now reuses stderr unsupported-hint normalization when `app-commands` JSON is invalid (`invalid_json_output`), preserving canonical deferred-blocker classification instead of generic parse-failure labeling.
 - Landed a focused cliq-193 blocker-accounting increment: probe-summary now extracts unsupported endpoint hints from structured top-level `error` objects and keeps the strongest canonical unsupported signal when multiple hints are present (`not_supported` > `operation_not_allowed` > `inactive_appaccount_user` > `unsupported`), preserving stable deferred-blocker classification for wrapper-heavy endpoint failures.
 - Landed a focused cliq-193 blocker-accounting increment: probe-summary now normalizes unsupported endpoint hints from top-level `error` strings (for example `error: not_supported` and `endpoint is not supported`) so wrapper/prefix variants still classify into canonical deferred-blocker signals.
 - Landed a focused cliq-193 blocker-accounting increment: probe-summary unsupported-hint normalization now also recognizes spaced unsupported stderr phrasing (for example `not supported`, `operation not allowed`, `inactive appaccount user`) so empty-output `app-commands` probes still classify into canonical deferred-blocker signals.

@@ -18,7 +18,11 @@ jobs:
         uses: Homebrew/actions/setup-homebrew@master
 
       - name: Tap adwasd-dvd/tap
-        run: brew tap adwasd-dvd/tap
+        env:
+          HOMEBREW_TAP_TOKEN: ${{ secrets.HOMEBREW_TAP_TOKEN }}
+        run: |
+          brew tap adwasd-dvd/tap \
+            "https://x-access-token:${HOMEBREW_TAP_TOKEN}@github.com/adwasd-dvd/homebrew-tap.git"
 
       - name: Compute tarball SHA-256
         id: info

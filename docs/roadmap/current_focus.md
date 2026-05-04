@@ -7,10 +7,10 @@
 4. **Workflow packaging status**: `mail-010`, `cliq-195`, `platform-207`, and `platform-208` are complete for this milestone.
 5. **Cliq modularization handoff is complete for the channel lane**: `cliq-210` moved readiness, identity, org-directory, org-admin, productivity, platform-extension list, channel-management/chat-control, threading, scheduled-message, bot, and message retrieval/context commands into smaller `zoho_cli/commands/cliq_*` modules with JSON/help parity preserved.
 6. **External blockers remain deferred**: `cliq-165` (`inactive_appaccount_user`) and `cliq-193` (`not_supported`) stay capability-gated under 3-strike policy.
-7. **OpenClaw channel skeleton is installable**: `cliq-channel-401` added `integrations/openclaw-channel-cliq/` and package-local `openclaw@2026.5.3-1` install/inspect discovers plugin `zoho-cliq` with channel `cliq`.
+7. **OpenClaw channel config is schema-backed**: `cliq-channel-401` added the installable `integrations/openclaw-channel-cliq/` package, and `cliq-channel-402` expanded channel config/setup to cover accounts, Zoho account/config references, env SecretRef credentials, and plaintext-token rejection while package-local `openclaw@2026.5.3-1` install/inspect/doctor stays green.
 
 ## Next
-1. Start `cliq-channel-402`: expand the native channel config schema, SecretRef support, and setup flow.
+1. Start `cliq-channel-416`: make human install/setup UX actionable before security/pairing hardening.
 2. Keep cliq-194 read-ack endpoint limitation in capability-gated deferred mode.
 3. Continue remaining Cliq helper-heavy modularization opportunistically when it directly lowers channel implementation risk.
 4. Resume CRM CLI planning in v0.5 after the native channel lane is stable.
@@ -18,7 +18,7 @@
 ## Delivery estimate (v1.0 first cut)
 - **Stable cut**: published as `v0.2.1`.
 - **External-unblocked full parity**: add ~1-3 weeks depending on Zoho-side availability.
-- **Native OpenClaw Cliq channel v0.4**: staged after the current Mail+Cliq release line; MVP target is about one focused week, full native channel hardening is about two focused weeks.
+- **Native OpenClaw Cliq channel v0.4**: config/schema slice is complete; first real Cliq send testing starts after `cliq-channel-404` CLI process execution plus `cliq-channel-405` outbound delivery, with full inbound/security hardening still staged behind the setup UX and policy slices.
 
 ## Blocker policy
 - 3 consecutive `not_supported` or `inactive_appaccount_user` outcomes for the same check => mark post-release deferred.

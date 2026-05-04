@@ -11,7 +11,10 @@ Planned for `zoho-cli` v0.4 after the current Mail + Cliq CLI release line.
 is complete: the installable package skeleton lives at
 `integrations/openclaw-channel-cliq/`, uses compiled `dist/*.js` runtime
 entrypoints, and was discovered by package-local `openclaw@2026.5.3-1` as
-plugin `zoho-cliq` with channel `cliq`.
+plugin `zoho-cliq` with channel `cliq`. `cliq-channel-402` is complete: the
+channel now has schema-backed account/config metadata, env SecretRef references
+for token password and webhook secret, and setup validation that rejects
+plaintext token-style fields.
 
 The v0.4 plugin targets OpenClaw `>=2026.5.3-1`. The local
 `OpenClaw 2026.4.15` install is too old for plugin install/inspect validation,
@@ -66,6 +69,42 @@ Human setup checkpoints:
 - Pairing/allowlist/mention gating are enabled.
 - Scoped employee mode has a work-scope profile.
 - Test message or dry-run fixture succeeds.
+
+Config reference shape:
+
+```json
+{
+  "channels": {
+    "cliq": {
+      "defaultAccount": "default",
+      "accounts": {
+        "default": {
+          "accountEmail": "bot@example.com",
+          "configPath": {
+            "source": "env",
+            "provider": "default",
+            "id": "ZOHO_CONFIG"
+          },
+          "tokenPassword": {
+            "source": "env",
+            "provider": "default",
+            "id": "ZOHO_TOKEN_PASSWORD"
+          },
+          "webhookSecret": {
+            "source": "env",
+            "provider": "default",
+            "id": "ZOHO_CLIQ_WEBHOOK_SECRET"
+          },
+          "network": "<network>",
+          "cliPath": "zoho",
+          "dmPolicy": "allowlist",
+          "allowFrom": ["<cliq_user_id>"]
+        }
+      }
+    }
+  }
+}
+```
 
 Fallback commands:
 

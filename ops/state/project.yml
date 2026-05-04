@@ -1,5 +1,5 @@
 project: zoho-cli
-updated_at: '2026-05-04T22:03:50Z'
+updated_at: '2026-05-04T22:36:55Z'
 status: v0.2.1-final-release
 throughput_mode: turbo_20x
 throughput_policy_ref: ops/state/execution_policy.yml
@@ -9,7 +9,7 @@ module_order:
 - Mail
 - Cliq
 - CRM
-current_focus: "Turbo 20x mode active: v0.2.1 is stable; cliq-channel-401 added the installable native OpenClaw Cliq channel skeleton, and cliq-channel-402 config/SecretRef/setup is the next active implementation slice."
+current_focus: "Turbo 20x mode active: v0.2.1 is stable; cliq-channel-402 completed native OpenClaw Cliq config/SecretRef/setup, and cliq-channel-416 human install/setup UX is the next active implementation slice."
 primary_blockers:
 - cliq-194 live read-ack endpoint remains unsupported on happydistrouklimited for the active token, but watch-act continuity is now capability-gated (`status=ok`, `fallbackUsed=true`, `readAckSupported=false`) and treated as deferred/non-blocking for forward platform execution
 - cliq live unread-filter probe now authenticates successfully but returned zero unread chats (`count=0`), so behavioral validation against real reacted unread traffic remains pending fresh unread activity
@@ -32,8 +32,9 @@ primary_blockers:
   returns `not_supported`)
 - calls/meetings endpoints are unsupported on current token/network (`cliq meetings`
   now returns `not_supported` in focused live verification)
-next_step: "Start cliq-channel-402: expand `integrations/openclaw-channel-cliq/` config schema, SecretRef/env support, and setup flow while preserving package-local OpenClaw install/inspect validation."
+next_step: "Start cliq-channel-416: add operator-facing install/setup UX, setup-state copy, troubleshooting, disable/uninstall, and upgrade/recovery guidance while preserving package-local OpenClaw install/inspect validation."
 additional_info:
+- "2026-05-04 cliq-channel-402 config/SecretRef/setup at 2026-05-04T22:36:55Z expanded `integrations/openclaw-channel-cliq/openclaw.plugin.json` and runtime config schema beyond the empty skeleton; config now covers account/config references, env SecretRefs for `ZOHO_TOKEN_PASSWORD` and `ZOHO_CLIQ_WEBHOOK_SECRET`, safe `dmPolicy`/`allowFrom` metadata, setup env-ref writes, and plaintext token/password/secret-style setup rejection. Package-local `openclaw@2026.5.3-1` linked install + `plugins inspect zoho-cliq --json` + `plugins doctor` stayed green, and `make ci` passed with `1760 passed in 35.27s`."
 - "2026-05-04 cliq-channel-401 plugin skeleton at 2026-05-04T22:03:50Z added `integrations/openclaw-channel-cliq/` with OpenClaw manifest/package metadata, setup/runtime entries, configured/auth-state probes, compiled `dist/*.js` runtime outputs, and channel skill; package-local `openclaw@2026.5.3-1` linked install + `plugins inspect zoho-cliq --json` discovered channel `cliq`, and `plugins doctor` reported no issues. Process execution is deferred to cliq-channel-404 to keep the skeleton normal-installable under dangerous-code scanning."
 - "2026-05-04 cliq-channel-400 SDK/version contract lock at 2026-05-04T21:39:33Z checked official OpenClaw plugin/channel docs, local `openclaw --version` (`2026.4.15`), npm latest (`2026.5.3-1`), and npm beta (`2026.5.4-beta.1`); v0.4 plugin target is locked to `minHostVersion`/`compat.pluginApi` `>=2026.5.3-1`, local `2026.4.15` is too old for install/inspect validation, and `docs/architecture/OPENCLAW_CLIQ_CHANNEL_SDK_CONTRACT.md` is the source of truth for cliq-channel-401."
 - "2026-05-04 v0.2.1 final release promotion at 2026-05-04T21:15:20Z moved the Mail+Cliq AI-employee line from `0.2.1rc1` to stable `0.2.1`; final gates are green (`make release-gate` -> `1752 passed in 38.55s` + wheel smoke `0.2.1`; `make ci` -> ruff clean + `1752 passed in 38.63s`), release URL is https://github.com/adwasd-dvd/zoho-cli/releases/tag/v0.2.1, and follow-on focus is cliq-210 handoff then cliq-channel-400."

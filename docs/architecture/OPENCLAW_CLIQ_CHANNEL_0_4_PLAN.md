@@ -260,12 +260,21 @@ channels:
     accounts:
       default:
         enabled: true
-        account: ai-dev@example.com
+        accountEmail: ai-dev@example.com
         network: happydistrouklimited
-        zohoBinary: zoho
-        configPath: ""              # optional; falls back to ZOHO_CONFIG
-        tokenPassword: "<SecretRef>" # optional; for file token fallback
-        webhookSecret: "<SecretRef>"
+        cliPath: zoho
+        configPath:
+          source: env
+          provider: default
+          id: ZOHO_CONFIG
+        tokenPassword:
+          source: env
+          provider: default
+          id: ZOHO_TOKEN_PASSWORD
+        webhookSecret:
+          source: env
+          provider: default
+          id: ZOHO_CLIQ_WEBHOOK_SECRET
         webhookPath: /webhooks/cliq/default
         dmPolicy: pairing
         groupPolicy: allowlist
@@ -721,9 +730,15 @@ OpenClaw:
 
 ### cliq-channel-402: Config, SecretRef, and setup
 
-- Implement config schema and setup helper.
-- Support env/SecretRef for Zoho account/config/token/webhook secret.
-- Acceptance: config validates; secret audit sees known secret targets.
+- Implement config schema and setup helper. Complete.
+- Support env/SecretRef for Zoho account/config/token/webhook secret. Complete
+  for `accountEmail`, `configPath`, `tokenPassword`, and `webhookSecret`;
+  `tokenPassword` and `webhookSecret` are documented as SecretRef-only in the
+  manifest schema.
+- Reject plaintext setup token inputs. Complete for `token`, `accessToken`,
+  `password`, `privateKey`, `secret`, `botToken`, and `appToken`.
+- Acceptance: package-local `openclaw@2026.5.3-1` linked install, `plugins
+  inspect zoho-cliq --json`, and `plugins doctor` remain green.
 
 ### cliq-channel-416: Human install and setup UX
 

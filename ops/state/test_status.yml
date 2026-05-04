@@ -1,10 +1,21 @@
-last_run_at: "2026-05-04T22:07:02Z"
+last_run_at: "2026-05-04T22:39:13Z"
 last_result: passing
-current_focus: cliq-channel-401-plugin-skeleton-20260504T220600Z
+current_focus: cliq-channel-402-config-secretref-setup-20260504T223655Z
 suites:
   unit:
     status: passing
     notes:
+      - "cliq-channel-402 config/SecretRef/setup at 2026-05-04T22:36:55Z"
+      - "expanded OpenClaw Cliq channel manifest/runtime config schema beyond the empty skeleton; schema now covers account/config references, env SecretRefs for `ZOHO_TOKEN_PASSWORD` and `ZOHO_CLIQ_WEBHOOK_SECRET`, `dmPolicy`, `allowFrom`, and setup plaintext token rejection"
+      - "npm --prefix integrations/openclaw-channel-cliq run typecheck -> passed"
+      - "npm --prefix integrations/openclaw-channel-cliq run build -> passed"
+      - "./.venv/bin/python -m pytest -q tests/test_openclaw_channel_skeleton.py tests/test_openclaw_channel_contract.py tests/test_lane3_docs.py tests/test_markdown_update.py -> 16 passed in 0.02s"
+      - "package-local openclaw@2026.5.3-1 linked install in temp HOME -> passed"
+      - "package-local openclaw@2026.5.3-1 plugins inspect zoho-cliq --json -> plugin status loaded, channelIds [`cliq`], diagnostics []"
+      - "package-local openclaw@2026.5.3-1 plugins doctor -> No plugin issues detected."
+      - "ruby YAML parse for ops/workflow state -> YAML_PARSE_OK"
+      - "git diff --check -> clean"
+      - "make ci -> ruff format/check clean + pytest `1760 passed in 35.27s`"
       - "cliq-channel-401 plugin skeleton at 2026-05-04T22:06:00Z"
       - "added installable OpenClaw Cliq package skeleton under `integrations/openclaw-channel-cliq/` with compiled runtime output and no child_process process execution until cliq-channel-404"
       - "./.venv/bin/python -m pytest -q tests/test_openclaw_channel_skeleton.py tests/test_openclaw_channel_contract.py tests/test_lane3_docs.py tests/test_markdown_update.py -> 15 passed in 0.05s"

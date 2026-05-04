@@ -1,21 +1,23 @@
-id: cliq-channel-402
-title: implement Cliq channel config schema, SecretRef support, and setup flow
+id: cliq-channel-416
+title: implement human install onboarding setup-state copy disable uninstall and recovery UX
 module: openclaw_cliq_channel
 stage: queued
 status: ready
 owner: coder
-updated_at: '2026-05-04T22:03:50Z'
+updated_at: '2026-05-04T22:36:55Z'
 execution_mode: turbo_20x
 throughput_policy_ref: ops/state/execution_policy.yml
 success_criteria:
-  - expand `integrations/openclaw-channel-cliq/openclaw.plugin.json` and runtime config schema beyond the empty skeleton
-  - support env and SecretRef references for account, config path, token password, and webhook secret
-  - implement setup input validation without accepting plaintext tokens
+  - document and expose human setup checkpoints for host compatibility, package source, Zoho CLI detection, auth/scopes, network selection, webhook/polling choice, and test message readiness
+  - normalize setup failures into actionable states such as `host_too_old`, `zoho_missing`, `not_logged_in`, `missing_scope`, `network_missing`, `webhook_unverified`, and `allowlist_empty`
+  - add operator-facing install, disable/uninstall, troubleshooting, and upgrade/recovery guidance without requiring source reading
   - keep package-local `npm run typecheck`, `npm run build`, OpenClaw linked install, `plugins inspect zoho-cliq --json`, and `plugins doctor` green
   - update Lane 2 docs, Lane 3 skill/docs, and Lane 1 state/progress docs
-next_if_done: implement cliq-channel-416 human install and setup UX, then cliq-channel-403 secure pairing/allowlist/scoped employee mode.
+next_if_done: implement cliq-channel-403 secure pairing/allowlist/scoped employee mode, then cliq-channel-414 native SDK policy seams.
 progress:
+  - "2026-05-04T22:36:55Z cliq-channel-402 completed: `openclaw.plugin.json` and runtime `cliqChannelConfigSchema` now cover `defaultAccount/accounts`, account/config references, `network`, `cliPath`, `dmPolicy`, `allowFrom`, and `defaultTo`; setup writes env SecretRefs when `useEnv` is set and rejects plaintext token/password/secret-style inputs."
+  - "2026-05-04T22:39:13Z cliq-channel-402 validation: `npm --prefix integrations/openclaw-channel-cliq run typecheck`, `npm --prefix integrations/openclaw-channel-cliq run build`, focused OpenClaw/Lane3 tests (`16 passed`), package-local linked install, `plugins inspect zoho-cliq --json`, `plugins doctor`, YAML parse, `git diff --check`, and `make ci` (`1760 passed`) passed."
   - "2026-05-04T22:03:50Z cliq-channel-401 completed: `integrations/openclaw-channel-cliq/` now has manifest/package metadata, setup/runtime entries, configured/auth-state probes, compiled dist runtime output, and channel skill; package-local `openclaw@2026.5.3-1` linked install + `plugins inspect zoho-cliq --json` discovers plugin `zoho-cliq` with channel `cliq`, and `plugins doctor` reports no issues."
   - "2026-05-04T22:03:50Z process execution was intentionally deferred to cliq-channel-404 after OpenClaw dangerous-code scanning blocked a child_process skeleton; cliq-channel-401 stays normal-installable and keeps only the `zoho cliq send` argument contract."
   - "2026-05-04T21:39:33Z cliq-channel-400 completed: OpenClaw Cliq channel SDK/version contract locked in `docs/architecture/OPENCLAW_CLIQ_CHANNEL_SDK_CONTRACT.md`; target `minHostVersion`/`compat.pluginApi` is `>=2026.5.3-1`, local OpenClaw `2026.4.15` is too old for plugin install/inspect validation, and `cliq-channel-401` is ready to scaffold the installable plugin."
-next_step: Start `cliq-channel-402` config/SecretRef/setup using the installable plugin skeleton and the locked `>=2026.5.3-1` OpenClaw contract.
+next_step: Start `cliq-channel-416` human install/setup UX now that config schema, SecretRef/env support, and setup input hardening are in place.

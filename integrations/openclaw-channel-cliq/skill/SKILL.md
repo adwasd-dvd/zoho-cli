@@ -12,6 +12,9 @@ Use this skill when operating through the native OpenClaw Zoho Cliq channel.
   signatures, or private message bodies in logs.
 - In group/channel conversations, require an explicit bot mention unless config
   allows a narrower implicit mention policy.
+- Configure sensitive values with SecretRef/env references. Do not ask for or
+  store plaintext token passwords, webhook secrets, OAuth tokens, bot tokens, app
+  tokens, or private keys in setup input.
 
 ## Required local readiness
 
@@ -22,3 +25,39 @@ zoho cliq capabilities --network <network>
 
 If readiness fails, report the failing `zoho-cli` command, exit code, and
 redacted stderr summary.
+
+## Config shape
+
+```json
+{
+  "channels": {
+    "cliq": {
+      "defaultAccount": "default",
+      "accounts": {
+        "default": {
+          "accountEmail": "bot@example.com",
+          "configPath": {
+            "source": "env",
+            "provider": "default",
+            "id": "ZOHO_CONFIG"
+          },
+          "tokenPassword": {
+            "source": "env",
+            "provider": "default",
+            "id": "ZOHO_TOKEN_PASSWORD"
+          },
+          "webhookSecret": {
+            "source": "env",
+            "provider": "default",
+            "id": "ZOHO_CLIQ_WEBHOOK_SECRET"
+          },
+          "network": "<network>",
+          "cliPath": "zoho",
+          "dmPolicy": "allowlist",
+          "allowFrom": ["<cliq_user_id>"]
+        }
+      }
+    }
+  }
+}
+```

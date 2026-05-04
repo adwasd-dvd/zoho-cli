@@ -121,7 +121,7 @@ HOME="$PWD/.tmp/openclaw-home-2026.5.3-1" \
 `openclaw.plugin.json` is pre-runtime metadata. It must not contain runtime
 entrypoints or npm install metadata.
 
-Required skeleton:
+Required manifest baseline after `cliq-channel-402`:
 
 ```json
 {
@@ -145,9 +145,76 @@ Required skeleton:
       "schema": {
         "type": "object",
         "additionalProperties": false,
-        "properties": {}
+        "properties": {
+          "enabled": { "type": "boolean" },
+          "defaultAccount": { "type": "string", "minLength": 1 },
+          "accountEmail": { "$ref": "#/definitions/configValue" },
+          "configPath": { "$ref": "#/definitions/configValue" },
+          "network": { "type": "string", "minLength": 1 },
+          "cliPath": { "type": "string", "minLength": 1 },
+          "tokenPassword": { "$ref": "#/definitions/secretRef" },
+          "webhookSecret": { "$ref": "#/definitions/secretRef" },
+          "dmPolicy": {
+            "type": "string",
+            "enum": ["allowlist", "pairing", "open", "disabled"]
+          },
+          "allowFrom": { "$ref": "#/definitions/allowFrom" },
+          "defaultTo": { "type": "string", "minLength": 1 },
+          "accounts": {
+            "type": "object",
+            "additionalProperties": { "$ref": "#/definitions/account" }
+          }
+        },
+        "definitions": {
+          "secretRef": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["source", "provider", "id"],
+            "properties": {
+              "source": { "type": "string", "enum": ["env", "file", "exec"] },
+              "provider": { "type": "string", "minLength": 1 },
+              "id": { "type": "string", "minLength": 1 }
+            }
+          },
+          "configValue": {
+            "anyOf": [
+              { "type": "string", "minLength": 1 },
+              { "$ref": "#/definitions/secretRef" }
+            ]
+          },
+          "allowFrom": {
+            "type": "array",
+            "items": {
+              "anyOf": [
+                { "type": "string", "minLength": 1 },
+                { "type": "number" }
+              ]
+            }
+          },
+          "account": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "accountEmail": { "$ref": "#/definitions/configValue" },
+              "configPath": { "$ref": "#/definitions/configValue" },
+              "network": { "type": "string", "minLength": 1 },
+              "cliPath": { "type": "string", "minLength": 1 },
+              "tokenPassword": { "$ref": "#/definitions/secretRef" },
+              "webhookSecret": { "$ref": "#/definitions/secretRef" },
+              "dmPolicy": {
+                "type": "string",
+                "enum": ["allowlist", "pairing", "open", "disabled"]
+              },
+              "allowFrom": { "$ref": "#/definitions/allowFrom" },
+              "defaultTo": { "type": "string", "minLength": 1 }
+            }
+          }
+        }
       },
-      "uiHints": {}
+      "uiHints": {
+        "tokenPassword": { "sensitive": true },
+        "webhookSecret": { "sensitive": true }
+      }
     }
   },
   "activation": {
@@ -163,9 +230,9 @@ Required skeleton:
 ```
 
 `channelConfigs.cliq.schema` is required because OpenClaw uses channel config
-metadata before the runtime loads. Expand the schema in `cliq-channel-402`, not
-in the skeleton slice unless a minimal `enabled/defaultAccount/accounts` shape is
-needed for inspect.
+metadata before the runtime loads. Keep the manifest schema and
+`src/config.ts#cliqChannelConfigSchema` in sync for account/config/SecretRef
+fields.
 
 ## Runtime SDK contract
 
@@ -214,6 +281,10 @@ Use OpenClaw's SecretRef object shape:
 
 Supported secret-bearing config fields for v0.4:
 
+- `channels.cliq.accountEmail` / `channels.cliq.accounts.<id>.accountEmail`
+  may be direct strings or SecretRef/env references to `ZOHO_ACCOUNT`.
+- `channels.cliq.configPath` / `channels.cliq.accounts.<id>.configPath` may be
+  direct strings or SecretRef/env references to `ZOHO_CONFIG`.
 - `channels.cliq.accounts.<id>.tokenPassword`
 - `channels.cliq.accounts.<id>.webhookSecret`
 - future optional OAuth override fields only if the user explicitly approves
@@ -221,6 +292,8 @@ Supported secret-bearing config fields for v0.4:
 
 Plain env values remain supported through `channelEnvVars`, but committed docs
 and examples must prefer SecretRef/env references over plaintext secrets.
+Setup input must reject plaintext `token`, `accessToken`, `password`,
+`privateKey`, `secret`, `botToken`, and `appToken` fields.
 
 ## CLI contract
 

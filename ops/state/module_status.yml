@@ -20,9 +20,9 @@ cliq:
 openclaw_cliq_channel:
   priority: 3
   status: in_progress
-  phase: plugin_skeleton_installable_config_next
+  phase: config_secretref_setup_ready_human_install_next
   target_release: v0.4.0
-  current_milestone: cliq-channel-402-config-secretref-setup
+  current_milestone: cliq-channel-416-human-install-ux
   blockers:
     - "local global OpenClaw `2026.4.15` remains below the locked v0.4 plugin host/API floor `>=2026.5.3-1`; package-local `openclaw@2026.5.3-1` validation is used for plugin install/inspect until the host is upgraded"
 

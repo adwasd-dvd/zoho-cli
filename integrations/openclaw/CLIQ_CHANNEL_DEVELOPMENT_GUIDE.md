@@ -63,7 +63,8 @@ Follow the stack from the architecture plan:
 2. `cliq-channel-401` plugin skeleton (complete; package lives at
    `integrations/openclaw-channel-cliq/` and validates with
    `openclaw@2026.5.3-1`)
-3. `cliq-channel-402` config, SecretRef, and setup
+3. `cliq-channel-402` config, SecretRef, and setup (complete; manifest/runtime
+   schema covers account/config refs plus SecretRef credentials)
 4. `cliq-channel-416` human install and setup UX
 5. `cliq-channel-403` security, pairing, and scoped employee mode
 6. `cliq-channel-414` native SDK policy seams
@@ -129,6 +130,45 @@ openclaw channels status --channel cliq --deep
 openclaw channels capabilities --channel cliq
 openclaw security audit --json
 ```
+
+Current config baseline:
+
+```json
+{
+  "channels": {
+    "cliq": {
+      "defaultAccount": "default",
+      "accounts": {
+        "default": {
+          "accountEmail": "bot@example.com",
+          "configPath": {
+            "source": "env",
+            "provider": "default",
+            "id": "ZOHO_CONFIG"
+          },
+          "tokenPassword": {
+            "source": "env",
+            "provider": "default",
+            "id": "ZOHO_TOKEN_PASSWORD"
+          },
+          "webhookSecret": {
+            "source": "env",
+            "provider": "default",
+            "id": "ZOHO_CLIQ_WEBHOOK_SECRET"
+          },
+          "network": "<network>",
+          "cliPath": "zoho",
+          "dmPolicy": "allowlist",
+          "allowFrom": ["<cliq_user_id>"]
+        }
+      }
+    }
+  }
+}
+```
+
+Setup input rejects plaintext token/password/secret-style fields; use `zoho
+login` plus env SecretRefs for sensitive values.
 
 ## Human install UX checklist
 

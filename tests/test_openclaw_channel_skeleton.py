@@ -54,11 +54,40 @@ def test_openclaw_cliq_channel_manifest_matches_contract() -> None:
         "ZOHO_TOKEN_PASSWORD",
         "ZOHO_CLIQ_WEBHOOK_SECRET",
     ]
-    assert manifest["channelConfigs"]["cliq"]["schema"] == {
-        "type": "object",
-        "additionalProperties": False,
-        "properties": {},
+    schema = manifest["channelConfigs"]["cliq"]["schema"]
+    properties = schema["properties"]
+    definitions = schema["definitions"]
+
+    assert schema["type"] == "object"
+    assert schema["additionalProperties"] is False
+    assert {
+        "accounts",
+        "accountEmail",
+        "configPath",
+        "defaultAccount",
+        "tokenPassword",
+        "webhookSecret",
+        "dmPolicy",
+        "allowFrom",
+    }.issubset(properties)
+    assert properties["tokenPassword"] == {"$ref": "#/definitions/secretRef"}
+    assert properties["webhookSecret"] == {"$ref": "#/definitions/secretRef"}
+    assert properties["accountEmail"] == {"$ref": "#/definitions/configValue"}
+    assert properties["configPath"] == {"$ref": "#/definitions/configValue"}
+    assert definitions["secretRef"]["required"] == ["source", "provider", "id"]
+    assert definitions["secretRef"]["properties"]["source"]["enum"] == [
+        "env",
+        "file",
+        "exec",
+    ]
+    assert definitions["configValue"]["anyOf"][1] == {"$ref": "#/definitions/secretRef"}
+    assert definitions["account"]["properties"]["tokenPassword"] == {
+        "$ref": "#/definitions/secretRef"
     }
+
+    ui_hints = manifest["channelConfigs"]["cliq"]["uiHints"]
+    assert ui_hints["tokenPassword"]["sensitive"] is True
+    assert ui_hints["webhookSecret"]["sensitive"] is True
 
 
 def test_openclaw_cliq_channel_sources_use_locked_sdk_surfaces() -> None:
@@ -91,6 +120,33 @@ def test_openclaw_cliq_channel_sources_use_locked_sdk_surfaces() -> None:
     assert "ChannelPlugin.approvals" not in source
     assert "child_process" not in source
     assert "cliq-channel-404" in source
+
+
+def test_openclaw_cliq_channel_setup_uses_env_secret_refs() -> None:
+    source = read("src/config.ts")
+
+    for marker in [
+        "SecretRef",
+        "envSecretRef",
+        "ZOHO_TOKEN_PASSWORD",
+        "ZOHO_CLIQ_WEBHOOK_SECRET",
+        "ZOHO_ACCOUNT",
+        "ZOHO_CONFIG",
+        "configPath",
+        "dmPolicy",
+    ]:
+        assert marker in source
+
+    for forbidden_input in [
+        "input.token",
+        "input.accessToken",
+        "input.password",
+        "input.privateKey",
+        "input.secret",
+        "input.botToken",
+        "input.appToken",
+    ]:
+        assert forbidden_input in source
 
 
 def test_openclaw_cliq_channel_dist_runtime_outputs_exist() -> None:

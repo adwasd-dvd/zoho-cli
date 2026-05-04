@@ -331,7 +331,7 @@
 - id: cliq-channel-402
   title: implement Cliq channel config schema, SecretRef support, and setup flow
   module: openclaw_cliq_channel
-  stage: queued
+  stage: completed
   priority: high
   depends_on:
   - cliq-channel-401

@@ -1,12 +1,12 @@
 # OpenClaw Zoho Cliq channel
 
-Native OpenClaw channel skeleton for Zoho Cliq, backed by `zoho-cli`.
+Native OpenClaw channel package for Zoho Cliq, backed by `zoho-cli`.
 
-This package is the `cliq-channel-401` implementation slice. It is intentionally
-small: it declares the installable plugin/channel metadata, setup/runtime
-entrypoints, configured/auth-state probes, a minimal OpenClaw channel object, and
-a typed `zoho cliq send` argument contract. Full config schema expansion,
-SecretRef setup UX, security hardening, process execution, inbound delivery, and
+This package includes the `cliq-channel-401` installable skeleton and the
+`cliq-channel-402` config/SecretRef/setup slice. It declares the plugin/channel
+metadata, setup/runtime entrypoints, configured/auth-state probes, a minimal
+OpenClaw channel object, config schema metadata, and a typed `zoho cliq send`
+argument contract. Security hardening, process execution, inbound delivery, and
 outbound behavior follow in later slices.
 
 ## Contract
@@ -20,6 +20,47 @@ outbound behavior follow in later slices.
 
 The source of truth is
 `../../docs/architecture/OPENCLAW_CLIQ_CHANNEL_SDK_CONTRACT.md`.
+
+## Config example
+
+```json
+{
+  "channels": {
+    "cliq": {
+      "enabled": true,
+      "defaultAccount": "default",
+      "accounts": {
+        "default": {
+          "accountEmail": "bot@example.com",
+          "network": "happydistrouklimited",
+          "cliPath": "zoho",
+          "configPath": {
+            "source": "env",
+            "provider": "default",
+            "id": "ZOHO_CONFIG"
+          },
+          "tokenPassword": {
+            "source": "env",
+            "provider": "default",
+            "id": "ZOHO_TOKEN_PASSWORD"
+          },
+          "webhookSecret": {
+            "source": "env",
+            "provider": "default",
+            "id": "ZOHO_CLIQ_WEBHOOK_SECRET"
+          },
+          "dmPolicy": "allowlist",
+          "allowFrom": ["123456789"],
+          "defaultTo": "channel:123456789"
+        }
+      }
+    }
+  }
+}
+```
+
+Setup rejects plaintext token/password/secret-style inputs. Use `zoho login`
+for OAuth bootstrap and SecretRef/env references for sensitive values.
 
 ## Development
 

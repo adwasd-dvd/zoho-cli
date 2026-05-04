@@ -27,6 +27,18 @@ _STDERR_UNSUPPORTED_HINTS: tuple[tuple[str, str], ...] = (
 )
 
 
+def _normalize_unsupported_hint(text: str | None) -> str | None:
+    if not isinstance(text, str):
+        return None
+    lowered = text.strip().lower()
+    if not lowered:
+        return None
+    for needle, normalized in _STDERR_UNSUPPORTED_HINTS:
+        if needle in lowered:
+            return normalized
+    return None
+
+
 def _read_json_dict(path: Path) -> dict[str, Any]:
     if not path.exists():
         return {}
@@ -50,6 +62,10 @@ def _extract_app_error(app_payload: dict[str, Any]) -> str | None:
     error = app_payload.get("error")
     if isinstance(error, str) and error.strip():
         return error.strip()
+    for key in ("details", "message", "reason"):
+        normalized = _normalize_unsupported_hint(app_payload.get(key))
+        if normalized:
+            return normalized
     if app_payload.get("status") == "error":
         return "error"
     return None
@@ -67,9 +83,9 @@ def _extract_app_error_from_stderr(app_commands_file: Path) -> str | None:
         body = candidate.read_text(encoding="utf-8", errors="replace").strip().lower()
         if not body:
             continue
-        for needle, normalized in _STDERR_UNSUPPORTED_HINTS:
-            if needle in body:
-                return normalized
+        normalized = _normalize_unsupported_hint(body)
+        if normalized:
+            return normalized
     return None
 
 

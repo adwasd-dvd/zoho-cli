@@ -12,6 +12,7 @@
 - No publish, version bump, or tagging actions were performed.
 
 ### Added
+- Landed a focused cliq-193 blocker-accounting increment: probe-summary error extraction now also normalizes unsupported hints from JSON `details`/`message`/`reason` fields when top-level `error` is missing, so `appCommandsError` still records `not_supported`-class signals instead of falling back to generic `error` during empty-or-wrapper live failures.
 - Landed a focused cliq-193 blocker-accounting increment: probe-summary normalization now reads sidecar stderr hints when `app-commands` JSON is empty output, promoting unsupported endpoint signals (`not_supported`, `inactive_appaccount_user`, `operation_not_allowed`) into `appCommandsError` classification so defer-gate reporting reflects real endpoint posture.
 - Landed a focused platform-208 Cliq help-wording cleanup slice: normalized `zoho cliq status-react --help` from internal `agent-status` wording to operator-facing `Set one status reaction on a Cliq message.`, and extended focused IA guard coverage to keep this internal-label drift from returning.
 - Landed a focused platform-208 Cliq help-wording cleanup slice: normalized `zoho cliq capabilities --help` description from token/org-facing wording to operator-facing `Probe currently-available Cliq read capabilities for this account and network.`, and extended focused IA guard coverage to keep this wording drift from returning.

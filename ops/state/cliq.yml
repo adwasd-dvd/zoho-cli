@@ -1,9 +1,10 @@
 module: Cliq
-updated_at: '2026-05-04T16:26:05Z'
+updated_at: '2026-05-04T16:48:39Z'
 status: completed
 execution_mode: turbo_20x
 throughput_policy_ref: ops/state/execution_policy.yml
 blockers:
+- "focused cliq-193 archived-summary replay at 2026-05-04T16:48:39Z regenerated `tests/auto_pilot/reports/cliq193_app_commands_probe_summary_20260417_160856.json` so `appCommandsError` now resolves to canonical `not_supported` (was `empty_output`) with defer posture intact (`unsupportedConsecutiveCount: 58`, `postReleaseDeferred: true`), and focused guard coverage remains green (`./.venv/bin/python -m pytest -q tests/test_cliq193_probe_summary.py` -> `11 passed in 0.01s`)."
 - "focused cliq-193 archived-summary replay at 2026-05-04T16:26:05Z regenerated `tests/auto_pilot/reports/cliq193_app_commands_probe_summary_20260417_052039.json` so `appCommandsError` now resolves to canonical `not_supported` (was `empty_output`) with defer posture intact (`unsupportedConsecutiveCount: 30`, `postReleaseDeferred: true`), and focused guard coverage remains green (`./.venv/bin/python -m pytest -q tests/test_cliq193_probe_summary.py` -> `11 passed in 0.02s`)."
 - "focused cliq-193 blocker-accounting guard extension at 2026-05-04T16:09:45Z kept the strongest unsupported-hint priority locked with one additional top-level error-object fixture (mixed `inactive appaccount user` + `operation not allowed` + `endpoint is not supported` now asserted to stay canonical `not_supported`), with focused guard coverage green (`./.venv/bin/python -m pytest -q tests/test_cliq193_probe_summary.py` -> `11 passed in 0.01s`); deferred RC posture remains unchanged."
 - "platform integration-loop medium-scope rerun at 2026-05-04T15:51:44Z stayed green with no behavior change across registry/bridge + focused CLI/Cliq boundaries (`./.venv/bin/python -m pytest -q tests/test_registry.py tests/test_membrane_bridge.py` -> `489 passed in 8.52s`; focused CLI selector -> `202 passed, 665 deselected in 3.94s`; focused Cliq selector -> `69 passed, 190 deselected in 0.70s`; help smokes -> `HELP_SMOKE_OK`), so no integration regression is currently detected and deferred RC posture remains unchanged."

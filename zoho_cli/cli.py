@@ -986,7 +986,7 @@ def login(
     with_cliq_export: bool = typer.Option(
         False,
         "--with-cliq-export",
-        help="Include Cliq maintenance export OAuth scopes in this login flow.",
+        help="Include Cliq chat export OAuth scopes in this login flow.",
     ),
     with_crm: bool = typer.Option(
         False,

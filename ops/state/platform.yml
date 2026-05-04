@@ -1,7 +1,7 @@
 module: Platform
-updated_at: "2026-05-04T00:19:00Z"
+updated_at: "2026-05-04T00:39:00Z"
 status: in_progress
 execution_mode: turbo_20x
 throughput_policy_ref: ops/state/execution_policy.yml
 blockers: []
-next_small_step: Platform-208 focused root help-wording cleanup at 2026-05-04T00:19:00Z removed internal `experimental` wording from `zoho --help` membrane command text; focused guard coverage stayed green (`./.venv/bin/python -m pytest -q tests/test_cli.py::test_root_help_hides_experimental_wording` -> `1 passed in 1.33s`). Keep RC checkpoint refresh queued unless blocker posture changes.
+next_small_step: Platform-208 focused login help-wording cleanup at 2026-05-04T00:39:00Z removed internal `maintenance` wording from `zoho login --help` (`--with-cliq-export`) by switching to operator-facing `chat export OAuth` wording; focused guard coverage stayed green (`./.venv/bin/python -m pytest -q tests/test_cli.py::test_login_help_hides_internal_maintenance_wording` -> `1 passed in 1.28s`). Keep RC checkpoint refresh queued unless blocker posture changes.

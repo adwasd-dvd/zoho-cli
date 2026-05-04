@@ -12,6 +12,7 @@
 - No publish, version bump, or tagging actions were performed.
 
 ### Added
+- Landed a focused platform-208 login help-wording cleanup slice: removed internal `maintenance` wording from `zoho login --help` (`--with-cliq-export`) by switching to operator-facing `chat export OAuth` language, and added a focused guard test to keep maintenance wording out of operator-facing login help.
 - Landed a focused platform-208 root help-wording cleanup slice: removed the internal-facing `experimental` qualifier from `membrane` command help in `zoho --help`, and added a focused guard test to keep experimental labels out of operator-facing root help.
 - Landed a focused platform-208 Cliq help-wording cleanup slice: removed internal `maintenance API` wording from `zoho cliq export-chats --help` and extended focused help guards to keep maintenance implementation labels out of operator-facing Cliq help output.
 - Landed a focused platform-208 Cliq help-wording cleanup slice: removed internal `OpenClaw-style` wording from `zoho cliq watch-context --help` and added focused guard coverage to keep internal platform labels out of operator-facing Cliq help text.

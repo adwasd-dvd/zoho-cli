@@ -1,10 +1,24 @@
-last_run_at: "2026-05-04T18:25:43Z"
+last_run_at: "2026-05-04T18:29:58Z"
 last_result: passing
-current_focus: cliq-210-identity-command-extraction-20260504T182543Z
+current_focus: cliq-210-org-directory-command-extraction-20260504T182958Z
 suites:
   unit:
     status: passing
     notes:
+      - "cliq-210 org-directory extraction at 2026-05-04T18:31:16Z"
+      - "no behavior change; `zoho cliq users` and `zoho cliq teams` command bodies moved to `zoho_cli/commands/cliq_org_directory.py` while `zoho_cli/cli.py` keeps dependency injection and existing registration"
+      - "./.venv/bin/ruff check zoho_cli/cli.py zoho_cli/commands/cliq_org_directory.py -> All checks passed!"
+      - "./.venv/bin/python -m pytest -q tests/test_cli.py -k 'cliq_users or cliq_teams' -> 3 passed, 864 deselected in 0.18s"
+      - "./.venv/bin/python -m pytest -q tests/test_registry.py -k 'commands_package_exports_root_registrars or cliq_root_contains_core_groups' -> 1 passed, 65 deselected in 0.03s"
+      - "cliq-210 org-directory extraction at 2026-05-04T18:29:58Z"
+      - "no behavior change; `zoho cliq users` and `zoho cliq teams` command bodies moved to `zoho_cli/commands/cliq_org_directory.py` while `zoho_cli/cli.py` keeps dependency injection and existing registration"
+      - "./.venv/bin/ruff format zoho_cli/cli.py zoho_cli/commands/cliq_org_directory.py -> 2 files left unchanged"
+      - "./.venv/bin/ruff check zoho_cli/cli.py zoho_cli/commands/cliq_org_directory.py -> All checks passed!"
+      - "./.venv/bin/python -m pytest -q tests/test_cli.py -k 'cliq_users or cliq_teams' -> 3 passed, 864 deselected in 0.24s"
+      - "./.venv/bin/python -m pytest -q tests/test_registry.py -k 'users_teams_commands or commands_package_exports_root_registrars' -> 2 passed, 64 deselected in 0.03s"
+      - "post-doc sync aggregate: focused readiness+identity+org-directory CLI tests -> 19 passed, 848 deselected in 0.72s"
+      - "post-doc sync aggregate: registry + lane3 + markdown tests -> 72 passed in 0.06s; Ruby YAML parse -> YAML_PARSE_OK"
+      - "post-doc sync aggregate: `wc -l` -> `cliq_readiness.py` 224 lines, `cliq_identity.py` 79 lines, `cliq_org_directory.py` 97 lines"
       - "cliq-210 identity extraction at 2026-05-04T18:25:43Z"
       - "no behavior change; `zoho cliq whoami` and `zoho cliq user-resolve` command bodies moved to `zoho_cli/commands/cliq_identity.py` while `zoho_cli/cli.py` keeps dependency injection and existing registration"
       - "./.venv/bin/ruff format zoho_cli/cli.py zoho_cli/commands/cliq_identity.py -> 2 files left unchanged"

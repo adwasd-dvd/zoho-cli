@@ -81,6 +81,7 @@ Definition of done:
 Current progress:
 - first slice extracted `zoho cliq status` and `zoho cliq capabilities` into `zoho_cli/commands/cliq_readiness.py` with behavior parity checks green
 - second slice extracted `zoho cliq whoami` and `zoho cliq user-resolve` into `zoho_cli/commands/cliq_identity.py` with behavior parity checks green
+- third slice extracted `zoho cliq users` and `zoho cliq teams` into `zoho_cli/commands/cliq_org_directory.py` with behavior parity checks green
 
 ### Phase B4 — cross-channel interoperability contract (completed)
 

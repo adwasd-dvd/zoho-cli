@@ -39,6 +39,23 @@ def _normalize_unsupported_hint(text: str | None) -> str | None:
     return None
 
 
+def _find_unsupported_hint(value: Any) -> str | None:
+    if isinstance(value, str):
+        return _normalize_unsupported_hint(value)
+    if isinstance(value, dict):
+        for nested in value.values():
+            normalized = _find_unsupported_hint(nested)
+            if normalized:
+                return normalized
+        return None
+    if isinstance(value, list):
+        for nested in value:
+            normalized = _find_unsupported_hint(nested)
+            if normalized:
+                return normalized
+    return None
+
+
 def _read_json_dict(path: Path) -> dict[str, Any]:
     if not path.exists():
         return {}
@@ -63,7 +80,7 @@ def _extract_app_error(app_payload: dict[str, Any]) -> str | None:
     if isinstance(error, str) and error.strip():
         return error.strip()
     for key in ("details", "message", "reason"):
-        normalized = _normalize_unsupported_hint(app_payload.get(key))
+        normalized = _find_unsupported_hint(app_payload.get(key))
         if normalized:
             return normalized
     if app_payload.get("status") == "error":

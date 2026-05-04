@@ -1,10 +1,13 @@
-last_run_at: "2026-05-04T12:12:04Z"
+last_run_at: "2026-05-04T12:47:00Z"
 last_result: passing
-current_focus: cliq-193-probe-summary-details-hint-fallback-20260504T121204Z
+current_focus: cliq-193-probe-summary-nested-details-fallback-20260504T124700Z
 suites:
   unit:
     status: passing
     notes:
+      - "focused cliq-193 blocker-accounting nested-details increment at 2026-05-04T12:47:00Z"
+      - "behavior change: probe summary now recursively scans nested JSON details/message/reason wrappers for unsupported hints when top-level error is missing"
+      - "./.venv/bin/python -m pytest -q tests/test_cliq193_probe_summary.py -> 6 passed in 0.02s"
       - "focused cliq-193 blocker-accounting details-hint increment at 2026-05-04T12:12:04Z"
       - "behavior change: probe summary now normalizes unsupported hints from JSON details/message/reason when app-commands payload omits top-level error"
       - "./.venv/bin/python -m pytest -q tests/test_cliq193_probe_summary.py -> 5 passed in 0.01s"

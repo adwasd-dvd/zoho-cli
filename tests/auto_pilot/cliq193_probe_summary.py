@@ -19,6 +19,13 @@ _UNSUPPORTED_ERRORS = {
     "unsupported",
 }
 
+_STDERR_UNSUPPORTED_HINTS: tuple[tuple[str, str], ...] = (
+    ("inactive_appaccount_user", "inactive_appaccount_user"),
+    ("operation_not_allowed", "operation_not_allowed"),
+    ("not_supported", "not_supported"),
+    ("unsupported", "unsupported"),
+)
+
 
 def _read_json_dict(path: Path) -> dict[str, Any]:
     if not path.exists():
@@ -45,6 +52,24 @@ def _extract_app_error(app_payload: dict[str, Any]) -> str | None:
         return error.strip()
     if app_payload.get("status") == "error":
         return "error"
+    return None
+
+
+def _extract_app_error_from_stderr(app_commands_file: Path) -> str | None:
+    candidates = (
+        app_commands_file.with_suffix(".stderr"),
+        app_commands_file.with_suffix(".stderr.txt"),
+        app_commands_file.with_suffix(".stderr.log"),
+    )
+    for candidate in candidates:
+        if not candidate.exists():
+            continue
+        body = candidate.read_text(encoding="utf-8", errors="replace").strip().lower()
+        if not body:
+            continue
+        for needle, normalized in _STDERR_UNSUPPORTED_HINTS:
+            if needle in body:
+                return normalized
     return None
 
 
@@ -110,6 +135,10 @@ def build_summary(
     oauth_ready = bool(status_payload.get("oauthReady")) or auth_ok
     export_oauth_ready = bool(status_payload.get("exportOauthReady"))
     app_commands_error = _extract_app_error(app_payload)
+    if app_commands_error == "empty_output":
+        stderr_error = _extract_app_error_from_stderr(app_commands_file)
+        if stderr_error:
+            app_commands_error = stderr_error
     unsupported_signal = _is_unsupported_error(app_commands_error)
     unsupported_consecutive_count = 0
     if unsupported_signal:

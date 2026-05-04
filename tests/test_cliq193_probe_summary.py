@@ -72,6 +72,30 @@ def test_build_summary_extracts_api_error(tmp_path):
     assert summary["postReleaseDeferred"] is False
 
 
+def test_build_summary_prefers_stderr_unsupported_hint_when_json_is_empty(tmp_path):
+    status_file = tmp_path / "status.json"
+    app_commands_file = tmp_path / "app_commands.json"
+    app_commands_stderr = tmp_path / "app_commands.stderr"
+    status_file.write_text(json.dumps({"oauthReady": True, "exportOauthReady": True}))
+    app_commands_file.write_text("")
+    app_commands_stderr.write_text("error: not_supported")
+
+    summary = build_summary(
+        stamp="20260504_120001",
+        probe_app_id="APP_PROBE_FAKE_20260504_120001",
+        status_command="status",
+        app_commands_command="app-commands",
+        status_exit_code=0,
+        app_commands_exit_code=1,
+        status_file=status_file,
+        app_commands_file=app_commands_file,
+        timestamp_utc="2026-05-04T12:00:01Z",
+    )
+
+    assert summary["appCommandsError"] == "not_supported"
+    assert summary["unsupportedSignal"] is True
+
+
 def test_build_summary_marks_post_release_deferred_after_three_strikes(tmp_path):
     status_file = tmp_path / "status.json"
     app_commands_file = tmp_path / "app_commands.json"

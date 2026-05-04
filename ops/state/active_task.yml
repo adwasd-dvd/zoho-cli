@@ -4,7 +4,7 @@ module: platform
 stage: completed
 status: completed
 owner: coder
-updated_at: '2026-05-04T15:51:44Z'
+updated_at: '2026-05-04T17:57:40Z'
 execution_mode: turbo_20x
 throughput_policy_ref: ops/state/execution_policy.yml
 success_criteria:
@@ -12,4 +12,4 @@ success_criteria:
 - keep module-first command taxonomy consistent across level-2/level-3 help surfaces
 - leave a concise operator-facing IA contract that matches current module order and release state
 next_if_done: reassess RC/version gate posture with blocker-bug policy unchanged.
-next_step: "Platform-208 closure reassessment remains complete: latest medium-scope integration rerun is still green (`./.venv/bin/python -m pytest -q tests/test_registry.py tests/test_membrane_bridge.py` -> `489 passed in 8.52s`; focused CLI selector -> `202 passed, 665 deselected in 3.94s`; focused Cliq selector -> `69 passed, 190 deselected in 0.70s`; help smokes -> `HELP_SMOKE_OK`). Next best step is to keep RC deferred until blocker-bug gate changes, then re-run release-candidate decision."
+next_step: "Platform-208 closure reassessment remains complete: latest medium-scope integration rerun is still green (`./.venv/bin/python -m pytest -q tests/test_registry.py tests/test_membrane_bridge.py` -> `489 passed in 9.19s`; focused CLI selector -> `202 passed, 665 deselected in 4.19s`; focused Cliq selector -> `69 passed, 190 deselected in 0.74s`; help smokes -> `HELP_SMOKE_OK`). Next best step is to keep RC deferred until blocker-bug gate changes, then re-run release-candidate decision."

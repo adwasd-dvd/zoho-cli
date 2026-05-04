@@ -12,6 +12,7 @@
 - No publish, version bump, or tagging actions were performed.
 
 ### Added
+- Landed a focused cliq-193 blocker-accounting increment: probe-summary now normalizes unsupported endpoint hints from top-level `error` strings (for example `error: not_supported` and `endpoint is not supported`) so wrapper/prefix variants still classify into canonical deferred-blocker signals.
 - Landed a focused cliq-193 blocker-accounting increment: probe-summary unsupported-hint normalization now also recognizes spaced unsupported stderr phrasing (for example `not supported`, `operation not allowed`, `inactive appaccount user`) so empty-output `app-commands` probes still classify into canonical deferred-blocker signals.
 - Landed a focused cliq-193 blocker-accounting increment: probe-summary unsupported-hint extraction now recursively scans nested JSON `details`/`message`/`reason` payloads (dict/list wrappers) so `appCommandsError` still normalizes to `not_supported`-class signals when the endpoint wraps error hints instead of exposing a top-level string field.
 - Landed a focused cliq-193 blocker-accounting increment: probe-summary error extraction now also normalizes unsupported hints from JSON `details`/`message`/`reason` fields when top-level `error` is missing, so `appCommandsError` still records `not_supported`-class signals instead of falling back to generic `error` during empty-or-wrapper live failures.

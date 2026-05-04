@@ -81,6 +81,9 @@ def _extract_app_error(app_payload: dict[str, Any]) -> str | None:
         return "invalid_json_output"
     error = app_payload.get("error")
     if isinstance(error, str) and error.strip():
+        normalized_error = _normalize_unsupported_hint(error)
+        if normalized_error:
+            return normalized_error
         return error.strip()
     for key in ("details", "message", "reason"):
         normalized = _find_unsupported_hint(app_payload.get(key))

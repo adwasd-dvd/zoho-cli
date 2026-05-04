@@ -1,9 +1,10 @@
 module: Cliq
-updated_at: '2026-05-04T13:07:00Z'
+updated_at: '2026-05-04T13:27:00Z'
 status: completed
 execution_mode: turbo_20x
 throughput_policy_ref: ops/state/execution_policy.yml
 blockers:
+- "focused cliq-193 blocker-accounting top-level-error-hint increment at 2026-05-04T13:27:00Z now normalizes unsupported endpoint hints from top-level `error` strings (for example `error: not_supported` and `endpoint is not supported`) so prefixed/wrapper variants still classify into canonical deferred-blocker signals; focused guard coverage is green (`./.venv/bin/python -m pytest -q tests/test_cliq193_probe_summary.py` -> `9 passed in 0.02s`)."
 - "focused cliq-193 blocker-accounting spaced-stderr-hint increment at 2026-05-04T13:07:00Z now normalizes spaced unsupported stderr phrases (`not supported`, `operation not allowed`, `inactive appaccount user`) into canonical blocker signals when `app-commands` JSON is empty, preserving deferred-gate accounting fidelity; focused guard coverage is green (`./.venv/bin/python -m pytest -q tests/test_cliq193_probe_summary.py` -> `7 passed in 0.02s`)."
 - "focused cliq-193 blocker-accounting nested-details increment at 2026-05-04T12:47:00Z now recursively scans nested JSON `details`/`message`/`reason` payload wrappers (dict/list) for unsupported endpoint hints, preserving `not_supported` normalization when live payloads omit top-level string errors; focused guard coverage is green (`./.venv/bin/python -m pytest -q tests/test_cliq193_probe_summary.py` -> `6 passed in 0.02s`)."
 - "focused cliq-193 blocker-accounting details-hint increment at 2026-05-04T12:12:04Z now normalizes unsupported endpoint hints from JSON `details`/`message`/`reason` fields when `error` is absent, so probe summaries preserve `not_supported` classification instead of generic `error`; focused guard coverage is green (`./.venv/bin/python -m pytest -q tests/test_cliq193_probe_summary.py` -> `5 passed in 0.01s`)."

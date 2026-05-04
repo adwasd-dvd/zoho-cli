@@ -11,6 +11,7 @@
 - Continued `cliq-210` by extracting productivity/platform list commands (`zoho cliq events`, `zoho cliq reminders`, `zoho cliq meetings`, and `zoho cliq databases`) into `zoho_cli/commands/cliq_productivity.py`, preserving command names, help text, and JSON output.
 - Continued `cliq-210` by extracting platform-extension list commands (`zoho cliq widgets`, `zoho cliq map-tickers`, `zoho cliq custom-domains`, and `zoho cliq custom-emails`) into `zoho_cli/commands/cliq_platform_extensions.py`, preserving command names, help text, and JSON output.
 - Continued `cliq-210` by extracting channel/member/chat-control commands (`zoho cliq members`, `zoho cliq channel-create`, `zoho cliq channel-rename`, `zoho cliq channel-topic`, `zoho cliq member-add`, `zoho cliq member-remove`, `zoho cliq channel-archive`, `zoho cliq channel-delete`, `zoho cliq channel-unarchive`, `zoho cliq leave`, `zoho cliq mute`, and `zoho cliq unmute`) into `zoho_cli/commands/cliq_channel_management.py`, preserving command names, help text, and JSON output.
+- Continued `cliq-210` by moving pinned chat-control commands (`zoho cliq pin`, `zoho cliq unpin`, and `zoho cliq pinned`) into `zoho_cli/commands/cliq_channel_management.py`, preserving command names, help text, and JSON output.
 
 ### Release readiness (2026-05-04T18:02:41Z)
 - Approved the fast RC posture for `0.2.1rc1`.

@@ -54,6 +54,36 @@ def _archive_channel(
     )
 
 
+def _set_pin(
+    context: CliqChannelManagementContext,
+    *,
+    channel_id: str | None,
+    chat_id: str | None,
+    network: str | None,
+    pinned: bool,
+) -> None:
+    _require_destination(chat_id, channel_id)
+
+    client = _client(context, network)
+    resolved_chat = _resolved_chat(client, chat_id, channel_id)
+    data = _data(
+        client.set_chat_pin(
+            chat_id=resolved_chat,
+            channel_id=channel_id,
+            pinned=pinned,
+        )
+    )
+    utils.output_status(
+        "Cliq conversation pinned" if pinned else "Cliq conversation unpinned",
+        extra={
+            "chatId": resolved_chat or "",
+            "channelId": channel_id or "",
+            "pinned": pinned,
+            "result": data,
+        },
+    )
+
+
 def build_cliq_members_command(
     context: CliqChannelManagementContext,
 ) -> Callable[..., None]:
@@ -430,3 +460,113 @@ def build_cliq_unmute_command(
         )
 
     return cliq_unmute
+
+
+def build_cliq_pin_command(
+    context: CliqChannelManagementContext,
+) -> Callable[..., None]:
+    """Build ``zoho cliq pin`` with injected runtime state."""
+
+    def cliq_pin(
+        channel_id: Optional[str] = typer.Option(
+            None, "--channel-id", help="Destination channel id (resolved to chat_id)."
+        ),
+        chat_id: Optional[str] = typer.Option(None, "--chat-id", help="Chat id."),
+        network: Optional[str] = typer.Option(
+            None, "--network", help="Cliq network slug (e.g. happydistrouklimited)."
+        ),
+    ) -> None:
+        """Pin one chat/channel conversation."""
+        _set_pin(
+            context,
+            channel_id=channel_id,
+            chat_id=chat_id,
+            network=network,
+            pinned=True,
+        )
+
+    return cliq_pin
+
+
+def build_cliq_unpin_command(
+    context: CliqChannelManagementContext,
+) -> Callable[..., None]:
+    """Build ``zoho cliq unpin`` with injected runtime state."""
+
+    def cliq_unpin(
+        channel_id: Optional[str] = typer.Option(
+            None, "--channel-id", help="Destination channel id (resolved to chat_id)."
+        ),
+        chat_id: Optional[str] = typer.Option(None, "--chat-id", help="Chat id."),
+        network: Optional[str] = typer.Option(
+            None, "--network", help="Cliq network slug (e.g. happydistrouklimited)."
+        ),
+    ) -> None:
+        """Unpin one chat/channel conversation."""
+        _set_pin(
+            context,
+            channel_id=channel_id,
+            chat_id=chat_id,
+            network=network,
+            pinned=False,
+        )
+
+    return cliq_unpin
+
+
+def build_cliq_pinned_command(
+    context: CliqChannelManagementContext,
+) -> Callable[..., None]:
+    """Build ``zoho cliq pinned`` with injected runtime state."""
+
+    def cliq_pinned(
+        channel_id: Optional[str] = typer.Option(
+            None, "--channel-id", help="Destination channel id (resolved to chat_id)."
+        ),
+        chat_id: Optional[str] = typer.Option(None, "--chat-id", help="Chat id."),
+        limit: int = typer.Option(50, "--limit", "-n", help="Max rows to return."),
+        network: Optional[str] = typer.Option(
+            None, "--network", help="Cliq network slug (e.g. happydistrouklimited)."
+        ),
+    ) -> None:
+        """List pinned messages for one chat/channel conversation."""
+        _require_destination(chat_id, channel_id)
+
+        client = _client(context, network)
+        resolved_chat = _resolved_chat(client, chat_id, channel_id)
+        resp = client.list_pinned_messages(
+            chat_id=resolved_chat,
+            channel_id=channel_id,
+            limit=limit,
+        )
+
+        data = _data(resp)
+        pinned_messages: list[dict[str, Any]] = []
+        if isinstance(data, list):
+            pinned_messages = [item for item in data if isinstance(item, dict)]
+        elif isinstance(data, dict):
+            for key in (
+                "pinned",
+                "messages",
+                "items",
+                "data",
+                "list",
+                "pins",
+            ):
+                candidate = data.get(key)
+                if isinstance(candidate, list):
+                    pinned_messages = [
+                        item for item in candidate if isinstance(item, dict)
+                    ]
+                    break
+
+        utils.output(
+            {
+                "chatId": resolved_chat or "",
+                "channelId": channel_id or "",
+                "count": len(pinned_messages),
+                "pinnedMessages": pinned_messages,
+            }
+        )
+
+    return cliq_pinned

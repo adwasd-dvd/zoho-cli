@@ -153,6 +153,9 @@ from zoho_cli.commands.cliq_channel_management import (
     build_cliq_member_remove_command,
     build_cliq_members_command,
     build_cliq_mute_command,
+    build_cliq_pin_command,
+    build_cliq_pinned_command,
+    build_cliq_unpin_command,
     build_cliq_unmute_command,
 )
 from zoho_cli.commands.cliq_org_admin import (
@@ -9072,74 +9075,8 @@ register_cliq_mute_unmute_commands(
 )
 
 
-def cliq_pin(
-    channel_id: Optional[str] = typer.Option(
-        None, "--channel-id", help="Destination channel id (resolved to chat_id)."
-    ),
-    chat_id: Optional[str] = typer.Option(None, "--chat-id", help="Chat id."),
-    network: Optional[str] = typer.Option(
-        None, "--network", help="Cliq network slug (e.g. happydistrouklimited)."
-    ),
-) -> None:
-    """Pin one chat/channel conversation."""
-    if not chat_id and not channel_id:
-        utils.error_exit("invalid_destination", "Provide --chat-id or --channel-id")
-
-    cfg = _cfg()
-    email = _require_account(cfg)
-    client = _get_cliq_client(cfg, email, network=network)
-
-    resolved_chat = (chat_id or "").strip() or client.resolve_chat_id(channel_id or "")
-    resp = client.set_chat_pin(
-        chat_id=resolved_chat, channel_id=channel_id, pinned=True
-    )
-    data = resp.get("data", resp)
-
-    utils.output_status(
-        "Cliq conversation pinned",
-        extra={
-            "chatId": resolved_chat or "",
-            "channelId": channel_id or "",
-            "pinned": True,
-            "result": data,
-        },
-    )
-
-
-def cliq_unpin(
-    channel_id: Optional[str] = typer.Option(
-        None, "--channel-id", help="Destination channel id (resolved to chat_id)."
-    ),
-    chat_id: Optional[str] = typer.Option(None, "--chat-id", help="Chat id."),
-    network: Optional[str] = typer.Option(
-        None, "--network", help="Cliq network slug (e.g. happydistrouklimited)."
-    ),
-) -> None:
-    """Unpin one chat/channel conversation."""
-    if not chat_id and not channel_id:
-        utils.error_exit("invalid_destination", "Provide --chat-id or --channel-id")
-
-    cfg = _cfg()
-    email = _require_account(cfg)
-    client = _get_cliq_client(cfg, email, network=network)
-
-    resolved_chat = (chat_id or "").strip() or client.resolve_chat_id(channel_id or "")
-    resp = client.set_chat_pin(
-        chat_id=resolved_chat,
-        channel_id=channel_id,
-        pinned=False,
-    )
-    data = resp.get("data", resp)
-
-    utils.output_status(
-        "Cliq conversation unpinned",
-        extra={
-            "chatId": resolved_chat or "",
-            "channelId": channel_id or "",
-            "pinned": False,
-            "result": data,
-        },
-    )
+cliq_pin = build_cliq_pin_command(_cliq_channel_management_context)
+cliq_unpin = build_cliq_unpin_command(_cliq_channel_management_context)
 
 
 register_cliq_pin_unpin_commands(
@@ -9149,57 +9086,7 @@ register_cliq_pin_unpin_commands(
 )
 
 
-def cliq_pinned(
-    channel_id: Optional[str] = typer.Option(
-        None, "--channel-id", help="Destination channel id (resolved to chat_id)."
-    ),
-    chat_id: Optional[str] = typer.Option(None, "--chat-id", help="Chat id."),
-    limit: int = typer.Option(50, "--limit", "-n", help="Max rows to return."),
-    network: Optional[str] = typer.Option(
-        None, "--network", help="Cliq network slug (e.g. happydistrouklimited)."
-    ),
-) -> None:
-    """List pinned messages for one chat/channel conversation."""
-    if not chat_id and not channel_id:
-        utils.error_exit("invalid_destination", "Provide --chat-id or --channel-id")
-
-    cfg = _cfg()
-    email = _require_account(cfg)
-    client = _get_cliq_client(cfg, email, network=network)
-
-    resolved_chat = (chat_id or "").strip() or client.resolve_chat_id(channel_id or "")
-    resp = client.list_pinned_messages(
-        chat_id=resolved_chat,
-        channel_id=channel_id,
-        limit=limit,
-    )
-
-    data = resp.get("data", resp)
-    pinned_messages: list[dict[str, Any]] = []
-    if isinstance(data, list):
-        pinned_messages = [item for item in data if isinstance(item, dict)]
-    elif isinstance(data, dict):
-        for key in (
-            "pinned",
-            "messages",
-            "items",
-            "data",
-            "list",
-            "pins",
-        ):
-            candidate = data.get(key)
-            if isinstance(candidate, list):
-                pinned_messages = [item for item in candidate if isinstance(item, dict)]
-                break
-
-    utils.output(
-        {
-            "chatId": resolved_chat or "",
-            "channelId": channel_id or "",
-            "count": len(pinned_messages),
-            "pinnedMessages": pinned_messages,
-        }
-    )
+cliq_pinned = build_cliq_pinned_command(_cliq_channel_management_context)
 
 
 register_cliq_pinned_commands(

@@ -1,10 +1,19 @@
-last_run_at: "2026-05-04T19:04:49Z"
+last_run_at: "2026-05-04T19:10:14Z"
 last_result: passing
-current_focus: cliq-210-channel-management-command-extraction-20260504T190449Z
+current_focus: cliq-210-pinned-command-extraction-20260504T191014Z
 suites:
   unit:
     status: passing
     notes:
+      - "cliq-210 pinned command extraction at 2026-05-04T19:10:14Z"
+      - "no behavior change; `zoho cliq pin`, `zoho cliq unpin`, and `zoho cliq pinned` moved to `zoho_cli/commands/cliq_channel_management.py`"
+      - "./.venv/bin/ruff format zoho_cli/cli.py zoho_cli/commands/cliq_channel_management.py -> 2 files left unchanged"
+      - "./.venv/bin/ruff check zoho_cli/cli.py zoho_cli/commands/cliq_channel_management.py -> All checks passed!"
+      - "./.venv/bin/python -m pytest -q tests/test_cli.py -k 'cliq_pin_from_channel or cliq_unpin_from_channel or cliq_pinned_from_channel' -> 3 passed, 864 deselected in 0.21s"
+      - "./.venv/bin/python -m pytest -q tests/test_registry.py -k 'pin_unpin_commands or pinned_commands or commands_package_exports_root_registrars' -> 3 passed, 63 deselected in 0.07s"
+      - "post-doc sync aggregate: focused extracted Cliq command surfaces -> 49 passed, 818 deselected in 1.51s"
+      - "post-doc sync aggregate: registry + lane3 + markdown tests -> 72 passed in 0.08s; Ruby YAML parse -> YAML_PARSE_OK"
+      - "post-doc sync aggregate: `wc -l` -> `cliq_readiness.py` 224, `cliq_identity.py` 79, `cliq_org_directory.py` 97, `cliq_org_admin.py` 304, `cliq_productivity.py` 267, `cliq_platform_extensions.py` 248, `cliq_channel_management.py` 572"
       - "cliq-210 channel-management extraction at 2026-05-04T19:04:49Z"
       - "no behavior change; `zoho cliq members`, channel lifecycle/member commands, and `zoho cliq leave`/`mute`/`unmute` moved to `zoho_cli/commands/cliq_channel_management.py`"
       - "./.venv/bin/ruff format zoho_cli/cli.py zoho_cli/commands/cliq_channel_management.py -> 1 file reformatted, 1 file left unchanged"

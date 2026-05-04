@@ -406,7 +406,7 @@ crm_app = typer.Typer(
 config_app = typer.Typer(no_args_is_help=True, help="Configuration helpers.")
 membrane_app = typer.Typer(
     no_args_is_help=True,
-    help="Membrane bridge operations (experimental).",
+    help="Membrane bridge operations.",
 )
 
 

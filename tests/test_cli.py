@@ -215,6 +215,14 @@ def test_crm_help_hides_scaffold_wording() -> None:
     assert "scaffold" not in result.output
 
 
+def test_root_help_hides_experimental_wording() -> None:
+    result = runner.invoke(app, ["--help"])
+
+    assert result.exit_code == 0, result.output
+    assert "Membrane bridge operations." in result.output
+    assert "experimental" not in result.output.lower()
+
+
 def test_login_no_browser_defaults_to_localhost_redirect_when_unset(
     mock_config: Path, monkeypatch: pytest.MonkeyPatch
 ) -> None:

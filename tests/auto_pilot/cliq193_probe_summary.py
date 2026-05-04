@@ -29,6 +29,13 @@ _STDERR_UNSUPPORTED_HINTS: tuple[tuple[str, str], ...] = (
     ("unsupported", "unsupported"),
 )
 
+_UNSUPPORTED_HINT_PRIORITY: dict[str, int] = {
+    "not_supported": 4,
+    "operation_not_allowed": 3,
+    "inactive_appaccount_user": 2,
+    "unsupported": 1,
+}
+
 
 def _normalize_unsupported_hint(text: str | None) -> str | None:
     if not isinstance(text, str):
@@ -42,20 +49,36 @@ def _normalize_unsupported_hint(text: str | None) -> str | None:
     return None
 
 
+def _prefer_unsupported_hint(
+    current: str | None,
+    candidate: str | None,
+) -> str | None:
+    if not candidate:
+        return current
+    if not current:
+        return candidate
+    current_priority = _UNSUPPORTED_HINT_PRIORITY.get(current, 0)
+    candidate_priority = _UNSUPPORTED_HINT_PRIORITY.get(candidate, 0)
+    if candidate_priority > current_priority:
+        return candidate
+    return current
+
+
 def _find_unsupported_hint(value: Any) -> str | None:
     if isinstance(value, str):
         return _normalize_unsupported_hint(value)
     if isinstance(value, dict):
+        best: str | None = None
         for nested in value.values():
             normalized = _find_unsupported_hint(nested)
-            if normalized:
-                return normalized
-        return None
+            best = _prefer_unsupported_hint(best, normalized)
+        return best
     if isinstance(value, list):
+        best: str | None = None
         for nested in value:
             normalized = _find_unsupported_hint(nested)
-            if normalized:
-                return normalized
+            best = _prefer_unsupported_hint(best, normalized)
+        return best
     return None
 
 
@@ -85,6 +108,9 @@ def _extract_app_error(app_payload: dict[str, Any]) -> str | None:
         if normalized_error:
             return normalized_error
         return error.strip()
+    normalized_error = _find_unsupported_hint(error)
+    if normalized_error:
+        return normalized_error
     for key in ("details", "message", "reason"):
         normalized = _find_unsupported_hint(app_payload.get(key))
         if normalized:

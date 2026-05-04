@@ -8,20 +8,19 @@ mail:
 
 cliq:
   priority: 2
-  status: in_progress
-  phase: expansion_conversation_visibility_and_media_primitives
-  target_release: v0.4.0
-  current_milestone: cliq-expansion-phase
+  status: completed
+  phase: workflow_packaging_complete_with_deferred_external_blockers
+  target_release: v1.0.0
+  current_milestone: cliq-195-workflow-package
   blockers:
-    - "live search endpoint variants are currently unsupported on happydistrouklimited (`extra_param_found` / `request_url_invalid`)"
-    - "attachment retrieval parity remains endpoint-limited on current token/network (`/attachments` returns empty payloads for media-visible messages)"
-    - "`cliq export-chats` live verification is currently blocked by API-side `inactive_appaccount_user` even after maintenance export scopes (`ZohoCliq.OrganizationChats.READ` + `ZohoCliq.OrganizationMessages.READ`) were granted"
+    - "deferred: live search endpoint variants are currently unsupported on happydistrouklimited (`extra_param_found` / `request_url_invalid`)"
+    - "deferred: attachment retrieval parity remains endpoint-limited on current token/network (`/attachments` returns empty payloads for media-visible messages)"
+    - "deferred: `cliq export-chats` live verification is currently blocked by API-side `inactive_appaccount_user` even after maintenance export scopes (`ZohoCliq.OrganizationChats.READ` + `ZohoCliq.OrganizationMessages.READ`) were granted"
 
 crm:
   priority: 3
-  status: blocked
+  status: completed
   phase: phase_1_read_only_commands_implemented
   target_release: v0.5.0
   current_milestone: crm-phase1-read-only
-  blockers:
-    - test account is not in a CRM org; live CRM scopes cannot be granted
+  blockers: []

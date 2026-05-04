@@ -169,6 +169,10 @@ def test_cliq_teams_help_hides_internal_slice_labels() -> None:
             ["app-command-get", "APP_TEST", "CMD_TEST"],
             "Get one app command by id.",
         ),
+        (
+            ["export-chats"],
+            "Export Cliq chats or one chat's message history.",
+        ),
     ],
 )
 def test_cliq_help_hides_internal_slice_labels(
@@ -181,6 +185,7 @@ def test_cliq_help_hides_internal_slice_labels(
     assert "slice" not in result.output
     assert "org-admin" not in result.output
     assert "platform-extension" not in result.output
+    assert "maintenance API" not in result.output
 
 
 def test_cliq_help_hides_scaffold_wording() -> None:

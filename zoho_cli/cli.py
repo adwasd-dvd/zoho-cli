@@ -9083,7 +9083,7 @@ def cliq_export_chats(
         None, "--network", help="Cliq network slug (e.g. happydistrouklimited)."
     ),
 ) -> None:
-    """Export Cliq chats or one chat's message history via maintenance API."""
+    """Export Cliq chats or one chat's message history."""
 
     def _extract_chat_rows(payload: Any) -> list[dict[str, Any]]:
         if isinstance(payload, list):

@@ -1,10 +1,13 @@
-last_run_at: "2026-05-03T23:57:21Z"
+last_run_at: "2026-05-03T23:59:00Z"
 last_result: passing
-current_focus: platform-208-integration-loop-medium-scope-rerun-20260503T235721Z
+current_focus: platform-208-cliq-export-chats-help-wording-cleanup-20260503T235900Z
 suites:
   unit:
     status: passing
     notes:
+      - "platform-208 focused Cliq help-wording cleanup at 2026-05-03T23:59:00Z"
+      - "behavior change: removed internal `maintenance API` wording from `zoho cliq export-chats --help`"
+      - "./.venv/bin/python -m pytest -q tests/test_cli.py::test_cliq_help_hides_internal_slice_labels -> 17 passed in 1.65s"
       - "platform-208 integration-loop medium-scope rerun at 2026-05-03T23:57:21Z"
       - "no behavior change; module-first help + bridge + watch-action boundary checks remained green"
       - "./.venv/bin/python -m pytest -q tests/test_registry.py tests/test_membrane_bridge.py -> 489 passed in 8.57s"

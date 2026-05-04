@@ -12,6 +12,7 @@
 - No publish, version bump, or tagging actions were performed.
 
 ### Added
+- Landed a focused platform-208 Cliq help-wording cleanup slice: removed internal `maintenance API` wording from `zoho cliq export-chats --help` and extended focused help guards to keep maintenance implementation labels out of operator-facing Cliq help output.
 - Landed a focused platform-208 Cliq help-wording cleanup slice: removed internal `OpenClaw-style` wording from `zoho cliq watch-context --help` and added focused guard coverage to keep internal platform labels out of operator-facing Cliq help text.
 - Landed a focused platform-208 Cliq help-taxonomy cleanup slice: replaced internal `org-admin`/`platform-extension` wording in operator-facing `zoho cliq --help` descriptions for `teams`, `departments`, `roles`, `designations`, `user-status`, `userfields`, `databases`, and `widgets`, and extended focused CLI help guards to keep those internal labels out of command help output.
 - Landed a focused platform-208 Cliq help-taxonomy cleanup slice: removed internal governance wording from operator-facing `zoho cliq --help` descriptions for `app-permissions`, `app-installs`, `app-commands`, and `app-command-get`, and extended focused CLI help guards to keep `governance` out of top-level Cliq help output.

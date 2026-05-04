@@ -1,9 +1,10 @@
 module: Cliq
-updated_at: '2026-05-04T12:47:00Z'
+updated_at: '2026-05-04T13:07:00Z'
 status: completed
 execution_mode: turbo_20x
 throughput_policy_ref: ops/state/execution_policy.yml
 blockers:
+- "focused cliq-193 blocker-accounting spaced-stderr-hint increment at 2026-05-04T13:07:00Z now normalizes spaced unsupported stderr phrases (`not supported`, `operation not allowed`, `inactive appaccount user`) into canonical blocker signals when `app-commands` JSON is empty, preserving deferred-gate accounting fidelity; focused guard coverage is green (`./.venv/bin/python -m pytest -q tests/test_cliq193_probe_summary.py` -> `7 passed in 0.02s`)."
 - "focused cliq-193 blocker-accounting nested-details increment at 2026-05-04T12:47:00Z now recursively scans nested JSON `details`/`message`/`reason` payload wrappers (dict/list) for unsupported endpoint hints, preserving `not_supported` normalization when live payloads omit top-level string errors; focused guard coverage is green (`./.venv/bin/python -m pytest -q tests/test_cliq193_probe_summary.py` -> `6 passed in 0.02s`)."
 - "focused cliq-193 blocker-accounting details-hint increment at 2026-05-04T12:12:04Z now normalizes unsupported endpoint hints from JSON `details`/`message`/`reason` fields when `error` is absent, so probe summaries preserve `not_supported` classification instead of generic `error`; focused guard coverage is green (`./.venv/bin/python -m pytest -q tests/test_cliq193_probe_summary.py` -> `5 passed in 0.01s`)."
 - "platform integration-loop medium-scope rerun at 2026-05-04T12:02:20Z stayed green with no behavior change across registry/bridge + focused CLI/Cliq boundaries (`./.venv/bin/python -m pytest -q tests/test_registry.py tests/test_membrane_bridge.py` -> `489 passed in 8.64s`; focused CLI selector + cliq-193 summary coverage -> `228 passed, 643 deselected in 4.50s`; focused Cliq selector -> `30 passed, 229 deselected in 0.55s`; help smokes -> `HELP_SMOKE_OK`), so no integration regression is currently detected and deferred RC posture remains unchanged."

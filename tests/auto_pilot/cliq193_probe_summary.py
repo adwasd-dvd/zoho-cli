@@ -21,8 +21,11 @@ _UNSUPPORTED_ERRORS = {
 
 _STDERR_UNSUPPORTED_HINTS: tuple[tuple[str, str], ...] = (
     ("inactive_appaccount_user", "inactive_appaccount_user"),
+    ("inactive appaccount user", "inactive_appaccount_user"),
     ("operation_not_allowed", "operation_not_allowed"),
+    ("operation not allowed", "operation_not_allowed"),
     ("not_supported", "not_supported"),
+    ("not supported", "not_supported"),
     ("unsupported", "unsupported"),
 )
 

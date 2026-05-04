@@ -144,7 +144,7 @@ def test_cliq_teams_help_hides_internal_slice_labels() -> None:
         (["events"], "List Cliq collaboration events."),
         (["reminders"], "List Cliq collaboration reminders."),
         (["meetings"], "List Cliq collaboration calls and meetings."),
-        (["databases"], "List Cliq platform databases."),
+        (["databases"], "List Cliq databases."),
         (["widgets"], "List Cliq platform widgets."),
         (["map-tickers"], "List Cliq platform map tickers."),
         (["custom-domains"], "List Cliq platform custom domains."),

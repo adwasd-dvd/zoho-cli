@@ -180,6 +180,10 @@ def test_cliq_teams_help_hides_internal_slice_labels() -> None:
             "Export Cliq chats or one chat's message history.",
         ),
         (
+            ["status-react", "MSG_TEST", "--status", "thinking"],
+            "Set one status reaction on a Cliq message.",
+        ),
+        (
             ["capabilities"],
             "Probe currently-available Cliq read capabilities for this account and network.",
         ),

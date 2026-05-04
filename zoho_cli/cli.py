@@ -12657,7 +12657,7 @@ def cliq_status_react(
         help="Clear known status emojis before setting the new one.",
     ),
 ) -> None:
-    """Set one agent-status reaction on a message (read fallback for operators/agents)."""
+    """Set one status reaction on a Cliq message."""
     if not chat_id and not channel_id:
         utils.error_exit("invalid_destination", "Provide --chat-id or --channel-id")
 

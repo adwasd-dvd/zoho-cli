@@ -52,6 +52,7 @@ Current implementation-only delta:
 - `cliq-210` also moved org-admin list command bodies (`departments`, `roles`, `designations`, `user-status`, `userfields`) into `zoho_cli/commands/cliq_org_admin.py`; AI-user command patterns are unchanged.
 - `cliq-210` also moved productivity/platform list command bodies (`events`, `reminders`, `meetings`, `databases`) into `zoho_cli/commands/cliq_productivity.py`; AI-user command patterns are unchanged.
 - `cliq-210` also moved platform-extension list command bodies (`widgets`, `map-tickers`, `custom-domains`, `custom-emails`) into `zoho_cli/commands/cliq_platform_extensions.py`; AI-user command patterns are unchanged.
+- `cliq-210` also moved channel/member/chat-control command bodies (`members`, channel lifecycle/member commands, `leave`, `mute`, `unmute`) into `zoho_cli/commands/cliq_channel_management.py`; AI-user command patterns are unchanged.
 - v0.4 planning now reserves the next major feature lane for a native OpenClaw Cliq channel; CRM expansion moves to v0.5.
 
 ## Required behavior support after lane3 sync

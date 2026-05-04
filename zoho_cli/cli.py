@@ -140,6 +140,21 @@ from zoho_cli.commands.cliq_platform_extensions import (
     build_cliq_map_tickers_command,
     build_cliq_widgets_command,
 )
+from zoho_cli.commands.cliq_channel_management import (
+    CliqChannelManagementContext,
+    build_cliq_channel_archive_command,
+    build_cliq_channel_create_command,
+    build_cliq_channel_delete_command,
+    build_cliq_channel_rename_command,
+    build_cliq_channel_topic_command,
+    build_cliq_channel_unarchive_command,
+    build_cliq_leave_command,
+    build_cliq_member_add_command,
+    build_cliq_member_remove_command,
+    build_cliq_members_command,
+    build_cliq_mute_command,
+    build_cliq_unmute_command,
+)
 from zoho_cli.commands.cliq_org_admin import (
     CliqOrgAdminContext,
     build_cliq_departments_command,
@@ -8483,65 +8498,17 @@ register_cliq_identity_commands(
 )
 
 
-def cliq_members(
-    channel_id: Optional[str] = typer.Option(
-        None, "--channel-id", help="Channel id (preferred for member listing)."
-    ),
-    chat_id: Optional[str] = typer.Option(None, "--chat-id", help="Chat id."),
-    network: Optional[str] = typer.Option(
-        None, "--network", help="Cliq network slug (e.g. happydistrouklimited)."
-    ),
-) -> None:
-    """List members for a channel/chat."""
-    if not chat_id and not channel_id:
-        utils.error_exit("invalid_destination", "Provide --chat-id or --channel-id")
-
-    cfg = _cfg()
-    email = _require_account(cfg)
-    client = _get_cliq_client(cfg, email, network=network)
-
-    resolved_chat = (chat_id or "").strip()
-    resp = client.list_members(chat_id=resolved_chat, channel_id=channel_id)
-    members = resp.get("members", resp.get("data", resp))
-    if not isinstance(members, list):
-        members = []
-
-    utils.output(
-        {
-            "chatId": resolved_chat or "",
-            "channelId": channel_id or "",
-            "count": len(members),
-            "members": members,
-        }
-    )
+_cliq_channel_management_context = CliqChannelManagementContext(
+    load_config=_cfg,
+    require_account=lambda cfg: _require_account(cfg),
+    get_cliq_client=lambda *args, **kwargs: _get_cliq_client(*args, **kwargs),
+)
 
 
-def cliq_channel_create(
-    name: str = typer.Option(..., "--name", help="Channel display name."),
-    level: str = typer.Option(
-        "organization",
-        "--level",
-        help="Channel level (for example: organization/team).",
-    ),
-    network: Optional[str] = typer.Option(
-        None, "--network", help="Cliq network slug (e.g. happydistrouklimited)."
-    ),
-) -> None:
-    """Create a Cliq channel."""
-    cfg = _cfg()
-    email = _require_account(cfg)
-    client = _get_cliq_client(cfg, email, network=network)
-
-    resp = client.create_channel(name, level=level)
-    data = resp.get("data", resp)
-    utils.output_status(
-        "Cliq channel created",
-        extra={
-            "name": name,
-            "level": level,
-            "result": data,
-        },
-    )
+cliq_members = build_cliq_members_command(_cliq_channel_management_context)
+cliq_channel_create = build_cliq_channel_create_command(
+    _cliq_channel_management_context
+)
 
 
 register_cliq_channel_membership_commands(
@@ -8551,52 +8518,10 @@ register_cliq_channel_membership_commands(
 )
 
 
-def cliq_channel_rename(
-    channel_id: str = typer.Argument(..., help="Target channel id."),
-    name: str = typer.Option(..., "--name", help="New channel display name."),
-    network: Optional[str] = typer.Option(
-        None, "--network", help="Cliq network slug (e.g. happydistrouklimited)."
-    ),
-) -> None:
-    """Rename a Cliq channel."""
-    cfg = _cfg()
-    email = _require_account(cfg)
-    client = _get_cliq_client(cfg, email, network=network)
-
-    resp = client.rename_channel(channel_id, name)
-    data = resp.get("data", resp)
-    utils.output_status(
-        "Cliq channel renamed",
-        extra={
-            "channelId": channel_id,
-            "name": name,
-            "result": data,
-        },
-    )
-
-
-def cliq_channel_topic(
-    channel_id: str = typer.Argument(..., help="Target channel id."),
-    topic: str = typer.Option(..., "--topic", help="Channel topic/description."),
-    network: Optional[str] = typer.Option(
-        None, "--network", help="Cliq network slug (e.g. happydistrouklimited)."
-    ),
-) -> None:
-    """Update a Cliq channel topic."""
-    cfg = _cfg()
-    email = _require_account(cfg)
-    client = _get_cliq_client(cfg, email, network=network)
-
-    resp = client.update_channel_topic(channel_id, topic)
-    data = resp.get("data", resp)
-    utils.output_status(
-        "Cliq channel topic updated",
-        extra={
-            "channelId": channel_id,
-            "topic": topic,
-            "result": data,
-        },
-    )
+cliq_channel_rename = build_cliq_channel_rename_command(
+    _cliq_channel_management_context
+)
+cliq_channel_topic = build_cliq_channel_topic_command(_cliq_channel_management_context)
 
 
 register_cliq_channel_metadata_commands(
@@ -8606,76 +8531,8 @@ register_cliq_channel_metadata_commands(
 )
 
 
-def cliq_member_add(
-    member_id: str = typer.Argument(..., help="Member/user id to add."),
-    channel_id: Optional[str] = typer.Option(
-        None, "--channel-id", help="Target channel id."
-    ),
-    chat_id: Optional[str] = typer.Option(None, "--chat-id", help="Target chat id."),
-    network: Optional[str] = typer.Option(
-        None, "--network", help="Cliq network slug (e.g. happydistrouklimited)."
-    ),
-) -> None:
-    """Add a member to a channel/chat."""
-    if not chat_id and not channel_id:
-        utils.error_exit("invalid_destination", "Provide --chat-id or --channel-id")
-
-    cfg = _cfg()
-    email = _require_account(cfg)
-    client = _get_cliq_client(cfg, email, network=network)
-
-    resolved_chat = (chat_id or "").strip() or client.resolve_chat_id(channel_id or "")
-    resp = client.add_member(
-        member_id,
-        chat_id=resolved_chat,
-        channel_id=channel_id,
-    )
-    data = resp.get("data", resp)
-    utils.output_status(
-        "Cliq member added",
-        extra={
-            "memberId": member_id,
-            "chatId": resolved_chat,
-            "channelId": channel_id or "",
-            "result": data,
-        },
-    )
-
-
-def cliq_member_remove(
-    member_id: str = typer.Argument(..., help="Member/user id to remove."),
-    channel_id: Optional[str] = typer.Option(
-        None, "--channel-id", help="Target channel id."
-    ),
-    chat_id: Optional[str] = typer.Option(None, "--chat-id", help="Target chat id."),
-    network: Optional[str] = typer.Option(
-        None, "--network", help="Cliq network slug (e.g. happydistrouklimited)."
-    ),
-) -> None:
-    """Remove a member from a channel/chat."""
-    if not chat_id and not channel_id:
-        utils.error_exit("invalid_destination", "Provide --chat-id or --channel-id")
-
-    cfg = _cfg()
-    email = _require_account(cfg)
-    client = _get_cliq_client(cfg, email, network=network)
-
-    resolved_chat = (chat_id or "").strip() or client.resolve_chat_id(channel_id or "")
-    resp = client.remove_member(
-        member_id,
-        chat_id=resolved_chat,
-        channel_id=channel_id,
-    )
-    data = resp.get("data", resp)
-    utils.output_status(
-        "Cliq member removed",
-        extra={
-            "memberId": member_id,
-            "chatId": resolved_chat,
-            "channelId": channel_id or "",
-            "result": data,
-        },
-    )
+cliq_member_add = build_cliq_member_add_command(_cliq_channel_management_context)
+cliq_member_remove = build_cliq_member_remove_command(_cliq_channel_management_context)
 
 
 register_cliq_channel_member_management_commands(
@@ -8685,49 +8542,12 @@ register_cliq_channel_member_management_commands(
 )
 
 
-def cliq_channel_archive(
-    channel_id: str = typer.Argument(..., help="Target channel id."),
-    unarchive: bool = typer.Option(
-        False, "--unarchive", help="Unarchive instead of archiving."
-    ),
-    network: Optional[str] = typer.Option(
-        None, "--network", help="Cliq network slug (e.g. happydistrouklimited)."
-    ),
-) -> None:
-    """Archive or unarchive a Cliq channel."""
-    cfg = _cfg()
-    email = _require_account(cfg)
-    client = _get_cliq_client(cfg, email, network=network)
-
-    resp = client.archive_channel(channel_id, unarchive=unarchive)
-    data = resp.get("data", resp)
-    utils.output_status(
-        "Cliq channel unarchived" if unarchive else "Cliq channel archived",
-        extra={"channelId": channel_id, "unarchive": unarchive, "result": data},
-    )
-
-
-def cliq_channel_delete(
-    channel_id: str = typer.Argument(..., help="Target channel id."),
-    force: bool = typer.Option(False, "--force", help="Confirm channel deletion."),
-    network: Optional[str] = typer.Option(
-        None, "--network", help="Cliq network slug (e.g. happydistrouklimited)."
-    ),
-) -> None:
-    """Delete a Cliq channel."""
-    if not force:
-        utils.error_exit("confirm_required", "Add --force to delete a channel")
-
-    cfg = _cfg()
-    email = _require_account(cfg)
-    client = _get_cliq_client(cfg, email, network=network)
-
-    resp = client.delete_channel(channel_id)
-    data = resp.get("data", resp)
-    utils.output_status(
-        "Cliq channel deleted",
-        extra={"channelId": channel_id, "result": data},
-    )
+cliq_channel_archive = build_cliq_channel_archive_command(
+    _cliq_channel_management_context
+)
+cliq_channel_delete = build_cliq_channel_delete_command(
+    _cliq_channel_management_context
+)
 
 
 register_cliq_channel_lifecycle_commands(
@@ -8737,14 +8557,9 @@ register_cliq_channel_lifecycle_commands(
 )
 
 
-def cliq_channel_unarchive(
-    channel_id: str = typer.Argument(..., help="Target channel id."),
-    network: Optional[str] = typer.Option(
-        None, "--network", help="Cliq network slug (e.g. happydistrouklimited)."
-    ),
-) -> None:
-    """Unarchive a Cliq channel."""
-    cliq_channel_archive(channel_id=channel_id, unarchive=True, network=network)
+cliq_channel_unarchive = build_cliq_channel_unarchive_command(
+    _cliq_channel_management_context
+)
 
 
 register_cliq_channel_unarchive_commands(
@@ -9236,35 +9051,7 @@ def cliq_scheduled_cancel(
     )
 
 
-def cliq_leave(
-    channel_id: Optional[str] = typer.Option(
-        None, "--channel-id", help="Destination channel id (resolved to chat_id)."
-    ),
-    chat_id: Optional[str] = typer.Option(None, "--chat-id", help="Chat id."),
-    network: Optional[str] = typer.Option(
-        None, "--network", help="Cliq network slug (e.g. happydistrouklimited)."
-    ),
-) -> None:
-    """Leave one chat/channel conversation."""
-    if not chat_id and not channel_id:
-        utils.error_exit("invalid_destination", "Provide --chat-id or --channel-id")
-
-    cfg = _cfg()
-    email = _require_account(cfg)
-    client = _get_cliq_client(cfg, email, network=network)
-
-    resolved_chat = (chat_id or "").strip() or client.resolve_chat_id(channel_id or "")
-    resp = client.leave_chat(chat_id=resolved_chat, channel_id=channel_id)
-    data = resp.get("data", resp)
-
-    utils.output_status(
-        "Cliq conversation left",
-        extra={
-            "chatId": resolved_chat or "",
-            "channelId": channel_id or "",
-            "result": data,
-        },
-    )
+cliq_leave = build_cliq_leave_command(_cliq_channel_management_context)
 
 
 register_cliq_scheduled_cancel_leave_commands(
@@ -9274,74 +9061,8 @@ register_cliq_scheduled_cancel_leave_commands(
 )
 
 
-def cliq_mute(
-    channel_id: Optional[str] = typer.Option(
-        None, "--channel-id", help="Destination channel id (resolved to chat_id)."
-    ),
-    chat_id: Optional[str] = typer.Option(None, "--chat-id", help="Chat id."),
-    network: Optional[str] = typer.Option(
-        None, "--network", help="Cliq network slug (e.g. happydistrouklimited)."
-    ),
-) -> None:
-    """Mute one chat/channel conversation."""
-    if not chat_id and not channel_id:
-        utils.error_exit("invalid_destination", "Provide --chat-id or --channel-id")
-
-    cfg = _cfg()
-    email = _require_account(cfg)
-    client = _get_cliq_client(cfg, email, network=network)
-
-    resolved_chat = (chat_id or "").strip() or client.resolve_chat_id(channel_id or "")
-    resp = client.set_chat_mute(
-        chat_id=resolved_chat, channel_id=channel_id, muted=True
-    )
-    data = resp.get("data", resp)
-
-    utils.output_status(
-        "Cliq conversation muted",
-        extra={
-            "chatId": resolved_chat or "",
-            "channelId": channel_id or "",
-            "muted": True,
-            "result": data,
-        },
-    )
-
-
-def cliq_unmute(
-    channel_id: Optional[str] = typer.Option(
-        None, "--channel-id", help="Destination channel id (resolved to chat_id)."
-    ),
-    chat_id: Optional[str] = typer.Option(None, "--chat-id", help="Chat id."),
-    network: Optional[str] = typer.Option(
-        None, "--network", help="Cliq network slug (e.g. happydistrouklimited)."
-    ),
-) -> None:
-    """Unmute one chat/channel conversation."""
-    if not chat_id and not channel_id:
-        utils.error_exit("invalid_destination", "Provide --chat-id or --channel-id")
-
-    cfg = _cfg()
-    email = _require_account(cfg)
-    client = _get_cliq_client(cfg, email, network=network)
-
-    resolved_chat = (chat_id or "").strip() or client.resolve_chat_id(channel_id or "")
-    resp = client.set_chat_mute(
-        chat_id=resolved_chat,
-        channel_id=channel_id,
-        muted=False,
-    )
-    data = resp.get("data", resp)
-
-    utils.output_status(
-        "Cliq conversation unmuted",
-        extra={
-            "chatId": resolved_chat or "",
-            "channelId": channel_id or "",
-            "muted": False,
-            "result": data,
-        },
-    )
+cliq_mute = build_cliq_mute_command(_cliq_channel_management_context)
+cliq_unmute = build_cliq_unmute_command(_cliq_channel_management_context)
 
 
 register_cliq_mute_unmute_commands(

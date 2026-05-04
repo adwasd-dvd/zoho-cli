@@ -55,6 +55,7 @@ Each migration slice must be small enough for one coding cycle:
 - `zoho_cli/commands/cliq_org_admin.py` owns the org-admin list commands: `departments`, `roles`, `designations`, `user-status`, and `userfields`.
 - `zoho_cli/commands/cliq_productivity.py` owns productivity/platform list commands: `events`, `reminders`, `meetings`, and `databases`.
 - `zoho_cli/commands/cliq_platform_extensions.py` owns platform-extension list commands: `widgets`, `map-tickers`, `custom-domains`, and `custom-emails`.
+- `zoho_cli/commands/cliq_channel_management.py` owns channel lifecycle/member/chat-control commands: `members`, `channel-create`, `channel-rename`, `channel-topic`, `member-add`, `member-remove`, `channel-archive`, `channel-delete`, `channel-unarchive`, `leave`, `mute`, and `unmute`.
 - Preserve command names, help text, JSON shape, and monkeypatch-friendly module lookups when moving additional Cliq surfaces.
 
 ## Sequencing policy

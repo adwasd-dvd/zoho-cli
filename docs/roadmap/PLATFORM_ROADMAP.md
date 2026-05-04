@@ -91,6 +91,7 @@ Current progress:
 - fifth slice completed the org-admin list extraction by moving `zoho cliq designations`, `zoho cliq user-status`, and `zoho cliq userfields` into `zoho_cli/commands/cliq_org_admin.py` with behavior parity checks green
 - sixth slice extracted `zoho cliq events`, `zoho cliq reminders`, `zoho cliq meetings`, and `zoho cliq databases` into `zoho_cli/commands/cliq_productivity.py` with behavior parity checks green
 - seventh slice extracted `zoho cliq widgets`, `zoho cliq map-tickers`, `zoho cliq custom-domains`, and `zoho cliq custom-emails` into `zoho_cli/commands/cliq_platform_extensions.py` with behavior parity checks green
+- eighth slice extracted `zoho cliq members`, channel lifecycle/member commands, and chat-control commands (`leave`, `mute`, `unmute`) into `zoho_cli/commands/cliq_channel_management.py` with behavior parity checks green
 
 ### Phase B6 — OpenClaw native Cliq channel (v0.4)
 

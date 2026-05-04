@@ -1,10 +1,19 @@
-last_run_at: "2026-05-04T18:55:16Z"
+last_run_at: "2026-05-04T19:04:49Z"
 last_result: passing
-current_focus: cliq-210-platform-extension-command-extraction-20260504T185516Z
+current_focus: cliq-210-channel-management-command-extraction-20260504T190449Z
 suites:
   unit:
     status: passing
     notes:
+      - "cliq-210 channel-management extraction at 2026-05-04T19:04:49Z"
+      - "no behavior change; `zoho cliq members`, channel lifecycle/member commands, and `zoho cliq leave`/`mute`/`unmute` moved to `zoho_cli/commands/cliq_channel_management.py`"
+      - "./.venv/bin/ruff format zoho_cli/cli.py zoho_cli/commands/cliq_channel_management.py -> 1 file reformatted, 1 file left unchanged"
+      - "./.venv/bin/ruff check zoho_cli/cli.py zoho_cli/commands/cliq_channel_management.py -> All checks passed!"
+      - "./.venv/bin/python -m pytest -q tests/test_cli.py -k 'cliq_members or cliq_member_add or cliq_member_remove or cliq_channel_create or cliq_channel_rename or cliq_channel_topic or cliq_channel_archive or cliq_channel_unarchive or cliq_channel_delete or cliq_leave_from_channel or cliq_mute_from_channel or cliq_unmute_from_channel' -> 14 passed, 853 deselected in 0.50s"
+      - "./.venv/bin/python -m pytest -q tests/test_registry.py -k 'channel_membership_commands or channel_metadata_commands or channel_member_management_commands or channel_lifecycle_commands or channel_unarchive_commands or scheduled_cancel_leave_commands or mute_unmute_commands or commands_package_exports_root_registrars' -> 8 passed, 58 deselected in 0.07s"
+      - "post-doc sync aggregate: focused extracted Cliq command surfaces -> 46 passed, 821 deselected in 1.36s"
+      - "post-doc sync aggregate: registry + lane3 + markdown tests -> 72 passed in 0.07s; Ruby YAML parse -> YAML_PARSE_OK"
+      - "post-doc sync aggregate: `wc -l` -> `cliq_readiness.py` 224, `cliq_identity.py` 79, `cliq_org_directory.py` 97, `cliq_org_admin.py` 304, `cliq_productivity.py` 267, `cliq_platform_extensions.py` 248, `cliq_channel_management.py` 432"
       - "cliq-210 platform-extension extraction at 2026-05-04T18:55:16Z"
       - "no behavior change; `zoho cliq widgets`, `zoho cliq map-tickers`, `zoho cliq custom-domains`, and `zoho cliq custom-emails` moved to `zoho_cli/commands/cliq_platform_extensions.py`"
       - "./.venv/bin/ruff format zoho_cli/cli.py zoho_cli/commands/cliq_platform_extensions.py -> 2 files reformatted"

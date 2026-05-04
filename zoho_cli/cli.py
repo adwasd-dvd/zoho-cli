@@ -4329,7 +4329,7 @@ def cliq_roles(
         None, "--network", help="Cliq network slug (e.g. happydistrouklimited)."
     ),
 ) -> None:
-    """List Cliq organization roles."""
+    """List Cliq roles."""
     cfg = _cfg()
     email = _require_account(cfg)
     client = _get_cliq_client(cfg, email, network=network)

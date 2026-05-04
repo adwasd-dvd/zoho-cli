@@ -84,6 +84,7 @@ Current progress:
 - third slice extracted `zoho cliq users` and `zoho cliq teams` into `zoho_cli/commands/cliq_org_directory.py` with behavior parity checks green
 - fourth slice extracted `zoho cliq departments` and `zoho cliq roles` into `zoho_cli/commands/cliq_org_admin.py` with behavior parity checks green
 - fifth slice completed the org-admin list extraction by moving `zoho cliq designations`, `zoho cliq user-status`, and `zoho cliq userfields` into `zoho_cli/commands/cliq_org_admin.py` with behavior parity checks green
+- sixth slice extracted `zoho cliq events`, `zoho cliq reminders`, `zoho cliq meetings`, and `zoho cliq databases` into `zoho_cli/commands/cliq_productivity.py` with behavior parity checks green
 
 ### Phase B4 — cross-channel interoperability contract (completed)
 

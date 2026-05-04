@@ -126,6 +126,13 @@ from zoho_cli.commands.cliq_org_directory import (
     build_cliq_teams_command,
     build_cliq_users_command,
 )
+from zoho_cli.commands.cliq_productivity import (
+    CliqProductivityContext,
+    build_cliq_databases_command,
+    build_cliq_events_command,
+    build_cliq_meetings_command,
+    build_cliq_reminders_command,
+)
 from zoho_cli.commands.cliq_org_admin import (
     CliqOrgAdminContext,
     build_cliq_departments_command,
@@ -4135,125 +4142,15 @@ register_cliq_userfields_commands(
 )
 
 
-def cliq_events(
-    limit: int = typer.Option(50, "--limit", "-n", help="Max events to return."),
-    network: Optional[str] = typer.Option(
-        None, "--network", help="Cliq network slug (e.g. happydistrouklimited)."
-    ),
-) -> None:
-    """List Cliq collaboration events."""
-    cfg = _cfg()
-    email = _require_account(cfg)
-    client = _get_cliq_client(cfg, email, network=network)
-
-    resp = client.list_events(limit=limit)
-    data = resp.get("data", resp)
-    if not isinstance(data, list):
-        data = []
-
-    views: list[dict[str, Any]] = []
-    for row in data:
-        if not isinstance(row, dict):
-            continue
-        views.append(
-            {
-                "eventId": str(
-                    row.get("event_id")
-                    or row.get("eventId")
-                    or row.get("id")
-                    or row.get("zuid")
-                    or ""
-                ),
-                "title": str(
-                    row.get("title")
-                    or row.get("name")
-                    or row.get("event_name")
-                    or row.get("summary")
-                    or ""
-                ),
-                "startsAt": str(
-                    row.get("start_time")
-                    or row.get("startTime")
-                    or row.get("starts_at")
-                    or row.get("startsAt")
-                    or ""
-                ),
-                "endsAt": str(
-                    row.get("end_time")
-                    or row.get("endTime")
-                    or row.get("ends_at")
-                    or row.get("endsAt")
-                    or ""
-                ),
-                "status": str(row.get("status") or row.get("event_status") or ""),
-                "raw": row,
-            }
-        )
-
-    utils.output(
-        {
-            "count": len(views),
-            "events": views,
-        }
-    )
+_cliq_productivity_context = CliqProductivityContext(
+    load_config=_cfg,
+    require_account=lambda cfg: _require_account(cfg),
+    get_cliq_client=lambda *args, **kwargs: _get_cliq_client(*args, **kwargs),
+)
 
 
-def cliq_reminders(
-    limit: int = typer.Option(50, "--limit", "-n", help="Max reminders to return."),
-    network: Optional[str] = typer.Option(
-        None, "--network", help="Cliq network slug (e.g. happydistrouklimited)."
-    ),
-) -> None:
-    """List Cliq collaboration reminders."""
-    cfg = _cfg()
-    email = _require_account(cfg)
-    client = _get_cliq_client(cfg, email, network=network)
-
-    resp = client.list_reminders(limit=limit)
-    data = resp.get("data", resp)
-    if not isinstance(data, list):
-        data = []
-
-    views: list[dict[str, Any]] = []
-    for row in data:
-        if not isinstance(row, dict):
-            continue
-        views.append(
-            {
-                "reminderId": str(
-                    row.get("reminder_id")
-                    or row.get("reminderId")
-                    or row.get("id")
-                    or row.get("zuid")
-                    or ""
-                ),
-                "title": str(
-                    row.get("title")
-                    or row.get("name")
-                    or row.get("message")
-                    or row.get("summary")
-                    or ""
-                ),
-                "dueAt": str(
-                    row.get("remind_at")
-                    or row.get("remindAt")
-                    or row.get("due_at")
-                    or row.get("dueAt")
-                    or row.get("scheduled_time")
-                    or row.get("scheduledTime")
-                    or ""
-                ),
-                "status": str(row.get("status") or row.get("reminder_status") or ""),
-                "raw": row,
-            }
-        )
-
-    utils.output(
-        {
-            "count": len(views),
-            "reminders": views,
-        }
-    )
+cliq_events = build_cliq_events_command(_cliq_productivity_context)
+cliq_reminders = build_cliq_reminders_command(_cliq_productivity_context)
 
 
 register_cliq_events_reminders_commands(
@@ -4263,132 +4160,8 @@ register_cliq_events_reminders_commands(
 )
 
 
-def cliq_meetings(
-    limit: int = typer.Option(50, "--limit", "-n", help="Max meetings to return."),
-    network: Optional[str] = typer.Option(
-        None, "--network", help="Cliq network slug (e.g. happydistrouklimited)."
-    ),
-) -> None:
-    """List Cliq collaboration calls and meetings."""
-    cfg = _cfg()
-    email = _require_account(cfg)
-    client = _get_cliq_client(cfg, email, network=network)
-
-    resp = client.list_meetings(limit=limit)
-    data = resp.get("data", resp)
-    if not isinstance(data, list):
-        data = []
-
-    views: list[dict[str, Any]] = []
-    for row in data:
-        if not isinstance(row, dict):
-            continue
-        views.append(
-            {
-                "meetingId": str(
-                    row.get("meeting_id")
-                    or row.get("meetingId")
-                    or row.get("call_id")
-                    or row.get("callId")
-                    or row.get("id")
-                    or row.get("zuid")
-                    or ""
-                ),
-                "title": str(
-                    row.get("title")
-                    or row.get("name")
-                    or row.get("subject")
-                    or row.get("meeting_title")
-                    or row.get("call_title")
-                    or row.get("summary")
-                    or ""
-                ),
-                "startsAt": str(
-                    row.get("start_time")
-                    or row.get("startTime")
-                    or row.get("starts_at")
-                    or row.get("startsAt")
-                    or row.get("scheduled_time")
-                    or row.get("scheduledTime")
-                    or ""
-                ),
-                "endsAt": str(
-                    row.get("end_time")
-                    or row.get("endTime")
-                    or row.get("ends_at")
-                    or row.get("endsAt")
-                    or ""
-                ),
-                "status": str(
-                    row.get("status")
-                    or row.get("meeting_status")
-                    or row.get("call_status")
-                    or ""
-                ),
-                "raw": row,
-            }
-        )
-
-    utils.output(
-        {
-            "count": len(views),
-            "meetings": views,
-        }
-    )
-
-
-def cliq_databases(
-    limit: int = typer.Option(50, "--limit", "-n", help="Max databases to return."),
-    network: Optional[str] = typer.Option(
-        None, "--network", help="Cliq network slug (e.g. happydistrouklimited)."
-    ),
-) -> None:
-    """List Cliq databases."""
-    cfg = _cfg()
-    email = _require_account(cfg)
-    client = _get_cliq_client(cfg, email, network=network)
-
-    resp = client.list_databases(limit=limit)
-    data = resp.get("data", resp)
-    if not isinstance(data, list):
-        data = []
-
-    views: list[dict[str, Any]] = []
-    for row in data:
-        if not isinstance(row, dict):
-            continue
-        views.append(
-            {
-                "databaseId": str(
-                    row.get("database_id")
-                    or row.get("databaseId")
-                    or row.get("id")
-                    or row.get("zuid")
-                    or ""
-                ),
-                "name": str(
-                    row.get("name")
-                    or row.get("database_name")
-                    or row.get("title")
-                    or row.get("display_name")
-                    or ""
-                ),
-                "type": str(
-                    row.get("database_type")
-                    or row.get("type")
-                    or row.get("category")
-                    or ""
-                ),
-                "raw": row,
-            }
-        )
-
-    utils.output(
-        {
-            "count": len(views),
-            "databases": views,
-        }
-    )
+cliq_meetings = build_cliq_meetings_command(_cliq_productivity_context)
+cliq_databases = build_cliq_databases_command(_cliq_productivity_context)
 
 
 register_cliq_meetings_databases_commands(

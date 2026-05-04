@@ -4,7 +4,7 @@ module: cliq
 stage: in_progress
 status: in_progress
 owner: coder
-updated_at: '2026-05-04T18:44:05Z'
+updated_at: '2026-05-04T18:49:42Z'
 execution_mode: turbo_20x
 throughput_policy_ref: ops/state/execution_policy.yml
 success_criteria:
@@ -15,9 +15,10 @@ success_criteria:
   - leave CRM expansion queued until the post-RC Cliq split plan is stable
 next_if_done: continue extracting the next Cliq API surface, then plan CRM read/write expansion.
 progress:
+  - "2026-05-04T18:49:42Z sixth low-risk extraction complete: `zoho cliq events`, `zoho cliq reminders`, `zoho cliq meetings`, and `zoho cliq databases` command bodies moved into `zoho_cli/commands/cliq_productivity.py`; focused parity tests stayed green."
   - "2026-05-04T18:44:05Z fifth low-risk extraction complete: `zoho cliq designations`, `zoho cliq user-status`, and `zoho cliq userfields` command bodies moved into `zoho_cli/commands/cliq_org_admin.py`; focused parity tests stayed green."
   - "2026-05-04T18:34:41Z fourth low-risk extraction complete: `zoho cliq departments` and `zoho cliq roles` command bodies moved into `zoho_cli/commands/cliq_org_admin.py`; runtime hooks remain patch-friendly and focused parity tests stayed green."
   - "2026-05-04T18:31:16Z third low-risk extraction complete: `zoho cliq users` and `zoho cliq teams` command bodies moved into `zoho_cli/commands/cliq_org_directory.py`; runtime hooks remain patch-friendly and focused parity tests stayed green."
   - "2026-05-04T18:19:47Z first low-risk extraction complete: `zoho cliq status` and `zoho cliq capabilities` command bodies moved into `zoho_cli/commands/cliq_readiness.py`; `zoho_cli/cli.py` now injects runtime hooks and keeps existing command registration."
   - "2026-05-04T18:25:43Z second low-risk extraction complete: `zoho cliq whoami` and `zoho cliq user-resolve` command bodies moved into `zoho_cli/commands/cliq_identity.py`; runtime hooks remain patch-friendly and focused parity tests stayed green."
-next_step: Continue with the next low-risk Cliq API-surface extraction after readiness, identity, org-directory, and org-admin list commands, preserving command JSON/help parity and keeping new files under the 800-line split threshold.
+next_step: Continue with the next low-risk Cliq API-surface extraction after readiness, identity, org-directory, org-admin list, and productivity list commands, preserving command JSON/help parity and keeping new files under the 800-line split threshold.

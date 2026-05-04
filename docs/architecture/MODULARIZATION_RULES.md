@@ -53,6 +53,7 @@ Each migration slice must be small enough for one coding cycle:
 - `zoho_cli/commands/cliq_identity.py` owns the `zoho cliq whoami` and `zoho cliq user-resolve` command bodies. Keep runtime hooks patch-friendly when extracting adjacent identity/user-directory surfaces.
 - `zoho_cli/commands/cliq_org_directory.py` owns the `zoho cliq users` and `zoho cliq teams` command bodies.
 - `zoho_cli/commands/cliq_org_admin.py` owns the org-admin list commands: `departments`, `roles`, `designations`, `user-status`, and `userfields`.
+- `zoho_cli/commands/cliq_productivity.py` owns productivity/platform list commands: `events`, `reminders`, `meetings`, and `databases`.
 - Preserve command names, help text, JSON shape, and monkeypatch-friendly module lookups when moving additional Cliq surfaces.
 
 ## Sequencing policy

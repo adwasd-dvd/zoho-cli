@@ -5,7 +5,7 @@
 2. **Architecture lock is complete**: `platform-204` contract is landed and drives gate execution.
 3. **Release-gate lane is unblocked**: deferred external Zoho endpoint blockers are accepted as non-blocking for RC.
 4. **Workflow packaging status**: `mail-010`, `cliq-195`, `platform-207`, and `platform-208` are complete for this milestone.
-5. **Cliq modularization has started**: `cliq-210` first slice moved `status`/`capabilities` command bodies to `zoho_cli/commands/cliq_readiness.py` with JSON/help parity preserved.
+5. **Cliq modularization has started**: `cliq-210` has moved `status`/`capabilities` into `zoho_cli/commands/cliq_readiness.py` and `whoami`/`user-resolve` into `zoho_cli/commands/cliq_identity.py` with JSON/help parity preserved.
 6. **External blockers remain deferred**: `cliq-165` (`inactive_appaccount_user`) and `cliq-193` (`not_supported`) stay capability-gated under 3-strike policy.
 
 ## Next

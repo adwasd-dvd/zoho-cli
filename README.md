@@ -109,6 +109,7 @@ zoho_cli/
 │   └── pagination/    # Pagination helpers
 ├── products/          # Product modules (mail/cliq/crm)
 ├── commands/          # Typer registrars + extracted command-family builders
+│   ├── cliq_identity.py   # Cliq whoami/user-resolve command bodies
 │   └── cliq_readiness.py  # Cliq status/capabilities command bodies
 ├── cli.py             # CLI entry point (Typer)
 └── registry.py        # Command registration

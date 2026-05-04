@@ -50,6 +50,7 @@ Each migration slice must be small enough for one coding cycle:
 ## Current Cliq split map
 
 - `zoho_cli/commands/cliq_readiness.py` owns the `zoho cliq status` and `zoho cliq capabilities` command bodies. `zoho_cli/cli.py` only injects runtime hooks and registers those commands.
+- `zoho_cli/commands/cliq_identity.py` owns the `zoho cliq whoami` and `zoho cliq user-resolve` command bodies. Keep runtime hooks patch-friendly when extracting adjacent identity/user-directory surfaces.
 - Preserve command names, help text, JSON shape, and monkeypatch-friendly module lookups when moving additional Cliq surfaces.
 
 ## Sequencing policy

@@ -1,10 +1,19 @@
-last_run_at: "2026-05-04T18:19:47Z"
+last_run_at: "2026-05-04T18:25:43Z"
 last_result: passing
-current_focus: cliq-210-readiness-command-extraction-20260504T181947Z
+current_focus: cliq-210-identity-command-extraction-20260504T182543Z
 suites:
   unit:
     status: passing
     notes:
+      - "cliq-210 identity extraction at 2026-05-04T18:25:43Z"
+      - "no behavior change; `zoho cliq whoami` and `zoho cliq user-resolve` command bodies moved to `zoho_cli/commands/cliq_identity.py` while `zoho_cli/cli.py` keeps dependency injection and existing registration"
+      - "./.venv/bin/ruff format zoho_cli/cli.py zoho_cli/commands/cliq_identity.py -> 2 files left unchanged"
+      - "./.venv/bin/ruff check zoho_cli/cli.py zoho_cli/commands/cliq_identity.py -> All checks passed!"
+      - "./.venv/bin/python -m pytest -q tests/test_cli.py -k 'cliq_whoami or cliq_user_resolve' -> 4 passed, 863 deselected in 0.27s"
+      - "./.venv/bin/python -m pytest -q tests/test_registry.py -k 'identity_commands or commands_package_exports_root_registrars' -> 2 passed, 64 deselected in 0.08s"
+      - "post-doc sync aggregate: `./.venv/bin/python -m pytest -q tests/test_cli.py -k 'cliq_status or cliq_capabilities or cliq_whoami or cliq_user_resolve'` -> 16 passed, 851 deselected in 0.59s"
+      - "post-doc sync aggregate: `./.venv/bin/python -m pytest -q tests/test_registry.py tests/test_lane3_docs.py tests/test_markdown_update.py` -> 72 passed in 0.05s"
+      - "post-doc sync aggregate: Ruby YAML parse -> YAML_PARSE_OK; `wc -l` -> `cliq_readiness.py` 224 lines, `cliq_identity.py` 79 lines"
       - "cliq-210 first readiness/capability extraction at 2026-05-04T18:19:47Z"
       - "no behavior change; `zoho cliq status` and `zoho cliq capabilities` command bodies moved to `zoho_cli/commands/cliq_readiness.py` while `zoho_cli/cli.py` keeps dependency injection and existing registration"
       - "./.venv/bin/ruff format zoho_cli/cli.py zoho_cli/commands/cliq_readiness.py -> 2 files left unchanged after formatting"

@@ -116,6 +116,11 @@ from zoho_cli.commands.cliq_readiness import (
     build_cliq_capabilities_command,
     build_cliq_status_command,
 )
+from zoho_cli.commands.cliq_identity import (
+    CliqIdentityContext,
+    build_cliq_user_resolve_command,
+    build_cliq_whoami_command,
+)
 from zoho_cli.crm import ZohoCrmClient
 from zoho_cli.registry import register_root_commands
 
@@ -9159,47 +9164,15 @@ register_cliq_export_commands(
 )
 
 
-def cliq_whoami(
-    network: Optional[str] = typer.Option(
-        None, "--network", help="Cliq network slug (e.g. happydistrouklimited)."
-    ),
-    limit: int = typer.Option(
-        500,
-        "--limit",
-        "-n",
-        help="Directory scan size for email-match fallback.",
-    ),
-) -> None:
-    """Best-effort identity check for the current Cliq token."""
-    cfg = _cfg()
-    email = _require_account(cfg)
-    client = _get_cliq_client(cfg, email, network=network)
-
-    result = client.whoami(account_email=email, limit=limit)
-    utils.output(
-        {
-            "account": email,
-            "baseUrl": client.base_url,
-            **result,
-        }
-    )
+_cliq_identity_context = CliqIdentityContext(
+    load_config=_cfg,
+    require_account=lambda cfg: _require_account(cfg),
+    get_cliq_client=lambda *args, **kwargs: _get_cliq_client(*args, **kwargs),
+)
 
 
-def cliq_user_resolve(
-    query: str = typer.Argument(..., help="User lookup query (email or display name)."),
-    by: str = typer.Option("auto", "--by", help="Match mode: auto|email|name."),
-    limit: int = typer.Option(500, "--limit", "-n", help="Max users to scan."),
-    network: Optional[str] = typer.Option(
-        None, "--network", help="Cliq network slug (e.g. happydistrouklimited)."
-    ),
-) -> None:
-    """Resolve user ids by email or display name."""
-    cfg = _cfg()
-    email = _require_account(cfg)
-    client = _get_cliq_client(cfg, email, network=network)
-
-    result = client.resolve_users(query, by=by, limit=limit)
-    utils.output(result)
+cliq_whoami = build_cliq_whoami_command(_cliq_identity_context)
+cliq_user_resolve = build_cliq_user_resolve_command(_cliq_identity_context)
 
 
 register_cliq_identity_commands(

@@ -4,7 +4,7 @@ module: cliq
 stage: in_progress
 status: in_progress
 owner: coder
-updated_at: '2026-05-04T18:19:47Z'
+updated_at: '2026-05-04T18:25:43Z'
 execution_mode: turbo_20x
 throughput_policy_ref: ops/state/execution_policy.yml
 success_criteria:
@@ -16,4 +16,5 @@ success_criteria:
 next_if_done: continue extracting the next Cliq API surface, then plan CRM read/write expansion.
 progress:
   - "2026-05-04T18:19:47Z first low-risk extraction complete: `zoho cliq status` and `zoho cliq capabilities` command bodies moved into `zoho_cli/commands/cliq_readiness.py`; `zoho_cli/cli.py` now injects runtime hooks and keeps existing command registration."
+  - "2026-05-04T18:25:43Z second low-risk extraction complete: `zoho cliq whoami` and `zoho cliq user-resolve` command bodies moved into `zoho_cli/commands/cliq_identity.py`; runtime hooks remain patch-friendly and focused parity tests stayed green."
 next_step: Continue with the next low-risk Cliq API-surface extraction, preserving command JSON/help parity and keeping new files under the 800-line split threshold.

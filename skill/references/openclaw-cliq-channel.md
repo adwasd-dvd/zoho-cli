@@ -5,9 +5,14 @@ OpenClaw Zoho Cliq channel.
 
 ## Status
 
-Planned for `zoho-cli` v0.4 after the current Mail + Cliq CLI release line and
-post-RC Cliq modularization are complete. CRM expansion is intentionally moved
-to v0.5.
+Planned for `zoho-cli` v0.4 after the current Mail + Cliq CLI release line.
+`cliq-channel-400` is complete: the native channel SDK contract is locked in
+`docs/architecture/OPENCLAW_CLIQ_CHANNEL_SDK_CONTRACT.md`.
+
+The v0.4 plugin targets OpenClaw `>=2026.5.3-1`. The local
+`OpenClaw 2026.4.15` install is too old for plugin install/inspect validation,
+so upgrade OpenClaw or use a throwaway `openclaw@2026.5.3-1` environment before
+running native plugin checks. CRM expansion is intentionally moved to v0.5.
 
 ## Operating model
 
@@ -45,6 +50,8 @@ zoho cliq status --check-auth --network <network>
 Human setup checkpoints:
 
 - OpenClaw host version is compatible.
+- Package metadata advertises `minHostVersion` / `compat.pluginApi`
+  `>=2026.5.3-1`.
 - Package source and integrity are trusted.
 - `zoho` binary is detected.
 - Zoho Cliq login/scopes are valid.

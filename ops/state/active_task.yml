@@ -1,20 +1,21 @@
-id: cliq-210
-title: split Cliq command and client code by API surface to reduce AI context load
-module: cliq
-stage: in_progress
-status: in_progress
+id: cliq-channel-401
+title: scaffold installable OpenClaw Zoho Cliq channel plugin skeleton
+module: openclaw_cliq_channel
+stage: queued
+status: ready
 owner: coder
-updated_at: '2026-05-04T20:47:46Z'
+updated_at: '2026-05-04T21:39:33Z'
 execution_mode: turbo_20x
 throughput_policy_ref: ops/state/execution_policy.yml
 success_criteria:
-  - define Cliq API-surface module boundaries around existing command families
-  - extract one low-risk Cliq surface without changing JSON output or help text
-  - keep each extracted file below the documented 800-line split threshold
-  - add focused parity tests for the extracted surface
-  - leave CRM expansion queued until the v0.4 native OpenClaw Cliq channel plan is stable
-next_if_done: continue extracting the next Cliq API surface, then prepare cliq-channel-400 for the v0.4 native OpenClaw Cliq channel.
+  - create `integrations/openclaw-channel-cliq/` package skeleton
+  - add `openclaw.plugin.json` with `zoho-cliq` plugin id and `cliq` channel config metadata
+  - add `package.json#openclaw` with `minHostVersion` and `compat.pluginApi` `>=2026.5.3-1`
+  - add setup/runtime entrypoints plus tiny configured-state and auth-presence modules
+  - add package-local tests or inspect smoke once a compatible OpenClaw host is available
+next_if_done: implement cliq-channel-402 config schema, SecretRef support, and setup flow.
 progress:
+  - "2026-05-04T21:39:33Z cliq-channel-400 completed: OpenClaw Cliq channel SDK/version contract locked in `docs/architecture/OPENCLAW_CLIQ_CHANNEL_SDK_CONTRACT.md`; target `minHostVersion`/`compat.pluginApi` is `>=2026.5.3-1`, local OpenClaw `2026.4.15` is too old for plugin install/inspect validation, and `cliq-channel-401` is ready to scaffold the installable plugin."
   - "2026-05-04T20:47:46Z thirteenth low-risk extraction complete: message retrieval/context commands (`search`, `messages`, `message`, `context`, `watch-context`) moved into `zoho_cli/commands/cliq_message_retrieval.py`; focused parity tests stayed green."
   - "2026-05-04T20:41:04Z tenth-through-twelfth low-risk extractions complete: thread commands moved into `zoho_cli/commands/cliq_threading.py`, scheduled-message commands moved into `zoho_cli/commands/cliq_scheduling.py`, and bot commands moved into `zoho_cli/commands/cliq_bots.py`; focused parity tests stayed green."
   - "2026-05-04T19:10:14Z ninth low-risk extraction complete: `zoho cliq pin`, `zoho cliq unpin`, and `zoho cliq pinned` command bodies moved into `zoho_cli/commands/cliq_channel_management.py`; focused parity tests stayed green."
@@ -26,4 +27,4 @@ progress:
   - "2026-05-04T18:31:16Z third low-risk extraction complete: `zoho cliq users` and `zoho cliq teams` command bodies moved into `zoho_cli/commands/cliq_org_directory.py`; runtime hooks remain patch-friendly and focused parity tests stayed green."
   - "2026-05-04T18:19:47Z first low-risk extraction complete: `zoho cliq status` and `zoho cliq capabilities` command bodies moved into `zoho_cli/commands/cliq_readiness.py`; `zoho_cli/cli.py` now injects runtime hooks and keeps existing command registration."
   - "2026-05-04T18:25:43Z second low-risk extraction complete: `zoho cliq whoami` and `zoho cliq user-resolve` command bodies moved into `zoho_cli/commands/cliq_identity.py`; runtime hooks remain patch-friendly and focused parity tests stayed green."
-next_step: Continue with the next low-risk Cliq API-surface extraction after readiness, identity, org-directory, org-admin list, productivity list, platform-extension list, channel-management/chat-control, threading, scheduled-message, bot, and message retrieval/context commands, preserving command JSON/help parity and keeping new files under the 800-line split threshold; after cliq-210 handoff, start cliq-channel-400 before any v0.5 CRM expansion.
+next_step: Start `cliq-channel-401` plugin skeleton using the locked contract; do not run native plugin inspect against local OpenClaw `2026.4.15` until the host is upgraded or a throwaway `openclaw@2026.5.3-1` validation environment is used.

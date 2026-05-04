@@ -30,15 +30,20 @@ The OpenClaw agent should use the normal OpenClaw channel/message flow. The
 plugin should not expose a parallel set of ad-hoc `cliq_*` tools when OpenClaw
 already has native channel actions.
 
-Current OpenClaw baseline check on 2026-05-04:
+Current OpenClaw baseline lock is captured in
+`docs/architecture/OPENCLAW_CLIQ_CHANNEL_SDK_CONTRACT.md`.
+
+`cliq-channel-400` check on `2026-05-04T21:39:33Z`:
 
 - local workspace OpenClaw: `2026.4.15`
 - npm `latest`: `2026.5.3-1`
 - npm `beta`: `2026.5.4-beta.1`
+- target `minHostVersion`: `>=2026.5.3-1`
+- target `compat.pluginApi`: `>=2026.5.3-1`
 
-v0.4 implementation should target the latest stable host at the time work
-starts, then run a compatibility pass against the local older install and the
-current beta before release.
+v0.4 implementation targets the latest stable host checked above. The local
+`2026.4.15` install is too old for plugin install/inspect validation and remains
+only a compatibility reference until upgraded.
 
 ## Design principles
 
@@ -194,21 +199,22 @@ compatibility gate.
     "install": {
       "npmSpec": "@adwasd/openclaw-zoho-cliq",
       "defaultChoice": "npm",
-      "minHostVersion": ">=2026.5.3",
+      "minHostVersion": ">=2026.5.3-1",
       "expectedIntegrity": "<filled-at-release>"
     },
     "startup": {
       "deferConfiguredChannelFullLoadUntilAfterListen": true
     },
     "compat": {
-      "pluginApi": ">=2026.5.3"
+      "pluginApi": ">=2026.5.3-1"
     }
   }
 }
 ```
 
-The exact minimum version must be rechecked immediately before implementation
-starts, because OpenClaw channel plugin APIs are still evolving.
+The exact minimum version was locked by `cliq-channel-400` and must be rechecked
+again before publishing v0.4, because OpenClaw channel plugin APIs are still
+evolving.
 
 Manifest/package split:
 
@@ -691,12 +697,16 @@ OpenClaw:
 
 ### cliq-channel-400: Version and SDK contract
 
-- Recheck latest OpenClaw plugin docs and npm version.
-- Choose `minHostVersion` and `compat.pluginApi`.
-- Capture compatibility notes for local older OpenClaw installs.
+- Recheck latest OpenClaw plugin docs and npm version. Completed at
+  `2026-05-04T21:39:33Z`.
+- Choose `minHostVersion` and `compat.pluginApi`. Locked to `>=2026.5.3-1`.
+- Capture compatibility notes for local older OpenClaw installs. Local
+  `2026.4.15` is too old for install/inspect validation.
 - Record local/latest/beta host versions and decide whether beta API drift
-  requires follow-up before release.
-- Acceptance: architecture doc and package metadata agree.
+  requires follow-up before release. Beta `2026.5.4-beta.1` does not change the
+  skeleton dependency; recheck before v0.4 release.
+- Acceptance: `docs/architecture/OPENCLAW_CLIQ_CHANNEL_SDK_CONTRACT.md`,
+  this plan, Lane 3 guide, and tests agree.
 
 ### cliq-channel-401: Plugin skeleton
 

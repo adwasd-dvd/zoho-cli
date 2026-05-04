@@ -19,13 +19,12 @@ cliq:
 
 openclaw_cliq_channel:
   priority: 3
-  status: planned
-  phase: v0_4_native_channel_planning
+  status: in_progress
+  phase: sdk_contract_locked_plugin_skeleton_next
   target_release: v0.4.0
-  current_milestone: cliq-openclaw-channel-v0.4
+  current_milestone: cliq-channel-401-plugin-skeleton
   blockers:
-    - "implementation waits for the current Mail+Cliq CLI release line and cliq-210 post-RC Cliq modularization handoff to stabilize"
-    - "OpenClaw host/plugin API minimum version must be rechecked immediately before development starts"
+    - "local OpenClaw `2026.4.15` is below the locked v0.4 plugin host/API floor `>=2026.5.3-1`; upgrade or use a throwaway compatible validation environment before native plugin inspect/install tests"
 
 crm:
   priority: 4

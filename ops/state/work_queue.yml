@@ -310,14 +310,14 @@
 - id: cliq-210
   title: split Cliq command/client code by API surface after RC to reduce AI context load
   module: cliq
-  stage: in_progress
+  stage: completed
   priority: high
   depends_on:
   - platform-209
 - id: cliq-channel-400
   title: lock OpenClaw Cliq channel SDK/version contract for v0.4
   module: openclaw_cliq_channel
-  stage: queued
+  stage: completed
   priority: high
   depends_on:
   - cliq-210

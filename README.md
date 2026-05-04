@@ -154,7 +154,7 @@ Project state lives in `ops/state/*.yml`:
 | --- | --- | --- | --- |
 | Mail | ✅ Completed | stabilization_complete | Shipping baseline is stable. |
 | Cliq | ✅ Completed for RC | workflow_packaging_complete_with_deferred_external_blockers | Mail+Cliq AI-employee core is ready for RC; endpoint-limited tail is deferred post-RC. |
-| OpenClaw Cliq channel | 📋 Planned | v0.4_native_channel | Native OpenClaw channel work starts after the current Mail+Cliq release line and post-RC Cliq modularization. |
+| OpenClaw Cliq channel | 🚧 In progress | sdk_contract_locked | `cliq-channel-400` locked the v0.4 SDK/version contract; plugin skeleton is next. |
 | CRM | ✅ Completed for phase 1 | phase_1_read_only_commands_implemented | Read-only scaffold is present; deeper CRM work resumes in v0.5 after the v0.4 channel. |
 
 ### Current platform lane (AI-employee v1)
@@ -171,7 +171,7 @@ Project state lives in `ops/state/*.yml`:
 ### Current release posture
 
 - Current version: `0.2.1`
-- Next active target: finish the `cliq-210` handoff, then start the native OpenClaw Cliq channel v0.4 lane.
+- Next active target: scaffold the native OpenClaw Cliq channel plugin skeleton (`cliq-channel-401`).
 - Release candidate: `false`
 - Broad automated gate: final `make release-gate && make ci` is green for `0.2.1`; [v0.2.1](https://github.com/adwasd-dvd/zoho-cli/releases/tag/v0.2.1) is the current stable release.
 
@@ -185,8 +185,10 @@ Project state lives in `ops/state/*.yml`:
 ### Near-term plan
 
 1. Keep unsupported Cliq endpoints capability-gated so they do not stall AI-employee internal-loop readiness.
-2. Split Cliq by API surface to reduce AI context load.
-3. Build the native OpenClaw Cliq channel in v0.4.
+2. Keep remaining Cliq helper-heavy modularization opportunistic while the
+   channel lane moves.
+3. Build the native OpenClaw Cliq channel in v0.4, starting with the plugin
+   skeleton.
 4. Resume deeper CRM work in v0.5 after the channel lane is stable.
 
 ---

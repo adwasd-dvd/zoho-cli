@@ -1,10 +1,16 @@
-last_run_at: "2026-05-04T21:15:20Z"
+last_run_at: "2026-05-04T21:45:21Z"
 last_result: passing
-current_focus: v0.2.1-final-release-promotion-20260504T211520Z
+current_focus: cliq-channel-400-sdk-contract-20260504T214521Z
 suites:
   unit:
     status: passing
     notes:
+      - "cliq-channel-400 SDK/version contract lock at 2026-05-04T21:45:21Z"
+      - "no runtime CLI behavior change; OpenClaw Cliq channel target contract now locks package identity, host/plugin API floor, SDK imports, SecretRef shape, and minimum CLI command contract"
+      - "./.venv/bin/python -m pytest -q tests/test_openclaw_channel_contract.py tests/test_lane3_docs.py tests/test_markdown_update.py -> 11 passed in 0.02s"
+      - "ruby YAML parse for ops/workflow state -> YAML_PARSE_OK"
+      - "git diff --check -> clean"
+      - "make ci -> ruff format/check clean + pytest `1755 passed in 39.26s`"
       - "v0.2.1 final release promotion at 2026-05-04T21:15:20Z"
       - "no additional CLI behavior change beyond promoting package/runtime version metadata from `0.2.1rc1` to `0.2.1`"
       - "./.venv/bin/zoho --version -> 0.2.1"

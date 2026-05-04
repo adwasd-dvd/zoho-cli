@@ -10,6 +10,11 @@
 - Homebrew tap bump remains non-blocking: the release-triggered run found `HOMEBREW_TAP_TOKEN` empty, and the workflow now skips successfully when the token is absent plus supports manual dispatch by tag after the secret is configured.
 - Follow-on engineering focus remains AI-first: finish the `cliq-210` command-surface handoff, then start the native OpenClaw Cliq channel v0.4 lane before deeper CRM expansion.
 
+### OpenClaw Cliq channel (2026-05-04T21:39:33Z)
+- Completed `cliq-channel-400` by locking the native OpenClaw Cliq channel SDK/version contract in `docs/architecture/OPENCLAW_CLIQ_CHANNEL_SDK_CONTRACT.md`.
+- Target OpenClaw host/plugin API is `>=2026.5.3-1`; local `OpenClaw 2026.4.15` is documented as too old for v0.4 plugin install/inspect validation.
+- Captured the v0.4 package identity, manifest/package metadata split, SDK helper imports, SecretRef shape, and minimum `zoho cliq ...` command contract for the upcoming `cliq-channel-401` plugin skeleton.
+
 ### Architecture / modularization (2026-05-04T18:19:47Z)
 - Started `cliq-210` post-RC modularization by extracting the `zoho cliq status` and `zoho cliq capabilities` command bodies into `zoho_cli/commands/cliq_readiness.py`, leaving `zoho_cli/cli.py` with runtime dependency injection plus existing Typer registration only. Command names, help text, and JSON output are unchanged.
 - Continued `cliq-210` by extracting the `zoho cliq whoami` and `zoho cliq user-resolve` command bodies into `zoho_cli/commands/cliq_identity.py`, preserving command names, help text, and JSON output.

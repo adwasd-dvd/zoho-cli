@@ -20,11 +20,12 @@ The plugin should:
 ## Required reading order
 
 1. `docs/architecture/OPENCLAW_CLIQ_CHANNEL_0_4_PLAN.md`
-2. `docs/architecture/CROSS_CHANNEL_INTEROP_CONTRACT.md`
-3. `docs/DOCUMENTATION_LANES.md`
-4. `skill/SKILL.md`
-5. `skill/references/command-playbook.md`
-6. Latest OpenClaw channel plugin docs before coding:
+2. `docs/architecture/OPENCLAW_CLIQ_CHANNEL_SDK_CONTRACT.md`
+3. `docs/architecture/CROSS_CHANNEL_INTEROP_CONTRACT.md`
+4. `docs/DOCUMENTATION_LANES.md`
+5. `skill/SKILL.md`
+6. `skill/references/command-playbook.md`
+7. Latest OpenClaw channel plugin docs before coding:
    - https://docs.openclaw.ai/plugins/sdk-channel-plugins
    - https://docs.openclaw.ai/plugins/manifest
    - https://docs.openclaw.ai/gateway/security
@@ -57,7 +58,8 @@ The plugin should:
 
 Follow the stack from the architecture plan:
 
-1. `cliq-channel-400` version and SDK contract
+1. `cliq-channel-400` version and SDK contract (complete; target
+   `minHostVersion` / `compat.pluginApi` is `>=2026.5.3-1`)
 2. `cliq-channel-401` plugin skeleton
 3. `cliq-channel-402` config, SecretRef, and setup
 4. `cliq-channel-416` human install and setup UX
@@ -177,6 +179,9 @@ Recommended setup-state copy should stay short:
 ## Native SDK alignment checklist
 
 - Recheck local, latest, and beta OpenClaw versions before implementation.
+- Treat local `OpenClaw 2026.4.15` as too old for v0.4 install/inspect tests;
+  upgrade or use a throwaway `openclaw@2026.5.3-1` environment before running
+  plugin validation.
 - Keep `openclaw.plugin.json` focused on pre-runtime metadata: config schema,
   env vars, channel config metadata, setup metadata, QA runners, and skills.
 - Keep `package.json#openclaw` focused on entrypoints, install/update hints,
@@ -254,6 +259,7 @@ Check whether Zoho auth is healthy.
 Run focused tests for every slice:
 
 ```bash
+pytest tests/test_openclaw_channel_contract.py -q
 pytest tests/test_cli.py tests/test_cliq.py tests/test_membrane_bridge.py -q
 ```
 

@@ -12,6 +12,7 @@
 - No publish, version bump, or tagging actions were performed.
 
 ### Added
+- Landed a focused platform-208 Cliq help-wording cleanup slice: normalized `zoho cliq capabilities --help` description from token/org-facing wording to operator-facing `Probe currently-available Cliq read capabilities for this account and network.`, and extended focused IA guard coverage to keep this wording drift from returning.
 - Landed a focused platform-208 Cliq help-wording cleanup slice: normalized `zoho cliq user-status --help` and `zoho cliq userfields --help` from organization-labeled descriptions to operator-facing `List Cliq user-status values.` and `List Cliq user fields.`, and extended focused IA guard coverage to keep this org-admin wording drift from returning.
 - Landed a focused platform-208 Cliq help-wording cleanup slice: normalized `zoho cliq designations --help` from `List Cliq organization designations.` to `List Cliq designations.` and extended focused IA guard coverage so operator-facing Cliq help remains free of organization-internal taxonomy wording.
 - Landed a focused platform-208 Cliq help-wording cleanup slice: normalized `zoho cliq roles --help` from `List Cliq organization roles.` to `List Cliq roles.` and extended focused IA guard coverage so operator-facing Cliq help remains free of organization-internal taxonomy wording.

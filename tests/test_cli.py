@@ -179,6 +179,10 @@ def test_cliq_teams_help_hides_internal_slice_labels() -> None:
             ["export-chats"],
             "Export Cliq chats or one chat's message history.",
         ),
+        (
+            ["capabilities"],
+            "Probe currently-available Cliq read capabilities for this account and network.",
+        ),
     ],
 )
 def test_cliq_help_hides_internal_slice_labels(

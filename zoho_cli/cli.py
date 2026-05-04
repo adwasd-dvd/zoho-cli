@@ -3643,7 +3643,7 @@ def cliq_capabilities(
         help="Optional message id for deeper message/file/attachment probes (requires --channel-id).",
     ),
 ) -> None:
-    """Probe currently-available Cliq read capabilities for this token and org."""
+    """Probe currently-available Cliq read capabilities for this account and network."""
     if (message_id or "").strip() and not (channel_id or "").strip():
         utils.error_exit(
             "invalid_destination",

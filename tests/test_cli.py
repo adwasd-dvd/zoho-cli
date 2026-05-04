@@ -134,7 +134,8 @@ def test_cliq_teams_help_hides_internal_slice_labels() -> None:
     result = runner.invoke(app, ["cliq", "teams", "--help"])
 
     assert result.exit_code == 0, result.output
-    assert "List Cliq organization teams." in result.output
+    assert "List Cliq teams." in result.output
+    assert "organization" not in result.output.lower()
     assert "phase-1 slice" not in result.output
 
 

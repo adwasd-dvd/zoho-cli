@@ -1,9 +1,10 @@
 module: Cliq
-updated_at: '2026-05-04T18:34:41Z'
+updated_at: '2026-05-04T18:44:05Z'
 status: in_progress
 execution_mode: turbo_20x
 throughput_policy_ref: ops/state/execution_policy.yml
 blockers:
+- "cliq-210 fifth modularization slice at 2026-05-04T18:44:05Z moved the remaining org-admin list commands (`zoho cliq designations`, `zoho cliq user-status`, `zoho cliq userfields`) into `zoho_cli/commands/cliq_org_admin.py`; command JSON/help parity stayed green (`./.venv/bin/python -m pytest -q tests/test_cli.py -k 'cliq_departments or cliq_roles or cliq_designations or cliq_user_status or cliq_userfields'` -> `5 passed, 862 deselected in 0.26s`; registry org-admin guards -> `4 passed, 62 deselected in 0.07s`; ruff check passed)."
 - "cliq-210 fourth modularization slice at 2026-05-04T18:34:41Z extracted `zoho cliq departments` and `zoho cliq roles` command bodies into `zoho_cli/commands/cliq_org_admin.py`; command JSON/help parity stayed green (`./.venv/bin/python -m pytest -q tests/test_cli.py -k 'cliq_departments or cliq_roles'` -> `2 passed, 865 deselected in 0.18s`; registry export guard -> `1 passed, 65 deselected in 0.03s`; ruff check passed)."
 - "cliq-210 third modularization slice at 2026-05-04T18:31:16Z extracted `zoho cliq users` and `zoho cliq teams` command bodies into `zoho_cli/commands/cliq_org_directory.py`; command JSON/help parity stayed green (`./.venv/bin/python -m pytest -q tests/test_cli.py -k 'cliq_users or cliq_teams'` -> `3 passed, 864 deselected in 0.18s`; registry export guard -> `1 passed, 65 deselected in 0.03s`; ruff check passed)."
 - "cliq-210 third modularization slice at 2026-05-04T18:29:58Z extracted `zoho cliq users` and `zoho cliq teams` command bodies into `zoho_cli/commands/cliq_org_directory.py`; command JSON/help parity stayed green (`./.venv/bin/python -m pytest -q tests/test_cli.py -k 'cliq_users or cliq_teams'` -> `3 passed, 864 deselected in 0.24s`; registry users/teams guard -> `2 passed, 64 deselected in 0.03s`; ruff check passed)."

@@ -7,6 +7,7 @@
 - Continued `cliq-210` by extracting the `zoho cliq whoami` and `zoho cliq user-resolve` command bodies into `zoho_cli/commands/cliq_identity.py`, preserving command names, help text, and JSON output.
 - Continued `cliq-210` by extracting the `zoho cliq users` and `zoho cliq teams` command bodies into `zoho_cli/commands/cliq_org_directory.py`, preserving command names, help text, and JSON output.
 - Continued `cliq-210` by extracting the `zoho cliq departments` and `zoho cliq roles` command bodies into `zoho_cli/commands/cliq_org_admin.py`, preserving command names, help text, and JSON output.
+- Continued `cliq-210` by moving the remaining org-admin list commands (`zoho cliq designations`, `zoho cliq user-status`, and `zoho cliq userfields`) into `zoho_cli/commands/cliq_org_admin.py`, preserving command names, help text, and JSON output.
 
 ### Release readiness (2026-05-04T18:02:41Z)
 - Approved the fast RC posture for `0.2.1rc1`.

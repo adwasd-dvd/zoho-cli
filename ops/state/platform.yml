@@ -1,7 +1,7 @@
 module: Platform
-updated_at: "2026-05-04T18:34:41Z"
+updated_at: "2026-05-04T18:44:05Z"
 status: in_progress
 execution_mode: turbo_20x
 throughput_policy_ref: ops/state/execution_policy.yml
 blockers: []
-next_small_step: "`cliq-210` has extracted readiness, identity, org-directory, and org-admin command bodies (`cliq_readiness.py`, `cliq_identity.py`, `cliq_org_directory.py`, `cliq_org_admin.py`); continue the next low-risk Cliq API-surface split with JSON/help parity checks."
+next_small_step: "`cliq-210` has extracted readiness, identity, org-directory, and org-admin list command bodies (`cliq_readiness.py`, `cliq_identity.py`, `cliq_org_directory.py`, `cliq_org_admin.py`); continue the next low-risk Cliq API-surface split with JSON/help parity checks."

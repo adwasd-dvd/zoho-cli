@@ -129,7 +129,10 @@ from zoho_cli.commands.cliq_org_directory import (
 from zoho_cli.commands.cliq_org_admin import (
     CliqOrgAdminContext,
     build_cliq_departments_command,
+    build_cliq_designations_command,
     build_cliq_roles_command,
+    build_cliq_user_status_command,
+    build_cliq_userfields_command,
 )
 from zoho_cli.crm import ZohoCrmClient
 from zoho_cli.registry import register_root_commands
@@ -4112,101 +4115,8 @@ register_cliq_departments_roles_commands(
 )
 
 
-def cliq_designations(
-    limit: int = typer.Option(50, "--limit", "-n", help="Max designations to return."),
-    network: Optional[str] = typer.Option(
-        None, "--network", help="Cliq network slug (e.g. happydistrouklimited)."
-    ),
-) -> None:
-    """List Cliq designations."""
-    cfg = _cfg()
-    email = _require_account(cfg)
-    client = _get_cliq_client(cfg, email, network=network)
-
-    resp = client.list_designations(limit=limit)
-    data = resp.get("data", resp)
-    if not isinstance(data, list):
-        data = []
-
-    views: list[dict[str, Any]] = []
-    for row in data:
-        if not isinstance(row, dict):
-            continue
-        views.append(
-            {
-                "designationId": str(
-                    row.get("designation_id")
-                    or row.get("designationId")
-                    or row.get("id")
-                    or row.get("zuid")
-                    or ""
-                ),
-                "name": str(
-                    row.get("name")
-                    or row.get("designation_name")
-                    or row.get("display_name")
-                    or ""
-                ),
-                "raw": row,
-            }
-        )
-
-    utils.output(
-        {
-            "count": len(views),
-            "designations": views,
-        }
-    )
-
-
-def cliq_user_status(
-    limit: int = typer.Option(
-        50, "--limit", "-n", help="Max user-status rows to return."
-    ),
-    network: Optional[str] = typer.Option(
-        None, "--network", help="Cliq network slug (e.g. happydistrouklimited)."
-    ),
-) -> None:
-    """List Cliq user-status values."""
-    cfg = _cfg()
-    email = _require_account(cfg)
-    client = _get_cliq_client(cfg, email, network=network)
-
-    resp = client.list_user_statuses(limit=limit)
-    data = resp.get("data", resp)
-    if not isinstance(data, list):
-        data = []
-
-    views: list[dict[str, Any]] = []
-    for row in data:
-        if not isinstance(row, dict):
-            continue
-        views.append(
-            {
-                "statusId": str(
-                    row.get("status_id")
-                    or row.get("statusId")
-                    or row.get("id")
-                    or row.get("zuid")
-                    or ""
-                ),
-                "name": str(
-                    row.get("name")
-                    or row.get("status")
-                    or row.get("label")
-                    or row.get("display_name")
-                    or ""
-                ),
-                "raw": row,
-            }
-        )
-
-    utils.output(
-        {
-            "count": len(views),
-            "statuses": views,
-        }
-    )
+cliq_designations = build_cliq_designations_command(_cliq_org_admin_context)
+cliq_user_status = build_cliq_user_status_command(_cliq_org_admin_context)
 
 
 register_cliq_designations_user_status_commands(
@@ -4216,60 +4126,7 @@ register_cliq_designations_user_status_commands(
 )
 
 
-def cliq_userfields(
-    limit: int = typer.Option(
-        50, "--limit", "-n", help="Max user-field rows to return."
-    ),
-    network: Optional[str] = typer.Option(
-        None, "--network", help="Cliq network slug (e.g. happydistrouklimited)."
-    ),
-) -> None:
-    """List Cliq user fields."""
-    cfg = _cfg()
-    email = _require_account(cfg)
-    client = _get_cliq_client(cfg, email, network=network)
-
-    resp = client.list_user_fields(limit=limit)
-    data = resp.get("data", resp)
-    if not isinstance(data, list):
-        data = []
-
-    views: list[dict[str, Any]] = []
-    for row in data:
-        if not isinstance(row, dict):
-            continue
-        views.append(
-            {
-                "fieldId": str(
-                    row.get("field_id")
-                    or row.get("fieldId")
-                    or row.get("id")
-                    or row.get("zuid")
-                    or ""
-                ),
-                "label": str(
-                    row.get("label")
-                    or row.get("field_name")
-                    or row.get("display_name")
-                    or row.get("name")
-                    or ""
-                ),
-                "type": str(
-                    row.get("field_type")
-                    or row.get("type")
-                    or row.get("data_type")
-                    or ""
-                ),
-                "raw": row,
-            }
-        )
-
-    utils.output(
-        {
-            "count": len(views),
-            "userFields": views,
-        }
-    )
+cliq_userfields = build_cliq_userfields_command(_cliq_org_admin_context)
 
 
 register_cliq_userfields_commands(

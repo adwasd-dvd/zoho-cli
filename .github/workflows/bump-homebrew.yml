@@ -3,21 +3,42 @@
 #   2. Run `brew update-python-resources` to regenerate ALL resource stanzas
 #      (this ensures transitive deps like `idna` are never missing)
 #
-# Required secret: HOMEBREW_TAP_TOKEN — PAT with `public_repo` + `workflow` scope
+# Optional secret: HOMEBREW_TAP_TOKEN — PAT with `public_repo` + `workflow` scope.
+# When the secret is absent, the workflow exits successfully and leaves the tap
+# bump as a manual follow-up instead of failing the release workflow.
 name: Bump Homebrew formula
 
 on:
   release:
     types: [published]
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: Release tag to bump, for example v0.2.1
+        required: true
 
 jobs:
   bump:
     runs-on: macos-latest
     steps:
+      - name: Check Homebrew tap token
+        id: tap-token
+        env:
+          HOMEBREW_TAP_TOKEN: ${{ secrets.HOMEBREW_TAP_TOKEN }}
+        run: |
+          if [ -z "$HOMEBREW_TAP_TOKEN" ]; then
+            echo "::notice::HOMEBREW_TAP_TOKEN is not configured; skipping Homebrew tap bump."
+            echo "available=false" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+          echo "available=true" >> "$GITHUB_OUTPUT"
+
       - name: Set up Homebrew
-        uses: Homebrew/actions/setup-homebrew@master
+        if: steps.tap-token.outputs.available == 'true'
+        uses: Homebrew/actions/setup-homebrew@main
 
       - name: Tap adwasd-dvd/tap
+        if: steps.tap-token.outputs.available == 'true'
         env:
           HOMEBREW_TAP_TOKEN: ${{ secrets.HOMEBREW_TAP_TOKEN }}
         run: |
@@ -25,9 +46,17 @@ jobs:
             "https://x-access-token:${HOMEBREW_TAP_TOKEN}@github.com/adwasd-dvd/homebrew-tap.git"
 
       - name: Compute tarball SHA-256
+        if: steps.tap-token.outputs.available == 'true'
         id: info
         run: |
           TAG="${{ github.event.release.tag_name }}"
+          if [ -z "$TAG" ]; then
+            TAG="${{ inputs.tag }}"
+          fi
+          if [ -z "$TAG" ]; then
+            echo "release tag is required" >&2
+            exit 1
+          fi
           URL="https://github.com/${{ github.repository }}/archive/refs/tags/${TAG}.tar.gz"
           SHA=$(curl -fsSL "$URL" | shasum -a 256 | awk '{print $1}')
           VERSION="${TAG#v}"
@@ -37,6 +66,7 @@ jobs:
           echo "version=$VERSION" >> "$GITHUB_OUTPUT"
 
       - name: Patch formula URL + SHA
+        if: steps.tap-token.outputs.available == 'true'
         run: |
           FORMULA="$(brew formula adwasd-dvd/tap/zoho-cli)"
           python3 - "$FORMULA" "${{ steps.info.outputs.url }}" "${{ steps.info.outputs.sha }}" <<'PY'
@@ -51,9 +81,11 @@ jobs:
           PY
 
       - name: Regenerate all Python resource stanzas
+        if: steps.tap-token.outputs.available == 'true'
         run: brew update-python-resources adwasd-dvd/tap/zoho-cli
 
       - name: Commit and push to tap
+        if: steps.tap-token.outputs.available == 'true'
         env:
           HOMEBREW_TAP_TOKEN: ${{ secrets.HOMEBREW_TAP_TOKEN }}
         run: |

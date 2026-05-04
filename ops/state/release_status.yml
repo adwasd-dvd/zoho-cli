@@ -69,5 +69,5 @@ release_gate:
   tag_pushed: true
   github_prerelease_published: true
   github_release_published: true
-  homebrew_bump_workflow_status: failed_private_tap_clone
-  homebrew_bump_followup: workflow tap step now uses HOMEBREW_TAP_TOKEN for private tap clone; rerun/manual tap bump remains pending outside the published RC artifact.
+  homebrew_bump_workflow_status: missing_tap_token_non_blocking
+  homebrew_bump_followup: final release run found `HOMEBREW_TAP_TOKEN` empty, so the tap bump remains pending; workflow now skips successfully when the token is absent and supports manual dispatch by tag after the secret is configured.

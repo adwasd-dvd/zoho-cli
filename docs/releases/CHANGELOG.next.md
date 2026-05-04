@@ -7,6 +7,7 @@
 - Bumped package/runtime version metadata to `0.2.1` (`pyproject.toml`, `uv.lock`, and `zoho_cli.__version__`).
 - Final verification is green: `make release-gate` passed (`1752 passed` + wheel smoke `0.2.1`) and `make ci` passed (`1752 passed`, ruff clean).
 - Published stable GitHub release `v0.2.1`: https://github.com/adwasd-dvd/zoho-cli/releases/tag/v0.2.1
+- Homebrew tap bump remains non-blocking: the release-triggered run found `HOMEBREW_TAP_TOKEN` empty, and the workflow now skips successfully when the token is absent plus supports manual dispatch by tag after the secret is configured.
 - Follow-on engineering focus remains AI-first: finish the `cliq-210` command-surface handoff, then start the native OpenClaw Cliq channel v0.4 lane before deeper CRM expansion.
 
 ### Architecture / modularization (2026-05-04T18:19:47Z)

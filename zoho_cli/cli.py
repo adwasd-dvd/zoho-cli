@@ -4812,7 +4812,7 @@ def cliq_widgets(
         None, "--network", help="Cliq network slug (e.g. happydistrouklimited)."
     ),
 ) -> None:
-    """List Cliq platform widgets."""
+    """List Cliq widgets."""
     cfg = _cfg()
     email = _require_account(cfg)
     client = _get_cliq_client(cfg, email, network=network)
@@ -4872,7 +4872,7 @@ def cliq_map_tickers(
         None, "--network", help="Cliq network slug (e.g. happydistrouklimited)."
     ),
 ) -> None:
-    """List Cliq platform map tickers."""
+    """List Cliq map tickers."""
     cfg = _cfg()
     email = _require_account(cfg)
     client = _get_cliq_client(cfg, email, network=network)
@@ -4941,7 +4941,7 @@ def cliq_custom_domains(
         None, "--network", help="Cliq network slug (e.g. happydistrouklimited)."
     ),
 ) -> None:
-    """List Cliq platform custom domains."""
+    """List Cliq custom domains."""
     cfg = _cfg()
     email = _require_account(cfg)
     client = _get_cliq_client(cfg, email, network=network)
@@ -4994,7 +4994,7 @@ def cliq_custom_emails(
         None, "--network", help="Cliq network slug (e.g. happydistrouklimited)."
     ),
 ) -> None:
-    """List Cliq platform custom emails."""
+    """List Cliq custom emails."""
     cfg = _cfg()
     email = _require_account(cfg)
     client = _get_cliq_client(cfg, email, network=network)

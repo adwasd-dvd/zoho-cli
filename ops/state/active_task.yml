@@ -4,7 +4,7 @@ module: platform
 stage: in_progress
 status: in_progress
 owner: coder
-updated_at: '2026-05-04T01:08:44Z'
+updated_at: '2026-05-04T01:30:13Z'
 execution_mode: turbo_20x
 throughput_policy_ref: ops/state/execution_policy.yml
 success_criteria:
@@ -12,4 +12,4 @@ success_criteria:
 - keep module-first command taxonomy consistent across level-2/level-3 help surfaces
 - leave a concise operator-facing IA contract that matches current module order and release state
 next_if_done: queue RC checkpoint refresh packet with updated operator IA references.
-next_step: "Platform-208 focused Cliq help-wording cleanup at 2026-05-04T01:08:44Z removed internal taxonomy wording from `zoho cliq --help` by renaming `databases` help text from `List Cliq platform databases.` to `List Cliq databases.`; focused guard coverage stayed green (`./.venv/bin/python -m pytest -q tests/test_cli.py::test_cliq_help_hides_internal_slice_labels` -> `17 passed in 1.62s`). Next best step remains RC checkpoint refresh unless blocker posture changes."
+next_step: "Platform-208 focused Cliq help-wording cleanup at 2026-05-04T01:30:13Z removed internal `platform` taxonomy wording from `zoho cliq --help` descriptions for `widgets`, `map-tickers`, `custom-domains`, and `custom-emails`; focused guard coverage stayed green (`./.venv/bin/python -m pytest -q tests/test_cli.py::test_cliq_help_hides_internal_slice_labels` -> `17 passed in 0.43s`). Next best step remains RC checkpoint refresh unless blocker posture changes."

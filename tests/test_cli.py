@@ -145,10 +145,10 @@ def test_cliq_teams_help_hides_internal_slice_labels() -> None:
         (["reminders"], "List Cliq collaboration reminders."),
         (["meetings"], "List Cliq collaboration calls and meetings."),
         (["databases"], "List Cliq databases."),
-        (["widgets"], "List Cliq platform widgets."),
-        (["map-tickers"], "List Cliq platform map tickers."),
-        (["custom-domains"], "List Cliq platform custom domains."),
-        (["custom-emails"], "List Cliq platform custom emails."),
+        (["widgets"], "List Cliq widgets."),
+        (["map-tickers"], "List Cliq map tickers."),
+        (["custom-domains"], "List Cliq custom domains."),
+        (["custom-emails"], "List Cliq custom emails."),
         (["apps"], "List Cliq apps."),
         (["app-get", "APP_TEST"], "Get one Cliq app by id."),
         (
@@ -185,6 +185,7 @@ def test_cliq_help_hides_internal_slice_labels(
     assert "slice" not in result.output
     assert "org-admin" not in result.output
     assert "platform-extension" not in result.output
+    assert "platform " not in result.output.lower()
     assert "maintenance API" not in result.output
 
 

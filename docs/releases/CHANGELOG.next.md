@@ -12,6 +12,7 @@
 - No publish, version bump, or tagging actions were performed.
 
 ### Added
+- Landed a focused platform-208 Cliq help-wording cleanup slice: removed internal `platform` taxonomy wording from `zoho cliq --help` command descriptions for `widgets`, `map-tickers`, `custom-domains`, and `custom-emails`, and extended focused IA guards to keep platform taxonomy labels out of operator-facing Cliq help output.
 - Landed a focused platform-208 Cliq help-wording cleanup slice: renamed the `zoho cliq --help` databases description from `List Cliq platform databases.` to `List Cliq databases.` and kept focused IA guard coverage green.
 - Landed a focused platform-208 login help-wording cleanup slice: removed internal `maintenance` wording from `zoho login --help` (`--with-cliq-export`) by switching to operator-facing `chat export OAuth` language, and added a focused guard test to keep maintenance wording out of operator-facing login help.
 - Landed a focused platform-208 root help-wording cleanup slice: removed the internal-facing `experimental` qualifier from `membrane` command help in `zoho --help`, and added a focused guard test to keep experimental labels out of operator-facing root help.

@@ -10,6 +10,15 @@ Primary paths:
 - `skill/scripts/*`
 - `integrations/openclaw/*`
 
+Native channel planning:
+- `docs/architecture/OPENCLAW_CLIQ_CHANNEL_0_4_PLAN.md`
+- `integrations/openclaw/CLIQ_CHANNEL_DEVELOPMENT_GUIDE.md`
+- `skill/references/openclaw-cliq-channel.md`
+
+GitHub intake:
+- `skill/references/github-intake-workflow.md`
+- `.github/ISSUE_TEMPLATE/*`
+
 ## Update contract for every CLI change
 
 1. Update lane2 human docs (`README.md`, `docs/releases/CHANGELOG.next.md`) when user-visible behavior changes.
@@ -30,4 +39,12 @@ Then summarize command/skill changes and apply local lane3 sync.
 
 - no secrets/tokens in committed lane3 docs/scripts
 - no machine-specific absolute paths unless explicitly template/example-scoped
-- repo/package URLs must target `adwasd-dvd/zoho-mail-cli-zomacli`
+- repo/package URLs must target `adwasd-dvd/zoho-cli`
+- GitHub bugs, suggestions, docs mismatches, and AI employee observations must
+  target `adwasd-dvd/zoho-cli`, use existing labels, search duplicates first,
+  and redact private data before issue creation
+- AI employee observations use `agent-feedback`, `openclaw`, and `needs-triage`
+- native OpenClaw channel docs must default to pairing/allowlist access, scoped
+  employee mode, SecretRef credentials, loop prevention, native approval
+  surfaces, session grammar alignment, human install/onboarding UX, redacted
+  diagnostics, and `zoho` CLI-backed Zoho API operations

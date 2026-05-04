@@ -276,13 +276,14 @@
   - cliq-195
   - platform-206
 - id: crm-003
-  title: evaluate and phase in official Zoho CRM server-side SDK in post-release follow-up slices
+  title: evaluate and phase in official Zoho CRM server-side SDK in v0.5 follow-up slices
   module: crm
   stage: queued
   priority: medium
   depends_on:
   - crm-002
   - platform-202
+  - cliq-channel-412
 - id: platform-208
   title: finalize module-first CLI information architecture (retire legacy root mail aliases after deprecation window and normalize level-2/3 help taxonomy)
   module: platform
@@ -306,3 +307,122 @@
   priority: high
   depends_on:
   - platform-209
+- id: cliq-channel-400
+  title: lock OpenClaw Cliq channel SDK/version contract for v0.4
+  module: openclaw_cliq_channel
+  stage: queued
+  priority: high
+  depends_on:
+  - cliq-210
+- id: cliq-channel-401
+  title: scaffold installable OpenClaw Zoho Cliq channel plugin skeleton
+  module: openclaw_cliq_channel
+  stage: queued
+  priority: high
+  depends_on:
+  - cliq-channel-400
+- id: cliq-channel-402
+  title: implement Cliq channel config schema, SecretRef support, and setup flow
+  module: openclaw_cliq_channel
+  stage: queued
+  priority: high
+  depends_on:
+  - cliq-channel-401
+- id: cliq-channel-416
+  title: implement human install onboarding setup-state copy disable uninstall and recovery UX
+  module: openclaw_cliq_channel
+  stage: queued
+  priority: high
+  depends_on:
+  - cliq-channel-402
+- id: cliq-channel-403
+  title: implement secure-by-default pairing, allowlist, scoped employee mode, mention gating, and audit warnings
+  module: openclaw_cliq_channel
+  stage: queued
+  priority: high
+  depends_on:
+  - cliq-channel-416
+- id: cliq-channel-414
+  title: align session grammar mention policy approval capability and runtime namespaces with OpenClaw SDK
+  module: openclaw_cliq_channel
+  stage: queued
+  priority: high
+  depends_on:
+  - cliq-channel-403
+- id: cliq-channel-404
+  title: implement JSON-safe zoho CLI adapter for channel runtime
+  module: openclaw_cliq_channel
+  stage: queued
+  priority: high
+  depends_on:
+  - cliq-channel-414
+- id: cliq-channel-405
+  title: implement native OpenClaw outbound delivery through zoho cliq send/reply
+  module: openclaw_cliq_channel
+  stage: queued
+  priority: high
+  depends_on:
+  - cliq-channel-404
+- id: cliq-channel-406
+  title: implement Cliq inbound polling fallback with dedupe and normalized events
+  module: openclaw_cliq_channel
+  stage: queued
+  priority: high
+  depends_on:
+  - cliq-channel-405
+- id: cliq-channel-407
+  title: implement Cliq webhook inbound normalization and verification
+  module: openclaw_cliq_channel
+  stage: queued
+  priority: high
+  depends_on:
+  - cliq-channel-406
+- id: cliq-channel-408
+  title: implement status reaction and read-ack lifecycle for native channel turns
+  module: openclaw_cliq_channel
+  stage: queued
+  priority: high
+  depends_on:
+  - cliq-channel-407
+- id: cliq-channel-413
+  title: implement turn ledger loop prevention dead-letter and efficiency hardening
+  module: openclaw_cliq_channel
+  stage: queued
+  priority: high
+  depends_on:
+  - cliq-channel-408
+- id: cliq-channel-409
+  title: complete OpenClaw native channel UX for status capabilities routing and diagnostics
+  module: openclaw_cliq_channel
+  stage: queued
+  priority: medium
+  depends_on:
+  - cliq-channel-413
+- id: cliq-channel-410
+  title: align AI-facing docs skill references CLI help and troubleshooting for native Cliq channel
+  module: openclaw_cliq_channel
+  stage: queued
+  priority: medium
+  depends_on:
+  - cliq-channel-409
+- id: cliq-channel-415
+  title: implement observability privacy retention rate-limit diagnostics and npm integrity hardening
+  module: openclaw_cliq_channel
+  stage: queued
+  priority: high
+  depends_on:
+  - cliq-channel-410
+- id: cliq-channel-411
+  title: run fake and live verification gate for v0.4 native Cliq channel
+  module: openclaw_cliq_channel
+  stage: queued
+  priority: high
+  depends_on:
+  - cliq-channel-415
+- id: cliq-channel-412
+  title: document OpenClaw host compatibility maintenance and future repair workflow
+  module: openclaw_cliq_channel
+  stage: queued
+  priority: medium
+  depends_on:
+  - cliq-channel-411

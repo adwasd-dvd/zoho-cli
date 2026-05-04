@@ -13,6 +13,7 @@ This directory contains AI-user-facing skill docs/scripts for OpenClaw.
 ## Lane 3 docs and scripts
 
 - `LANE3_AI_USER_GUIDE.md` — AI-user update and sync workflow
+- `CLIQ_CHANNEL_DEVELOPMENT_GUIDE.md` — v0.4 native OpenClaw Cliq channel development workflow
 - `SKILL_INDEX.md` — maintainers checklist for lane3 alignment
 - `bin/pull_lane3_only.sh` — pull/sync only lane3 content (skill/docs/scripts) from GitHub
 - `bin/run-scan.example.sh` — optional scan example
@@ -21,5 +22,8 @@ This directory contains AI-user-facing skill docs/scripts for OpenClaw.
 ## Rules
 
 1. Keep lane3 content aligned with CLI behavior changes.
-2. Keep repo URL/package references accurate (`adwasd-dvd/zoho-mail-cli-zomacli`).
-3. For isolated agents, install skill locally inside the agent workspace, not global `~/.openclaw/skills`.
+2. Keep repo URL/package references accurate (`adwasd-dvd/zoho-cli`).
+3. Keep GitHub issue intake aligned with `skill/references/github-intake-workflow.md` and `.github/ISSUE_TEMPLATE/*`.
+4. Keep v0.4 native channel docs aligned with current OpenClaw plugin/channel APIs.
+5. Keep scoped employee mode and loop-prevention behavior documented before the channel ships.
+6. For isolated agents, install skill locally inside the agent workspace, not global `~/.openclaw/skills`.

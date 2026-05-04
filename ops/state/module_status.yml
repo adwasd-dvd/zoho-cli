@@ -17,10 +17,20 @@ cliq:
     - "deferred: attachment retrieval parity remains endpoint-limited on current token/network (`/attachments` returns empty payloads for media-visible messages)"
     - "deferred: `cliq export-chats` live verification is currently blocked by API-side `inactive_appaccount_user` even after maintenance export scopes (`ZohoCliq.OrganizationChats.READ` + `ZohoCliq.OrganizationMessages.READ`) were granted"
 
-crm:
+openclaw_cliq_channel:
   priority: 3
+  status: planned
+  phase: v0_4_native_channel_planning
+  target_release: v0.4.0
+  current_milestone: cliq-openclaw-channel-v0.4
+  blockers:
+    - "implementation waits for the current Mail+Cliq CLI release line and cliq-210 post-RC Cliq modularization handoff to stabilize"
+    - "OpenClaw host/plugin API minimum version must be rechecked immediately before development starts"
+
+crm:
+  priority: 4
   status: completed
-  phase: phase_1_read_only_commands_implemented
+  phase: phase_1_read_only_complete_v0_5_followup_deferred
   target_release: v0.5.0
-  current_milestone: crm-phase1-read-only
+  current_milestone: crm-v0.5-expansion
   blockers: []

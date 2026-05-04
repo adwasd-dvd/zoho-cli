@@ -112,6 +112,7 @@ zoho_cli/
 │   ├── cliq_identity.py   # Cliq whoami/user-resolve command bodies
 │   ├── cliq_org_admin.py  # Cliq org-admin list command bodies
 │   ├── cliq_org_directory.py  # Cliq users/teams command bodies
+│   ├── cliq_platform_extensions.py  # Cliq widgets/domains/emails command bodies
 │   ├── cliq_productivity.py  # Cliq events/reminders/meetings/databases command bodies
 │   └── cliq_readiness.py  # Cliq status/capabilities command bodies
 ├── cli.py             # CLI entry point (Typer)
@@ -152,7 +153,8 @@ Project state lives in `ops/state/*.yml`:
 | --- | --- | --- | --- |
 | Mail | ✅ Completed | stabilization_complete | Shipping baseline is stable. |
 | Cliq | ✅ Completed for RC | workflow_packaging_complete_with_deferred_external_blockers | Mail+Cliq AI-employee core is ready for RC; endpoint-limited tail is deferred post-RC. |
-| CRM | ✅ Completed for phase 1 | phase_1_read_only_commands_implemented | Read-only scaffold is present; deeper CRM work resumes after RC. |
+| OpenClaw Cliq channel | 📋 Planned | v0.4_native_channel | Native OpenClaw channel work starts after the current Mail+Cliq release line and post-RC Cliq modularization. |
+| CRM | ✅ Completed for phase 1 | phase_1_read_only_commands_implemented | Read-only scaffold is present; deeper CRM work resumes in v0.5 after the v0.4 channel. |
 
 ### Current platform lane (AI-employee v1)
 
@@ -183,7 +185,8 @@ Project state lives in `ops/state/*.yml`:
 
 1. Keep unsupported Cliq endpoints capability-gated so they do not stall AI-employee internal-loop readiness.
 2. Split Cliq by API surface to reduce AI context load.
-3. Plan deeper CRM after the Cliq split lane is stable.
+3. Build the native OpenClaw Cliq channel in v0.4.
+4. Resume deeper CRM work in v0.5 after the channel lane is stable.
 
 ---
 
@@ -195,7 +198,8 @@ Project state lives in `ops/state/*.yml`:
 | v0.2.1rc1 | Mail+Cliq AI-employee RC with deferred external blockers | ✅ Published prerelease |
 | v0.2.1 | Cliq expansion hardening + blocker burn-down | ⏳ Final after RC validation |
 | v0.3.x | Cliq live parity and export unblock closure | ⏳ Pending external unblock |
-| v0.4.x | CRM live validation and follow-on CRM work | 📋 Planned |
+| v0.4.x | Native OpenClaw Zoho Cliq channel | 📋 Planned |
+| v0.5.x | CRM live validation and follow-on CRM work | 📋 Planned |
 
 ---
 
@@ -207,6 +211,7 @@ This repo includes OpenClaw-facing skill and helper docs/scripts:
 - `integrations/openclaw/SKILL.md` — integration copy for OpenClaw workflows
 - `integrations/openclaw/SKILL_INDEX.md` — maintainer checklist/index
 - `integrations/openclaw/LANE3_AI_USER_GUIDE.md` — AI-user lane3 sync/update guide
+- `integrations/openclaw/CLIQ_CHANNEL_DEVELOPMENT_GUIDE.md` — v0.4 native Cliq channel development guide
 - `integrations/openclaw/bin/pull_lane3_only.sh` — lane3-only pull/sync script
 - `integrations/openclaw/bin/run-scan.example.sh` — long-running scan example
 - `integrations/openclaw/quick_test.sh` — lightweight attachment smoke test

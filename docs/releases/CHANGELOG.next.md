@@ -9,6 +9,7 @@
 - Continued `cliq-210` by extracting the `zoho cliq departments` and `zoho cliq roles` command bodies into `zoho_cli/commands/cliq_org_admin.py`, preserving command names, help text, and JSON output.
 - Continued `cliq-210` by moving the remaining org-admin list commands (`zoho cliq designations`, `zoho cliq user-status`, and `zoho cliq userfields`) into `zoho_cli/commands/cliq_org_admin.py`, preserving command names, help text, and JSON output.
 - Continued `cliq-210` by extracting productivity/platform list commands (`zoho cliq events`, `zoho cliq reminders`, `zoho cliq meetings`, and `zoho cliq databases`) into `zoho_cli/commands/cliq_productivity.py`, preserving command names, help text, and JSON output.
+- Continued `cliq-210` by extracting platform-extension list commands (`zoho cliq widgets`, `zoho cliq map-tickers`, `zoho cliq custom-domains`, and `zoho cliq custom-emails`) into `zoho_cli/commands/cliq_platform_extensions.py`, preserving command names, help text, and JSON output.
 
 ### Release readiness (2026-05-04T18:02:41Z)
 - Approved the fast RC posture for `0.2.1rc1`.

@@ -43,7 +43,7 @@ Definition of done:
 - local image/voice/file sends have verified success path or explicit endpoint-limitation classification
 - fallback chain is documented and regression-tested
 
-### Phase C — CRM baseline
+### Phase C — CRM baseline (implemented; deeper work deferred to v0.5)
 
 Goals:
 - scaffold CRM module
@@ -53,6 +53,11 @@ Goals:
 Definition of done:
 - metadata and record read paths stable
 - tests cover common org/module edge cases
+
+Current posture:
+- the read-only CRM baseline is implemented
+- live validation and deeper CRM workflows are deferred until v0.5
+- v0.4 is reserved for the native OpenClaw Cliq channel
 
 ### Phase B3 — v1 AI-employee release gate (RC)
 
@@ -71,7 +76,7 @@ Definition of done:
 Goals:
 - split the large Cliq command/client surfaces by API family so AI agents can inspect smaller files
 - keep command JSON schemas and help output stable while moving code
-- prioritize Mail + Cliq operator workflows over new CRM depth until the RC is cut
+- prioritize Mail + Cliq operator workflows and the v0.4 native channel over new CRM depth
 
 Definition of done:
 - each extracted Cliq API family has focused parity tests
@@ -85,6 +90,26 @@ Current progress:
 - fourth slice extracted `zoho cliq departments` and `zoho cliq roles` into `zoho_cli/commands/cliq_org_admin.py` with behavior parity checks green
 - fifth slice completed the org-admin list extraction by moving `zoho cliq designations`, `zoho cliq user-status`, and `zoho cliq userfields` into `zoho_cli/commands/cliq_org_admin.py` with behavior parity checks green
 - sixth slice extracted `zoho cliq events`, `zoho cliq reminders`, `zoho cliq meetings`, and `zoho cliq databases` into `zoho_cli/commands/cliq_productivity.py` with behavior parity checks green
+- seventh slice extracted `zoho cliq widgets`, `zoho cliq map-tickers`, `zoho cliq custom-domains`, and `zoho cliq custom-emails` into `zoho_cli/commands/cliq_platform_extensions.py` with behavior parity checks green
+
+### Phase B6 — OpenClaw native Cliq channel (v0.4)
+
+Goals:
+- create an installable OpenClaw channel plugin for Zoho Cliq
+- keep Zoho API compatibility inside `zoho` CLI rather than duplicating a REST client in the plugin
+- support native OpenClaw channel setup, status, capabilities, security, pairing, inbound routing, and outbound delivery
+- provide webhook-first inbound with polling fallback
+- keep AI-facing docs, skill references, CLI diagnostics, and OpenClaw setup prompts aligned
+- document a compatibility maintenance path for future OpenClaw plugin API updates
+
+Definition of done:
+- `@adwasd/openclaw-zoho-cliq` installs and registers a `cliq` channel
+- safe defaults are enforced (`dmPolicy=pairing`, `groupPolicy=allowlist`, SecretRef credentials, mention-gated groups)
+- inbound webhook and polling fallback normalize into the same OpenClaw event shape
+- outbound direct/channel replies use `zoho cliq ...` and return native OpenClaw delivery results
+- `openclaw channels list/status/capabilities` provides actionable diagnostics
+- security audit and fake/live channel tests produce recorded pass/skip/fail evidence
+- Lane 2 and Lane 3 docs are complete before v0.4 is marked done
 
 ### Phase B4 — cross-channel interoperability contract (completed)
 
@@ -108,7 +133,8 @@ Definition of done:
 - `cliq-155-read-matrix`
 - `cliq-156-local-media-send`
 - `cliq-160-release-hardening`
-- `crm-phase1-read-only`
+- `cliq-openclaw-channel-v0.4`
+- `crm-v0.5-expansion`
 
 ## Operating rule
 

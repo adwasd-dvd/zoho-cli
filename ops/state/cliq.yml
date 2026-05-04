@@ -1,9 +1,10 @@
 module: Cliq
-updated_at: '2026-05-04T18:29:58Z'
+updated_at: '2026-05-04T18:34:41Z'
 status: in_progress
 execution_mode: turbo_20x
 throughput_policy_ref: ops/state/execution_policy.yml
 blockers:
+- "cliq-210 fourth modularization slice at 2026-05-04T18:34:41Z extracted `zoho cliq departments` and `zoho cliq roles` command bodies into `zoho_cli/commands/cliq_org_admin.py`; command JSON/help parity stayed green (`./.venv/bin/python -m pytest -q tests/test_cli.py -k 'cliq_departments or cliq_roles'` -> `2 passed, 865 deselected in 0.18s`; registry export guard -> `1 passed, 65 deselected in 0.03s`; ruff check passed)."
 - "cliq-210 third modularization slice at 2026-05-04T18:31:16Z extracted `zoho cliq users` and `zoho cliq teams` command bodies into `zoho_cli/commands/cliq_org_directory.py`; command JSON/help parity stayed green (`./.venv/bin/python -m pytest -q tests/test_cli.py -k 'cliq_users or cliq_teams'` -> `3 passed, 864 deselected in 0.18s`; registry export guard -> `1 passed, 65 deselected in 0.03s`; ruff check passed)."
 - "cliq-210 third modularization slice at 2026-05-04T18:29:58Z extracted `zoho cliq users` and `zoho cliq teams` command bodies into `zoho_cli/commands/cliq_org_directory.py`; command JSON/help parity stayed green (`./.venv/bin/python -m pytest -q tests/test_cli.py -k 'cliq_users or cliq_teams'` -> `3 passed, 864 deselected in 0.24s`; registry users/teams guard -> `2 passed, 64 deselected in 0.03s`; ruff check passed)."
 - "cliq-210 second modularization slice at 2026-05-04T18:25:43Z extracted `zoho cliq whoami` and `zoho cliq user-resolve` command bodies into `zoho_cli/commands/cliq_identity.py`; command JSON/help parity stayed green (`./.venv/bin/python -m pytest -q tests/test_cli.py -k 'cliq_whoami or cliq_user_resolve'` -> `4 passed, 863 deselected in 0.27s`; registry identity/export guard -> `2 passed, 64 deselected in 0.08s`; ruff check passed)."

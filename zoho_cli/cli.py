@@ -126,6 +126,11 @@ from zoho_cli.commands.cliq_org_directory import (
     build_cliq_teams_command,
     build_cliq_users_command,
 )
+from zoho_cli.commands.cliq_org_admin import (
+    CliqOrgAdminContext,
+    build_cliq_departments_command,
+    build_cliq_roles_command,
+)
 from zoho_cli.crm import ZohoCrmClient
 from zoho_cli.registry import register_root_commands
 
@@ -4089,98 +4094,15 @@ register_cliq_users_teams_commands(
 )
 
 
-def cliq_departments(
-    limit: int = typer.Option(50, "--limit", "-n", help="Max departments to return."),
-    network: Optional[str] = typer.Option(
-        None, "--network", help="Cliq network slug (e.g. happydistrouklimited)."
-    ),
-) -> None:
-    """List Cliq departments."""
-    cfg = _cfg()
-    email = _require_account(cfg)
-    client = _get_cliq_client(cfg, email, network=network)
-
-    resp = client.list_departments(limit=limit)
-    data = resp.get("data", resp)
-    if not isinstance(data, list):
-        data = []
-
-    views: list[dict[str, Any]] = []
-    for row in data:
-        if not isinstance(row, dict):
-            continue
-        views.append(
-            {
-                "departmentId": str(
-                    row.get("department_id")
-                    or row.get("departmentId")
-                    or row.get("id")
-                    or row.get("zuid")
-                    or ""
-                ),
-                "name": str(
-                    row.get("name")
-                    or row.get("department_name")
-                    or row.get("display_name")
-                    or ""
-                ),
-                "raw": row,
-            }
-        )
-
-    utils.output(
-        {
-            "count": len(views),
-            "departments": views,
-        }
-    )
+_cliq_org_admin_context = CliqOrgAdminContext(
+    load_config=_cfg,
+    require_account=lambda cfg: _require_account(cfg),
+    get_cliq_client=lambda *args, **kwargs: _get_cliq_client(*args, **kwargs),
+)
 
 
-def cliq_roles(
-    limit: int = typer.Option(50, "--limit", "-n", help="Max roles to return."),
-    network: Optional[str] = typer.Option(
-        None, "--network", help="Cliq network slug (e.g. happydistrouklimited)."
-    ),
-) -> None:
-    """List Cliq roles."""
-    cfg = _cfg()
-    email = _require_account(cfg)
-    client = _get_cliq_client(cfg, email, network=network)
-
-    resp = client.list_roles(limit=limit)
-    data = resp.get("data", resp)
-    if not isinstance(data, list):
-        data = []
-
-    views: list[dict[str, Any]] = []
-    for row in data:
-        if not isinstance(row, dict):
-            continue
-        views.append(
-            {
-                "roleId": str(
-                    row.get("role_id")
-                    or row.get("roleId")
-                    or row.get("id")
-                    or row.get("zuid")
-                    or ""
-                ),
-                "name": str(
-                    row.get("name")
-                    or row.get("role_name")
-                    or row.get("display_name")
-                    or ""
-                ),
-                "raw": row,
-            }
-        )
-
-    utils.output(
-        {
-            "count": len(views),
-            "roles": views,
-        }
-    )
+cliq_departments = build_cliq_departments_command(_cliq_org_admin_context)
+cliq_roles = build_cliq_roles_command(_cliq_org_admin_context)
 
 
 register_cliq_departments_roles_commands(

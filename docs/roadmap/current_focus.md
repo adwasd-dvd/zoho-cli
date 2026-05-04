@@ -5,12 +5,13 @@
 2. **Architecture lock is complete**: `platform-204` contract is landed and drives gate execution.
 3. **Release-gate lane is unblocked**: deferred external Zoho endpoint blockers are accepted as non-blocking for RC.
 4. **Workflow packaging status**: `mail-010`, `cliq-195`, `platform-207`, and `platform-208` are complete for this milestone.
-5. **External blockers remain deferred**: `cliq-165` (`inactive_appaccount_user`) and `cliq-193` (`not_supported`) stay capability-gated under 3-strike policy.
+5. **Cliq modularization has started**: `cliq-210` first slice moved `status`/`capabilities` command bodies to `zoho_cli/commands/cliq_readiness.py` with JSON/help parity preserved.
+6. **External blockers remain deferred**: `cliq-165` (`inactive_appaccount_user`) and `cliq-193` (`not_supported`) stay capability-gated under 3-strike policy.
 
 ## Next
 1. Keep the release evidence linked in state and changelog.
 2. Keep cliq-194 read-ack endpoint limitation in capability-gated deferred mode.
-3. Start post-RC Cliq API-surface modularization so AI agents can read smaller files.
+3. Continue post-RC Cliq API-surface modularization so AI agents can read smaller files.
 4. Resume CRM CLI planning after the Cliq split lane is stable.
 
 ## Delivery estimate (v1.0 first cut)

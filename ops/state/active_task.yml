@@ -4,7 +4,7 @@ module: cliq
 stage: in_progress
 status: in_progress
 owner: coder
-updated_at: '2026-05-04T18:10:25Z'
+updated_at: '2026-05-04T18:19:47Z'
 execution_mode: turbo_20x
 throughput_policy_ref: ops/state/execution_policy.yml
 success_criteria:
@@ -14,4 +14,6 @@ success_criteria:
   - add focused parity tests for the extracted surface
   - leave CRM expansion queued until the post-RC Cliq split plan is stable
 next_if_done: continue extracting the next Cliq API surface, then plan CRM read/write expansion.
-next_step: Continue the smallest low-risk Cliq surface extraction after blocker-accounting hardening (`invalid_json_output` now falls back to stderr unsupported hints).
+progress:
+  - "2026-05-04T18:19:47Z first low-risk extraction complete: `zoho cliq status` and `zoho cliq capabilities` command bodies moved into `zoho_cli/commands/cliq_readiness.py`; `zoho_cli/cli.py` now injects runtime hooks and keeps existing command registration."
+next_step: Continue with the next low-risk Cliq API-surface extraction, preserving command JSON/help parity and keeping new files under the 800-line split threshold.

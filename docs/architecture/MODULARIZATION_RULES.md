@@ -47,6 +47,11 @@ Each migration slice must be small enough for one coding cycle:
 5. Run the smallest relevant test slice immediately.
 6. Update `ops/state/*.yml`, `docs/roadmap/current_focus.md`, and `docs/releases/CHANGELOG.next.md`.
 
+## Current Cliq split map
+
+- `zoho_cli/commands/cliq_readiness.py` owns the `zoho cliq status` and `zoho cliq capabilities` command bodies. `zoho_cli/cli.py` only injects runtime hooks and registers those commands.
+- Preserve command names, help text, JSON shape, and monkeypatch-friendly module lookups when moving additional Cliq surfaces.
+
 ## Sequencing policy
 
 - Keep current delivery priority (Mail -> Cliq -> CRM).

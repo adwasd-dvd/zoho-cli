@@ -43,6 +43,9 @@ bash integrations/openclaw/bin/pull_lane3_only.sh --workspace "$HOME/.openclaw/w
 4. summarize command/flag/output and skill-usage changes
 5. sync lane3 locally
 
+Current implementation-only delta:
+- `cliq-210` moved `zoho cliq status` and `zoho cliq capabilities` command bodies into `zoho_cli/commands/cliq_readiness.py`; AI-user command patterns are unchanged.
+
 ## Required behavior support after lane3 sync
 
 After sync, ensure the AI user follows:

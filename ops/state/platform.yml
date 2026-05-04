@@ -1,7 +1,7 @@
 module: Platform
-updated_at: "2026-05-04T18:07:27Z"
+updated_at: "2026-05-04T18:19:47Z"
 status: in_progress
 execution_mode: turbo_20x
 throughput_policy_ref: ops/state/execution_policy.yml
 blockers: []
-next_small_step: "`v0.2.1rc1` is published as a GitHub prerelease; begin post-RC Cliq API-surface modularization."
+next_small_step: "`cliq-210` first slice is complete (`status`/`capabilities` extracted to `zoho_cli/commands/cliq_readiness.py`); continue the next low-risk Cliq API-surface split with JSON/help parity checks."

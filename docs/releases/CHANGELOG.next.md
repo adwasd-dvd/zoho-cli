@@ -2,6 +2,9 @@
 
 ## Unreleased
 
+### Architecture / modularization (2026-05-04T18:19:47Z)
+- Started `cliq-210` post-RC modularization by extracting the `zoho cliq status` and `zoho cliq capabilities` command bodies into `zoho_cli/commands/cliq_readiness.py`, leaving `zoho_cli/cli.py` with runtime dependency injection plus existing Typer registration only. Command names, help text, and JSON output are unchanged.
+
 ### Release readiness (2026-05-04T18:02:41Z)
 - Approved the fast RC posture for `0.2.1rc1`.
 - External Zoho live blockers that repeatedly return `not_supported`, missing scopes, `inactive_appaccount_user`, or missing CRM org access are now explicitly treated as capability-gated deferred blockers, not RC blockers.

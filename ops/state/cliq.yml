@@ -1,9 +1,10 @@
 module: Cliq
-updated_at: '2026-05-04T17:57:40Z'
-status: completed
+updated_at: '2026-05-04T18:19:47Z'
+status: in_progress
 execution_mode: turbo_20x
 throughput_policy_ref: ops/state/execution_policy.yml
 blockers:
+- "cliq-210 first modularization slice at 2026-05-04T18:19:47Z extracted `zoho cliq status` and `zoho cliq capabilities` command bodies into `zoho_cli/commands/cliq_readiness.py`; command JSON/help parity stayed green (`./.venv/bin/python -m pytest -q tests/test_cli.py -k 'cliq_status or cliq_capabilities'` -> `12 passed, 855 deselected in 0.53s`; `./.venv/bin/ruff check zoho_cli/cli.py zoho_cli/commands/cliq_readiness.py` -> `All checks passed!`)."
 - "focused cliq-193 invalid-json stderr fallback at 2026-05-04T18:07:27Z: probe-summary now uses sidecar stderr unsupported hints when app-command JSON is invalid, preserving canonical `not_supported` classification for malformed live evidence captures (`./.venv/bin/python -m pytest -q tests/test_cliq193_probe_summary.py` -> `12 passed in 0.02s`)."
 - "platform integration-loop medium-scope rerun at 2026-05-04T17:57:40Z stayed green with no behavior change across registry/bridge + focused CLI/Cliq boundaries (`./.venv/bin/python -m pytest -q tests/test_registry.py tests/test_membrane_bridge.py` -> `489 passed in 9.19s`; focused CLI selector -> `202 passed, 665 deselected in 4.19s`; focused Cliq selector -> `69 passed, 190 deselected in 0.74s`; help smokes -> `HELP_SMOKE_OK`), so no integration regression is currently detected and deferred RC posture remains unchanged."
 - "focused cliq-193 archived-summary replay at 2026-05-04T17:26:44Z regenerated `tests/auto_pilot/reports/cliq193_app_commands_probe_summary_20260416_124129.json` so `appCommandsError` now resolves to canonical `not_supported` (was `empty_output`) with defer posture intact (`unsupportedConsecutiveCount: 7`, `postReleaseDeferred: true`), and focused guard coverage remains green (`./.venv/bin/python -m pytest -q tests/test_cliq193_probe_summary.py` -> `11 passed in 0.01s`)."

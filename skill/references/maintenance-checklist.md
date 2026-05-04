@@ -18,4 +18,5 @@ Run this whenever command surfaces or workflows change.
    ./.venv/bin/python -m pytest -q tests/test_lane3_docs.py
    ```
 6. For RC updates, verify `zoho --version` matches the approved RC version before syncing AI-user skill files.
-7. Update changelog and state files for traceability.
+7. For Cliq status/capability maintenance, inspect `zoho_cli/commands/cliq_readiness.py` first; those command bodies are no longer in the `zoho_cli/cli.py` monolith.
+8. Update changelog and state files for traceability.

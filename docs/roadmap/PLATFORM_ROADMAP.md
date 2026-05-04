@@ -78,6 +78,9 @@ Definition of done:
 - `zoho_cli/cli.py` stops receiving new large command bodies
 - no file created by the modularization path crosses the 800-line split threshold
 
+Current progress:
+- first slice extracted `zoho cliq status` and `zoho cliq capabilities` into `zoho_cli/commands/cliq_readiness.py` with behavior parity checks green
+
 ### Phase B4 — cross-channel interoperability contract (completed)
 
 Goals:

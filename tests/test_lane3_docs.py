@@ -42,6 +42,9 @@ def test_lane3_required_paths_exist() -> None:
         REPO_ROOT / "integrations" / "openclaw" / "LANE3_AI_USER_GUIDE.md",
         REPO_ROOT / "integrations" / "openclaw" / "SKILL_INDEX.md",
         REPO_ROOT / "integrations" / "openclaw" / "bin" / "pull_lane3_only.sh",
+        REPO_ROOT / "integrations" / "openclaw-channel-cliq" / "package.json",
+        REPO_ROOT / "integrations" / "openclaw-channel-cliq" / "openclaw.plugin.json",
+        REPO_ROOT / "integrations" / "openclaw-channel-cliq" / "skill" / "SKILL.md",
     ]
 
     for path in required:

@@ -324,7 +324,7 @@
 - id: cliq-channel-401
   title: scaffold installable OpenClaw Zoho Cliq channel plugin skeleton
   module: openclaw_cliq_channel
-  stage: queued
+  stage: completed
   priority: high
   depends_on:
   - cliq-channel-400

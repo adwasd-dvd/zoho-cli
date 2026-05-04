@@ -1,0 +1,73 @@
+{
+  "name": "@adwasd/openclaw-zoho-cliq",
+  "version": "0.4.0-alpha.0",
+  "description": "Native OpenClaw channel for Zoho Cliq backed by zoho-cli.",
+  "type": "module",
+  "license": "MIT",
+  "main": "./dist/index.js",
+  "files": [
+    "README.md",
+    "openclaw.plugin.json",
+    "dist",
+    "index.ts",
+    "setup-entry.ts",
+    "configured-state.ts",
+    "auth-presence.ts",
+    "src",
+    "skill"
+  ],
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "typecheck": "tsc -p tsconfig.json --noEmit",
+    "check": "npm run typecheck",
+    "openclaw:install": "openclaw plugins install . --link",
+    "inspect": "openclaw plugins inspect zoho-cliq --json",
+    "doctor": "openclaw plugins doctor"
+  },
+  "engines": {
+    "node": ">=22.14.0"
+  },
+  "peerDependencies": {
+    "openclaw": ">=2026.5.3-1"
+  },
+  "devDependencies": {
+    "@types/node": "^22.14.0",
+    "openclaw": "2026.5.3-1",
+    "typescript": "^5.8.0"
+  },
+  "openclaw": {
+    "extensions": [
+      "./dist/index.js"
+    ],
+    "setupEntry": "./dist/setup-entry.js",
+    "channel": {
+      "id": "cliq",
+      "label": "Zoho Cliq",
+      "selectionLabel": "Zoho Cliq (Bot API + zoho-cli)",
+      "docsPath": "/channels/cliq",
+      "docsLabel": "cliq",
+      "blurb": "Zoho Cliq channel backed by zoho-cli.",
+      "markdownCapable": true,
+      "configuredState": {
+        "specifier": "./dist/configured-state.js",
+        "exportName": "hasCliqConfiguredState"
+      },
+      "persistedAuthState": {
+        "specifier": "./dist/auth-presence.js",
+        "exportName": "hasCliqAuthState"
+      }
+    },
+    "install": {
+      "npmSpec": "@adwasd/openclaw-zoho-cliq",
+      "defaultChoice": "npm",
+      "minHostVersion": ">=2026.5.3-1",
+      "expectedIntegrity": "<filled-at-release>"
+    },
+    "startup": {
+      "deferConfiguredChannelFullLoadUntilAfterListen": true
+    },
+    "compat": {
+      "pluginApi": ">=2026.5.3-1"
+    }
+  }
+}

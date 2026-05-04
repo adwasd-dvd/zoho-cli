@@ -13,6 +13,7 @@ Primary paths:
 Native channel planning:
 - `docs/architecture/OPENCLAW_CLIQ_CHANNEL_0_4_PLAN.md`
 - `integrations/openclaw/CLIQ_CHANNEL_DEVELOPMENT_GUIDE.md`
+- `integrations/openclaw-channel-cliq/`
 - `skill/references/openclaw-cliq-channel.md`
 
 GitHub intake:

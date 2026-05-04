@@ -14,6 +14,9 @@
 - Completed `cliq-channel-400` by locking the native OpenClaw Cliq channel SDK/version contract in `docs/architecture/OPENCLAW_CLIQ_CHANNEL_SDK_CONTRACT.md`.
 - Target OpenClaw host/plugin API is `>=2026.5.3-1`; local `OpenClaw 2026.4.15` is documented as too old for v0.4 plugin install/inspect validation.
 - Captured the v0.4 package identity, manifest/package metadata split, SDK helper imports, SecretRef shape, and minimum `zoho cliq ...` command contract for the upcoming `cliq-channel-401` plugin skeleton.
+- Completed `cliq-channel-401` by adding `integrations/openclaw-channel-cliq/` with `package.json#openclaw`, `openclaw.plugin.json`, setup/runtime entrypoints, configured/auth-state probes, compiled `dist/*.js` runtime output, and a channel skill.
+- Package-local OpenClaw validation now passes in a throwaway home with `openclaw@2026.5.3-1`: linked install succeeds, `plugins inspect zoho-cliq --json` discovers channel `cliq`, and `plugins doctor` reports no issues.
+- Deferred process execution to `cliq-channel-404` so the skeleton remains normal-installable under OpenClaw dangerous-code scanning; the current package keeps the `zoho cliq send` argument contract without `child_process`.
 
 ### Architecture / modularization (2026-05-04T18:19:47Z)
 - Started `cliq-210` post-RC modularization by extracting the `zoho cliq status` and `zoho cliq capabilities` command bodies into `zoho_cli/commands/cliq_readiness.py`, leaving `zoho_cli/cli.py` with runtime dependency injection plus existing Typer registration only. Command names, help text, and JSON output are unchanged.

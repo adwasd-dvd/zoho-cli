@@ -16,6 +16,9 @@ env/
 # uv
 .uv/
 
+# Node / OpenClaw plugin workspaces
+node_modules/
+
 # macOS
 .DS_Store
 .AppleDouble
@@ -35,6 +38,8 @@ htmlcov/
 # Distribution
 *.whl
 *.tar.gz
+!integrations/openclaw-channel-cliq/dist/
+!integrations/openclaw-channel-cliq/dist/**
 
 # Others
 # Local workspace / OpenClaw

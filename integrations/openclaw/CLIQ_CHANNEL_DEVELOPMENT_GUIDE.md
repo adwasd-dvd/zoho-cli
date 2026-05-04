@@ -60,7 +60,9 @@ Follow the stack from the architecture plan:
 
 1. `cliq-channel-400` version and SDK contract (complete; target
    `minHostVersion` / `compat.pluginApi` is `>=2026.5.3-1`)
-2. `cliq-channel-401` plugin skeleton
+2. `cliq-channel-401` plugin skeleton (complete; package lives at
+   `integrations/openclaw-channel-cliq/` and validates with
+   `openclaw@2026.5.3-1`)
 3. `cliq-channel-402` config, SecretRef, and setup
 4. `cliq-channel-416` human install and setup UX
 5. `cliq-channel-403` security, pairing, and scoped employee mode
@@ -260,17 +262,18 @@ Run focused tests for every slice:
 
 ```bash
 pytest tests/test_openclaw_channel_contract.py -q
+pytest tests/test_openclaw_channel_skeleton.py -q
 pytest tests/test_cli.py tests/test_cliq.py tests/test_membrane_bridge.py -q
 ```
 
 When the plugin package exists, add package-local checks:
 
 ```bash
-npm test
-npm run typecheck
-npm run lint
-openclaw plugins inspect ./integrations/openclaw-channel-cliq --json
-openclaw plugins doctor --json
+npm --prefix integrations/openclaw-channel-cliq run typecheck
+npm --prefix integrations/openclaw-channel-cliq run build
+HOME="$PWD/.tmp/openclaw-home-2026.5.3-1" integrations/openclaw-channel-cliq/node_modules/.bin/openclaw plugins install ./integrations/openclaw-channel-cliq --link
+HOME="$PWD/.tmp/openclaw-home-2026.5.3-1" integrations/openclaw-channel-cliq/node_modules/.bin/openclaw plugins inspect zoho-cliq --json
+HOME="$PWD/.tmp/openclaw-home-2026.5.3-1" integrations/openclaw-channel-cliq/node_modules/.bin/openclaw plugins doctor
 openclaw channels capabilities --channel cliq --json
 openclaw security audit --json
 ```

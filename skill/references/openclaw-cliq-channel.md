@@ -7,7 +7,11 @@ OpenClaw Zoho Cliq channel.
 
 Planned for `zoho-cli` v0.4 after the current Mail + Cliq CLI release line.
 `cliq-channel-400` is complete: the native channel SDK contract is locked in
-`docs/architecture/OPENCLAW_CLIQ_CHANNEL_SDK_CONTRACT.md`.
+`docs/architecture/OPENCLAW_CLIQ_CHANNEL_SDK_CONTRACT.md`. `cliq-channel-401`
+is complete: the installable package skeleton lives at
+`integrations/openclaw-channel-cliq/`, uses compiled `dist/*.js` runtime
+entrypoints, and was discovered by package-local `openclaw@2026.5.3-1` as
+plugin `zoho-cliq` with channel `cliq`.
 
 The v0.4 plugin targets OpenClaw `>=2026.5.3-1`. The local
 `OpenClaw 2026.4.15` install is too old for plugin install/inspect validation,
@@ -41,6 +45,8 @@ message and approval workflows.
 Diagnostic commands:
 
 ```bash
+openclaw plugins inspect zoho-cliq --json
+openclaw plugins doctor
 openclaw channels status --channel cliq --deep
 openclaw channels capabilities --channel cliq
 openclaw security audit --json

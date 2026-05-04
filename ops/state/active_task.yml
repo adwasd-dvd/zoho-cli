@@ -1,30 +1,21 @@
-id: cliq-channel-401
-title: scaffold installable OpenClaw Zoho Cliq channel plugin skeleton
+id: cliq-channel-402
+title: implement Cliq channel config schema, SecretRef support, and setup flow
 module: openclaw_cliq_channel
 stage: queued
 status: ready
 owner: coder
-updated_at: '2026-05-04T21:39:33Z'
+updated_at: '2026-05-04T22:03:50Z'
 execution_mode: turbo_20x
 throughput_policy_ref: ops/state/execution_policy.yml
 success_criteria:
-  - create `integrations/openclaw-channel-cliq/` package skeleton
-  - add `openclaw.plugin.json` with `zoho-cliq` plugin id and `cliq` channel config metadata
-  - add `package.json#openclaw` with `minHostVersion` and `compat.pluginApi` `>=2026.5.3-1`
-  - add setup/runtime entrypoints plus tiny configured-state and auth-presence modules
-  - add package-local tests or inspect smoke once a compatible OpenClaw host is available
-next_if_done: implement cliq-channel-402 config schema, SecretRef support, and setup flow.
+  - expand `integrations/openclaw-channel-cliq/openclaw.plugin.json` and runtime config schema beyond the empty skeleton
+  - support env and SecretRef references for account, config path, token password, and webhook secret
+  - implement setup input validation without accepting plaintext tokens
+  - keep package-local `npm run typecheck`, `npm run build`, OpenClaw linked install, `plugins inspect zoho-cliq --json`, and `plugins doctor` green
+  - update Lane 2 docs, Lane 3 skill/docs, and Lane 1 state/progress docs
+next_if_done: implement cliq-channel-416 human install and setup UX, then cliq-channel-403 secure pairing/allowlist/scoped employee mode.
 progress:
+  - "2026-05-04T22:03:50Z cliq-channel-401 completed: `integrations/openclaw-channel-cliq/` now has manifest/package metadata, setup/runtime entries, configured/auth-state probes, compiled dist runtime output, and channel skill; package-local `openclaw@2026.5.3-1` linked install + `plugins inspect zoho-cliq --json` discovers plugin `zoho-cliq` with channel `cliq`, and `plugins doctor` reports no issues."
+  - "2026-05-04T22:03:50Z process execution was intentionally deferred to cliq-channel-404 after OpenClaw dangerous-code scanning blocked a child_process skeleton; cliq-channel-401 stays normal-installable and keeps only the `zoho cliq send` argument contract."
   - "2026-05-04T21:39:33Z cliq-channel-400 completed: OpenClaw Cliq channel SDK/version contract locked in `docs/architecture/OPENCLAW_CLIQ_CHANNEL_SDK_CONTRACT.md`; target `minHostVersion`/`compat.pluginApi` is `>=2026.5.3-1`, local OpenClaw `2026.4.15` is too old for plugin install/inspect validation, and `cliq-channel-401` is ready to scaffold the installable plugin."
-  - "2026-05-04T20:47:46Z thirteenth low-risk extraction complete: message retrieval/context commands (`search`, `messages`, `message`, `context`, `watch-context`) moved into `zoho_cli/commands/cliq_message_retrieval.py`; focused parity tests stayed green."
-  - "2026-05-04T20:41:04Z tenth-through-twelfth low-risk extractions complete: thread commands moved into `zoho_cli/commands/cliq_threading.py`, scheduled-message commands moved into `zoho_cli/commands/cliq_scheduling.py`, and bot commands moved into `zoho_cli/commands/cliq_bots.py`; focused parity tests stayed green."
-  - "2026-05-04T19:10:14Z ninth low-risk extraction complete: `zoho cliq pin`, `zoho cliq unpin`, and `zoho cliq pinned` command bodies moved into `zoho_cli/commands/cliq_channel_management.py`; focused parity tests stayed green."
-  - "2026-05-04T19:04:49Z eighth low-risk extraction complete: `zoho cliq members`, channel lifecycle/member commands, and chat-control commands (`leave`, `mute`, `unmute`) moved into `zoho_cli/commands/cliq_channel_management.py`; focused parity tests stayed green."
-  - "2026-05-04T18:55:16Z seventh low-risk extraction complete: `zoho cliq widgets`, `zoho cliq map-tickers`, `zoho cliq custom-domains`, and `zoho cliq custom-emails` command bodies moved into `zoho_cli/commands/cliq_platform_extensions.py`; focused parity tests stayed green."
-  - "2026-05-04T18:49:42Z sixth low-risk extraction complete: `zoho cliq events`, `zoho cliq reminders`, `zoho cliq meetings`, and `zoho cliq databases` command bodies moved into `zoho_cli/commands/cliq_productivity.py`; focused parity tests stayed green."
-  - "2026-05-04T18:44:05Z fifth low-risk extraction complete: `zoho cliq designations`, `zoho cliq user-status`, and `zoho cliq userfields` command bodies moved into `zoho_cli/commands/cliq_org_admin.py`; focused parity tests stayed green."
-  - "2026-05-04T18:34:41Z fourth low-risk extraction complete: `zoho cliq departments` and `zoho cliq roles` command bodies moved into `zoho_cli/commands/cliq_org_admin.py`; runtime hooks remain patch-friendly and focused parity tests stayed green."
-  - "2026-05-04T18:31:16Z third low-risk extraction complete: `zoho cliq users` and `zoho cliq teams` command bodies moved into `zoho_cli/commands/cliq_org_directory.py`; runtime hooks remain patch-friendly and focused parity tests stayed green."
-  - "2026-05-04T18:19:47Z first low-risk extraction complete: `zoho cliq status` and `zoho cliq capabilities` command bodies moved into `zoho_cli/commands/cliq_readiness.py`; `zoho_cli/cli.py` now injects runtime hooks and keeps existing command registration."
-  - "2026-05-04T18:25:43Z second low-risk extraction complete: `zoho cliq whoami` and `zoho cliq user-resolve` command bodies moved into `zoho_cli/commands/cliq_identity.py`; runtime hooks remain patch-friendly and focused parity tests stayed green."
-next_step: Start `cliq-channel-401` plugin skeleton using the locked contract; do not run native plugin inspect against local OpenClaw `2026.4.15` until the host is upgraded or a throwaway `openclaw@2026.5.3-1` validation environment is used.
+next_step: Start `cliq-channel-402` config/SecretRef/setup using the installable plugin skeleton and the locked `>=2026.5.3-1` OpenClaw contract.

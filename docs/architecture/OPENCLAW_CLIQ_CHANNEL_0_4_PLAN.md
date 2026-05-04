@@ -710,11 +710,14 @@ OpenClaw:
 
 ### cliq-channel-401: Plugin skeleton
 
-- Create package skeleton under `integrations/openclaw-channel-cliq/`.
-- Add manifest, package metadata, setup entry, runtime entry.
+- Create package skeleton under `integrations/openclaw-channel-cliq/`. Complete.
+- Add manifest, package metadata, setup entry, runtime entry. Complete with
+  TypeScript source and compiled `dist/*.js` OpenClaw runtime entrypoints.
 - Add lightweight configured-state/auth-presence modules, declared skills,
-  channel config metadata, and QA runner descriptors when supported.
-- Acceptance: `openclaw plugins inspect <path>` discovers plugin and channel.
+  channel config metadata, and QA runner descriptors when supported. Complete;
+  richer config and QA runners are deferred to `cliq-channel-402` and later.
+- Acceptance: package-local `openclaw@2026.5.3-1` install/inspect discovers
+  plugin `zoho-cliq` and channel `cliq`; plugin doctor reports no issues.
 
 ### cliq-channel-402: Config, SecretRef, and setup
 

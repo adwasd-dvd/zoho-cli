@@ -26,9 +26,8 @@ The v0.4 plugin contract is:
 ```
 
 `cliq-channel-401` must not rely on local `2026.4.15` behavior. Before running
-`openclaw plugins inspect ./integrations/openclaw-channel-cliq --json`, upgrade
-the local host to the current stable OpenClaw version or run inspect in a
-throwaway environment pinned to `openclaw@2026.5.3-1`.
+native install/inspect checks, upgrade the local host to the current stable
+OpenClaw version or use a throwaway environment pinned to `openclaw@2026.5.3-1`.
 
 ## Package contract
 
@@ -61,8 +60,8 @@ The initial `package.json` skeleton should include:
     "openclaw": "2026.5.3-1"
   },
   "openclaw": {
-    "extensions": ["./index.ts"],
-    "setupEntry": "./setup-entry.ts",
+    "extensions": ["./dist/index.js"],
+    "setupEntry": "./dist/setup-entry.js",
     "channel": {
       "id": "cliq",
       "label": "Zoho Cliq",
@@ -72,11 +71,11 @@ The initial `package.json` skeleton should include:
       "blurb": "Zoho Cliq channel backed by zoho-cli.",
       "markdownCapable": true,
       "configuredState": {
-        "specifier": "./configured-state.ts",
+        "specifier": "./dist/configured-state.js",
         "exportName": "hasCliqConfiguredState"
       },
       "persistedAuthState": {
-        "specifier": "./auth-presence.ts",
+        "specifier": "./dist/auth-presence.js",
         "exportName": "hasCliqAuthState"
       }
     },
@@ -96,9 +95,26 @@ The initial `package.json` skeleton should include:
 }
 ```
 
-Use TypeScript source entrypoints in the repo-local development package. The
-publish step can emit JavaScript and update `extensions` / `setupEntry` to the
-compiled files if the OpenClaw packaging path requires it.
+Keep TypeScript source in the repo-local development package, but point OpenClaw
+runtime metadata at compiled `dist/*.js` files. `cliq-channel-401` verified that
+`openclaw@2026.5.3-1` local path installs reject TypeScript-only runtime
+entrypoints before discovery.
+
+Package-local validation flow:
+
+```bash
+npm --prefix integrations/openclaw-channel-cliq run typecheck
+npm --prefix integrations/openclaw-channel-cliq run build
+HOME="$PWD/.tmp/openclaw-home-2026.5.3-1" \
+  integrations/openclaw-channel-cliq/node_modules/.bin/openclaw \
+  plugins install ./integrations/openclaw-channel-cliq --link
+HOME="$PWD/.tmp/openclaw-home-2026.5.3-1" \
+  integrations/openclaw-channel-cliq/node_modules/.bin/openclaw \
+  plugins inspect zoho-cliq --json
+HOME="$PWD/.tmp/openclaw-home-2026.5.3-1" \
+  integrations/openclaw-channel-cliq/node_modules/.bin/openclaw \
+  plugins doctor
+```
 
 ## Manifest contract
 

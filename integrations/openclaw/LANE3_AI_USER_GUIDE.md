@@ -20,6 +20,19 @@ bash integrations/openclaw/bin/pull_lane3_only.sh \
   --branch autobot/zoho-platform
 ```
 
+## Repository rename alignment
+
+The active GitHub repository is now `adwasd-dvd/zoho-cli`. If the employee
+agent already has a local checkout, align the remote before syncing lane3:
+
+```bash
+git -C ~/zoho-cli remote set-url origin https://github.com/adwasd-dvd/zoho-cli.git
+git -C ~/zoho-cli fetch --prune origin
+```
+
+Use `/Users/adwasd/.openclaw/workspace-zoho-employee-test` for the current local
+employee-agent workspace unless the user provides another workspace.
+
 What it does:
 1. sparse-pulls lane3 paths from GitHub
 2. syncs `skill/` into `<workspace>/skills/zoho-cli-employee/`
@@ -31,8 +44,8 @@ What it does:
 Only use this when user explicitly approves CLI upgrade.
 
 ```bash
-git -C ~/zoho-mail-cli-zomacli pull --ff-only
-uv tool install --upgrade git+https://github.com/adwasd-dvd/zoho-mail-cli-zomacli
+git -C ~/zoho-cli pull --ff-only
+uv tool install --upgrade git+https://github.com/adwasd-dvd/zoho-cli
 bash integrations/openclaw/bin/pull_lane3_only.sh --workspace "$HOME/.openclaw/workspace-zoho-employee-test"
 ```
 
@@ -68,3 +81,8 @@ After sync, ensure the AI user follows:
 - native channel development/operation docs when relevant:
   - read `skill/references/openclaw-cliq-channel.md`
   - read `integrations/openclaw/CLIQ_CHANNEL_DEVELOPMENT_GUIDE.md`
+- GitHub issue intake for bugs/suggestions:
+  - read `skill/references/github-intake-workflow.md`
+  - file sanitized issues in `adwasd-dvd/zoho-cli` only
+  - search duplicates before creating issues
+  - ask before including private context or changing GitHub settings/labels/code

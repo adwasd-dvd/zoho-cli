@@ -1,0 +1,5 @@
+blank_issues_enabled: false
+contact_links:
+  - name: Canonical repository
+    url: https://github.com/adwasd-dvd/zoho-cli
+    about: File zoho-cli bugs, suggestions, and AI employee observations here.

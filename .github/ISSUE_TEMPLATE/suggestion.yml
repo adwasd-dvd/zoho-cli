@@ -1,0 +1,48 @@
+name: Suggestion
+description: Suggest a feature, workflow improvement, or operator-experience change.
+title: "[suggestion] "
+labels:
+  - enhancement
+  - needs-triage
+body:
+  - type: textarea
+    id: problem
+    attributes:
+      label: Problem or opportunity
+      description: What workflow is hard, slow, unclear, or missing?
+    validations:
+      required: true
+  - type: textarea
+    id: proposal
+    attributes:
+      label: Proposed behavior
+      description: Describe the smallest useful improvement.
+    validations:
+      required: true
+  - type: textarea
+    id: examples
+    attributes:
+      label: Example usage
+      description: Include command examples or OpenClaw agent workflow examples if helpful.
+      placeholder: |
+        zoho ...
+  - type: dropdown
+    id: area
+    attributes:
+      label: Area
+      options:
+        - Mail
+        - Cliq
+        - CRM
+        - OpenClaw skill/docs
+        - Install/update
+        - Other
+    validations:
+      required: true
+  - type: checkboxes
+    id: privacy
+    attributes:
+      label: Privacy check
+      options:
+        - label: I removed tokens, secrets, customer data, private message bodies, and raw credentials.
+          required: true

@@ -5,7 +5,7 @@ build-backend = "hatchling.build"
 [project]
 name = "zoho-cli"
 version = "0.2.1rc1"
-description = "Zoho Mail JSON CLI"
+description = "Unified Zoho CLI for Mail, Cliq, and CRM"
 readme = "README.md"
 requires-python = ">=3.11"
 license = { text = "MIT" }

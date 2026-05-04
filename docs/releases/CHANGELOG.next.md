@@ -19,11 +19,13 @@
 - Bumped package/runtime version metadata to `0.2.1rc1` (`pyproject.toml`, `uv.lock`, and `zoho_cli.__version__`).
 - Added release hygiene for the RC cut: auto-pilot report sidecars (`.stderr`, `.exitcode`, `.env`, `.txt`) are now ignored by default, and the Homebrew bump workflow now pushes to the matching `adwasd-dvd/homebrew-tap` repository.
 - Post-flip verification is green: `make release-gate` passed (`1749 passed` + wheel smoke `0.2.1rc1`) and `make ci` passed (`1749 passed`, ruff clean).
-- Published GitHub prerelease `v0.2.1rc1`: https://github.com/adwasd-dvd/zoho-mail-cli-zomacli/releases/tag/v0.2.1rc1
+- Published GitHub prerelease `v0.2.1rc1`: https://github.com/adwasd-dvd/zoho-cli/releases/tag/v0.2.1rc1
 - Fixed the Homebrew bump workflow tap step to clone the private `adwasd-dvd/homebrew-tap` tap with `HOMEBREW_TAP_TOKEN`; the release-triggered run failed before this fix while cloning the private tap.
 - Hardened cliq-193 probe-summary blocker accounting so invalid app-command JSON output also falls back to sidecar stderr hints, preserving canonical `not_supported` classification for malformed live evidence captures.
 
 ### Changed
+- Renamed the canonical GitHub repository to `adwasd-dvd/zoho-cli`; the older pre-platform repository now lives at `adwasd-dvd/zoho-cli-legacy`, and install/update documentation now targets the canonical repository URL.
+- Added the OpenClaw employee-agent GitHub issue intake workflow and issue templates so sanitized bugs, suggestions, docs mismatches, and AI employee observations are filed directly in `adwasd-dvd/zoho-cli`.
 - Accepted post-RC Cliq modularization as the next high-priority engineering lane: split Cliq by API surface after RC to reduce AI context load before deeper CRM expansion.
 - Moved the markdown update smoke from a top-level ad hoc script into `tests/test_markdown_update.py`.
 

@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-REPO_URL="https://github.com/adwasd-dvd/zoho-mail-cli-zomacli.git"
+REPO_URL="https://github.com/adwasd-dvd/zoho-cli.git"
 BRANCH="autobot/zoho-platform"
 WORKSPACE="$HOME/.openclaw/workspace-zoho-employee-test"
 SKILL_NAME="zoho-cli-employee"
@@ -14,7 +14,7 @@ Usage: pull_lane3_only.sh [options]
 Options:
   --workspace <path>    Agent workspace (default: ~/.openclaw/workspace-zoho-employee-test)
   --branch <name>       Git branch to sync (default: autobot/zoho-platform)
-  --repo-url <url>      Git repo url (default: adwasd-dvd/zoho-mail-cli-zomacli)
+  --repo-url <url>      Git repo url (default: adwasd-dvd/zoho-cli)
   --skill-name <name>   Local skill directory name (default: zoho-cli-employee)
   -h, --help            Show help
 EOF

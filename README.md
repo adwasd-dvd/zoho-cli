@@ -2,7 +2,7 @@
 
 Fast, script-friendly CLI for Zoho Mail, Cliq, and CRM. JSON output by default, Markdown tables with `--md`. Pipe to `jq`, use in scripts, or feed directly to AI agents.
 
-[![GitHub release](https://img.shields.io/github/v/release/adwasd-dvd/zoho-mail-cli-zomacli)](https://github.com/adwasd-dvd/zoho-mail-cli-zomacli/releases)
+[![GitHub release](https://img.shields.io/github/v/release/adwasd-dvd/zoho-cli)](https://github.com/adwasd-dvd/zoho-cli/releases)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 
 ---
@@ -11,14 +11,14 @@ Fast, script-friendly CLI for Zoho Mail, Cliq, and CRM. JSON output by default, 
 
 ```bash
 # Install via uv (recommended)
-uv tool install git+https://github.com/adwasd-dvd/zoho-mail-cli-zomacli
+uv tool install git+https://github.com/adwasd-dvd/zoho-cli
 
 # Or pipx
-pipx install git+https://github.com/adwasd-dvd/zoho-mail-cli-zomacli
+pipx install git+https://github.com/adwasd-dvd/zoho-cli
 
 # From source
-git clone https://github.com/adwasd-dvd/zoho-mail-cli-zomacli
-cd zoho-mail-cli-zomacli
+git clone https://github.com/adwasd-dvd/zoho-cli
+cd zoho-cli
 uv tool install .
 ```
 
@@ -173,7 +173,7 @@ Project state lives in `ops/state/*.yml`:
 - Current version: `0.2.1rc1`
 - Next final target: `0.2.1`
 - Release candidate: `true`
-- Broad automated gate: post-flip `make release-gate && make ci` is green for `0.2.1rc1`; [v0.2.1rc1](https://github.com/adwasd-dvd/zoho-mail-cli-zomacli/releases/tag/v0.2.1rc1) is published as a GitHub prerelease.
+- Broad automated gate: post-flip `make release-gate && make ci` is green for `0.2.1rc1`; [v0.2.1rc1](https://github.com/adwasd-dvd/zoho-cli/releases/tag/v0.2.1rc1) is published as a GitHub prerelease.
 
 ### Deferred external blockers (do not block RC)
 

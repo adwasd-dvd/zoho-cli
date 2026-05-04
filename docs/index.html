@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>zoho-cli — Zoho Mail in your terminal</title>
+  <title>zoho-cli — Zoho Mail, Cliq, and CRM in your terminal</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
@@ -627,7 +627,7 @@
         <a href="#commands">Commands</a>
         <a href="#setup">Setup</a>
       </div>
-      <a href="https://github.com/robsannaa/zoho-cli" class="github-btn" target="_blank">GitHub</a>
+      <a href="https://github.com/adwasd-dvd/zoho-cli" class="github-btn" target="_blank">GitHub</a>
     </div>
   </nav>
 
@@ -640,11 +640,11 @@
       <span class="typewriter" id="typewriter"></span>
       <span class="cursor"></span>
     </h1>
-    <h2>Zoho Mail in your terminal</h2>
-    <p>A fast, script-friendly CLI for Zoho Mail. JSON by default. Pipe to jq. Integrate with your workflows.</p>
+    <h2>Zoho Mail, Cliq, and CRM in your terminal</h2>
+    <p>A fast, script-friendly CLI for Zoho Mail, Cliq, and CRM. JSON by default. Pipe to jq. Integrate with your workflows.</p>
     <div class="buttons">
       <a href="#installation" class="btn btn-primary">Get Started</a>
-      <a href="https://github.com/robsannaa/zoho-cli" class="btn btn-glass" target="_blank">GitHub</a>
+      <a href="https://github.com/adwasd-dvd/zoho-cli" class="btn btn-glass" target="_blank">GitHub</a>
     </div>
     
     <div class="terminal">
@@ -773,7 +773,7 @@
       </div>
       <div class="terminal-content">
         <div class="typing-line">
-          <span class="prompt">$</span> <span id="install-cmd">brew install robsannaa/tap/zoho-cli</span>
+          <span class="prompt">$</span> <span id="install-cmd">brew install adwasd-dvd/tap/zoho-cli</span>
         </div>
         <div class="success" id="install-output">Installed zoho-cli</div>
       </div>
@@ -908,16 +908,16 @@
   <footer>
     <a href="#" class="logo">$ zoho-cli</a>
     <div class="links">
-      <a href="https://github.com/robsannaa/zoho-cli" target="_blank">GitHub</a>
-      <a href="https://github.com/robsannaa/zoho-cli/issues" target="_blank">Issues</a>
-      <a href="https://github.com/robsannaa/zoho-cli/releases" target="_blank">Releases</a>
+      <a href="https://github.com/adwasd-dvd/zoho-cli" target="_blank">GitHub</a>
+      <a href="https://github.com/adwasd-dvd/zoho-cli/issues" target="_blank">Issues</a>
+      <a href="https://github.com/adwasd-dvd/zoho-cli/releases" target="_blank">Releases</a>
     </div>
     <div class="status">
       MIT License
       <div class="status-dot"></div>
     </div>
     <p style="margin-top: 1.5rem; font-size: 0.75rem; color: var(--text-tertiary);">
-      Built by <a href="https://github.com/robsannaa" target="_blank" style="color: var(--text-secondary);">robsannaa</a>
+      Originally by <a href="https://github.com/robsannaa" target="_blank" style="color: var(--text-secondary);">robsannaa</a>; maintained at <a href="https://github.com/adwasd-dvd/zoho-cli" target="_blank" style="color: var(--text-secondary);">adwasd-dvd/zoho-cli</a>
     </p>
   </footer>
 
@@ -954,9 +954,9 @@
     
     // Installation
     const installCommands = {
-      homebrew: { cmd: 'brew install robsannaa/tap/zoho-cli', out: 'Installed zoho-cli' },
-      uv: { cmd: 'uv tool install git+https://github.com/robsannaa/zoho-cli', out: 'Installed zoho-cli' },
-      pipx: { cmd: 'pipx install git+https://github.com/robsannaa/zoho-cli', out: 'done!' }
+      homebrew: { cmd: 'brew install adwasd-dvd/tap/zoho-cli', out: 'Installed zoho-cli' },
+      uv: { cmd: 'uv tool install git+https://github.com/adwasd-dvd/zoho-cli', out: 'Installed zoho-cli' },
+      pipx: { cmd: 'pipx install git+https://github.com/adwasd-dvd/zoho-cli', out: 'done!' }
     };
     
     function setMethod(method) {

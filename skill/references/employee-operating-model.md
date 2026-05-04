@@ -24,7 +24,10 @@
    - External escalation
    - Follow-up reminder or status note
 5. Execute one small action and verify result JSON.
-6. Record what changed, what is blocked, and local `processed_status`.
+6. If the work reveals a CLI bug, docs mismatch, workflow issue, or suggestion,
+   file a sanitized GitHub issue through `github-intake-workflow.md`.
+7. Record what changed, what is blocked, any GitHub issue URL, and local
+   `processed_status`.
 
 ## Safety and behavior
 
@@ -41,6 +44,8 @@
   - ✅ `done`
   - ❌ `failed`
 - Before setting a new status, clear previous known status reactions from the same agent (`status-react --clear-known`).
+- For GitHub escalation, use `adwasd-dvd/zoho-cli` only; never include tokens,
+  private message bodies, customer data, or raw credentials in issues.
 
 ## CRM expansion
 

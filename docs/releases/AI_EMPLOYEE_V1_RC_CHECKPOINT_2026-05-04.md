@@ -20,7 +20,7 @@ This packet refreshes the RC checkpoint evidence after platform-208 CLI informat
 - Version metadata is bumped to `0.2.1rc1`.
 - Deferred external Cliq/CRM constraints are accepted as capability-gated non-blockers for RC.
 - Post-flip gate is green: `make release-gate` passed (`1749 passed` + wheel smoke `0.2.1rc1`) and `make ci` passed (`1749 passed`, ruff clean).
-- `v0.2.1rc1` is published as a GitHub prerelease: https://github.com/adwasd-dvd/zoho-mail-cli-zomacli/releases/tag/v0.2.1rc1
+- `v0.2.1rc1` is published as a GitHub prerelease: https://github.com/adwasd-dvd/zoho-cli/releases/tag/v0.2.1rc1
 
 ## Next checkpoint trigger
 

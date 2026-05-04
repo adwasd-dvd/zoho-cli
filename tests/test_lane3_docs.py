@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import re
 from pathlib import Path
 
 
@@ -33,6 +34,7 @@ def test_lane3_required_paths_exist() -> None:
         SKILL_ROOT / "references" / "employee-operating-model.md",
         SKILL_ROOT / "references" / "command-playbook.md",
         SKILL_ROOT / "references" / "install-and-update.md",
+        SKILL_ROOT / "references" / "github-intake-workflow.md",
         SKILL_ROOT / "references" / "maintenance-checklist.md",
         SKILL_ROOT / "references" / "unread-status-workflow.md",
         SKILL_ROOT / "references" / "cli-help-snapshot.md",
@@ -50,15 +52,25 @@ def test_lane3_docs_use_canonical_repo_url() -> None:
     lane3_files = [
         SKILL_ROOT / "SKILL.md",
         SKILL_ROOT / "references" / "install-and-update.md",
+        SKILL_ROOT / "references" / "github-intake-workflow.md",
         REPO_ROOT / "integrations" / "openclaw" / "README.md",
         REPO_ROOT / "integrations" / "openclaw" / "LANE3_AI_USER_GUIDE.md",
         REPO_ROOT / "integrations" / "openclaw" / "SKILL_INDEX.md",
     ]
 
-    old_url = "github.com/adwasd-dvd/zoho-cli"
+    canonical_refs = ("github.com/adwasd-dvd/zoho-cli", "adwasd-dvd/zoho-cli")
+    outdated_refs = (
+        "github.com/adwasd-dvd/zoho-mail-cli-zomacli",
+        "adwasd-dvd/zoho-mail-cli-zomacli",
+    )
     for path in lane3_files:
         text = path.read_text(encoding="utf-8")
-        assert old_url not in text, f"outdated repo url in {path}"
+        for old_ref in outdated_refs:
+            assert old_ref not in text, f"outdated repo url in {path}"
+        if path.name != "SKILL.md":
+            assert any(ref in text for ref in canonical_refs), (
+                f"missing canonical repo url in {path}"
+            )
 
 
 def test_lane3_reaction_status_protocol_and_unread_filter_present() -> None:
@@ -81,6 +93,44 @@ def test_lane3_reaction_status_protocol_and_unread_filter_present() -> None:
         assert token in workflow
 
 
+def test_lane3_github_intake_targets_canonical_repo_and_redacts() -> None:
+    workflow = (SKILL_ROOT / "references" / "github-intake-workflow.md").read_text(
+        encoding="utf-8"
+    )
+
+    for token in [
+        "adwasd-dvd/zoho-cli",
+        "gh issue list",
+        "gh issue create",
+        "--repo adwasd-dvd/zoho-cli",
+        "--label bug",
+        "--label needs-triage",
+        "agent-feedback",
+        "openclaw",
+        "duplicate",
+        "tokens",
+        "secrets",
+        "customer data",
+        "private message bodies",
+    ]:
+        assert token in workflow
+
+
+def test_github_issue_templates_exist_for_employee_intake() -> None:
+    template_root = REPO_ROOT / ".github" / "ISSUE_TEMPLATE"
+    required = [
+        template_root / "bug_report.yml",
+        template_root / "suggestion.yml",
+        template_root / "ai_employee_feedback.yml",
+        template_root / "config.yml",
+    ]
+
+    for path in required:
+        text = path.read_text(encoding="utf-8")
+        assert "adwasd-dvd/zoho-mail-cli-zomacli" not in text
+        assert "Privacy check" in text or path.name == "config.yml"
+
+
 def test_lane3_examples_use_zoho_binary_not_legacy_command_forms() -> None:
     command_doc_files = [
         SKILL_ROOT / "SKILL.md",
@@ -95,9 +145,14 @@ def test_lane3_examples_use_zoho_binary_not_legacy_command_forms() -> None:
         REPO_ROOT / "integrations" / "openclaw" / "quick_test.sh",
     ]
 
-    legacy_command_tokens = ["python -m zoho_cli", "zoho-cli "]
+    legacy_command_patterns = [
+        re.compile(r"python\s+-m\s+zoho_cli"),
+        re.compile(r"(?m)(?:^|[|;&`]\s*|\$\s*)zoho-cli(?:\s|$)"),
+    ]
 
     for path in command_doc_files:
         text = path.read_text(encoding="utf-8")
-        for token in legacy_command_tokens:
-            assert token not in text, f"legacy command token {token!r} found in {path}"
+        for pattern in legacy_command_patterns:
+            assert not pattern.search(text), (
+                f"legacy command pattern {pattern.pattern!r} found in {path}"
+            )

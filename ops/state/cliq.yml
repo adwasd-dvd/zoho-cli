@@ -1,9 +1,10 @@
 module: Cliq
-updated_at: '2026-05-04T15:43:12Z'
+updated_at: '2026-05-04T15:51:44Z'
 status: completed
 execution_mode: turbo_20x
 throughput_policy_ref: ops/state/execution_policy.yml
 blockers:
+- "platform integration-loop medium-scope rerun at 2026-05-04T15:51:44Z stayed green with no behavior change across registry/bridge + focused CLI/Cliq boundaries (`./.venv/bin/python -m pytest -q tests/test_registry.py tests/test_membrane_bridge.py` -> `489 passed in 8.52s`; focused CLI selector -> `202 passed, 665 deselected in 3.94s`; focused Cliq selector -> `69 passed, 190 deselected in 0.70s`; help smokes -> `HELP_SMOKE_OK`), so no integration regression is currently detected and deferred RC posture remains unchanged."
 - "focused cliq-193 archived-summary replay at 2026-05-04T15:43:12Z regenerated `tests/auto_pilot/reports/cliq193_app_commands_probe_summary_20260416_152430.json` from a non-20260417 batch with canonical unsupported normalization (`appCommandsError: not_supported`, was `empty_output`) while deferred-gate posture remains unchanged (`unsupportedConsecutiveCount: 11`, `postReleaseDeferred: true`); focused guard coverage is green (`./.venv/bin/python -m pytest -q tests/test_cliq193_probe_summary.py` -> `11 passed in 0.01s`)."
 - "focused cliq-193 archived-summary replay at 2026-05-04T15:39:58Z regenerated `tests/auto_pilot/reports/cliq193_app_commands_probe_summary_20260417_060112.json` with canonical unsupported normalization from sidecar stderr/top-level-error logic (`appCommandsError: not_supported`, was `empty_output`) while deferred-gate posture remains unchanged (`unsupportedConsecutiveCount: 33`, `postReleaseDeferred: true`); focused guard coverage is green (`./.venv/bin/python -m pytest -q tests/test_cliq193_probe_summary.py` -> `11 passed in 0.02s`)."
 - "focused cliq-193 archived-summary replay at 2026-05-04T14:55:00Z regenerated `tests/auto_pilot/reports/cliq193_app_commands_probe_summary_20260417_161825.json` with the latest stderr/top-level-error normalization so `appCommandsError` now resolves to canonical `not_supported` (was `empty_output`) while deferred-gate posture is unchanged (`unsupportedConsecutiveCount: 59`, `postReleaseDeferred: true`); focused guard coverage is green (`./.venv/bin/python -m pytest -q tests/test_cliq193_probe_summary.py` -> `11 passed in 0.02s`)."

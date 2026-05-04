@@ -27,3 +27,11 @@ This packet refreshes the RC checkpoint evidence after platform-208 CLI informat
 Re-run RC checkpoint after one of:
 1. external blocker posture changes materially, or
 2. the next RC/final release decision is queued.
+
+## Final promotion
+
+- **Decision is approved**: promote `0.2.1rc1` to final `0.2.1`.
+- Version metadata is bumped to `0.2.1`.
+- Final gate is green: `make release-gate` passed (`1752 passed` + wheel smoke `0.2.1`) and `make ci` passed (`1752 passed`, ruff clean).
+- `v0.2.1` is published as the stable GitHub release: https://github.com/adwasd-dvd/zoho-cli/releases/tag/v0.2.1
+- Deferred external Cliq/CRM constraints stay tracked as capability-gated post-release blockers.

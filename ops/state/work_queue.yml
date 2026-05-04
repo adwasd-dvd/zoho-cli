@@ -300,6 +300,13 @@
   depends_on:
   - platform-207
   - platform-208
+- id: platform-211
+  title: promote Mail+Cliq AI-employee RC to v0.2.1 stable release
+  module: platform
+  stage: completed
+  priority: high
+  depends_on:
+  - platform-209
 - id: cliq-210
   title: split Cliq command/client code by API surface after RC to reduce AI context load
   module: cliq

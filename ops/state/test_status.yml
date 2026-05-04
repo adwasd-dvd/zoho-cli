@@ -1,10 +1,15 @@
-last_run_at: "2026-05-04T20:47:46Z"
+last_run_at: "2026-05-04T21:15:20Z"
 last_result: passing
-current_focus: cliq-210-message-retrieval-command-extraction-20260504T204746Z
+current_focus: v0.2.1-final-release-promotion-20260504T211520Z
 suites:
   unit:
     status: passing
     notes:
+      - "v0.2.1 final release promotion at 2026-05-04T21:15:20Z"
+      - "no additional CLI behavior change beyond promoting package/runtime version metadata from `0.2.1rc1` to `0.2.1`"
+      - "./.venv/bin/zoho --version -> 0.2.1"
+      - "make release-gate -> unit suite `1752 passed in 38.55s` + wheel smoke `ok: wheel smoke passed (0.2.1)`"
+      - "make ci -> ruff format/check clean + pytest `1752 passed in 38.63s`"
       - "cliq-210 message retrieval/context extraction at 2026-05-04T20:47:46Z"
       - "no behavior change; `zoho cliq search`, `messages`, `message`, `context`, and `watch-context` moved to `zoho_cli/commands/cliq_message_retrieval.py`"
       - "./.venv/bin/ruff format zoho_cli/cli.py zoho_cli/commands/cliq_message_retrieval.py -> 1 file reformatted, 1 file left unchanged"

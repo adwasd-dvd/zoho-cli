@@ -47,9 +47,9 @@ What this does:
 2. optionally upgrades CLI (only in full update flow).
 3. syncs lane3 skill/docs/scripts into the agent-local workspace.
 
-## RC alignment check
+## Release alignment check
 
-For the `0.2.1rc1` AI-employee RC, verify the CLI and skill update together:
+For the `0.2.1` AI-employee stable release, verify the CLI and skill update together:
 
 ```bash
 zoho --version
@@ -57,4 +57,4 @@ zoho cliq --help >/dev/null
 zoho mail --help >/dev/null
 ```
 
-Expected version after the RC update: `0.2.1rc1`.
+Expected version after the release update: `0.2.1`.

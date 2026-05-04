@@ -29,3 +29,9 @@ Use this checklist to complete the platform-207 package and run the RC/version d
 
 - Do not flip RC based on docs alone.
 - RC flip needs one clear decision record in `ops/state/release_status.yml` tied to current blockers and latest gate evidence.
+
+## Final promotion checkpoint
+
+- [x] Promote `0.2.1rc1` to final `0.2.1` only after the RC and final gates are green.
+- [x] Keep deferred external Cliq/CRM blockers explicit and non-blocking under the capability-gated policy.
+- [x] Publish stable `v0.2.1` after version metadata, release status, and Lane 2/Lane 3 docs are aligned.

@@ -170,12 +170,12 @@ Project state lives in `ops/state/*.yml`:
 
 ### Current release posture
 
-- Current version: `0.2.1rc1`
-- Next final target: `0.2.1`
-- Release candidate: `true`
-- Broad automated gate: post-flip `make release-gate && make ci` is green for `0.2.1rc1`; [v0.2.1rc1](https://github.com/adwasd-dvd/zoho-cli/releases/tag/v0.2.1rc1) is published as a GitHub prerelease.
+- Current version: `0.2.1`
+- Next active target: finish the `cliq-210` handoff, then start the native OpenClaw Cliq channel v0.4 lane.
+- Release candidate: `false`
+- Broad automated gate: final `make release-gate && make ci` is green for `0.2.1`; [v0.2.1](https://github.com/adwasd-dvd/zoho-cli/releases/tag/v0.2.1) is the current stable release.
 
-### Deferred external blockers (do not block RC)
+### Deferred external blockers (do not block release)
 
 - Cliq-194 live read-ack endpoint is still unsupported on active network/token, but runtime continuity is capability-gated (watch-act falls back safely instead of hard-failing).
 - Cliq maintenance export verification (`cliq-165`) is blocked by API-side `inactive_appaccount_user`.
@@ -197,9 +197,9 @@ Project state lives in `ops/state/*.yml`:
 | --- | --- | --- |
 | v0.2.0 | Mail stabilized + shared core extracted | ✅ Released |
 | v0.2.1rc1 | Mail+Cliq AI-employee RC with deferred external blockers | ✅ Published prerelease |
-| v0.2.1 | Cliq expansion hardening + blocker burn-down | ⏳ Final after RC validation |
+| v0.2.1 | Mail+Cliq AI-employee stable release | ✅ Released |
 | v0.3.x | Cliq live parity and export unblock closure | ⏳ Pending external unblock |
-| v0.4.x | Native OpenClaw Zoho Cliq channel | 📋 Planned |
+| v0.4.x | Native OpenClaw Zoho Cliq channel | 📋 Next active product lane |
 | v0.5.x | CRM live validation and follow-on CRM work | 📋 Planned |
 
 ---

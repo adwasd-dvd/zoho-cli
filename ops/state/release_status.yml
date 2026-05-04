@@ -1,14 +1,15 @@
-current_version: 0.2.1rc1
-next_version: 0.2.1
-release_candidate: true
-last_release_tag: v0.1.9
+current_version: 0.2.1
+next_version: 0.3.0
+release_candidate: false
+last_release_tag: v0.2.1
 rc_tag_target: v0.2.1rc1
 current_train: ai-employee-v1
-assessed_at: '2026-05-04T18:02:41Z'
-current_milestone: platform-209-rc-readiness
+assessed_at: '2026-05-04T21:15:20Z'
+current_milestone: platform-211-final-release
 current_milestone_complete: true
-published_at: '2026-05-04T18:07:27Z'
-release_url: https://github.com/adwasd-dvd/zoho-cli/releases/tag/v0.2.1rc1
+published_at: '2026-05-04T21:15:20Z'
+release_url: https://github.com/adwasd-dvd/zoho-cli/releases/tag/v0.2.1
+rc_release_url: https://github.com/adwasd-dvd/zoho-cli/releases/tag/v0.2.1rc1
 missing_requirements: []
 rc_package:
   gate_contract_ready: true
@@ -34,6 +35,16 @@ release_candidate_decision:
     signed_off_at: '2026-05-04T18:02:41Z'
     decision: approve_rc_with_deferred_external_blockers
     rationale: Existing 3-strike capability-gated policy keeps `not_supported`, missing-scope, `inactive_appaccount_user`, and missing CRM-org live constraints explicit as deferred evidence while allowing the RC to ship.
+final_release_decision:
+  decided_at: '2026-05-04T21:15:20Z'
+  decision: promote_rc_to_stable
+  reason: RC and final release gates are green, version metadata is aligned to `0.2.1`, and remaining Zoho-side constraints are explicit deferred external blockers.
+  source_rc: v0.2.1rc1
+  target_release: v0.2.1
+  follow_on:
+    - finish-cliq-210-handoff
+    - start-cliq-channel-400
+    - keep-crm-expansion-queued-for-v0.5
 integration_pass_skip_mapping:
   - area: cliq-watch-context-watch-act-bridge
     status: pass
@@ -57,5 +68,6 @@ release_gate:
   ci_passed: true
   tag_pushed: true
   github_prerelease_published: true
+  github_release_published: true
   homebrew_bump_workflow_status: failed_private_tap_clone
   homebrew_bump_followup: workflow tap step now uses HOMEBREW_TAP_TOKEN for private tap clone; rerun/manual tap bump remains pending outside the published RC artifact.

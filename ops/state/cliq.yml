@@ -1,9 +1,10 @@
 module: Cliq
-updated_at: '2026-05-04T17:05:54Z'
+updated_at: '2026-05-04T17:26:44Z'
 status: completed
 execution_mode: turbo_20x
 throughput_policy_ref: ops/state/execution_policy.yml
 blockers:
+- "focused cliq-193 archived-summary replay at 2026-05-04T17:26:44Z regenerated `tests/auto_pilot/reports/cliq193_app_commands_probe_summary_20260416_124129.json` so `appCommandsError` now resolves to canonical `not_supported` (was `empty_output`) with defer posture intact (`unsupportedConsecutiveCount: 7`, `postReleaseDeferred: true`), and focused guard coverage remains green (`./.venv/bin/python -m pytest -q tests/test_cliq193_probe_summary.py` -> `11 passed in 0.01s`)."
 - "focused cliq-193 archived-summary replay at 2026-05-04T17:05:54Z regenerated `tests/auto_pilot/reports/cliq193_app_commands_probe_summary_20260417_005822.json` so `appCommandsError` now resolves to canonical `not_supported` (was `empty_output`) with defer posture intact (`unsupportedConsecutiveCount: 23`, `postReleaseDeferred: true`), and focused guard coverage remains green (`./.venv/bin/python -m pytest -q tests/test_cliq193_probe_summary.py` -> `11 passed in 0.02s`)."
 - "focused cliq-193 archived-summary replay at 2026-05-04T16:48:39Z regenerated `tests/auto_pilot/reports/cliq193_app_commands_probe_summary_20260417_160856.json` so `appCommandsError` now resolves to canonical `not_supported` (was `empty_output`) with defer posture intact (`unsupportedConsecutiveCount: 58`, `postReleaseDeferred: true`), and focused guard coverage remains green (`./.venv/bin/python -m pytest -q tests/test_cliq193_probe_summary.py` -> `11 passed in 0.01s`)."
 - "focused cliq-193 archived-summary replay at 2026-05-04T16:26:05Z regenerated `tests/auto_pilot/reports/cliq193_app_commands_probe_summary_20260417_052039.json` so `appCommandsError` now resolves to canonical `not_supported` (was `empty_output`) with defer posture intact (`unsupportedConsecutiveCount: 30`, `postReleaseDeferred: true`), and focused guard coverage remains green (`./.venv/bin/python -m pytest -q tests/test_cliq193_probe_summary.py` -> `11 passed in 0.02s`)."

@@ -145,6 +145,8 @@ def test_cliq_teams_help_hides_internal_slice_labels() -> None:
         (["departments"], "List Cliq departments."),
         (["roles"], "List Cliq roles."),
         (["designations"], "List Cliq designations."),
+        (["user-status"], "List Cliq user-status values."),
+        (["userfields"], "List Cliq user fields."),
         (["events"], "List Cliq collaboration events."),
         (["reminders"], "List Cliq collaboration reminders."),
         (["meetings"], "List Cliq collaboration calls and meetings."),

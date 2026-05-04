@@ -1,10 +1,13 @@
-last_run_at: "2026-05-04T03:17:26Z"
+last_run_at: "2026-05-04T03:30:24Z"
 last_result: passing
-current_focus: platform-208-cliq-designations-help-wording-20260504T031726Z
+current_focus: platform-208-cliq-user-status-userfields-help-wording-20260504T033024Z
 suites:
   unit:
     status: passing
     notes:
+      - "platform-208 focused Cliq help-wording cleanup at 2026-05-04T03:30:24Z"
+      - "behavior change: normalized `zoho cliq user-status --help` and `zoho cliq userfields --help` from organization-labeled descriptions to operator-facing wording (`List Cliq user-status values.` / `List Cliq user fields.`)."
+      - "./.venv/bin/python -m pytest -q tests/test_cli.py::test_cliq_help_hides_internal_slice_labels -> 22 passed in 1.73s"
       - "platform-208 focused Cliq help-wording cleanup at 2026-05-04T03:17:26Z"
       - "behavior change: normalized `zoho cliq designations --help` from `List Cliq organization designations.` to `List Cliq designations.`"
       - "./.venv/bin/python -m pytest -q tests/test_cli.py::test_cliq_help_hides_internal_slice_labels -> 20 passed in 0.49s"

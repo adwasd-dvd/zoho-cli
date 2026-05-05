@@ -57,6 +57,7 @@ def test_lane3_required_paths_exist() -> None:
         / "docs"
         / "releases"
         / "OPENCLAW_CLIQ_TRUSTED_REPLY_EVIDENCE_TEMPLATE.json",
+        REPO_ROOT / "ops" / "scripts" / "openclaw_cliq_hash_ref.sh",
         REPO_ROOT / "ops" / "scripts" / "openclaw_cliq_rc_pack.sh",
         REPO_ROOT
         / "ops"
@@ -207,6 +208,7 @@ def test_native_cliq_channel_ai_troubleshooting_contract_present() -> None:
         "skip_deferred",
         "ops/scripts/openclaw_cliq_rc_pack.sh",
         "OPENCLAW_CLIQ_BOT_HANDLER_TEMPLATES.md",
+        "ops/scripts/openclaw_cliq_hash_ref.sh",
         "ZOHO_CLIQ_EXPECTED_AGENT_ID",
         "ZOHO_CLIQ_EXPECTED_AGENT_MODEL",
         "ZOHO_CLIQ_ROUTE_BINDING_ONLY",

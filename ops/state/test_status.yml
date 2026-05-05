@@ -1,10 +1,18 @@
-last_run_at: "2026-05-05T22:39:51Z"
+last_run_at: "2026-05-05T22:58:52Z"
 last_result: passing
-current_focus: cliq-channel-427-trusted-reply-evidence-prepare
+current_focus: cliq-channel-428-trusted-reply-hash-ref-helper
 suites:
   unit:
     status: passing
     notes:
+      - "cliq-channel-428 trusted reply hash-ref helper completed at 2026-05-05T22:58:52Z"
+      - "added `ops/scripts/openclaw_cliq_hash_ref.sh` to hash live raw Cliq ids from stdin into `sha256:` references without echoing raw ids; errors are JSON on stderr and stdout stays clean"
+      - "./.venv/bin/python -m pytest -q tests/test_auto_pilot_scripts.py -k 'openclaw_cliq_hash_ref or openclaw_cliq_trusted_reply' -> 8 passed, 11 deselected in 0.24s"
+      - "./.venv/bin/python -m pytest -q tests/test_auto_pilot_scripts.py -k 'openclaw_cliq' tests/test_lane3_docs.py tests/test_markdown_update.py -> 13 passed, 18 deselected in 0.82s"
+      - "bash -n ops/scripts/openclaw_cliq_hash_ref.sh -> passed"
+      - "./.venv/bin/ruff format --check tests/test_auto_pilot_scripts.py tests/test_lane3_docs.py -> 2 files already formatted"
+      - "ruby YAML parse for project/module_status/test_status -> YAML_PARSE_OK"
+      - "git diff --check -> passed"
       - "cliq-channel-427 trusted reply evidence prepare completed at 2026-05-05T22:39:51Z"
       - "added `ops/scripts/openclaw_cliq_trusted_reply_evidence_prepare.sh` to generate redacted trusted reply evidence from route preflight JSON plus `sha256:` sender/message/reply references, and to refuse raw/non-`sha256:` ids before the checker runs"
       - "./.venv/bin/python -m pytest -q tests/test_auto_pilot_scripts.py -k 'openclaw_cliq_trusted_reply' -> 6 passed, 11 deselected in 0.16s"

@@ -60,6 +60,9 @@ Use this skill as the default operating contract for an OpenClaw agent acting li
   real trusted reply has occurred: give it `ZOHO_CLIQ_ROUTE_REPORT_FILE` plus
   `ZOHO_CLIQ_TRUSTED_SENDER_ID_HASH`, `ZOHO_CLIQ_TRUSTED_MESSAGE_ID_HASH`, and
   `ZOHO_CLIQ_DELIVERY_ID_HASH`, then pass the generated evidence to the checker.
+- Use `ops/scripts/openclaw_cliq_hash_ref.sh` to hash live raw Cliq ids through
+  stdin before setting those `*_HASH` variables; the helper prints only the
+  `sha256:` reference and does not echo raw input.
 - For OpenClaw host upgrades or plugin SDK breakage, follow
   `docs/releases/OPENCLAW_CLIQ_CHANNEL_COMPATIBILITY.md` before changing
   business logic or raising the host floor.

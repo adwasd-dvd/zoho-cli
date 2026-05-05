@@ -175,6 +175,7 @@ openclaw plugins install . --link
 openclaw plugins inspect zoho-cliq --json
 openclaw plugins doctor
 ../../ops/scripts/openclaw_cliq_live_smoke.sh
+../../ops/scripts/openclaw_cliq_hash_ref.sh
 ../../ops/scripts/openclaw_cliq_rc_pack.sh
 ../../ops/scripts/openclaw_cliq_trusted_reply_evidence_prepare.sh
 ../../ops/scripts/openclaw_cliq_trusted_reply_evidence.sh

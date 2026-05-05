@@ -70,6 +70,7 @@ openclaw channels capabilities --channel cliq
 zoho cliq status --check-auth --network <network>
 zoho cliq capabilities --network <network>
 ops/scripts/openclaw_cliq_live_smoke.sh
+ops/scripts/openclaw_cliq_hash_ref.sh
 ops/scripts/openclaw_cliq_rc_pack.sh
 ops/scripts/openclaw_cliq_trusted_reply_evidence_prepare.sh
 ops/scripts/openclaw_cliq_trusted_reply_evidence.sh
@@ -96,7 +97,9 @@ For the final trusted reply gate, set
 store sender/message/reply ids as `sha256:` references, not raw ids or bodies.
 Use `ops/scripts/openclaw_cliq_trusted_reply_evidence_prepare.sh` with
 `ZOHO_CLIQ_ROUTE_REPORT_FILE` and the three `sha256:` references to generate the
-artifact before running the checker.
+artifact before running the checker. Use
+`ops/scripts/openclaw_cliq_hash_ref.sh` to hash live raw Cliq ids via stdin; do
+not paste raw ids into evidence files.
 
 If readiness fails, report the failing `zoho-cli` command, exit code,
 classified error kind, and redacted stderr summary.

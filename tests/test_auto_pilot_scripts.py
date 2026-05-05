@@ -14,6 +14,9 @@ CRM_FIXTURE_SMOKE_SCRIPT = REPO_ROOT / "ops" / "scripts" / "crm_fixture_live_smo
 OPENCLAW_CLIQ_LIVE_SMOKE_SCRIPT = (
     REPO_ROOT / "ops" / "scripts" / "openclaw_cliq_live_smoke.sh"
 )
+OPENCLAW_CLIQ_HASH_REF_SCRIPT = (
+    REPO_ROOT / "ops" / "scripts" / "openclaw_cliq_hash_ref.sh"
+)
 OPENCLAW_CLIQ_TRUSTED_REPLY_EVIDENCE_SCRIPT = (
     REPO_ROOT / "ops" / "scripts" / "openclaw_cliq_trusted_reply_evidence.sh"
 )
@@ -688,6 +691,41 @@ def test_openclaw_cliq_live_smoke_route_binding_only_requires_expected_agent() -
     assert payload["accountId"] == "default"
     assert "zoho auth" not in output
     assert "local webhook missing-secret gate" not in output
+
+
+def test_openclaw_cliq_hash_ref_hashes_stdin_without_echoing_raw_id() -> None:
+    result = subprocess.run(
+        ["bash", str(OPENCLAW_CLIQ_HASH_REF_SCRIPT)],
+        cwd=REPO_ROOT,
+        input="raw-cliq-message-id",
+        capture_output=True,
+        text=True,
+        check=False,
+    )
+
+    output = f"{result.stdout}\n{result.stderr}"
+    assert result.returncode == 0, output
+    assert result.stderr == ""
+    assert result.stdout.startswith("sha256:")
+    assert result.stdout.strip() == (
+        "sha256:29faeea9d9156bf36ace510646aea6b156047547b1db6a53ed8541e37655b45f"
+    )
+    assert "raw-cliq-message-id" not in output
+
+
+def test_openclaw_cliq_hash_ref_rejects_empty_input_without_stdout() -> None:
+    result = subprocess.run(
+        ["bash", str(OPENCLAW_CLIQ_HASH_REF_SCRIPT)],
+        cwd=REPO_ROOT,
+        input="",
+        capture_output=True,
+        text=True,
+        check=False,
+    )
+
+    assert result.returncode == 2
+    assert result.stdout == ""
+    assert json.loads(result.stderr)["error"] == "input_missing"
 
 
 def _valid_openclaw_cliq_trusted_reply_evidence() -> dict[str, object]:

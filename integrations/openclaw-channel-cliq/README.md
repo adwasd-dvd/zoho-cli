@@ -13,7 +13,8 @@ turn-ledger loop-prevention slice, `cliq-channel-409` native UX/status
 diagnostics slice, and `cliq-channel-410` AI troubleshooting docs slice. It
 also includes the `cliq-channel-417` native agent turn dispatch slice and the
 `cliq-channel-415` observability/privacy hardening slice plus the
-`cliq-channel-411` fake/live smoke gate harness. It
+`cliq-channel-411` fake/live smoke gate harness and `cliq-channel-412`
+compatibility maintenance slice. It
 declares the plugin/channel metadata, setup/runtime entrypoints,
 configured/auth-state probes, a native
 OpenClaw channel object, config schema metadata, DM pairing, group allowlist,
@@ -48,6 +49,8 @@ The source of truth is
 
 Human setup and troubleshooting live in
 `../../docs/releases/OPENCLAW_CLIQ_CHANNEL_SETUP.md`.
+Host compatibility maintenance lives in
+`../../docs/releases/OPENCLAW_CLIQ_CHANNEL_COMPATIBILITY.md`.
 
 ## Config example
 
@@ -159,8 +162,9 @@ openclaw plugins doctor
 ```
 
 Use a host satisfying `>=2026.5.3-1` for inspect/install validation. The
-upgraded global `OpenClaw 2026.5.3-1` host is suitable; package-local
-`openclaw@2026.5.3-1` remains useful for isolated checks.
+upgraded global `OpenClaw 2026.5.3-1` host is the supported baseline;
+`openclaw@latest` `2026.5.4` and `openclaw@beta` `2026.5.4-beta.3` currently
+pass Temp-HOME linked install/inspect/doctor checks.
 
 ## Setup UX
 

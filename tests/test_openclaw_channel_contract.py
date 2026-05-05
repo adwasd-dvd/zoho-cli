@@ -19,7 +19,9 @@ def test_openclaw_cliq_channel_contract_locks_versions_and_identity():
         "OpenClaw 2026.5.3-1 (2eae30e)",
         "OpenClaw 2026.4.15",
         "2026.5.3-1",
-        "2026.5.4-beta.1",
+        "2026.5.4",
+        "2026.5.4-beta.3",
+        "docs/releases/OPENCLAW_CLIQ_CHANNEL_COMPATIBILITY.md",
         '"minHostVersion": ">=2026.5.3-1"',
         '"pluginApi": ">=2026.5.3-1"',
         '"node": ">=22.14.0"',
@@ -75,6 +77,7 @@ def test_openclaw_cliq_channel_docs_point_to_locked_contract():
 
     docs = [
         read("docs/architecture/OPENCLAW_CLIQ_CHANNEL_0_4_PLAN.md"),
+        read("docs/releases/OPENCLAW_CLIQ_CHANNEL_COMPATIBILITY.md"),
         read("integrations/openclaw/CLIQ_CHANNEL_DEVELOPMENT_GUIDE.md"),
         read("skill/references/openclaw-cliq-channel.md"),
     ]
@@ -82,3 +85,27 @@ def test_openclaw_cliq_channel_docs_point_to_locked_contract():
     for doc in docs:
         assert contract_path in doc
         assert ">=2026.5.3-1" in doc
+
+
+def test_openclaw_cliq_channel_compatibility_runbook_has_repair_contract():
+    runbook = read("docs/releases/OPENCLAW_CLIQ_CHANNEL_COMPATIBILITY.md")
+
+    required = [
+        "Compatibility matrix",
+        "OpenClaw 2026.5.3-1 (2eae30e)",
+        "2026.5.4",
+        "2026.5.4-beta.3",
+        "host_too_old",
+        "plugin discovery failure",
+        "manifest schema failure",
+        "HTTP route registration failure",
+        "native dispatch failure",
+        "token_refresh_rate_limited",
+        "skip_deferred",
+        "npx -y openclaw@latest",
+        "npx -y openclaw@beta",
+        "ops/scripts/openclaw_cliq_live_smoke.sh",
+    ]
+
+    for marker in required:
+        assert marker in runbook

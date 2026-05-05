@@ -950,12 +950,20 @@ OpenClaw:
 - Include latest stable, local older host, and current beta compatibility checks
   where practical.
 - Acceptance: v0.4 release gate produces pass/skip/fail evidence.
+- Status: complete with `ops/scripts/openclaw_cliq_live_smoke.sh`; local
+  OpenClaw plugin/channel checks, Zoho auth/capability/polling probes, local
+  webhook security gates, and native polling pass. Public Bot callback remains
+  deployment-dependent on a reachable tunnel/gateway URL.
 
 ### cliq-channel-412: Compatibility maintenance
 
 - Add a compatibility matrix for OpenClaw host/plugin API versions.
 - Add a lightweight revalidation checklist for future OpenClaw updates.
 - Acceptance: future SDK breakage has a documented repair path.
+- Status: complete in `docs/releases/OPENCLAW_CLIQ_CHANNEL_COMPATIBILITY.md`;
+  global `2026.5.3-1`, latest `2026.5.4`, and beta `2026.5.4-beta.3` pass
+  Temp-HOME linked install/inspect/doctor checks while the v0.4 floor remains
+  `>=2026.5.3-1`.
 
 ## Test strategy
 

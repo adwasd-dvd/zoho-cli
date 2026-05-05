@@ -44,6 +44,9 @@ Use this skill when operating through the native OpenClaw Zoho Cliq channel.
 - Configure sensitive values with SecretRef/env references. Do not ask for or
   store plaintext token passwords, webhook secrets, OAuth tokens, bot tokens, app
   tokens, or private keys in setup input.
+- For host/plugin API changes, follow
+  `docs/releases/OPENCLAW_CLIQ_CHANNEL_COMPATIBILITY.md` and patch OpenClaw
+  adapter/setup metadata before changing Zoho CLI command contracts.
 
 ## Required local readiness
 
@@ -53,6 +56,7 @@ openclaw channels status --channel cliq --deep
 openclaw channels capabilities --channel cliq
 zoho cliq status --check-auth --network <network>
 zoho cliq capabilities --network <network>
+ops/scripts/openclaw_cliq_live_smoke.sh
 ```
 
 If readiness fails, report the failing `zoho-cli` command, exit code,
@@ -69,12 +73,14 @@ classified error kind, and redacted stderr summary.
    screenshots.
 4. Native dispatch is implemented for accepted webhook/polling events. Treat
    dispatch failures/dead letters as terminal diagnostics, use the redacted
-   diagnostic bundle for support handoff, and keep `live_verification_pending`
-   as the remaining production blocker.
+   diagnostic bundle for support handoff, and keep public Bot callback
+   reachability as the remaining production deployment blocker when no
+   tunnel/gateway URL is configured.
 5. For unresolved routes, prefer explicit `channel:<id>`, `user:<id>`, or
    `cliq:channel:<id>:thread:<thread_id>` targets.
-6. For repeated Zoho-side `not_supported` or `inactive_appaccount_user` errors,
-   report `skip_deferred` and keep unrelated channel work moving.
+6. For repeated Zoho-side `not_supported`, `inactive_appaccount_user`, or
+   `token_refresh_rate_limited` errors, report `skip_deferred` and keep
+   unrelated channel work moving.
 
 ## Setup states
 

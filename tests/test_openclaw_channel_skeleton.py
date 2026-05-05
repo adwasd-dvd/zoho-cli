@@ -369,8 +369,9 @@ assert(status.diagnostics.implementedSlices.includes("cliq-channel-410"));
 assert(status.diagnostics.implementedSlices.includes("cliq-channel-417"));
 assert(status.diagnostics.implementedSlices.includes("cliq-channel-415"));
 assert(status.diagnostics.implementedSlices.includes("cliq-channel-411"));
+assert(status.diagnostics.implementedSlices.includes("cliq-channel-412"));
 assert(status.diagnostics.smokeChecks.includes("ops/scripts/openclaw_cliq_live_smoke.sh"));
-assert.equal(status.diagnostics.nextSlice, "cliq-channel-412");
+assert.equal(status.diagnostics.nextSlice, "v0.4-rc-packaging");
 
 const capabilities = resolveCliqChannelCapabilitySummary({ cfg });
 assert.equal(capabilities.nativeMessageSurface, true);

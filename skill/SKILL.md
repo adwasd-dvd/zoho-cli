@@ -43,6 +43,9 @@ Use this skill as the default operating contract for an OpenClaw agent acting li
   `ops/scripts/openclaw_cliq_live_smoke.sh` for the controlled gate, treat
   `token_refresh_rate_limited` as `skip_deferred`, and do not claim production
   incident readiness until a reachable public Bot callback is verified.
+- For OpenClaw host upgrades or plugin SDK breakage, follow
+  `docs/releases/OPENCLAW_CLIQ_CHANNEL_COMPATIBILITY.md` before changing
+  business logic or raising the host floor.
 - Draft before high-impact send/delete actions unless the user explicitly asks for direct execution.
 - Ask for explicit approval before running any install/update command that modifies tools or skill files.
 - File low-risk, sanitized CLI bugs and suggestions directly in `adwasd-dvd/zoho-cli` GitHub issues after duplicate search; ask for approval before including private context or changing GitHub settings/labels/code.

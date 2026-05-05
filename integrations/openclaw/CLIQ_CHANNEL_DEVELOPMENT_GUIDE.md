@@ -114,7 +114,9 @@ Follow the stack from the architecture plan:
     repo-level smoke gate covers OpenClaw inspect/doctor/status/capabilities,
     local webhook auth/security checks, safe polling probes, `rate_limited`
     classification, and public webhook reachability deferral)
-18. `cliq-channel-412` compatibility maintenance
+18. `cliq-channel-412` compatibility maintenance (complete; matrix and repair
+    workflow live in `docs/releases/OPENCLAW_CLIQ_CHANNEL_COMPATIBILITY.md`,
+    with latest stable and beta early-warning checks passing)
 
 Each slice should be independently testable. Prefer many small slices over one
 large plugin drop.
@@ -483,6 +485,13 @@ For every behavior change:
 Do not mark a slice complete if docs and skill usage are out of sync with code.
 
 ## Compatibility maintenance
+
+The canonical host matrix and repair workflow live in
+`docs/releases/OPENCLAW_CLIQ_CHANNEL_COMPATIBILITY.md`. As of
+`2026-05-05T09:21:50Z`, the v0.4 floor remains `>=2026.5.3-1`, the global
+baseline `OpenClaw 2026.5.3-1 (2eae30e)` passes, npm latest `2026.5.4` passes
+Temp-HOME linked install/inspect/doctor checks, and npm beta
+`2026.5.4-beta.3` passes the same early-warning checks.
 
 Before each OpenClaw host upgrade:
 

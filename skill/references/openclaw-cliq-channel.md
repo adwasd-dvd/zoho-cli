@@ -52,7 +52,10 @@ without exposing secrets or message bodies. `cliq-channel-411` is complete: the
 repo now has `ops/scripts/openclaw_cliq_live_smoke.sh` for redacted fake/live
 gate checks, `rate_limited` classification for Zoho refresh throttling, and
 local webhook security smoke coverage while public Bot callback verification
-waits for a reachable tunnel or gateway URL.
+waits for a reachable tunnel or gateway URL. `cliq-channel-412` is complete:
+the host compatibility matrix and future SDK repair workflow live in
+`docs/releases/OPENCLAW_CLIQ_CHANNEL_COMPATIBILITY.md`, with `2026.5.3-1` as
+the v0.4 floor and `2026.5.4` / `2026.5.4-beta.3` passing early-warning checks.
 
 The v0.4 plugin targets OpenClaw `>=2026.5.3-1`. The upgraded global
 `OpenClaw 2026.5.3-1` host is suitable for native plugin checks; use
@@ -136,6 +139,12 @@ Human setup runbook:
 
 ```text
 docs/releases/OPENCLAW_CLIQ_CHANNEL_SETUP.md
+```
+
+Compatibility runbook:
+
+```text
+docs/releases/OPENCLAW_CLIQ_CHANNEL_COMPATIBILITY.md
 ```
 
 Human setup checkpoints:
@@ -271,5 +280,5 @@ zoho cliq thread-reply <thread_id> --network <network> --chat-id <chat_id> --tex
 ## Maintenance reminder
 
 When OpenClaw updates, re-run the channel compatibility checklist in
-`integrations/openclaw/CLIQ_CHANNEL_DEVELOPMENT_GUIDE.md` before changing
-business logic.
+`docs/releases/OPENCLAW_CLIQ_CHANNEL_COMPATIBILITY.md` before changing business
+logic.

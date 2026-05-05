@@ -6,14 +6,15 @@ channel plugin.
 ## Version lock
 
 Checked at `2026-05-04T21:39:33Z`; refreshed after global host upgrade at
-`2026-05-05T02:45:00Z`.
+`2026-05-05T02:45:00Z`; compatibility matrix refreshed at
+`2026-05-05T09:21:50Z`.
 
 | Surface | Observed value | Decision |
 | --- | --- | --- |
-| Global OpenClaw | `OpenClaw 2026.5.3-1 (2eae30e)` | Current stable host for v0.4 plugin install/inspect tests. |
+| Global OpenClaw | `OpenClaw 2026.5.3-1 (2eae30e)` | Supported stable baseline for v0.4 plugin install/inspect tests. |
 | Previous local OpenClaw | `OpenClaw 2026.4.15 (041266a)` | Too old; keep only as compatibility history. |
-| npm `openclaw@latest` | `2026.5.3-1` | Target stable host/plugin API. |
-| npm `openclaw@beta` | `2026.5.4-beta.1` | Recheck before v0.4 release; no beta-only API dependency for skeleton. |
+| npm `openclaw@latest` | `2026.5.4` | Temp-HOME linked install, inspect, and doctor pass; compatible above the v0.4 floor. |
+| npm `openclaw@beta` | `2026.5.4-beta.3` | Temp-HOME linked install, inspect, and doctor pass; early warning only, no beta-only API dependency. |
 | Node engine | `>=22.14.0` from local OpenClaw package | Use the same floor for plugin package metadata. |
 
 The v0.4 plugin contract is:
@@ -30,6 +31,8 @@ The v0.4 plugin contract is:
 `cliq-channel-401+` must not rely on local `2026.4.15` behavior. Native
 install/inspect checks now run on the upgraded global stable host, with
 package-local `openclaw@2026.5.3-1` kept as the isolated validation fallback.
+Compatibility maintenance details live in
+`docs/releases/OPENCLAW_CLIQ_CHANNEL_COMPATIBILITY.md`.
 
 ## Package contract
 

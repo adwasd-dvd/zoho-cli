@@ -436,7 +436,14 @@
 - id: cliq-channel-412
   title: document OpenClaw host compatibility maintenance and future repair workflow
   module: openclaw_cliq_channel
-  stage: in_progress
+  stage: completed
   priority: medium
   depends_on:
   - cliq-channel-411
+- id: cliq-channel-418
+  title: prepare v0.4 native Cliq channel RC package and final checklist
+  module: openclaw_cliq_channel
+  stage: in_progress
+  priority: high
+  depends_on:
+  - cliq-channel-412

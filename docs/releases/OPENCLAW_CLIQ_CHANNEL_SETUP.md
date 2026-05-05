@@ -57,6 +57,8 @@ zoho cliq status --check-auth --network <network>
 
 Use `ZOHO_CONFIG` for the config file and `ZOHO_TOKEN_PASSWORD` for encrypted
 file fallback. Do not paste OAuth tokens or webhook secrets into setup prompts.
+For host compatibility updates, use
+`docs/releases/OPENCLAW_CLIQ_CHANNEL_COMPATIBILITY.md`.
 
 ## Install from the workspace
 
@@ -68,9 +70,10 @@ openclaw plugins inspect zoho-cliq --json
 openclaw plugins doctor
 ```
 
-The upgraded global `OpenClaw 2026.5.3-1` host is suitable for normal plugin
-checks. For isolated validation in this repository, use package-local OpenClaw
-with a throwaway home:
+The upgraded global `OpenClaw 2026.5.3-1` host is the supported baseline. The
+latest npm stable (`2026.5.4`) and beta (`2026.5.4-beta.3`) currently pass
+Temp-HOME linked install/inspect/doctor checks. For isolated validation in this
+repository, use package-local OpenClaw with a throwaway home:
 
 ```bash
 HOME="$PWD/.tmp/openclaw-home-2026.5.3-1" \

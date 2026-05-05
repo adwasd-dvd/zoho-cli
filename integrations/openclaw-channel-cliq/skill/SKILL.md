@@ -76,8 +76,10 @@ For rollout smoke that must target a specific agent, set
 `ZOHO_CLIQ_EXPECTED_AGENT_MODEL` before running
 `ops/scripts/openclaw_cliq_live_smoke.sh`. Use
 `ZOHO_CLIQ_ROUTE_BINDING_ONLY=1` plus `OPENCLAW_CONFIG_PATH` for offline route
-preflight without Zoho, gateway, or webhook calls. Route preflight failures emit
-JSON with `status=error` and stable error codes such as
+preflight without Zoho, gateway, or webhook calls. Set
+`ZOHO_CLIQ_ROUTE_REPORT_FILE` to persist the single route result JSON for RC
+evidence. Route preflight failures emit JSON with `status=error` and stable
+error codes such as
 `expected_agent_missing` or `agent_binding_mismatch`, so parse that before
 asking the operator to send a fresh Bot message.
 

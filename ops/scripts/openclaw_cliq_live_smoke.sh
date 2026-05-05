@@ -13,6 +13,7 @@ EXPECTED_AGENT_MODEL="${ZOHO_CLIQ_EXPECTED_AGENT_MODEL:-}"
 EXPECTED_ACCOUNT_ID="${ZOHO_CLIQ_EXPECTED_ACCOUNT_ID:-default}"
 OPENCLAW_CONFIG_PATH="${OPENCLAW_CONFIG_PATH:-"$HOME/.openclaw/openclaw.json"}"
 ROUTE_BINDING_ONLY="${ZOHO_CLIQ_ROUTE_BINDING_ONLY:-0}"
+ROUTE_REPORT_FILE="${ZOHO_CLIQ_ROUTE_REPORT_FILE:-}"
 SMOKE_RUN_ID="${ZOHO_CLIQ_SMOKE_RUN_ID:-$(date -u +%Y%m%dT%H%M%SZ)-$$}"
 SMOKE_RUN_ID="$(printf '%s' "$SMOKE_RUN_ID" | tr -c 'A-Za-z0-9_.:-' '_')"
 
@@ -49,11 +50,20 @@ expect_status() {
   [[ "$status" == "$expected" ]]
 }
 
+emit_route_json() {
+  local payload="$1"
+  printf '%s\n' "$payload"
+  if [[ -n "$ROUTE_REPORT_FILE" ]]; then
+    mkdir -p "$(dirname "$ROUTE_REPORT_FILE")"
+    printf '%s\n' "$payload" > "$ROUTE_REPORT_FILE"
+  fi
+}
+
 check_route_binding() {
   if [[ -z "$EXPECTED_AGENT_ID" ]]; then
     if [[ "$ROUTE_BINDING_ONLY" == "1" ]]; then
       printf '\n== openclaw cliq route binding gate ==\n'
-      printf '{"status":"error","error":"expected_agent_missing","channel":"cliq","accountId":"%s"}\n' "$EXPECTED_ACCOUNT_ID"
+      emit_route_json "$(printf '{"status":"error","error":"expected_agent_missing","channel":"cliq","accountId":"%s"}' "$EXPECTED_ACCOUNT_ID")"
       return 1
     fi
     printf '\n== openclaw cliq route binding gate skipped ==\n'
@@ -61,7 +71,10 @@ check_route_binding() {
     return 0
   fi
   printf '\n== openclaw cliq route binding gate ==\n'
-  node --input-type=module -e '
+  local route_output
+  local route_status
+  set +e
+  route_output="$(node --input-type=module -e '
 import fs from "node:fs";
 
 const expectedAgentId = process.argv[1];
@@ -108,7 +121,11 @@ console.log(JSON.stringify({
   agentId: binding.agentId,
   model: agent.model ?? null
 }));
-' "$EXPECTED_AGENT_ID" "$EXPECTED_AGENT_MODEL" "$EXPECTED_ACCOUNT_ID" "$OPENCLAW_CONFIG_PATH"
+' "$EXPECTED_AGENT_ID" "$EXPECTED_AGENT_MODEL" "$EXPECTED_ACCOUNT_ID" "$OPENCLAW_CONFIG_PATH")"
+  route_status=$?
+  set -e
+  emit_route_json "$route_output"
+  return "$route_status"
 }
 
 if [[ "$ROUTE_BINDING_ONLY" == "1" ]]; then

@@ -74,6 +74,7 @@ Trusted agent reply:
 
    ```bash
    ZOHO_CLIQ_ROUTE_BINDING_ONLY=1 \
+   ZOHO_CLIQ_ROUTE_REPORT_FILE=tests/auto_pilot/reports/openclaw_cliq_route_preflight.json \
    ZOHO_CLIQ_EXPECTED_AGENT_ID=zoho-employee-test \
    ZOHO_CLIQ_EXPECTED_AGENT_MODEL=openai-codex/gpt-5.3-codex \
      ops/scripts/openclaw_cliq_live_smoke.sh

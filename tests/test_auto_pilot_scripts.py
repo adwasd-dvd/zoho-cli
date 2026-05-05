@@ -476,6 +476,7 @@ def test_crm_fixture_live_smoke_requires_env_for_execute(tmp_path: Path) -> None
 
 def test_openclaw_cliq_live_smoke_route_binding_only_mode(tmp_path: Path) -> None:
     config_path = tmp_path / "openclaw.json"
+    report_path = tmp_path / "reports" / "route.json"
     config_path.write_text(
         json.dumps(
             {
@@ -504,6 +505,7 @@ def test_openclaw_cliq_live_smoke_route_binding_only_mode(tmp_path: Path) -> Non
             **os.environ,
             "OPENCLAW_CONFIG_PATH": str(config_path),
             "ZOHO_CLIQ_ROUTE_BINDING_ONLY": "1",
+            "ZOHO_CLIQ_ROUTE_REPORT_FILE": str(report_path),
             "ZOHO_CLIQ_EXPECTED_AGENT_ID": "zoho-employee-test",
             "ZOHO_CLIQ_EXPECTED_AGENT_MODEL": "openai-codex/gpt-5.3-codex",
         },
@@ -518,11 +520,16 @@ def test_openclaw_cliq_live_smoke_route_binding_only_mode(tmp_path: Path) -> Non
     assert '"agentId":"zoho-employee-test"' in output
     assert "zoho auth" not in output
     assert "local webhook missing-secret gate" not in output
+    report = json.loads(report_path.read_text())
+    assert report["status"] == "ok"
+    assert report["agentId"] == "zoho-employee-test"
+    assert report["model"] == "openai-codex/gpt-5.3-codex"
     script = OPENCLAW_CLIQ_LIVE_SMOKE_SCRIPT.read_text()
     assert "ZOHO_CLIQ_EXPECTED_AGENT_ID" in script
     assert "ZOHO_CLIQ_EXPECTED_AGENT_MODEL" in script
     assert "ZOHO_CLIQ_EXPECTED_ACCOUNT_ID" in script
     assert "ZOHO_CLIQ_ROUTE_BINDING_ONLY" in script
+    assert "ZOHO_CLIQ_ROUTE_REPORT_FILE" in script
     assert "OPENCLAW_CONFIG_PATH" in script
     assert 'match.channel === "cliq"' in script
     assert "agent_binding_mismatch" in script
@@ -532,6 +539,7 @@ def test_openclaw_cliq_live_smoke_route_binding_only_reports_mismatch(
     tmp_path: Path,
 ) -> None:
     config_path = tmp_path / "openclaw.json"
+    report_path = tmp_path / "route-report.json"
     config_path.write_text(
         json.dumps(
             {
@@ -561,6 +569,7 @@ def test_openclaw_cliq_live_smoke_route_binding_only_reports_mismatch(
             **os.environ,
             "OPENCLAW_CONFIG_PATH": str(config_path),
             "ZOHO_CLIQ_ROUTE_BINDING_ONLY": "1",
+            "ZOHO_CLIQ_ROUTE_REPORT_FILE": str(report_path),
             "ZOHO_CLIQ_EXPECTED_AGENT_ID": "zoho-employee-test",
         },
         capture_output=True,
@@ -582,6 +591,7 @@ def test_openclaw_cliq_live_smoke_route_binding_only_reports_mismatch(
     assert payload["actualAgentId"] == "main"
     assert payload["channel"] == "cliq"
     assert payload["accountId"] == "default"
+    assert json.loads(report_path.read_text()) == payload
     assert "AssertionError" not in output
 
 

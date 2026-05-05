@@ -1,10 +1,15 @@
-last_run_at: "2026-05-05T12:12:49Z"
+last_run_at: "2026-05-05T12:15:14Z"
 last_result: passing
-current_focus: crm-014-operator-fixture-evidence-full-ci-20260505T121249Z
+current_focus: openclaw-cliq-channel-local-pack-preflight-20260505T121514Z
 suites:
   unit:
     status: passing
     notes:
+      - "OpenClaw Cliq channel local package artifact preflight completed at 2026-05-05T12:15:14Z"
+      - "npm --prefix integrations/openclaw-channel-cliq run typecheck -> passed"
+      - "npm --prefix integrations/openclaw-channel-cliq run build -> passed"
+      - "npm pack --json --pack-destination .tmp/openclaw-cliq-rc-pack from plugin directory -> tarball `adwasd-openclaw-zoho-cliq-0.4.0-alpha.0.tgz`, shasum `eb0579eaa8776cf015719d07b04fcd8a05a7285a`, integrity `sha512-oIChoy8CJjduamkrUB5ru/Brq8rYvb+qiZVph18AgJEUYoL2bwiiw+G1Sqf5CvvRXSEYSCINfdZ8XZ/AQdz/OA==`, entry count 67"
+      - "no npm publish or version bump performed; tarball is under ignored `.tmp/openclaw-cliq-rc-pack`"
       - "crm-014 operator fixture evidence checker completed at 2026-05-05T12:04:56Z"
       - "make ci -> ruff format/check clean + pytest `1839 passed in 57.63s`"
       - "added `crm_operator_fixture_evidence_status()` and `zoho crm fixture-evidence`"

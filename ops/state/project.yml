@@ -1,5 +1,5 @@
 project: zoho-cli
-updated_at: '2026-05-05T12:04:56Z'
+updated_at: '2026-05-05T12:15:14Z'
 status: v0.2.1-final-release
 throughput_mode: turbo_20x
 throughput_policy_ref: ops/state/execution_policy.yml
@@ -35,6 +35,7 @@ primary_blockers:
   now returns `not_supported` in focused live verification)
 next_step: "Start crm-015: run the controlled CRM live fixture only after the operator provides a dedicated payload, cleanup plan, and live env gates; keep normal live writes blocked."
 additional_info:
+- "2026-05-05 OpenClaw Cliq channel local package artifact preflight at 2026-05-05T12:15:14Z reran `npm --prefix integrations/openclaw-channel-cliq run typecheck`, `npm --prefix integrations/openclaw-channel-cliq run build`, and `npm pack --json --pack-destination .tmp/openclaw-cliq-rc-pack` from the plugin directory; generated alpha tarball `adwasd-openclaw-zoho-cliq-0.4.0-alpha.0.tgz` with shasum `eb0579eaa8776cf015719d07b04fcd8a05a7285a`, integrity `sha512-oIChoy8CJjduamkrUB5ru/Brq8rYvb+qiZVph18AgJEUYoL2bwiiw+G1Sqf5CvvRXSEYSCINfdZ8XZ/AQdz/OA==`, and 67 entries. No package publish or version bump was performed."
 - "2026-05-05 crm-014 operator fixture evidence checker at 2026-05-05T12:04:56Z added `crm_operator_fixture_evidence_status()` and `zoho crm fixture-evidence`; the command reads a smoke summary and redacted audit JSONL, resolves report paths, checks dry-run/gate/scope/fixture-plan/fixture-attempt/fixture-result evidence, verifies redaction, and classifies status as `incomplete`, `ready_for_operator_live_fixture`, or `live_fixture_recorded` without writing CRM data."
 - "2026-05-05 crm-013 controlled fixture smoke harness at 2026-05-05T11:51:41Z added `ops/scripts/crm_fixture_live_smoke.sh`; the script defaults to dry-run, runs `zoho crm upsert`, `zoho crm upsert-gate --check-auth`, `zoho crm fixture-plan`, `zoho crm fixture-execute` dry-run, and `zoho crm write-audit`, writes redacted report files plus a top-level summary, and refuses live execution unless both `ZOHO_CRM_FIXTURE_EXECUTE=1` and `ZOHO_CRM_ALLOW_LIVE_FIXTURE=1` are set with a payload file and cleanup plan."
 - "2026-05-05 crm-012 guarded fixture execution harness at 2026-05-05T11:37:34Z added `crm_guarded_fixture_execution_policy()` and `zoho crm fixture-execute`; the command defaults to dry-run, reports `requiredApproval`, requires `ZOHO_CRM_ALLOW_LIVE_FIXTURE=1`, exact `--fixture-approval`, `--cleanup-plan`, matching payload digest/idempotency, and persisted dry-run/gate/fixture-plan audit evidence for `--execute`, persists redacted `crm.write.fixture_attempt` and `crm.write.fixture_result`, summarizes CRM API responses without raw field values, and keeps normal `zoho crm upsert --execute` blocked."

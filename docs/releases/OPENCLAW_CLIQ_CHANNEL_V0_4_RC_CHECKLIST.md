@@ -7,7 +7,7 @@ candidate.
 SDK contract source of truth:
 `docs/architecture/OPENCLAW_CLIQ_CHANNEL_SDK_CONTRACT.md`.
 
-Updated: `2026-05-05T09:42:24Z`.
+Updated: `2026-05-05T12:15:14Z`.
 
 ## Decision
 
@@ -43,6 +43,7 @@ Do not claim production incident readiness while channel diagnostics report
 | Package linked baseline | Temp-HOME `openclaw plugins install ./integrations/openclaw-channel-cliq --link`, `plugins inspect zoho-cliq --json`, and `plugins doctor` passed on global `OpenClaw 2026.5.3-1`. |
 | Latest stable host | Temp-HOME `npx -y openclaw@2026.5.4` linked install/inspect/doctor passed. |
 | Beta early warning | Temp-HOME `npx -y openclaw@2026.5.4-beta.3` linked install/inspect/doctor passed. |
+| Local package artifact preflight | `npm pack --json --pack-destination .tmp/openclaw-cliq-rc-pack` passed after typecheck/build for `@adwasd/openclaw-zoho-cliq@0.4.0-alpha.0`; tarball `adwasd-openclaw-zoho-cliq-0.4.0-alpha.0.tgz`, size `93516`, unpacked size `464886`, entry count `67`, shasum `eb0579eaa8776cf015719d07b04fcd8a05a7285a`, integrity `sha512-oIChoy8CJjduamkrUB5ru/Brq8rYvb+qiZVph18AgJEUYoL2bwiiw+G1Sqf5CvvRXSEYSCINfdZ8XZ/AQdz/OA==`. |
 
 ## Remaining deployment gate
 

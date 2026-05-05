@@ -20,12 +20,12 @@ cliq:
 openclaw_cliq_channel:
   priority: 3
   status: completed_for_rc
-  phase: live_callback_verified_reply_hash_prepare_ready
+  phase: live_callback_verified_reply_bundle_ready
   target_release: v0.4.0
-  current_milestone: cliq-channel-428-trusted-reply-hash-ref-helper
+  current_milestone: cliq-channel-429-trusted-reply-evidence-bundle
   blockers:
     - "durable production tunnel/gateway selection remains pending after operator-tunnel callback verification"
-    - "actual controlled trusted Mention-to-agent reply evidence is pending for `cliq/default -> zoho-employee-test`; hash/prepare/check now requires `trusted_reply_recorded` with sha256 sender/message/reply references and rejects unchanged templates, raw ids, or secret markers"
+    - "actual controlled trusted Mention-to-agent reply evidence is pending for `cliq/default -> zoho-employee-test`; bundle/check now requires `trusted_reply_recorded` with sha256 sender/message/reply references and rejects unchanged templates, raw ids, or secret markers"
 
 crm:
   priority: 4

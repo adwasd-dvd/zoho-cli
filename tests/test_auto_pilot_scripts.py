@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import os
+import hashlib
 import json
 import stat
 import subprocess
@@ -22,6 +23,9 @@ OPENCLAW_CLIQ_TRUSTED_REPLY_EVIDENCE_SCRIPT = (
 )
 OPENCLAW_CLIQ_TRUSTED_REPLY_EVIDENCE_PREPARE_SCRIPT = (
     REPO_ROOT / "ops" / "scripts" / "openclaw_cliq_trusted_reply_evidence_prepare.sh"
+)
+OPENCLAW_CLIQ_TRUSTED_REPLY_EVIDENCE_BUNDLE_SCRIPT = (
+    REPO_ROOT / "ops" / "scripts" / "openclaw_cliq_trusted_reply_evidence_bundle.sh"
 )
 OPENCLAW_CLIQ_RC_PACK_SCRIPT = (
     REPO_ROOT / "ops" / "scripts" / "openclaw_cliq_rc_pack.sh"
@@ -1078,3 +1082,138 @@ def test_openclaw_cliq_trusted_reply_evidence_prepare_rejects_raw_ids(
     assert payload["status"] == "error"
     assert payload["error"] == "trusted_sender_hash_missing"
     assert not evidence_path.exists()
+
+
+def _sha256_ref(value: str) -> str:
+    return f"sha256:{hashlib.sha256(value.encode()).hexdigest()}"
+
+
+def test_openclaw_cliq_trusted_reply_bundle_hashes_raw_ids_and_checks(
+    tmp_path: Path,
+) -> None:
+    route_path = tmp_path / "route.json"
+    evidence_path = tmp_path / "reports" / "trusted-reply.json"
+    check_path = tmp_path / "reports" / "trusted-reply-check.json"
+    route_path.write_text(
+        json.dumps(
+            {
+                "schemaVersion": 1,
+                "kind": "openclaw_cliq_route_preflight",
+                "status": "ok",
+                "accountId": "default",
+                "agentId": "zoho-employee-test",
+                "model": "openai-codex/gpt-5.3-codex",
+            }
+        )
+    )
+
+    result = subprocess.run(
+        ["bash", str(OPENCLAW_CLIQ_TRUSTED_REPLY_EVIDENCE_BUNDLE_SCRIPT)],
+        cwd=REPO_ROOT,
+        env={
+            **os.environ,
+            "ZOHO_CLIQ_ROUTE_REPORT_FILE": str(route_path),
+            "ZOHO_CLIQ_TRUSTED_REPLY_EVIDENCE_FILE": str(evidence_path),
+            "ZOHO_CLIQ_TRUSTED_REPLY_REPORT_FILE": str(check_path),
+            "ZOHO_CLIQ_TRUSTED_REPLY_RUN_ID": "unit-bundle-ok",
+            "ZOHO_CLIQ_TRUSTED_MENTION_SENT_AT": "2026-05-05T23:36:22Z",
+            "ZOHO_CLIQ_TRUSTED_SENDER_ID": "sender-raw-id",
+            "ZOHO_CLIQ_TRUSTED_MESSAGE_ID": "message-raw-id",
+            "ZOHO_CLIQ_DELIVERY_ID": "delivery-raw-id",
+            "ZOHO_CLIQ_EXPECTED_AGENT_ID": "zoho-employee-test",
+            "ZOHO_CLIQ_EXPECTED_AGENT_MODEL": "openai-codex/gpt-5.3-codex",
+        },
+        capture_output=True,
+        text=True,
+        check=False,
+    )
+
+    output = f"{result.stdout}\n{result.stderr}"
+    assert result.returncode == 0, output
+    assert "sender-raw-id" not in output
+    assert "message-raw-id" not in output
+    assert "delivery-raw-id" not in output
+
+    check_payload = json.loads(result.stdout)
+    assert check_payload["status"] == "trusted_reply_recorded"
+    assert json.loads(check_path.read_text()) == check_payload
+
+    evidence = json.loads(evidence_path.read_text())
+    assert evidence["trustedMention"]["trustedSenderIdHash"] == _sha256_ref(
+        "sender-raw-id"
+    )
+    assert evidence["trustedMention"]["messageIdHash"] == _sha256_ref("message-raw-id")
+    assert evidence["delivery"]["deliveryIdHash"] == _sha256_ref("delivery-raw-id")
+    assert "sender-raw-id" not in evidence_path.read_text()
+    assert "message-raw-id" not in evidence_path.read_text()
+    assert "delivery-raw-id" not in evidence_path.read_text()
+
+
+def test_openclaw_cliq_trusted_reply_bundle_reports_missing_agent(
+    tmp_path: Path,
+) -> None:
+    route_path = tmp_path / "route.json"
+    route_path.write_text(
+        json.dumps(
+            {
+                "schemaVersion": 1,
+                "kind": "openclaw_cliq_route_preflight",
+                "status": "ok",
+            }
+        )
+    )
+
+    result = subprocess.run(
+        ["bash", str(OPENCLAW_CLIQ_TRUSTED_REPLY_EVIDENCE_BUNDLE_SCRIPT)],
+        cwd=REPO_ROOT,
+        env={
+            **os.environ,
+            "ZOHO_CLIQ_ROUTE_REPORT_FILE": str(route_path),
+            "ZOHO_CLIQ_TRUSTED_REPLY_RUN_ID": "unit-bundle-missing-agent",
+            "ZOHO_CLIQ_EXPECTED_AGENT_ID": "",
+        },
+        capture_output=True,
+        text=True,
+        check=False,
+    )
+
+    assert result.returncode == 2
+    assert result.stderr == ""
+    payload = json.loads(result.stdout)
+    assert payload["kind"] == "openclaw_cliq_trusted_reply_evidence_bundle"
+    assert payload["error"] == "expected_agent_missing"
+
+
+def test_openclaw_cliq_trusted_reply_bundle_reports_missing_hash(
+    tmp_path: Path,
+) -> None:
+    route_path = tmp_path / "route.json"
+    route_path.write_text(
+        json.dumps(
+            {
+                "schemaVersion": 1,
+                "kind": "openclaw_cliq_route_preflight",
+                "status": "ok",
+            }
+        )
+    )
+
+    result = subprocess.run(
+        ["bash", str(OPENCLAW_CLIQ_TRUSTED_REPLY_EVIDENCE_BUNDLE_SCRIPT)],
+        cwd=REPO_ROOT,
+        env={
+            **os.environ,
+            "ZOHO_CLIQ_ROUTE_REPORT_FILE": str(route_path),
+            "ZOHO_CLIQ_TRUSTED_REPLY_RUN_ID": "unit-bundle-missing-hash",
+            "ZOHO_CLIQ_EXPECTED_AGENT_ID": "zoho-employee-test",
+        },
+        capture_output=True,
+        text=True,
+        check=False,
+    )
+
+    assert result.returncode == 2
+    assert result.stderr == ""
+    payload = json.loads(result.stdout)
+    assert payload["kind"] == "openclaw_cliq_trusted_reply_evidence_bundle"
+    assert payload["error"] == "trusted_sender_hash_missing"

@@ -18,6 +18,7 @@ Native channel planning:
 - `docs/releases/OPENCLAW_CLIQ_BOT_HANDLER_TEMPLATES.md`
 - `ops/scripts/openclaw_cliq_hash_ref.sh`
 - `ops/scripts/openclaw_cliq_rc_pack.sh`
+- `ops/scripts/openclaw_cliq_trusted_reply_evidence_bundle.sh`
 - `ops/scripts/openclaw_cliq_trusted_reply_evidence_prepare.sh`
 - `ops/scripts/openclaw_cliq_trusted_reply_evidence.sh`
 - `skill/references/openclaw-cliq-channel.md`

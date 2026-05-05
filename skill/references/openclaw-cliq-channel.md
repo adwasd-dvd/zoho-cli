@@ -160,12 +160,11 @@ Native diagnostic behavior:
   `docs/releases/OPENCLAW_CLIQ_TRUSTED_REPLY_EVIDENCE_TEMPLATE.json` as a
   copy/edit starting point; it is deliberately incomplete until live facts are
   replaced. Prefer
-  `ops/scripts/openclaw_cliq_trusted_reply_evidence_prepare.sh` once live facts
-  are available; it reads `ZOHO_CLIQ_ROUTE_REPORT_FILE`, requires the three
-  `sha256:` references, and writes the redacted evidence for the checker. Use
-  `ops/scripts/openclaw_cliq_hash_ref.sh` to hash live raw Cliq ids through
-  stdin before setting those reference variables; do not paste raw ids into
-  evidence files.
+  `ops/scripts/openclaw_cliq_trusted_reply_evidence_bundle.sh` once live facts
+  are available; it reads `ZOHO_CLIQ_ROUTE_REPORT_FILE`, accepts raw ids or the
+  three `sha256:` references, prepares the redacted evidence, and runs the
+  checker. Use `ops/scripts/openclaw_cliq_hash_ref.sh` when hashing ids as a
+  separate step; do not paste raw ids into evidence files.
 - Do not include webhook secrets, token passwords, webhook signatures, raw
   stderr, or raw Cliq message bodies in reports.
 

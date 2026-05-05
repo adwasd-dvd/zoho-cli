@@ -66,6 +66,7 @@
 - Added auto-pilot coverage that the trusted reply evidence template is rejected unchanged and that otherwise valid evidence containing secret markers such as `X-Cliq-Webhook-Secret` is blocked with `secret_marker_present`.
 - Added `ops/scripts/openclaw_cliq_trusted_reply_evidence_prepare.sh` so the final trusted reply artifact can be generated from route preflight evidence plus `sha256:` trusted sender/message/reply references before it is validated by the checker.
 - Added `ops/scripts/openclaw_cliq_hash_ref.sh` so operators/AI agents can hash live raw Cliq ids from stdin into `sha256:` references without echoing raw ids into stdout, evidence files, or docs.
+- Added `ops/scripts/openclaw_cliq_trusted_reply_evidence_bundle.sh` to run the final trusted reply evidence flow in one pass: hash raw ids when supplied, prepare redacted evidence, and execute the trusted reply checker with final JSON on stdout.
 
 ### Architecture / modularization (2026-05-04T18:19:47Z)
 - Started `cliq-210` post-RC modularization by extracting the `zoho cliq status` and `zoho cliq capabilities` command bodies into `zoho_cli/commands/cliq_readiness.py`, leaving `zoho_cli/cli.py` with runtime dependency injection plus existing Typer registration only. Command names, help text, and JSON output are unchanged.

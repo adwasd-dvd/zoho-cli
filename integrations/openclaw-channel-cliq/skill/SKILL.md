@@ -54,8 +54,7 @@ Use this skill when operating through the native OpenClaw Zoho Cliq channel.
   `docs/releases/OPENCLAW_CLIQ_CHANNEL_V0_4_RC_CHECKLIST.md` and keep
   production rollout blocked until public Bot callback reachability and one
   controlled trusted agent reply are verified with
-  `ops/scripts/openclaw_cliq_trusted_reply_evidence_prepare.sh` plus
-  `ops/scripts/openclaw_cliq_trusted_reply_evidence.sh`.
+  `ops/scripts/openclaw_cliq_trusted_reply_evidence_bundle.sh`.
 - Before cutting a local/operator or npm/GitHub RC artifact, run
   `ops/scripts/openclaw_cliq_rc_pack.sh`; it must not publish or mutate
   package version metadata at pack time. The current RC package metadata is
@@ -72,6 +71,7 @@ zoho cliq capabilities --network <network>
 ops/scripts/openclaw_cliq_live_smoke.sh
 ops/scripts/openclaw_cliq_hash_ref.sh
 ops/scripts/openclaw_cliq_rc_pack.sh
+ops/scripts/openclaw_cliq_trusted_reply_evidence_bundle.sh
 ops/scripts/openclaw_cliq_trusted_reply_evidence_prepare.sh
 ops/scripts/openclaw_cliq_trusted_reply_evidence.sh
 ```
@@ -95,11 +95,11 @@ For the final trusted reply gate, set
 `ops/scripts/openclaw_cliq_trusted_reply_evidence.sh`; require
 `trusted_reply_recorded` before claiming production readiness. Evidence must
 store sender/message/reply ids as `sha256:` references, not raw ids or bodies.
-Use `ops/scripts/openclaw_cliq_trusted_reply_evidence_prepare.sh` with
-`ZOHO_CLIQ_ROUTE_REPORT_FILE` and the three `sha256:` references to generate the
-artifact before running the checker. Use
-`ops/scripts/openclaw_cliq_hash_ref.sh` to hash live raw Cliq ids via stdin; do
-not paste raw ids into evidence files.
+Use `ops/scripts/openclaw_cliq_trusted_reply_evidence_bundle.sh` with
+`ZOHO_CLIQ_ROUTE_REPORT_FILE`, expected agent/model, and either raw ids or the
+three `sha256:` references to hash, prepare, and check the artifact. Use
+`ops/scripts/openclaw_cliq_hash_ref.sh` only when hashing live raw ids as a
+separate step; do not paste raw ids into evidence files.
 
 If readiness fails, report the failing `zoho-cli` command, exit code,
 classified error kind, and redacted stderr summary.

@@ -208,7 +208,10 @@ Set `ZOHO_CLIQ_EXPECTED_AGENT_ID` before live rollout smoke when a Cliq account
 must route to a specific OpenClaw agent. The gate reads OpenClaw config,
 verifies `cliq/<account>` binding, and can also enforce
 `ZOHO_CLIQ_EXPECTED_AGENT_MODEL` plus `ZOHO_CLIQ_EXPECTED_ACCOUNT_ID` when the
-smoke is pinned to a named account/model pair.
+smoke is pinned to a named account/model pair. Set
+`ZOHO_CLIQ_ROUTE_BINDING_ONLY=1` for an offline preflight that runs only this
+binding check; use `OPENCLAW_CONFIG_PATH` to point it at a temporary or
+operator-provided config file.
 
 `token_refresh_rate_limited` and repeated endpoint availability failures are
 recorded as `skip_deferred` so the gate does not hammer Zoho refresh endpoints
@@ -299,5 +302,7 @@ Recovery checklist:
    controlled native dispatch and redacted diagnostic bundle smoke through
    `ops/scripts/openclaw_cliq_live_smoke.sh`, setting
    `ZOHO_CLIQ_EXPECTED_AGENT_ID` when the account must route to a specific
-   agent. Finish with a controlled trusted Bot event that produces exactly one
-   native agent turn and one Cliq reply before production agent rollout.
+   agent. Use `ZOHO_CLIQ_ROUTE_BINDING_ONLY=1` first when only route config is
+   being checked. Finish with a controlled trusted Bot event that produces
+   exactly one native agent turn and one Cliq reply before production agent
+   rollout.

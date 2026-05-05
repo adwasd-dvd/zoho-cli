@@ -74,7 +74,9 @@ ops/scripts/openclaw_cliq_rc_pack.sh
 For rollout smoke that must target a specific agent, set
 `ZOHO_CLIQ_EXPECTED_AGENT_ID` and optionally
 `ZOHO_CLIQ_EXPECTED_AGENT_MODEL` before running
-`ops/scripts/openclaw_cliq_live_smoke.sh`.
+`ops/scripts/openclaw_cliq_live_smoke.sh`. Use
+`ZOHO_CLIQ_ROUTE_BINDING_ONLY=1` plus `OPENCLAW_CONFIG_PATH` for offline route
+preflight without Zoho, gateway, or webhook calls.
 
 If readiness fails, report the failing `zoho-cli` command, exit code,
 classified error kind, and redacted stderr summary.

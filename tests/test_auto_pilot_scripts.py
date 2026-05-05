@@ -474,10 +474,39 @@ def test_crm_fixture_live_smoke_requires_env_for_execute(tmp_path: Path) -> None
     assert not any("--execute" in call for call in calls)
 
 
-def test_openclaw_cliq_live_smoke_has_optional_route_binding_gate() -> None:
+def test_openclaw_cliq_live_smoke_route_binding_only_mode(tmp_path: Path) -> None:
+    config_path = tmp_path / "openclaw.json"
+    config_path.write_text(
+        json.dumps(
+            {
+                "bindings": [
+                    {
+                        "agentId": "zoho-employee-test",
+                        "match": {"channel": "cliq", "accountId": "default"},
+                    }
+                ],
+                "agents": {
+                    "list": [
+                        {
+                            "id": "zoho-employee-test",
+                            "model": "openai-codex/gpt-5.3-codex",
+                        }
+                    ]
+                },
+            }
+        )
+    )
+
     result = subprocess.run(
-        ["bash", "-n", str(OPENCLAW_CLIQ_LIVE_SMOKE_SCRIPT)],
+        ["bash", str(OPENCLAW_CLIQ_LIVE_SMOKE_SCRIPT)],
         cwd=REPO_ROOT,
+        env={
+            **os.environ,
+            "OPENCLAW_CONFIG_PATH": str(config_path),
+            "ZOHO_CLIQ_ROUTE_BINDING_ONLY": "1",
+            "ZOHO_CLIQ_EXPECTED_AGENT_ID": "zoho-employee-test",
+            "ZOHO_CLIQ_EXPECTED_AGENT_MODEL": "openai-codex/gpt-5.3-codex",
+        },
         capture_output=True,
         text=True,
         check=False,
@@ -485,10 +514,16 @@ def test_openclaw_cliq_live_smoke_has_optional_route_binding_gate() -> None:
 
     output = f"{result.stdout}\n{result.stderr}"
     assert result.returncode == 0, output
+    assert "openclaw cliq route binding gate" in output
+    assert '"agentId":"zoho-employee-test"' in output
+    assert "zoho auth" not in output
+    assert "local webhook missing-secret gate" not in output
     script = OPENCLAW_CLIQ_LIVE_SMOKE_SCRIPT.read_text()
     assert "ZOHO_CLIQ_EXPECTED_AGENT_ID" in script
     assert "ZOHO_CLIQ_EXPECTED_AGENT_MODEL" in script
     assert "ZOHO_CLIQ_EXPECTED_ACCOUNT_ID" in script
+    assert "ZOHO_CLIQ_ROUTE_BINDING_ONLY" in script
+    assert "OPENCLAW_CONFIG_PATH" in script
     assert "missing cliq/${expectedAccountId} binding" in script
     assert 'match.channel === "cliq"' in script
     assert "assert.equal(binding.agentId, expectedAgentId)" in script

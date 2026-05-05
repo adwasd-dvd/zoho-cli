@@ -71,7 +71,10 @@ templates stay aligned with OpenClaw dispatch behavior.
 `cliq-channel-422` is complete: package, manifest, runtime constants, tests, and
 built output now identify the native Cliq channel as `0.4.0-rc.1`; the RC pack
 preflight produced `adwasd-openclaw-zoho-cliq-0.4.0-rc.1.tgz` without npm
-publish.
+publish. Trusted reply evidence checking is available through
+`ops/scripts/openclaw_cliq_trusted_reply_evidence.sh`; it validates redacted
+`openclaw_cliq_trusted_reply_evidence` JSON before production readiness can be
+claimed.
 
 The v0.4 plugin targets OpenClaw `>=2026.5.3-1`. The upgraded global
 `OpenClaw 2026.5.3-1` host is suitable for native plugin checks; use
@@ -118,6 +121,7 @@ openclaw security audit --json
 zoho cliq status --check-auth --network <network>
 ops/scripts/openclaw_cliq_live_smoke.sh
 ops/scripts/openclaw_cliq_rc_pack.sh
+ops/scripts/openclaw_cliq_trusted_reply_evidence.sh
 ```
 
 Native diagnostic behavior:
@@ -138,6 +142,16 @@ Native diagnostic behavior:
   `openclaw_cliq_route_preflight` JSON evidence with `runId` and `checkedAt`.
   The report omits local config paths and uses stable error codes such as
   `expected_agent_missing` and `agent_binding_mismatch`.
+- For the final trusted Bot Mention gate, validate a redacted
+  `openclaw_cliq_trusted_reply_evidence` artifact with
+  `ZOHO_CLIQ_TRUSTED_REPLY_EVIDENCE_FILE` and
+  `ops/scripts/openclaw_cliq_trusted_reply_evidence.sh`. The checker reports
+  `kind=openclaw_cliq_trusted_reply_evidence_check` and
+  `trusted_reply_recorded` only when public callback verification, route
+  preflight, expected agent/model, exactly one native turn, exactly one Cliq
+  reply, zero duplicate/dead-letter counts, and redaction facts all pass. Stable
+  blockers include `agent_turn_count_not_one`, `cliq_reply_count_not_one`,
+  `agent_mismatch`, and `route_preflight_not_ok`.
 - Do not include webhook secrets, token passwords, webhook signatures, raw
   stderr, or raw Cliq message bodies in reports.
 
@@ -203,7 +217,10 @@ Human setup checkpoints:
   OpenClaw agent must receive Cliq traffic, run the route-only preflight first
   with `ZOHO_CLIQ_EXPECTED_AGENT_ID`, `ZOHO_CLIQ_ROUTE_BINDING_ONLY=1`, and
   `ZOHO_CLIQ_ROUTE_REPORT_FILE`; then verify one trusted Bot message produces
-  exactly one native agent turn and one Cliq reply.
+  exactly one native agent turn and one Cliq reply. Record only redacted
+  trusted reply evidence and require
+  `ops/scripts/openclaw_cliq_trusted_reply_evidence.sh` to report
+  `trusted_reply_recorded`.
 - The RC pack preflight script is run from the repo root before cutting an
   artifact; its summary JSON remains under ignored `tests/auto_pilot/reports/`.
 - Pairing/allowlist/mention gating are enabled.

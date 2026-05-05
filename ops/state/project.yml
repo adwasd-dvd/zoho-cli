@@ -1,5 +1,5 @@
 project: zoho-cli
-updated_at: '2026-05-05T20:24:21Z'
+updated_at: '2026-05-05T20:55:24Z'
 status: v0.2.1-final-release
 throughput_mode: turbo_20x
 throughput_policy_ref: ops/state/execution_policy.yml
@@ -9,7 +9,7 @@ module_order:
 - Mail
 - Cliq
 - CRM
-current_focus: "Turbo 20x mode active: v0.2.1 is stable; native Cliq channel v0.4 package metadata is promoted to 0.4.0-rc.1 with repeatable pack preflight, real Bot handler templates, runtime contract coverage, and operator-tunnel public callback verification; `cliq/default` is bound to the Codex-backed `zoho-employee-test` agent, controlled trusted reply evidence is pending, crm-014 operator fixture evidence checker is complete, and crm-015 operator live fixture run is gated on a dedicated payload."
+current_focus: "Turbo 20x mode active: v0.2.1 is stable; native Cliq channel v0.4 package metadata is promoted to 0.4.0-rc.1 with repeatable pack preflight, real Bot handler templates, runtime contract coverage, operator-tunnel public callback verification, route preflight evidence, and trusted reply evidence checking; `cliq/default` is bound to the Codex-backed `zoho-employee-test` agent, actual controlled trusted reply evidence is pending, crm-014 operator fixture evidence checker is complete, and crm-015 operator live fixture run is gated on a dedicated payload."
 primary_blockers:
 - native OpenClaw Cliq channel durable public Bot callback deployment and controlled trusted agent reply evidence remain pending; operator-tunnel callback auth/reachability passes and `cliq/default` is routed to `zoho-employee-test`
 - cliq-194 live read-ack endpoint remains unsupported on happydistrouklimited for the active token, but watch-act continuity is now capability-gated (`status=ok`, `fallbackUsed=true`, `readAckSupported=false`) and treated as deferred/non-blocking for forward platform execution
@@ -33,8 +33,9 @@ primary_blockers:
   returns `not_supported`)
 - calls/meetings endpoints are unsupported on current token/network (`cliq meetings`
   now returns `not_supported` in focused live verification)
-next_step: "First verify the controlled trusted Zoho Cliq Bot Mention routes to the Codex-backed `zoho-employee-test` agent and delivers exactly one Cliq reply; then start crm-015 only after the operator provides a dedicated payload, cleanup plan, and live env gates; keep normal live writes blocked."
+next_step: "First verify the controlled trusted Zoho Cliq Bot Mention routes to the Codex-backed `zoho-employee-test` agent, delivers exactly one Cliq reply, and validates as `trusted_reply_recorded`; then start crm-015 only after the operator provides a dedicated payload, cleanup plan, and live env gates; keep normal live writes blocked."
 additional_info:
+- "2026-05-05 OpenClaw Cliq trusted reply evidence contract at 2026-05-05T20:55:24Z added `ops/scripts/openclaw_cliq_trusted_reply_evidence.sh`; the checker validates redacted `openclaw_cliq_trusted_reply_evidence` JSON, enforces expected agent/model, public callback and route preflight status, exactly one native agent turn, exactly one Cliq reply, zero duplicate/dead-letter counts, and no stored raw webhook/message/reply bodies or secrets before reporting `trusted_reply_recorded`. Focused OpenClaw Cliq script tests plus Lane 3 docs tests passed."
 - "2026-05-05 CRM crm-015 live placeholder guard at 2026-05-05T20:24:21Z hardened `ops/scripts/crm_fixture_live_smoke.sh`: smoke summaries now include `payloadTemplatePlaceholders.emailCount`, and live fixture execution exits with `fixture_payload_placeholder_email` if the payload email still contains `example.invalid` or `replace-me`. This protects the real-environment fixture gate from accidentally using the copy-only template unchanged."
 - "2026-05-05 CRM crm-015 operator payload handoff at 2026-05-05T20:08:21Z added `docs/releases/CRM_V0_5_FIXTURE_PAYLOAD_TEMPLATE.json` as a safe one-record Leads fixture template with `.example.invalid` placeholder data; the operator runbook and Lane 3 guidance now tell agents to copy/edit it outside the repo, replace the placeholder with a dedicated operator-owned test email, keep a specific cleanup plan, run dry-run smoke first, and leave normal `zoho crm upsert --execute` blocked."
 - "2026-05-05 OpenClaw Cliq Lane 3 route evidence contract at 2026-05-05T19:36:46Z tightened the root skill, native Cliq channel reference, and Lane 3 docs tests so future AI agents use `ZOHO_CLIQ_EXPECTED_AGENT_ID`, `ZOHO_CLIQ_ROUTE_BINDING_ONLY=1`, and `ZOHO_CLIQ_ROUTE_REPORT_FILE` before asking for fresh Bot traffic; route evidence must include `schemaVersion=1`, `openclaw_cliq_route_preflight`, `runId`, `checkedAt`, stable error codes such as `expected_agent_missing` / `agent_binding_mismatch`, and omit local config paths."

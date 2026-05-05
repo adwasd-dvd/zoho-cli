@@ -54,6 +54,7 @@ def test_lane3_required_paths_exist() -> None:
         REPO_ROOT / "docs" / "releases" / "OPENCLAW_CLIQ_CHANNEL_COMPATIBILITY.md",
         REPO_ROOT / "docs" / "releases" / "OPENCLAW_CLIQ_CHANNEL_V0_4_RC_CHECKLIST.md",
         REPO_ROOT / "ops" / "scripts" / "openclaw_cliq_rc_pack.sh",
+        REPO_ROOT / "ops" / "scripts" / "openclaw_cliq_trusted_reply_evidence.sh",
     ]
 
     for path in required:
@@ -203,6 +204,12 @@ def test_native_cliq_channel_ai_troubleshooting_contract_present() -> None:
         "ZOHO_CLIQ_ROUTE_BINDING_ONLY",
         "ZOHO_CLIQ_ROUTE_REPORT_FILE",
         "openclaw_cliq_route_preflight",
+        "openclaw_cliq_trusted_reply_evidence",
+        "openclaw_cliq_trusted_reply_evidence_check",
+        "ZOHO_CLIQ_TRUSTED_REPLY_EVIDENCE_FILE",
+        "trusted_reply_recorded",
+        "agent_turn_count_not_one",
+        "cliq_reply_count_not_one",
         "schemaVersion=1",
         "runId",
         "checkedAt",

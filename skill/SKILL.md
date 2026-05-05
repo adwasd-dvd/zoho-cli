@@ -44,12 +44,18 @@ Use this skill as the default operating contract for an OpenClaw agent acting li
   Zoho Bot handler, use `ops/scripts/openclaw_cliq_live_smoke.sh` for the
   controlled gate, treat `token_refresh_rate_limited` as `skip_deferred`, and do
   not claim production incident readiness until public Bot callback
-  auth/reachability and a controlled trusted agent reply are both verified.
+  auth/reachability and a controlled trusted agent reply are both verified with
+  `ops/scripts/openclaw_cliq_trusted_reply_evidence.sh`.
 - For native Cliq rollout smoke that must target a specific OpenClaw agent, set
   `ZOHO_CLIQ_EXPECTED_AGENT_ID` and optionally
   `ZOHO_CLIQ_EXPECTED_AGENT_MODEL`; use `ZOHO_CLIQ_ROUTE_BINDING_ONLY=1` for
   offline route preflight and `ZOHO_CLIQ_ROUTE_REPORT_FILE` to persist the
   `openclaw_cliq_route_preflight` JSON evidence.
+- For the final trusted reply gate, set `ZOHO_CLIQ_TRUSTED_REPLY_EVIDENCE_FILE`
+  and run `ops/scripts/openclaw_cliq_trusted_reply_evidence.sh`; require
+  `trusted_reply_recorded`, exactly one agent turn, exactly one Cliq reply, zero
+  duplicate/dead-letter counts, and no raw webhook/message/reply bodies or
+  secrets in evidence.
 - For OpenClaw host upgrades or plugin SDK breakage, follow
   `docs/releases/OPENCLAW_CLIQ_CHANNEL_COMPATIBILITY.md` before changing
   business logic or raising the host floor.

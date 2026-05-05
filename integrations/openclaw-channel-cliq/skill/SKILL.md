@@ -53,7 +53,8 @@ Use this skill when operating through the native OpenClaw Zoho Cliq channel.
 - For v0.4 RC decisions, follow
   `docs/releases/OPENCLAW_CLIQ_CHANNEL_V0_4_RC_CHECKLIST.md` and keep
   production rollout blocked until public Bot callback reachability and one
-  controlled trusted agent reply are verified.
+  controlled trusted agent reply are verified with
+  `ops/scripts/openclaw_cliq_trusted_reply_evidence.sh`.
 - Before cutting a local/operator or npm/GitHub RC artifact, run
   `ops/scripts/openclaw_cliq_rc_pack.sh`; it must not publish or mutate
   package version metadata at pack time. The current RC package metadata is
@@ -69,6 +70,7 @@ zoho cliq status --check-auth --network <network>
 zoho cliq capabilities --network <network>
 ops/scripts/openclaw_cliq_live_smoke.sh
 ops/scripts/openclaw_cliq_rc_pack.sh
+ops/scripts/openclaw_cliq_trusted_reply_evidence.sh
 ```
 
 For rollout smoke that must target a specific agent, set
@@ -83,6 +85,12 @@ evidence. The route evidence is schema-versioned, includes `runId` and
 with `status=error` and stable error codes such as
 `expected_agent_missing` or `agent_binding_mismatch`, so parse that before
 asking the operator to send a fresh Bot message.
+
+For the final trusted reply gate, set
+`ZOHO_CLIQ_TRUSTED_REPLY_EVIDENCE_FILE` to a redacted
+`openclaw_cliq_trusted_reply_evidence` JSON artifact and run
+`ops/scripts/openclaw_cliq_trusted_reply_evidence.sh`; require
+`trusted_reply_recorded` before claiming production readiness.
 
 If readiness fails, report the failing `zoho-cli` command, exit code,
 classified error kind, and redacted stderr summary.

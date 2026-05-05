@@ -14,6 +14,9 @@ CRM_FIXTURE_SMOKE_SCRIPT = REPO_ROOT / "ops" / "scripts" / "crm_fixture_live_smo
 OPENCLAW_CLIQ_LIVE_SMOKE_SCRIPT = (
     REPO_ROOT / "ops" / "scripts" / "openclaw_cliq_live_smoke.sh"
 )
+OPENCLAW_CLIQ_TRUSTED_REPLY_EVIDENCE_SCRIPT = (
+    REPO_ROOT / "ops" / "scripts" / "openclaw_cliq_trusted_reply_evidence.sh"
+)
 OPENCLAW_CLIQ_RC_PACK_SCRIPT = (
     REPO_ROOT / "ops" / "scripts" / "openclaw_cliq_rc_pack.sh"
 )
@@ -682,3 +685,142 @@ def test_openclaw_cliq_live_smoke_route_binding_only_requires_expected_agent() -
     assert payload["accountId"] == "default"
     assert "zoho auth" not in output
     assert "local webhook missing-secret gate" not in output
+
+
+def test_openclaw_cliq_trusted_reply_evidence_accepts_redacted_gate(
+    tmp_path: Path,
+) -> None:
+    evidence_path = tmp_path / "trusted-reply.json"
+    report_path = tmp_path / "reports" / "trusted-reply-report.json"
+    evidence_path.write_text(
+        json.dumps(
+            {
+                "schemaVersion": 1,
+                "kind": "openclaw_cliq_trusted_reply_evidence",
+                "channel": "cliq",
+                "accountId": "default",
+                "routePreflight": {
+                    "status": "ok",
+                    "agentId": "zoho-employee-test",
+                    "model": "openai-codex/gpt-5.3-codex",
+                },
+                "publicCallbackVerified": True,
+                "trustedMention": {
+                    "handler": "mention",
+                    "sentAt": "2026-05-05T20:48:51Z",
+                    "trustedSenderIdHash": "sha256:sender",
+                    "messageIdHash": "sha256:message",
+                },
+                "nativeDispatch": {
+                    "agentId": "zoho-employee-test",
+                    "agentModel": "openai-codex/gpt-5.3-codex",
+                    "agentTurnCount": 1,
+                    "deadLetterCount": 0,
+                    "duplicateDispatchCount": 0,
+                },
+                "delivery": {
+                    "replyDelivered": True,
+                    "cliqReplyCount": 1,
+                    "deliveryIdHash": "sha256:reply",
+                },
+                "redaction": {
+                    "rawWebhookPayloadStored": False,
+                    "rawMessageBodyStored": False,
+                    "rawCliqReplyBodyStored": False,
+                    "secretsStored": False,
+                },
+            }
+        )
+    )
+
+    result = subprocess.run(
+        ["bash", str(OPENCLAW_CLIQ_TRUSTED_REPLY_EVIDENCE_SCRIPT)],
+        cwd=REPO_ROOT,
+        env={
+            **os.environ,
+            "ZOHO_CLIQ_TRUSTED_REPLY_EVIDENCE_FILE": str(evidence_path),
+            "ZOHO_CLIQ_TRUSTED_REPLY_REPORT_FILE": str(report_path),
+            "ZOHO_CLIQ_TRUSTED_REPLY_RUN_ID": "unit-trusted-ok",
+            "ZOHO_CLIQ_EXPECTED_AGENT_ID": "zoho-employee-test",
+            "ZOHO_CLIQ_EXPECTED_AGENT_MODEL": "openai-codex/gpt-5.3-codex",
+        },
+        capture_output=True,
+        text=True,
+        check=False,
+    )
+
+    output = f"{result.stdout}\n{result.stderr}"
+    assert result.returncode == 0, output
+    payload = json.loads(result.stdout)
+    assert payload["schemaVersion"] == 1
+    assert payload["kind"] == "openclaw_cliq_trusted_reply_evidence_check"
+    assert payload["runId"] == "unit-trusted-ok"
+    assert payload["status"] == "trusted_reply_recorded"
+    assert payload["blockingReasons"] == []
+    assert payload["agentId"] == "zoho-employee-test"
+    assert payload["agentTurnCount"] == 1
+    assert payload["cliqReplyCount"] == 1
+    assert payload["redaction"]["secretMarkerPresent"] is False
+    assert "trusted-reply.json" == payload["evidenceFile"]
+    assert "configPath" not in payload
+    assert json.loads(report_path.read_text()) == payload
+
+
+def test_openclaw_cliq_trusted_reply_evidence_reports_blockers(
+    tmp_path: Path,
+) -> None:
+    evidence_path = tmp_path / "trusted-reply-bad.json"
+    evidence_path.write_text(
+        json.dumps(
+            {
+                "schemaVersion": 1,
+                "kind": "openclaw_cliq_trusted_reply_evidence",
+                "channel": "cliq",
+                "accountId": "default",
+                "routePreflight": {"status": "error", "agentId": "main"},
+                "publicCallbackVerified": False,
+                "nativeDispatch": {
+                    "agentId": "main",
+                    "agentTurnCount": 2,
+                    "deadLetterCount": 1,
+                    "duplicateDispatchCount": 1,
+                },
+                "delivery": {"replyDelivered": False, "cliqReplyCount": 0},
+                "redaction": {
+                    "rawWebhookPayloadStored": False,
+                    "rawMessageBodyStored": False,
+                    "rawCliqReplyBodyStored": False,
+                    "secretsStored": False,
+                },
+            }
+        )
+    )
+
+    result = subprocess.run(
+        ["bash", str(OPENCLAW_CLIQ_TRUSTED_REPLY_EVIDENCE_SCRIPT)],
+        cwd=REPO_ROOT,
+        env={
+            **os.environ,
+            "ZOHO_CLIQ_TRUSTED_REPLY_EVIDENCE_FILE": str(evidence_path),
+            "ZOHO_CLIQ_TRUSTED_REPLY_RUN_ID": "unit-trusted-bad",
+            "ZOHO_CLIQ_EXPECTED_AGENT_ID": "zoho-employee-test",
+        },
+        capture_output=True,
+        text=True,
+        check=False,
+    )
+
+    output = f"{result.stdout}\n{result.stderr}"
+    assert result.returncode == 1, output
+    payload = json.loads(result.stdout)
+    assert payload["status"] == "incomplete"
+    assert payload["blockingReasons"] == [
+        "route_preflight_not_ok",
+        "public_callback_not_verified",
+        "agent_mismatch",
+        "agent_turn_count_not_one",
+        "cliq_reply_count_not_one",
+        "reply_not_delivered",
+        "dead_letter_count_not_zero",
+        "duplicate_dispatch_count_not_zero",
+    ]

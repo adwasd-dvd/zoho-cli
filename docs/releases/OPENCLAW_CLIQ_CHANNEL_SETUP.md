@@ -41,7 +41,8 @@ This runbook is for the native OpenClaw `cliq` channel package in
   observability support. The fake/live gate harness is in place; public Bot
   callback auth/reachability has been verified through an operator tunnel, and
   final rollout evidence now requires one controlled trusted Mention-to-agent
-  reply plus a durable tunnel/gateway decision.
+  reply validated by `ops/scripts/openclaw_cliq_trusted_reply_evidence.sh` plus
+  a durable tunnel/gateway decision.
 
 ## Requirements
 
@@ -226,7 +227,10 @@ recorded as `skip_deferred` so the gate does not hammer Zoho refresh endpoints
 or block unrelated local channel work. Public Bot callback auth/reachability can
 be tested with an operator tunnel; final rollout evidence also requires a
 trusted Bot event to route to the intended OpenClaw agent and deliver one Cliq
-reply.
+reply. Store only redacted `openclaw_cliq_trusted_reply_evidence` JSON and run
+`ops/scripts/openclaw_cliq_trusted_reply_evidence.sh` with
+`ZOHO_CLIQ_TRUSTED_REPLY_EVIDENCE_FILE`; the result must be
+`trusted_reply_recorded` before production readiness claims.
 
 ## Setup states
 
@@ -312,5 +316,6 @@ Recovery checklist:
    `ZOHO_CLIQ_EXPECTED_AGENT_ID` when the account must route to a specific
    agent. Use `ZOHO_CLIQ_ROUTE_BINDING_ONLY=1` first when only route config is
    being checked. Finish with a controlled trusted Bot event that produces
-   exactly one native agent turn and one Cliq reply before production agent
-   rollout.
+   exactly one native agent turn and one Cliq reply, then validate the redacted
+   evidence with `ops/scripts/openclaw_cliq_trusted_reply_evidence.sh` before
+   production agent rollout.

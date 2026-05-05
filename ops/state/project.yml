@@ -1,5 +1,5 @@
 project: zoho-cli
-updated_at: '2026-05-05T21:31:21Z'
+updated_at: '2026-05-05T21:42:21Z'
 status: v0.2.1-final-release
 throughput_mode: turbo_20x
 throughput_policy_ref: ops/state/execution_policy.yml
@@ -35,6 +35,7 @@ primary_blockers:
   now returns `not_supported` in focused live verification)
 next_step: "First verify the controlled trusted Zoho Cliq Bot Mention routes to the Codex-backed `zoho-employee-test` agent, delivers exactly one Cliq reply, and validates as `trusted_reply_recorded`; then start crm-015 only after the operator provides a dedicated payload, cleanup plan, and live env gates; keep normal live writes blocked."
 additional_info:
+- "2026-05-05 OpenClaw Cliq trusted reply evidence template at 2026-05-05T21:42:21Z added `docs/releases/OPENCLAW_CLIQ_TRUSTED_REPLY_EVIDENCE_TEMPLATE.json` as a safe copy/edit starting point for the final trusted Mention gate; the template intentionally contains placeholders, `publicCallbackVerified=false`, zero turn/reply counts, and no `sha256:` values so it cannot pass unchanged. Lane 3 template safety tests passed."
 - "2026-05-05 OpenClaw Cliq trusted reply hash contract at 2026-05-05T21:31:21Z tightened `ops/scripts/openclaw_cliq_trusted_reply_evidence.sh` so final trusted Mention evidence requires `trustedMention.handler=mention` plus `sha256:` references for trusted sender id, trusted message id, and reply delivery id; raw or missing facts now block with `trusted_mention_handler_invalid`, `trusted_sender_hash_missing`, `trusted_message_hash_missing`, or `delivery_id_hash_missing`. Focused trusted-reply and Lane 3 tests passed."
 - "2026-05-05 OpenClaw Cliq trusted reply evidence contract at 2026-05-05T20:55:24Z added `ops/scripts/openclaw_cliq_trusted_reply_evidence.sh`; the checker validates redacted `openclaw_cliq_trusted_reply_evidence` JSON, enforces expected agent/model, public callback and route preflight status, exactly one native agent turn, exactly one Cliq reply, zero duplicate/dead-letter counts, and no stored raw webhook/message/reply bodies or secrets before reporting `trusted_reply_recorded`. Focused OpenClaw Cliq script tests plus Lane 3 docs tests passed."
 - "2026-05-05 CRM crm-015 live placeholder guard at 2026-05-05T20:24:21Z hardened `ops/scripts/crm_fixture_live_smoke.sh`: smoke summaries now include `payloadTemplatePlaceholders.emailCount`, and live fixture execution exits with `fixture_payload_placeholder_email` if the payload email still contains `example.invalid` or `replace-me`. This protects the real-environment fixture gate from accidentally using the copy-only template unchanged."

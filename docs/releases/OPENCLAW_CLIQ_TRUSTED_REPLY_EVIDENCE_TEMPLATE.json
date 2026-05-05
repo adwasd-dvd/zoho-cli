@@ -1,0 +1,36 @@
+{
+  "schemaVersion": 1,
+  "kind": "openclaw_cliq_trusted_reply_evidence",
+  "channel": "cliq",
+  "accountId": "default",
+  "routePreflight": {
+    "status": "replace-with-route-preflight-status",
+    "agentId": "zoho-employee-test",
+    "model": "openai-codex/gpt-5.3-codex"
+  },
+  "publicCallbackVerified": false,
+  "trustedMention": {
+    "handler": "mention",
+    "sentAt": "replace-with-iso-timestamp",
+    "trustedSenderIdHash": "replace-with-sha256-sender-reference",
+    "messageIdHash": "replace-with-sha256-message-reference"
+  },
+  "nativeDispatch": {
+    "agentId": "zoho-employee-test",
+    "agentModel": "openai-codex/gpt-5.3-codex",
+    "agentTurnCount": 0,
+    "deadLetterCount": 0,
+    "duplicateDispatchCount": 0
+  },
+  "delivery": {
+    "replyDelivered": false,
+    "cliqReplyCount": 0,
+    "deliveryIdHash": "replace-with-sha256-reply-delivery-reference"
+  },
+  "redaction": {
+    "rawWebhookPayloadStored": false,
+    "rawMessageBodyStored": false,
+    "rawCliqReplyBodyStored": false,
+    "secretsStored": false
+  }
+}

@@ -87,6 +87,10 @@ Trusted agent reply:
 7. Record only redacted evidence and validate it:
 
    ```bash
+   cp docs/releases/OPENCLAW_CLIQ_TRUSTED_REPLY_EVIDENCE_TEMPLATE.json \
+     tests/auto_pilot/reports/openclaw_cliq_trusted_reply.json
+   $EDITOR tests/auto_pilot/reports/openclaw_cliq_trusted_reply.json
+
    ZOHO_CLIQ_TRUSTED_REPLY_EVIDENCE_FILE=tests/auto_pilot/reports/openclaw_cliq_trusted_reply.json \
    ZOHO_CLIQ_TRUSTED_REPLY_REPORT_FILE=tests/auto_pilot/reports/openclaw_cliq_trusted_reply_check.json \
    ZOHO_CLIQ_EXPECTED_AGENT_ID=zoho-employee-test \

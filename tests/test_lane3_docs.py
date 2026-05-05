@@ -53,6 +53,10 @@ def test_lane3_required_paths_exist() -> None:
         REPO_ROOT / "docs" / "releases" / "OPENCLAW_CLIQ_BOT_HANDLER_TEMPLATES.md",
         REPO_ROOT / "docs" / "releases" / "OPENCLAW_CLIQ_CHANNEL_COMPATIBILITY.md",
         REPO_ROOT / "docs" / "releases" / "OPENCLAW_CLIQ_CHANNEL_V0_4_RC_CHECKLIST.md",
+        REPO_ROOT
+        / "docs"
+        / "releases"
+        / "OPENCLAW_CLIQ_TRUSTED_REPLY_EVIDENCE_TEMPLATE.json",
         REPO_ROOT / "ops" / "scripts" / "openclaw_cliq_rc_pack.sh",
         REPO_ROOT / "ops" / "scripts" / "openclaw_cliq_trusted_reply_evidence.sh",
     ]
@@ -206,6 +210,7 @@ def test_native_cliq_channel_ai_troubleshooting_contract_present() -> None:
         "openclaw_cliq_route_preflight",
         "openclaw_cliq_trusted_reply_evidence",
         "openclaw_cliq_trusted_reply_evidence_check",
+        "OPENCLAW_CLIQ_TRUSTED_REPLY_EVIDENCE_TEMPLATE.json",
         "ZOHO_CLIQ_TRUSTED_REPLY_EVIDENCE_FILE",
         "trusted_reply_recorded",
         "trusted_mention_handler_invalid",
@@ -326,3 +331,27 @@ def test_crm_fixture_payload_template_is_safe_single_record() -> None:
     assert "dedicated operator-owned test address" in payload["Description"]
     assert "--execute" not in text
     assert "ZOHO_CRM_ALLOW_LIVE_FIXTURE" not in text
+
+
+def test_openclaw_cliq_trusted_reply_template_is_safe_placeholder() -> None:
+    template_path = (
+        REPO_ROOT
+        / "docs"
+        / "releases"
+        / "OPENCLAW_CLIQ_TRUSTED_REPLY_EVIDENCE_TEMPLATE.json"
+    )
+    text = template_path.read_text(encoding="utf-8")
+    payload = json.loads(text)
+
+    assert payload["schemaVersion"] == 1
+    assert payload["kind"] == "openclaw_cliq_trusted_reply_evidence"
+    assert payload["channel"] == "cliq"
+    assert payload["trustedMention"]["handler"] == "mention"
+    assert payload["publicCallbackVerified"] is False
+    assert payload["nativeDispatch"]["agentTurnCount"] == 0
+    assert payload["delivery"]["replyDelivered"] is False
+    assert payload["delivery"]["cliqReplyCount"] == 0
+    assert "replace-with-sha256" in text
+    assert "sha256:" not in text
+    assert "X-Cliq-Webhook-Secret" not in text
+    assert "ZOHO_CLIQ_WEBHOOK_SECRET" not in text

@@ -156,7 +156,10 @@ Native diagnostic behavior:
   include `trusted_mention_handler_invalid`, `trusted_sender_hash_missing`,
   `trusted_message_hash_missing`, `delivery_id_hash_missing`,
   `agent_turn_count_not_one`, `cliq_reply_count_not_one`, `agent_mismatch`, and
-  `route_preflight_not_ok`.
+  `route_preflight_not_ok`. Use
+  `docs/releases/OPENCLAW_CLIQ_TRUSTED_REPLY_EVIDENCE_TEMPLATE.json` as a
+  copy/edit starting point; it is deliberately incomplete until live facts are
+  replaced.
 - Do not include webhook secrets, token passwords, webhook signatures, raw
   stderr, or raw Cliq message bodies in reports.
 

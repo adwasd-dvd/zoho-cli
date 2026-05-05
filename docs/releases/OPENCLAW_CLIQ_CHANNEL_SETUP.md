@@ -232,7 +232,9 @@ reply. Store only redacted `openclaw_cliq_trusted_reply_evidence` JSON and run
 `ZOHO_CLIQ_TRUSTED_REPLY_EVIDENCE_FILE`; the result must be
 `trusted_reply_recorded` before production readiness claims. The evidence must
 store the trusted sender id, trusted message id, and reply delivery id only as
-`sha256:` references.
+`sha256:` references. Use
+`docs/releases/OPENCLAW_CLIQ_TRUSTED_REPLY_EVIDENCE_TEMPLATE.json` as a
+copy/edit starting point; it intentionally does not pass unchanged.
 
 ## Setup states
 

@@ -43,6 +43,10 @@ CRM SDK planning:
 - `zoho crm fixture-plan` (`crm-011`: controlled live fixture readiness gate,
   `policyId=crm-011-controlled-live-fixture-gate`, no CRM writes,
   `liveWritesEnabled=false`)
+- `zoho crm fixture-execute` (`crm-012`: guarded fixture-only live upsert
+  harness, `policyId=crm-012-guarded-fixture-execution-harness`, dry-run by
+  default, requires `ZOHO_CRM_ALLOW_LIVE_FIXTURE=1`, exact approval, cleanup,
+  digest, idempotency, and persisted audit evidence for `--execute`)
 - `docs/architecture/CRM_WRITE_SURFACE_CONTRACT.md`
 
 GitHub intake:

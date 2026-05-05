@@ -717,6 +717,25 @@ def _get_crm_client(cfg: dict, email: str, *, adapter: str = "http-v2") -> objec
     )
 
 
+def _get_crm_http_v8_client(cfg: dict, email: str) -> ZohoCrmClient:
+    cid, csec = _require_credentials(cfg)
+    account_cfg = cfg.get("accounts", {}).get(email, {})
+    access_token = auth.refresh_access_token(
+        email,
+        cid,
+        csec,
+        accounts_base_url=account_cfg.get("accounts_server"),
+    )
+    return ZohoCrmClient(
+        access_token,
+        base_url=_crm.infer_crm_base_url(
+            mail_base_url=account_cfg.get("mail_base_url"),
+            accounts_server=account_cfg.get("accounts_server"),
+            api_version=_crm.CRM_SDK_API_VERSION,
+        ),
+    )
+
+
 def _require_account_id(cfg: dict, email: str) -> str:
     aid = cfg.get("accounts", {}).get(email, {}).get("accountId")
     if not aid:
@@ -11574,6 +11593,167 @@ def crm_fixture_plan(
         source_command="zoho crm fixture-plan",
         audit_file=audit_file,
     )
+    utils.output(payload)
+
+
+@crm_app.command("fixture-execute")
+def crm_fixture_execute(
+    module: str = typer.Option(
+        ..., "--module", "-m", help="CRM module API name for the controlled fixture."
+    ),
+    data_json: Optional[str] = typer.Option(
+        None,
+        "--data-json",
+        help="JSON object/array or full upsert request body for the fixture.",
+    ),
+    data_file: Optional[str] = typer.Option(
+        None,
+        "--data-file",
+        help="Path to JSON object/array or full upsert request body for the fixture.",
+    ),
+    duplicate_check_fields: List[str] = typer.Option(
+        [],
+        "--duplicate-check-field",
+        help="Duplicate/unique Field API name expected for the fixture (repeatable).",
+    ),
+    idempotency_key: str = typer.Option(
+        ...,
+        "--idempotency-key",
+        help="Caller-provided idempotency key recorded in the fixture audit envelope.",
+    ),
+    payload_digest: Optional[str] = typer.Option(
+        None,
+        "--payload-digest",
+        help="Payload digest from the reviewed upsert dry-run.",
+    ),
+    fixture_approval: Optional[str] = typer.Option(
+        None,
+        "--fixture-approval",
+        help="Exact approval token reported by fixture-execute dry-run output.",
+    ),
+    cleanup_plan: Optional[str] = typer.Option(
+        None,
+        "--cleanup-plan",
+        help="Human cleanup/recovery plan. Only its digest is stored in audit output.",
+    ),
+    execute: bool = typer.Option(
+        False,
+        "--execute",
+        help="Run the controlled live fixture if every gate is satisfied.",
+    ),
+    audit_file: Optional[str] = typer.Option(
+        None,
+        "--audit-file",
+        help="Override CRM write audit JSONL path.",
+    ),
+    evidence_limit: int = typer.Option(
+        1000,
+        "--evidence-limit",
+        help="Max audit events to inspect for fixture execution evidence.",
+    ),
+) -> None:
+    """Plan or run the guarded live CRM fixture upsert."""
+    raw_payload = _load_crm_write_payload(data_json=data_json, data_file=data_file)
+
+    try:
+        dry_run = _crm.build_crm_upsert_dry_run(
+            module_api_name=module,
+            payload=raw_payload,
+            duplicate_check_fields=list(duplicate_check_fields),
+            idempotency_key=idempotency_key,
+        )
+    except ValueError as exc:
+        utils.error_exit("invalid_fixture_payload", str(exc))
+
+    computed_digest = dry_run["payloadDigest"]
+    if payload_digest and payload_digest != computed_digest:
+        utils.error_exit(
+            "payload_digest_mismatch",
+            "The provided --payload-digest does not match the fixture payload.",
+        )
+    effective_digest = payload_digest or computed_digest
+
+    path, path_meta = _crm_write_audit_path(audit_file)
+    try:
+        audit_events = (
+            _crm.read_crm_write_audit_events(path, limit=evidence_limit)
+            if path is not None
+            else []
+        )
+    except ValueError as exc:
+        utils.error_exit("invalid_audit_query", str(exc))
+
+    env_allows_live_fixture = os.environ.get(_crm.CRM_LIVE_FIXTURE_ENV_VAR) == "1"
+    payload = _crm.crm_guarded_fixture_execution_policy(
+        module_api_name=module,
+        duplicate_check_fields=list(duplicate_check_fields),
+        idempotency_key=idempotency_key,
+        payload_digest=effective_digest,
+        fixture_approval=fixture_approval,
+        cleanup_plan=cleanup_plan,
+        audit_events=audit_events,
+        execute=execute,
+        env_allows_live_fixture=env_allows_live_fixture,
+        record_count=dry_run["recordCount"],
+        field_names=dry_run["fieldNames"],
+    )
+    payload["auditFile"] = str(path) if path is not None else ""
+    payload["auditFileExists"] = path.exists() if path is not None else False
+    payload["auditPath"] = path_meta
+
+    cfg = _cfg()
+    email = _S.account or _config.default_account(cfg)
+    payload["auditPersistence"] = _persist_crm_write_audit(
+        payload,
+        event_type="crm.write.fixture_attempt",
+        account=email,
+        source_command="zoho crm fixture-execute",
+        audit_file=audit_file,
+    )
+
+    if execute and payload["blockingReasons"]:
+        reasons = ", ".join(payload["blockingReasons"])
+        utils.error_exit(
+            "controlled_fixture_gate_blocked",
+            f"Controlled CRM fixture execution is blocked: {reasons}",
+        )
+
+    if not execute:
+        utils.output(payload)
+        return
+
+    if not email:
+        utils.error_exit("not_logged_in", "No default account configured.")
+
+    normalized_payload = _crm.normalize_crm_upsert_payload(
+        raw_payload,
+        duplicate_check_fields=list(duplicate_check_fields),
+    )
+    client = _get_crm_http_v8_client(cfg, email)
+    result = client.upsert_records(module, normalized_payload)
+    response_summary = _crm.summarize_crm_upsert_response(
+        result["body"],
+        http_status=result["httpStatus"],
+        is_success=result["isSuccess"],
+    )
+    payload["execution"]["networkWriteAttempted"] = True
+    payload["execution"]["httpStatus"] = result["httpStatus"]
+    payload["status"] = "succeeded" if result["isSuccess"] else "failed"
+    payload["responseSummary"] = response_summary
+    payload["resultAuditPersistence"] = _persist_crm_write_audit(
+        payload,
+        event_type="crm.write.fixture_result",
+        account=email,
+        source_command="zoho crm fixture-execute",
+        audit_file=audit_file,
+    )
+
+    if not result["isSuccess"]:
+        utils.error_exit(
+            "api_error",
+            "Controlled CRM fixture upsert failed; redacted response summary was persisted in the audit log.",
+        )
+
     utils.output(payload)
 
 

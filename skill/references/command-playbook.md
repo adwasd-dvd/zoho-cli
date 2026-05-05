@@ -152,6 +152,39 @@ zoho crm fixture-plan \
 `crm-011` reports dry-run/gate/scope audit evidence and fixture blockers. It is
 not a live write command; `liveWritesEnabled=false` remains authoritative.
 
+To prepare the guarded fixture execution harness, first run it without
+`--execute` and copy only the returned `requiredApproval` token:
+
+```bash
+zoho crm fixture-execute \
+  --audit-file /tmp/zoho-crm-audit.jsonl \
+  --module Leads \
+  --data-file /tmp/lead-fixture.json \
+  --duplicate-check-field Email \
+  --idempotency-key crm-leads-upsert-$(date +%F) \
+  --payload-digest sha256:<reviewed-digest>
+```
+
+Only run a real fixture when the user has approved the dedicated test record and
+cleanup plan:
+
+```bash
+ZOHO_CRM_ALLOW_LIVE_FIXTURE=1 zoho crm fixture-execute \
+  --audit-file /tmp/zoho-crm-audit.jsonl \
+  --module Leads \
+  --data-file /tmp/lead-fixture.json \
+  --duplicate-check-field Email \
+  --idempotency-key crm-leads-upsert-$(date +%F) \
+  --payload-digest sha256:<reviewed-digest> \
+  --fixture-approval crm:fixture:upsert:Leads:<digest-prefix>:<idempotency-key> \
+  --cleanup-plan "remove or update the dedicated fixture record after validation" \
+  --execute
+```
+
+`crm-012` persists `crm.write.fixture_attempt` and
+`crm.write.fixture_result`, redacts raw field values and raw responses, and keeps
+normal `zoho crm upsert --execute` blocked.
+
 ## Bridge fallback (explicit)
 
 ```bash

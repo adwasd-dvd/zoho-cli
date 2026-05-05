@@ -27447,6 +27447,218 @@ def test_crm_fixture_plan_uses_existing_audit_evidence(tmp_path: Path) -> None:
     assert "wang@example.com" not in result.output
 
 
+def _prepare_crm_fixture_audit(tmp_path: Path) -> tuple[Path, dict]:
+    audit_path = tmp_path / "crm_audit.jsonl"
+    upsert_result = runner.invoke(
+        app,
+        [
+            "crm",
+            "upsert",
+            "--module",
+            "Leads",
+            "--data-json",
+            '{"Last_Name":"Wang","Email":"wang@example.com"}',
+            "--duplicate-check-field",
+            "Email",
+            "--idempotency-key",
+            "fixture-123",
+            "--audit-file",
+            str(audit_path),
+        ],
+    )
+    assert upsert_result.exit_code == 0, upsert_result.output
+    upsert_payload = json.loads(upsert_result.output)
+
+    gate_event = _crm.crm_upsert_live_gate_policy(
+        module_api_name="Leads",
+        granted_scopes=["ZohoCRM.modules.Leads.WRITE"],
+        auth_checked=True,
+    )
+    _crm.append_crm_write_audit_event(
+        audit_path,
+        _crm.build_crm_write_audit_event(
+            payload=gate_event,
+            event_type="crm.write.gate",
+            created_at="2026-05-05T11:35:00Z",
+        ),
+    )
+
+    fixture_plan_result = runner.invoke(
+        app,
+        [
+            "crm",
+            "fixture-plan",
+            "--module",
+            "Leads",
+            "--duplicate-check-field",
+            "Email",
+            "--idempotency-key",
+            "fixture-123",
+            "--payload-digest",
+            upsert_payload["payloadDigest"],
+            "--audit-file",
+            str(audit_path),
+        ],
+    )
+    assert fixture_plan_result.exit_code == 0, fixture_plan_result.output
+    return audit_path, upsert_payload
+
+
+def test_crm_fixture_execute_dry_run_reports_required_approval(
+    tmp_path: Path,
+) -> None:
+    audit_path, upsert_payload = _prepare_crm_fixture_audit(tmp_path)
+
+    result = runner.invoke(
+        app,
+        [
+            "crm",
+            "fixture-execute",
+            "--module",
+            "Leads",
+            "--data-json",
+            '{"Last_Name":"Wang","Email":"wang@example.com"}',
+            "--duplicate-check-field",
+            "Email",
+            "--idempotency-key",
+            "fixture-123",
+            "--payload-digest",
+            upsert_payload["payloadDigest"],
+            "--audit-file",
+            str(audit_path),
+        ],
+    )
+
+    assert result.exit_code == 0, result.output
+    payload = json.loads(result.output)
+    assert payload["policyId"] == "crm-012-guarded-fixture-execution-harness"
+    assert payload["liveWritesEnabled"] is False
+    assert payload["requiredApproval"].startswith("crm:fixture:upsert:Leads:")
+    assert "execute_flag_required" in payload["blockingReasons"]
+    assert "operator_fixture_approval_mismatch" in payload["blockingReasons"]
+    assert payload["auditPersistence"]["status"] == "persisted"
+    assert "Wang" not in result.output
+    assert "wang@example.com" not in audit_path.read_text()
+
+
+def test_crm_fixture_execute_execute_blocked_without_env(tmp_path: Path) -> None:
+    audit_path, upsert_payload = _prepare_crm_fixture_audit(tmp_path)
+    approval = _crm.crm_fixture_approval_token(
+        module_api_name="Leads",
+        payload_digest=upsert_payload["payloadDigest"],
+        idempotency_key="fixture-123",
+    )
+
+    result = runner.invoke(
+        app,
+        [
+            "crm",
+            "fixture-execute",
+            "--module",
+            "Leads",
+            "--data-json",
+            '{"Last_Name":"Wang","Email":"wang@example.com"}',
+            "--duplicate-check-field",
+            "Email",
+            "--idempotency-key",
+            "fixture-123",
+            "--payload-digest",
+            upsert_payload["payloadDigest"],
+            "--fixture-approval",
+            approval,
+            "--cleanup-plan",
+            "remove or update fixture record after validation",
+            "--execute",
+            "--audit-file",
+            str(audit_path),
+        ],
+    )
+
+    assert result.exit_code == 1
+    assert "controlled_fixture_gate_blocked" in result.output
+    events = [json.loads(line) for line in audit_path.read_text().splitlines()]
+    attempt = events[-1]
+    assert attempt["eventType"] == "crm.write.fixture_attempt"
+    assert attempt["fixtureApproval"]["matches"] is True
+    assert "live_fixture_env_not_enabled" in attempt["blockingReasons"]
+    assert "Wang" not in audit_path.read_text()
+
+
+@respx.mock
+def test_crm_fixture_execute_runs_with_all_gates(
+    mock_config: Path,
+    mock_token_refresh: Any,
+    tmp_path: Path,
+) -> None:
+    audit_path, upsert_payload = _prepare_crm_fixture_audit(tmp_path)
+    approval = _crm.crm_fixture_approval_token(
+        module_api_name="Leads",
+        payload_digest=upsert_payload["payloadDigest"],
+        idempotency_key="fixture-123",
+    )
+    route = respx.post("https://www.zohoapis.com/crm/v8/Leads/upsert").mock(
+        return_value=httpx.Response(
+            201,
+            json={
+                "data": [
+                    {
+                        "code": "SUCCESS",
+                        "duplicate_field": "Email",
+                        "action": "insert",
+                        "details": {"id": "4150868000003194003"},
+                        "message": "record added",
+                        "status": "success",
+                    }
+                ]
+            },
+        )
+    )
+
+    env = {
+        **_cfg_env(mock_config),
+        _crm.CRM_LIVE_FIXTURE_ENV_VAR: "1",
+    }
+    result = runner.invoke(
+        app,
+        [
+            "crm",
+            "fixture-execute",
+            "--module",
+            "Leads",
+            "--data-json",
+            '{"Last_Name":"Wang","Email":"wang@example.com"}',
+            "--duplicate-check-field",
+            "Email",
+            "--idempotency-key",
+            "fixture-123",
+            "--payload-digest",
+            upsert_payload["payloadDigest"],
+            "--fixture-approval",
+            approval,
+            "--cleanup-plan",
+            "remove or update fixture record after validation",
+            "--execute",
+            "--audit-file",
+            str(audit_path),
+        ],
+        env=env,
+    )
+
+    assert result.exit_code == 0, result.output
+    payload = json.loads(result.output)
+    assert route.called
+    request_body = json.loads(route.calls[0].request.content)
+    assert request_body["duplicate_check_fields"] == ["Email"]
+    assert request_body["data"][0]["Last_Name"] == "Wang"
+    assert payload["status"] == "succeeded"
+    assert payload["decision"] == "allow_controlled_live_fixture_execution"
+    assert payload["liveWritesEnabled"] is True
+    assert payload["responseSummary"]["recordIds"] == ["4150868000003194003"]
+    assert payload["resultAuditPersistence"]["status"] == "persisted"
+    assert "Wang" not in result.output
+    assert "wang@example.com" not in audit_path.read_text()
+
+
 def test_crm_sdk_status_command_uses_account_region(mock_config: Path) -> None:
     cfg = json.loads(mock_config.read_text())
     cfg["accounts"][ACCOUNT_EMAIL]["accounts_server"] = "https://accounts.zoho.eu"

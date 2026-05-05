@@ -41,6 +41,8 @@ CRM_WRITE_AUDIT_EVENT_VERSION = 1
 CRM_WRITE_AUDIT_DEFAULT_FILENAME = "crm_write_audit.jsonl"
 CRM_WRITE_AUDIT_DEFAULT_LIMIT = 20
 CRM_CONTROLLED_LIVE_FIXTURE_POLICY_ID = "crm-011-controlled-live-fixture-gate"
+CRM_CONTROLLED_FIXTURE_EXECUTION_POLICY_ID = "crm-012-guarded-fixture-execution-harness"
+CRM_LIVE_FIXTURE_ENV_VAR = "ZOHO_CRM_ALLOW_LIVE_FIXTURE"
 
 
 def crm_sdk_status(
@@ -474,6 +476,13 @@ def build_crm_write_audit_event(
         "confirmationMatches": payload.get("confirmation", {}).get("matches"),
         "scopeGate": _crm_safe_scope_gate(payload.get("scopeGate", {})),
         "fixture": payload.get("fixture", {}),
+        "fixtureApproval": payload.get("fixtureApproval", {}),
+        "controlledLiveFixtureEnabled": payload.get(
+            "controlledLiveFixtureEnabled", False
+        ),
+        "cleanupPlan": payload.get("cleanupPlan", {}),
+        "execution": payload.get("execution", {}),
+        "responseSummary": payload.get("responseSummary", {}),
         "auditEvidence": payload.get("auditEvidence", {}),
         "blockingReasons": list(payload.get("blockingReasons", [])),
         "policyId": payload.get("policyId")
@@ -657,6 +666,254 @@ def crm_controlled_live_fixture_policy(
             "Run `zoho crm upsert-gate --check-auth` against the same module.",
             "Review `zoho crm write-audit` before any future live fixture command.",
         ],
+    }
+
+
+def crm_fixture_approval_token(
+    *,
+    module_api_name: str | None,
+    payload_digest: str | None,
+    idempotency_key: str | None,
+) -> str:
+    """Build the exact operator approval token for one CRM fixture upsert."""
+
+    module = (module_api_name or "").strip()
+    digest = (payload_digest or "").strip()
+    key = (idempotency_key or "").strip()
+    digest_tail = digest.split(":", 1)[-1][:12] if digest else ""
+    return f"crm:fixture:upsert:{module}:{digest_tail}:{key}"
+
+
+def crm_fixture_cleanup_plan_summary(cleanup_plan: str | None) -> dict:
+    """Return an audit-safe cleanup plan summary without storing the text."""
+
+    text = (cleanup_plan or "").strip()
+    return {
+        "provided": bool(text),
+        "minLengthMet": len(text) >= 12,
+        "digest": _stable_json_digest(text) if text else "",
+        "descriptionStored": False,
+    }
+
+
+def crm_guarded_fixture_execution_policy(
+    *,
+    module_api_name: str | None = None,
+    duplicate_check_fields: list[str] | None = None,
+    idempotency_key: str | None = None,
+    payload_digest: str | None = None,
+    fixture_approval: str | None = None,
+    cleanup_plan: str | None = None,
+    audit_events: list[dict] | None = None,
+    execute: bool = False,
+    env_allows_live_fixture: bool = False,
+    record_count: int | None = None,
+    field_names: list[str] | None = None,
+) -> dict:
+    """Gate the fixture-only CRM upsert execution path."""
+
+    module = (module_api_name or "").strip()
+    duplicate_fields = _clean_string_list(duplicate_check_fields)
+    key = (idempotency_key or "").strip()
+    digest = (payload_digest or "").strip()
+    approval = (fixture_approval or "").strip()
+    events = audit_events or []
+    count = record_count or 0
+    expected_approval = crm_fixture_approval_token(
+        module_api_name=module,
+        payload_digest=digest,
+        idempotency_key=key,
+    )
+    approval_matches = bool(approval) and approval == expected_approval
+    cleanup_summary = crm_fixture_cleanup_plan_summary(cleanup_plan)
+
+    plan_events = [
+        event
+        for event in events
+        if event.get("eventType") == "crm.write.plan"
+        and event.get("operation") == "upsert"
+        and (not module or event.get("module") == module)
+        and (not key or event.get("idempotencyKey") == key)
+        and (not digest or event.get("payloadDigest") == digest)
+    ]
+    duplicate_fields_match = not duplicate_fields or any(
+        event.get("duplicateCheckFields") == duplicate_fields for event in plan_events
+    )
+    gate_events = [
+        event
+        for event in events
+        if event.get("eventType") == "crm.write.gate"
+        and event.get("operation") == "upsert"
+        and (not module or event.get("module") == module)
+    ]
+    matching_scope_events = [
+        event
+        for event in gate_events
+        if event.get("scopeGate", {}).get("hasAcceptedScope") is True
+    ]
+    fixture_plan_events = [
+        event
+        for event in events
+        if event.get("eventType") == "crm.write.fixture_plan"
+        and event.get("operation") == "upsert"
+        and (not module or event.get("module") == module)
+        and (not key or event.get("idempotencyKey") == key)
+        and (not digest or event.get("payloadDigest") == digest)
+        and event.get("auditEvidence", {}).get("hasDryRunPlan") is True
+        and event.get("auditEvidence", {}).get("hasGate") is True
+        and event.get("auditEvidence", {}).get("hasScopeEvidence") is True
+    ]
+
+    blocking_reasons = []
+    if not module:
+        blocking_reasons.append("module_required")
+    if not duplicate_fields:
+        blocking_reasons.append("duplicate_check_field_required")
+    if not key:
+        blocking_reasons.append("idempotency_key_required")
+    if not digest:
+        blocking_reasons.append("payload_digest_required")
+    if count != 1:
+        blocking_reasons.append("fixture_record_count_must_be_one")
+    if not plan_events:
+        blocking_reasons.append("dry_run_audit_evidence_missing")
+    if not duplicate_fields_match:
+        blocking_reasons.append("duplicate_check_field_evidence_mismatch")
+    if not gate_events:
+        blocking_reasons.append("upsert_gate_audit_evidence_missing")
+    if not matching_scope_events:
+        blocking_reasons.append("upsert_scope_evidence_missing")
+    if not fixture_plan_events:
+        blocking_reasons.append("fixture_plan_audit_evidence_missing")
+    if not approval_matches:
+        blocking_reasons.append("operator_fixture_approval_mismatch")
+    if not cleanup_summary["provided"]:
+        blocking_reasons.append("fixture_cleanup_plan_required")
+    elif not cleanup_summary["minLengthMet"]:
+        blocking_reasons.append("fixture_cleanup_plan_too_short")
+    if not env_allows_live_fixture:
+        blocking_reasons.append("live_fixture_env_not_enabled")
+    if not execute:
+        blocking_reasons.append("execute_flag_required")
+
+    allowed = not blocking_reasons
+    decision = (
+        "allow_controlled_live_fixture_execution"
+        if allowed
+        else "defer_controlled_live_fixture_execution"
+    )
+    fixture_label = f"zoho-cli-fixture:{module}:{key}" if module and key else ""
+
+    return {
+        "policyId": CRM_CONTROLLED_FIXTURE_EXECUTION_POLICY_ID,
+        "operation": "upsert",
+        "stage": "guarded-fixture-execution",
+        "status": "ready"
+        if allowed
+        else (CRM_WRITE_LIVE_STATUS if execute else CRM_WRITE_DRY_RUN_STATUS),
+        "dryRun": not execute,
+        "execute": execute,
+        "liveWritesEnabled": allowed,
+        "controlledLiveFixtureEnabled": allowed,
+        "decision": decision,
+        "module": module,
+        "recordCount": count,
+        "fieldNames": _clean_string_list(field_names),
+        "duplicateCheckFields": duplicate_fields,
+        "payloadDigest": digest,
+        "idempotencyKey": key,
+        "requiredApproval": expected_approval,
+        "fixtureApproval": {
+            "provided": bool(approval),
+            "matches": approval_matches,
+            "rawApprovalStored": False,
+        },
+        "fixture": {
+            "label": fixture_label,
+            "recordCount": 1,
+            "mustUseDedicatedTestRecord": True,
+            "mustBeRecoverable": True,
+            "cleanupPlanRequired": True,
+        },
+        "cleanupPlan": cleanup_summary,
+        "execution": {
+            "envVar": CRM_LIVE_FIXTURE_ENV_VAR,
+            "environmentAllowsLiveFixture": env_allows_live_fixture,
+            "normalUpsertExecuteEnabled": False,
+            "networkWriteAttempted": False,
+        },
+        "auditEvidence": {
+            "eventsConsidered": len(events),
+            "matchingPlanEvents": len(plan_events),
+            "matchingGateEvents": len(gate_events),
+            "matchingScopeEvents": len(matching_scope_events),
+            "matchingFixturePlanEvents": len(fixture_plan_events),
+            "hasDryRunPlan": bool(plan_events),
+            "hasGate": bool(gate_events),
+            "hasScopeEvidence": bool(matching_scope_events),
+            "hasFixturePlan": bool(fixture_plan_events),
+            "duplicateCheckFieldsMatch": duplicate_fields_match,
+            "matchingPlanEventIds": [event.get("eventId", "") for event in plan_events],
+            "matchingGateEventIds": [event.get("eventId", "") for event in gate_events],
+            "matchingFixturePlanEventIds": [
+                event.get("eventId", "") for event in fixture_plan_events
+            ],
+        },
+        "blockingReasons": blocking_reasons,
+        "failureRetryCleanup": {
+            "preWriteAuditRequired": True,
+            "resultAuditRequired": True,
+            "retryRequiresSamePayloadDigest": True,
+            "retryRequiresSameIdempotencyKey": True,
+            "cleanupPlanMustBeRecordedBeforeWrite": True,
+            "responseSummaryStoresRawResponse": False,
+        },
+        "next": [
+            "Run without --execute to inspect requiredApproval and blockers.",
+            f"Set {CRM_LIVE_FIXTURE_ENV_VAR}=1 only for a deliberate fixture run.",
+            "Keep `zoho crm upsert --execute` blocked for normal writes.",
+        ],
+    }
+
+
+def summarize_crm_upsert_response(
+    response: dict,
+    *,
+    http_status: int | None = None,
+    is_success: bool | None = None,
+) -> dict:
+    """Return a redacted summary of a CRM upsert API response."""
+
+    rows = response.get("data", []) if isinstance(response, dict) else []
+    if not isinstance(rows, list):
+        rows = []
+
+    records = []
+    record_ids = []
+    for row in rows:
+        if not isinstance(row, dict):
+            continue
+        details = row.get("details") if isinstance(row.get("details"), dict) else {}
+        record_id = str(details.get("id") or "")
+        if record_id:
+            record_ids.append(record_id)
+        records.append(
+            {
+                "status": str(row.get("status") or ""),
+                "code": str(row.get("code") or ""),
+                "action": str(row.get("action") or ""),
+                "duplicateField": str(row.get("duplicate_field") or ""),
+                "recordId": record_id,
+            }
+        )
+
+    return {
+        "httpStatus": http_status,
+        "isSuccess": is_success,
+        "recordCount": len(records),
+        "records": records,
+        "recordIds": record_ids,
+        "rawResponseStored": False,
     }
 
 
@@ -870,3 +1127,25 @@ class ZohoCrmClient:
         if word:
             params["word"] = word
         return self._get(f"/{module_api_name}/search", params)
+
+    def upsert_records(self, module_api_name: str, payload: dict) -> dict:
+        """Execute one guarded CRM upsert request and return a safe wrapper."""
+
+        path = f"/{module_api_name}/upsert"
+        resp = httpx.post(
+            f"{self.base_url}{path}",
+            headers=self._headers,
+            json=payload,
+            timeout=httpx.Timeout(30.0),
+        )
+        try:
+            body = resp.json()
+        except json.JSONDecodeError:
+            body = {}
+
+        return {
+            "httpStatus": resp.status_code,
+            "isSuccess": resp.is_success,
+            "body": body,
+            "rawResponseStored": False,
+        }

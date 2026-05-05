@@ -1,13 +1,15 @@
 # CRM write-surface safety contract
 
-Updated: `2026-05-05T11:23:21Z`.
+Updated: `2026-05-05T11:37:34Z`.
 
 This is the `crm-007` contract for adding CRM write commands without making AI
 agents accidentally mutate production data.
 
 ## Current decision
 
-CRM writes are **not enabled** in this slice.
+Normal CRM writes are **not enabled** in this slice. The only live write path is
+the controlled fixture harness introduced in `crm-012`, and it requires a
+dedicated command plus multiple independent gates.
 
 `zoho crm write-plan` exposes the machine-readable contract through
 `writeSurfacePolicy`:
@@ -139,6 +141,50 @@ The command reads recent redacted audit events and reports:
 
 `fixture-plan` also persists a `crm.write.fixture_plan` audit event when an
 audit path is configured. It is a readiness gate, not an execution command.
+
+## Implemented in crm-012
+
+`zoho crm fixture-execute` now provides the guarded fixture-only upsert harness:
+
+```bash
+zoho crm fixture-execute \
+  --module Leads \
+  --data-file /tmp/lead-fixture.json \
+  --duplicate-check-field Email \
+  --idempotency-key crm-fixture-2026-05-05 \
+  --payload-digest sha256:<reviewed-digest> \
+  --audit-file /tmp/zoho-crm-audit.jsonl
+```
+
+By default, the command is a dry-run and reports `requiredApproval`. A live
+fixture run requires all of the following:
+
+- `--execute`
+- `ZOHO_CRM_ALLOW_LIVE_FIXTURE=1`
+- exact `--fixture-approval` matching `requiredApproval`
+- non-empty `--cleanup-plan` whose text is not stored, only digested
+- one-record payload whose computed digest matches `--payload-digest`
+- matching `crm.write.plan`, `crm.write.gate`, and `crm.write.fixture_plan`
+  events in the redacted audit log
+- accepted OAuth upsert scope evidence from the gate event
+
+When every gate matches, the execution decision is
+`allow_controlled_live_fixture_execution`.
+
+When all gates pass, the command performs `POST /{module_api_name}/upsert`
+against CRM API v8 and persists:
+
+- `crm.write.fixture_attempt` before any network write
+- `crm.write.fixture_result` after the API response
+
+The output and audit log store field API names, payload digest, idempotency key,
+approval/cleanup summaries, HTTP status, action/code/status, and CRM record IDs
+needed for cleanup. They do not store raw CRM field values, tokens, secrets, raw
+approval text, raw cleanup text, or raw API responses.
+
+Normal `zoho crm upsert --execute` still returns `live_write_not_enabled`; the
+fixture harness is intentionally separate so broad live writes cannot be invoked
+accidentally.
 
 ## Official API references
 

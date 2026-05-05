@@ -328,6 +328,130 @@ def test_crm_controlled_live_fixture_policy_matches_audit_evidence() -> None:
     )
 
 
+def _build_crm_fixture_audit_events() -> tuple[dict, list[dict]]:
+    plan = crm.build_crm_upsert_dry_run(
+        module_api_name="Leads",
+        payload={"Last_Name": "Wang", "Email": "wang@example.com"},
+        duplicate_check_fields=["Email"],
+        idempotency_key="fixture-123",
+    )
+    plan_event = crm.build_crm_write_audit_event(
+        payload=plan,
+        event_type="crm.write.plan",
+        created_at="2026-05-05T11:30:00Z",
+    )
+    gate = crm.crm_upsert_live_gate_policy(
+        module_api_name="Leads",
+        granted_scopes=["ZohoCRM.modules.Leads.WRITE"],
+        auth_checked=True,
+    )
+    gate_event = crm.build_crm_write_audit_event(
+        payload=gate,
+        event_type="crm.write.gate",
+        created_at="2026-05-05T11:31:00Z",
+    )
+    fixture_plan = crm.crm_controlled_live_fixture_policy(
+        module_api_name="Leads",
+        duplicate_check_fields=["Email"],
+        idempotency_key="fixture-123",
+        payload_digest=plan["payloadDigest"],
+        audit_events=[plan_event, gate_event],
+    )
+    fixture_plan_event = crm.build_crm_write_audit_event(
+        payload=fixture_plan,
+        event_type="crm.write.fixture_plan",
+        created_at="2026-05-05T11:32:00Z",
+    )
+    return plan, [plan_event, gate_event, fixture_plan_event]
+
+
+def test_crm_guarded_fixture_execution_policy_requires_fixture_plan() -> None:
+    plan, events = _build_crm_fixture_audit_events()
+    approval = crm.crm_fixture_approval_token(
+        module_api_name="Leads",
+        payload_digest=plan["payloadDigest"],
+        idempotency_key="fixture-123",
+    )
+
+    policy = crm.crm_guarded_fixture_execution_policy(
+        module_api_name="Leads",
+        duplicate_check_fields=["Email"],
+        idempotency_key="fixture-123",
+        payload_digest=plan["payloadDigest"],
+        fixture_approval=approval,
+        cleanup_plan="remove or update fixture record after validation",
+        audit_events=events[:2],
+        execute=True,
+        env_allows_live_fixture=True,
+        record_count=1,
+        field_names=plan["fieldNames"],
+    )
+
+    assert policy["policyId"] == "crm-012-guarded-fixture-execution-harness"
+    assert policy["liveWritesEnabled"] is False
+    assert "fixture_plan_audit_evidence_missing" in policy["blockingReasons"]
+    assert "operator_fixture_approval_mismatch" not in policy["blockingReasons"]
+
+
+def test_crm_guarded_fixture_execution_policy_allows_exact_fixture() -> None:
+    plan, events = _build_crm_fixture_audit_events()
+    approval = crm.crm_fixture_approval_token(
+        module_api_name="Leads",
+        payload_digest=plan["payloadDigest"],
+        idempotency_key="fixture-123",
+    )
+
+    policy = crm.crm_guarded_fixture_execution_policy(
+        module_api_name="Leads",
+        duplicate_check_fields=["Email"],
+        idempotency_key="fixture-123",
+        payload_digest=plan["payloadDigest"],
+        fixture_approval=approval,
+        cleanup_plan="remove or update fixture record after validation",
+        audit_events=events,
+        execute=True,
+        env_allows_live_fixture=True,
+        record_count=1,
+        field_names=plan["fieldNames"],
+    )
+
+    assert policy["decision"] == "allow_controlled_live_fixture_execution"
+    assert policy["liveWritesEnabled"] is True
+    assert policy["controlledLiveFixtureEnabled"] is True
+    assert policy["blockingReasons"] == []
+    assert policy["fixtureApproval"]["matches"] is True
+    assert policy["cleanupPlan"]["descriptionStored"] is False
+
+
+def test_summarize_crm_upsert_response_redacts_user_names() -> None:
+    summary = crm.summarize_crm_upsert_response(
+        {
+            "data": [
+                {
+                    "code": "SUCCESS",
+                    "duplicate_field": "Email",
+                    "action": "insert",
+                    "details": {
+                        "id": "4150868000003194003",
+                        "Created_By": {"name": "Patricia Boyle"},
+                    },
+                    "message": "record added",
+                    "status": "success",
+                }
+            ]
+        },
+        http_status=201,
+        is_success=True,
+    )
+    encoded = json.dumps(summary)
+
+    assert summary["recordIds"] == ["4150868000003194003"]
+    assert summary["records"][0]["action"] == "insert"
+    assert summary["rawResponseStored"] is False
+    assert "Patricia" not in encoded
+    assert "record added" not in encoded
+
+
 @respx.mock
 def test_crm_client_modules() -> None:
     client = crm.ZohoCrmClient("fake-token", base_url="https://www.zohoapis.com/crm/v2")

@@ -1,10 +1,18 @@
-last_run_at: "2026-05-05T11:28:21Z"
+last_run_at: "2026-05-05T11:46:38Z"
 last_result: passing
-current_focus: crm-011-controlled-live-fixture-full-ci-20260505T112821Z
+current_focus: crm-012-guarded-fixture-execution-full-ci-20260505T114638Z
 suites:
   unit:
     status: passing
     notes:
+      - "crm-012 guarded fixture execution harness completed at 2026-05-05T11:37:34Z"
+      - "make ci -> ruff format/check clean + pytest `1834 passed in 51.95s`"
+      - "added `crm_guarded_fixture_execution_policy()`, `crm_fixture_approval_token()`, redacted cleanup/response summaries, and `zoho crm fixture-execute`"
+      - "`zoho crm fixture-execute` defaults to dry-run, reports `requiredApproval`, and requires `--execute`, `ZOHO_CRM_ALLOW_LIVE_FIXTURE=1`, exact `--fixture-approval`, `--cleanup-plan`, matching payload digest/idempotency, and persisted dry-run/gate/fixture-plan audit evidence before a live fixture upsert"
+      - "normal `zoho crm upsert --execute` remains blocked with `live_write_not_enabled`"
+      - "fixture execution persists `crm.write.fixture_attempt` before network write and `crm.write.fixture_result` after response; audits store no raw field values, raw approval text, raw cleanup text, or raw API responses"
+      - "./.venv/bin/python -m pytest -q tests/test_crm.py tests/test_cli.py -k 'crm' tests/test_lane3_docs.py tests/test_markdown_update.py -> 65 passed, 866 deselected in 1.10s"
+      - "manual fixture probe: `zoho crm upsert` + `zoho crm upsert-gate` + `zoho crm fixture-plan` + `zoho crm fixture-execute` dry-run + blocked `--execute` -> policy `crm-012-guarded-fixture-execution-harness`, `decision=defer_controlled_live_fixture_execution`, required approval emitted, blocked error `controlled_fixture_gate_blocked`, `REDACTION_OK`"
       - "crm-011 controlled live fixture gate completed at 2026-05-05T11:23:21Z"
       - "make ci -> ruff format/check clean + pytest `1828 passed in 50.71s`"
       - "added `crm_controlled_live_fixture_policy()` plus `zoho crm fixture-plan`"

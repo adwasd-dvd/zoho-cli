@@ -84,4 +84,10 @@ Use `zoho crm write-audit` to inspect them, prefer `--audit-file` or
 `rawFieldValuesStored=false`.
 Before any real-environment CRM test, run `zoho crm fixture-plan` against the
 same audit file. Treat its blockers and `liveWritesEnabled=false` as
-authoritative until a later guarded fixture execution slice exists.
+authoritative until `zoho crm fixture-execute` reports matching evidence.
+In `crm-012`, `zoho crm fixture-execute` is dry-run by default. A live fixture
+requires `--execute`, `ZOHO_CRM_ALLOW_LIVE_FIXTURE=1`, exact
+`--fixture-approval`, a cleanup plan, one-record payload, matching digest, and
+persisted dry-run/gate/fixture-plan audit evidence. It records
+`crm.write.fixture_attempt` and `crm.write.fixture_result`; normal
+`zoho crm upsert --execute` stays blocked.

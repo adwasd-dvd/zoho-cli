@@ -1,10 +1,10 @@
 module: CRM
-updated_at: "2026-05-05T11:23:21Z"
+updated_at: "2026-05-05T11:37:34Z"
 status: in_progress
-phase: v0_5_guarded_fixture_execution_planning
+phase: v0_5_controlled_fixture_live_smoke
 blockers: []
-current_milestone: crm-012-guarded-fixture-execution-harness
+current_milestone: crm-013-controlled-fixture-live-smoke
 last_completed:
-  id: crm-011
-  summary: "Added `zoho crm fixture-plan` to inspect redacted dry-run/gate/scope audit evidence for controlled live fixture readiness while keeping `liveWritesEnabled=false`."
-next_small_step: decide the guarded fixture execution harness contract while keeping normal live writes blocked
+  id: crm-012
+  summary: "Added `zoho crm fixture-execute` as a dry-run-first, environment-gated, exact-approval controlled fixture upsert harness while keeping normal `zoho crm upsert --execute` blocked."
+next_small_step: prepare controlled CRM fixture live smoke evidence with a dedicated test record and cleanup plan

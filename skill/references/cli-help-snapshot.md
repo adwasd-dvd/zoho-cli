@@ -1,6 +1,6 @@
 # CLI help snapshot
 
-Generated at: `2026-05-05T11:23:03Z`
+Generated at: `2026-05-05T11:45:06Z`
 
 Use this file as a quick command-surface reference for the skill.
 
@@ -273,20 +273,22 @@ Exit code: `0`
 │ --help          Show this message and exit.                                  │
 ╰──────────────────────────────────────────────────────────────────────────────╯
 ╭─ Commands ───────────────────────────────────────────────────────────────────╮
-│ status        Show CRM auth readiness and inferred API endpoint.             │
-│ sdk-status    Show official Zoho CRM SDK adapter readiness.                  │
-│ write-plan    Show CRM write-surface safety gates without writing data.      │
-│ upsert        Plan a CRM upsert without writing data.                        │
-│ upsert-gate   Show the guarded live-upsert gate without writing data.        │
-│ write-audit   List recent redacted CRM write audit events.                   │
-│ fixture-plan  Plan the controlled live CRM fixture gate without writing      │
-│               data.                                                          │
-│ modules       List CRM modules available to the account.                     │
-│ fields        List fields for a CRM module.                                  │
-│ list          List records from a CRM module.                                │
-│ get           Get a single CRM record by id.                                 │
-│ search        Search records in a CRM module.                                │
-│ bridge-run    Run one CRM action through membrane bridge (explicit opt-in).  │
+│ status           Show CRM auth readiness and inferred API endpoint.          │
+│ sdk-status       Show official Zoho CRM SDK adapter readiness.               │
+│ write-plan       Show CRM write-surface safety gates without writing data.   │
+│ upsert           Plan a CRM upsert without writing data.                     │
+│ upsert-gate      Show the guarded live-upsert gate without writing data.     │
+│ write-audit      List recent redacted CRM write audit events.                │
+│ fixture-plan     Plan the controlled live CRM fixture gate without writing   │
+│                  data.                                                       │
+│ fixture-execute  Plan or run the guarded live CRM fixture upsert.            │
+│ modules          List CRM modules available to the account.                  │
+│ fields           List fields for a CRM module.                               │
+│ list             List records from a CRM module.                             │
+│ get              Get a single CRM record by id.                              │
+│ search           Search records in a CRM module.                             │
+│ bridge-run       Run one CRM action through membrane bridge (explicit        │
+│                  opt-in).                                                    │
 ╰──────────────────────────────────────────────────────────────────────────────╯
 ```
 
@@ -398,5 +400,51 @@ Exit code: `0`
 │                                           fixture evidence.                  │
 │                                           [default: 1000]                    │
 │ --help                                    Show this message and exit.        │
+╰──────────────────────────────────────────────────────────────────────────────╯
+```
+
+## `zoho crm fixture-execute --help`
+
+Exit code: `0`
+
+```text
+
+ Usage: zoho crm fixture-execute [OPTIONS]
+
+ Plan or run the guarded live CRM fixture upsert.
+
+╭─ Options ────────────────────────────────────────────────────────────────────╮
+│ *  --module                 -m      TEXT     CRM module API name for the     │
+│                                              controlled fixture.             │
+│                                              [required]                      │
+│    --data-json                      TEXT     JSON object/array or full       │
+│                                              upsert request body for the     │
+│                                              fixture.                        │
+│    --data-file                      TEXT     Path to JSON object/array or    │
+│                                              full upsert request body for    │
+│                                              the fixture.                    │
+│    --duplicate-check-field          TEXT     Duplicate/unique Field API name │
+│                                              expected for the fixture        │
+│                                              (repeatable).                   │
+│ *  --idempotency-key                TEXT     Caller-provided idempotency key │
+│                                              recorded in the fixture audit   │
+│                                              envelope.                       │
+│                                              [required]                      │
+│    --payload-digest                 TEXT     Payload digest from the         │
+│                                              reviewed upsert dry-run.        │
+│    --fixture-approval               TEXT     Exact approval token reported   │
+│                                              by fixture-execute dry-run      │
+│                                              output.                         │
+│    --cleanup-plan                   TEXT     Human cleanup/recovery plan.    │
+│                                              Only its digest is stored in    │
+│                                              audit output.                   │
+│    --execute                                 Run the controlled live fixture │
+│                                              if every gate is satisfied.     │
+│    --audit-file                     TEXT     Override CRM write audit JSONL  │
+│                                              path.                           │
+│    --evidence-limit                 INTEGER  Max audit events to inspect for │
+│                                              fixture execution evidence.     │
+│                                              [default: 1000]                 │
+│    --help                                    Show this message and exit.     │
 ╰──────────────────────────────────────────────────────────────────────────────╯
 ```

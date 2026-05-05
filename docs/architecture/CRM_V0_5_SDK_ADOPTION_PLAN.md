@@ -1,6 +1,6 @@
 # CRM v0.5 SDK adoption plan
 
-Updated: `2026-05-05T11:23:21Z`.
+Updated: `2026-05-05T11:37:34Z`.
 
 This is the `crm-003` handoff for phasing the official Zoho CRM server-side
 Python SDK into `zoho-cli` without breaking the current AI-safe CLI contract.
@@ -146,7 +146,7 @@ adapter proves parity on the read-only surface. The CLI contract remains:
   module, event-type, and limit filters.
 - `--audit-file` and `ZOHO_CRM_WRITE_AUDIT` support isolated CI/agent audit
   stores.
-- Live CRM writes remain disabled.
+- Broad CRM writes remain disabled.
 
 ## Implemented in crm-011
 
@@ -156,7 +156,21 @@ adapter proves parity on the read-only surface. The CLI contract remains:
   controlled fixture.
 - `fixture-plan` persists `crm.write.fixture_plan` when audit storage is
   configured.
-- Live CRM writes remain disabled.
+- Broad CRM writes remain disabled.
+
+## Implemented in crm-012
+
+- Added `crm_guarded_fixture_execution_policy()`, safe approval/cleanup helpers,
+  redacted CRM upsert response summaries, and `zoho crm fixture-execute`.
+- `fixture-execute` defaults to dry-run and reports `requiredApproval`.
+- A live fixture upsert requires `--execute`, `ZOHO_CRM_ALLOW_LIVE_FIXTURE=1`,
+  exact `--fixture-approval`, `--cleanup-plan`, a one-record payload, matching
+  payload digest, idempotency key, and persisted dry-run/gate/fixture-plan audit
+  evidence.
+- The command writes `crm.write.fixture_attempt` before a live attempt and
+  `crm.write.fixture_result` after the API response, without storing raw field
+  values, raw cleanup text, raw approval text, or raw API responses.
+- Normal `zoho crm upsert --execute` remains blocked.
 
 ## v0.5 slices
 
@@ -193,13 +207,16 @@ adapter proves parity on the read-only surface. The CLI contract remains:
    - define the smallest safe real-CRM fixture for upsert validation;
    - require explicit operator approval and persisted audit evidence before any
      network write is attempted.
-9. `crm-012` guarded fixture execution harness:
+9. `crm-012` guarded fixture execution harness (completed):
    - decide whether a special fixture-only execution path should exist;
    - keep normal `zoho crm upsert --execute` blocked.
+10. `crm-013` controlled CRM fixture live smoke:
+   - run the fixture harness against a dedicated test record when operator
+     approval, scopes, cleanup plan, and environment gates are ready;
+   - record the live attempt/result audit evidence and cleanup outcome.
 
 ## Non-goals
 
 - Do not install the SDK as a mandatory dependency in the base CLI yet.
 - Do not replace the current HTTP client until parity evidence is recorded.
-- Do not add CRM write commands before read-only SDK parity and live safety
-  gates are complete.
+- Do not add broad CRM write commands before fixture safety evidence is recorded.

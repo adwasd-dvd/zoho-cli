@@ -128,8 +128,16 @@ Native diagnostic behavior:
   normalized session routes to decide the next operator action.
 - Native agent dispatch is implemented for accepted webhook/polling events.
   Redacted audit events and diagnostic bundles are available; use the smoke
-  gate script before production rollout and treat missing public Bot callback
-  reachability as a deployment blocker.
+  gate script before production rollout. Public Bot callback auth/reachability
+  can be verified through a controlled operator tunnel; production readiness
+  still requires trusted Mention-to-agent reply evidence.
+- For route-specific rollout smoke, set `ZOHO_CLIQ_EXPECTED_AGENT_ID` and
+  optionally `ZOHO_CLIQ_EXPECTED_AGENT_MODEL`. Use
+  `ZOHO_CLIQ_ROUTE_BINDING_ONLY=1` for offline preflight and
+  `ZOHO_CLIQ_ROUTE_REPORT_FILE` to write schema-versioned
+  `openclaw_cliq_route_preflight` JSON evidence with `runId` and `checkedAt`.
+  The report omits local config paths and uses stable error codes such as
+  `expected_agent_missing` and `agent_binding_mismatch`.
 - Do not include webhook secrets, token passwords, webhook signatures, raw
   stderr, or raw Cliq message bodies in reports.
 
@@ -148,7 +156,7 @@ AI troubleshooting ladder:
 | `employee_scope_empty` | channel status summary | Add `workScopes.<profile>` before accepting business chat turns. |
 | `target_unresolved` | routing diagnostic | Prefer explicit `channel:<id>`, `user:<id>`, or `cliq:channel:<id>:thread:<thread_id>` targets. |
 | native dispatch failure / dead-letter | webhook or polling turn diagnostics | Do not retry blindly; inspect the turn id, dispatch error, and dead-letter metadata before replay. |
-| `live_verification_pending` | channel status diagnostics | Do not claim production incident readiness until the smoke gate and public Bot callback pass; continue with redacted diagnostic bundle evidence only. |
+| `live_verification_pending` | channel status diagnostics | Do not claim production incident readiness until the smoke gate, public Bot callback, route preflight, and trusted agent reply evidence pass; continue with redacted diagnostic bundle evidence only. |
 | `token_refresh_rate_limited` | `zoho cliq ...` JSON error or native polling adapter error kind `rate_limited` | Record as `skip_deferred`, wait for cooldown, and avoid bursty probe loops. |
 | Zoho endpoint `not_supported` or `inactive_appaccount_user` | `zoho cliq ...` JSON error | Record as `skip_deferred` when repeated; do not block unrelated local channel work. |
 
@@ -191,8 +199,11 @@ Human setup checkpoints:
 - Real Zoho Bot handler edits use the Deluge templates and placeholders in
   `docs/releases/OPENCLAW_CLIQ_BOT_HANDLER_TEMPLATES.md`.
 - The live smoke gate script is run from the repo root, with
-  `token_refresh_rate_limited` recorded as `skip_deferred` and public callback
-  reachability deferred only when no tunnel/gateway URL is configured.
+  `token_refresh_rate_limited` recorded as `skip_deferred`. When a specific
+  OpenClaw agent must receive Cliq traffic, run the route-only preflight first
+  with `ZOHO_CLIQ_EXPECTED_AGENT_ID`, `ZOHO_CLIQ_ROUTE_BINDING_ONLY=1`, and
+  `ZOHO_CLIQ_ROUTE_REPORT_FILE`; then verify one trusted Bot message produces
+  exactly one native agent turn and one Cliq reply.
 - The RC pack preflight script is run from the repo root before cutting an
   artifact; its summary JSON remains under ignored `tests/auto_pilot/reports/`.
 - Pairing/allowlist/mention gating are enabled.

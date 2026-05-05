@@ -196,6 +196,17 @@ def test_native_cliq_channel_ai_troubleshooting_contract_present() -> None:
         "skip_deferred",
         "ops/scripts/openclaw_cliq_rc_pack.sh",
         "OPENCLAW_CLIQ_BOT_HANDLER_TEMPLATES.md",
+        "ZOHO_CLIQ_EXPECTED_AGENT_ID",
+        "ZOHO_CLIQ_EXPECTED_AGENT_MODEL",
+        "ZOHO_CLIQ_ROUTE_BINDING_ONLY",
+        "ZOHO_CLIQ_ROUTE_REPORT_FILE",
+        "openclaw_cliq_route_preflight",
+        "schemaVersion=1",
+        "runId",
+        "checkedAt",
+        "expected_agent_missing",
+        "agent_binding_mismatch",
+        "local config path",
     ]:
         assert marker in combined
 

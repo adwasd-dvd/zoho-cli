@@ -43,14 +43,20 @@ Use this skill as the default operating contract for an OpenClaw agent acting li
   `docs/releases/OPENCLAW_CLIQ_BOT_HANDLER_TEMPLATES.md` before editing a real
   Zoho Bot handler, use `ops/scripts/openclaw_cliq_live_smoke.sh` for the
   controlled gate, treat `token_refresh_rate_limited` as `skip_deferred`, and do
-  not claim production incident readiness until a reachable public Bot callback
-  is verified.
+  not claim production incident readiness until public Bot callback
+  auth/reachability and a controlled trusted agent reply are both verified.
+- For native Cliq rollout smoke that must target a specific OpenClaw agent, set
+  `ZOHO_CLIQ_EXPECTED_AGENT_ID` and optionally
+  `ZOHO_CLIQ_EXPECTED_AGENT_MODEL`; use `ZOHO_CLIQ_ROUTE_BINDING_ONLY=1` for
+  offline route preflight and `ZOHO_CLIQ_ROUTE_REPORT_FILE` to persist the
+  `openclaw_cliq_route_preflight` JSON evidence.
 - For OpenClaw host upgrades or plugin SDK breakage, follow
   `docs/releases/OPENCLAW_CLIQ_CHANNEL_COMPATIBILITY.md` before changing
   business logic or raising the host floor.
 - For v0.4 native Cliq channel RC decisions, follow
   `docs/releases/OPENCLAW_CLIQ_CHANNEL_V0_4_RC_CHECKLIST.md`; production rollout
-  still requires public Bot callback verification. Run
+  still requires controlled trusted agent reply evidence after public callback
+  auth/reachability. Run
   `ops/scripts/openclaw_cliq_rc_pack.sh` before cutting a local/operator or
   npm/GitHub RC artifact.
 - For CRM SDK work, run `zoho crm sdk-status` first. Treat

@@ -687,51 +687,51 @@ def test_openclaw_cliq_live_smoke_route_binding_only_requires_expected_agent() -
     assert "local webhook missing-secret gate" not in output
 
 
+def _valid_openclaw_cliq_trusted_reply_evidence() -> dict[str, object]:
+    return {
+        "schemaVersion": 1,
+        "kind": "openclaw_cliq_trusted_reply_evidence",
+        "channel": "cliq",
+        "accountId": "default",
+        "routePreflight": {
+            "status": "ok",
+            "agentId": "zoho-employee-test",
+            "model": "openai-codex/gpt-5.3-codex",
+        },
+        "publicCallbackVerified": True,
+        "trustedMention": {
+            "handler": "mention",
+            "sentAt": "2026-05-05T20:48:51Z",
+            "trustedSenderIdHash": "sha256:sender",
+            "messageIdHash": "sha256:message",
+        },
+        "nativeDispatch": {
+            "agentId": "zoho-employee-test",
+            "agentModel": "openai-codex/gpt-5.3-codex",
+            "agentTurnCount": 1,
+            "deadLetterCount": 0,
+            "duplicateDispatchCount": 0,
+        },
+        "delivery": {
+            "replyDelivered": True,
+            "cliqReplyCount": 1,
+            "deliveryIdHash": "sha256:reply",
+        },
+        "redaction": {
+            "rawWebhookPayloadStored": False,
+            "rawMessageBodyStored": False,
+            "rawCliqReplyBodyStored": False,
+            "secretsStored": False,
+        },
+    }
+
+
 def test_openclaw_cliq_trusted_reply_evidence_accepts_redacted_gate(
     tmp_path: Path,
 ) -> None:
     evidence_path = tmp_path / "trusted-reply.json"
     report_path = tmp_path / "reports" / "trusted-reply-report.json"
-    evidence_path.write_text(
-        json.dumps(
-            {
-                "schemaVersion": 1,
-                "kind": "openclaw_cliq_trusted_reply_evidence",
-                "channel": "cliq",
-                "accountId": "default",
-                "routePreflight": {
-                    "status": "ok",
-                    "agentId": "zoho-employee-test",
-                    "model": "openai-codex/gpt-5.3-codex",
-                },
-                "publicCallbackVerified": True,
-                "trustedMention": {
-                    "handler": "mention",
-                    "sentAt": "2026-05-05T20:48:51Z",
-                    "trustedSenderIdHash": "sha256:sender",
-                    "messageIdHash": "sha256:message",
-                },
-                "nativeDispatch": {
-                    "agentId": "zoho-employee-test",
-                    "agentModel": "openai-codex/gpt-5.3-codex",
-                    "agentTurnCount": 1,
-                    "deadLetterCount": 0,
-                    "duplicateDispatchCount": 0,
-                },
-                "delivery": {
-                    "replyDelivered": True,
-                    "cliqReplyCount": 1,
-                    "deliveryIdHash": "sha256:reply",
-                },
-                "redaction": {
-                    "rawWebhookPayloadStored": False,
-                    "rawMessageBodyStored": False,
-                    "rawCliqReplyBodyStored": False,
-                    "secretsStored": False,
-                },
-            }
-        )
-    )
+    evidence_path.write_text(json.dumps(_valid_openclaw_cliq_trusted_reply_evidence()))
 
     result = subprocess.run(
         ["bash", str(OPENCLAW_CLIQ_TRUSTED_REPLY_EVIDENCE_SCRIPT)],
@@ -843,3 +843,76 @@ def test_openclaw_cliq_trusted_reply_evidence_reports_blockers(
         "dead_letter_count_not_zero",
         "duplicate_dispatch_count_not_zero",
     ]
+
+
+def test_openclaw_cliq_trusted_reply_template_cannot_pass_unchanged() -> None:
+    template_path = (
+        REPO_ROOT
+        / "docs"
+        / "releases"
+        / "OPENCLAW_CLIQ_TRUSTED_REPLY_EVIDENCE_TEMPLATE.json"
+    )
+
+    result = subprocess.run(
+        ["bash", str(OPENCLAW_CLIQ_TRUSTED_REPLY_EVIDENCE_SCRIPT)],
+        cwd=REPO_ROOT,
+        env={
+            **os.environ,
+            "ZOHO_CLIQ_TRUSTED_REPLY_EVIDENCE_FILE": str(template_path),
+            "ZOHO_CLIQ_TRUSTED_REPLY_RUN_ID": "unit-template-placeholder",
+            "ZOHO_CLIQ_EXPECTED_AGENT_ID": "zoho-employee-test",
+            "ZOHO_CLIQ_EXPECTED_AGENT_MODEL": "openai-codex/gpt-5.3-codex",
+        },
+        capture_output=True,
+        text=True,
+        check=False,
+    )
+
+    output = f"{result.stdout}\n{result.stderr}"
+    assert result.returncode == 1, output
+    payload = json.loads(result.stdout)
+    assert payload["status"] == "incomplete"
+    assert (
+        payload["evidenceFile"] == "OPENCLAW_CLIQ_TRUSTED_REPLY_EVIDENCE_TEMPLATE.json"
+    )
+    assert payload["blockingReasons"] == [
+        "route_preflight_not_ok",
+        "public_callback_not_verified",
+        "trusted_sender_hash_missing",
+        "trusted_message_hash_missing",
+        "agent_turn_count_not_one",
+        "cliq_reply_count_not_one",
+        "reply_not_delivered",
+        "delivery_id_hash_missing",
+    ]
+
+
+def test_openclaw_cliq_trusted_reply_evidence_blocks_secret_markers(
+    tmp_path: Path,
+) -> None:
+    evidence = _valid_openclaw_cliq_trusted_reply_evidence()
+    evidence["diagnostic"] = "redacted X-Cliq-Webhook-Secret header marker"
+    evidence_path = tmp_path / "trusted-reply-secret-marker.json"
+    evidence_path.write_text(json.dumps(evidence))
+
+    result = subprocess.run(
+        ["bash", str(OPENCLAW_CLIQ_TRUSTED_REPLY_EVIDENCE_SCRIPT)],
+        cwd=REPO_ROOT,
+        env={
+            **os.environ,
+            "ZOHO_CLIQ_TRUSTED_REPLY_EVIDENCE_FILE": str(evidence_path),
+            "ZOHO_CLIQ_TRUSTED_REPLY_RUN_ID": "unit-secret-marker",
+            "ZOHO_CLIQ_EXPECTED_AGENT_ID": "zoho-employee-test",
+            "ZOHO_CLIQ_EXPECTED_AGENT_MODEL": "openai-codex/gpt-5.3-codex",
+        },
+        capture_output=True,
+        text=True,
+        check=False,
+    )
+
+    output = f"{result.stdout}\n{result.stderr}"
+    assert result.returncode == 1, output
+    payload = json.loads(result.stdout)
+    assert payload["status"] == "incomplete"
+    assert payload["blockingReasons"] == ["secret_marker_present"]
+    assert payload["redaction"]["secretMarkerPresent"] is True

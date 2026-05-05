@@ -53,6 +53,10 @@
           "webhookSecret": {
             "$ref": "#/definitions/secretRef"
           },
+          "webhookPath": {
+            "type": "string",
+            "minLength": 1
+          },
           "dmPolicy": {
             "type": "string",
             "enum": [
@@ -261,6 +265,10 @@
               "webhookSecret": {
                 "$ref": "#/definitions/secretRef"
               },
+              "webhookPath": {
+                "type": "string",
+                "minLength": 1
+              },
               "dmPolicy": {
                 "type": "string",
                 "enum": [
@@ -320,6 +328,11 @@
           "label": "Webhook secret",
           "help": "SecretRef/env reference to ZOHO_CLIQ_WEBHOOK_SECRET.",
           "sensitive": true
+        },
+        "webhookPath": {
+          "label": "Webhook path",
+          "help": "OpenClaw plugin HTTP route used by Zoho Cliq Bot handlers.",
+          "advanced": true
         },
         "allowFrom": {
           "label": "Allowed Cliq senders",

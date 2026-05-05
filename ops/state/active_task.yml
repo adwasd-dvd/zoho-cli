@@ -1,23 +1,23 @@
-id: cliq-channel-407
-title: implement Cliq webhook inbound normalization and verification
+id: cliq-channel-408
+title: implement Cliq channel status reaction and read-ack lifecycle
 module: openclaw_cliq_channel
 stage: ready
 status: ready
 owner: coder
-updated_at: '2026-05-05T04:58:36Z'
+updated_at: '2026-05-05T06:24:01Z'
 execution_mode: turbo_20x
 throughput_policy_ref: ops/state/execution_policy.yml
 success_criteria:
-  - register or expose the webhook inbound path expected by the current OpenClaw channel SDK without adding parallel send tools
-  - verify webhook signatures/secrets with redacted diagnostics and no raw secret logging
-  - normalize bot message and participation payloads into the same `CliqNormalizedInboundEvent` shape used by polling
-  - reuse group allowlist, mention gating, scoped employee policy, self-message skipping, and dedupe before dispatch
-  - keep fake webhook fixture coverage for valid payload, invalid signature, duplicate payload, mention-denied group payload, and direct-message payload
+  - add visible lifecycle status transitions for accepted native Cliq turns (`received`, `thinking`, `writing`, `testing`, `done`, `failed`)
+  - reuse `zoho cliq status-react` and read-ack/mark-read fallback through the existing JSON-safe CLI adapter
+  - keep lifecycle actions idempotent, redacted, and non-recursive so status/read failures do not create new inbound work
+  - share the lifecycle path across webhook and polling events without adding parallel send tools
+  - add fake runtime coverage for success, failure, unsupported endpoint fallback, and redaction
   - update Lane 2 docs, Lane 3 skill/docs, and Lane 1 state/progress docs
   - keep package-local `npm run typecheck`, `npm run build`, OpenClaw linked install, `plugins inspect zoho-cliq --json`, `plugins doctor`, focused tests, and `make ci` green
-next_if_done: implement cliq-channel-408 status reaction and read-ack lifecycle for native channel turns.
+next_if_done: implement cliq-channel-413 turn ledger loop prevention dead-letter and efficiency hardening.
 progress:
+  - "2026-05-05T06:20:03Z cliq-channel-407 completed: `src/webhook.ts` registers exact OpenClaw plugin HTTP routes such as `/webhooks/cliq`, verifies `X-Cliq-Webhook-Secret` via SecretRef/env config, filters multi-account candidates by webhook path, parses JSON/form/Deluge payload bodies, accepts Message/Mention/Participation/Context handlers, ignores unrelated handler kinds, normalizes to the same inbound event shape as polling, and applies dedupe plus allowlist/mention/employee security gates before the optional dispatch callback."
   - "2026-05-05T04:58:36Z cliq-channel-406 completed: `src/zoho-cli.ts` now wraps `zoho cliq chats --unread-only --exclude-reacted-by-self` and `zoho cliq context`; `src/inbound.ts` normalizes Cliq payloads into account/network/chat/message-keyed events, skips self-authored messages when signaled, detects mentions, evaluates existing allowlist/employee policy gates, and provides dedupe helpers; `src/polling.ts` runs one polling pass with optional dispatch callback. Fake `zoho` runtime coverage verifies accepted channel/direct messages, mention-denied group messages, duplicate suppression, and self-message skipping."
   - "2026-05-05T04:03:04Z cliq-channel-405 completed: `src/channel.ts` now exposes the native OpenClaw outbound adapter with `deliveryMode=direct` and markdown chunking; outbound text delivery resolves account config, calls `sendCliqText`, maps direct/channel/user sends to `zoho cliq send`, routes replies through `zoho cliq reply`, uses `--chat-id` thread routing when thread ids are present, returns message ids when present, and preserves classified/redacted adapter errors. Fake `zoho` runtime coverage verifies direct send, chat send, reply routing, thread-id routing, command arguments, and delivery metadata."
-  - "2026-05-05T03:45:52Z cliq-channel-404 completed: `src/zoho-cli.ts` now runs `zoho cliq ...` via `runPluginCommandWithTimeout`, parses JSON stdout, injects account/config/env SecretRefs, redacts token/password/webhook diagnostics, classifies auth/scope/unsupported/invalid-json/timeout/missing-command/generic failures, and extracts message ids from send responses for the outbound handoff; fake `zoho` runtime tests cover success, env injection, redaction, send arg construction, auth/scope/unsupported/invalid-json/empty/timeout/missing-command paths."
-next_step: Start `cliq-channel-407` by adding webhook payload verification and reusing the polling normalizer/dedupe path.
+next_step: Start `cliq-channel-408` by adding status reaction/read-ack lifecycle helpers around accepted webhook and polling events.

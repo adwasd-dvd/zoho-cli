@@ -1,4 +1,4 @@
-import { CLIQ_CHANNEL_ID, DEFAULT_ACCOUNT_ID, DEFAULT_ZOHO_CLI, } from "./constants.js";
+import { CLIQ_CHANNEL_ID, DEFAULT_ACCOUNT_ID, DEFAULT_CLIQ_WEBHOOK_PATH, DEFAULT_ZOHO_CLI, } from "./constants.js";
 export const DEFAULT_CLIQ_EMPLOYEE_MODE = {
     enabled: true,
     scopeProfile: "default",
@@ -170,6 +170,10 @@ const accountSchema = {
         },
         tokenPassword: secretOnlySchema,
         webhookSecret: secretOnlySchema,
+        webhookPath: {
+            type: "string",
+            minLength: 1,
+        },
         dmPolicy: {
             type: "string",
             enum: ["allowlist", "pairing", "open", "disabled"],
@@ -223,6 +227,10 @@ export const cliqChannelConfigSchema = {
             },
             tokenPassword: secretOnlySchema,
             webhookSecret: secretOnlySchema,
+            webhookPath: {
+                type: "string",
+                minLength: 1,
+            },
             dmPolicy: {
                 type: "string",
                 enum: ["allowlist", "pairing", "open", "disabled"],
@@ -281,6 +289,11 @@ export const cliqChannelConfigSchema = {
             help: "SecretRef/env reference to ZOHO_CLIQ_WEBHOOK_SECRET.",
             sensitive: true,
         },
+        webhookPath: {
+            label: "Webhook path",
+            help: "OpenClaw plugin HTTP route used by Zoho Cliq Bot handlers.",
+            advanced: true,
+        },
         allowFrom: {
             label: "Allowed Cliq senders",
             help: "Zoho Cliq user ids allowed to DM this channel or complete pairing.",
@@ -336,6 +349,7 @@ function hasTopLevelAccount(section) {
         section.cliPath ||
         section.tokenPassword ||
         section.webhookSecret ||
+        section.webhookPath ||
         section.dmPolicy ||
         section.groupPolicy ||
         section.defaultTo ||
@@ -393,6 +407,7 @@ export function resolveCliqAccount(cfg, accountId) {
         cliPath: entry.cliPath || section.cliPath || DEFAULT_ZOHO_CLI,
         tokenPassword: entry.tokenPassword,
         webhookSecret: entry.webhookSecret,
+        webhookPath: entry.webhookPath || section.webhookPath || DEFAULT_CLIQ_WEBHOOK_PATH,
         dmPolicy: entry.dmPolicy ||
             entry.dmSecurity ||
             section.dmPolicy ||
@@ -462,6 +477,7 @@ export function isCliqAccountConfigured(account) {
         account.network ||
         hasConfiguredInput(account.tokenPassword) ||
         hasConfiguredInput(account.webhookSecret) ||
+        account.webhookPath !== DEFAULT_CLIQ_WEBHOOK_PATH ||
         account.defaultTo);
 }
 export function describeCliqAccount(account) {
@@ -480,6 +496,7 @@ export function describeCliqAccount(account) {
             ? "configured"
             : "optional",
         signingSecretSource: inputSource(account.webhookSecret),
+        webhookPath: account.webhookPath,
         credentialSource: inputSource(account.accountEmail) || inputSource(account.configPath),
         dmPolicy: account.dmPolicy,
         allowFrom: account.allowFrom.map(String),
@@ -575,6 +592,9 @@ export function applyCliqAccountConfig(params) {
         webhookSecret: params.input.useEnv
             ? envSecretRef("ZOHO_CLIQ_WEBHOOK_SECRET")
             : accounts[params.accountId]?.webhookSecret,
+        webhookPath: params.input.webhookPath ??
+            accounts[params.accountId]?.webhookPath ??
+            DEFAULT_CLIQ_WEBHOOK_PATH,
         defaultTo: params.input.audience ?? accounts[params.accountId]?.defaultTo,
         dmPolicy: accounts[params.accountId]?.dmPolicy ?? "pairing",
         groupPolicy: accounts[params.accountId]?.groupPolicy ?? "allowlist",

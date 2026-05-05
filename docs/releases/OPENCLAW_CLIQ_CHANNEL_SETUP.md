@@ -21,14 +21,19 @@ This runbook is for the native OpenClaw `cliq` channel package in
   with `zoho cliq context`, normalizes events, skips self-authored messages,
   applies mention/allowlist/employee policy checks, and dedupes by
   account/network/chat/message.
-- Inbound webhook tests wait for `cliq-channel-407`.
-- Production/bidirectional testing waits for webhook intake, loop prevention,
-  and observability slices.
+- Inbound webhook smoke testing is ready now: Zoho Cliq Bot Message, Mention,
+  Participation, and Context handlers can POST to `/webhooks/cliq`; the plugin
+  verifies `X-Cliq-Webhook-Secret`, normalizes events, dedupes by
+  account/network/chat/message, and applies the same security gates as polling.
+- Production/bidirectional agent replies wait for status/read lifecycle, loop
+  prevention, and observability slices.
 
 ## Requirements
 
 - OpenClaw `>=2026.5.3-1`.
 - `zoho-cli` installed and available as `zoho`.
+- A Zoho Cliq Bot handler that can invoke the local OpenClaw webhook route
+  through a tunnel or gateway.
 - One interactive bootstrap login:
 
 ```bash
@@ -90,6 +95,7 @@ HOME="$PWD/.tmp/openclaw-home-2026.5.3-1" \
             "provider": "default",
             "id": "ZOHO_CLIQ_WEBHOOK_SECRET"
           },
+          "webhookPath": "/webhooks/cliq",
           "dmPolicy": "pairing",
           "groupPolicy": "allowlist",
           "allowFrom": ["<trusted_cliq_user_id>"],
@@ -116,6 +122,46 @@ HOME="$PWD/.tmp/openclaw-home-2026.5.3-1" \
 }
 ```
 
+## Zoho Cliq Bot handler
+
+Use a Bot Message, Mention, Participation, or Context Handler for inbound
+OpenClaw channel messages. Mention Handler is the best first live smoke because
+Zoho provides `message`, `mentions`, `user`, and `chat` objects to the Deluge
+script.
+
+```deluge
+response = Map();
+webhook_url = "https://<your-tunnel-or-gateway>/webhooks/cliq";
+payload = Map();
+payload.put("handler","mention");
+payload.put("message",message);
+payload.put("user",user);
+payload.put("chat",chat);
+payload.put("mentions",mentions);
+invokeurl
+[
+  url :webhook_url
+  type :POST
+  body:payload.toString()
+  headers:{"Content-Type":"application/json","X-Cliq-Webhook-Secret":"<rotated-secret>"}
+]
+response.put("text","received");
+return response;
+```
+
+`parameters:payload.toString()` is also accepted by the current plugin parser,
+but `body:payload.toString()` is the clearer Deluge shape for a JSON request.
+Rotate any webhook secret that appeared in screenshots, chat, logs, or docs
+before using a real Bot.
+
+For RC, Welcome, Incoming Webhook, Call, and Menu handlers are ignored with a
+200 `unsupported_handler` response so Zoho does not retry unrelated bot events.
+They can be mapped later when each workflow has an explicit OpenClaw behavior.
+
+References: Zoho Cliq Bot Mention Handler
+(`https://www.zoho.com/cliq/help/platform/bot-mentionshandler.html`) and Zoho
+Deluge help (`https://www.zoho.com/deluge/help/`).
+
 ## Setup states
 
 | State | Meaning | Next action |
@@ -125,7 +171,7 @@ HOME="$PWD/.tmp/openclaw-home-2026.5.3-1" \
 | `not_logged_in` | Zoho auth/config is missing. | Run `zoho login --with-cliq`. |
 | `missing_scope` | Cliq scopes are incomplete. | Re-auth and rerun `zoho cliq status --check-auth`. |
 | `network_missing` | Cliq network is not set. | Set `channels.cliq.accounts.<id>.network`. |
-| `webhook_unverified` | Inbound webhook is not verified. | Configure `webhookSecret`; polling fallback dry-runs can still be tested locally. |
+| `webhook_unverified` | Inbound webhook is not verified. | Configure `webhookSecret` and POST a controlled Bot handler event to `/webhooks/cliq`; polling fallback dry-runs can still be tested locally. |
 | `allowlist_empty` | No trusted Cliq senders are configured. | Add trusted user ids to `allowFrom` and group/channel ids to `groupAllowFrom`. |
 | `employee_scope_empty` | Scoped employee mode has no work scope. | Add `workScopes.<profile>` or pick a valid `employeeMode.scopeProfile`. |
 
@@ -170,5 +216,6 @@ Recovery checklist:
 2. Reinstall with `openclaw plugins install ./integrations/openclaw-channel-cliq --link`.
 3. Run `openclaw plugins inspect zoho-cliq --json` and `openclaw plugins doctor`.
 4. Re-run `zoho cliq status --check-auth --network <network>`.
-5. Run controlled outbound smoke and local inbound polling dry-runs only; wait
-   for webhook intake plus loop prevention before bidirectional production use.
+5. Run controlled outbound smoke, local inbound polling dry-runs, and a real
+   Bot webhook receive/auth/normalize smoke. Wait for lifecycle plus loop
+   prevention before bidirectional production agent replies.

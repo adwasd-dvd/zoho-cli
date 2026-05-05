@@ -68,6 +68,7 @@ def test_openclaw_cliq_channel_manifest_matches_contract() -> None:
         "defaultAccount",
         "tokenPassword",
         "webhookSecret",
+        "webhookPath",
         "dmPolicy",
         "groupPolicy",
         "groupAllowFrom",
@@ -78,6 +79,7 @@ def test_openclaw_cliq_channel_manifest_matches_contract() -> None:
     }.issubset(properties)
     assert properties["tokenPassword"] == {"$ref": "#/definitions/secretRef"}
     assert properties["webhookSecret"] == {"$ref": "#/definitions/secretRef"}
+    assert properties["webhookPath"] == {"type": "string", "minLength": 1}
     assert properties["accountEmail"] == {"$ref": "#/definitions/configValue"}
     assert properties["configPath"] == {"$ref": "#/definitions/configValue"}
     assert definitions["secretRef"]["required"] == ["source", "provider", "id"]
@@ -89,6 +91,10 @@ def test_openclaw_cliq_channel_manifest_matches_contract() -> None:
     assert definitions["configValue"]["anyOf"][1] == {"$ref": "#/definitions/secretRef"}
     assert definitions["account"]["properties"]["tokenPassword"] == {
         "$ref": "#/definitions/secretRef"
+    }
+    assert definitions["account"]["properties"]["webhookPath"] == {
+        "type": "string",
+        "minLength": 1,
     }
     assert definitions["account"]["properties"]["groupPolicy"]["enum"] == [
         "allowlist",
@@ -103,6 +109,7 @@ def test_openclaw_cliq_channel_manifest_matches_contract() -> None:
     ui_hints = manifest["channelConfigs"]["cliq"]["uiHints"]
     assert ui_hints["tokenPassword"]["sensitive"] is True
     assert ui_hints["webhookSecret"]["sensitive"] is True
+    assert ui_hints["webhookPath"]["advanced"] is True
     assert ui_hints["employeeMode"]["advanced"] is True
 
 
@@ -115,12 +122,14 @@ def test_openclaw_cliq_channel_sources_use_locked_sdk_surfaces() -> None:
             read("auth-presence.ts"),
             read("src/channel.ts"),
             read("src/config.ts"),
+            read("src/constants.ts"),
             read("src/employee-policy.ts"),
             read("src/inbound.ts"),
             read("src/polling.ts"),
             read("src/session.ts"),
             read("src/security.ts"),
             read("src/setup-wizard.ts"),
+            read("src/webhook.ts"),
             read("src/zoho-cli.ts"),
         ]
     )
@@ -162,6 +171,14 @@ def test_openclaw_cliq_channel_sources_use_locked_sdk_surfaces() -> None:
         "pollCliqInboundOnce",
         "CliqInboundDedupeStore",
         "evaluateCliqPollingEventSecurity",
+        "registerHttpRoute",
+        'auth: "plugin"',
+        "registerCliqWebhookRoutes",
+        "processCliqWebhookPayload",
+        "normalizeCliqWebhookPayload",
+        "verifyCliqWebhookSecret",
+        "X-Cliq-Webhook-Secret".lower(),
+        "openclaw/plugin-sdk/webhook-ingress",
         'from "openclaw/plugin-sdk/run-command"',
         "runPluginCommandWithTimeout",
         "ZohoCliqCommandErrorKind",
@@ -185,6 +202,7 @@ def test_openclaw_cliq_channel_setup_uses_env_secret_refs() -> None:
         "ZOHO_CONFIG",
         "configPath",
         "dmPolicy",
+        "webhookPath",
     ]:
         assert marker in source
 
@@ -215,6 +233,7 @@ def test_openclaw_cliq_channel_dist_runtime_outputs_exist() -> None:
         "dist/src/session.js",
         "dist/src/security.js",
         "dist/src/setup-wizard.js",
+        "dist/src/webhook.js",
         "dist/src/zoho-cli.js",
     ]:
         assert (PLUGIN_ROOT / path).exists(), f"missing build output: {path}"
@@ -230,6 +249,7 @@ def test_openclaw_cliq_channel_dist_runtime_outputs_exist() -> None:
             read("dist/src/session.js"),
             read("dist/src/security.js"),
             read("dist/src/setup-wizard.js"),
+            read("dist/src/webhook.js"),
             read("dist/src/zoho-cli.js"),
         ]
     )
@@ -741,6 +761,185 @@ const secondPoll = await pollCliqInboundOnce({{
 assert.equal(secondPoll.events.length, 0);
 assert.equal(secondPoll.dispatchedCount, 0);
 assert.equal(secondPoll.skipped.filter((item) => item.reason === "duplicate").length, 3);
+"""
+    subprocess.run(
+        ["node", "--input-type=module", "-e", script],
+        cwd=ROOT,
+        check=True,
+        text=True,
+        capture_output=True,
+    )
+
+
+def test_openclaw_cliq_channel_webhook_inbound_runtime() -> None:
+    script = """
+import assert from "node:assert/strict";
+import { resolveCliqAccount } from "./integrations/openclaw-channel-cliq/dist/src/config.js";
+import { CliqInboundDedupeStore } from "./integrations/openclaw-channel-cliq/dist/src/inbound.js";
+import {
+  listCliqWebhookRoutePaths,
+  normalizeCliqWebhookPath,
+  normalizeCliqWebhookPayload,
+  parseCliqWebhookPayload,
+  processCliqWebhookPayload,
+  verifyCliqWebhookSecret,
+} from "./integrations/openclaw-channel-cliq/dist/src/webhook.js";
+
+process.env.FAKE_ZOHO_WEBHOOK_SECRET = "webhook-secret";
+process.env.OTHER_ZOHO_WEBHOOK_SECRET = "other-secret";
+
+const cfg = {
+  channels: {
+    cliq: {
+      accounts: {
+        default: {
+          network: "happy",
+          webhookSecret: {
+            source: "env",
+            provider: "default",
+            id: "FAKE_ZOHO_WEBHOOK_SECRET",
+          },
+          webhookPath: "webhooks/cliq",
+          dmPolicy: "allowlist",
+          allowFrom: ["U2"],
+          groupPolicy: "allowlist",
+          groupAllowFrom: ["channel:C123"],
+          requireMention: true,
+        },
+      },
+    },
+  },
+};
+const account = resolveCliqAccount(cfg, "default");
+
+assert.equal(normalizeCliqWebhookPath("webhooks/cliq?debug=1"), "/webhooks/cliq");
+assert.deepEqual(listCliqWebhookRoutePaths(cfg), ["/webhooks/cliq"]);
+
+const verified = await verifyCliqWebhookSecret({
+  cfg,
+  headers: { "x-cliq-webhook-secret": "webhook-secret" },
+  env: process.env,
+});
+assert.equal(verified.ok, true);
+assert.equal(verified.accountId, "default");
+assert.equal((await verifyCliqWebhookSecret({
+  cfg,
+  headers: { "x-cliq-webhook-secret": "wrong" },
+  env: process.env,
+})).reason, "invalid_secret");
+
+const multiCfg = {
+  channels: {
+    cliq: {
+      accounts: {
+        default: cfg.channels.cliq.accounts.default,
+        other: {
+          network: "happy",
+          webhookSecret: {
+            source: "env",
+            provider: "default",
+            id: "OTHER_ZOHO_WEBHOOK_SECRET",
+          },
+          webhookPath: "/webhooks/other",
+        },
+      },
+    },
+  },
+};
+assert.equal((await verifyCliqWebhookSecret({
+  cfg: multiCfg,
+  headers: { "x-cliq-webhook-secret": "other-secret" },
+  env: process.env,
+  webhookPath: "/webhooks/cliq",
+})).reason, "invalid_secret");
+assert.equal((await verifyCliqWebhookSecret({
+  cfg: multiCfg,
+  headers: { "x-cliq-webhook-secret": "other-secret" },
+  env: process.env,
+  webhookPath: "/webhooks/other",
+})).accountId, "other");
+
+const mentionPayload = parseCliqWebhookPayload(JSON.stringify({
+  handler: "mention",
+  message: { id: "M1", text: "@bot hello" },
+  user: { id: "U2", name: "Alice" },
+  chat: { channelId: "C123", chatType: "channel" },
+}), "application/json");
+const mentionNormalized = normalizeCliqWebhookPayload({
+  account,
+  payload: mentionPayload,
+  mentionMatchers: [/@bot\\b/i],
+});
+assert.equal(mentionNormalized.envelope.handlerKind, "mention");
+assert.equal(mentionNormalized.event.peerId, "channel:C123");
+assert.equal(mentionNormalized.event.senderId, "U2");
+assert.equal(mentionNormalized.event.mentioned, true);
+
+const dedupe = new CliqInboundDedupeStore(100);
+const dispatched = [];
+const accepted = await processCliqWebhookPayload({
+  cfg,
+  account,
+  payload: mentionPayload,
+  dedupe,
+  mentionMatchers: [/@bot\\b/i],
+  onEvent: (event) => dispatched.push(event.messageId),
+});
+assert.equal(accepted.accepted, true);
+assert.deepEqual(dispatched, ["M1"]);
+
+const duplicate = await processCliqWebhookPayload({
+  cfg,
+  account,
+  payload: mentionPayload,
+  dedupe,
+  mentionMatchers: [/@bot\\b/i],
+});
+assert.equal(duplicate.accepted, false);
+assert.equal(duplicate.reason, "duplicate");
+
+const denied = await processCliqWebhookPayload({
+  cfg,
+  account,
+  payload: {
+    handler: "message",
+    message: { id: "M2", text: "hello without mention" },
+    user: { id: "U2" },
+    chat: { channelId: "C123", chatType: "channel" },
+  },
+  dedupe,
+});
+assert.equal(denied.accepted, false);
+assert.equal(denied.reason, "security_denied");
+assert.equal(denied.security.reasonCode, "mention_required");
+
+const direct = await processCliqWebhookPayload({
+  cfg,
+  account,
+  payload: {
+    handler: "message",
+    message: { id: "DM1", text: "direct hello" },
+    user: { id: "U2", name: "Alice" },
+  },
+  dedupe,
+});
+assert.equal(direct.accepted, true);
+assert.equal(direct.event.chatType, "direct");
+assert.equal(direct.event.peerId, "user:U2");
+
+const unsupported = await processCliqWebhookPayload({
+  cfg,
+  account,
+  payload: {
+    handler: "call",
+    message: { id: "CALL1", text: "ring" },
+    user: { id: "U2" },
+  },
+  dedupe,
+});
+assert.equal(unsupported.accepted, false);
+assert.equal(unsupported.reason, "unsupported_handler");
+assert.equal(unsupported.handlerKind, "call");
 """
     subprocess.run(
         ["node", "--input-type=module", "-e", script],

@@ -20,9 +20,9 @@ cliq:
 openclaw_cliq_channel:
   priority: 3
   status: in_progress
-  phase: inbound_polling_ready_webhook_next
+  phase: webhook_inbound_ready_lifecycle_next
   target_release: v0.4.0
-  current_milestone: cliq-channel-407-webhook-inbound
+  current_milestone: cliq-channel-408-status-read-lifecycle
   blockers: []
 
 crm:

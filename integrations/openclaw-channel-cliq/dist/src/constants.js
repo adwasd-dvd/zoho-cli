@@ -5,6 +5,8 @@ export const CLIQ_PLUGIN_VERSION = "0.4.0-alpha.0";
 export const OPENCLAW_PLUGIN_API_RANGE = ">=2026.5.3-1";
 export const DEFAULT_ACCOUNT_ID = "default";
 export const DEFAULT_ZOHO_CLI = "zoho";
+export const DEFAULT_CLIQ_WEBHOOK_PATH = "/webhooks/cliq";
+export const CLIQ_WEBHOOK_SECRET_HEADER = "x-cliq-webhook-secret";
 export const CLIQ_ENV_VARS = [
     "ZOHO_ACCOUNT",
     "ZOHO_CONFIG",

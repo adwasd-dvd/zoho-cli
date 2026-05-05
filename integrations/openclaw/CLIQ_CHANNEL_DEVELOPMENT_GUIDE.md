@@ -87,7 +87,9 @@ Follow the stack from the architecture plan:
 9. `cliq-channel-406` inbound polling fallback (complete; `chats` + `context`
    polling normalizes events, skips self-authored messages, applies security,
    and dedupes before optional dispatch)
-10. `cliq-channel-407` webhook inbound
+10. `cliq-channel-407` webhook inbound (complete; `src/webhook.ts` registers
+    Bot webhook routes, verifies secrets, normalizes accepted handler payloads,
+    dedupes, and reuses polling security gates)
 11. `cliq-channel-408` status/read lifecycle
 12. `cliq-channel-413` turn ledger and loop prevention
 13. `cliq-channel-409` OpenClaw native UX
@@ -127,11 +129,13 @@ zoho cliq channel-contract --format openclaw
 If these helpers do not exist when plugin work begins, add the CLI helper first
 or keep a temporary plugin normalizer behind tests and mark it as temporary.
 
-Current plugin polling fallback status: `cliq-channel-406` keeps the runtime on
-the existing JSON-safe CLI path (`chats` + `context`), normalizes messages into
-the shared inbound event shape, skips self-authored messages when signaled, runs
-mention/allowlist/employee policy checks, and dedupes by
-account/network/chat/message before optional dispatch.
+Current plugin inbound status: `cliq-channel-406` keeps the polling runtime on
+the existing JSON-safe CLI path (`chats` + `context`), and `cliq-channel-407`
+adds Bot webhook intake at `/webhooks/cliq`. Both paths normalize messages into
+the shared inbound event shape, run mention/allowlist/employee policy checks,
+and dedupe by account/network/chat/message before optional dispatch. Full
+agent turn dispatch, status reactions, read acks, and loop prevention remain in
+the next slices.
 
 ## AI-agent convenience checklist
 
@@ -179,6 +183,7 @@ Current config baseline:
             "provider": "default",
             "id": "ZOHO_CLIQ_WEBHOOK_SECRET"
           },
+          "webhookPath": "/webhooks/cliq",
           "network": "<network>",
           "cliPath": "zoho",
           "dmPolicy": "pairing",
@@ -209,6 +214,31 @@ Current config baseline:
 Setup input rejects plaintext token/password/secret-style fields; use `zoho
 login` plus env SecretRefs for sensitive values.
 
+Bot webhook handler baseline:
+
+```deluge
+response = Map();
+webhook_url = "https://<your-tunnel-or-gateway>/webhooks/cliq";
+payload = Map();
+payload.put("handler","mention");
+payload.put("message",message);
+payload.put("user",user);
+payload.put("chat",chat);
+payload.put("mentions",mentions);
+invokeurl
+[
+  url :webhook_url
+  type :POST
+  body:payload.toString()
+  headers:{"Content-Type":"application/json","X-Cliq-Webhook-Secret":"<rotated-secret>"}
+]
+response.put("text","received");
+return response;
+```
+
+The intake accepts Message, Mention, Participation, and Context handlers for
+RC. Rotate any exposed webhook secret before live use.
+
 ## Human install UX checklist
 
 The OpenClaw setup flow should be usable by a non-developer operator.
@@ -236,7 +266,7 @@ Recommended setup-state copy should stay short:
 | `not_logged_in` | Zoho login is required. | Run `zoho login --with-cliq`. |
 | `missing_scope` | Cliq permissions are incomplete. | Re-auth with Cliq scopes. |
 | `network_missing` | Cliq network is not selected. | Choose a network. |
-| `webhook_unverified` | Webhook delivery is not verified. | Verify webhook or use polling. |
+| `webhook_unverified` | Webhook delivery is not verified. | POST a controlled Bot handler event to `/webhooks/cliq` or use polling. |
 | `allowlist_empty` | Group messages are blocked. | Add allowed channels/users. |
 | `employee_scope_empty` | Employee mode needs a work scope. | Add `workScopes.<profile>`. |
 | `host_too_old` | OpenClaw is too old for this plugin. | Upgrade OpenClaw. |

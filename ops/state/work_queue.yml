@@ -380,14 +380,14 @@
 - id: cliq-channel-407
   title: implement Cliq webhook inbound normalization and verification
   module: openclaw_cliq_channel
-  stage: queued
+  stage: completed
   priority: high
   depends_on:
   - cliq-channel-406
 - id: cliq-channel-408
   title: implement status reaction and read-ack lifecycle for native channel turns
   module: openclaw_cliq_channel
-  stage: queued
+  stage: ready
   priority: high
   depends_on:
   - cliq-channel-407

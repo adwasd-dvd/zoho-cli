@@ -32,7 +32,11 @@ message ids when the CLI response provides them. `cliq-channel-406` is
 complete: inbound polling fallback now lists unread chats, fetches context,
 normalizes messages into account/network/chat/message-keyed events, skips
 self-authored messages, applies mention/allowlist/employee policy checks, and
-dedupes before optional dispatch.
+dedupes before optional dispatch. `cliq-channel-407` is complete: the plugin
+registers Bot webhook routes such as `/webhooks/cliq`, verifies
+`X-Cliq-Webhook-Secret`, accepts Message/Mention/Participation/Context handler
+payloads, normalizes them into the same inbound event shape as polling, and
+applies dedupe plus policy gates before the next lifecycle/dispatch slices.
 
 The v0.4 plugin targets OpenClaw `>=2026.5.3-1`. The upgraded global
 `OpenClaw 2026.5.3-1` host is suitable for native plugin checks; use
@@ -91,8 +95,9 @@ Human setup checkpoints:
 - `zoho` binary is detected.
 - Zoho Cliq login/scopes are valid.
 - Cliq network is selected.
-- Webhook is verified or polling fallback is intentionally enabled; polling
-  dry-runs use `zoho cliq chats` plus `zoho cliq context`.
+- Webhook is verified with a controlled Bot handler POST to `/webhooks/cliq`, or
+  polling fallback is intentionally enabled; polling dry-runs use
+  `zoho cliq chats` plus `zoho cliq context`.
 - Pairing/allowlist/mention gating are enabled.
 - Scoped employee mode has a work-scope profile.
 - Test message or dry-run fixture succeeds.
@@ -104,8 +109,9 @@ Setup state codes:
 - `not_logged_in`: run `zoho login --with-cliq`.
 - `missing_scope`: re-auth and rerun `zoho cliq status --check-auth`.
 - `network_missing`: set `channels.cliq.accounts.<id>.network`.
-- `webhook_unverified`: configure webhook secret; polling fallback dry-runs can
-  still validate local intake normalization.
+- `webhook_unverified`: configure webhook secret and POST a controlled Bot
+  handler event to `/webhooks/cliq`; polling fallback dry-runs can still
+  validate local intake normalization.
 - `allowlist_empty`: add trusted Cliq user ids to `allowFrom` and group/channel
   ids to `groupAllowFrom`.
 - `employee_scope_empty`: add a valid `workScopes.<profile>` entry.
@@ -135,6 +141,7 @@ Config reference shape:
             "provider": "default",
             "id": "ZOHO_CLIQ_WEBHOOK_SECRET"
           },
+          "webhookPath": "/webhooks/cliq",
           "network": "<network>",
           "cliPath": "zoho",
           "dmPolicy": "pairing",

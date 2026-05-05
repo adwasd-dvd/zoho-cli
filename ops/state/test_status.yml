@@ -1,10 +1,27 @@
-last_run_at: "2026-05-05T04:58:36Z"
+last_run_at: "2026-05-05T06:24:01Z"
 last_result: passing
-current_focus: cliq-channel-406-inbound-polling-20260505T045836Z
+current_focus: cliq-channel-407-webhook-inbound-20260505T062401Z
 suites:
   unit:
     status: passing
     notes:
+      - "cliq-channel-407 webhook inbound intake completed at 2026-05-05T06:24:01Z"
+      - "added `src/webhook.ts` with exact OpenClaw plugin HTTP route registration, `X-Cliq-Webhook-Secret` verification through SecretRef/env config, multi-account path/secret filtering, JSON/form/Deluge payload parsing, handler filtering, inbound event normalization, dedupe, and security-gate reuse"
+      - "added `webhookPath` to runtime config schema, manifest schema/UI hints, account descriptions, setup config application, and docs examples; default route is `/webhooks/cliq`"
+      - "expanded fake-runtime coverage for accepted mention/channel payloads, direct-message payloads, invalid secret, duplicate suppression, mention-denied group payloads, unsupported handler ignores, and multi-account route/secret filtering"
+      - "npm --prefix integrations/openclaw-channel-cliq run typecheck -> passed"
+      - "npm --prefix integrations/openclaw-channel-cliq run build -> passed"
+      - "./.venv/bin/python -m pytest -q tests/test_openclaw_channel_skeleton.py -> 14 passed in 7.08s"
+      - "./.venv/bin/python -m pytest -q tests/test_openclaw_channel_skeleton.py tests/test_openclaw_channel_contract.py tests/test_lane3_docs.py tests/test_markdown_update.py -> 25 passed in 6.40s"
+      - "package-local OpenClaw linked install in temp HOME -> passed"
+      - "package-local OpenClaw plugins inspect zoho-cliq --json -> plugin status loaded, channelIds [`cliq`], diagnostics []"
+      - "package-local OpenClaw plugins doctor -> No plugin issues detected."
+      - "global OpenClaw plugins inspect zoho-cliq --json -> plugin status loaded, channelIds [`cliq`], diagnostics []"
+      - "global OpenClaw plugins doctor -> No plugin issues detected."
+      - "node JSON parse for package/manifest -> PLUGIN_JSON_OK"
+      - "ruby YAML parse for ops/workflow state -> YAML_PARSE_OK"
+      - "git diff --check -> clean"
+      - "make ci -> ruff format/check clean + pytest `1769 passed in 43.05s`"
       - "cliq-channel-406 inbound polling fallback completed at 2026-05-05T04:58:36Z"
       - "added `src/inbound.ts` with `normalizeCliqInboundMessage`, `normalizeCliqContextMessages`/`normalizeCliqWatchMessages`, `buildCliqInboundDedupeKey`, `CliqInboundDedupeStore`, and `evaluateCliqPollingEventSecurity` for normalized/deduped account/network/chat/message events"
       - "expanded `src/zoho-cli.ts` with `buildCliqChatsArgs`, `buildCliqContextArgs`, `listCliqChats`, and `fetchCliqContext` so unread chats + context polling stay on the JSON-safe adapter path"

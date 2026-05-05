@@ -6,16 +6,16 @@ This package includes the `cliq-channel-401` installable skeleton,
 `cliq-channel-402` config/SecretRef/setup slice, `cliq-channel-416` human
 setup UX slice, `cliq-channel-403` security/policy slice, and
 `cliq-channel-414` native SDK seam slice, `cliq-channel-404` CLI adapter slice,
-`cliq-channel-405` outbound delivery slice, and `cliq-channel-406` inbound
-polling slice. It declares the plugin/channel
+`cliq-channel-405` outbound delivery slice, `cliq-channel-406` inbound
+polling slice, and `cliq-channel-407` webhook inbound slice. It declares the plugin/channel
 metadata, setup/runtime entrypoints, configured/auth-state probes, a native
 OpenClaw channel object, config schema metadata, DM pairing, group allowlist,
 mention gating, scoped employee policy gates, audit warnings,
 account/network/thread-aware session grammar, native mention-policy delegation,
 approval capability metadata, a JSON-safe `zoho cliq ...` process adapter,
-native outbound send/reply/thread-reply delivery, and normalized/deduped
-polling fallback events from `zoho cliq chats` + `zoho cliq context`. Webhook
-delivery follows in later slices.
+native outbound send/reply/thread-reply delivery, normalized/deduped polling
+fallback events from `zoho cliq chats` + `zoho cliq context`, and Bot webhook
+intake at `/webhooks/cliq`.
 
 ## Contract
 
@@ -60,6 +60,7 @@ Human setup and troubleshooting live in
             "provider": "default",
             "id": "ZOHO_CLIQ_WEBHOOK_SECRET"
           },
+          "webhookPath": "/webhooks/cliq",
           "dmPolicy": "pairing",
           "groupPolicy": "allowlist",
           "allowFrom": ["123456789"],
@@ -88,6 +89,45 @@ Human setup and troubleshooting live in
 
 Setup rejects plaintext token/password/secret-style inputs. Use `zoho login`
 for OAuth bootstrap and SecretRef/env references for sensitive values.
+
+## Bot handler webhook
+
+Configure the Zoho Cliq Bot Message, Mention, Participation, or Context Handler
+to POST to the OpenClaw plugin route. The route verifies
+`X-Cliq-Webhook-Secret`, normalizes the payload into the same inbound event
+shape as polling, dedupes by account/network/chat/message, and applies the
+same allowlist, mention, and employee policy gates.
+
+```deluge
+response = Map();
+webhook_url = "https://<your-tunnel-or-gateway>/webhooks/cliq";
+payload = Map();
+payload.put("handler","mention");
+payload.put("message",message);
+payload.put("user",user);
+payload.put("chat",chat);
+payload.put("mentions",mentions);
+invokeurl
+[
+  url :webhook_url
+  type :POST
+  body:payload.toString()
+  headers:{"Content-Type":"application/json","X-Cliq-Webhook-Secret":"<rotated-secret>"}
+]
+response.put("text","received");
+return response;
+```
+
+`parameters:payload.toString()` is tolerated for Deluge compatibility, but
+`body:payload.toString()` keeps the HTTP JSON intent clearer. Rotate any
+secret that was pasted into screenshots or chat before using a real Bot.
+
+The RC intake accepts Message, Mention, Participation, and Context handlers.
+Welcome, Incoming Webhook, Call, and Menu handlers are intentionally ignored
+until a later slice maps them to explicit channel workflows.
+
+References: `https://www.zoho.com/cliq/help/platform/bot-mentionshandler.html`
+and `https://www.zoho.com/deluge/help/`.
 
 ## Development
 
@@ -146,3 +186,7 @@ timeout, missing-command, and generic failures while keeping stderr diagnostics
 redacted. Native outbound delivery uses OpenClaw's shared message surface with
 markdown chunking and maps text sends to `zoho cliq send`, message replies to
 `zoho cliq reply`, and thread delivery to `zoho cliq thread-reply`.
+Inbound webhook delivery registers OpenClaw plugin HTTP routes with
+`auth: "plugin"` and exact matching. Accepted events can be observed through
+the runtime callback today; full agent turn dispatch, status reactions, read
+acks, and loop prevention are the next channel slices.

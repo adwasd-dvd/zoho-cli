@@ -493,7 +493,7 @@ The setup/status UI should normalize common failure states:
 | `not_logged_in` | Zoho login is required. | Run `zoho login --with-cliq`. |
 | `missing_scope` | Cliq permissions are incomplete. | Re-auth with Cliq scopes. |
 | `network_missing` | Cliq network is not configured. | Select a network from discovery. |
-| `webhook_unverified` | Webhook secret/path is not verified. | Run webhook verification or use polling. |
+| `webhook_unverified` | Webhook secret/path is not verified. | POST a controlled Bot handler event to `/webhooks/cliq` or use polling. |
 | `allowlist_empty` | Group messages are blocked until an allowlist is set. | Add allowed channels/users. |
 | `employee_scope_empty` | Employee mode needs a work scope. | Pick a default scope profile. |
 | `host_too_old` | OpenClaw must be upgraded for this plugin. | Upgrade OpenClaw or use compatibility mode. |
@@ -602,16 +602,21 @@ Required hard limits:
 
 ### Inbound webhook path
 
-1. Receive Zoho Cliq bot webhook event.
-2. Verify configured webhook secret/signature where available.
-3. Normalize payload through CLI or local fallback normalizer.
-4. Drop self-authored or duplicate events.
-5. Enforce `dmPolicy`, `groupPolicy`, `allowFrom`, and mention gating.
-6. Enforce scoped employee mode and action policy.
-7. Record the turn ledger state transition before dispatch.
-8. Build OpenClaw inbound session route.
+1. Receive Zoho Cliq bot webhook event. Complete in `cliq-channel-407`.
+2. Verify configured webhook secret/signature where available. Complete via
+   `X-Cliq-Webhook-Secret` in `cliq-channel-407`.
+3. Normalize payload through CLI or local fallback normalizer. Complete locally
+   for Message/Mention/Participation/Context handler payloads.
+4. Drop self-authored or duplicate events. Duplicate suppression is complete;
+   self-authored webhook detection remains dependent on Zoho payload fields.
+5. Enforce `dmPolicy`, `groupPolicy`, `allowFrom`, and mention gating. Complete.
+6. Enforce scoped employee mode and action policy. Complete through the shared
+   inbound security path.
+7. Record the turn ledger state transition before dispatch. Next.
+8. Build OpenClaw inbound session route. Next.
 9. Dispatch to the configured agent through OpenClaw native reply pipeline.
-10. Apply status reaction / read ack after successful processing.
+   Next.
+10. Apply status reaction / read ack after successful processing. Next.
 
 ### Polling fallback path
 
@@ -830,9 +835,16 @@ OpenClaw:
 
 ### cliq-channel-407: Webhook inbound
 
-- Implement webhook route registration and payload verification.
-- Normalize bot message and participation handler payloads.
+- Implement webhook route registration and payload verification. Complete with
+  exact OpenClaw plugin HTTP routes such as `/webhooks/cliq` and
+  `X-Cliq-Webhook-Secret` verification.
+- Normalize bot message and participation handler payloads. Complete for
+  Message, Mention, Participation, and Context handlers; Welcome, Incoming
+  Webhook, Call, and Menu handlers are ignored until explicit workflows exist.
 - Acceptance: webhook fixtures dispatch the same event shape as polling.
+  Complete with fixture coverage for accepted mention/direct messages,
+  duplicate suppression, mention-denied channel messages, unsupported handlers,
+  and multi-account path/secret filtering.
 
 ### cliq-channel-408: Status/read lifecycle
 

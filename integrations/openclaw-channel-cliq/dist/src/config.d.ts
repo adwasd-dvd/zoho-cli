@@ -10,6 +10,7 @@ export type CliqAccountConfig = {
     cliPath?: string;
     tokenPassword?: SecretInput;
     webhookSecret?: SecretInput;
+    webhookPath?: string;
     dmPolicy?: string;
     dmSecurity?: string;
     groupPolicy?: string;
@@ -54,6 +55,7 @@ export type CliqResolvedAccount = {
     cliPath: string;
     tokenPassword?: SecretInput;
     webhookSecret?: SecretInput;
+    webhookPath: string;
     dmPolicy?: string;
     groupPolicy: string;
     groupAllowFrom: Array<string | number>;

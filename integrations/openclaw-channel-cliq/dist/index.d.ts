@@ -1,5 +1,6 @@
 export { buildCliqInboundDedupeKey, createCliqInboundDedupeStore, evaluateCliqPollingEventSecurity, normalizeCliqContextMessages, normalizeCliqInboundMessage, normalizeCliqWatchMessages, } from "./src/inbound.js";
 export { pollCliqInboundOnce } from "./src/polling.js";
+export { createCliqWebhookHttpHandler, evaluateCliqWebhookEventSecurity, listCliqWebhookRoutePaths, normalizeCliqWebhookPayload, normalizeCliqWebhookPath, parseCliqWebhookPayload, processCliqWebhookPayload, registerCliqWebhookRoutes, verifyCliqWebhookSecret, } from "./src/webhook.js";
 declare const _default: {
     id: string;
     name: string;

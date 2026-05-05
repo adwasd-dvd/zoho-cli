@@ -156,6 +156,7 @@ Required manifest baseline after `cliq-channel-402`:
           "cliPath": { "type": "string", "minLength": 1 },
           "tokenPassword": { "$ref": "#/definitions/secretRef" },
           "webhookSecret": { "$ref": "#/definitions/secretRef" },
+          "webhookPath": { "type": "string", "minLength": 1 },
           "dmPolicy": {
             "type": "string",
             "enum": ["allowlist", "pairing", "open", "disabled"]
@@ -238,6 +239,7 @@ Required manifest baseline after `cliq-channel-402`:
               "cliPath": { "type": "string", "minLength": 1 },
               "tokenPassword": { "$ref": "#/definitions/secretRef" },
               "webhookSecret": { "$ref": "#/definitions/secretRef" },
+              "webhookPath": { "type": "string", "minLength": 1 },
               "dmPolicy": {
                 "type": "string",
                 "enum": ["allowlist", "pairing", "open", "disabled"]
@@ -258,7 +260,8 @@ Required manifest baseline after `cliq-channel-402`:
       },
       "uiHints": {
         "tokenPassword": { "sensitive": true },
-        "webhookSecret": { "sensitive": true }
+        "webhookSecret": { "sensitive": true },
+        "webhookPath": { "advanced": true }
       }
     }
   },
@@ -321,6 +324,11 @@ Required runtime surfaces:
 - Native `outbound.sendText(...)` via `src/channel.ts` and `sendCliqText(...)`
   for direct send, message reply, and thread-reply delivery through OpenClaw's
   shared message surface.
+- `api.registerHttpRoute(...)` plus
+  `openclaw/plugin-sdk/webhook-ingress` helpers for Bot webhook routes such as
+  `/webhooks/cliq`; routes must use `auth: "plugin"`, exact matching, bounded
+  request size/concurrency/rate limits, and `X-Cliq-Webhook-Secret`
+  verification before payload normalization.
 - `resolveInboundMentionDecision({ facts, policy })` for the final mention gate.
 - `approvalCapability`, not `ChannelPlugin.approvals`, for native approval facts.
 
@@ -411,6 +419,15 @@ webhook signatures, token passwords, and raw message bodies.
 `cliq-channel-406` uses only the `chats` + `context` commands above for the
 polling fallback, then normalizes and dedupes events inside the plugin before
 any dispatch callback runs.
+
+`cliq-channel-407` adds local Bot webhook intake for Message, Mention,
+Participation, and Context handlers. It parses JSON, form, and Deluge
+`payload.toString()` bodies, verifies `X-Cliq-Webhook-Secret` against
+SecretRef/env config, filters account candidates by webhook path for
+multi-account installs, normalizes events into the same shape as polling,
+dedupes, and applies the existing inbound security gates before any dispatch
+callback runs. Welcome, Incoming Webhook, Call, and Menu handlers are ignored
+until explicit OpenClaw workflows are defined.
 
 ## Compatibility rule
 

@@ -13,6 +13,10 @@ Use this skill when operating through the native OpenClaw Zoho Cliq channel.
 - Native inbound polling uses `zoho cliq chats --unread-only
   --exclude-reacted-by-self` plus `zoho cliq context`; normalize events before
   dispatch, skip self-authored messages, and dedupe by account/network/chat/message.
+- Native Bot webhook intake uses `/webhooks/cliq` by default. Zoho Cliq Bot
+  Message, Mention, Participation, and Context handlers must POST with
+  `X-Cliq-Webhook-Secret`; normalize, dedupe, and apply the same security gates
+  as polling before dispatch.
 - Treat stdout as machine data and stderr as diagnostics.
 - Never reveal token passwords, webhook secrets, OAuth tokens, raw webhook
   signatures, or private message bodies in logs.
@@ -47,7 +51,8 @@ classified error kind, and redacted stderr summary.
 - `not_logged_in`: run `zoho login --with-cliq`.
 - `missing_scope`: re-auth and rerun `zoho cliq status --check-auth`.
 - `network_missing`: set the Cliq network.
-- `webhook_unverified`: configure webhook secret or choose polling later.
+- `webhook_unverified`: configure webhook secret and test `/webhooks/cliq`, or
+  use polling dry-runs until live inbound is ready.
 - `allowlist_empty`: add trusted Cliq user ids to `allowFrom` and group/channel
   ids to `groupAllowFrom`.
 - `employee_scope_empty`: add a valid `workScopes.<profile>` entry.
@@ -77,6 +82,7 @@ classified error kind, and redacted stderr summary.
             "provider": "default",
             "id": "ZOHO_CLIQ_WEBHOOK_SECRET"
           },
+          "webhookPath": "/webhooks/cliq",
           "network": "<network>",
           "cliPath": "zoho",
           "dmPolicy": "pairing",
@@ -103,3 +109,11 @@ classified error kind, and redacted stderr summary.
   }
 }
 ```
+
+## Bot handler setup
+
+Use Zoho Cliq Bot Message, Mention, Participation, or Context handlers for live
+inbound smoke. POST JSON to `webhookPath` with `X-Cliq-Webhook-Secret`; keep the
+secret in `ZOHO_CLIQ_WEBHOOK_SECRET` and rotate any value that was exposed in
+chat or screenshots. Welcome, Incoming Webhook, Call, and Menu handlers are
+ignored until a later slice assigns explicit OpenClaw workflows.

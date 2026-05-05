@@ -84,6 +84,11 @@ Use this skill as the default operating contract for an OpenClaw agent acting li
   events, exact `--fixture-approval`, `--cleanup-plan`, and
   `ZOHO_CRM_ALLOW_LIVE_FIXTURE=1`. Normal `zoho crm upsert --execute` remains
   blocked.
+  In `crm-013`, prefer `ops/scripts/crm_fixture_live_smoke.sh` for real CRM
+  fixture testing; it writes redacted report files and skips live execution
+  unless both `ZOHO_CRM_FIXTURE_EXECUTE=1` and
+  `ZOHO_CRM_ALLOW_LIVE_FIXTURE=1` are set with a dedicated payload file and
+  cleanup plan.
 - Draft before high-impact send/delete actions unless the user explicitly asks for direct execution.
 - Ask for explicit approval before running any install/update command that modifies tools or skill files.
 - File low-risk, sanitized CLI bugs and suggestions directly in `adwasd-dvd/zoho-cli` GitHub issues after duplicate search; ask for approval before including private context or changing GitHub settings/labels/code.

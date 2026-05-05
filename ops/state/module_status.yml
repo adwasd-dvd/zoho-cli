@@ -29,7 +29,7 @@ openclaw_cliq_channel:
 crm:
   priority: 4
   status: in_progress
-  phase: v0_5_controlled_fixture_live_smoke
+  phase: v0_5_operator_fixture_live_evidence
   target_release: v0.5.0
-  current_milestone: crm-013-controlled-fixture-live-smoke
+  current_milestone: crm-014-operator-fixture-evidence
   blockers: []

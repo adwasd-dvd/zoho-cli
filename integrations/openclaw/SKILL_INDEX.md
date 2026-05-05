@@ -47,6 +47,9 @@ CRM SDK planning:
   harness, `policyId=crm-012-guarded-fixture-execution-harness`, dry-run by
   default, requires `ZOHO_CRM_ALLOW_LIVE_FIXTURE=1`, exact approval, cleanup,
   digest, idempotency, and persisted audit evidence for `--execute`)
+- `ops/scripts/crm_fixture_live_smoke.sh` (`crm-013`: repeatable controlled CRM
+  fixture smoke reports; skips live execution unless `ZOHO_CRM_FIXTURE_EXECUTE=1`
+  and `ZOHO_CRM_ALLOW_LIVE_FIXTURE=1`)
 - `docs/architecture/CRM_WRITE_SURFACE_CONTRACT.md`
 
 GitHub intake:

@@ -1,10 +1,10 @@
 module: CRM
-updated_at: "2026-05-05T11:37:34Z"
+updated_at: "2026-05-05T11:51:41Z"
 status: in_progress
-phase: v0_5_controlled_fixture_live_smoke
+phase: v0_5_operator_fixture_live_evidence
 blockers: []
-current_milestone: crm-013-controlled-fixture-live-smoke
+current_milestone: crm-014-operator-fixture-evidence
 last_completed:
-  id: crm-012
-  summary: "Added `zoho crm fixture-execute` as a dry-run-first, environment-gated, exact-approval controlled fixture upsert harness while keeping normal `zoho crm upsert --execute` blocked."
-next_small_step: prepare controlled CRM fixture live smoke evidence with a dedicated test record and cleanup plan
+  id: crm-013
+  summary: "Added `ops/scripts/crm_fixture_live_smoke.sh` to produce repeatable redacted CRM fixture smoke reports while skipping live execution unless both fixture execution environment gates are set."
+next_small_step: collect operator-approved CRM fixture evidence when a dedicated payload and cleanup plan are available

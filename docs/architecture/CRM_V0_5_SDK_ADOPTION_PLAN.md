@@ -1,6 +1,6 @@
 # CRM v0.5 SDK adoption plan
 
-Updated: `2026-05-05T11:37:34Z`.
+Updated: `2026-05-05T11:51:41Z`.
 
 This is the `crm-003` handoff for phasing the official Zoho CRM server-side
 Python SDK into `zoho-cli` without breaking the current AI-safe CLI contract.
@@ -172,6 +172,18 @@ adapter proves parity on the read-only surface. The CLI contract remains:
   values, raw cleanup text, raw approval text, or raw API responses.
 - Normal `zoho crm upsert --execute` remains blocked.
 
+## Implemented in crm-013
+
+- Added `ops/scripts/crm_fixture_live_smoke.sh` as the operator/AI entrypoint
+  for repeatable controlled CRM fixture evidence.
+- The script generates redacted report files for upsert dry-run, upsert-gate
+  `--check-auth`, fixture-plan, fixture-execute dry-run, write-audit summary,
+  and a top-level smoke summary.
+- Live execution is skipped by default and requires both
+  `ZOHO_CRM_FIXTURE_EXECUTE=1` and `ZOHO_CRM_ALLOW_LIVE_FIXTURE=1`.
+- The script requires a dedicated payload file and cleanup plan before live
+  execution and never passes `--execute` when the environment gate is absent.
+
 ## v0.5 slices
 
 1. `crm-004` SDK adapter skeleton (completed):
@@ -210,10 +222,16 @@ adapter proves parity on the read-only surface. The CLI contract remains:
 9. `crm-012` guarded fixture execution harness (completed):
    - decide whether a special fixture-only execution path should exist;
    - keep normal `zoho crm upsert --execute` blocked.
-10. `crm-013` controlled CRM fixture live smoke:
-   - run the fixture harness against a dedicated test record when operator
+10. `crm-013` controlled CRM fixture live smoke harness (completed):
+   - prepare the smoke script for a dedicated test record when operator
      approval, scopes, cleanup plan, and environment gates are ready;
-   - record the live attempt/result audit evidence and cleanup outcome.
+   - generate redacted report paths for dry-run evidence and future live
+     attempt/result evidence.
+11. `crm-014` operator fixture evidence:
+   - use the smoke script against a real dedicated CRM fixture payload when the
+     operator provides one;
+   - archive redacted reports and decide whether v0.5 should broaden guarded
+     upsert support or stop at fixture evidence.
 
 ## Non-goals
 

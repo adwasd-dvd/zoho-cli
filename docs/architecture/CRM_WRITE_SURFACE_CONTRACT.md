@@ -1,6 +1,6 @@
 # CRM write-surface safety contract
 
-Updated: `2026-05-05T11:37:34Z`.
+Updated: `2026-05-05T11:51:41Z`.
 
 This is the `crm-007` contract for adding CRM write commands without making AI
 agents accidentally mutate production data.
@@ -185,6 +185,41 @@ approval text, raw cleanup text, or raw API responses.
 Normal `zoho crm upsert --execute` still returns `live_write_not_enabled`; the
 fixture harness is intentionally separate so broad live writes cannot be invoked
 accidentally.
+
+## Implemented in crm-013
+
+`ops/scripts/crm_fixture_live_smoke.sh` records the controlled fixture sequence
+as repeatable report files:
+
+```bash
+ZOHO_CRM_FIXTURE_PAYLOAD_FILE=/tmp/lead-fixture.json \
+ZOHO_CRM_FIXTURE_IDEMPOTENCY_KEY=crm-fixture-2026-05-05 \
+ZOHO_CRM_FIXTURE_CLEANUP_PLAN="remove or update the dedicated fixture record after validation" \
+ops/scripts/crm_fixture_live_smoke.sh
+```
+
+Dry-run mode writes:
+
+- upsert dry-run report
+- upsert gate report with `--check-auth`
+- fixture-plan report
+- fixture-execute dry-run report containing `requiredApproval`
+- write-audit summary
+- top-level smoke summary
+
+To run the live fixture, the operator must deliberately add both gates:
+
+```bash
+ZOHO_CRM_FIXTURE_EXECUTE=1 \
+ZOHO_CRM_ALLOW_LIVE_FIXTURE=1 \
+ZOHO_CRM_FIXTURE_PAYLOAD_FILE=/tmp/lead-fixture.json \
+ZOHO_CRM_FIXTURE_CLEANUP_PLAN="remove or update the dedicated fixture record after validation" \
+ops/scripts/crm_fixture_live_smoke.sh
+```
+
+The script never echoes the raw payload and does not pass `--execute` unless
+both live environment gates are present. It is the recommended real-environment
+CRM test entrypoint for operators and AI agents.
 
 ## Official API references
 

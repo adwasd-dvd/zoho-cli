@@ -1,5 +1,5 @@
 project: zoho-cli
-updated_at: '2026-05-05T11:37:34Z'
+updated_at: '2026-05-05T11:51:41Z'
 status: v0.2.1-final-release
 throughput_mode: turbo_20x
 throughput_policy_ref: ops/state/execution_policy.yml
@@ -9,7 +9,7 @@ module_order:
 - Mail
 - Cliq
 - CRM
-current_focus: "Turbo 20x mode active: v0.2.1 is stable; native Cliq channel v0.4 RC package is ready for local/operator testing with public callback deferred, crm-012 guarded fixture execution is complete, and crm-013 controlled fixture live smoke evidence is active."
+current_focus: "Turbo 20x mode active: v0.2.1 is stable; native Cliq channel v0.4 RC package is ready for local/operator testing with public callback deferred, crm-013 controlled fixture smoke harness is complete, and crm-014 operator fixture evidence is active."
 primary_blockers:
 - native OpenClaw Cliq channel public Bot callback verification requires a reachable tunnel/gateway URL; local webhook auth/security gates pass and this is deferred for deployment wiring
 - cliq-194 live read-ack endpoint remains unsupported on happydistrouklimited for the active token, but watch-act continuity is now capability-gated (`status=ok`, `fallbackUsed=true`, `readAckSupported=false`) and treated as deferred/non-blocking for forward platform execution
@@ -33,8 +33,9 @@ primary_blockers:
   returns `not_supported`)
 - calls/meetings endpoints are unsupported on current token/network (`cliq meetings`
   now returns `not_supported` in focused live verification)
-next_step: "Start crm-013: prepare controlled CRM fixture live smoke evidence while keeping normal live writes blocked."
+next_step: "Start crm-014: collect operator-approved CRM fixture evidence while keeping normal live writes blocked."
 additional_info:
+- "2026-05-05 crm-013 controlled fixture smoke harness at 2026-05-05T11:51:41Z added `ops/scripts/crm_fixture_live_smoke.sh`; the script defaults to dry-run, runs `zoho crm upsert`, `zoho crm upsert-gate --check-auth`, `zoho crm fixture-plan`, `zoho crm fixture-execute` dry-run, and `zoho crm write-audit`, writes redacted report files plus a top-level summary, and refuses live execution unless both `ZOHO_CRM_FIXTURE_EXECUTE=1` and `ZOHO_CRM_ALLOW_LIVE_FIXTURE=1` are set with a payload file and cleanup plan."
 - "2026-05-05 crm-012 guarded fixture execution harness at 2026-05-05T11:37:34Z added `crm_guarded_fixture_execution_policy()` and `zoho crm fixture-execute`; the command defaults to dry-run, reports `requiredApproval`, requires `ZOHO_CRM_ALLOW_LIVE_FIXTURE=1`, exact `--fixture-approval`, `--cleanup-plan`, matching payload digest/idempotency, and persisted dry-run/gate/fixture-plan audit evidence for `--execute`, persists redacted `crm.write.fixture_attempt` and `crm.write.fixture_result`, summarizes CRM API responses without raw field values, and keeps normal `zoho crm upsert --execute` blocked."
 - "2026-05-05 crm-011 controlled live fixture gate at 2026-05-05T11:23:21Z added `crm_controlled_live_fixture_policy()` and `zoho crm fixture-plan`; the command reads redacted audit events, reports matching dry-run/gate/scope evidence, persists `crm.write.fixture_plan`, and keeps `liveWritesEnabled=false` with explicit fixture blockers."
 - "2026-05-05 crm-010 write audit persistence at 2026-05-05T11:14:00Z added redacted CRM write audit JSONL helpers, persisted `crm.write.plan` from `zoho crm upsert`, persisted `crm.write.gate` from `zoho crm upsert-gate`, added `zoho crm write-audit` with operation/module/event-type/limit filters, supported `--audit-file` and `ZOHO_CRM_WRITE_AUDIT`, and kept events at `rawFieldValuesStored=false`; live writes remain blocked."

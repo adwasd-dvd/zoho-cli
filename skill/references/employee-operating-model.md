@@ -91,3 +91,6 @@ requires `--execute`, `ZOHO_CRM_ALLOW_LIVE_FIXTURE=1`, exact
 persisted dry-run/gate/fixture-plan audit evidence. It records
 `crm.write.fixture_attempt` and `crm.write.fixture_result`; normal
 `zoho crm upsert --execute` stays blocked.
+In `crm-013`, use `ops/scripts/crm_fixture_live_smoke.sh` as the preferred
+operator smoke path. It creates redacted reports and only runs live when
+`ZOHO_CRM_FIXTURE_EXECUTE=1` and `ZOHO_CRM_ALLOW_LIVE_FIXTURE=1` are both set.

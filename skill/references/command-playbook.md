@@ -185,6 +185,25 @@ ZOHO_CRM_ALLOW_LIVE_FIXTURE=1 zoho crm fixture-execute \
 `crm.write.fixture_result`, redacts raw field values and raw responses, and keeps
 normal `zoho crm upsert --execute` blocked.
 
+For operator/live smoke evidence, prefer the repeatable script:
+
+```bash
+ZOHO_CRM_FIXTURE_PAYLOAD_FILE=/tmp/lead-fixture.json \
+ZOHO_CRM_FIXTURE_CLEANUP_PLAN="remove or update the dedicated fixture record after validation" \
+ops/scripts/crm_fixture_live_smoke.sh
+```
+
+It writes redacted reports under `tests/auto_pilot/reports` by default. It only
+passes `--execute` when both live gates are present:
+
+```bash
+ZOHO_CRM_FIXTURE_EXECUTE=1 \
+ZOHO_CRM_ALLOW_LIVE_FIXTURE=1 \
+ZOHO_CRM_FIXTURE_PAYLOAD_FILE=/tmp/lead-fixture.json \
+ZOHO_CRM_FIXTURE_CLEANUP_PLAN="remove or update the dedicated fixture record after validation" \
+ops/scripts/crm_fixture_live_smoke.sh
+```
+
 ## Bridge fallback (explicit)
 
 ```bash

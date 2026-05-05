@@ -58,6 +58,10 @@ def test_lane3_required_paths_exist() -> None:
         / "releases"
         / "OPENCLAW_CLIQ_TRUSTED_REPLY_EVIDENCE_TEMPLATE.json",
         REPO_ROOT / "ops" / "scripts" / "openclaw_cliq_rc_pack.sh",
+        REPO_ROOT
+        / "ops"
+        / "scripts"
+        / "openclaw_cliq_trusted_reply_evidence_prepare.sh",
         REPO_ROOT / "ops" / "scripts" / "openclaw_cliq_trusted_reply_evidence.sh",
     ]
 
@@ -208,10 +212,14 @@ def test_native_cliq_channel_ai_troubleshooting_contract_present() -> None:
         "ZOHO_CLIQ_ROUTE_BINDING_ONLY",
         "ZOHO_CLIQ_ROUTE_REPORT_FILE",
         "openclaw_cliq_route_preflight",
+        "openclaw_cliq_trusted_reply_evidence_prepare.sh",
         "openclaw_cliq_trusted_reply_evidence",
         "openclaw_cliq_trusted_reply_evidence_check",
         "OPENCLAW_CLIQ_TRUSTED_REPLY_EVIDENCE_TEMPLATE.json",
         "ZOHO_CLIQ_TRUSTED_REPLY_EVIDENCE_FILE",
+        "ZOHO_CLIQ_TRUSTED_SENDER_ID_HASH",
+        "ZOHO_CLIQ_TRUSTED_MESSAGE_ID_HASH",
+        "ZOHO_CLIQ_DELIVERY_ID_HASH",
         "trusted_reply_recorded",
         "trusted_mention_handler_invalid",
         "trusted_sender_hash_missing",

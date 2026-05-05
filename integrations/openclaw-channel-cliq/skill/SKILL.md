@@ -54,6 +54,7 @@ Use this skill when operating through the native OpenClaw Zoho Cliq channel.
   `docs/releases/OPENCLAW_CLIQ_CHANNEL_V0_4_RC_CHECKLIST.md` and keep
   production rollout blocked until public Bot callback reachability and one
   controlled trusted agent reply are verified with
+  `ops/scripts/openclaw_cliq_trusted_reply_evidence_prepare.sh` plus
   `ops/scripts/openclaw_cliq_trusted_reply_evidence.sh`.
 - Before cutting a local/operator or npm/GitHub RC artifact, run
   `ops/scripts/openclaw_cliq_rc_pack.sh`; it must not publish or mutate
@@ -70,6 +71,7 @@ zoho cliq status --check-auth --network <network>
 zoho cliq capabilities --network <network>
 ops/scripts/openclaw_cliq_live_smoke.sh
 ops/scripts/openclaw_cliq_rc_pack.sh
+ops/scripts/openclaw_cliq_trusted_reply_evidence_prepare.sh
 ops/scripts/openclaw_cliq_trusted_reply_evidence.sh
 ```
 
@@ -92,6 +94,9 @@ For the final trusted reply gate, set
 `ops/scripts/openclaw_cliq_trusted_reply_evidence.sh`; require
 `trusted_reply_recorded` before claiming production readiness. Evidence must
 store sender/message/reply ids as `sha256:` references, not raw ids or bodies.
+Use `ops/scripts/openclaw_cliq_trusted_reply_evidence_prepare.sh` with
+`ZOHO_CLIQ_ROUTE_REPORT_FILE` and the three `sha256:` references to generate the
+artifact before running the checker.
 
 If readiness fails, report the failing `zoho-cli` command, exit code,
 classified error kind, and redacted stderr summary.

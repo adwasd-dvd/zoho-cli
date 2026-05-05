@@ -12,7 +12,7 @@ accepted handler families against native webhook processing, and
 SDK contract source of truth:
 `docs/architecture/OPENCLAW_CLIQ_CHANNEL_SDK_CONTRACT.md`.
 
-Updated: `2026-05-05T20:48:51Z`.
+Updated: `2026-05-05T22:10:51Z`.
 
 ## Decision
 
@@ -54,7 +54,7 @@ delivers exactly one Cliq reply. The live environment currently binds
 | Local package artifact preflight | `NPM_CONFIG_CACHE=/private/tmp/zoho-cli-npm-cache OPENCLAW_CLIQ_PACK_RUN_ID=20260505T142129Z-rc1 ops/scripts/openclaw_cliq_rc_pack.sh` passed at `2026-05-05T14:22:51Z`; the script reran typecheck/build and then packed from the plugin directory into `.tmp/openclaw-cliq-rc-pack`. Tarball `adwasd-openclaw-zoho-cliq-0.4.0-rc.1.tgz`, size `93879`, unpacked size `466025`, entry count `67`, shasum `87b553ad5bbec1c920a05b342630a57cea58b96b`, integrity `sha512-PVaBZFB0+m2sll7dl+c47iPnb6+KgRcCNkiqvFJzv8qtuHB8Lb153/27rqC1izmmybGP1CtrqMH4ZVrBkvBgBg==`. Summary report path pattern: `tests/auto_pilot/reports/openclaw_cliq_rc_pack_summary_<run-id>.json`. |
 | Public callback auth/reachability | Operator Cloudflare tunnel to local OpenClaw gateway is reachable; missing-secret webhook calls return `401`, authenticated unsupported-handler calls return `200` with `unsupported_handler`, and the Zoho Cliq Bot Mention Handler has reached local OpenClaw. |
 | Live route binding | `openclaw config validate` passes with `cliq/default -> zoho-employee-test`; both `main` and `zoho-employee-test` are configured for `openai-codex/gpt-5.3-codex`. |
-| Trusted reply evidence checker | `ops/scripts/openclaw_cliq_trusted_reply_evidence.sh` validates redacted `openclaw_cliq_trusted_reply_evidence` JSON and reports `trusted_reply_recorded` only when the route, callback, trusted Mention hash facts, agent/model, one-turn, one-reply, duplicate/dead-letter, and redaction facts all pass. |
+| Trusted reply evidence prepare/check | `ops/scripts/openclaw_cliq_trusted_reply_evidence_prepare.sh` generates redacted `openclaw_cliq_trusted_reply_evidence` JSON from route preflight evidence plus `sha256:` sender/message/reply references, and `ops/scripts/openclaw_cliq_trusted_reply_evidence.sh` reports `trusted_reply_recorded` only when the route, callback, trusted Mention hash facts, agent/model, one-turn, one-reply, duplicate/dead-letter, and redaction facts all pass. |
 
 ## Remaining deployment gate
 
@@ -84,12 +84,16 @@ Trusted agent reply:
 6. Send a controlled trusted mention from Cliq and verify exactly one native
    OpenClaw turn routes to `zoho-employee-test`, uses a Codex model, and emits
    exactly one Cliq reply.
-7. Record only redacted evidence and validate it:
+7. Record only redacted evidence and validate it. Prefer the prepare script so
+   AI agents do not hand-edit raw ids into evidence:
 
    ```bash
-   cp docs/releases/OPENCLAW_CLIQ_TRUSTED_REPLY_EVIDENCE_TEMPLATE.json \
-     tests/auto_pilot/reports/openclaw_cliq_trusted_reply.json
-   $EDITOR tests/auto_pilot/reports/openclaw_cliq_trusted_reply.json
+   ZOHO_CLIQ_ROUTE_REPORT_FILE=tests/auto_pilot/reports/openclaw_cliq_route_preflight.json \
+   ZOHO_CLIQ_TRUSTED_REPLY_EVIDENCE_FILE=tests/auto_pilot/reports/openclaw_cliq_trusted_reply.json \
+   ZOHO_CLIQ_TRUSTED_SENDER_ID_HASH=sha256:trusted-sender-reference \
+   ZOHO_CLIQ_TRUSTED_MESSAGE_ID_HASH=sha256:trusted-message-reference \
+   ZOHO_CLIQ_DELIVERY_ID_HASH=sha256:reply-delivery-reference \
+     ops/scripts/openclaw_cliq_trusted_reply_evidence_prepare.sh
 
    ZOHO_CLIQ_TRUSTED_REPLY_EVIDENCE_FILE=tests/auto_pilot/reports/openclaw_cliq_trusted_reply.json \
    ZOHO_CLIQ_TRUSTED_REPLY_REPORT_FILE=tests/auto_pilot/reports/openclaw_cliq_trusted_reply_check.json \

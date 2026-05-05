@@ -159,7 +159,10 @@ Native diagnostic behavior:
   `route_preflight_not_ok`. Use
   `docs/releases/OPENCLAW_CLIQ_TRUSTED_REPLY_EVIDENCE_TEMPLATE.json` as a
   copy/edit starting point; it is deliberately incomplete until live facts are
-  replaced.
+  replaced. Prefer
+  `ops/scripts/openclaw_cliq_trusted_reply_evidence_prepare.sh` once live facts
+  are available; it reads `ZOHO_CLIQ_ROUTE_REPORT_FILE`, requires the three
+  `sha256:` references, and writes the redacted evidence for the checker.
 - Do not include webhook secrets, token passwords, webhook signatures, raw
   stderr, or raw Cliq message bodies in reports.
 

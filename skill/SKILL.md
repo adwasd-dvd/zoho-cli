@@ -56,6 +56,10 @@ Use this skill as the default operating contract for an OpenClaw agent acting li
   `trusted_reply_recorded`, exactly one agent turn, exactly one Cliq reply, zero
   duplicate/dead-letter counts, `sha256:` sender/message/reply id references,
   and no raw webhook/message/reply bodies or secrets in evidence.
+- Prefer `ops/scripts/openclaw_cliq_trusted_reply_evidence_prepare.sh` after the
+  real trusted reply has occurred: give it `ZOHO_CLIQ_ROUTE_REPORT_FILE` plus
+  `ZOHO_CLIQ_TRUSTED_SENDER_ID_HASH`, `ZOHO_CLIQ_TRUSTED_MESSAGE_ID_HASH`, and
+  `ZOHO_CLIQ_DELIVERY_ID_HASH`, then pass the generated evidence to the checker.
 - For OpenClaw host upgrades or plugin SDK breakage, follow
   `docs/releases/OPENCLAW_CLIQ_CHANNEL_COMPATIBILITY.md` before changing
   business logic or raising the host floor.

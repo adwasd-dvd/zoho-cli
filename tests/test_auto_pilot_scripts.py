@@ -583,3 +583,33 @@ def test_openclaw_cliq_live_smoke_route_binding_only_reports_mismatch(
     assert payload["channel"] == "cliq"
     assert payload["accountId"] == "default"
     assert "AssertionError" not in output
+
+
+def test_openclaw_cliq_live_smoke_route_binding_only_requires_expected_agent() -> None:
+    result = subprocess.run(
+        ["bash", str(OPENCLAW_CLIQ_LIVE_SMOKE_SCRIPT)],
+        cwd=REPO_ROOT,
+        env={
+            **os.environ,
+            "ZOHO_CLIQ_ROUTE_BINDING_ONLY": "1",
+            "ZOHO_CLIQ_EXPECTED_AGENT_ID": "",
+        },
+        capture_output=True,
+        text=True,
+        check=False,
+    )
+
+    output = f"{result.stdout}\n{result.stderr}"
+    assert result.returncode == 1, output
+    payload_lines = [
+        line
+        for line in result.stdout.splitlines()
+        if line.startswith("{") and '"status":"error"' in line
+    ]
+    assert len(payload_lines) == 1, output
+    payload = json.loads(payload_lines[0])
+    assert payload["error"] == "expected_agent_missing"
+    assert payload["channel"] == "cliq"
+    assert payload["accountId"] == "default"
+    assert "zoho auth" not in output
+    assert "local webhook missing-secret gate" not in output

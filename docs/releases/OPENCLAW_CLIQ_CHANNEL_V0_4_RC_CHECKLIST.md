@@ -69,7 +69,8 @@ Trusted agent reply:
    before production use.
 5. Run the offline route preflight, then run the full
    `ops/scripts/openclaw_cliq_live_smoke.sh` with the same expected-agent
-   values for the current operator environment:
+   values for the current operator environment. Route-only mode requires
+   `ZOHO_CLIQ_EXPECTED_AGENT_ID` and exits non-zero if it is omitted:
 
    ```bash
    ZOHO_CLIQ_ROUTE_BINDING_ONLY=1 \

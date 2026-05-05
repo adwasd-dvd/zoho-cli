@@ -51,6 +51,11 @@ expect_status() {
 
 check_route_binding() {
   if [[ -z "$EXPECTED_AGENT_ID" ]]; then
+    if [[ "$ROUTE_BINDING_ONLY" == "1" ]]; then
+      printf '\n== openclaw cliq route binding gate ==\n'
+      printf '{"status":"error","error":"expected_agent_missing","channel":"cliq","accountId":"%s"}\n' "$EXPECTED_ACCOUNT_ID"
+      return 1
+    fi
     printf '\n== openclaw cliq route binding gate skipped ==\n'
     printf 'reason=ZOHO_CLIQ_EXPECTED_AGENT_ID_missing\n'
     return 0

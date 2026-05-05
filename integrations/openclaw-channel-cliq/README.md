@@ -14,8 +14,10 @@ diagnostics slice, and `cliq-channel-410` AI troubleshooting docs slice. It
 also includes the `cliq-channel-417` native agent turn dispatch slice and the
 `cliq-channel-415` observability/privacy hardening slice plus the
 `cliq-channel-411` fake/live smoke gate harness, `cliq-channel-412`
-compatibility maintenance slice, and `cliq-channel-419` repeatable RC pack
-preflight script. It
+compatibility maintenance slice, `cliq-channel-419` repeatable RC pack
+preflight script, `cliq-channel-420` Bot handler templates,
+`cliq-channel-421` runtime contract coverage for those handlers, and
+`cliq-channel-422` RC package metadata. It
 declares the plugin/channel metadata, setup/runtime entrypoints,
 configured/auth-state probes, a native
 OpenClaw channel object, config schema metadata, DM pairing, group allowlist,
@@ -36,11 +38,12 @@ The live smoke harness records Zoho refresh throttling as `rate_limited` /
 `skip_deferred` and keeps public Bot callback verification separate from local
 gateway/webhook security gates. The RC pack harness runs typecheck/build and
 packs from the package directory, then writes an ignored JSON summary for
-release evidence without publishing or bumping the version.
+release evidence without publishing or mutating version metadata at pack time.
 
 ## Contract
 
 - Package: `@adwasd/openclaw-zoho-cliq`
+- Version: `0.4.0-rc.1`
 - Plugin id: `zoho-cliq`
 - Channel id: `cliq`
 - Config root: `channels.cliq`

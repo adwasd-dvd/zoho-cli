@@ -4,13 +4,15 @@ This checklist is the `cliq-channel-418` handoff for deciding whether the
 native OpenClaw Zoho Cliq channel package can be cut as a v0.4 release
 candidate. `cliq-channel-419` codifies the local package artifact preflight
 used by this checklist. `cliq-channel-420` adds real Zoho Bot handler templates
-for the remaining public callback gate, and `cliq-channel-421` verifies those
-accepted handler families against native webhook processing.
+for the remaining public callback gate, `cliq-channel-421` verifies those
+accepted handler families against native webhook processing, and
+`cliq-channel-422` promotes the source-controlled package metadata to
+`0.4.0-rc.1`.
 
 SDK contract source of truth:
 `docs/architecture/OPENCLAW_CLIQ_CHANNEL_SDK_CONTRACT.md`.
 
-Updated: `2026-05-05T13:06:07Z`.
+Updated: `2026-05-05T14:28:57Z`.
 
 ## Decision
 
@@ -32,8 +34,9 @@ Do not claim production incident readiness while channel diagnostics report
 - Plugin id: `zoho-cliq`
 - Channel id: `cliq`
 - Host floor: OpenClaw `>=2026.5.3-1`
+- Package version: `0.4.0-rc.1`
 - Implemented slices:
-  `cliq-channel-401/402/416/403/414/404/405/406/407/408/413/409/410/417/415/411/412/418/419/420/421`
+  `cliq-channel-401/402/416/403/414/404/405/406/407/408/413/409/410/417/415/411/412/418/419/420/421/422`
 
 ## Evidence
 
@@ -41,12 +44,12 @@ Do not claim production incident readiness while channel diagnostics report
 | --- | --- |
 | TypeScript typecheck/build | `npm --prefix integrations/openclaw-channel-cliq run typecheck` and `run build` passed. |
 | Focused channel/docs tests | `tests/test_openclaw_channel_contract.py`, `tests/test_lane3_docs.py`, and `tests/test_markdown_update.py` passed with `16 passed`. |
-| Full CI | `make ci` passed with ruff format/check clean and `1841 passed in 51.63s`. |
+| Full CI | `make ci` passed with ruff format/check clean and `1841 passed in 48.64s`. |
 | Local live smoke | `ops/scripts/openclaw_cliq_live_smoke.sh` passed: Zoho auth/capability/polling OK, local webhook missing-secret/authenticated-non-dispatch/authenticated-deny OK, native polling OK with zero events. |
 | Package linked baseline | Temp-HOME `openclaw plugins install ./integrations/openclaw-channel-cliq --link`, `plugins inspect zoho-cliq --json`, and `plugins doctor` passed on global `OpenClaw 2026.5.3-1`. |
 | Latest stable host | Temp-HOME `npx -y openclaw@2026.5.4` linked install/inspect/doctor passed. |
 | Beta early warning | Temp-HOME `npx -y openclaw@2026.5.4-beta.3` linked install/inspect/doctor passed. |
-| Local package artifact preflight | `ops/scripts/openclaw_cliq_rc_pack.sh` passed at `2026-05-05T12:53:50Z`; the script reran typecheck/build and then packed from the plugin directory into `.tmp/openclaw-cliq-rc-pack`. Tarball `adwasd-openclaw-zoho-cliq-0.4.0-alpha.0.tgz`, size `93548`, unpacked size `465042`, entry count `67`, shasum `a77c6c1d26af1454c634a353e1a5ad642b4b5ccd`, integrity `sha512-DhO74Ol6jFvO6bvSzUWGLeX6Bv5OwAGXIoMZ1DVFedEMjB3vo9w/lW6MLUl8gE4Uv4RpmFRy7vwpwxJtr3fdkA==`. Summary report path pattern: `tests/auto_pilot/reports/openclaw_cliq_rc_pack_summary_<run-id>.json`. |
+| Local package artifact preflight | `NPM_CONFIG_CACHE=/private/tmp/zoho-cli-npm-cache OPENCLAW_CLIQ_PACK_RUN_ID=20260505T142129Z-rc1 ops/scripts/openclaw_cliq_rc_pack.sh` passed at `2026-05-05T14:22:51Z`; the script reran typecheck/build and then packed from the plugin directory into `.tmp/openclaw-cliq-rc-pack`. Tarball `adwasd-openclaw-zoho-cliq-0.4.0-rc.1.tgz`, size `93879`, unpacked size `466025`, entry count `67`, shasum `87b553ad5bbec1c920a05b342630a57cea58b96b`, integrity `sha512-PVaBZFB0+m2sll7dl+c47iPnb6+KgRcCNkiqvFJzv8qtuHB8Lb153/27rqC1izmmybGP1CtrqMH4ZVrBkvBgBg==`. Summary report path pattern: `tests/auto_pilot/reports/openclaw_cliq_rc_pack_summary_<run-id>.json`. |
 
 ## Remaining deployment gate
 
@@ -72,9 +75,8 @@ cooldown, and rerun without bursty refresh loops.
    and `make ci`.
 3. Re-run `docs/releases/OPENCLAW_CLIQ_CHANNEL_COMPATIBILITY.md` latest/beta
    checks if OpenClaw published a newer stable or beta after this checklist.
-4. Decide package version:
-   - keep `0.4.0-alpha.0` for local/operator testing without publishing;
-   - bump to `0.4.0-rc.1` only when cutting an npm/GitHub RC artifact.
+4. Package metadata is already set to `0.4.0-rc.1` for the source-controlled
+   RC artifact; do not bump again unless cutting a newer RC.
 5. Before npm promotion, fill `openclaw.install.expectedIntegrity` with the
    published artifact integrity and update `docs/releases/CHANGELOG.next.md`.
 6. Install the published artifact in a Temp-HOME OpenClaw profile and rerun

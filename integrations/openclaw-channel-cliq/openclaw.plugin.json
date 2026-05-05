@@ -2,7 +2,7 @@
   "id": "zoho-cliq",
   "name": "Zoho Cliq",
   "description": "Native OpenClaw channel for Zoho Cliq backed by zoho-cli.",
-  "version": "0.4.0-alpha.0",
+  "version": "0.4.0-rc.1",
   "channels": [
     "cliq"
   ],

@@ -61,13 +61,17 @@ the v0.4 floor and `2026.5.4` / `2026.5.4-beta.3` passing early-warning checks.
 `cliq-channel-419` is complete: `ops/scripts/openclaw_cliq_rc_pack.sh` now
 codifies the local RC package preflight by running typecheck/build, packing from
 the plugin directory, and writing ignored JSON release evidence without npm
-publish or version bump side effects.
+publish or package-version mutation side effects.
 `cliq-channel-420` is complete: real Zoho Bot Deluge templates for Message,
 Mention, Participation, and Context handlers live in
 `docs/releases/OPENCLAW_CLIQ_BOT_HANDLER_TEMPLATES.md`.
 `cliq-channel-421` is complete: webhook runtime tests now process Message,
 Mention, Participation, and Context shaped payloads through native intake so the
 templates stay aligned with OpenClaw dispatch behavior.
+`cliq-channel-422` is complete: package, manifest, runtime constants, tests, and
+built output now identify the native Cliq channel as `0.4.0-rc.1`; the RC pack
+preflight produced `adwasd-openclaw-zoho-cliq-0.4.0-rc.1.tgz` without npm
+publish.
 
 The v0.4 plugin targets OpenClaw `>=2026.5.3-1`. The upgraded global
 `OpenClaw 2026.5.3-1` host is suitable for native plugin checks; use

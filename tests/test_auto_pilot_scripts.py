@@ -261,7 +261,7 @@ def test_openclaw_cliq_rc_pack_script_runs_pack_from_package_dir(
         json.dumps(
             {
                 "name": "@adwasd/openclaw-zoho-cliq",
-                "version": "0.4.0-alpha.0",
+                "version": "0.4.0-rc.1",
             }
         )
     )
@@ -291,12 +291,12 @@ if args[:1] == ["pack"]:
         raise SystemExit(8)
     destination = Path(args[args.index("--pack-destination") + 1])
     destination.mkdir(parents=True, exist_ok=True)
-    filename = "adwasd-openclaw-zoho-cliq-0.4.0-alpha.0.tgz"
+    filename = "adwasd-openclaw-zoho-cliq-0.4.0-rc.1.tgz"
     (destination / filename).write_bytes(b"fake-tarball")
     print(json.dumps([{
-        "id": "@adwasd/openclaw-zoho-cliq@0.4.0-alpha.0",
+        "id": "@adwasd/openclaw-zoho-cliq@0.4.0-rc.1",
         "name": "@adwasd/openclaw-zoho-cliq",
-        "version": "0.4.0-alpha.0",
+        "version": "0.4.0-rc.1",
         "filename": filename,
         "size": 12,
         "unpackedSize": 34,
@@ -344,7 +344,7 @@ raise SystemExit(9)
     assert summary["status"] == "passed"
     assert summary["packageDir"] == str(package_dir)
     assert summary["pack"]["name"] == "@adwasd/openclaw-zoho-cliq"
-    assert summary["pack"]["version"] == "0.4.0-alpha.0"
+    assert summary["pack"]["version"] == "0.4.0-rc.1"
     assert summary["pack"]["entryCount"] == 2
     assert summary["releasePosture"] == {
         "publishPerformed": False,

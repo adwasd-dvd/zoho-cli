@@ -54,7 +54,9 @@ Use this skill when operating through the native OpenClaw Zoho Cliq channel.
   `docs/releases/OPENCLAW_CLIQ_CHANNEL_V0_4_RC_CHECKLIST.md` and keep
   production rollout blocked until public Bot callback reachability is verified.
 - Before cutting a local/operator or npm/GitHub RC artifact, run
-  `ops/scripts/openclaw_cliq_rc_pack.sh`; it must not publish or bump versions.
+  `ops/scripts/openclaw_cliq_rc_pack.sh`; it must not publish or mutate
+  package version metadata at pack time. The current RC package metadata is
+  `0.4.0-rc.1`.
 
 ## Required local readiness
 

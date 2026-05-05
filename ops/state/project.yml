@@ -1,5 +1,5 @@
 project: zoho-cli
-updated_at: '2026-05-05T13:52:55Z'
+updated_at: '2026-05-05T14:28:57Z'
 status: v0.2.1-final-release
 throughput_mode: turbo_20x
 throughput_policy_ref: ops/state/execution_policy.yml
@@ -9,7 +9,7 @@ module_order:
 - Mail
 - Cliq
 - CRM
-current_focus: "Turbo 20x mode active: v0.2.1 is stable; native Cliq channel v0.4 RC package is ready for local/operator testing with repeatable pack preflight, real Bot handler templates, and public callback deferred; crm-014 operator fixture evidence checker is complete, and crm-015 operator live fixture run is gated on a dedicated payload."
+current_focus: "Turbo 20x mode active: v0.2.1 is stable; native Cliq channel v0.4 package metadata is promoted to 0.4.0-rc.1 with repeatable pack preflight, real Bot handler templates, runtime contract coverage, and public callback deferred; crm-014 operator fixture evidence checker is complete, and crm-015 operator live fixture run is gated on a dedicated payload."
 primary_blockers:
 - native OpenClaw Cliq channel public Bot callback verification requires a reachable tunnel/gateway URL; local webhook auth/security gates pass and this is deferred for deployment wiring
 - cliq-194 live read-ack endpoint remains unsupported on happydistrouklimited for the active token, but watch-act continuity is now capability-gated (`status=ok`, `fallbackUsed=true`, `readAckSupported=false`) and treated as deferred/non-blocking for forward platform execution
@@ -35,6 +35,7 @@ primary_blockers:
   now returns `not_supported` in focused live verification)
 next_step: "Start crm-015: run the controlled CRM live fixture only after the operator provides a dedicated payload, cleanup plan, and live env gates; keep normal live writes blocked."
 additional_info:
+- "2026-05-05 cliq-channel-422 RC artifact metadata promotion at 2026-05-05T14:28:57Z bumped `integrations/openclaw-channel-cliq/package.json`, `openclaw.plugin.json`, runtime constants, generated `dist/`, and package metadata tests to `0.4.0-rc.1`; `NPM_CONFIG_CACHE=/private/tmp/zoho-cli-npm-cache OPENCLAW_CLIQ_PACK_RUN_ID=20260505T142129Z-rc1 ops/scripts/openclaw_cliq_rc_pack.sh` passed and produced `adwasd-openclaw-zoho-cliq-0.4.0-rc.1.tgz` with shasum `87b553ad5bbec1c920a05b342630a57cea58b96b`, integrity `sha512-PVaBZFB0+m2sll7dl+c47iPnb6+KgRcCNkiqvFJzv8qtuHB8Lb153/27rqC1izmmybGP1CtrqMH4ZVrBkvBgBg==`, and 67 entries. Full `make ci` passed with `1841 passed in 48.64s`; no npm publish was performed, and `openclaw.install.expectedIntegrity` remains the release-promotion placeholder."
 - "2026-05-05 cliq-channel-421 real Bot handler runtime contract coverage at 2026-05-05T13:52:55Z expanded webhook runtime tests so Message, Mention, Participation, and Context shaped payloads process through native normalization, security, dedupe, lifecycle, and turn-ledger behavior; this keeps `docs/releases/OPENCLAW_CLIQ_BOT_HANDLER_TEMPLATES.md` aligned with OpenClaw dispatch before public callback verification. Full `make ci` required sandbox escalation for localhost OAuth callback bind tests and passed with `1841 passed in 51.63s`."
 - "2026-05-05 cliq-channel-420 real Bot handler templates at 2026-05-05T13:17:07Z added `docs/releases/OPENCLAW_CLIQ_BOT_HANDLER_TEMPLATES.md` with Deluge templates for Zoho Cliq Message, Mention, Participation, and Context handlers; templates use placeholder public webhook URL and rotated secret values only, point handlers at `/webhooks/cliq`, document the safe first Mention Handler path, and keep Welcome/Incoming Webhook/Call/Menu handlers out of native OpenClaw turn dispatch for RC. Full `make ci` passed with `1841 passed in 48.97s`."
 - "2026-05-05 cliq-channel-419 repeatable RC package preflight at 2026-05-05T12:58:30Z added `ops/scripts/openclaw_cliq_rc_pack.sh`; the script runs package typecheck/build, packs from the plugin directory, writes ignored JSON evidence under `tests/auto_pilot/reports/`, keeps tarballs under `.tmp/openclaw-cliq-rc-pack`, and performs no npm publish or version bump. Local run generated `adwasd-openclaw-zoho-cliq-0.4.0-alpha.0.tgz` with shasum `a77c6c1d26af1454c634a353e1a5ad642b4b5ccd`, integrity `sha512-DhO74Ol6jFvO6bvSzUWGLeX6Bv5OwAGXIoMZ1DVFedEMjB3vo9w/lW6MLUl8gE4Uv4RpmFRy7vwpwxJtr3fdkA==`, and 67 entries; native diagnostics and Lane 3 docs now advertise the preflight. Full `make ci` passed with `1840 passed in 48.40s`."

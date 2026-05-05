@@ -132,6 +132,9 @@ Follow the stack from the architecture plan:
     webhook runtime tests process Message, Mention, Participation, and Context
     shaped payloads through native normalization/security/dedupe/lifecycle/ledger
     handling)
+23. `cliq-channel-422` RC artifact metadata promotion (complete; package,
+    manifest, runtime constants, tests, and built output now identify the native
+    Cliq channel as `0.4.0-rc.1`, with a fresh local pack artifact preflight)
 
 Each slice should be independently testable. Prefer many small slices over one
 large plugin drop.
@@ -175,7 +178,8 @@ routing diagnostics, `cliq-channel-410` aligns AI-facing troubleshooting, and
 `cliq-channel-411` adds the live smoke gate harness; `cliq-channel-419` adds the
 repeatable local RC pack preflight; `cliq-channel-420` adds real Bot Deluge
 handler templates; and `cliq-channel-421` covers those accepted handler families
-in runtime webhook tests.
+in runtime webhook tests; `cliq-channel-422` promotes package metadata to
+`0.4.0-rc.1` and records fresh pack evidence.
 Both inbound paths normalize messages into the shared
 inbound event shape, run mention/allowlist/employee policy checks, dedupe by
 account/network/chat/message before optional dispatch, keep status/read failures

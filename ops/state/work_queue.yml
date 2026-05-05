@@ -552,3 +552,10 @@
   priority: high
   depends_on:
   - cliq-channel-420
+- id: cliq-channel-422
+  title: promote native Cliq channel package metadata to v0.4.0 rc artifact
+  module: openclaw_cliq_channel
+  stage: completed
+  priority: high
+  depends_on:
+  - cliq-channel-421

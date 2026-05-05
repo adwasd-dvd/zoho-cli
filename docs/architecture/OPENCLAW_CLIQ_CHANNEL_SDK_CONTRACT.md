@@ -48,12 +48,12 @@ config root: channels.cliq
 target release: v0.4.x
 ```
 
-The initial `package.json` skeleton should include:
+The current `package.json` should include:
 
 ```json
 {
   "name": "@adwasd/openclaw-zoho-cliq",
-  "version": "0.4.0-alpha.0",
+  "version": "0.4.0-rc.1",
   "type": "module",
   "engines": {
     "node": ">=22.14.0"
@@ -126,14 +126,14 @@ HOME="$PWD/.tmp/openclaw-home-2026.5.3-1" \
 `openclaw.plugin.json` is pre-runtime metadata. It must not contain runtime
 entrypoints or npm install metadata.
 
-Required manifest baseline after `cliq-channel-402`:
+Required manifest baseline for the v0.4 RC:
 
 ```json
 {
   "id": "zoho-cliq",
   "name": "Zoho Cliq",
   "description": "Native OpenClaw channel for Zoho Cliq backed by zoho-cli.",
-  "version": "0.4.0-alpha.0",
+  "version": "0.4.0-rc.1",
   "channels": ["cliq"],
   "channelEnvVars": {
     "cliq": [

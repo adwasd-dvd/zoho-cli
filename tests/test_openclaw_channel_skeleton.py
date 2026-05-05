@@ -22,7 +22,7 @@ def test_openclaw_cliq_channel_package_metadata_is_installable() -> None:
     openclaw = package["openclaw"]
 
     assert package["name"] == "@adwasd/openclaw-zoho-cliq"
-    assert package["version"] == "0.4.0-alpha.0"
+    assert package["version"] == "0.4.0-rc.1"
     assert package["engines"]["node"] == ">=22.14.0"
     assert package["peerDependencies"]["openclaw"] == ">=2026.5.3-1"
     assert package["devDependencies"]["openclaw"] == "2026.5.3-1"

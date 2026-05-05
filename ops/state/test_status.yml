@@ -1,10 +1,22 @@
-last_run_at: "2026-05-05T13:52:55Z"
+last_run_at: "2026-05-05T14:28:57Z"
 last_result: passing
-current_focus: cliq-channel-421-bot-handler-runtime-contract
+current_focus: cliq-channel-422-rc-artifact-metadata
 suites:
   unit:
     status: passing
     notes:
+      - "cliq-channel-422 RC artifact metadata promotion completed at 2026-05-05T14:22:51Z"
+      - "bumped native Cliq channel package, plugin manifest, runtime constants, generated `dist/`, and package metadata tests to `0.4.0-rc.1`"
+      - "npm --prefix integrations/openclaw-channel-cliq run typecheck -> passed"
+      - "npm --prefix integrations/openclaw-channel-cliq run build -> passed"
+      - "./.venv/bin/python -m pytest -q tests/test_openclaw_channel_skeleton.py::test_openclaw_cliq_channel_package_metadata_is_installable tests/test_auto_pilot_scripts.py::test_openclaw_cliq_rc_pack_script_runs_pack_from_package_dir -> 2 passed in 0.53s"
+      - "NPM_CONFIG_CACHE=/private/tmp/zoho-cli-npm-cache OPENCLAW_CLIQ_PACK_RUN_ID=20260505T142129Z-rc1 ops/scripts/openclaw_cliq_rc_pack.sh -> tarball `adwasd-openclaw-zoho-cliq-0.4.0-rc.1.tgz`, shasum `87b553ad5bbec1c920a05b342630a57cea58b96b`, integrity `sha512-PVaBZFB0+m2sll7dl+c47iPnb6+KgRcCNkiqvFJzv8qtuHB8Lb153/27rqC1izmmybGP1CtrqMH4ZVrBkvBgBg==`, entry count 67"
+      - "./.venv/bin/python -m pytest -q tests/test_openclaw_channel_skeleton.py tests/test_openclaw_channel_contract.py tests/test_auto_pilot_scripts.py -k 'openclaw_cliq' tests/test_lane3_docs.py tests/test_markdown_update.py -> 26 passed, 16 deselected in 12.04s"
+      - "ruby YAML parse for project/module/work_queue/test_status -> YAML_PARSE_OK"
+      - "./.venv/bin/ruff format --check tests/test_openclaw_channel_skeleton.py tests/test_openclaw_channel_contract.py tests/test_auto_pilot_scripts.py tests/test_lane3_docs.py -> 4 files already formatted"
+      - "git diff --check -> passed"
+      - "make ci -> ruff format/check clean + pytest `1841 passed in 48.64s`"
+      - "`openclaw.install.expectedIntegrity` remains `<filled-at-release>` until npm/GitHub promotion; no npm publish was performed"
       - "cliq-channel-421 real Bot handler runtime contract coverage completed at 2026-05-05T13:52:55Z"
       - "expanded `test_openclaw_cliq_channel_webhook_inbound_runtime` so Message, Mention, Participation, and Context shaped payloads process through native webhook intake"
       - "./.venv/bin/python -m pytest -q tests/test_openclaw_channel_skeleton.py::test_openclaw_cliq_channel_webhook_inbound_runtime -> 1 passed in 1.68s"

@@ -55,6 +55,7 @@
 - Completed `cliq-channel-419` repeatable RC package preflight: added `ops/scripts/openclaw_cliq_rc_pack.sh` to run typecheck/build, pack from the plugin directory, write ignored JSON evidence, and avoid npm publish/version-bump side effects; native channel diagnostics and Lane 3 docs now advertise the script.
 - Completed `cliq-channel-420` real Bot handler templates: added `docs/releases/OPENCLAW_CLIQ_BOT_HANDLER_TEMPLATES.md` with Deluge templates for Message, Mention, Participation, and Context handlers that forward to `/webhooks/cliq` with placeholder public URL and rotated webhook secret values.
 - Completed `cliq-channel-421` real Bot handler runtime contract coverage: expanded webhook runtime tests so Message, Mention, Participation, and Context shaped payloads process through native normalization, security, dedupe, lifecycle, and turn-ledger handling.
+- Completed `cliq-channel-422` RC artifact metadata promotion: bumped the native Cliq channel package, manifest, and runtime constants to `0.4.0-rc.1`, refreshed package metadata tests, rebuilt `dist/`, and reran the RC pack preflight to produce `adwasd-openclaw-zoho-cliq-0.4.0-rc.1.tgz` without publishing to npm.
 
 ### Architecture / modularization (2026-05-04T18:19:47Z)
 - Started `cliq-210` post-RC modularization by extracting the `zoho cliq status` and `zoho cliq capabilities` command bodies into `zoho_cli/commands/cliq_readiness.py`, leaving `zoho_cli/cli.py` with runtime dependency injection plus existing Typer registration only. Command names, help text, and JSON output are unchanged.

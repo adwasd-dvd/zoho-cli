@@ -774,7 +774,7 @@ OpenClaw:
   diagnose config/auth smoke from UI/setup surfaces and docs without reading
   source; controlled outbound smoke is now covered by `cliq-channel-405`, and
   inbound loop prevention is covered by `cliq-channel-413`. Production
-  bidirectional testing remains gated by native dispatch/UX and observability.
+  bidirectional testing remains gated by native dispatch and observability.
 
 ### cliq-channel-403: Security, pairing, and scoped employee mode
 
@@ -883,8 +883,17 @@ OpenClaw:
 ### cliq-channel-409: OpenClaw native UX
 
 - Wire capabilities, status, setup, docs labels, and target resolution.
+  Complete with `src/status.ts` status, capability, and routing diagnostic
+  summaries plus setup wizard status lines for webhook, polling, lifecycle, and
+  turn-ledger readiness.
 - Ensure `openclaw channels list/status/capabilities` output is helpful.
+  Complete for package-exported status/capability summaries that keep secrets
+  and message bodies out of diagnostics while exposing setup blockers,
+  controlled-smoke readiness, and the remaining production blockers.
 - Acceptance: channel looks and behaves like a native OpenClaw channel.
+  Complete for local/native surfaces with runtime tests covering status,
+  capability, and route/session diagnostics; full production bidirectional
+  dispatch and observability remain in later slices.
 
 ### cliq-channel-410: AI-facing docs and skill alignment
 

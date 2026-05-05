@@ -73,6 +73,46 @@ export declare function defaultCliqAccountId(cfg: OpenClawConfig): string;
 export declare function resolveCliqAccount(cfg: OpenClawConfig, accountId?: string | null): CliqResolvedAccount;
 export declare function envSecretRef(id: string): SecretRef;
 export declare function isCliqAccountConfigured(account: CliqResolvedAccount): boolean;
+export declare function describeCliqCapabilityDiagnostics(account: CliqResolvedAccount): {
+    outboundText: boolean;
+    outboundReply: boolean;
+    outboundThreadReply: boolean;
+    inboundPolling: boolean;
+    inboundWebhook: boolean;
+    webhookConfigured: boolean;
+    statusLifecycle: boolean;
+    readAckLifecycle: boolean;
+    turnLedger: boolean;
+    scopedEmployeeMode: boolean;
+    nativeApprovalCapability: boolean;
+    nativeAgentDispatch: boolean;
+    observabilityBundle: boolean;
+};
+export declare function describeCliqAccountDiagnostics(account: CliqResolvedAccount): {
+    readiness: string;
+    productionReadiness: string;
+    webhookPath: string;
+    defaultTarget: string | undefined;
+    capabilities: {
+        outboundText: boolean;
+        outboundReply: boolean;
+        outboundThreadReply: boolean;
+        inboundPolling: boolean;
+        inboundWebhook: boolean;
+        webhookConfigured: boolean;
+        statusLifecycle: boolean;
+        readAckLifecycle: boolean;
+        turnLedger: boolean;
+        scopedEmployeeMode: boolean;
+        nativeApprovalCapability: boolean;
+        nativeAgentDispatch: boolean;
+        observabilityBundle: boolean;
+    };
+    blockers: string[];
+    smokeChecks: string[];
+    implementedSlices: string[];
+    nextSlice: string;
+};
 export declare function describeCliqAccount(account: CliqResolvedAccount): ChannelAccountSnapshot;
 export declare function hasCliqConfiguredState(params?: {
     cfg?: OpenClawConfig;

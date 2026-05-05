@@ -8,8 +8,9 @@ setup UX slice, `cliq-channel-403` security/policy slice, and
 `cliq-channel-414` native SDK seam slice, `cliq-channel-404` CLI adapter slice,
 `cliq-channel-405` outbound delivery slice, `cliq-channel-406` inbound
 polling slice, `cliq-channel-407` webhook inbound slice,
-`cliq-channel-408` status/read lifecycle slice, and `cliq-channel-413`
-turn-ledger loop-prevention slice. It declares the plugin/channel
+`cliq-channel-408` status/read lifecycle slice, `cliq-channel-413`
+turn-ledger loop-prevention slice, and `cliq-channel-409` native UX/status
+diagnostics slice. It declares the plugin/channel
 metadata, setup/runtime entrypoints, configured/auth-state probes, a native
 OpenClaw channel object, config schema metadata, DM pairing, group allowlist,
 mention gating, scoped employee policy gates, audit warnings,
@@ -17,8 +18,9 @@ account/network/thread-aware session grammar, native mention-policy delegation,
 approval capability metadata, a JSON-safe `zoho cliq ...` process adapter,
 native outbound send/reply/thread-reply delivery, normalized/deduped polling
 fallback events from `zoho cliq chats` + `zoho cliq context`, and Bot webhook
-intake at `/webhooks/cliq`, shared status/read lifecycle handling, and a native
-turn ledger for duplicate/active/dead-letter loop prevention.
+intake at `/webhooks/cliq`, shared status/read lifecycle handling, a native
+turn ledger for duplicate/active/dead-letter loop prevention, and status/
+capability/routing diagnostic summaries for operator surfaces.
 
 ## Contract
 
@@ -195,5 +197,7 @@ the runtime callback today. Accepted webhook and polling events now use the
 shared lifecycle wrapper: `received -> thinking`, optional dispatch, `mark-read`,
 and `done`; dispatch failures attempt `failed`. The turn ledger blocks duplicate
 completed events, coalesces concurrent same-conversation bursts, and dead-letters
-failed turns after bounded attempts. Full agent turn dispatch, native UX/status
-diagnostics, and observability are the next channel slices.
+failed turns after bounded attempts. `src/status.ts` exposes status,
+capability, and routing summaries for OpenClaw/operator diagnostics. Full agent
+turn dispatch, AI-facing docs polish, and observability are the next channel
+slices.

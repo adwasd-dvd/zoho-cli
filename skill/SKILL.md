@@ -34,6 +34,10 @@ Use this skill as the default operating contract for an OpenClaw agent acting li
 - In the native OpenClaw Cliq channel, dispatch only after the turn ledger
   accepts the event; duplicate completed events, active same-conversation bursts,
   and dead-lettered replays are terminal diagnostics, not fresh agent turns.
+- Before ad hoc Cliq CLI probing, inspect native channel status, capability, and
+  routing diagnostics when available; use their setup states and route/session
+  facts, and never report webhook secrets, token passwords, raw stderr, webhook
+  signatures, or raw message bodies.
 - Draft before high-impact send/delete actions unless the user explicitly asks for direct execution.
 - Ask for explicit approval before running any install/update command that modifies tools or skill files.
 - File low-risk, sanitized CLI bugs and suggestions directly in `adwasd-dvd/zoho-cli` GitHub issues after duplicate search; ask for approval before including private context or changing GitHub settings/labels/code.

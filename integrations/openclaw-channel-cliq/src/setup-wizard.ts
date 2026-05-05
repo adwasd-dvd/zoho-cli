@@ -164,6 +164,7 @@ export function resolveCliqSetupStatusLines(params: {
     `account: ${displayConfigValue(account.accountEmail)}`,
     `network: ${account.network || "not set"}`,
     `cli: ${account.cliPath || DEFAULT_ZOHO_CLI}`,
+    `webhook: ${account.webhookPath}`,
     describeAuthState(account),
     `dm policy: ${normalizeCliqDmPolicy(account.dmPolicy)}`,
     `group policy: ${account.groupPolicy}`,
@@ -171,6 +172,9 @@ export function resolveCliqSetupStatusLines(params: {
     `allowFrom: ${account.allowFrom.length}`,
     `groupAllowFrom: ${account.groupAllowFrom.length}`,
     `employee scope: ${account.employeeMode.scopeProfile || "default"}`,
+    "inbound: polling + Bot webhook",
+    "lifecycle: status/read diagnostics enabled",
+    "turn ledger: duplicate/active/dead-letter protection enabled",
   ];
 
   if (states.length === 0 && params.configured) {
@@ -178,6 +182,7 @@ export function resolveCliqSetupStatusLines(params: {
       ...lines,
       "auth_check: run zoho cliq status --check-auth before live use.",
       "send_check: controlled outbound smoke is available for a trusted target.",
+      "bot_check: trusted Bot webhook smoke can validate receive/lifecycle/ledger.",
     ];
   }
 
@@ -221,7 +226,7 @@ export const cliqSetupWizard: ChannelSetupWizard = {
     resolveStatusLines: resolveCliqSetupStatusLines,
     resolveSelectionHint: ({ configured }) =>
       configured
-        ? "Ready for auth smoke; outbound still waits for the delivery slice."
+        ? "Ready for controlled channel smoke; native dispatch/observability still pending."
         : "Run setup before selecting Zoho Cliq for agents.",
     resolveQuickstartScore: ({ cfg, accountId, configured }) => {
       const states = resolveCliqSetupStateCodes({ cfg, accountId });

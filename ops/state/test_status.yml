@@ -1,10 +1,26 @@
-last_run_at: "2026-05-05T07:36:09Z"
+last_run_at: "2026-05-05T07:54:15Z"
 last_result: passing
-current_focus: cliq-channel-413-turn-ledger-loop-prevention-20260505T073609Z
+current_focus: cliq-channel-409-native-ux-diagnostics-20260505T075415Z
 suites:
   unit:
     status: passing
     notes:
+      - "cliq-channel-409 native UX diagnostics completed at 2026-05-05T07:54:15Z"
+      - "added `src/status.ts` with OpenClaw-native status, capability, and routing diagnostic summaries for account/setup state, webhook/polling/lifecycle/turn-ledger readiness, controlled-smoke readiness, production blockers, native message/approval facts, and normalized session routes"
+      - "expanded setup wizard status lines and channel prompt capabilities so Bot webhook/polling intake, status/read lifecycle, and turn-ledger protection are visible to operator/agent surfaces"
+      - "aligned Lane 2 docs, Lane 3 skill/docs, and Lane 1 state/progress docs around `cliq-channel-409` completion and `cliq-channel-410` as the next active AI docs/help/troubleshooting slice"
+      - "npm --prefix integrations/openclaw-channel-cliq run typecheck -> passed"
+      - "npm --prefix integrations/openclaw-channel-cliq run build -> passed"
+      - "./.venv/bin/python -m pytest -q tests/test_openclaw_channel_skeleton.py tests/test_openclaw_channel_contract.py tests/test_lane3_docs.py tests/test_markdown_update.py -> 28 passed in 10.15s"
+      - "package-local OpenClaw linked install in temp HOME -> passed"
+      - "package-local OpenClaw plugins inspect zoho-cliq --json -> plugin status loaded, channelIds [`cliq`], diagnostics []"
+      - "package-local OpenClaw plugins doctor -> No plugin issues detected."
+      - "global OpenClaw plugins inspect zoho-cliq --json -> plugin status loaded, channelIds [`cliq`], diagnostics []"
+      - "global OpenClaw plugins doctor -> No plugin issues detected."
+      - "node JSON parse for package/manifest -> PLUGIN_JSON_OK"
+      - "ruby YAML parse for ops/workflow state -> YAML_PARSE_OK"
+      - "git diff --check -> clean"
+      - "make ci -> ruff format/check clean + pytest `1772 passed in 47.33s`"
       - "cliq-channel-413 turn-ledger loop prevention completed at 2026-05-05T07:36:09Z"
       - "added `src/turn-ledger.ts` with handler-scoped in-memory active/completed/failed/dead-letter turn state, safe idempotency/correlation metadata, bounded attempts, active TTL, and coalesced event tracking"
       - "expanded webhook and polling paths with `runCliqInboundTurn`, turn summaries, duplicate completed-event skips, active same-conversation coalescing, dispatch-failure dead-lettering, and dead-letter replay blocking"

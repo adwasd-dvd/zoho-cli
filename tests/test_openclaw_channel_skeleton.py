@@ -130,6 +130,7 @@ def test_openclaw_cliq_channel_sources_use_locked_sdk_surfaces() -> None:
             read("src/session.ts"),
             read("src/security.ts"),
             read("src/setup-wizard.ts"),
+            read("src/status.ts"),
             read("src/turn-ledger.ts"),
             read("src/webhook.ts"),
             read("src/zoho-cli.ts"),
@@ -175,6 +176,9 @@ def test_openclaw_cliq_channel_sources_use_locked_sdk_surfaces() -> None:
         "runCliqInboundTurn",
         "createCliqTurnLedgerStore",
         "buildCliqTurnConversationKey",
+        "resolveCliqChannelStatusSummary",
+        "resolveCliqChannelCapabilitySummary",
+        "resolveCliqRoutingDiagnostic",
         "setCliqStatusReaction",
         "markCliqMessageRead",
         "buildCliqStatusReactArgs",
@@ -244,6 +248,7 @@ def test_openclaw_cliq_channel_dist_runtime_outputs_exist() -> None:
         "dist/src/session.js",
         "dist/src/security.js",
         "dist/src/setup-wizard.js",
+        "dist/src/status.js",
         "dist/src/turn-ledger.js",
         "dist/src/webhook.js",
         "dist/src/zoho-cli.js",
@@ -262,6 +267,7 @@ def test_openclaw_cliq_channel_dist_runtime_outputs_exist() -> None:
             read("dist/src/session.js"),
             read("dist/src/security.js"),
             read("dist/src/setup-wizard.js"),
+            read("dist/src/status.js"),
             read("dist/src/turn-ledger.js"),
             read("dist/src/webhook.js"),
             read("dist/src/zoho-cli.js"),
@@ -291,6 +297,77 @@ def test_openclaw_cliq_channel_setup_wizard_has_operator_states() -> None:
         "ZOHO_CLIQ_WEBHOOK_SECRET",
     ]:
         assert marker in source
+
+
+def test_openclaw_cliq_channel_status_diagnostics_runtime() -> None:
+    script = """
+import assert from "node:assert/strict";
+import {
+  resolveCliqChannelCapabilitySummary,
+  resolveCliqChannelStatusSummary,
+  resolveCliqRoutingDiagnostic,
+} from "./integrations/openclaw-channel-cliq/dist/src/status.js";
+
+const cfg = {
+  channels: {
+    cliq: {
+      accounts: {
+        default: {
+          accountEmail: { source: "env", provider: "default", id: "ZOHO_ACCOUNT" },
+          configPath: { source: "env", provider: "default", id: "ZOHO_CONFIG" },
+          network: "happy",
+          webhookSecret: { source: "env", provider: "default", id: "ZOHO_CLIQ_WEBHOOK_SECRET" },
+          webhookPath: "/webhooks/cliq",
+          dmPolicy: "allowlist",
+          allowFrom: ["U2"],
+          groupPolicy: "allowlist",
+          groupAllowFrom: ["channel:C123"],
+          requireMention: true,
+          employeeMode: { enabled: true, scopeProfile: "default", policy: "strict" },
+          workScopes: { default: { role: "employee", allowedSurfaces: ["cliq", "mail"], crm: "read_only" } },
+        },
+      },
+    },
+  },
+};
+
+const status = resolveCliqChannelStatusSummary({ cfg });
+assert.equal(status.channel, "cliq");
+assert.equal(status.enabled, true);
+assert.equal(status.configured, true);
+assert.deepEqual(status.setupStates, []);
+assert.equal(status.diagnostics.capabilities.inboundWebhook, true);
+assert.equal(status.diagnostics.capabilities.turnLedger, true);
+assert.equal(status.diagnostics.productionReadiness, "pending_native_dispatch_observability");
+assert(status.statusLines.some((line) => line.includes("turn ledger")));
+assert(status.diagnostics.implementedSlices.includes("cliq-channel-413"));
+assert(status.diagnostics.implementedSlices.includes("cliq-channel-409"));
+assert.equal(status.diagnostics.nextSlice, "cliq-channel-410");
+
+const capabilities = resolveCliqChannelCapabilitySummary({ cfg });
+assert.equal(capabilities.nativeMessageSurface, true);
+assert.equal(capabilities.nativeApprovalSurface, true);
+assert.equal(capabilities.customSendTools, false);
+assert.equal(capabilities.capabilities.nativeAgentDispatch, false);
+
+const route = resolveCliqRoutingDiagnostic({
+  cfg,
+  target: "cliq:channel:C123:thread:T9",
+  replyToId: "M1",
+});
+assert.equal(route.normalized, "channel:C123");
+assert.equal(route.chatType, "channel");
+assert.equal(route.nativeId, "C123");
+assert.equal(route.threadId, "T9");
+assert.equal(route.sessionRoute.to, "channel:C123");
+"""
+    subprocess.run(
+        ["node", "--input-type=module", "-e", script],
+        cwd=ROOT,
+        check=True,
+        text=True,
+        capture_output=True,
+    )
 
 
 def test_openclaw_cliq_channel_security_policy_is_secure_by_default() -> None:

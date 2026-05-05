@@ -97,7 +97,9 @@ Follow the stack from the architecture plan:
     `src/turn-ledger.ts` blocks duplicate completed events, coalesces active
     same-conversation bursts, and dead-letters failed turns after bounded
     attempts)
-13. `cliq-channel-409` OpenClaw native UX
+13. `cliq-channel-409` OpenClaw native UX (complete; `src/status.ts` exports
+    status, capability, and routing diagnostics; setup status lines now expose
+    webhook, polling, lifecycle, and turn-ledger readiness)
 14. `cliq-channel-410` AI-facing docs and skill alignment
 15. `cliq-channel-415` observability, privacy, and supply-chain hardening
 16. `cliq-channel-411` live verification and release gate
@@ -137,13 +139,15 @@ or keep a temporary plugin normalizer behind tests and mark it as temporary.
 Current plugin inbound status: `cliq-channel-406` keeps the polling runtime on
 the existing JSON-safe CLI path (`chats` + `context`), `cliq-channel-407` adds
 Bot webhook intake at `/webhooks/cliq`, `cliq-channel-408` wraps accepted events
-with status/read lifecycle handling, and `cliq-channel-413` wraps dispatch with
-a native turn ledger. Both inbound paths normalize messages into the shared
+with status/read lifecycle handling, `cliq-channel-413` wraps dispatch with a
+native turn ledger, and `cliq-channel-409` exposes native status/capability/
+routing diagnostics. Both inbound paths normalize messages into the shared
 inbound event shape, run mention/allowlist/employee policy checks, dedupe by
 account/network/chat/message before optional dispatch, keep status/read failures
-as terminal diagnostics, and prevent duplicate/active/dead-lettered turns from
-starting repeated agent work. Full agent turn dispatch, native UX/status
-diagnostics, and observability remain in the next slices.
+as terminal diagnostics, prevent duplicate/active/dead-lettered turns from
+starting repeated agent work, and report controlled-smoke readiness without
+leaking secrets or message bodies. Full agent turn dispatch and observability
+remain in the next slices.
 
 ## AI-agent convenience checklist
 

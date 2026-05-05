@@ -43,7 +43,12 @@ webhook and polling events now use shared lifecycle handling for visible
 new inbound work. `cliq-channel-413` is complete: accepted events now pass
 through a native turn ledger that blocks duplicate completed events, coalesces
 active same-conversation bursts, and dead-letters failed turns after bounded
-attempts.
+attempts. `cliq-channel-409` is complete: `src/status.ts` now exposes
+OpenClaw-native status, capability, and routing diagnostics; setup status lines
+show webhook, polling, lifecycle, and turn-ledger readiness; capability
+diagnostics advertise native message/approval surfaces without custom send
+tools; and route diagnostics normalize account/network/chat/thread-aware targets
+without exposing secrets or message bodies.
 
 The v0.4 plugin targets OpenClaw `>=2026.5.3-1`. The upgraded global
 `OpenClaw 2026.5.3-1` host is suitable for native plugin checks; use
@@ -89,6 +94,17 @@ openclaw channels capabilities --channel cliq
 openclaw security audit --json
 zoho cliq status --check-auth --network <network>
 ```
+
+Native diagnostic behavior:
+
+- Check OpenClaw channel status/capability/routing summaries before falling back
+  to lower-level `zoho cliq ...` probes.
+- Use setup state codes, controlled-smoke readiness, production blockers, and
+  normalized session routes to decide the next operator action.
+- Treat `native_agent_dispatch_pending` and `observability_bundle_pending` as
+  expected pre-production blockers until those slices land.
+- Do not include webhook secrets, token passwords, webhook signatures, raw
+  stderr, or raw Cliq message bodies in reports.
 
 Human setup runbook:
 

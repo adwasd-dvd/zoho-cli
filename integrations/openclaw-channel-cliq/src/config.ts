@@ -626,6 +626,75 @@ export function isCliqAccountConfigured(account: CliqResolvedAccount): boolean {
   );
 }
 
+export function describeCliqCapabilityDiagnostics(account: CliqResolvedAccount) {
+  const hasWebhookSecret = hasConfiguredInput(account.webhookSecret);
+  return {
+    outboundText: true,
+    outboundReply: true,
+    outboundThreadReply: true,
+    inboundPolling: true,
+    inboundWebhook: true,
+    webhookConfigured: hasWebhookSecret,
+    statusLifecycle: true,
+    readAckLifecycle: true,
+    turnLedger: true,
+    scopedEmployeeMode: account.employeeMode.enabled !== false,
+    nativeApprovalCapability: true,
+    nativeAgentDispatch: false,
+    observabilityBundle: false,
+  };
+}
+
+export function describeCliqAccountDiagnostics(account: CliqResolvedAccount) {
+  const capabilities = describeCliqCapabilityDiagnostics(account);
+  const blockers: string[] = [];
+  if (!account.enabled) blockers.push("account_disabled");
+  if (!account.network) blockers.push("network_missing");
+  if (!capabilities.webhookConfigured) blockers.push("webhook_secret_missing");
+  if (
+    account.groupPolicy === "allowlist" &&
+    account.groupAllowFrom.length === 0 &&
+    account.allowFrom.length === 0
+  ) {
+    blockers.push("allowlist_empty");
+  }
+  if (account.employeeMode.enabled === false) {
+    blockers.push("employee_mode_disabled");
+  }
+  blockers.push("native_agent_dispatch_pending");
+  blockers.push("observability_bundle_pending");
+
+  return {
+    readiness: blockers.length <= 2 ? "controlled_smoke_ready" : "setup_required",
+    productionReadiness: "pending_native_dispatch_observability",
+    webhookPath: account.webhookPath,
+    defaultTarget: account.defaultTo,
+    capabilities,
+    blockers,
+    smokeChecks: [
+      "zoho cliq status --check-auth --network <network>",
+      "openclaw plugins inspect zoho-cliq --json",
+      "openclaw plugins doctor",
+      "POST a trusted Bot handler payload to /webhooks/cliq",
+    ],
+    implementedSlices: [
+      "cliq-channel-401",
+      "cliq-channel-402",
+      "cliq-channel-416",
+      "cliq-channel-403",
+      "cliq-channel-414",
+      "cliq-channel-404",
+      "cliq-channel-405",
+      "cliq-channel-406",
+      "cliq-channel-407",
+      "cliq-channel-408",
+      "cliq-channel-413",
+      "cliq-channel-409",
+    ],
+    nextSlice: "cliq-channel-410",
+  };
+}
+
 export function describeCliqAccount(
   account: CliqResolvedAccount,
 ): ChannelAccountSnapshot {

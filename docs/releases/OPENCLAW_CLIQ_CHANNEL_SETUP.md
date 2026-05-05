@@ -33,7 +33,11 @@ This runbook is for the native OpenClaw `cliq` channel package in
   record a small turn row, duplicate completed events are skipped, active
   same-conversation bursts are coalesced, and failed turns can stop in
   dead-letter with actionable metadata.
-- Production/bidirectional agent replies wait for native dispatch/UX and
+- Native UX/status diagnostics smoke testing is ready now: channel status
+  summaries include setup state, webhook/polling/lifecycle/ledger readiness,
+  capabilities, and target routing previews without exposing secrets or message
+  bodies.
+- Production/bidirectional agent replies wait for native dispatch and
   observability slices.
 
 ## Requirements
@@ -225,6 +229,7 @@ Recovery checklist:
 3. Run `openclaw plugins inspect zoho-cliq --json` and `openclaw plugins doctor`.
 4. Re-run `zoho cliq status --check-auth --network <network>`.
 5. Run controlled outbound smoke, local inbound polling dry-runs, a real Bot
-   webhook receive/auth/normalize smoke, status/read lifecycle smoke, and
-   turn-ledger loop-prevention smoke. Wait for native dispatch/UX and
-   observability before bidirectional production agent replies.
+   webhook receive/auth/normalize smoke, status/read lifecycle smoke,
+   turn-ledger loop-prevention smoke, and status/routing diagnostics smoke. Wait
+   for native dispatch and observability before bidirectional production agent
+   replies.

@@ -16,6 +16,11 @@ export {
 export { runCliqInboundLifecycle } from "./src/lifecycle.js";
 export { pollCliqInboundOnce } from "./src/polling.js";
 export {
+  resolveCliqChannelCapabilitySummary,
+  resolveCliqChannelStatusSummary,
+  resolveCliqRoutingDiagnostic,
+} from "./src/status.js";
+export {
   buildCliqTurnConversationKey,
   buildCliqTurnId,
   createCliqTurnLedgerStore,

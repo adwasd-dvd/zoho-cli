@@ -139,6 +139,8 @@ const cliqBase = {
                 "Zoho Cliq text send through zoho-cli JSON stdout.",
                 "Mention-gated group/channel operation.",
                 "Scoped employee policy gate for chat-originated requests.",
+                "Bot webhook and polling inbound surfaces with status/read lifecycle.",
+                "Turn-ledger loop prevention for duplicate, active, and dead-lettered turns.",
             ],
             inboundFormattingHints: () => ({
                 text_markup: "markdown",

@@ -25,6 +25,9 @@ Use this skill when operating through the native OpenClaw Zoho Cliq channel.
 - Run accepted native events through the turn ledger before dispatch. Duplicate
   completed events, active same-conversation bursts, and dead-lettered replays
   must not start another agent turn.
+- Inspect native status, capability, and routing diagnostics before lower-level
+  CLI probing; use setup states, controlled-smoke readiness, production
+  blockers, and normalized session routes to choose the next operator action.
 - Treat stdout as machine data and stderr as diagnostics.
 - Never reveal token passwords, webhook secrets, OAuth tokens, raw webhook
   signatures, or private message bodies in logs.

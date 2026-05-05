@@ -48,5 +48,6 @@ Then summarize command/skill changes and apply local lane3 sync.
 - AI employee observations use `agent-feedback`, `openclaw`, and `needs-triage`
 - native OpenClaw channel docs must default to pairing/allowlist access, scoped
   employee mode, SecretRef credentials, loop prevention, native approval
-  surfaces, session grammar alignment, human install/onboarding UX, redacted
-  diagnostics, and `zoho` CLI-backed Zoho API operations
+  surfaces, session grammar alignment, human install/onboarding UX, native
+  status/capability/routing diagnostics, redacted diagnostics, and `zoho`
+  CLI-backed Zoho API operations

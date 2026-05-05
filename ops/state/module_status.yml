@@ -20,9 +20,9 @@ cliq:
 openclaw_cliq_channel:
   priority: 3
   status: in_progress
-  phase: loop_prevention_ready_native_ux_next
+  phase: native_ux_ready_ai_docs_next
   target_release: v0.4.0
-  current_milestone: cliq-channel-409-native-ux-diagnostics
+  current_milestone: cliq-channel-410-ai-docs-troubleshooting
   blockers: []
 
 crm:

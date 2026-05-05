@@ -1,25 +1,26 @@
-id: cliq-channel-409
-title: complete OpenClaw native channel UX for status capabilities routing and diagnostics
+id: cliq-channel-410
+title: align AI-facing docs skill references CLI help and troubleshooting for native Cliq channel
 module: openclaw_cliq_channel
 stage: ready
 status: ready
 owner: coder
-updated_at: '2026-05-05T07:31:57Z'
+updated_at: '2026-05-05T07:47:01Z'
 execution_mode: turbo_20x
 throughput_policy_ref: ops/state/execution_policy.yml
 success_criteria:
-  - expose native channel status/capability diagnostics that include setup, webhook, polling, lifecycle, and turn-ledger readiness
-  - make route/target/session diagnostics operator-readable without leaking message bodies or secrets
-  - surface actionable setup/doctor labels for missing Zoho CLI/auth/network/webhook/allowlist/employee-scope states
+  - align `skill/SKILL.md` and `skill/references/openclaw-cliq-channel.md` with implemented native channel behavior
+  - align `integrations/openclaw/*` AI guides and troubleshooting copy with setup/status/capability/routing diagnostics
+  - ensure docs and help guidance do not imply unavailable production bidirectional agent dispatch before native dispatch and observability land
+  - add or update docs/grep coverage for native Cliq channel AI-facing instructions as needed
   - keep OpenClaw setup/runtime/CLI metadata aligned with the implemented channel behavior
-  - add fake runtime/docs coverage for status/capability/diagnostic surfaces
   - update Lane 2 docs, Lane 3 skill/docs, and Lane 1 state/progress docs
   - keep package-local `npm run typecheck`, `npm run build`, OpenClaw linked install, `plugins inspect zoho-cliq --json`, `plugins doctor`, focused tests, and `make ci` green
-next_if_done: complete cliq-channel-410 AI-facing docs skill references CLI help and troubleshooting for native Cliq channel.
+next_if_done: complete cliq-channel-415 observability privacy retention rate-limit diagnostics and npm integrity hardening.
 progress:
+  - "2026-05-05T07:47:01Z cliq-channel-409 completed: `src/status.ts` exports native status/capability/routing diagnostics, setup status lines now expose webhook/polling/lifecycle/turn-ledger readiness, channel capability prompts describe Bot webhook/polling intake and turn-ledger protection, and fake-runtime coverage verifies controlled-smoke readiness plus normalized route/session facts without leaking secrets or message bodies."
   - "2026-05-05T07:31:57Z cliq-channel-413 completed: `src/turn-ledger.ts` adds handler-scoped in-memory turn ownership for accepted webhook and polling events, with duplicate completed-event skips, same-conversation active burst coalescing, bounded failed-turn dead-lettering, safe idempotency/correlation metadata, and turn summaries returned through webhook/polling results. Fake-runtime coverage verifies completed duplicate suppression, active burst coalescing, dispatch-failure dead-letter, and dead-letter replay blocking."
   - "2026-05-05T07:21:02Z cliq-channel-408 completed: `src/lifecycle.ts` wraps accepted native webhook and polling events with `received -> thinking -> mark-read -> done` lifecycle handling, attempts `failed` on dispatch errors, records status/read failures as terminal diagnostics, and reuses the existing JSON-safe `zoho` process adapter through new `status-react` and `mark-read` helpers. Webhook responses and polling results now expose lifecycle metadata, with fake-runtime coverage for success, unsupported read-ack degradation, and dispatch failure."
   - "2026-05-05T06:20:03Z cliq-channel-407 completed: `src/webhook.ts` registers exact OpenClaw plugin HTTP routes such as `/webhooks/cliq`, verifies `X-Cliq-Webhook-Secret` via SecretRef/env config, filters multi-account candidates by webhook path, parses JSON/form/Deluge payload bodies, accepts Message/Mention/Participation/Context handlers, ignores unrelated handler kinds, normalizes to the same inbound event shape as polling, and applies dedupe plus allowlist/mention/employee security gates before the optional dispatch callback."
   - "2026-05-05T04:58:36Z cliq-channel-406 completed: `src/zoho-cli.ts` now wraps `zoho cliq chats --unread-only --exclude-reacted-by-self` and `zoho cliq context`; `src/inbound.ts` normalizes Cliq payloads into account/network/chat/message-keyed events, skips self-authored messages when signaled, detects mentions, evaluates existing allowlist/employee policy gates, and provides dedupe helpers; `src/polling.ts` runs one polling pass with optional dispatch callback. Fake `zoho` runtime coverage verifies accepted channel/direct messages, mention-denied group messages, duplicate suppression, and self-message skipping."
   - "2026-05-05T04:03:04Z cliq-channel-405 completed: `src/channel.ts` now exposes the native OpenClaw outbound adapter with `deliveryMode=direct` and markdown chunking; outbound text delivery resolves account config, calls `sendCliqText`, maps direct/channel/user sends to `zoho cliq send`, routes replies through `zoho cliq reply`, uses `--chat-id` thread routing when thread ids are present, returns message ids when present, and preserves classified/redacted adapter errors. Fake `zoho` runtime coverage verifies direct send, chat send, reply routing, thread-id routing, command arguments, and delivery metadata."
-next_step: Start `cliq-channel-409` by wiring status/capability/routing diagnostics to the implemented native channel surfaces.
+next_step: Start `cliq-channel-410` by aligning AI-facing docs, skill references, CLI help, and troubleshooting around the implemented native Cliq channel surfaces.

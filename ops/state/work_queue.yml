@@ -401,14 +401,14 @@
 - id: cliq-channel-409
   title: complete OpenClaw native channel UX for status capabilities routing and diagnostics
   module: openclaw_cliq_channel
-  stage: ready
+  stage: completed
   priority: medium
   depends_on:
   - cliq-channel-413
 - id: cliq-channel-410
   title: align AI-facing docs skill references CLI help and troubleshooting for native Cliq channel
   module: openclaw_cliq_channel
-  stage: queued
+  stage: ready
   priority: medium
   depends_on:
   - cliq-channel-409

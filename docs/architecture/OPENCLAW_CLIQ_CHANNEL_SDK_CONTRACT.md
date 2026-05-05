@@ -337,6 +337,11 @@ Required runtime surfaces:
   duplicate completed events, coalesces same-conversation active bursts,
   dead-letters failed turns after bounded attempts, and carries safe
   correlation/idempotency metadata for later diagnostics.
+- `src/status.ts` for OpenClaw-native status, capability, and routing
+  diagnostic summaries. These summaries may expose setup state codes,
+  readiness blockers, implemented/next slices, native message/approval facts,
+  and normalized target/session routes, but must not expose secrets, webhook
+  signatures, token passwords, raw stderr, or message bodies.
 - `resolveInboundMentionDecision({ facts, policy })` for the final mention gate.
 - `approvalCapability`, not `ChannelPlugin.approvals`, for native approval facts.
 
@@ -448,6 +453,14 @@ polling events. The handler-scoped in-memory ledger records active/completed/
 failed/dead-letter turn state, blocks duplicate completed events, coalesces
 concurrent same-conversation bursts, and returns dead-letter metadata instead of
 starting repeated agent work.
+
+`cliq-channel-409` adds OpenClaw-native diagnostic summaries through
+`src/status.ts`. Status diagnostics combine account/config snapshots, setup
+state codes, setup status lines, capability facts, controlled-smoke readiness,
+and production blockers. Capability diagnostics advertise native message and
+approval surfaces while explicitly keeping custom send tools disabled. Routing
+diagnostics normalize Cliq targets and return account/network/chat/thread-aware
+session routes without exposing message bodies or secrets.
 
 ## Compatibility rule
 

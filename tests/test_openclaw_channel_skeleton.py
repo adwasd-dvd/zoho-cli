@@ -125,6 +125,7 @@ def test_openclaw_cliq_channel_sources_use_locked_sdk_surfaces() -> None:
             read("src/constants.ts"),
             read("src/employee-policy.ts"),
             read("src/inbound.ts"),
+            read("src/lifecycle.ts"),
             read("src/polling.ts"),
             read("src/session.ts"),
             read("src/security.ts"),
@@ -169,6 +170,11 @@ def test_openclaw_cliq_channel_sources_use_locked_sdk_surfaces() -> None:
         "normalizeCliqWatchMessages",
         "normalizeCliqInboundMessage",
         "pollCliqInboundOnce",
+        "runCliqInboundLifecycle",
+        "setCliqStatusReaction",
+        "markCliqMessageRead",
+        "buildCliqStatusReactArgs",
+        "buildCliqMarkReadArgs",
         "CliqInboundDedupeStore",
         "evaluateCliqPollingEventSecurity",
         "registerHttpRoute",
@@ -229,6 +235,7 @@ def test_openclaw_cliq_channel_dist_runtime_outputs_exist() -> None:
         "dist/src/constants.js",
         "dist/src/employee-policy.js",
         "dist/src/inbound.js",
+        "dist/src/lifecycle.js",
         "dist/src/polling.js",
         "dist/src/session.js",
         "dist/src/security.js",
@@ -245,6 +252,7 @@ def test_openclaw_cliq_channel_dist_runtime_outputs_exist() -> None:
             read("dist/src/channel.js"),
             read("dist/src/employee-policy.js"),
             read("dist/src/inbound.js"),
+            read("dist/src/lifecycle.js"),
             read("dist/src/polling.js"),
             read("dist/src/session.js"),
             read("dist/src/security.js"),
@@ -490,8 +498,10 @@ console.log(JSON.stringify(payload));
 import assert from "node:assert/strict";
 import {{
   buildCliqDeliveryArgs,
+  buildCliqMarkReadArgs,
   buildCliqReplyArgs,
   buildCliqSendArgs,
+  buildCliqStatusReactArgs,
   buildCliqThreadReplyArgs,
   runZohoCliqJson,
   sendCliqText,
@@ -560,6 +570,18 @@ assert.deepEqual(
 assert.deepEqual(
   buildCliqThreadReplyArgs({{ account, to: "chat:CT1", text: "thread", threadId: "T2" }}),
   ["thread-reply", "T2", "--text", "thread", "--network", "happy", "--chat-id", "CT1"],
+);
+assert.deepEqual(
+  buildCliqStatusReactArgs({{ account, messageId: "M77", status: "thinking", chatId: "CHAT1" }}),
+  ["status-react", "M77", "--status", "thinking", "--network", "happy", "--chat-id", "CHAT1", "--clear-known"],
+);
+assert.deepEqual(
+  buildCliqStatusReactArgs({{ account, messageId: "M77", status: "done", channelId: "C123", clearKnown: false }}),
+  ["status-react", "M77", "--status", "done", "--network", "happy", "--channel-id", "C123", "--keep-existing"],
+);
+assert.deepEqual(
+  buildCliqMarkReadArgs({{ account, messageId: "M77", chatId: "CHAT1" }}),
+  ["mark-read", "M77", "--network", "happy", "--chat-id", "CHAT1"],
 );
 assert.deepEqual(
   await sendCliqText({{ account, to: "channel:C123", text: "hello" }}),
@@ -771,7 +793,150 @@ assert.equal(secondPoll.skipped.filter((item) => item.reason === "duplicate").le
     )
 
 
-def test_openclaw_cliq_channel_webhook_inbound_runtime() -> None:
+def test_openclaw_cliq_channel_lifecycle_runtime(tmp_path) -> None:
+    fake_zoho = tmp_path / "fake-zoho.mjs"
+    calls_file = tmp_path / "calls.jsonl"
+    fake_zoho.write_text(
+        """#!/usr/bin/env node
+import fs from "node:fs";
+
+const args = process.argv.slice(2);
+fs.appendFileSync(process.env.FAKE_ZOHO_CALLS, `${JSON.stringify(args)}\\n`);
+if (args[0] !== "cliq") {
+  console.error("expected cliq command");
+  process.exit(7);
+}
+if (args[1] === "mark-read" && process.env.FAKE_MARK_READ_FAIL === "1") {
+  console.error(JSON.stringify({ error: "not_supported", secret: process.env.ZOHO_CLIQ_WEBHOOK_SECRET }));
+  process.exit(1);
+}
+console.log(JSON.stringify({ ok: true, args }));
+""",
+        encoding="utf-8",
+    )
+    fake_zoho.chmod(0o755)
+
+    script = f"""
+import assert from "node:assert/strict";
+import fs from "node:fs";
+import {{ runCliqInboundLifecycle }} from "./integrations/openclaw-channel-cliq/dist/src/lifecycle.js";
+
+process.env.FAKE_ZOHO_CALLS = {json.dumps(str(calls_file))};
+process.env.FAKE_ZOHO_WEBHOOK_SECRET = "webhook-secret";
+
+const account = {{
+  accountId: "default",
+  enabled: true,
+  cliPath: {json.dumps(str(fake_zoho))},
+  network: "happy",
+  webhookSecret: {{ source: "env", provider: "default", id: "FAKE_ZOHO_WEBHOOK_SECRET" }},
+  dmPolicy: "pairing",
+  groupPolicy: "allowlist",
+  groupAllowFrom: [],
+  allowFrom: [],
+  requireMention: true,
+  employeeMode: {{}},
+  workScopes: {{}},
+}};
+const event = {{
+  channel: "cliq",
+  accountId: "default",
+  network: "happy",
+  chatType: "channel",
+  peerId: "channel:C123",
+  nativePeerId: "C123",
+  chatId: "CHAT1",
+  channelId: "C123",
+  messageId: "M1",
+  senderId: "U2",
+  text: "@bot hello",
+  mentioned: true,
+  dedupeKey: "cliq:default:happy:channel:c123:m1",
+  raw: {{}},
+}};
+
+const dispatched = [];
+const success = await runCliqInboundLifecycle({{
+  account,
+  event,
+  onEvent: (inbound) => dispatched.push(inbound.messageId),
+}});
+assert.equal(success.dispatched, true);
+assert.deepEqual(dispatched, ["M1"]);
+assert.deepEqual(
+  success.actions.map((action) => [action.kind, action.status ?? "", action.ok]),
+  [
+    ["status", "received", true],
+    ["status", "thinking", true],
+    ["mark_read", "", true],
+    ["status", "done", true],
+  ],
+);
+
+const successCalls = fs.readFileSync(process.env.FAKE_ZOHO_CALLS, "utf8")
+  .trim()
+  .split("\\n")
+  .map((line) => JSON.parse(line));
+assert.deepEqual(successCalls[0], ["cliq", "status-react", "M1", "--status", "received", "--network", "happy", "--chat-id", "CHAT1", "--clear-known"]);
+assert.deepEqual(successCalls[1], ["cliq", "status-react", "M1", "--status", "thinking", "--network", "happy", "--chat-id", "CHAT1", "--clear-known"]);
+assert.deepEqual(successCalls[2], ["cliq", "mark-read", "M1", "--network", "happy", "--chat-id", "CHAT1"]);
+assert.deepEqual(successCalls[3], ["cliq", "status-react", "M1", "--status", "done", "--network", "happy", "--chat-id", "CHAT1", "--clear-known"]);
+
+fs.writeFileSync(process.env.FAKE_ZOHO_CALLS, "");
+process.env.FAKE_MARK_READ_FAIL = "1";
+const readFailure = await runCliqInboundLifecycle({{
+  account,
+  event: {{ ...event, messageId: "M2", dedupeKey: "m2" }},
+  onEvent: () => undefined,
+}});
+assert.equal(readFailure.dispatched, true);
+assert.equal(readFailure.actions.find((action) => action.kind === "mark_read").ok, false);
+assert.equal(readFailure.actions.find((action) => action.kind === "mark_read").errorKind, "unsupported_endpoint");
+assert.equal(readFailure.actions.at(-1).status, "done");
+process.env.FAKE_MARK_READ_FAIL = "";
+
+fs.writeFileSync(process.env.FAKE_ZOHO_CALLS, "");
+await assert.rejects(
+  () => runCliqInboundLifecycle({{
+    account,
+    event: {{ ...event, messageId: "M3", dedupeKey: "m3" }},
+    onEvent: () => {{
+      throw new Error("dispatch failed");
+    }},
+  }}),
+  /dispatch failed/,
+);
+const failureCalls = fs.readFileSync(process.env.FAKE_ZOHO_CALLS, "utf8")
+  .trim()
+  .split("\\n")
+  .map((line) => JSON.parse(line));
+assert.equal(failureCalls.at(-1)[2], "M3");
+assert.deepEqual(failureCalls.at(-1).slice(0, 5), ["cliq", "status-react", "M3", "--status", "failed"]);
+"""
+    subprocess.run(
+        ["node", "--input-type=module", "-e", script],
+        cwd=ROOT,
+        check=True,
+        text=True,
+        capture_output=True,
+    )
+
+
+def test_openclaw_cliq_channel_webhook_inbound_runtime(tmp_path) -> None:
+    fake_zoho = tmp_path / "fake-zoho.mjs"
+    fake_zoho.write_text(
+        """#!/usr/bin/env node
+const args = process.argv.slice(2);
+if (args[0] !== "cliq") {
+  console.error("expected cliq command");
+  process.exit(7);
+}
+console.log(JSON.stringify({ ok: true, args }));
+""",
+        encoding="utf-8",
+    )
+    fake_zoho.chmod(0o755)
+
     script = """
 import assert from "node:assert/strict";
 import { resolveCliqAccount } from "./integrations/openclaw-channel-cliq/dist/src/config.js";
@@ -794,6 +959,7 @@ const cfg = {
       accounts: {
         default: {
           network: "happy",
+          cliPath: __FAKE_ZOHO__,
           webhookSecret: {
             source: "env",
             provider: "default",
@@ -887,6 +1053,15 @@ const accepted = await processCliqWebhookPayload({
 });
 assert.equal(accepted.accepted, true);
 assert.deepEqual(dispatched, ["M1"]);
+assert.deepEqual(
+  accepted.lifecycle.actions.map((action) => [action.kind, action.status ?? "", action.ok]),
+  [
+    ["status", "received", true],
+    ["status", "thinking", true],
+    ["mark_read", "", true],
+    ["status", "done", true],
+  ],
+);
 
 const duplicate = await processCliqWebhookPayload({
   cfg,
@@ -941,6 +1116,7 @@ assert.equal(unsupported.accepted, false);
 assert.equal(unsupported.reason, "unsupported_handler");
 assert.equal(unsupported.handlerKind, "call");
 """
+    script = script.replace("__FAKE_ZOHO__", json.dumps(str(fake_zoho)))
     subprocess.run(
         ["node", "--input-type=module", "-e", script],
         cwd=ROOT,

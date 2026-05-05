@@ -13,6 +13,7 @@ export {
   normalizeCliqInboundMessage,
   normalizeCliqWatchMessages,
 } from "./src/inbound.js";
+export { runCliqInboundLifecycle } from "./src/lifecycle.js";
 export { pollCliqInboundOnce } from "./src/polling.js";
 export {
   createCliqWebhookHttpHandler,

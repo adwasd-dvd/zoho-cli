@@ -599,6 +599,8 @@ Required hard limits:
 - Retry with bounded backoff, then move to a dead-letter state with actionable
   diagnostics.
 - Never let status/read-ack failures recursively trigger new agent work.
+  Complete in `cliq-channel-408`; lifecycle action failures are recorded as
+  terminal diagnostics and do not dispatch another event.
 
 ### Inbound webhook path
 
@@ -616,7 +618,8 @@ Required hard limits:
 8. Build OpenClaw inbound session route. Next.
 9. Dispatch to the configured agent through OpenClaw native reply pipeline.
    Next.
-10. Apply status reaction / read ack after successful processing. Next.
+10. Apply status reaction / read ack around accepted processing. Complete in
+    `cliq-channel-408`; dispatch-grade turn ledger ownership remains next.
 
 ### Polling fallback path
 
@@ -624,7 +627,8 @@ Required hard limits:
 2. For each eligible chat, run `zoho cliq context`.
 3. Normalize the newest target message into the same inbound event shape used by
    webhooks.
-4. Reuse the same security, policy, dedupe, routing, ledger, and status flow.
+4. Reuse the same security, policy, dedupe, routing, and status/read lifecycle;
+   turn ledger ownership remains next.
 
 ### Outbound path
 
@@ -848,9 +852,15 @@ OpenClaw:
 
 ### cliq-channel-408: Status/read lifecycle
 
-- Integrate status reactions and mark-read fallback.
-- Map lifecycle: `received`, `thinking`, `writing`, `testing`, `done`, `failed`.
+- Integrate status reactions and mark-read fallback. Complete with
+  `src/lifecycle.ts`, `src/zoho-cli.ts` helpers for `status-react` and
+  `mark-read`, and shared wrapping for accepted webhook and polling events.
+- Map lifecycle: `received`, `thinking`, `writing`, `testing`, `blocked`,
+  `done`, `failed`. Complete for default `received -> thinking -> mark-read ->
+  done`, with `failed` attempted on dispatch errors.
 - Acceptance: success and failure paths leave visible Cliq status evidence.
+  Complete with fake-runtime coverage for success, unsupported read-ack
+  degradation, and dispatch failure.
 
 ### cliq-channel-413: Turn ledger and loop prevention
 

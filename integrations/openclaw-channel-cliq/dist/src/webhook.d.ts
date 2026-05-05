@@ -3,6 +3,7 @@ import type { IncomingMessage, ServerResponse } from "node:http";
 import type { OpenClawConfig, OpenClawPluginApi, PluginLogger } from "openclaw/plugin-sdk";
 import { type CliqResolvedAccount } from "./config.js";
 import { type CliqInboundDedupeStore, type CliqMentionMatcher, type CliqNormalizedInboundEvent } from "./inbound.js";
+import { type CliqInboundLifecycleOption, type CliqInboundLifecycleResult } from "./lifecycle.js";
 import type { CliqInboundSecurityDecision } from "./security.js";
 export type CliqWebhookHandlerKind = "message" | "mention" | "participation" | "context" | "incoming_webhook" | "welcome" | "call" | "menu" | "unknown";
 export type CliqWebhookPayloadEnvelope = {
@@ -30,6 +31,7 @@ export type CliqWebhookProcessResult = {
     security: Extract<CliqInboundSecurityDecision, {
         allowed: true;
     }>;
+    lifecycle: CliqInboundLifecycleResult;
     dispatched: boolean;
 } | {
     ok: true;
@@ -45,6 +47,7 @@ export type CliqWebhookHandlerOptions = {
     cfg: OpenClawConfig;
     webhookPath?: string;
     dedupe?: CliqInboundDedupeStore;
+    lifecycle?: CliqInboundLifecycleOption;
     mentionMatchers?: CliqMentionMatcher[];
     env?: NodeJS.ProcessEnv;
     logger?: Partial<PluginLogger>;

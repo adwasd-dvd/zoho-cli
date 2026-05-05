@@ -90,7 +90,9 @@ Follow the stack from the architecture plan:
 10. `cliq-channel-407` webhook inbound (complete; `src/webhook.ts` registers
     Bot webhook routes, verifies secrets, normalizes accepted handler payloads,
     dedupes, and reuses polling security gates)
-11. `cliq-channel-408` status/read lifecycle
+11. `cliq-channel-408` status/read lifecycle (complete; `src/lifecycle.ts`
+    wraps accepted webhook/polling events with visible status reactions,
+    mark-read, and non-recursive diagnostics)
 12. `cliq-channel-413` turn ledger and loop prevention
 13. `cliq-channel-409` OpenClaw native UX
 14. `cliq-channel-410` AI-facing docs and skill alignment
@@ -130,12 +132,14 @@ If these helpers do not exist when plugin work begins, add the CLI helper first
 or keep a temporary plugin normalizer behind tests and mark it as temporary.
 
 Current plugin inbound status: `cliq-channel-406` keeps the polling runtime on
-the existing JSON-safe CLI path (`chats` + `context`), and `cliq-channel-407`
-adds Bot webhook intake at `/webhooks/cliq`. Both paths normalize messages into
-the shared inbound event shape, run mention/allowlist/employee policy checks,
-and dedupe by account/network/chat/message before optional dispatch. Full
-agent turn dispatch, status reactions, read acks, and loop prevention remain in
-the next slices.
+the existing JSON-safe CLI path (`chats` + `context`), `cliq-channel-407` adds
+Bot webhook intake at `/webhooks/cliq`, and `cliq-channel-408` wraps accepted
+events with status/read lifecycle handling. Both inbound paths normalize
+messages into the shared inbound event shape, run mention/allowlist/employee
+policy checks, dedupe by account/network/chat/message before optional dispatch,
+and keep status/read failures as terminal diagnostics. Full agent turn
+dispatch, turn-ledger loop prevention, and observability remain in the next
+slices.
 
 ## AI-agent convenience checklist
 

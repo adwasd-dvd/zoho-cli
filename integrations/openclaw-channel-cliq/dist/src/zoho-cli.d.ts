@@ -48,6 +48,21 @@ export declare function buildCliqDeliveryArgs(params: {
     replyToId?: string | null;
     threadId?: string | number | null;
 }): string[];
+export type CliqLifecycleStatus = "received" | "thinking" | "writing" | "testing" | "blocked" | "done" | "failed";
+export declare function buildCliqStatusReactArgs(params: {
+    account: CliqResolvedAccount;
+    messageId: string | number;
+    status: CliqLifecycleStatus;
+    chatId?: string | number | null;
+    channelId?: string | number | null;
+    clearKnown?: boolean;
+}): string[];
+export declare function buildCliqMarkReadArgs(params: {
+    account: CliqResolvedAccount;
+    messageId: string | number;
+    chatId?: string | number | null;
+    channelId?: string | number | null;
+}): string[];
 export declare function buildCliqChatsArgs(params: {
     account: CliqResolvedAccount;
     limit?: number;
@@ -72,6 +87,20 @@ export declare function sendCliqText(params: {
 }): Promise<{
     messageId?: string;
 }>;
+export declare function setCliqStatusReaction(params: {
+    account: CliqResolvedAccount;
+    messageId: string | number;
+    status: CliqLifecycleStatus;
+    chatId?: string | number | null;
+    channelId?: string | number | null;
+    clearKnown?: boolean;
+}): Promise<ZohoCliJsonResult<unknown>>;
+export declare function markCliqMessageRead(params: {
+    account: CliqResolvedAccount;
+    messageId: string | number;
+    chatId?: string | number | null;
+    channelId?: string | number | null;
+}): Promise<ZohoCliJsonResult<unknown>>;
 export declare function listCliqChats(params: {
     account: CliqResolvedAccount;
     limit?: number;

@@ -25,8 +25,12 @@ This runbook is for the native OpenClaw `cliq` channel package in
   Participation, and Context handlers can POST to `/webhooks/cliq`; the plugin
   verifies `X-Cliq-Webhook-Secret`, normalizes events, dedupes by
   account/network/chat/message, and applies the same security gates as polling.
-- Production/bidirectional agent replies wait for status/read lifecycle, loop
-  prevention, and observability slices.
+- Status/read lifecycle smoke testing is ready now: accepted native events can
+  apply visible `received -> thinking -> done` or `failed` reactions through
+  `zoho cliq status-react --clear-known` and attempt `zoho cliq mark-read`
+  without recursively creating new inbound work on lifecycle failures.
+- Production/bidirectional agent replies wait for turn-ledger loop prevention
+  and observability slices.
 
 ## Requirements
 
@@ -216,6 +220,7 @@ Recovery checklist:
 2. Reinstall with `openclaw plugins install ./integrations/openclaw-channel-cliq --link`.
 3. Run `openclaw plugins inspect zoho-cliq --json` and `openclaw plugins doctor`.
 4. Re-run `zoho cliq status --check-auth --network <network>`.
-5. Run controlled outbound smoke, local inbound polling dry-runs, and a real
-   Bot webhook receive/auth/normalize smoke. Wait for lifecycle plus loop
-   prevention before bidirectional production agent replies.
+5. Run controlled outbound smoke, local inbound polling dry-runs, a real Bot
+   webhook receive/auth/normalize smoke, and status/read lifecycle smoke. Wait
+   for turn-ledger loop prevention before bidirectional production agent
+   replies.

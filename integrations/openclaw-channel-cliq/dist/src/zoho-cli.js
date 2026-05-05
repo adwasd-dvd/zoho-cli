@@ -272,6 +272,40 @@ export function buildCliqDeliveryArgs(params) {
         text: params.text,
     });
 }
+function cliqMessageRouteArgs(params) {
+    const chatId = normalizeOptionalText(params.chatId);
+    if (chatId)
+        return ["--chat-id", chatId];
+    const channelId = normalizeOptionalText(params.channelId);
+    if (channelId)
+        return ["--channel-id", channelId];
+    throw new Error("cliq message route requires chatId or channelId");
+}
+export function buildCliqStatusReactArgs(params) {
+    const messageId = normalizeOptionalText(params.messageId);
+    if (!messageId)
+        throw new Error("cliq status-react requires messageId");
+    return [
+        "status-react",
+        messageId,
+        "--status",
+        params.status,
+        ...networkArgs(params.account),
+        ...cliqMessageRouteArgs(params),
+        params.clearKnown === false ? "--keep-existing" : "--clear-known",
+    ];
+}
+export function buildCliqMarkReadArgs(params) {
+    const messageId = normalizeOptionalText(params.messageId);
+    if (!messageId)
+        throw new Error("cliq mark-read requires messageId");
+    return [
+        "mark-read",
+        messageId,
+        ...networkArgs(params.account),
+        ...cliqMessageRouteArgs(params),
+    ];
+}
 export function buildCliqChatsArgs(params) {
     const args = [
         "chats",
@@ -396,6 +430,12 @@ function normalizeContextPayload(payload) {
 export async function sendCliqText(params) {
     const result = await runZohoCliqJson(params.account, buildCliqDeliveryArgs(params));
     return { messageId: extractCliqMessageId(result.stdout) };
+}
+export async function setCliqStatusReaction(params) {
+    return runZohoCliqJson(params.account, buildCliqStatusReactArgs(params));
+}
+export async function markCliqMessageRead(params) {
+    return runZohoCliqJson(params.account, buildCliqMarkReadArgs(params));
 }
 export async function listCliqChats(params) {
     const result = await runZohoCliqJson(params.account, buildCliqChatsArgs(params));

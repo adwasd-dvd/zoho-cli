@@ -36,7 +36,11 @@ dedupes before optional dispatch. `cliq-channel-407` is complete: the plugin
 registers Bot webhook routes such as `/webhooks/cliq`, verifies
 `X-Cliq-Webhook-Secret`, accepts Message/Mention/Participation/Context handler
 payloads, normalizes them into the same inbound event shape as polling, and
-applies dedupe plus policy gates before the next lifecycle/dispatch slices.
+applies dedupe plus policy gates. `cliq-channel-408` is complete: accepted
+webhook and polling events now use shared lifecycle handling for visible
+`received -> thinking -> done` or `failed` status reactions, attempt
+`mark-read`, and record status/read failures as diagnostics without dispatching
+new inbound work.
 
 The v0.4 plugin targets OpenClaw `>=2026.5.3-1`. The upgraded global
 `OpenClaw 2026.5.3-1` host is suitable for native plugin checks; use
@@ -68,6 +72,9 @@ Do not create parallel `cliq_send` or approval tools when OpenClaw exposes the
 native message/approval surfaces. The Cliq plugin should contribute routing,
 security, session grammar, and transport behavior while OpenClaw owns the shared
 message and approval workflows.
+
+Keep native channel lifecycle handling on the shared wrapper. Do not let
+status/read failures trigger another agent turn.
 
 Diagnostic commands:
 

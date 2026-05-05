@@ -1,4 +1,5 @@
 import { createCliqInboundDedupeStore, evaluateCliqPollingEventSecurity, normalizeCliqInboundMessage, } from "./inbound.js";
+import { runCliqInboundLifecycle, } from "./lifecycle.js";
 import { fetchCliqContext, listCliqChats } from "./zoho-cli.js";
 function isRecord(value) {
     return Boolean(value) && typeof value === "object" && !Array.isArray(value);
@@ -58,6 +59,7 @@ export async function pollCliqInboundOnce(options) {
         excludeReactedBySelf: true,
     });
     const events = [];
+    const lifecycle = [];
     const skipped = [];
     let dispatchedCount = 0;
     for (const chat of chats.chats) {
@@ -108,14 +110,22 @@ export async function pollCliqInboundOnce(options) {
             }
             events.push(event);
             if (options.onEvent) {
-                await options.onEvent(event);
-                dispatchedCount += 1;
+                const lifecycleResult = await runCliqInboundLifecycle({
+                    account: options.account,
+                    event,
+                    lifecycle: options.lifecycle,
+                    onEvent: options.onEvent,
+                });
+                lifecycle.push(lifecycleResult);
+                if (lifecycleResult.dispatched)
+                    dispatchedCount += 1;
             }
         }
     }
     return {
         events,
         dispatchedCount,
+        lifecycle,
         skipped,
     };
 }

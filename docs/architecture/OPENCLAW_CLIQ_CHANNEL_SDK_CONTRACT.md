@@ -329,6 +329,10 @@ Required runtime surfaces:
   `/webhooks/cliq`; routes must use `auth: "plugin"`, exact matching, bounded
   request size/concurrency/rate limits, and `X-Cliq-Webhook-Secret`
   verification before payload normalization.
+- `src/lifecycle.ts` for accepted inbound event lifecycle wrapping. Status
+  reactions and read acknowledgement must go through `src/zoho-cli.ts`, record
+  terminal diagnostics on failure, and never recursively dispatch new inbound
+  work.
 - `resolveInboundMentionDecision({ facts, policy })` for the final mention gate.
 - `approvalCapability`, not `ChannelPlugin.approvals`, for native approval facts.
 
@@ -428,6 +432,12 @@ multi-account installs, normalizes events into the same shape as polling,
 dedupes, and applies the existing inbound security gates before any dispatch
 callback runs. Welcome, Incoming Webhook, Call, and Menu handlers are ignored
 until explicit OpenClaw workflows are defined.
+
+`cliq-channel-408` wraps accepted webhook and polling events in shared lifecycle
+handling. The default status path is `received -> thinking`, optional dispatch,
+`mark-read`, and `done`; dispatch failures attempt `failed`. Status/read
+failures are returned in lifecycle action metadata and logged as diagnostics
+instead of creating another agent turn.
 
 ## Compatibility rule
 

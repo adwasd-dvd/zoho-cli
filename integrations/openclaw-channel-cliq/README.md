@@ -7,7 +7,8 @@ This package includes the `cliq-channel-401` installable skeleton,
 setup UX slice, `cliq-channel-403` security/policy slice, and
 `cliq-channel-414` native SDK seam slice, `cliq-channel-404` CLI adapter slice,
 `cliq-channel-405` outbound delivery slice, `cliq-channel-406` inbound
-polling slice, and `cliq-channel-407` webhook inbound slice. It declares the plugin/channel
+polling slice, `cliq-channel-407` webhook inbound slice, and
+`cliq-channel-408` status/read lifecycle slice. It declares the plugin/channel
 metadata, setup/runtime entrypoints, configured/auth-state probes, a native
 OpenClaw channel object, config schema metadata, DM pairing, group allowlist,
 mention gating, scoped employee policy gates, audit warnings,
@@ -15,7 +16,8 @@ account/network/thread-aware session grammar, native mention-policy delegation,
 approval capability metadata, a JSON-safe `zoho cliq ...` process adapter,
 native outbound send/reply/thread-reply delivery, normalized/deduped polling
 fallback events from `zoho cliq chats` + `zoho cliq context`, and Bot webhook
-intake at `/webhooks/cliq`.
+intake at `/webhooks/cliq` with shared status/read lifecycle handling for
+accepted native turns.
 
 ## Contract
 
@@ -188,5 +190,7 @@ markdown chunking and maps text sends to `zoho cliq send`, message replies to
 `zoho cliq reply`, and thread delivery to `zoho cliq thread-reply`.
 Inbound webhook delivery registers OpenClaw plugin HTTP routes with
 `auth: "plugin"` and exact matching. Accepted events can be observed through
-the runtime callback today; full agent turn dispatch, status reactions, read
-acks, and loop prevention are the next channel slices.
+the runtime callback today. Accepted webhook and polling events now use the
+shared lifecycle wrapper: `received -> thinking`, optional dispatch, `mark-read`,
+and `done`; dispatch failures attempt `failed`. Full agent turn dispatch, turn
+ledger loop prevention, and observability are the next channel slices.

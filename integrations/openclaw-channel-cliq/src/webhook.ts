@@ -35,6 +35,11 @@ import {
   type CliqMentionMatcher,
   type CliqNormalizedInboundEvent,
 } from "./inbound.js";
+import {
+  runCliqInboundLifecycle,
+  type CliqInboundLifecycleOption,
+  type CliqInboundLifecycleResult,
+} from "./lifecycle.js";
 import type { CliqInboundSecurityDecision } from "./security.js";
 
 const BODY_MAX_BYTES = 512 * 1024;
@@ -79,6 +84,7 @@ export type CliqWebhookProcessResult =
       handlerKind: CliqWebhookHandlerKind;
       event: CliqNormalizedInboundEvent;
       security: Extract<CliqInboundSecurityDecision, { allowed: true }>;
+      lifecycle: CliqInboundLifecycleResult;
       dispatched: boolean;
     }
   | {
@@ -100,6 +106,7 @@ export type CliqWebhookHandlerOptions = {
   cfg: OpenClawConfig;
   webhookPath?: string;
   dedupe?: CliqInboundDedupeStore;
+  lifecycle?: CliqInboundLifecycleOption;
   mentionMatchers?: CliqMentionMatcher[];
   env?: NodeJS.ProcessEnv;
   logger?: Partial<PluginLogger>;
@@ -627,10 +634,18 @@ export async function processCliqWebhookPayload(
       security,
     };
   }
-  await options.onEvent?.(event, {
+  const lifecycle = await runCliqInboundLifecycle({
     account: options.account,
-    handlerKind: envelope.handlerKind,
-    security,
+    event,
+    lifecycle: options.lifecycle,
+    onEvent: options.onEvent
+      ? (acceptedEvent) =>
+          options.onEvent?.(acceptedEvent, {
+            account: options.account,
+            handlerKind: envelope.handlerKind,
+            security,
+          })
+      : undefined,
   });
   return {
     ok: true,
@@ -639,7 +654,24 @@ export async function processCliqWebhookPayload(
     handlerKind: envelope.handlerKind,
     event,
     security,
-    dispatched: Boolean(options.onEvent),
+    lifecycle,
+    dispatched: lifecycle.dispatched,
+  };
+}
+
+function responseLifecycleSummary(
+  lifecycle: CliqInboundLifecycleResult,
+): Record<string, unknown> {
+  return {
+    dispatched: lifecycle.dispatched,
+    actions: lifecycle.actions.map((action) => ({
+      kind: action.kind,
+      ok: action.ok,
+      applied: action.applied,
+      status: action.status,
+      reason: action.reason,
+      errorKind: action.errorKind,
+    })),
   };
 }
 
@@ -733,6 +765,7 @@ export function createCliqWebhookHttpHandler(
           handlerKind: result.handlerKind,
           dispatched: result.dispatched,
           event: responseEventSummary(result.event),
+          lifecycle: responseLifecycleSummary(result.lifecycle),
         });
         return true;
       }

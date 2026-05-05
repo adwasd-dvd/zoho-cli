@@ -17,6 +17,11 @@ Use this skill when operating through the native OpenClaw Zoho Cliq channel.
   Message, Mention, Participation, and Context handlers must POST with
   `X-Cliq-Webhook-Secret`; normalize, dedupe, and apply the same security gates
   as polling before dispatch.
+- Accepted native webhook and polling events should run through the shared
+  lifecycle wrapper. Use `zoho cliq status-react --clear-known` for visible
+  status (`received`, `thinking`, `writing`, `testing`, `blocked`, `done`,
+  `failed`) and `zoho cliq mark-read` for read acknowledgement when available.
+  Treat status/read failures as diagnostics, not new inbound work.
 - Treat stdout as machine data and stderr as diagnostics.
 - Never reveal token passwords, webhook secrets, OAuth tokens, raw webhook
   signatures, or private message bodies in logs.

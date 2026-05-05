@@ -383,6 +383,63 @@ export function buildCliqDeliveryArgs(params: {
   });
 }
 
+function cliqMessageRouteArgs(params: {
+  chatId?: string | number | null;
+  channelId?: string | number | null;
+}): string[] {
+  const chatId = normalizeOptionalText(params.chatId);
+  if (chatId) return ["--chat-id", chatId];
+  const channelId = normalizeOptionalText(params.channelId);
+  if (channelId) return ["--channel-id", channelId];
+  throw new Error("cliq message route requires chatId or channelId");
+}
+
+export type CliqLifecycleStatus =
+  | "received"
+  | "thinking"
+  | "writing"
+  | "testing"
+  | "blocked"
+  | "done"
+  | "failed";
+
+export function buildCliqStatusReactArgs(params: {
+  account: CliqResolvedAccount;
+  messageId: string | number;
+  status: CliqLifecycleStatus;
+  chatId?: string | number | null;
+  channelId?: string | number | null;
+  clearKnown?: boolean;
+}): string[] {
+  const messageId = normalizeOptionalText(params.messageId);
+  if (!messageId) throw new Error("cliq status-react requires messageId");
+  return [
+    "status-react",
+    messageId,
+    "--status",
+    params.status,
+    ...networkArgs(params.account),
+    ...cliqMessageRouteArgs(params),
+    params.clearKnown === false ? "--keep-existing" : "--clear-known",
+  ];
+}
+
+export function buildCliqMarkReadArgs(params: {
+  account: CliqResolvedAccount;
+  messageId: string | number;
+  chatId?: string | number | null;
+  channelId?: string | number | null;
+}): string[] {
+  const messageId = normalizeOptionalText(params.messageId);
+  if (!messageId) throw new Error("cliq mark-read requires messageId");
+  return [
+    "mark-read",
+    messageId,
+    ...networkArgs(params.account),
+    ...cliqMessageRouteArgs(params),
+  ];
+}
+
 export function buildCliqChatsArgs(params: {
   account: CliqResolvedAccount;
   limit?: number;
@@ -546,6 +603,29 @@ export async function sendCliqText(params: {
     buildCliqDeliveryArgs(params),
   );
   return { messageId: extractCliqMessageId(result.stdout) };
+}
+
+export async function setCliqStatusReaction(params: {
+  account: CliqResolvedAccount;
+  messageId: string | number;
+  status: CliqLifecycleStatus;
+  chatId?: string | number | null;
+  channelId?: string | number | null;
+  clearKnown?: boolean;
+}): Promise<ZohoCliJsonResult<unknown>> {
+  return runZohoCliqJson<unknown>(
+    params.account,
+    buildCliqStatusReactArgs(params),
+  );
+}
+
+export async function markCliqMessageRead(params: {
+  account: CliqResolvedAccount;
+  messageId: string | number;
+  chatId?: string | number | null;
+  channelId?: string | number | null;
+}): Promise<ZohoCliJsonResult<unknown>> {
+  return runZohoCliqJson<unknown>(params.account, buildCliqMarkReadArgs(params));
 }
 
 export async function listCliqChats(params: {

@@ -4,6 +4,7 @@ import { CLIQ_CHANNEL_ID, CLIQ_PLUGIN_ID } from "./src/constants.js";
 import { zohoCliqPlugin } from "./src/channel.js";
 import { registerCliqWebhookRoutes } from "./src/webhook.js";
 export { buildCliqInboundDedupeKey, createCliqInboundDedupeStore, evaluateCliqPollingEventSecurity, normalizeCliqContextMessages, normalizeCliqInboundMessage, normalizeCliqWatchMessages, } from "./src/inbound.js";
+export { runCliqInboundLifecycle } from "./src/lifecycle.js";
 export { pollCliqInboundOnce } from "./src/polling.js";
 export { createCliqWebhookHttpHandler, evaluateCliqWebhookEventSecurity, listCliqWebhookRoutePaths, normalizeCliqWebhookPayload, normalizeCliqWebhookPath, parseCliqWebhookPayload, processCliqWebhookPayload, registerCliqWebhookRoutes, verifyCliqWebhookSecret, } from "./src/webhook.js";
 export default defineChannelPluginEntry({

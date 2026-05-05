@@ -58,9 +58,9 @@ uv tool install .
 
 - Package: `integrations/openclaw-channel-cliq/` (`@adwasd/openclaw-zoho-cliq`, plugin id `zoho-cliq`, channel id `cliq`)
 - Host target: OpenClaw `>=2026.5.3-1`; the upgraded global host is verified at `OpenClaw 2026.5.3-1`, and package-local validation remains available for isolated checks.
-- Current slice: `cliq-channel-407` is complete; the channel now has account/network-aware session grammar, secure policy gates, native approval metadata, a JSON-safe `zoho` process adapter, native outbound send/reply/thread-reply delivery, fixture-backed inbound polling normalization/dedupe through `zoho cliq chats` + `zoho cliq context`, and a Bot webhook intake route at `/webhooks/cliq` with secret verification.
+- Current slice: `cliq-channel-408` is complete; the channel now has account/network-aware session grammar, secure policy gates, native approval metadata, a JSON-safe `zoho` process adapter, native outbound send/reply/thread-reply delivery, fixture-backed inbound polling normalization/dedupe through `zoho cliq chats` + `zoho cliq context`, a Bot webhook intake route at `/webhooks/cliq` with secret verification, and shared status/read lifecycle handling for accepted native turns.
 - Setup runbook: `docs/releases/OPENCLAW_CLIQ_CHANNEL_SETUP.md`.
-- Controlled live outbound smoke, local inbound polling dry-runs, and real Bot webhook receive/auth/normalize smoke are now unblocked for trusted targets; production/bidirectional agent replies still wait for lifecycle, loop prevention, and observability slices.
+- Controlled live outbound smoke, local inbound polling dry-runs, real Bot webhook receive/auth/normalize smoke, and status/read lifecycle smoke are now unblocked for trusted targets; production/bidirectional agent replies still wait for turn-ledger loop prevention and observability slices.
 
 ### 🚧 Zoho CRM (read-only scaffold implemented)
 
@@ -162,7 +162,7 @@ Project state lives in `ops/state/*.yml`:
 | --- | --- | --- | --- |
 | Mail | ✅ Completed | stabilization_complete | Shipping baseline is stable. |
 | Cliq | ✅ Completed for RC | workflow_packaging_complete_with_deferred_external_blockers | Mail+Cliq AI-employee core is ready for RC; endpoint-limited tail is deferred post-RC. |
-| OpenClaw Cliq channel | 🚧 In progress | webhook_inbound_ready_lifecycle_next | `cliq-channel-401/402/416/403/414/404/405/406/407` added the installable package, config/setup UX, security/employee policy gates, SDK session/mention/approval seams, JSON-safe CLI process execution, native outbound delivery, normalized/deduped inbound polling, and Bot webhook intake. |
+| OpenClaw Cliq channel | 🚧 In progress | lifecycle_ready_loop_prevention_next | `cliq-channel-401/402/416/403/414/404/405/406/407/408` added the installable package, config/setup UX, security/employee policy gates, SDK session/mention/approval seams, JSON-safe CLI process execution, native outbound delivery, normalized/deduped inbound polling, Bot webhook intake, and status/read lifecycle handling. |
 | CRM | ✅ Completed for phase 1 | phase_1_read_only_commands_implemented | Read-only scaffold is present; deeper CRM work resumes in v0.5 after the v0.4 channel. |
 
 ### Current platform lane (AI-employee v1)
@@ -179,7 +179,7 @@ Project state lives in `ops/state/*.yml`:
 ### Current release posture
 
 - Current version: `0.2.1`
-- Next active target: implement status/read lifecycle (`cliq-channel-408`), then loop-prevention hardening.
+- Next active target: implement turn-ledger loop prevention (`cliq-channel-413`), then OpenClaw native UX hardening.
 - Release candidate: `false`
 - Broad automated gate: final `make release-gate && make ci` is green for `0.2.1`; [v0.2.1](https://github.com/adwasd-dvd/zoho-cli/releases/tag/v0.2.1) is the current stable release.
 
@@ -195,7 +195,7 @@ Project state lives in `ops/state/*.yml`:
 1. Keep unsupported Cliq endpoints capability-gated so they do not stall AI-employee internal-loop readiness.
 2. Keep remaining Cliq helper-heavy modularization opportunistic while the
    channel lane moves.
-3. Continue the native OpenClaw Cliq channel in v0.4 with status/read lifecycle next.
+3. Continue the native OpenClaw Cliq channel in v0.4 with turn-ledger loop prevention next.
 4. Resume deeper CRM work in v0.5 after the channel lane is stable.
 
 ---

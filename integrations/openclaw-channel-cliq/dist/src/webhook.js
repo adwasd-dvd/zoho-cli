@@ -4,6 +4,7 @@ import { beginWebhookRequestPipelineOrReject, createFixedWindowRateLimiter, crea
 import { defaultCliqAccountId, listCliqAccountIds, resolveCliqAccount, } from "./config.js";
 import { CLIQ_CHANNEL_ID, CLIQ_WEBHOOK_SECRET_HEADER, DEFAULT_ACCOUNT_ID, DEFAULT_CLIQ_WEBHOOK_PATH, } from "./constants.js";
 import { createCliqInboundDedupeStore, evaluateCliqPollingEventSecurity, normalizeCliqInboundMessage, } from "./inbound.js";
+import { runCliqInboundLifecycle, } from "./lifecycle.js";
 const BODY_MAX_BYTES = 512 * 1024;
 const BODY_TIMEOUT_MS = 5_000;
 function isRecord(value) {
@@ -451,10 +452,17 @@ export async function processCliqWebhookPayload(options) {
             security,
         };
     }
-    await options.onEvent?.(event, {
+    const lifecycle = await runCliqInboundLifecycle({
         account: options.account,
-        handlerKind: envelope.handlerKind,
-        security,
+        event,
+        lifecycle: options.lifecycle,
+        onEvent: options.onEvent
+            ? (acceptedEvent) => options.onEvent?.(acceptedEvent, {
+                account: options.account,
+                handlerKind: envelope.handlerKind,
+                security,
+            })
+            : undefined,
     });
     return {
         ok: true,
@@ -463,7 +471,21 @@ export async function processCliqWebhookPayload(options) {
         handlerKind: envelope.handlerKind,
         event,
         security,
-        dispatched: Boolean(options.onEvent),
+        lifecycle,
+        dispatched: lifecycle.dispatched,
+    };
+}
+function responseLifecycleSummary(lifecycle) {
+    return {
+        dispatched: lifecycle.dispatched,
+        actions: lifecycle.actions.map((action) => ({
+            kind: action.kind,
+            ok: action.ok,
+            applied: action.applied,
+            status: action.status,
+            reason: action.reason,
+            errorKind: action.errorKind,
+        })),
     };
 }
 function sendJson(res, statusCode, payload) {
@@ -548,6 +570,7 @@ export function createCliqWebhookHttpHandler(options) {
                     handlerKind: result.handlerKind,
                     dispatched: result.dispatched,
                     event: responseEventSummary(result.event),
+                    lifecycle: responseLifecycleSummary(result.lifecycle),
                 });
                 return true;
             }

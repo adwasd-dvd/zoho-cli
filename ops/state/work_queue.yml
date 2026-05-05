@@ -387,14 +387,14 @@
 - id: cliq-channel-408
   title: implement status reaction and read-ack lifecycle for native channel turns
   module: openclaw_cliq_channel
-  stage: ready
+  stage: completed
   priority: high
   depends_on:
   - cliq-channel-407
 - id: cliq-channel-413
   title: implement turn ledger loop prevention dead-letter and efficiency hardening
   module: openclaw_cliq_channel
-  stage: queued
+  stage: ready
   priority: high
   depends_on:
   - cliq-channel-408

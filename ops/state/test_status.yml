@@ -1,10 +1,26 @@
-last_run_at: "2026-05-05T06:24:01Z"
+last_run_at: "2026-05-05T07:21:02Z"
 last_result: passing
-current_focus: cliq-channel-407-webhook-inbound-20260505T062401Z
+current_focus: cliq-channel-408-status-read-lifecycle-20260505T072102Z
 suites:
   unit:
     status: passing
     notes:
+      - "cliq-channel-408 status/read lifecycle completed at 2026-05-05T07:21:02Z"
+      - "added `src/lifecycle.ts` with shared lifecycle wrapping for accepted webhook and polling events: `received`, `thinking`, `mark_read`, `done`, and `failed` on dispatch error"
+      - "expanded `src/zoho-cli.ts` with `buildCliqStatusReactArgs`, `buildCliqMarkReadArgs`, `setCliqStatusReaction`, and `markCliqMessageRead` so lifecycle stays on the JSON-safe `zoho cliq ...` adapter path"
+      - "expanded `src/webhook.ts` and `src/polling.ts` to return lifecycle metadata and keep status/read failures as terminal diagnostics instead of recursive inbound work"
+      - "npm --prefix integrations/openclaw-channel-cliq run typecheck -> passed"
+      - "npm --prefix integrations/openclaw-channel-cliq run build -> passed"
+      - "./.venv/bin/python -m pytest -q tests/test_openclaw_channel_skeleton.py tests/test_openclaw_channel_contract.py tests/test_lane3_docs.py tests/test_markdown_update.py -> 26 passed in 8.74s"
+      - "package-local OpenClaw linked install in temp HOME -> passed"
+      - "package-local OpenClaw plugins inspect zoho-cliq --json -> plugin status loaded, channelIds [`cliq`], diagnostics []"
+      - "package-local OpenClaw plugins doctor -> No plugin issues detected."
+      - "global OpenClaw plugins inspect zoho-cliq --json -> plugin status loaded, channelIds [`cliq`], diagnostics []"
+      - "global OpenClaw plugins doctor -> No plugin issues detected."
+      - "node JSON parse for package/manifest -> PLUGIN_JSON_OK"
+      - "ruby YAML parse for ops/workflow state -> YAML_PARSE_OK"
+      - "git diff --check -> clean"
+      - "make ci -> ruff format/check clean + pytest `1770 passed in 46.60s`"
       - "cliq-channel-407 webhook inbound intake completed at 2026-05-05T06:24:01Z"
       - "added `src/webhook.ts` with exact OpenClaw plugin HTTP route registration, `X-Cliq-Webhook-Secret` verification through SecretRef/env config, multi-account path/secret filtering, JSON/form/Deluge payload parsing, handler filtering, inbound event normalization, dedupe, and security-gate reuse"
       - "added `webhookPath` to runtime config schema, manifest schema/UI hints, account descriptions, setup config application, and docs examples; default route is `/webhooks/cliq`"

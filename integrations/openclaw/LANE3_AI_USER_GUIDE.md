@@ -66,7 +66,7 @@ Current implementation-only delta:
 - `cliq-210` also moved productivity/platform list command bodies (`events`, `reminders`, `meetings`, `databases`) into `zoho_cli/commands/cliq_productivity.py`; AI-user command patterns are unchanged.
 - `cliq-210` also moved platform-extension list command bodies (`widgets`, `map-tickers`, `custom-domains`, `custom-emails`) into `zoho_cli/commands/cliq_platform_extensions.py`; AI-user command patterns are unchanged.
 - `cliq-210` also moved channel/member/chat-control command bodies (`members`, channel lifecycle/member commands, `leave`, `mute`, `unmute`, `pin`, `unpin`, `pinned`) into `zoho_cli/commands/cliq_channel_management.py`; AI-user command patterns are unchanged.
-- v0.4 native OpenClaw Cliq channel now has config/setup/security/session/CLI-adapter/outbound delivery, fixture-backed inbound polling normalization/dedupe, and Bot webhook receive/auth/normalize intake at `/webhooks/cliq`; status/read lifecycle is the next channel slice and CRM expansion moves to v0.5.
+- v0.4 native OpenClaw Cliq channel now has config/setup/security/session/CLI-adapter/outbound delivery, fixture-backed inbound polling normalization/dedupe, Bot webhook receive/auth/normalize intake at `/webhooks/cliq`, and status/read lifecycle handling; turn-ledger loop prevention is the next channel slice and CRM expansion moves to v0.5.
 
 ## Required behavior support after lane3 sync
 
@@ -84,6 +84,9 @@ After sync, ensure the AI user follows:
 - native channel Bot webhook smoke:
   - configure Message, Mention, Participation, or Context handlers to POST to `/webhooks/cliq`
   - send `X-Cliq-Webhook-Secret` from `ZOHO_CLIQ_WEBHOOK_SECRET`
+- native channel lifecycle smoke:
+  - accepted webhook/polling events should produce lifecycle metadata and visible status reactions
+  - read-ack/status failures are diagnostics and must not dispatch new inbound work
   - rotate any exposed secret before live use
 - native channel development/operation docs when relevant:
   - read `skill/references/openclaw-cliq-channel.md`

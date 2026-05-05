@@ -9,6 +9,11 @@ import {
   type CliqMentionMatcher,
   type CliqNormalizedInboundEvent,
 } from "./inbound.js";
+import {
+  runCliqInboundLifecycle,
+  type CliqInboundLifecycleOption,
+  type CliqInboundLifecycleResult,
+} from "./lifecycle.js";
 import { fetchCliqContext, listCliqChats } from "./zoho-cli.js";
 
 export type CliqPollingSkipReason =
@@ -29,6 +34,7 @@ export type CliqPollingSkippedEvent = {
 export type CliqPollingResult = {
   events: CliqNormalizedInboundEvent[];
   dispatchedCount: number;
+  lifecycle: CliqInboundLifecycleResult[];
   skipped: CliqPollingSkippedEvent[];
 };
 
@@ -40,6 +46,7 @@ export type CliqPollingOptions = {
   mentionMatchers?: CliqMentionMatcher[];
   selfUserIds?: string[];
   dedupe?: CliqInboundDedupeStore;
+  lifecycle?: CliqInboundLifecycleOption;
   onEvent?: (event: CliqNormalizedInboundEvent) => void | Promise<void>;
 };
 
@@ -109,6 +116,7 @@ export async function pollCliqInboundOnce(
     excludeReactedBySelf: true,
   });
   const events: CliqNormalizedInboundEvent[] = [];
+  const lifecycle: CliqInboundLifecycleResult[] = [];
   const skipped: CliqPollingSkippedEvent[] = [];
   let dispatchedCount = 0;
 
@@ -164,8 +172,14 @@ export async function pollCliqInboundOnce(
 
       events.push(event);
       if (options.onEvent) {
-        await options.onEvent(event);
-        dispatchedCount += 1;
+        const lifecycleResult = await runCliqInboundLifecycle({
+          account: options.account,
+          event,
+          lifecycle: options.lifecycle,
+          onEvent: options.onEvent,
+        });
+        lifecycle.push(lifecycleResult);
+        if (lifecycleResult.dispatched) dispatchedCount += 1;
       }
     }
   }
@@ -173,6 +187,7 @@ export async function pollCliqInboundOnce(
   return {
     events,
     dispatchedCount,
+    lifecycle,
     skipped,
   };
 }

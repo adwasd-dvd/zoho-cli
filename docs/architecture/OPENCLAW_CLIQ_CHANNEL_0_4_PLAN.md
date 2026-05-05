@@ -33,17 +33,18 @@ already has native channel actions.
 Current OpenClaw baseline lock is captured in
 `docs/architecture/OPENCLAW_CLIQ_CHANNEL_SDK_CONTRACT.md`.
 
-`cliq-channel-400` check on `2026-05-04T21:39:33Z`:
+`cliq-channel-400` check on `2026-05-04T21:39:33Z`, refreshed after the global
+host upgrade on `2026-05-05T02:45:00Z`:
 
-- local workspace OpenClaw: `2026.4.15`
+- global workspace OpenClaw: `2026.5.3-1`
+- previous local OpenClaw: `2026.4.15`
 - npm `latest`: `2026.5.3-1`
 - npm `beta`: `2026.5.4-beta.1`
 - target `minHostVersion`: `>=2026.5.3-1`
 - target `compat.pluginApi`: `>=2026.5.3-1`
 
-v0.4 implementation targets the latest stable host checked above. The local
-`2026.4.15` install is too old for plugin install/inspect validation and remains
-only a compatibility reference until upgraded.
+v0.4 implementation targets the stable host checked above. The earlier local
+`2026.4.15` install is kept only as compatibility history.
 
 ## Design principles
 
@@ -712,8 +713,9 @@ OpenClaw:
 - Recheck latest OpenClaw plugin docs and npm version. Completed at
   `2026-05-04T21:39:33Z`.
 - Choose `minHostVersion` and `compat.pluginApi`. Locked to `>=2026.5.3-1`.
-- Capture compatibility notes for local older OpenClaw installs. Local
-  `2026.4.15` is too old for install/inspect validation.
+- Capture compatibility notes for local older OpenClaw installs. The previous
+  `2026.4.15` host is too old for install/inspect validation; the upgraded
+  global host is `2026.5.3-1`.
 - Record local/latest/beta host versions and decide whether beta API drift
   requires follow-up before release. Beta `2026.5.4-beta.1` does not change the
   skeleton dependency; recheck before v0.4 release.
@@ -781,14 +783,18 @@ OpenClaw:
 ### cliq-channel-414: Native SDK policy seams
 
 - Implement session grammar/conversation resolver for DM, channel, thread, and
-  parent fallback routing.
+  parent fallback routing. Complete in `src/session.ts` with account/network
+  scoped peer ids and thread-aware outbound routes.
 - Implement Cliq mention fact gathering and delegate final decisions to
-  OpenClaw's shared inbound mention policy helper when available.
+  OpenClaw's shared inbound mention policy helper when available. Complete for
+  explicit mentions, reply-to-bot, quoted-bot, bot-thread participation, and
+  authorized command bypass boundaries.
 - Expose approval capability for review-required actions instead of custom
-  approval tools.
-- Keep runtime gateway methods out of reserved core admin namespaces.
+  approval tools. Complete through `approvalCapability`.
+- Keep runtime gateway methods out of reserved core admin namespaces. Complete;
+  the plugin still declares no custom gateway methods.
 - Acceptance: session, mention, command-bypass, and approval fixtures match the
-  latest stable OpenClaw SDK behavior.
+  latest stable OpenClaw SDK behavior. Complete with runtime skeleton tests.
 
 ### cliq-channel-404: CLI adapter
 

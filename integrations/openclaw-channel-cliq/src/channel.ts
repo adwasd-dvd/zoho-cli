@@ -1,11 +1,8 @@
 import type { ChannelPlugin } from "openclaw/plugin-sdk";
 import { buildDmGroupAccountAllowlistAdapter } from "openclaw/plugin-sdk/allowlist-config-edit";
 import {
-  buildChannelOutboundSessionRoute,
   createChannelPluginBase,
   createChatChannelPlugin,
-  stripChannelTargetPrefix,
-  stripTargetKindPrefix,
 } from "openclaw/plugin-sdk/channel-core";
 import {
   implicitMentionKindWhen,
@@ -26,20 +23,21 @@ import {
   type CliqResolvedAccount,
   validateCliqSetupInput,
 } from "./config.js";
-import { CLIQ_CHANNEL_ID, CLIQ_PLUGIN_ID } from "./constants.js";
+import { CLIQ_CHANNEL_ID } from "./constants.js";
 import {
   collectCliqSecurityAuditFindings,
   collectCliqSecurityWarnings,
   normalizeCliqAllowEntry,
 } from "./security.js";
+import {
+  buildCliqOutboundSessionRoute,
+  inferCliqTargetChatType,
+  normalizeCliqTarget,
+  parseCliqExplicitTarget,
+  resolveCliqSessionConversation,
+  resolveCliqSessionTarget,
+} from "./session.js";
 import { cliqSetupWizard } from "./setup-wizard.js";
-
-function normalizeCliqTarget(raw: string): string | undefined {
-  const stripped = stripTargetKindPrefix(
-    stripChannelTargetPrefix(raw.trim(), "cliq", "zoho-cliq", "zoho"),
-  );
-  return stripped || undefined;
-}
 
 const cliqCapabilities: ChannelPlugin<CliqResolvedAccount>["capabilities"] = {
   chatTypes: ["direct", "group", "channel", "thread"],
@@ -90,62 +88,41 @@ const cliqMessagingAdapter: NonNullable<
 > = {
   targetPrefixes: ["cliq", "zoho-cliq", "zoho"],
   normalizeTarget: normalizeCliqTarget,
-  inferTargetChatType: ({ to }) =>
-    to.startsWith("user:") || to.startsWith("@") ? "direct" : "channel",
+  inferTargetChatType: ({ to }) => inferCliqTargetChatType(to),
   parseExplicitTarget: ({ raw }) => {
-    const target = normalizeCliqTarget(raw);
-    if (!target) return null;
-    if (target.startsWith("user:")) {
-      return { to: target, chatType: "direct" };
-    }
-    if (target.startsWith("@")) {
-      return { to: `user:${target.slice(1)}`, chatType: "direct" };
-    }
-    if (target.startsWith("channel:")) {
-      return { to: target, chatType: "channel" };
-    }
-    return { to: `channel:${target}`, chatType: "channel" };
+    const target = parseCliqExplicitTarget(raw);
+    return target
+      ? {
+          to: target.to,
+          threadId: target.threadId,
+          chatType: target.chatType,
+        }
+      : null;
   },
-  resolveSessionConversation: ({ kind, rawId }) => {
-    const [baseConversationId, threadId] = rawId.split(":", 2);
-    const id = threadId ? `${baseConversationId}:${threadId}` : rawId;
-    return {
-      id,
-      threadId: threadId || null,
-      baseConversationId,
-      parentConversationCandidates:
-        kind === "channel" || kind === "group" ? [baseConversationId] : [],
-    };
-  },
-  resolveSessionTarget: ({ kind, id, threadId }) => {
-    const prefix = kind === "channel" ? "channel" : "chat";
-    return threadId ? `${prefix}:${id}:${threadId}` : `${prefix}:${id}`;
-  },
+  resolveSessionConversation: resolveCliqSessionConversation,
+  resolveSessionTarget: resolveCliqSessionTarget,
   resolveOutboundSessionRoute: (params) => {
-    const resolved = params.resolvedTarget;
-    const normalized =
-      resolved?.to || normalizeCliqTarget(params.target) || params.target;
-    const chatType =
-      resolved?.kind === "user"
-        ? "direct"
-        : resolved?.kind === "group"
-          ? "group"
-          : "channel";
-    return buildChannelOutboundSessionRoute({
+    const account = resolveCliqAccount(params.cfg, params.accountId);
+    return buildCliqOutboundSessionRoute({
       cfg: params.cfg,
       agentId: params.agentId,
-      channel: CLIQ_CHANNEL_ID,
-      accountId: params.accountId,
-      peer: {
-        kind: chatType,
-        id: normalized,
-      },
-      chatType,
-      from: `${CLIQ_PLUGIN_ID}:${params.accountId || "default"}`,
-      to: normalized,
-      threadId: params.threadId ?? undefined,
+      account,
+      target: params.target,
+      resolvedTarget: params.resolvedTarget,
+      replyToId: params.replyToId,
+      threadId: params.threadId,
+      currentSessionKey: params.currentSessionKey,
     });
   },
+};
+
+const cliqApprovalCapability: NonNullable<
+  ChannelPlugin<CliqResolvedAccount>["approvalCapability"]
+> = {
+  getActionAvailabilityState: () => ({ kind: "enabled" }),
+  getExecInitiatingSurfaceState: () => ({ kind: "enabled" }),
+  describeExecApprovalSetup: ({ accountId }) =>
+    `Exec approvals are enabled for Cliq account ${accountId || "default"}.`,
 };
 
 const cliqBase: ChannelPlugin<CliqResolvedAccount> = {
@@ -204,6 +181,7 @@ const cliqBase: ChannelPlugin<CliqResolvedAccount> = {
   config: cliqConfigAdapter,
   allowlist: cliqAllowlistAdapter,
   messaging: cliqMessagingAdapter,
+  approvalCapability: cliqApprovalCapability,
 };
 
 export const zohoCliqPlugin = createChatChannelPlugin<CliqResolvedAccount>({
@@ -245,6 +223,10 @@ export function resolveCliqMentionDecision(params: {
   requireMention: boolean;
   isReplyToBot?: boolean;
   isQuoteOfBot?: boolean;
+  isBotThreadParticipant?: boolean;
+  allowTextCommands?: boolean;
+  hasControlCommand?: boolean;
+  commandAuthorized?: boolean;
 }) {
   const wasMentioned = matchesMentionWithExplicit({
     text: params.text,
@@ -258,15 +240,23 @@ export function resolveCliqMentionDecision(params: {
       implicitMentionKinds: [
         ...implicitMentionKindWhen("reply_to_bot", Boolean(params.isReplyToBot)),
         ...implicitMentionKindWhen("quoted_bot", Boolean(params.isQuoteOfBot)),
+        ...implicitMentionKindWhen(
+          "bot_thread_participant",
+          Boolean(params.isBotThreadParticipant),
+        ),
       ],
     },
     policy: {
       isGroup: params.isGroup,
       requireMention: params.requireMention,
-      allowedImplicitMentionKinds: ["reply_to_bot", "quoted_bot"],
-      allowTextCommands: false,
-      hasControlCommand: false,
-      commandAuthorized: false,
+      allowedImplicitMentionKinds: [
+        "reply_to_bot",
+        "quoted_bot",
+        "bot_thread_participant",
+      ],
+      allowTextCommands: params.allowTextCommands === true,
+      hasControlCommand: params.hasControlCommand === true,
+      commandAuthorized: params.commandAuthorized === true,
     },
   });
 }

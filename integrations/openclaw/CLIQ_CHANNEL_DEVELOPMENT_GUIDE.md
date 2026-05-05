@@ -70,7 +70,10 @@ Follow the stack from the architecture plan:
 5. `cliq-channel-403` security, pairing, and scoped employee mode (complete;
    DM pairing default, group allowlist, mention gating, scoped employee policy,
    and audit warnings are in runtime metadata/helpers)
-6. `cliq-channel-414` native SDK policy seams
+6. `cliq-channel-414` native SDK policy seams (complete; `src/session.ts`
+   handles account/network/thread-aware session grammar, shared mention policy
+   delegation is wired, authorized command bypass is bounded, and
+   `approvalCapability` advertises native approvals)
 7. `cliq-channel-404` CLI adapter
 8. `cliq-channel-405` outbound delivery
 9. `cliq-channel-406` inbound polling fallback
@@ -176,7 +179,7 @@ Current config baseline:
               "role": "employee",
               "allowedSurfaces": ["cliq", "mail"],
               "crm": "read_only",
-              "requiresReviewFor": ["external_send", "delete", "install", "config_write"]
+              "requiresReviewFor": ["external_send", "delete", "system.install", "system.config_write"]
             }
           }
         }
@@ -245,14 +248,14 @@ Recommended setup-state copy should stay short:
 ## Native SDK alignment checklist
 
 - Recheck local, latest, and beta OpenClaw versions before implementation.
-- Treat local `OpenClaw 2026.4.15` as too old for v0.4 install/inspect tests;
-  upgrade or use a throwaway `openclaw@2026.5.3-1` environment before running
-  plugin validation.
+- Use the upgraded global `OpenClaw 2026.5.3-1` host for v0.4 install/inspect
+  tests; keep package-local `openclaw@2026.5.3-1` as an isolated fallback.
 - Keep `openclaw.plugin.json` focused on pre-runtime metadata: config schema,
   env vars, channel config metadata, setup metadata, QA runners, and skills.
 - Keep `package.json#openclaw` focused on entrypoints, install/update hints,
   `minHostVersion`, configured/auth-state checkers, and integrity pins.
-- Add a session grammar module for account/network/chat/thread/parent mapping.
+- Keep `src/session.ts` as the session grammar module for
+  account/network/chat/thread/parent mapping.
 - Use the canonical OpenClaw conversation resolver hook when it is available.
 - Gather Cliq mention facts locally, then call the shared inbound mention policy
   helper when available.

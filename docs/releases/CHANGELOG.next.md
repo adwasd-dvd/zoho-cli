@@ -12,7 +12,7 @@
 
 ### OpenClaw Cliq channel (2026-05-04T21:39:33Z)
 - Completed `cliq-channel-400` by locking the native OpenClaw Cliq channel SDK/version contract in `docs/architecture/OPENCLAW_CLIQ_CHANNEL_SDK_CONTRACT.md`.
-- Target OpenClaw host/plugin API is `>=2026.5.3-1`; local `OpenClaw 2026.4.15` is documented as too old for v0.4 plugin install/inspect validation.
+- Target OpenClaw host/plugin API is `>=2026.5.3-1`; the global host was upgraded and verified at `OpenClaw 2026.5.3-1` for v0.4 plugin install/inspect validation.
 - Captured the v0.4 package identity, manifest/package metadata split, SDK helper imports, SecretRef shape, and minimum `zoho cliq ...` command contract for the upcoming `cliq-channel-401` plugin skeleton.
 - Completed `cliq-channel-401` by adding `integrations/openclaw-channel-cliq/` with `package.json#openclaw`, `openclaw.plugin.json`, setup/runtime entrypoints, configured/auth-state probes, compiled `dist/*.js` runtime output, and a channel skill.
 - Package-local OpenClaw validation now passes in a throwaway home with `openclaw@2026.5.3-1`: linked install succeeds, `plugins inspect zoho-cliq --json` discovers channel `cliq`, and `plugins doctor` reports no issues.
@@ -24,6 +24,7 @@
 - Added `docs/releases/OPENCLAW_CLIQ_CHANNEL_SETUP.md` with install, config/auth smoke, setup-state troubleshooting, disable/uninstall, and recovery guidance; real outbound testing remains gated by `cliq-channel-404` and `cliq-channel-405`.
 - Completed `cliq-channel-403` by adding secure-by-default runtime policy surfaces: DM pairing is the default, group/channel access defaults to `groupPolicy=allowlist`, group contexts require mention by default, unsafe open/wildcard/no-mention/employee-disabled settings emit audit warnings, and scoped employee mode blocks chat-originated debug, install, config-write, secret-read, shell/system, and policy-bypass requests before dispatch.
 - Added native allowlist adapter metadata for DM and group scopes, plus `src/security.ts` and `src/employee-policy.ts` so later inbound slices can enforce the same decisions before agent dispatch.
+- Completed `cliq-channel-414` by moving Cliq target/session grammar into `src/session.ts`, making outbound routes account/network/thread aware, delegating mention decisions to OpenClaw's shared inbound helper for explicit/implicit mention and authorized command bypass, and wiring native `approvalCapability` metadata instead of custom approval tools.
 
 ### Architecture / modularization (2026-05-04T18:19:47Z)
 - Started `cliq-210` post-RC modularization by extracting the `zoho cliq status` and `zoho cliq capabilities` command bodies into `zoho_cli/commands/cliq_readiness.py`, leaving `zoho_cli/cli.py` with runtime dependency injection plus existing Typer registration only. Command names, help text, and JSON output are unchanged.

@@ -4,12 +4,15 @@ Native OpenClaw channel package for Zoho Cliq, backed by `zoho-cli`.
 
 This package includes the `cliq-channel-401` installable skeleton,
 `cliq-channel-402` config/SecretRef/setup slice, `cliq-channel-416` human
-setup UX slice, and `cliq-channel-403` security/policy slice. It declares the plugin/channel
+setup UX slice, `cliq-channel-403` security/policy slice, and
+`cliq-channel-414` native SDK seam slice. It declares the plugin/channel
 metadata, setup/runtime entrypoints, configured/auth-state probes, a minimal
 OpenClaw channel object, config schema metadata, DM pairing, group allowlist,
-mention gating, scoped employee policy gates, audit warnings, and a typed
-`zoho cliq send` argument contract. Process execution, inbound delivery, and
-outbound behavior follow in later slices.
+mention gating, scoped employee policy gates, audit warnings,
+account/network/thread-aware session grammar, native mention-policy delegation,
+approval capability metadata, and a typed `zoho cliq send` argument contract.
+Process execution, inbound delivery, and outbound behavior follow in later
+slices.
 
 ## Contract
 
@@ -94,8 +97,9 @@ openclaw plugins inspect zoho-cliq --json
 openclaw plugins doctor
 ```
 
-Use a host satisfying `>=2026.5.3-1` for inspect/install validation. The local
-`OpenClaw 2026.4.15` install is too old for this package.
+Use a host satisfying `>=2026.5.3-1` for inspect/install validation. The
+upgraded global `OpenClaw 2026.5.3-1` host is suitable; package-local
+`openclaw@2026.5.3-1` remains useful for isolated checks.
 
 ## Setup UX
 
@@ -124,6 +128,10 @@ The wizard offers:
 - `dmPolicy=open`, `groupPolicy=open`, `allowFrom=["*"]`,
   `groupAllowFrom=["*"]`, `requireMention=false`, or disabled employee mode
   produce audit warnings.
+- Mention bypass for text commands is only valid for explicit, authorized
+  control commands; normal slash-like chat text still follows mention gating.
+- Review-required operations advertise OpenClaw native `approvalCapability`
+  facts instead of channel-specific approval tools.
 
 ## Runtime boundary
 

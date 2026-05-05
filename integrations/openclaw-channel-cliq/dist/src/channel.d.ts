@@ -8,4 +8,8 @@ export declare function resolveCliqMentionDecision(params: {
     requireMention: boolean;
     isReplyToBot?: boolean;
     isQuoteOfBot?: boolean;
+    isBotThreadParticipant?: boolean;
+    allowTextCommands?: boolean;
+    hasControlCommand?: boolean;
+    commandAuthorized?: boolean;
 }): import("openclaw/plugin-sdk/channel-inbound").InboundMentionDecision;

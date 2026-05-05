@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import json
+import subprocess
 from pathlib import Path
 
 
@@ -115,6 +116,7 @@ def test_openclaw_cliq_channel_sources_use_locked_sdk_surfaces() -> None:
             read("src/channel.ts"),
             read("src/config.ts"),
             read("src/employee-policy.ts"),
+            read("src/session.ts"),
             read("src/security.ts"),
             read("src/setup-wizard.ts"),
             read("src/zoho-cli.ts"),
@@ -138,6 +140,13 @@ def test_openclaw_cliq_channel_sources_use_locked_sdk_surfaces() -> None:
         "evaluateCliqEmployeePolicy",
         "groupPolicy",
         "employeeMode",
+        "approvalCapability",
+        "getActionAvailabilityState",
+        "buildCliqOutboundSessionRoute",
+        "buildThreadAwareOutboundSessionRoute",
+        "buildCliqSessionPeerId",
+        "bot_thread_participant",
+        "commandAuthorized",
     ]:
         assert marker in source
 
@@ -183,6 +192,7 @@ def test_openclaw_cliq_channel_dist_runtime_outputs_exist() -> None:
         "dist/src/config.js",
         "dist/src/constants.js",
         "dist/src/employee-policy.js",
+        "dist/src/session.js",
         "dist/src/security.js",
         "dist/src/setup-wizard.js",
         "dist/src/zoho-cli.js",
@@ -195,6 +205,7 @@ def test_openclaw_cliq_channel_dist_runtime_outputs_exist() -> None:
             read("dist/setup-entry.js"),
             read("dist/src/channel.js"),
             read("dist/src/employee-policy.js"),
+            read("dist/src/session.js"),
             read("dist/src/security.js"),
             read("dist/src/setup-wizard.js"),
             read("dist/src/zoho-cli.js"),
@@ -269,3 +280,137 @@ def test_openclaw_cliq_channel_security_policy_is_secure_by_default() -> None:
         "employee_scope_empty",
     ]:
         assert marker in employee
+
+
+def test_openclaw_cliq_channel_session_grammar_runtime() -> None:
+    script = """
+import assert from "node:assert/strict";
+import {
+  buildCliqOutboundSessionRoute,
+  buildCliqSessionPeerId,
+  parseCliqExplicitTarget,
+  resolveCliqSessionConversation,
+  resolveCliqSessionTarget,
+} from "./integrations/openclaw-channel-cliq/dist/src/session.js";
+
+assert.deepEqual(parseCliqExplicitTarget("cliq:user:U123"), {
+  to: "user:U123",
+  nativeId: "U123",
+  chatType: "direct",
+  kind: "user",
+});
+assert.deepEqual(parseCliqExplicitTarget("zoho:channel:C123:thread:T9"), {
+  to: "channel:C123",
+  nativeId: "C123",
+  chatType: "channel",
+  kind: "channel",
+  threadId: "T9",
+});
+
+const peer = buildCliqSessionPeerId({
+  accountId: "Default",
+  network: "HappyNetwork",
+  chatType: "channel",
+  nativeId: "C123",
+});
+assert.equal(peer, "account:default:network:happynetwork:channel:c123");
+
+const conversation = resolveCliqSessionConversation({
+  kind: "channel",
+  rawId: `${peer}:thread:T9`,
+});
+assert.equal(conversation.id, peer);
+assert.equal(conversation.threadId, "T9");
+assert.deepEqual(conversation.parentConversationCandidates, [peer]);
+assert.equal(
+  resolveCliqSessionTarget({ kind: "channel", id: peer, threadId: "T9" }),
+  "channel:c123:thread:T9",
+);
+
+const route = buildCliqOutboundSessionRoute({
+  cfg: {},
+  agentId: "main",
+  account: {
+    accountId: "Default",
+    enabled: true,
+    cliPath: "zoho",
+    network: "HappyNetwork",
+    dmPolicy: "pairing",
+    groupPolicy: "allowlist",
+    groupAllowFrom: [],
+    allowFrom: [],
+    requireMention: true,
+    employeeMode: {},
+    workScopes: {},
+  },
+  target: "channel:C123",
+  threadId: "T9",
+});
+assert.equal(route.to, "channel:C123");
+assert.equal(route.threadId, "T9");
+assert.match(route.baseSessionKey, /account:default:network:happynetwork:channel:c123/);
+assert.match(route.sessionKey, /:thread:t9$/);
+"""
+    subprocess.run(
+        ["node", "--input-type=module", "-e", script],
+        cwd=ROOT,
+        check=True,
+        text=True,
+        capture_output=True,
+    )
+
+
+def test_openclaw_cliq_channel_mention_policy_runtime() -> None:
+    script = """
+import assert from "node:assert/strict";
+import { resolveCliqMentionDecision } from "./integrations/openclaw-channel-cliq/dist/src/channel.js";
+
+assert.equal(resolveCliqMentionDecision({
+  text: "please help",
+  isGroup: true,
+  requireMention: true,
+}).shouldSkip, true);
+
+assert.equal(resolveCliqMentionDecision({
+  text: "please help",
+  isGroup: true,
+  requireMention: true,
+  isReplyToBot: true,
+}).shouldSkip, false);
+
+assert.equal(resolveCliqMentionDecision({
+  text: "please help",
+  isGroup: true,
+  requireMention: true,
+  isBotThreadParticipant: true,
+}).shouldSkip, false);
+
+const deniedCommand = resolveCliqMentionDecision({
+  text: "/approve abc",
+  isGroup: true,
+  requireMention: true,
+  allowTextCommands: true,
+  hasControlCommand: true,
+  commandAuthorized: false,
+});
+assert.equal(deniedCommand.shouldSkip, true);
+assert.equal(deniedCommand.shouldBypassMention, false);
+
+const allowedCommand = resolveCliqMentionDecision({
+  text: "/approve abc",
+  isGroup: true,
+  requireMention: true,
+  allowTextCommands: true,
+  hasControlCommand: true,
+  commandAuthorized: true,
+});
+assert.equal(allowedCommand.shouldSkip, false);
+assert.equal(allowedCommand.shouldBypassMention, true);
+"""
+    subprocess.run(
+        ["node", "--input-type=module", "-e", script],
+        cwd=ROOT,
+        check=True,
+        text=True,
+        capture_output=True,
+    )

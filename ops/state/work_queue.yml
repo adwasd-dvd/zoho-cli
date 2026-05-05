@@ -352,7 +352,7 @@
 - id: cliq-channel-414
   title: align session grammar mention policy approval capability and runtime namespaces with OpenClaw SDK
   module: openclaw_cliq_channel
-  stage: queued
+  stage: completed
   priority: high
   depends_on:
   - cliq-channel-403

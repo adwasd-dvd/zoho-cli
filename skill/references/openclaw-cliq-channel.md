@@ -19,11 +19,15 @@ metadata now exposes operator state copy, env shortcut, setup text inputs,
 allowlist handling, and disable behavior. `cliq-channel-403` is complete:
 runtime metadata now defaults to DM pairing, group allowlist, mention gating,
 scoped employee mode, and audit warnings for unsafe open access.
+`cliq-channel-414` is complete: session routing is account/network/thread aware,
+mention decisions delegate to OpenClaw's shared inbound helper with bounded
+authorized command bypass, and review-required actions advertise native
+`approvalCapability` facts instead of custom approval tools.
 
-The v0.4 plugin targets OpenClaw `>=2026.5.3-1`. The local
-`OpenClaw 2026.4.15` install is too old for plugin install/inspect validation,
-so upgrade OpenClaw or use a throwaway `openclaw@2026.5.3-1` environment before
-running native plugin checks. CRM expansion is intentionally moved to v0.5.
+The v0.4 plugin targets OpenClaw `>=2026.5.3-1`. The upgraded global
+`OpenClaw 2026.5.3-1` host is suitable for native plugin checks; use
+package-local `openclaw@2026.5.3-1` when an isolated throwaway check is safer.
+CRM expansion is intentionally moved to v0.5.
 
 ## Operating model
 
@@ -180,6 +184,8 @@ zoho cliq reply <message_id> --network <network> --chat-id <chat_id> --text "...
 - Keep mention policy aligned with OpenClaw shared inbound mention helpers.
 - Keep review-required actions on OpenClaw native approval capability.
 - Keep session ids account/network/chat/thread aware.
+- Keep authorized text-command bypass separate from ordinary slash-like chat
+  text; command authorization must be true before bypassing mention gating.
 - Use redacted diagnostics and avoid persisting raw chat bodies by default.
 
 ## Maintenance reminder

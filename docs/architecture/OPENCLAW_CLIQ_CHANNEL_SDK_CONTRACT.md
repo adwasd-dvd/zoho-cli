@@ -5,11 +5,13 @@ channel plugin.
 
 ## Version lock
 
-Checked at `2026-05-04T21:39:33Z`.
+Checked at `2026-05-04T21:39:33Z`; refreshed after global host upgrade at
+`2026-05-05T02:45:00Z`.
 
 | Surface | Observed value | Decision |
 | --- | --- | --- |
-| Local OpenClaw | `OpenClaw 2026.4.15 (041266a)` | Too old for v0.4 plugin install tests; keep only as compatibility reference. |
+| Global OpenClaw | `OpenClaw 2026.5.3-1 (2eae30e)` | Current stable host for v0.4 plugin install/inspect tests. |
+| Previous local OpenClaw | `OpenClaw 2026.4.15 (041266a)` | Too old; keep only as compatibility history. |
 | npm `openclaw@latest` | `2026.5.3-1` | Target stable host/plugin API. |
 | npm `openclaw@beta` | `2026.5.4-beta.1` | Recheck before v0.4 release; no beta-only API dependency for skeleton. |
 | Node engine | `>=22.14.0` from local OpenClaw package | Use the same floor for plugin package metadata. |
@@ -25,9 +27,9 @@ The v0.4 plugin contract is:
 }
 ```
 
-`cliq-channel-401` must not rely on local `2026.4.15` behavior. Before running
-native install/inspect checks, upgrade the local host to the current stable
-OpenClaw version or use a throwaway environment pinned to `openclaw@2026.5.3-1`.
+`cliq-channel-401+` must not rely on local `2026.4.15` behavior. Native
+install/inspect checks now run on the upgraded global stable host, with
+package-local `openclaw@2026.5.3-1` kept as the isolated validation fallback.
 
 ## Package contract
 
@@ -311,8 +313,8 @@ Required runtime surfaces:
   unsafe `open`/wildcard/no-mention/employee-disabled posture.
 - `defineChannelPluginEntry(...)` for the full runtime entry.
 - `defineSetupPluginEntry(...)` for setup-only startup.
-- `messaging.resolveSessionConversation(...)` for account/network/chat/thread
-  session grammar and parent candidates when implemented.
+- `messaging.resolveSessionConversation(...)` via `src/session.ts` for
+  account/network/chat/thread session grammar and parent candidates.
 - `resolveInboundMentionDecision({ facts, policy })` for the final mention gate.
 - `approvalCapability`, not `ChannelPlugin.approvals`, for native approval facts.
 

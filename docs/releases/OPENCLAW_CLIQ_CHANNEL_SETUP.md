@@ -9,6 +9,9 @@ This runbook is for the native OpenClaw `cliq` channel package in
 - Security policy smoke testing is ready now: DM pairing, group allowlist,
   mention gating, scoped employee mode, and unsafe-policy audit warnings are in
   the package runtime.
+- SDK seam smoke testing is ready now: session routing is
+  account/network/thread aware, mention policy delegates to OpenClaw shared
+  helpers, and review-required actions advertise native approval capability.
 - Real outbound message testing waits for `cliq-channel-404` and
   `cliq-channel-405`.
 - Inbound webhook or polling tests wait for `cliq-channel-406` and
@@ -40,8 +43,9 @@ openclaw plugins inspect zoho-cliq --json
 openclaw plugins doctor
 ```
 
-The local global OpenClaw may be older than the plugin target. For validation in
-this repository, use package-local OpenClaw with a throwaway home:
+The upgraded global `OpenClaw 2026.5.3-1` host is suitable for normal plugin
+checks. For isolated validation in this repository, use package-local OpenClaw
+with a throwaway home:
 
 ```bash
 HOME="$PWD/.tmp/openclaw-home-2026.5.3-1" \

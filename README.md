@@ -57,8 +57,8 @@ uv tool install .
 ### 🚧 OpenClaw Zoho Cliq native channel (v0.4 lane)
 
 - Package: `integrations/openclaw-channel-cliq/` (`@adwasd/openclaw-zoho-cliq`, plugin id `zoho-cliq`, channel id `cliq`)
-- Host target: OpenClaw `>=2026.5.3-1`; the local global `OpenClaw 2026.4.15` is too old, so package-local validation uses a throwaway `openclaw@2026.5.3-1` home.
-- Current slice: `cliq-channel-403` is complete; the channel now defaults to DM pairing, group allowlist, mention gating, scoped employee mode, and audit warnings on top of the setup UX.
+- Host target: OpenClaw `>=2026.5.3-1`; the upgraded global host is verified at `OpenClaw 2026.5.3-1`, and package-local validation remains available for isolated checks.
+- Current slice: `cliq-channel-414` is complete; the channel now has account/network-aware session grammar, thread-aware routes, native mention policy delegation, command-bypass boundaries, approval capability metadata, and the secure defaults from `cliq-channel-403`.
 - Setup runbook: `docs/releases/OPENCLAW_CLIQ_CHANNEL_SETUP.md`.
 - Not live-send ready yet: process execution remains deferred to `cliq-channel-404`, then outbound delivery lands in `cliq-channel-405`.
 
@@ -154,7 +154,7 @@ Project state lives in `ops/state/*.yml`:
 
 ---
 
-## Development status and roadmap (from `ops/state`, updated 2026-05-04)
+## Development status and roadmap (from `ops/state`, updated 2026-05-05)
 
 ### Current progress
 
@@ -162,7 +162,7 @@ Project state lives in `ops/state/*.yml`:
 | --- | --- | --- | --- |
 | Mail | ✅ Completed | stabilization_complete | Shipping baseline is stable. |
 | Cliq | ✅ Completed for RC | workflow_packaging_complete_with_deferred_external_blockers | Mail+Cliq AI-employee core is ready for RC; endpoint-limited tail is deferred post-RC. |
-| OpenClaw Cliq channel | 🚧 In progress | security_policy_ready | `cliq-channel-401/402/416/403` added the installable package, config/setup UX, and security/employee policy gates; SDK policy seams and CLI delivery are next. |
+| OpenClaw Cliq channel | 🚧 In progress | sdk_policy_seams_ready | `cliq-channel-401/402/416/403/414` added the installable package, config/setup UX, security/employee policy gates, and OpenClaw SDK session/mention/approval seams; CLI delivery is next. |
 | CRM | ✅ Completed for phase 1 | phase_1_read_only_commands_implemented | Read-only scaffold is present; deeper CRM work resumes in v0.5 after the v0.4 channel. |
 
 ### Current platform lane (AI-employee v1)
@@ -179,7 +179,7 @@ Project state lives in `ops/state/*.yml`:
 ### Current release posture
 
 - Current version: `0.2.1`
-- Next active target: implement native OpenClaw Cliq channel SDK policy seams (`cliq-channel-414`), then the CLI process adapter (`cliq-channel-404`).
+- Next active target: implement the native channel CLI process adapter (`cliq-channel-404`), then outbound delivery (`cliq-channel-405`).
 - Release candidate: `false`
 - Broad automated gate: final `make release-gate && make ci` is green for `0.2.1`; [v0.2.1](https://github.com/adwasd-dvd/zoho-cli/releases/tag/v0.2.1) is the current stable release.
 

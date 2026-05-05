@@ -148,10 +148,15 @@ Native diagnostic behavior:
   `ops/scripts/openclaw_cliq_trusted_reply_evidence.sh`. The checker reports
   `kind=openclaw_cliq_trusted_reply_evidence_check` and
   `trusted_reply_recorded` only when public callback verification, route
-  preflight, expected agent/model, exactly one native turn, exactly one Cliq
-  reply, zero duplicate/dead-letter counts, and redaction facts all pass. Stable
-  blockers include `agent_turn_count_not_one`, `cliq_reply_count_not_one`,
-  `agent_mismatch`, and `route_preflight_not_ok`.
+  preflight, trusted Mention hash facts, expected agent/model, exactly one
+  native turn, exactly one Cliq reply, zero duplicate/dead-letter counts, and
+  redaction facts all pass. Store
+  `trustedMention.trustedSenderIdHash`, `trustedMention.messageIdHash`, and
+  `delivery.deliveryIdHash` as `sha256:` references only. Stable blockers
+  include `trusted_mention_handler_invalid`, `trusted_sender_hash_missing`,
+  `trusted_message_hash_missing`, `delivery_id_hash_missing`,
+  `agent_turn_count_not_one`, `cliq_reply_count_not_one`, `agent_mismatch`, and
+  `route_preflight_not_ok`.
 - Do not include webhook secrets, token passwords, webhook signatures, raw
   stderr, or raw Cliq message bodies in reports.
 

@@ -230,7 +230,9 @@ trusted Bot event to route to the intended OpenClaw agent and deliver one Cliq
 reply. Store only redacted `openclaw_cliq_trusted_reply_evidence` JSON and run
 `ops/scripts/openclaw_cliq_trusted_reply_evidence.sh` with
 `ZOHO_CLIQ_TRUSTED_REPLY_EVIDENCE_FILE`; the result must be
-`trusted_reply_recorded` before production readiness claims.
+`trusted_reply_recorded` before production readiness claims. The evidence must
+store the trusted sender id, trusted message id, and reply delivery id only as
+`sha256:` references.
 
 ## Setup states
 
@@ -318,4 +320,5 @@ Recovery checklist:
    being checked. Finish with a controlled trusted Bot event that produces
    exactly one native agent turn and one Cliq reply, then validate the redacted
    evidence with `ops/scripts/openclaw_cliq_trusted_reply_evidence.sh` before
-   production agent rollout.
+   production agent rollout; raw ids and message/reply bodies do not belong in
+   the evidence file.

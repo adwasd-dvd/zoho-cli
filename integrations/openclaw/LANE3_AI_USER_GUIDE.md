@@ -93,7 +93,8 @@ After sync, ensure the AI user follows:
   - after a controlled trusted Mention, run
     `ops/scripts/openclaw_cliq_trusted_reply_evidence.sh` with
     `ZOHO_CLIQ_TRUSTED_REPLY_EVIDENCE_FILE` and require
-    `trusted_reply_recorded`
+    `trusted_reply_recorded`; sender/message/reply ids must be `sha256:`
+    references only
 - native channel RC pack preflight:
   - run `ops/scripts/openclaw_cliq_rc_pack.sh` from the repo root before cutting a local/operator or npm/GitHub RC artifact
   - keep generated tarballs under ignored `.tmp/openclaw-cliq-rc-pack`

@@ -90,7 +90,8 @@ For the final trusted reply gate, set
 `ZOHO_CLIQ_TRUSTED_REPLY_EVIDENCE_FILE` to a redacted
 `openclaw_cliq_trusted_reply_evidence` JSON artifact and run
 `ops/scripts/openclaw_cliq_trusted_reply_evidence.sh`; require
-`trusted_reply_recorded` before claiming production readiness.
+`trusted_reply_recorded` before claiming production readiness. Evidence must
+store sender/message/reply ids as `sha256:` references, not raw ids or bodies.
 
 If readiness fails, report the failing `zoho-cli` command, exit code,
 classified error kind, and redacted stderr summary.

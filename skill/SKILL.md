@@ -54,8 +54,8 @@ Use this skill as the default operating contract for an OpenClaw agent acting li
 - For the final trusted reply gate, set `ZOHO_CLIQ_TRUSTED_REPLY_EVIDENCE_FILE`
   and run `ops/scripts/openclaw_cliq_trusted_reply_evidence.sh`; require
   `trusted_reply_recorded`, exactly one agent turn, exactly one Cliq reply, zero
-  duplicate/dead-letter counts, and no raw webhook/message/reply bodies or
-  secrets in evidence.
+  duplicate/dead-letter counts, `sha256:` sender/message/reply id references,
+  and no raw webhook/message/reply bodies or secrets in evidence.
 - For OpenClaw host upgrades or plugin SDK breakage, follow
   `docs/releases/OPENCLAW_CLIQ_CHANNEL_COMPATIBILITY.md` before changing
   business logic or raising the host floor.

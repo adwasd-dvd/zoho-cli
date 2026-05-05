@@ -760,6 +760,12 @@ def test_openclaw_cliq_trusted_reply_evidence_accepts_redacted_gate(
     assert payload["agentId"] == "zoho-employee-test"
     assert payload["agentTurnCount"] == 1
     assert payload["cliqReplyCount"] == 1
+    assert payload["trustedMention"] == {
+        "handler": "mention",
+        "trustedSenderIdHashPresent": True,
+        "messageIdHashPresent": True,
+    }
+    assert payload["deliveryIdHashPresent"] is True
     assert payload["redaction"]["secretMarkerPresent"] is False
     assert "trusted-reply.json" == payload["evidenceFile"]
     assert "configPath" not in payload
@@ -779,13 +785,22 @@ def test_openclaw_cliq_trusted_reply_evidence_reports_blockers(
                 "accountId": "default",
                 "routePreflight": {"status": "error", "agentId": "main"},
                 "publicCallbackVerified": False,
+                "trustedMention": {
+                    "handler": "message",
+                    "trustedSenderIdHash": "sender-raw",
+                    "messageIdHash": "",
+                },
                 "nativeDispatch": {
                     "agentId": "main",
                     "agentTurnCount": 2,
                     "deadLetterCount": 1,
                     "duplicateDispatchCount": 1,
                 },
-                "delivery": {"replyDelivered": False, "cliqReplyCount": 0},
+                "delivery": {
+                    "replyDelivered": False,
+                    "cliqReplyCount": 0,
+                    "deliveryIdHash": "",
+                },
                 "redaction": {
                     "rawWebhookPayloadStored": False,
                     "rawMessageBodyStored": False,
@@ -817,10 +832,14 @@ def test_openclaw_cliq_trusted_reply_evidence_reports_blockers(
     assert payload["blockingReasons"] == [
         "route_preflight_not_ok",
         "public_callback_not_verified",
+        "trusted_mention_handler_invalid",
+        "trusted_sender_hash_missing",
+        "trusted_message_hash_missing",
         "agent_mismatch",
         "agent_turn_count_not_one",
         "cliq_reply_count_not_one",
         "reply_not_delivered",
+        "delivery_id_hash_missing",
         "dead_letter_count_not_zero",
         "duplicate_dispatch_count_not_zero",
     ]

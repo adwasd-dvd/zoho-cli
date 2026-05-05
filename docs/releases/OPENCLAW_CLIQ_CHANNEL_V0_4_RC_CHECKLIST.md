@@ -54,7 +54,7 @@ delivers exactly one Cliq reply. The live environment currently binds
 | Local package artifact preflight | `NPM_CONFIG_CACHE=/private/tmp/zoho-cli-npm-cache OPENCLAW_CLIQ_PACK_RUN_ID=20260505T142129Z-rc1 ops/scripts/openclaw_cliq_rc_pack.sh` passed at `2026-05-05T14:22:51Z`; the script reran typecheck/build and then packed from the plugin directory into `.tmp/openclaw-cliq-rc-pack`. Tarball `adwasd-openclaw-zoho-cliq-0.4.0-rc.1.tgz`, size `93879`, unpacked size `466025`, entry count `67`, shasum `87b553ad5bbec1c920a05b342630a57cea58b96b`, integrity `sha512-PVaBZFB0+m2sll7dl+c47iPnb6+KgRcCNkiqvFJzv8qtuHB8Lb153/27rqC1izmmybGP1CtrqMH4ZVrBkvBgBg==`. Summary report path pattern: `tests/auto_pilot/reports/openclaw_cliq_rc_pack_summary_<run-id>.json`. |
 | Public callback auth/reachability | Operator Cloudflare tunnel to local OpenClaw gateway is reachable; missing-secret webhook calls return `401`, authenticated unsupported-handler calls return `200` with `unsupported_handler`, and the Zoho Cliq Bot Mention Handler has reached local OpenClaw. |
 | Live route binding | `openclaw config validate` passes with `cliq/default -> zoho-employee-test`; both `main` and `zoho-employee-test` are configured for `openai-codex/gpt-5.3-codex`. |
-| Trusted reply evidence checker | `ops/scripts/openclaw_cliq_trusted_reply_evidence.sh` validates redacted `openclaw_cliq_trusted_reply_evidence` JSON and reports `trusted_reply_recorded` only when the route, callback, agent/model, one-turn, one-reply, duplicate/dead-letter, and redaction facts all pass. |
+| Trusted reply evidence checker | `ops/scripts/openclaw_cliq_trusted_reply_evidence.sh` validates redacted `openclaw_cliq_trusted_reply_evidence` JSON and reports `trusted_reply_recorded` only when the route, callback, trusted Mention hash facts, agent/model, one-turn, one-reply, duplicate/dead-letter, and redaction facts all pass. |
 
 ## Remaining deployment gate
 
@@ -94,9 +94,14 @@ Trusted agent reply:
      ops/scripts/openclaw_cliq_trusted_reply_evidence.sh
    ```
 
-   The check must report `status=trusted_reply_recorded`. It fails with stable
-   blockers such as `agent_turn_count_not_one`, `cliq_reply_count_not_one`,
-   `agent_mismatch`, `route_preflight_not_ok`, or `secret_marker_present`.
+   The evidence must include `trustedMention.handler=mention`,
+   `trustedMention.trustedSenderIdHash`, `trustedMention.messageIdHash`, and
+   `delivery.deliveryIdHash` as `sha256:` references only. The check must report
+   `status=trusted_reply_recorded`. It fails with stable blockers such as
+   `trusted_mention_handler_invalid`, `trusted_sender_hash_missing`,
+   `trusted_message_hash_missing`, `delivery_id_hash_missing`,
+   `agent_turn_count_not_one`, `cliq_reply_count_not_one`, `agent_mismatch`,
+   `route_preflight_not_ok`, or `secret_marker_present`.
 
 If Zoho returns `token_refresh_rate_limited`, record `skip_deferred`, wait for
 cooldown, and rerun without bursty refresh loops.

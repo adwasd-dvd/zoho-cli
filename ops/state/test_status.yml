@@ -1,14 +1,18 @@
-last_run_at: "2026-05-05T20:55:24Z"
+last_run_at: "2026-05-05T21:31:21Z"
 last_result: passing
-current_focus: cliq-channel-423-trusted-reply-evidence-check
+current_focus: cliq-channel-424-trusted-reply-hash-contract
 suites:
   unit:
     status: passing
     notes:
+      - "cliq-channel-424 trusted reply hash contract completed at 2026-05-05T21:31:21Z"
+      - "`ops/scripts/openclaw_cliq_trusted_reply_evidence.sh` now requires `trustedMention.handler=mention` plus `sha256:` references for trusted sender id, trusted message id, and reply delivery id; missing/raw facts block with `trusted_sender_hash_missing`, `trusted_message_hash_missing`, or `delivery_id_hash_missing`"
+      - "./.venv/bin/python -m pytest -q tests/test_auto_pilot_scripts.py -k 'openclaw_cliq_trusted_reply_evidence' tests/test_lane3_docs.py::test_native_cliq_channel_ai_troubleshooting_contract_present -> 2 passed, 12 deselected in 0.07s"
+      - "./.venv/bin/python -m pytest -q tests/test_lane3_docs.py tests/test_markdown_update.py -> 11 passed in 0.02s"
       - "cliq-channel-423 trusted reply evidence checker completed at 2026-05-05T20:55:24Z"
       - "added `ops/scripts/openclaw_cliq_trusted_reply_evidence.sh` to validate redacted `openclaw_cliq_trusted_reply_evidence` JSON, expected agent/model, public callback and route preflight status, exactly one native agent turn, exactly one Cliq reply, zero duplicate/dead-letter counts, and redaction facts before reporting `trusted_reply_recorded`"
       - "./.venv/bin/python -m pytest -q tests/test_auto_pilot_scripts.py -k 'openclaw_cliq_trusted_reply_evidence or openclaw_cliq_live_smoke_route_binding' tests/test_lane3_docs.py::test_native_cliq_channel_ai_troubleshooting_contract_present -> 5 passed, 9 deselected in 0.24s"
-      - "./.venv/bin/python -m pytest -q tests/test_auto_pilot_scripts.py -k 'openclaw_cliq' tests/test_lane3_docs.py tests/test_markdown_update.py -> 6 passed, 18 deselected in 0.59s"
+      - "./.venv/bin/python -m pytest -q tests/test_auto_pilot_scripts.py -k 'openclaw_cliq' tests/test_lane3_docs.py tests/test_markdown_update.py -> 6 passed, 18 deselected in 0.68s"
       - "bash -n ops/scripts/openclaw_cliq_trusted_reply_evidence.sh -> passed"
       - "./.venv/bin/ruff format --check tests/test_auto_pilot_scripts.py tests/test_lane3_docs.py -> 2 files already formatted"
       - "git diff --check -> passed"

@@ -55,6 +55,7 @@ RESULT="$("$JQ_BIN" -n \
   '
   def redaction_value($redaction; $key): (($redaction // {}) as $r | if ($r | has($key)) then $r[$key] else null end);
   def redaction_false($redaction; $key): (redaction_value($redaction; $key) == false);
+  def sha256_ref: type == "string" and test("^sha256:[A-Za-z0-9._:-]+$");
 
   ($evidence[0]) as $e
   | ($e.routePreflight.status // $e.routePreflightStatus // "") as $routeStatus
@@ -66,6 +67,10 @@ RESULT="$("$JQ_BIN" -n \
   | ($e.nativeDispatch.deadLetterCount // $e.deadLetterCount // -1 | tonumber? // -1) as $deadLetterCount
   | ($e.nativeDispatch.duplicateDispatchCount // $e.duplicateDispatchCount // -1 | tonumber? // -1) as $duplicateDispatchCount
   | (if (($e.delivery // {}) | has("replyDelivered")) then $e.delivery.replyDelivered elif ($e | has("replyDelivered")) then $e.replyDelivered else false end) as $replyDelivered
+  | ($e.trustedMention.handler // "") as $trustedHandler
+  | ($e.trustedMention.trustedSenderIdHash // "") as $trustedSenderIdHash
+  | ($e.trustedMention.messageIdHash // "") as $messageIdHash
+  | ($e.delivery.deliveryIdHash // $e.deliveryIdHash // "") as $deliveryIdHash
   | [
       (if $e.schemaVersion != 1 then "schema_version_invalid" else empty end),
       (if $e.kind != "openclaw_cliq_trusted_reply_evidence" then "kind_invalid" else empty end),
@@ -73,11 +78,15 @@ RESULT="$("$JQ_BIN" -n \
       (if $accountId != $expectedAccountId then "account_mismatch" else empty end),
       (if $routeStatus != "ok" then "route_preflight_not_ok" else empty end),
       (if ($e.publicCallbackVerified // false) != true then "public_callback_not_verified" else empty end),
+      (if $trustedHandler != "mention" then "trusted_mention_handler_invalid" else empty end),
+      (if ($trustedSenderIdHash | sha256_ref | not) then "trusted_sender_hash_missing" else empty end),
+      (if ($messageIdHash | sha256_ref | not) then "trusted_message_hash_missing" else empty end),
       (if $agentId != $expectedAgentId then "agent_mismatch" else empty end),
       (if ($expectedAgentModel != "" and $agentModel != $expectedAgentModel) then "agent_model_mismatch" else empty end),
       (if $agentTurnCount != 1 then "agent_turn_count_not_one" else empty end),
       (if $cliqReplyCount != 1 then "cliq_reply_count_not_one" else empty end),
       (if $replyDelivered != true then "reply_not_delivered" else empty end),
+      (if ($deliveryIdHash | sha256_ref | not) then "delivery_id_hash_missing" else empty end),
       (if $deadLetterCount != 0 then "dead_letter_count_not_zero" else empty end),
       (if $duplicateDispatchCount != 0 then "duplicate_dispatch_count_not_zero" else empty end),
       (if redaction_false($e.redaction; "rawWebhookPayloadStored") | not then "raw_webhook_payload_stored" else empty end),
@@ -101,9 +110,15 @@ RESULT="$("$JQ_BIN" -n \
       agentModel: (if $agentModel == "" then null else $agentModel end),
       publicCallbackVerified: ($e.publicCallbackVerified // false),
       routePreflightStatus: $routeStatus,
+      trustedMention: {
+        handler: (if $trustedHandler == "" then null else $trustedHandler end),
+        trustedSenderIdHashPresent: ($trustedSenderIdHash | sha256_ref),
+        messageIdHashPresent: ($messageIdHash | sha256_ref)
+      },
       agentTurnCount: $agentTurnCount,
       cliqReplyCount: $cliqReplyCount,
       replyDelivered: $replyDelivered,
+      deliveryIdHashPresent: ($deliveryIdHash | sha256_ref),
       deadLetterCount: $deadLetterCount,
       duplicateDispatchCount: $duplicateDispatchCount,
       redaction: {

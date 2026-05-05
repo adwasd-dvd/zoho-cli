@@ -39,8 +39,9 @@ This runbook is for the native OpenClaw `cliq` channel package in
   bodies.
 - Production/bidirectional agent replies now have native dispatch plus redacted
   observability support. The fake/live gate harness is in place; public Bot
-  callback verification remains a deployment prerequisite when no reachable
-  tunnel or gateway URL is configured.
+  callback auth/reachability has been verified through an operator tunnel, and
+  final rollout evidence now requires one controlled trusted Mention-to-agent
+  reply plus a durable tunnel/gateway decision.
 
 ## Requirements
 
@@ -205,8 +206,10 @@ non-default network, gateway, path, or public tunnel.
 
 `token_refresh_rate_limited` and repeated endpoint availability failures are
 recorded as `skip_deferred` so the gate does not hammer Zoho refresh endpoints
-or block unrelated local channel work. A public Bot callback cannot pass until a
-reachable tunnel/gateway URL is configured and the Bot handler points to it.
+or block unrelated local channel work. Public Bot callback auth/reachability can
+be tested with an operator tunnel; final rollout evidence also requires a
+trusted Bot event to route to the intended OpenClaw agent and deliver one Cliq
+reply.
 
 ## Setup states
 

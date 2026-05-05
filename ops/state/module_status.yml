@@ -20,11 +20,12 @@ cliq:
 openclaw_cliq_channel:
   priority: 3
   status: completed_for_rc
-  phase: rc_package_ready_external_callback_deferred
+  phase: live_callback_verified_agent_reply_pending
   target_release: v0.4.0
   current_milestone: cliq-channel-422-rc-artifact-metadata
   blockers:
-    - "deferred: public Zoho Cliq Bot callback verification requires a reachable tunnel/gateway URL"
+    - "durable production tunnel/gateway selection remains pending after operator-tunnel callback verification"
+    - "controlled trusted Mention-to-agent reply evidence is pending for `cliq/default -> zoho-employee-test`"
 
 crm:
   priority: 4

@@ -12,20 +12,22 @@ accepted handler families against native webhook processing, and
 SDK contract source of truth:
 `docs/architecture/OPENCLAW_CLIQ_CHANNEL_SDK_CONTRACT.md`.
 
-Updated: `2026-05-05T14:28:57Z`.
+Updated: `2026-05-05T15:45:33Z`.
 
 ## Decision
 
-Status: **RC package ready, deployment callback still external**.
+Status: **RC package ready, public callback verified, agent reply pending**.
 
 The native channel code, package metadata, fake/runtime tests, local gateway
 webhook checks, Zoho auth/capability/polling smoke, and OpenClaw host
-compatibility checks are green. Production rollout still requires a reachable
-public tunnel/gateway URL and a Zoho Cliq Bot handler configured to POST to that
-URL with a rotated `X-Cliq-Webhook-Secret`.
+compatibility checks are green. A reachable public callback has been verified
+with an operator Cloudflare tunnel and a Zoho Cliq Bot handler POSTing to
+`/webhooks/cliq` with `X-Cliq-Webhook-Secret`.
 
-Do not claim production incident readiness while channel diagnostics report
-`live_verification_pending`.
+Do not claim production incident readiness until one controlled trusted Bot
+Mention proves `cliq/default` routes to the intended Codex-backed agent and
+delivers exactly one Cliq reply. The live environment currently binds
+`cliq/default` to `zoho-employee-test`.
 
 ## Included scope
 
@@ -50,20 +52,25 @@ Do not claim production incident readiness while channel diagnostics report
 | Latest stable host | Temp-HOME `npx -y openclaw@2026.5.4` linked install/inspect/doctor passed. |
 | Beta early warning | Temp-HOME `npx -y openclaw@2026.5.4-beta.3` linked install/inspect/doctor passed. |
 | Local package artifact preflight | `NPM_CONFIG_CACHE=/private/tmp/zoho-cli-npm-cache OPENCLAW_CLIQ_PACK_RUN_ID=20260505T142129Z-rc1 ops/scripts/openclaw_cliq_rc_pack.sh` passed at `2026-05-05T14:22:51Z`; the script reran typecheck/build and then packed from the plugin directory into `.tmp/openclaw-cliq-rc-pack`. Tarball `adwasd-openclaw-zoho-cliq-0.4.0-rc.1.tgz`, size `93879`, unpacked size `466025`, entry count `67`, shasum `87b553ad5bbec1c920a05b342630a57cea58b96b`, integrity `sha512-PVaBZFB0+m2sll7dl+c47iPnb6+KgRcCNkiqvFJzv8qtuHB8Lb153/27rqC1izmmybGP1CtrqMH4ZVrBkvBgBg==`. Summary report path pattern: `tests/auto_pilot/reports/openclaw_cliq_rc_pack_summary_<run-id>.json`. |
+| Public callback auth/reachability | Operator Cloudflare tunnel to local OpenClaw gateway is reachable; missing-secret webhook calls return `401`, authenticated unsupported-handler calls return `200` with `unsupported_handler`, and the Zoho Cliq Bot Mention Handler has reached local OpenClaw. |
+| Live route binding | `openclaw config validate` passes with `cliq/default -> zoho-employee-test`; both `main` and `zoho-employee-test` are configured for `openai-codex/gpt-5.3-codex`. |
 
 ## Remaining deployment gate
 
-Public Bot callback:
+Trusted agent reply:
 
-1. Start or provision a reachable tunnel/gateway URL.
-2. Set `ZOHO_CLIQ_PUBLIC_WEBHOOK_URL` to that URL plus `/webhooks/cliq`.
-3. Configure Zoho Cliq Bot Message, Mention, Participation, or Context Handler
-   to POST to the same URL using
+1. Keep the operator tunnel or provision a durable gateway URL.
+2. Keep `ZOHO_CLIQ_PUBLIC_WEBHOOK_URL` pointed at that URL plus
+   `/webhooks/cliq` when running the live smoke harness.
+3. Keep the Zoho Cliq Bot Message, Mention, Participation, or Context Handler
+   posting to the same URL using
    `docs/releases/OPENCLAW_CLIQ_BOT_HANDLER_TEMPLATES.md`.
-4. Rotate any webhook secret that appeared in screenshots, chat, logs, or docs.
+4. Rotate any webhook secret that appeared in screenshots, chat, logs, or docs
+   before production use.
 5. Run `ops/scripts/openclaw_cliq_live_smoke.sh`.
 6. Send a controlled trusted mention from Cliq and verify exactly one native
-   OpenClaw turn plus a Cliq reply.
+   OpenClaw turn routes to `zoho-employee-test`, uses a Codex model, and emits
+   exactly one Cliq reply.
 
 If Zoho returns `token_refresh_rate_limited`, record `skip_deferred`, wait for
 cooldown, and rerun without bursty refresh loops.

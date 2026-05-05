@@ -52,7 +52,8 @@ Use this skill when operating through the native OpenClaw Zoho Cliq channel.
   adapter/setup metadata before changing Zoho CLI command contracts.
 - For v0.4 RC decisions, follow
   `docs/releases/OPENCLAW_CLIQ_CHANNEL_V0_4_RC_CHECKLIST.md` and keep
-  production rollout blocked until public Bot callback reachability is verified.
+  production rollout blocked until public Bot callback reachability and one
+  controlled trusted agent reply are verified.
 - Before cutting a local/operator or npm/GitHub RC artifact, run
   `ops/scripts/openclaw_cliq_rc_pack.sh`; it must not publish or mutate
   package version metadata at pack time. The current RC package metadata is
@@ -165,4 +166,7 @@ Use Zoho Cliq Bot Message, Mention, Participation, or Context handlers for live
 inbound smoke. POST JSON to `webhookPath` with `X-Cliq-Webhook-Secret`; keep the
 secret in `ZOHO_CLIQ_WEBHOOK_SECRET` and rotate any value that was exposed in
 chat or screenshots. Welcome, Incoming Webhook, Call, and Menu handlers are
-ignored until a later slice assigns explicit OpenClaw workflows.
+ignored until a later slice assigns explicit OpenClaw workflows. After saving a
+handler, verify redacted audit logs show `nativeDispatch.agentId` matching the
+intended OpenClaw route binding and exactly one outbound Cliq reply for the
+trusted smoke message.

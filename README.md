@@ -58,9 +58,9 @@ uv tool install .
 
 - Package: `integrations/openclaw-channel-cliq/` (`@adwasd/openclaw-zoho-cliq`, plugin id `zoho-cliq`, channel id `cliq`)
 - Host target: OpenClaw `>=2026.5.3-1`; the upgraded global host is verified at `OpenClaw 2026.5.3-1`, npm latest `2026.5.4` and beta `2026.5.4-beta.3` pass Temp-HOME compatibility checks, and package-local validation remains available for isolated checks.
-- Current slice: `cliq-channel-418` is complete; the channel now has account/network-aware session grammar, secure policy gates, native approval metadata, a JSON-safe `zoho` process adapter, native outbound send/reply/thread-reply delivery, fixture-backed inbound polling normalization/dedupe through `zoho cliq chats` + `zoho cliq context`, a Bot webhook intake route at `/webhooks/cliq` with secret verification, shared status/read lifecycle handling, a native turn ledger for duplicate/active/dead-letter loop prevention, operator-readable status/capability/routing diagnostics, AI-facing troubleshooting docs, native OpenClaw agent turn dispatch for accepted webhook/polling events, a redacted live smoke gate, a host compatibility repair runbook, and a v0.4 RC checklist.
+- Current slice: `cliq-channel-422` is complete; the channel now has account/network-aware session grammar, secure policy gates, native approval metadata, a JSON-safe `zoho` process adapter, native outbound send/reply/thread-reply delivery, fixture-backed inbound polling normalization/dedupe through `zoho cliq chats` + `zoho cliq context`, a Bot webhook intake route at `/webhooks/cliq` with secret verification, shared status/read lifecycle handling, a native turn ledger for duplicate/active/dead-letter loop prevention, operator-readable status/capability/routing diagnostics, AI-facing troubleshooting docs, native OpenClaw agent turn dispatch for accepted webhook/polling events, a redacted live smoke gate, a host compatibility repair runbook, a v0.4 RC checklist, repeatable RC package preflight, real Bot handler templates, handler runtime contract coverage, and RC package metadata.
 - Setup runbook: `docs/releases/OPENCLAW_CLIQ_CHANNEL_SETUP.md`; RC checklist: `docs/releases/OPENCLAW_CLIQ_CHANNEL_V0_4_RC_CHECKLIST.md`.
-- Controlled live outbound smoke, local inbound polling dry-runs, Bot webhook receive/auth/normalize smoke, status/read lifecycle smoke, turn-ledger loop-prevention smoke, status/routing diagnostics smoke, AI troubleshooting dry-runs, fake host native dispatch smoke, live smoke gate, and host compatibility revalidation are now unblocked for trusted targets; production rollout still waits for a reachable public Bot callback URL.
+- Controlled live outbound smoke, local inbound polling dry-runs, Bot webhook receive/auth/normalize smoke, status/read lifecycle smoke, turn-ledger loop-prevention smoke, status/routing diagnostics smoke, AI troubleshooting dry-runs, fake host native dispatch smoke, live smoke gate, and host compatibility revalidation are now unblocked for trusted targets; a public Bot callback has been verified through an operator tunnel, and rollout now waits on controlled trusted Mention-to-agent reply evidence plus a durable tunnel/gateway decision.
 
 ### 🚧 Zoho CRM (guarded fixture write path implemented)
 
@@ -165,7 +165,7 @@ Project state lives in `ops/state/*.yml`:
 | --- | --- | --- | --- |
 | Mail | ✅ Completed | stabilization_complete | Shipping baseline is stable. |
 | Cliq | ✅ Completed for RC | workflow_packaging_complete_with_deferred_external_blockers | Mail+Cliq AI-employee core is ready for RC; endpoint-limited tail is deferred post-RC. |
-| OpenClaw Cliq channel | 🚧 In progress | rc_package_ready_external_callback_deferred | `cliq-channel-401/402/416/403/414/404/405/406/407/408/413/409/410/417/415/411/412/418` added the installable package, config/setup UX, security/employee policy gates, SDK session/mention/approval seams, JSON-safe CLI process execution, native outbound delivery, normalized/deduped inbound polling, Bot webhook intake, status/read lifecycle handling, turn-ledger loop prevention, status/capability/routing diagnostics, AI troubleshooting docs, native OpenClaw agent turn dispatch, redacted observability/privacy diagnostics, the redacted fake/live smoke gate harness, host compatibility maintenance runbook, and v0.4 RC checklist. |
+| OpenClaw Cliq channel | 🚧 In progress | live_callback_verified_agent_reply_pending | `cliq-channel-401/402/416/403/414/404/405/406/407/408/413/409/410/417/415/411/412/418/419/420/421/422` added the installable package, config/setup UX, security/employee policy gates, SDK session/mention/approval seams, JSON-safe CLI process execution, native outbound delivery, normalized/deduped inbound polling, Bot webhook intake, status/read lifecycle handling, turn-ledger loop prevention, status/capability/routing diagnostics, AI troubleshooting docs, native OpenClaw agent turn dispatch, redacted observability/privacy diagnostics, the redacted fake/live smoke gate harness, host compatibility maintenance runbook, v0.4 RC checklist, repeatable RC package preflight, real Bot handler templates, handler runtime contract coverage, and RC package metadata. Public callback auth/reachability is verified through an operator tunnel; final live reply evidence is pending. |
 | CRM | 🚧 In progress | v0_5_operator_fixture_live_run | Read-only scaffold is present; `crm-003/004/005/006/007/008/009/010/011/012/013/014` added SDK readiness diagnostics, optional SDK packaging, the default-disabled SDK adapter, explicit `--adapter sdk-v8` read-only gates, the HTTP v2 vs SDK/API v8 policy, machine-readable write safety gates, upsert dry-run output, the live upsert gate, redacted write audit persistence, controlled fixture readiness planning, the guarded `fixture-execute` live fixture harness, the CRM fixture live smoke script, and the fixture evidence checker while preserving the current JSON-safe HTTP adapter as default. |
 
 ### Current platform lane (AI-employee v1)
@@ -182,13 +182,13 @@ Project state lives in `ops/state/*.yml`:
 ### Current release posture
 
 - Current version: `0.2.1`
-- Next active target: operator-approved CRM fixture live run while public native Cliq Bot callback verification waits on a reachable tunnel/gateway URL.
+- Next active target: complete the trusted Zoho Cliq Bot Mention -> OpenClaw `zoho-employee-test` Codex reply smoke, then run the operator-approved CRM fixture live run only after a dedicated payload and cleanup plan exist.
 - Release candidate: `false`
 - Broad automated gate: final `make release-gate && make ci` is green for `0.2.1`; [v0.2.1](https://github.com/adwasd-dvd/zoho-cli/releases/tag/v0.2.1) is the current stable release.
 
 ### Deferred external blockers (do not block release)
 
-- Native Cliq public Bot callback verification requires a reachable tunnel/gateway URL; local webhook auth/security gates pass.
+- Native Cliq public Bot callback reachability has been verified through an operator tunnel; durable production tunnel/gateway selection and one controlled trusted agent reply remain pending.
 - Zoho refresh throttling can recur in bursty live probe loops; treat `token_refresh_rate_limited` as `skip_deferred` and rerun after cooldown.
 - Cliq-194 live read-ack endpoint is still unsupported on active network/token, but runtime continuity is capability-gated (watch-act falls back safely instead of hard-failing).
 - Cliq maintenance export verification (`cliq-165`) is blocked by API-side `inactive_appaccount_user`.
@@ -200,7 +200,7 @@ Project state lives in `ops/state/*.yml`:
 1. Keep unsupported Cliq endpoints capability-gated so they do not stall AI-employee internal-loop readiness.
 2. Keep remaining Cliq helper-heavy modularization opportunistic while the
    channel lane moves.
-3. Continue the native OpenClaw Cliq channel in v0.4 with native agent turn dispatch next.
+3. Complete the native OpenClaw Cliq channel live reply smoke by verifying a trusted Bot Mention routes to the intended Codex-backed agent and emits exactly one Cliq reply.
 4. Run the guarded CRM fixture harness only with a dedicated test record; keep normal live writes disabled while the fixture path records redacted attempt/result audit evidence.
 
 ---

@@ -614,12 +614,14 @@ Required hard limits:
 5. Enforce `dmPolicy`, `groupPolicy`, `allowFrom`, and mention gating. Complete.
 6. Enforce scoped employee mode and action policy. Complete through the shared
    inbound security path.
-7. Record the turn ledger state transition before dispatch. Next.
+7. Record the turn ledger state transition before dispatch. Complete in
+   `cliq-channel-413`.
 8. Build OpenClaw inbound session route. Next.
 9. Dispatch to the configured agent through OpenClaw native reply pipeline.
    Next.
 10. Apply status reaction / read ack around accepted processing. Complete in
-    `cliq-channel-408`; dispatch-grade turn ledger ownership remains next.
+    `cliq-channel-408`; dispatch-grade turn ledger ownership is complete in
+    `cliq-channel-413`.
 
 ### Polling fallback path
 
@@ -627,8 +629,8 @@ Required hard limits:
 2. For each eligible chat, run `zoho cliq context`.
 3. Normalize the newest target message into the same inbound event shape used by
    webhooks.
-4. Reuse the same security, policy, dedupe, routing, and status/read lifecycle;
-   turn ledger ownership remains next.
+4. Reuse the same security, policy, dedupe, routing, status/read lifecycle, and
+   turn-ledger loop prevention.
 
 ### Outbound path
 
@@ -770,8 +772,9 @@ OpenClaw:
   `docs/releases/OPENCLAW_CLIQ_CHANNEL_SETUP.md`.
 - Acceptance: a human operator can install, configure, disable, uninstall, and
   diagnose config/auth smoke from UI/setup surfaces and docs without reading
-  source; controlled outbound smoke is now covered by `cliq-channel-405`, while
-  production/bidirectional testing remains gated by inbound loop prevention.
+  source; controlled outbound smoke is now covered by `cliq-channel-405`, and
+  inbound loop prevention is covered by `cliq-channel-413`. Production
+  bidirectional testing remains gated by native dispatch/UX and observability.
 
 ### cliq-channel-403: Security, pairing, and scoped employee mode
 
@@ -864,11 +867,18 @@ OpenClaw:
 
 ### cliq-channel-413: Turn ledger and loop prevention
 
-- Implement turn ledger state for webhook and polling events.
+- Implement turn ledger state for webhook and polling events. Complete with
+  `src/turn-ledger.ts`, exported turn helpers, webhook/polling turn metadata,
+  and handler-scoped in-memory ledger state.
 - Add one-active-turn-per-chat guard, bounded retries, burst coalescing,
   dead-letter diagnostics, and outbound idempotency keys where possible.
+  Complete for inbound duplicate/active/dead-letter prevention and generated
+  idempotency keys on turn entries; outbound transport idempotency remains
+  dependent on host/CLI support.
 - Acceptance: duplicate/self/retry fixtures never dispatch repeated agent work,
-  and failed turns stop with actionable dead-letter evidence.
+  and failed turns stop with actionable dead-letter evidence. Complete with
+  runtime tests for active same-conversation coalescing, completed duplicate
+  skips, dispatch failure dead-letter, and dead-letter replay blocking.
 
 ### cliq-channel-409: OpenClaw native UX
 

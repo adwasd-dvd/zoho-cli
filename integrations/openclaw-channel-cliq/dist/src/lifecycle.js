@@ -1,4 +1,15 @@
 import { markCliqMessageRead, setCliqStatusReaction, ZohoCliqCommandError, } from "./zoho-cli.js";
+export class CliqInboundLifecycleDispatchError extends Error {
+    lifecycle;
+    cause;
+    constructor(error, lifecycle) {
+        const message = error instanceof Error ? error.message : String(error || "dispatch failed");
+        super(message);
+        this.name = "CliqInboundLifecycleDispatchError";
+        this.cause = error;
+        this.lifecycle = lifecycle;
+    }
+}
 function routeForEvent(event) {
     return {
         messageId: event.messageId,
@@ -138,6 +149,6 @@ export async function runCliqInboundLifecycle(params) {
         if (lifecycle.failureStatus !== null) {
             await addStatus(lifecycle.failureStatus ?? "failed");
         }
-        throw error;
+        throw new CliqInboundLifecycleDispatchError(error, result());
     }
 }

@@ -394,14 +394,14 @@
 - id: cliq-channel-413
   title: implement turn ledger loop prevention dead-letter and efficiency hardening
   module: openclaw_cliq_channel
-  stage: ready
+  stage: completed
   priority: high
   depends_on:
   - cliq-channel-408
 - id: cliq-channel-409
   title: complete OpenClaw native channel UX for status capabilities routing and diagnostics
   module: openclaw_cliq_channel
-  stage: queued
+  stage: ready
   priority: medium
   depends_on:
   - cliq-channel-413

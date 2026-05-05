@@ -481,6 +481,12 @@ class InMemoryCliqInboundDedupeStore {
             this.seen.delete(oldest);
         }
     }
+    forget(keyOrEvent) {
+        const key = keyOf(keyOrEvent);
+        if (!key)
+            return;
+        this.seen.delete(key);
+    }
     takeNew(events) {
         return events.filter((event) => this.claim(event));
     }

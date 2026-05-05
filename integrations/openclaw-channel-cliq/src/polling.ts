@@ -10,23 +10,30 @@ import {
   type CliqNormalizedInboundEvent,
 } from "./inbound.js";
 import {
-  runCliqInboundLifecycle,
-  type CliqInboundLifecycleOption,
   type CliqInboundLifecycleResult,
 } from "./lifecycle.js";
+import {
+  resolveCliqTurnLedger,
+  runCliqInboundTurn,
+  type CliqInboundTurnResult,
+  type CliqTurnLedgerOption,
+} from "./turn-ledger.js";
 import { fetchCliqContext, listCliqChats } from "./zoho-cli.js";
 
 export type CliqPollingSkipReason =
   | "invalid_chat"
   | "invalid_message"
   | "duplicate"
-  | "security_denied";
+  | "security_denied"
+  | "turn_active"
+  | "dead_lettered";
 
 export type CliqPollingSkippedEvent = {
   reason: CliqPollingSkipReason;
   chat?: unknown;
   message?: unknown;
   event?: CliqNormalizedInboundEvent;
+  turn?: CliqInboundTurnResult["turn"];
   securityReasonCode?: string;
   securityReason?: string;
 };
@@ -35,6 +42,7 @@ export type CliqPollingResult = {
   events: CliqNormalizedInboundEvent[];
   dispatchedCount: number;
   lifecycle: CliqInboundLifecycleResult[];
+  turns: CliqInboundTurnResult[];
   skipped: CliqPollingSkippedEvent[];
 };
 
@@ -46,7 +54,8 @@ export type CliqPollingOptions = {
   mentionMatchers?: CliqMentionMatcher[];
   selfUserIds?: string[];
   dedupe?: CliqInboundDedupeStore;
-  lifecycle?: CliqInboundLifecycleOption;
+  lifecycle?: Parameters<typeof runCliqInboundTurn>[0]["lifecycle"];
+  turnLedger?: CliqTurnLedgerOption;
   onEvent?: (event: CliqNormalizedInboundEvent) => void | Promise<void>;
 };
 
@@ -109,6 +118,7 @@ export async function pollCliqInboundOnce(
   options: CliqPollingOptions,
 ): Promise<CliqPollingResult> {
   const dedupe = options.dedupe ?? createCliqInboundDedupeStore();
+  const turnLedger = resolveCliqTurnLedger(options.turnLedger);
   const chats = await listCliqChats({
     account: options.account,
     limit: options.limit ?? 50,
@@ -117,6 +127,7 @@ export async function pollCliqInboundOnce(
   });
   const events: CliqNormalizedInboundEvent[] = [];
   const lifecycle: CliqInboundLifecycleResult[] = [];
+  const turns: CliqInboundTurnResult[] = [];
   const skipped: CliqPollingSkippedEvent[] = [];
   let dispatchedCount = 0;
 
@@ -172,14 +183,32 @@ export async function pollCliqInboundOnce(
 
       events.push(event);
       if (options.onEvent) {
-        const lifecycleResult = await runCliqInboundLifecycle({
+        const turnResult = await runCliqInboundTurn({
           account: options.account,
           event,
+          turnLedger,
           lifecycle: options.lifecycle,
           onEvent: options.onEvent,
         });
-        lifecycle.push(lifecycleResult);
-        if (lifecycleResult.dispatched) dispatchedCount += 1;
+        turns.push(turnResult);
+        if (turnResult.turn.state === "failed") {
+          dedupe.forget(event);
+        }
+        if (turnResult.skipped) {
+          skipped.push({
+            reason:
+              turnResult.skipReason === "conversation_active"
+                ? "turn_active"
+                : turnResult.skipReason === "dead_lettered"
+                  ? "dead_lettered"
+                  : "duplicate",
+            event,
+            turn: turnResult.turn,
+          });
+          continue;
+        }
+        if (turnResult.lifecycle) lifecycle.push(turnResult.lifecycle);
+        if (turnResult.dispatched) dispatchedCount += 1;
       }
     }
   }
@@ -188,6 +217,7 @@ export async function pollCliqInboundOnce(
     events,
     dispatchedCount,
     lifecycle,
+    turns,
     skipped,
   };
 }

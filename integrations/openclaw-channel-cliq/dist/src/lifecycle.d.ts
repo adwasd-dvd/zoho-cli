@@ -28,6 +28,11 @@ export type CliqInboundLifecycleOptions = {
     logger?: Partial<PluginLogger>;
 };
 export type CliqInboundLifecycleOption = false | CliqInboundLifecycleOptions | undefined;
+export declare class CliqInboundLifecycleDispatchError extends Error {
+    readonly lifecycle: CliqInboundLifecycleResult;
+    readonly cause: unknown;
+    constructor(error: unknown, lifecycle: CliqInboundLifecycleResult);
+}
 export declare function runCliqInboundLifecycle(params: {
     account: CliqResolvedAccount;
     event: CliqNormalizedInboundEvent;

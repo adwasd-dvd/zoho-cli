@@ -38,6 +38,7 @@ export type CliqInboundDedupeStore = {
   has(keyOrEvent: string | CliqNormalizedInboundEvent): boolean;
   claim(keyOrEvent: string | CliqNormalizedInboundEvent): boolean;
   mark(keyOrEvent: string | CliqNormalizedInboundEvent): void;
+  forget(keyOrEvent: string | CliqNormalizedInboundEvent): void;
   takeNew(events: CliqNormalizedInboundEvent[]): CliqNormalizedInboundEvent[];
   clear(): void;
 };
@@ -613,6 +614,12 @@ class InMemoryCliqInboundDedupeStore implements CliqInboundDedupeStore {
       if (typeof oldest !== "string") break;
       this.seen.delete(oldest);
     }
+  }
+
+  forget(keyOrEvent: string | CliqNormalizedInboundEvent): void {
+    const key = keyOf(keyOrEvent);
+    if (!key) return;
+    this.seen.delete(key);
   }
 
   takeNew(events: CliqNormalizedInboundEvent[]): CliqNormalizedInboundEvent[] {

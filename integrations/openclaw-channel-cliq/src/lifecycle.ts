@@ -43,6 +43,20 @@ export type CliqInboundLifecycleOption =
   | CliqInboundLifecycleOptions
   | undefined;
 
+export class CliqInboundLifecycleDispatchError extends Error {
+  readonly lifecycle: CliqInboundLifecycleResult;
+  readonly cause: unknown;
+
+  constructor(error: unknown, lifecycle: CliqInboundLifecycleResult) {
+    const message =
+      error instanceof Error ? error.message : String(error || "dispatch failed");
+    super(message);
+    this.name = "CliqInboundLifecycleDispatchError";
+    this.cause = error;
+    this.lifecycle = lifecycle;
+  }
+}
+
 function routeForEvent(event: CliqNormalizedInboundEvent): {
   messageId: string;
   chatId?: string;
@@ -210,6 +224,6 @@ export async function runCliqInboundLifecycle(params: {
     if (lifecycle.failureStatus !== null) {
       await addStatus(lifecycle.failureStatus ?? "failed");
     }
-    throw error;
+    throw new CliqInboundLifecycleDispatchError(error, result());
   }
 }

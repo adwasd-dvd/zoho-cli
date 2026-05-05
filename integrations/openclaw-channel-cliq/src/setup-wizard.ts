@@ -402,7 +402,7 @@ export const cliqSetupWizard: ChannelSetupWizard = {
     title: "Before live use",
     lines: [
       "Run zoho cliq status --check-auth --network <network>.",
-      "Run only a controlled outbound smoke until inbound loop prevention lands.",
+      "Run only controlled smoke until native dispatch/observability lands.",
       "Keep webhook secrets and token passwords in SecretRef/env values.",
       "Keep dmPolicy=pairing and groupPolicy=allowlist unless an operator accepts the audit warning.",
     ],

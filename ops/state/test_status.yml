@@ -1,10 +1,27 @@
-last_run_at: "2026-05-05T07:21:02Z"
+last_run_at: "2026-05-05T07:36:09Z"
 last_result: passing
-current_focus: cliq-channel-408-status-read-lifecycle-20260505T072102Z
+current_focus: cliq-channel-413-turn-ledger-loop-prevention-20260505T073609Z
 suites:
   unit:
     status: passing
     notes:
+      - "cliq-channel-413 turn-ledger loop prevention completed at 2026-05-05T07:36:09Z"
+      - "added `src/turn-ledger.ts` with handler-scoped in-memory active/completed/failed/dead-letter turn state, safe idempotency/correlation metadata, bounded attempts, active TTL, and coalesced event tracking"
+      - "expanded webhook and polling paths with `runCliqInboundTurn`, turn summaries, duplicate completed-event skips, active same-conversation coalescing, dispatch-failure dead-lettering, and dead-letter replay blocking"
+      - "expanded fake-runtime coverage for completed duplicate suppression, active burst coalescing, dispatch-failure dead-letter, and webhook dead-letter replay blocking"
+      - "npm --prefix integrations/openclaw-channel-cliq run typecheck -> passed"
+      - "npm --prefix integrations/openclaw-channel-cliq run build -> passed"
+      - "./.venv/bin/python -m pytest -q tests/test_openclaw_channel_skeleton.py -> 16 passed in 13.23s"
+      - "./.venv/bin/python -m pytest -q tests/test_openclaw_channel_skeleton.py tests/test_openclaw_channel_contract.py tests/test_lane3_docs.py tests/test_markdown_update.py -> 27 passed in 9.27s"
+      - "package-local OpenClaw linked install in temp HOME -> passed"
+      - "package-local OpenClaw plugins inspect zoho-cliq --json -> plugin status loaded, channelIds [`cliq`], diagnostics []"
+      - "package-local OpenClaw plugins doctor -> No plugin issues detected."
+      - "global OpenClaw plugins inspect zoho-cliq --json -> plugin status loaded, channelIds [`cliq`], diagnostics []"
+      - "global OpenClaw plugins doctor -> No plugin issues detected."
+      - "node JSON parse for package/manifest -> PLUGIN_JSON_OK"
+      - "ruby YAML parse for ops/workflow state -> YAML_PARSE_OK"
+      - "git diff --check -> clean"
+      - "make ci -> ruff format/check clean + pytest `1771 passed in 47.53s`"
       - "cliq-channel-408 status/read lifecycle completed at 2026-05-05T07:21:02Z"
       - "added `src/lifecycle.ts` with shared lifecycle wrapping for accepted webhook and polling events: `received`, `thinking`, `mark_read`, `done`, and `failed` on dispatch error"
       - "expanded `src/zoho-cli.ts` with `buildCliqStatusReactArgs`, `buildCliqMarkReadArgs`, `setCliqStatusReaction`, and `markCliqMessageRead` so lifecycle stays on the JSON-safe `zoho cliq ...` adapter path"

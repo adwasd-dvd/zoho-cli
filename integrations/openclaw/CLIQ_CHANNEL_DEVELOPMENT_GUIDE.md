@@ -93,7 +93,10 @@ Follow the stack from the architecture plan:
 11. `cliq-channel-408` status/read lifecycle (complete; `src/lifecycle.ts`
     wraps accepted webhook/polling events with visible status reactions,
     mark-read, and non-recursive diagnostics)
-12. `cliq-channel-413` turn ledger and loop prevention
+12. `cliq-channel-413` turn ledger and loop prevention (complete;
+    `src/turn-ledger.ts` blocks duplicate completed events, coalesces active
+    same-conversation bursts, and dead-letters failed turns after bounded
+    attempts)
 13. `cliq-channel-409` OpenClaw native UX
 14. `cliq-channel-410` AI-facing docs and skill alignment
 15. `cliq-channel-415` observability, privacy, and supply-chain hardening
@@ -133,13 +136,14 @@ or keep a temporary plugin normalizer behind tests and mark it as temporary.
 
 Current plugin inbound status: `cliq-channel-406` keeps the polling runtime on
 the existing JSON-safe CLI path (`chats` + `context`), `cliq-channel-407` adds
-Bot webhook intake at `/webhooks/cliq`, and `cliq-channel-408` wraps accepted
-events with status/read lifecycle handling. Both inbound paths normalize
-messages into the shared inbound event shape, run mention/allowlist/employee
-policy checks, dedupe by account/network/chat/message before optional dispatch,
-and keep status/read failures as terminal diagnostics. Full agent turn
-dispatch, turn-ledger loop prevention, and observability remain in the next
-slices.
+Bot webhook intake at `/webhooks/cliq`, `cliq-channel-408` wraps accepted events
+with status/read lifecycle handling, and `cliq-channel-413` wraps dispatch with
+a native turn ledger. Both inbound paths normalize messages into the shared
+inbound event shape, run mention/allowlist/employee policy checks, dedupe by
+account/network/chat/message before optional dispatch, keep status/read failures
+as terminal diagnostics, and prevent duplicate/active/dead-lettered turns from
+starting repeated agent work. Full agent turn dispatch, native UX/status
+diagnostics, and observability remain in the next slices.
 
 ## AI-agent convenience checklist
 

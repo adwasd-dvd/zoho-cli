@@ -29,8 +29,12 @@ This runbook is for the native OpenClaw `cliq` channel package in
   apply visible `received -> thinking -> done` or `failed` reactions through
   `zoho cliq status-react --clear-known` and attempt `zoho cliq mark-read`
   without recursively creating new inbound work on lifecycle failures.
-- Production/bidirectional agent replies wait for turn-ledger loop prevention
-  and observability slices.
+- Turn-ledger loop-prevention smoke testing is ready now: accepted native events
+  record a small turn row, duplicate completed events are skipped, active
+  same-conversation bursts are coalesced, and failed turns can stop in
+  dead-letter with actionable metadata.
+- Production/bidirectional agent replies wait for native dispatch/UX and
+  observability slices.
 
 ## Requirements
 
@@ -221,6 +225,6 @@ Recovery checklist:
 3. Run `openclaw plugins inspect zoho-cliq --json` and `openclaw plugins doctor`.
 4. Re-run `zoho cliq status --check-auth --network <network>`.
 5. Run controlled outbound smoke, local inbound polling dry-runs, a real Bot
-   webhook receive/auth/normalize smoke, and status/read lifecycle smoke. Wait
-   for turn-ledger loop prevention before bidirectional production agent
-   replies.
+   webhook receive/auth/normalize smoke, status/read lifecycle smoke, and
+   turn-ledger loop-prevention smoke. Wait for native dispatch/UX and
+   observability before bidirectional production agent replies.

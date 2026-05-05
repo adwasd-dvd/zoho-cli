@@ -1,5 +1,5 @@
 import { createCliqInboundDedupeStore, evaluateCliqPollingEventSecurity, normalizeCliqInboundMessage, } from "./inbound.js";
-import { runCliqInboundLifecycle, } from "./lifecycle.js";
+import { resolveCliqTurnLedger, runCliqInboundTurn, } from "./turn-ledger.js";
 import { fetchCliqContext, listCliqChats } from "./zoho-cli.js";
 function isRecord(value) {
     return Boolean(value) && typeof value === "object" && !Array.isArray(value);
@@ -52,6 +52,7 @@ function extractMessages(context) {
 }
 export async function pollCliqInboundOnce(options) {
     const dedupe = options.dedupe ?? createCliqInboundDedupeStore();
+    const turnLedger = resolveCliqTurnLedger(options.turnLedger);
     const chats = await listCliqChats({
         account: options.account,
         limit: options.limit ?? 50,
@@ -60,6 +61,7 @@ export async function pollCliqInboundOnce(options) {
     });
     const events = [];
     const lifecycle = [];
+    const turns = [];
     const skipped = [];
     let dispatchedCount = 0;
     for (const chat of chats.chats) {
@@ -110,14 +112,32 @@ export async function pollCliqInboundOnce(options) {
             }
             events.push(event);
             if (options.onEvent) {
-                const lifecycleResult = await runCliqInboundLifecycle({
+                const turnResult = await runCliqInboundTurn({
                     account: options.account,
                     event,
+                    turnLedger,
                     lifecycle: options.lifecycle,
                     onEvent: options.onEvent,
                 });
-                lifecycle.push(lifecycleResult);
-                if (lifecycleResult.dispatched)
+                turns.push(turnResult);
+                if (turnResult.turn.state === "failed") {
+                    dedupe.forget(event);
+                }
+                if (turnResult.skipped) {
+                    skipped.push({
+                        reason: turnResult.skipReason === "conversation_active"
+                            ? "turn_active"
+                            : turnResult.skipReason === "dead_lettered"
+                                ? "dead_lettered"
+                                : "duplicate",
+                        event,
+                        turn: turnResult.turn,
+                    });
+                    continue;
+                }
+                if (turnResult.lifecycle)
+                    lifecycle.push(turnResult.lifecycle);
+                if (turnResult.dispatched)
                     dispatchedCount += 1;
             }
         }
@@ -126,6 +146,7 @@ export async function pollCliqInboundOnce(options) {
         events,
         dispatchedCount,
         lifecycle,
+        turns,
         skipped,
     };
 }

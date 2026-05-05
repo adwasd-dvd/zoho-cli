@@ -40,7 +40,10 @@ applies dedupe plus policy gates. `cliq-channel-408` is complete: accepted
 webhook and polling events now use shared lifecycle handling for visible
 `received -> thinking -> done` or `failed` status reactions, attempt
 `mark-read`, and record status/read failures as diagnostics without dispatching
-new inbound work.
+new inbound work. `cliq-channel-413` is complete: accepted events now pass
+through a native turn ledger that blocks duplicate completed events, coalesces
+active same-conversation bursts, and dead-letters failed turns after bounded
+attempts.
 
 The v0.4 plugin targets OpenClaw `>=2026.5.3-1`. The upgraded global
 `OpenClaw 2026.5.3-1` host is suitable for native plugin checks; use
@@ -203,6 +206,8 @@ zoho cliq thread-reply <thread_id> --network <network> --chat-id <chat_id> --tex
 
 - Ignore self-authored messages.
 - Use the channel turn ledger and dedupe state before dispatching to an agent.
+- Do not dispatch duplicate completed events, active same-conversation bursts,
+  or dead-lettered replays.
 - Do not manually re-run an inbound event unless the operator explicitly
   requeues it.
 - Treat dead-letter turns as diagnostics for the operator, not as new user

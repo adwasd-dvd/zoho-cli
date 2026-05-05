@@ -27,6 +27,7 @@ export type CliqInboundDedupeStore = {
     has(keyOrEvent: string | CliqNormalizedInboundEvent): boolean;
     claim(keyOrEvent: string | CliqNormalizedInboundEvent): boolean;
     mark(keyOrEvent: string | CliqNormalizedInboundEvent): void;
+    forget(keyOrEvent: string | CliqNormalizedInboundEvent): void;
     takeNew(events: CliqNormalizedInboundEvent[]): CliqNormalizedInboundEvent[];
     clear(): void;
 };
@@ -67,6 +68,7 @@ declare class InMemoryCliqInboundDedupeStore implements CliqInboundDedupeStore {
     has(keyOrEvent: string | CliqNormalizedInboundEvent): boolean;
     claim(keyOrEvent: string | CliqNormalizedInboundEvent): boolean;
     mark(keyOrEvent: string | CliqNormalizedInboundEvent): void;
+    forget(keyOrEvent: string | CliqNormalizedInboundEvent): void;
     takeNew(events: CliqNormalizedInboundEvent[]): CliqNormalizedInboundEvent[];
     clear(): void;
 }

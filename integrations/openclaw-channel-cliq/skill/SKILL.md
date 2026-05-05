@@ -22,6 +22,9 @@ Use this skill when operating through the native OpenClaw Zoho Cliq channel.
   status (`received`, `thinking`, `writing`, `testing`, `blocked`, `done`,
   `failed`) and `zoho cliq mark-read` for read acknowledgement when available.
   Treat status/read failures as diagnostics, not new inbound work.
+- Run accepted native events through the turn ledger before dispatch. Duplicate
+  completed events, active same-conversation bursts, and dead-lettered replays
+  must not start another agent turn.
 - Treat stdout as machine data and stderr as diagnostics.
 - Never reveal token passwords, webhook secrets, OAuth tokens, raw webhook
   signatures, or private message bodies in logs.

@@ -333,6 +333,10 @@ Required runtime surfaces:
   reactions and read acknowledgement must go through `src/zoho-cli.ts`, record
   terminal diagnostics on failure, and never recursively dispatch new inbound
   work.
+- `src/turn-ledger.ts` for accepted inbound turn ownership. The ledger blocks
+  duplicate completed events, coalesces same-conversation active bursts,
+  dead-letters failed turns after bounded attempts, and carries safe
+  correlation/idempotency metadata for later diagnostics.
 - `resolveInboundMentionDecision({ facts, policy })` for the final mention gate.
 - `approvalCapability`, not `ChannelPlugin.approvals`, for native approval facts.
 
@@ -438,6 +442,12 @@ handling. The default status path is `received -> thinking`, optional dispatch,
 `mark-read`, and `done`; dispatch failures attempt `failed`. Status/read
 failures are returned in lifecycle action metadata and logged as diagnostics
 instead of creating another agent turn.
+
+`cliq-channel-413` adds turn-ledger loop prevention around accepted webhook and
+polling events. The handler-scoped in-memory ledger records active/completed/
+failed/dead-letter turn state, blocks duplicate completed events, coalesces
+concurrent same-conversation bursts, and returns dead-letter metadata instead of
+starting repeated agent work.
 
 ## Compatibility rule
 

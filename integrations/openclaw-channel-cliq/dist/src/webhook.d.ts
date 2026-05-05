@@ -5,6 +5,7 @@ import { type CliqResolvedAccount } from "./config.js";
 import { type CliqInboundDedupeStore, type CliqMentionMatcher, type CliqNormalizedInboundEvent } from "./inbound.js";
 import { type CliqInboundLifecycleOption, type CliqInboundLifecycleResult } from "./lifecycle.js";
 import type { CliqInboundSecurityDecision } from "./security.js";
+import { type CliqInboundTurnResult, type CliqTurnLedgerOption, type CliqTurnLedgerStore } from "./turn-ledger.js";
 export type CliqWebhookHandlerKind = "message" | "mention" | "participation" | "context" | "incoming_webhook" | "welcome" | "call" | "menu" | "unknown";
 export type CliqWebhookPayloadEnvelope = {
     handler: string;
@@ -31,23 +32,27 @@ export type CliqWebhookProcessResult = {
     security: Extract<CliqInboundSecurityDecision, {
         allowed: true;
     }>;
-    lifecycle: CliqInboundLifecycleResult;
+    lifecycle?: CliqInboundLifecycleResult;
+    turn: CliqInboundTurnResult["turn"];
+    dispatchError?: string;
     dispatched: boolean;
 } | {
     ok: true;
     accepted: false;
     status: "ignored";
-    reason: "unsupported_handler" | "invalid_payload" | "duplicate" | "security_denied";
+    reason: "unsupported_handler" | "invalid_payload" | "duplicate" | "security_denied" | "turn_active" | "dead_lettered";
     accountId: string;
     handlerKind?: CliqWebhookHandlerKind;
     event?: CliqNormalizedInboundEvent;
     security?: CliqInboundSecurityDecision;
+    turn?: CliqInboundTurnResult["turn"];
 };
 export type CliqWebhookHandlerOptions = {
     cfg: OpenClawConfig;
     webhookPath?: string;
     dedupe?: CliqInboundDedupeStore;
     lifecycle?: CliqInboundLifecycleOption;
+    turnLedger?: CliqTurnLedgerOption;
     mentionMatchers?: CliqMentionMatcher[];
     env?: NodeJS.ProcessEnv;
     logger?: Partial<PluginLogger>;
@@ -58,6 +63,11 @@ export type CliqWebhookHandlerOptions = {
             allowed: true;
         }>;
     }) => void | Promise<void>;
+};
+type CliqWebhookProcessOptions = CliqWebhookHandlerOptions & {
+    account: CliqResolvedAccount;
+    payload: unknown;
+    resolvedTurnLedger?: CliqTurnLedgerStore | null;
 };
 type CliqWebhookHttpRouteHandler = (req: IncomingMessage, res: ServerResponse) => Promise<boolean | void> | boolean | void;
 export declare function parseCliqWebhookPayload(body: string | Buffer | unknown, contentType?: string | string[]): unknown;
@@ -83,10 +93,7 @@ export declare function evaluateCliqWebhookEventSecurity(params: {
     event: CliqNormalizedInboundEvent;
     intent?: string | null;
 }): CliqInboundSecurityDecision;
-export declare function processCliqWebhookPayload(options: CliqWebhookHandlerOptions & {
-    account: CliqResolvedAccount;
-    payload: unknown;
-}): Promise<CliqWebhookProcessResult>;
+export declare function processCliqWebhookPayload(options: CliqWebhookProcessOptions): Promise<CliqWebhookProcessResult>;
 export declare function createCliqWebhookHttpHandler(options: CliqWebhookHandlerOptions): CliqWebhookHttpRouteHandler;
 export declare function registerCliqWebhookRoutes(api: OpenClawPluginApi): void;
 export {};

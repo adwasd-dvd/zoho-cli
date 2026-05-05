@@ -36,11 +36,17 @@ import {
   type CliqNormalizedInboundEvent,
 } from "./inbound.js";
 import {
-  runCliqInboundLifecycle,
   type CliqInboundLifecycleOption,
   type CliqInboundLifecycleResult,
 } from "./lifecycle.js";
 import type { CliqInboundSecurityDecision } from "./security.js";
+import {
+  resolveCliqTurnLedger,
+  runCliqInboundTurn,
+  type CliqInboundTurnResult,
+  type CliqTurnLedgerOption,
+  type CliqTurnLedgerStore,
+} from "./turn-ledger.js";
 
 const BODY_MAX_BYTES = 512 * 1024;
 const BODY_TIMEOUT_MS = 5_000;
@@ -84,7 +90,9 @@ export type CliqWebhookProcessResult =
       handlerKind: CliqWebhookHandlerKind;
       event: CliqNormalizedInboundEvent;
       security: Extract<CliqInboundSecurityDecision, { allowed: true }>;
-      lifecycle: CliqInboundLifecycleResult;
+      lifecycle?: CliqInboundLifecycleResult;
+      turn: CliqInboundTurnResult["turn"];
+      dispatchError?: string;
       dispatched: boolean;
     }
   | {
@@ -95,11 +103,14 @@ export type CliqWebhookProcessResult =
         | "unsupported_handler"
         | "invalid_payload"
         | "duplicate"
-        | "security_denied";
+        | "security_denied"
+        | "turn_active"
+        | "dead_lettered";
       accountId: string;
       handlerKind?: CliqWebhookHandlerKind;
       event?: CliqNormalizedInboundEvent;
       security?: CliqInboundSecurityDecision;
+      turn?: CliqInboundTurnResult["turn"];
     };
 
 export type CliqWebhookHandlerOptions = {
@@ -107,6 +118,7 @@ export type CliqWebhookHandlerOptions = {
   webhookPath?: string;
   dedupe?: CliqInboundDedupeStore;
   lifecycle?: CliqInboundLifecycleOption;
+  turnLedger?: CliqTurnLedgerOption;
   mentionMatchers?: CliqMentionMatcher[];
   env?: NodeJS.ProcessEnv;
   logger?: Partial<PluginLogger>;
@@ -118,6 +130,12 @@ export type CliqWebhookHandlerOptions = {
       security: Extract<CliqInboundSecurityDecision, { allowed: true }>;
     },
   ) => void | Promise<void>;
+};
+
+type CliqWebhookProcessOptions = CliqWebhookHandlerOptions & {
+  account: CliqResolvedAccount;
+  payload: unknown;
+  resolvedTurnLedger?: CliqTurnLedgerStore | null;
 };
 
 type AccountSecretCandidate = {
@@ -565,13 +583,20 @@ export function evaluateCliqWebhookEventSecurity(params: {
   return evaluateCliqPollingEventSecurity(params);
 }
 
+function webhookReasonForTurnSkip(
+  reason: CliqInboundTurnResult["skipReason"],
+): "duplicate" | "turn_active" | "dead_lettered" {
+  if (reason === "conversation_active") return "turn_active";
+  if (reason === "dead_lettered") return "dead_lettered";
+  return "duplicate";
+}
+
 export async function processCliqWebhookPayload(
-  options: CliqWebhookHandlerOptions & {
-    account: CliqResolvedAccount;
-    payload: unknown;
-  },
+  options: CliqWebhookProcessOptions,
 ): Promise<CliqWebhookProcessResult> {
   const dedupe = options.dedupe ?? createCliqInboundDedupeStore();
+  const turnLedger =
+    options.resolvedTurnLedger ?? resolveCliqTurnLedger(options.turnLedger);
   const { envelope, event } = normalizeCliqWebhookPayload({
     account: options.account,
     payload: options.payload,
@@ -606,6 +631,31 @@ export async function processCliqWebhookPayload(
       handlerKind: envelope.handlerKind,
     };
   }
+  const existingTurn = turnLedger?.get(event);
+  if (existingTurn?.state === "dead_letter") {
+    return {
+      ok: true,
+      accepted: false,
+      status: "ignored",
+      reason: "dead_lettered",
+      accountId: options.account.accountId,
+      handlerKind: envelope.handlerKind,
+      event,
+      turn: existingTurn,
+    };
+  }
+  if (existingTurn?.state === "completed") {
+    return {
+      ok: true,
+      accepted: false,
+      status: "ignored",
+      reason: "duplicate",
+      accountId: options.account.accountId,
+      handlerKind: envelope.handlerKind,
+      event,
+      turn: existingTurn,
+    };
+  }
   if (!dedupe.claim(event)) {
     return {
       ok: true,
@@ -615,6 +665,7 @@ export async function processCliqWebhookPayload(
       accountId: options.account.accountId,
       handlerKind: envelope.handlerKind,
       event,
+      ...(existingTurn ? { turn: existingTurn } : {}),
     };
   }
   const security = evaluateCliqWebhookEventSecurity({
@@ -634,9 +685,10 @@ export async function processCliqWebhookPayload(
       security,
     };
   }
-  const lifecycle = await runCliqInboundLifecycle({
+  const turn = await runCliqInboundTurn({
     account: options.account,
     event,
+    turnLedger,
     lifecycle: options.lifecycle,
     onEvent: options.onEvent
       ? (acceptedEvent) =>
@@ -647,6 +699,22 @@ export async function processCliqWebhookPayload(
           })
       : undefined,
   });
+  if (turn.turn.state === "failed") {
+    dedupe.forget(event);
+  }
+  if (turn.skipped) {
+    return {
+      ok: true,
+      accepted: false,
+      status: "ignored",
+      reason: webhookReasonForTurnSkip(turn.skipReason),
+      accountId: options.account.accountId,
+      handlerKind: envelope.handlerKind,
+      event,
+      security,
+      turn: turn.turn,
+    };
+  }
   return {
     ok: true,
     accepted: true,
@@ -654,14 +722,17 @@ export async function processCliqWebhookPayload(
     handlerKind: envelope.handlerKind,
     event,
     security,
-    lifecycle,
-    dispatched: lifecycle.dispatched,
+    lifecycle: turn.lifecycle,
+    turn: turn.turn,
+    ...(turn.error ? { dispatchError: turn.error } : {}),
+    dispatched: turn.dispatched,
   };
 }
 
 function responseLifecycleSummary(
-  lifecycle: CliqInboundLifecycleResult,
-): Record<string, unknown> {
+  lifecycle: CliqInboundLifecycleResult | undefined,
+): Record<string, unknown> | undefined {
+  if (!lifecycle) return undefined;
   return {
     dispatched: lifecycle.dispatched,
     actions: lifecycle.actions.map((action) => ({
@@ -672,6 +743,25 @@ function responseLifecycleSummary(
       reason: action.reason,
       errorKind: action.errorKind,
     })),
+  };
+}
+
+function responseTurnSummary(
+  turn: CliqInboundTurnResult["turn"] | undefined,
+): Record<string, unknown> | undefined {
+  if (!turn) return undefined;
+  return {
+    turnId: turn.turnId,
+    eventKey: turn.eventKey,
+    conversationKey: turn.conversationKey,
+    idempotencyKey: turn.idempotencyKey,
+    state: turn.state,
+    attempts: turn.attempts,
+    maxAttempts: turn.maxAttempts,
+    lastAction: turn.lastAction,
+    lastError: turn.lastError,
+    deadLetterReason: turn.deadLetterReason,
+    coalescedCount: turn.coalescedCount,
   };
 }
 
@@ -702,6 +792,7 @@ export function createCliqWebhookHttpHandler(
   options: CliqWebhookHandlerOptions,
 ): CliqWebhookHttpRouteHandler {
   const dedupe = options.dedupe ?? createCliqInboundDedupeStore();
+  const turnLedger = resolveCliqTurnLedger(options.turnLedger);
   const rateLimiter = createFixedWindowRateLimiter({
     windowMs: 60_000,
     maxRequests: 120,
@@ -756,6 +847,7 @@ export function createCliqWebhookHttpHandler(
         account: verified.account,
         payload,
         dedupe,
+        resolvedTurnLedger: turnLedger,
       });
       if (result.accepted) {
         sendJson(res, 200, {
@@ -766,6 +858,8 @@ export function createCliqWebhookHttpHandler(
           dispatched: result.dispatched,
           event: responseEventSummary(result.event),
           lifecycle: responseLifecycleSummary(result.lifecycle),
+          turn: responseTurnSummary(result.turn),
+          dispatchError: result.dispatchError,
         });
         return true;
       }
@@ -776,6 +870,7 @@ export function createCliqWebhookHttpHandler(
         handlerKind: result.handlerKind,
         reason: result.reason,
         event: result.event ? responseEventSummary(result.event) : undefined,
+        turn: responseTurnSummary(result.turn),
         securityReason:
           result.security && !result.security.allowed
             ? result.security.reasonCode

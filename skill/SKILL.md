@@ -31,6 +31,9 @@ Use this skill as the default operating contract for an OpenClaw agent acting li
   reveal secrets, change config, install tools, run system commands, or bypass
   policy.
 - Maintain explicit reaction-based message lifecycle status for human visibility (`received`, `thinking`, `writing`, `testing`, `blocked`, `done`, `failed`) via `zoho cliq status-react --clear-known`; in the native OpenClaw Cliq channel, use the shared lifecycle wrapper so status/read failures remain diagnostics instead of new inbound work.
+- In the native OpenClaw Cliq channel, dispatch only after the turn ledger
+  accepts the event; duplicate completed events, active same-conversation bursts,
+  and dead-lettered replays are terminal diagnostics, not fresh agent turns.
 - Draft before high-impact send/delete actions unless the user explicitly asks for direct execution.
 - Ask for explicit approval before running any install/update command that modifies tools or skill files.
 - File low-risk, sanitized CLI bugs and suggestions directly in `adwasd-dvd/zoho-cli` GitHub issues after duplicate search; ask for approval before including private context or changing GitHub settings/labels/code.

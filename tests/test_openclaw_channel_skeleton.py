@@ -130,6 +130,7 @@ def test_openclaw_cliq_channel_sources_use_locked_sdk_surfaces() -> None:
             read("src/session.ts"),
             read("src/security.ts"),
             read("src/setup-wizard.ts"),
+            read("src/turn-ledger.ts"),
             read("src/webhook.ts"),
             read("src/zoho-cli.ts"),
         ]
@@ -171,6 +172,9 @@ def test_openclaw_cliq_channel_sources_use_locked_sdk_surfaces() -> None:
         "normalizeCliqInboundMessage",
         "pollCliqInboundOnce",
         "runCliqInboundLifecycle",
+        "runCliqInboundTurn",
+        "createCliqTurnLedgerStore",
+        "buildCliqTurnConversationKey",
         "setCliqStatusReaction",
         "markCliqMessageRead",
         "buildCliqStatusReactArgs",
@@ -240,6 +244,7 @@ def test_openclaw_cliq_channel_dist_runtime_outputs_exist() -> None:
         "dist/src/session.js",
         "dist/src/security.js",
         "dist/src/setup-wizard.js",
+        "dist/src/turn-ledger.js",
         "dist/src/webhook.js",
         "dist/src/zoho-cli.js",
     ]:
@@ -257,6 +262,7 @@ def test_openclaw_cliq_channel_dist_runtime_outputs_exist() -> None:
             read("dist/src/session.js"),
             read("dist/src/security.js"),
             read("dist/src/setup-wizard.js"),
+            read("dist/src/turn-ledger.js"),
             read("dist/src/webhook.js"),
             read("dist/src/zoho-cli.js"),
         ]
@@ -922,6 +928,144 @@ assert.deepEqual(failureCalls.at(-1).slice(0, 5), ["cliq", "status-react", "M3",
     )
 
 
+def test_openclaw_cliq_channel_turn_ledger_runtime() -> None:
+    script = """
+import assert from "node:assert/strict";
+import {
+  buildCliqTurnConversationKey,
+  createCliqTurnLedgerStore,
+  runCliqInboundTurn,
+} from "./integrations/openclaw-channel-cliq/dist/src/turn-ledger.js";
+
+let now = Date.parse("2026-05-05T00:00:00Z");
+const ledger = createCliqTurnLedgerStore({
+  maxAttempts: 1,
+  now: () => now,
+});
+const account = {
+  accountId: "default",
+  enabled: true,
+  cliPath: "zoho",
+  network: "happy",
+  dmPolicy: "pairing",
+  groupPolicy: "allowlist",
+  groupAllowFrom: [],
+  allowFrom: [],
+  requireMention: true,
+  employeeMode: {},
+  workScopes: {},
+};
+const baseEvent = {
+  channel: "cliq",
+  accountId: "default",
+  network: "happy",
+  chatType: "channel",
+  peerId: "channel:C123",
+  nativePeerId: "C123",
+  chatId: "CHAT1",
+  channelId: "C123",
+  messageId: "M1",
+  senderId: "U2",
+  text: "@bot hello",
+  mentioned: true,
+  dedupeKey: "account:default:network:happy:peer:channel:c123:message:m1",
+  raw: {},
+};
+
+assert.equal(
+  buildCliqTurnConversationKey(baseEvent),
+  "account:default:network:happy:conversation:chat1",
+);
+
+let releaseActive;
+const active = runCliqInboundTurn({
+  account,
+  event: baseEvent,
+  turnLedger: ledger,
+  lifecycle: false,
+  onEvent: () => new Promise((resolve) => {
+    releaseActive = resolve;
+  }),
+});
+
+const burstEvent = {
+  ...baseEvent,
+  messageId: "M2",
+  dedupeKey: "account:default:network:happy:peer:channel:c123:message:m2",
+};
+const coalesced = await runCliqInboundTurn({
+  account,
+  event: burstEvent,
+  turnLedger: ledger,
+  lifecycle: false,
+  onEvent: () => {
+    throw new Error("must not dispatch coalesced event");
+  },
+});
+assert.equal(coalesced.skipped, true);
+assert.equal(coalesced.skipReason, "conversation_active");
+assert.equal(coalesced.turn.state, "coalesced");
+assert.equal(ledger.get(baseEvent).coalescedCount, 1);
+
+releaseActive();
+const completed = await active;
+assert.equal(completed.dispatched, true);
+assert.equal(completed.turn.state, "completed");
+
+const duplicate = await runCliqInboundTurn({
+  account,
+  event: baseEvent,
+  turnLedger: ledger,
+  lifecycle: false,
+  onEvent: () => {
+    throw new Error("must not dispatch duplicate event");
+  },
+});
+assert.equal(duplicate.skipped, true);
+assert.equal(duplicate.skipReason, "duplicate_event");
+assert.equal(duplicate.turn.state, "completed");
+
+const failingEvent = {
+  ...baseEvent,
+  messageId: "M3",
+  dedupeKey: "account:default:network:happy:peer:channel:c123:message:m3",
+};
+const failed = await runCliqInboundTurn({
+  account,
+  event: failingEvent,
+  turnLedger: ledger,
+  lifecycle: false,
+  onEvent: () => {
+    throw new Error("dispatch failed");
+  },
+});
+assert.equal(failed.dispatched, false);
+assert.equal(failed.turn.state, "dead_letter");
+assert.equal(failed.turn.deadLetterReason, "max_attempts_exhausted");
+assert.match(failed.error, /dispatch failed/);
+
+const deadLetterReplay = await runCliqInboundTurn({
+  account,
+  event: failingEvent,
+  turnLedger: ledger,
+  lifecycle: false,
+  onEvent: () => {
+    throw new Error("must not dispatch dead-letter replay");
+  },
+});
+assert.equal(deadLetterReplay.skipped, true);
+assert.equal(deadLetterReplay.skipReason, "dead_lettered");
+assert.equal(deadLetterReplay.turn.state, "dead_letter");
+"""
+    subprocess.run(
+        ["node", "--input-type=module", "-e", script],
+        cwd=ROOT,
+        check=True,
+        text=True,
+        capture_output=True,
+    )
+
+
 def test_openclaw_cliq_channel_webhook_inbound_runtime(tmp_path) -> None:
     fake_zoho = tmp_path / "fake-zoho.mjs"
     fake_zoho.write_text(
@@ -949,6 +1093,7 @@ import {
   processCliqWebhookPayload,
   verifyCliqWebhookSecret,
 } from "./integrations/openclaw-channel-cliq/dist/src/webhook.js";
+import { createCliqTurnLedgerStore } from "./integrations/openclaw-channel-cliq/dist/src/turn-ledger.js";
 
 process.env.FAKE_ZOHO_WEBHOOK_SECRET = "webhook-secret";
 process.env.OTHER_ZOHO_WEBHOOK_SECRET = "other-secret";
@@ -1042,17 +1187,20 @@ assert.equal(mentionNormalized.event.senderId, "U2");
 assert.equal(mentionNormalized.event.mentioned, true);
 
 const dedupe = new CliqInboundDedupeStore(100);
+const turnLedger = createCliqTurnLedgerStore();
 const dispatched = [];
 const accepted = await processCliqWebhookPayload({
   cfg,
   account,
   payload: mentionPayload,
   dedupe,
+  turnLedger,
   mentionMatchers: [/@bot\\b/i],
   onEvent: (event) => dispatched.push(event.messageId),
 });
 assert.equal(accepted.accepted, true);
 assert.deepEqual(dispatched, ["M1"]);
+assert.equal(accepted.turn.state, "completed");
 assert.deepEqual(
   accepted.lifecycle.actions.map((action) => [action.kind, action.status ?? "", action.ok]),
   [
@@ -1068,10 +1216,48 @@ const duplicate = await processCliqWebhookPayload({
   account,
   payload: mentionPayload,
   dedupe,
+  turnLedger,
   mentionMatchers: [/@bot\\b/i],
 });
 assert.equal(duplicate.accepted, false);
 assert.equal(duplicate.reason, "duplicate");
+assert.equal(duplicate.turn.state, "completed");
+
+const failurePayload = {
+  handler: "mention",
+  message: { id: "MFAIL", text: "@bot fail" },
+  user: { id: "U2", name: "Alice" },
+  chat: { channelId: "C123", chatType: "channel" },
+};
+const failed = await processCliqWebhookPayload({
+  cfg,
+  account,
+  payload: failurePayload,
+  dedupe,
+  turnLedger,
+  mentionMatchers: [/@bot\\b/i],
+  onEvent: () => {
+    throw new Error("dispatch failed");
+  },
+});
+assert.equal(failed.accepted, true);
+assert.equal(failed.dispatched, false);
+assert.equal(failed.turn.state, "dead_letter");
+assert.equal(failed.turn.deadLetterReason, "max_attempts_exhausted");
+assert.match(failed.dispatchError, /dispatch failed/);
+assert.equal(failed.lifecycle.actions.at(-1).status, "failed");
+
+const deadLetterReplay = await processCliqWebhookPayload({
+  cfg,
+  account,
+  payload: failurePayload,
+  dedupe,
+  turnLedger,
+  mentionMatchers: [/@bot\\b/i],
+});
+assert.equal(deadLetterReplay.accepted, false);
+assert.equal(deadLetterReplay.reason, "dead_lettered");
+assert.equal(deadLetterReplay.turn.state, "dead_letter");
 
 const denied = await processCliqWebhookPayload({
   cfg,
@@ -1083,6 +1269,7 @@ const denied = await processCliqWebhookPayload({
     chat: { channelId: "C123", chatType: "channel" },
   },
   dedupe,
+  turnLedger,
 });
 assert.equal(denied.accepted, false);
 assert.equal(denied.reason, "security_denied");
@@ -1097,6 +1284,7 @@ const direct = await processCliqWebhookPayload({
     user: { id: "U2", name: "Alice" },
   },
   dedupe,
+  turnLedger,
 });
 assert.equal(direct.accepted, true);
 assert.equal(direct.event.chatType, "direct");
@@ -1111,6 +1299,7 @@ const unsupported = await processCliqWebhookPayload({
     user: { id: "U2" },
   },
   dedupe,
+  turnLedger,
 });
 assert.equal(unsupported.accepted, false);
 assert.equal(unsupported.reason, "unsupported_handler");

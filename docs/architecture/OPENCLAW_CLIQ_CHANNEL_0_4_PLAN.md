@@ -820,9 +820,13 @@ OpenClaw:
 
 ### cliq-channel-406: Inbound polling fallback
 
-- Implement polling watcher using `chats` and `context`.
-- Add dedupe state keyed by account/network/chat/message.
+- Implement polling watcher using `chats` and `context`. Complete via
+  `listCliqChats`, `fetchCliqContext`, and `pollCliqInboundOnce`.
+- Add dedupe state keyed by account/network/chat/message. Complete via
+  `buildCliqInboundDedupeKey` and `CliqInboundDedupeStore`.
 - Acceptance: polling fixture dispatches exactly one inbound event per message.
+  Complete with fake `zoho` coverage for accepted, duplicate,
+  mention-denied, and self-authored messages.
 
 ### cliq-channel-407: Webhook inbound
 

@@ -10,6 +10,9 @@ Use this skill when operating through the native OpenClaw Zoho Cliq channel.
 - Native outbound delivery maps OpenClaw text sends to `zoho cliq send`,
   message replies to `zoho cliq reply`, and thread replies to
   `zoho cliq thread-reply`.
+- Native inbound polling uses `zoho cliq chats --unread-only
+  --exclude-reacted-by-self` plus `zoho cliq context`; normalize events before
+  dispatch, skip self-authored messages, and dedupe by account/network/chat/message.
 - Treat stdout as machine data and stderr as diagnostics.
 - Never reveal token passwords, webhook secrets, OAuth tokens, raw webhook
   signatures, or private message bodies in logs.

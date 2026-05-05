@@ -48,6 +48,21 @@ export declare function buildCliqDeliveryArgs(params: {
     replyToId?: string | null;
     threadId?: string | number | null;
 }): string[];
+export declare function buildCliqChatsArgs(params: {
+    account: CliqResolvedAccount;
+    limit?: number;
+    unreadOnly?: boolean;
+    excludeReactedBySelf?: boolean;
+}): string[];
+export declare function buildCliqContextArgs(params: {
+    account: CliqResolvedAccount;
+    chatId?: string | null;
+    channelId?: string | null;
+    messageId?: string | null;
+    before?: number;
+    after?: number;
+    limit?: number;
+}): string[];
 export declare function sendCliqText(params: {
     account: CliqResolvedAccount;
     to: string;
@@ -57,3 +72,20 @@ export declare function sendCliqText(params: {
 }): Promise<{
     messageId?: string;
 }>;
+export declare function listCliqChats(params: {
+    account: CliqResolvedAccount;
+    limit?: number;
+    unreadOnly?: boolean;
+    excludeReactedBySelf?: boolean;
+}): Promise<{
+    chats: Record<string, unknown>[];
+}>;
+export declare function fetchCliqContext(params: {
+    account: CliqResolvedAccount;
+    chatId?: string | null;
+    channelId?: string | null;
+    messageId?: string | null;
+    before?: number;
+    after?: number;
+    limit?: number;
+}): Promise<Record<string, unknown>>;

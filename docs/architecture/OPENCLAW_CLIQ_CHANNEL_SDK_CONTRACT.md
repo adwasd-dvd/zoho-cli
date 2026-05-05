@@ -390,7 +390,7 @@ allowlisting uses `groupAllowFrom`; DM pairing/allowlist uses `allowFrom`.
 The plugin calls `zoho cliq ...` and parses JSON stdout. It does not call Zoho
 REST APIs directly.
 
-Minimum CLI commands for the first skeleton-through-outbound path:
+Minimum CLI commands for the first skeleton-through-inbound-polling path:
 
 ```bash
 zoho cliq status --check-auth --network <network>
@@ -407,6 +407,10 @@ zoho cliq status-react <message_id> --network <network> --chat-id <chat_id> --st
 
 CLI stderr is diagnostics only. Runtime logs must redact command env, secrets,
 webhook signatures, token passwords, and raw message bodies.
+
+`cliq-channel-406` uses only the `chats` + `context` commands above for the
+polling fallback, then normalizes and dedupes events inside the plugin before
+any dispatch callback runs.
 
 ## Compatibility rule
 

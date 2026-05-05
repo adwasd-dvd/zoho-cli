@@ -116,6 +116,8 @@ def test_openclaw_cliq_channel_sources_use_locked_sdk_surfaces() -> None:
             read("src/channel.ts"),
             read("src/config.ts"),
             read("src/employee-policy.ts"),
+            read("src/inbound.ts"),
+            read("src/polling.ts"),
             read("src/session.ts"),
             read("src/security.ts"),
             read("src/setup-wizard.ts"),
@@ -151,6 +153,15 @@ def test_openclaw_cliq_channel_sources_use_locked_sdk_surfaces() -> None:
         "outbound: cliqOutboundAdapter",
         'chunkerMode: "markdown"',
         "sendCliqText",
+        "listCliqChats",
+        "fetchCliqContext",
+        "buildCliqContextArgs",
+        "normalizeCliqContextMessages",
+        "normalizeCliqWatchMessages",
+        "normalizeCliqInboundMessage",
+        "pollCliqInboundOnce",
+        "CliqInboundDedupeStore",
+        "evaluateCliqPollingEventSecurity",
         'from "openclaw/plugin-sdk/run-command"',
         "runPluginCommandWithTimeout",
         "ZohoCliqCommandErrorKind",
@@ -199,6 +210,8 @@ def test_openclaw_cliq_channel_dist_runtime_outputs_exist() -> None:
         "dist/src/config.js",
         "dist/src/constants.js",
         "dist/src/employee-policy.js",
+        "dist/src/inbound.js",
+        "dist/src/polling.js",
         "dist/src/session.js",
         "dist/src/security.js",
         "dist/src/setup-wizard.js",
@@ -212,6 +225,8 @@ def test_openclaw_cliq_channel_dist_runtime_outputs_exist() -> None:
             read("dist/setup-entry.js"),
             read("dist/src/channel.js"),
             read("dist/src/employee-policy.js"),
+            read("dist/src/inbound.js"),
+            read("dist/src/polling.js"),
             read("dist/src/session.js"),
             read("dist/src/security.js"),
             read("dist/src/setup-wizard.js"),
@@ -534,6 +549,198 @@ assert.deepEqual(
   await sendCliqText({{ account, to: "channel:C123", text: "reply", replyToId: "M33" }}),
   {{ messageId: "M123" }},
 );
+"""
+    subprocess.run(
+        ["node", "--input-type=module", "-e", script],
+        cwd=ROOT,
+        check=True,
+        text=True,
+        capture_output=True,
+    )
+
+
+def test_openclaw_cliq_channel_inbound_polling_normalization_runtime(tmp_path) -> None:
+    fake_zoho = tmp_path / "fake-zoho.mjs"
+    fake_zoho.write_text(
+        """#!/usr/bin/env node
+const args = process.argv.slice(2);
+if (args[0] !== "cliq") {
+  console.error("expected cliq command");
+  process.exit(7);
+}
+
+if (args[1] === "chats") {
+  console.log(JSON.stringify({
+    data: {
+      chats: [
+        { id: "CHAT-1", chat_type: "channel", unread_message_count: 2, channel_id: "C123" },
+        { id: "CHAT-2", chat_type: "dm", unread_message_count: 1 }
+      ]
+    }
+  }));
+  process.exit(0);
+}
+
+if (args[1] === "context") {
+  const chatId = args[args.indexOf("--chat-id") + 1];
+  if (chatId === "CHAT-1") {
+    console.log(JSON.stringify({
+      chatId,
+      channelId: "C123",
+      messages: [
+        { messageId: "M100", senderId: "U1", senderName: "Alice", text: "@bot hello", timestamp: 1710000000000, raw: { message_id: "M100", thread_id: "TH-7" } },
+        { messageId: "M101", senderId: "U1", text: "forgot mention", timestamp: 1710000001000, raw: { message_id: "M101" } },
+        { messageId: "SELF", senderId: "BOT", text: "@bot ignore self", isSelf: true }
+      ]
+    }));
+    process.exit(0);
+  }
+  console.log(JSON.stringify({
+    chatId,
+    messages: [
+      { messageId: "DM1", chatType: "dm", senderId: "U2", text: "direct hello", timestamp: "2026-05-05T04:00:00Z" }
+    ]
+  }));
+  process.exit(0);
+}
+
+console.log(JSON.stringify({ ok: true, args }));
+""",
+        encoding="utf-8",
+    )
+    fake_zoho.chmod(0o755)
+
+    script = f"""
+import assert from "node:assert/strict";
+import {{
+  buildCliqChatsArgs,
+  buildCliqContextArgs,
+  fetchCliqContext,
+  listCliqChats,
+}} from "./integrations/openclaw-channel-cliq/dist/src/zoho-cli.js";
+import {{
+  buildCliqInboundDedupeKey,
+  CliqInboundDedupeStore,
+  evaluateCliqPollingEventSecurity,
+  normalizeCliqWatchMessages,
+}} from "./integrations/openclaw-channel-cliq/dist/src/inbound.js";
+import {{
+  pollCliqInboundOnce,
+}} from "./integrations/openclaw-channel-cliq/dist/src/polling.js";
+
+const account = {{
+  accountId: "default",
+  enabled: true,
+  cliPath: {json.dumps(str(fake_zoho))},
+  network: "happy",
+  dmPolicy: "pairing",
+  groupPolicy: "allowlist",
+  groupAllowFrom: ["channel:C123"],
+  allowFrom: ["U2"],
+  requireMention: true,
+  employeeMode: {{}},
+  workScopes: {{ default: {{ allowedSurfaces: ["cliq"], allowedIntents: ["cliq.reply"] }} }},
+}};
+
+assert.deepEqual(
+  buildCliqChatsArgs({{ account, limit: 25, unreadOnly: true, excludeReactedBySelf: true }}),
+  ["chats", "--limit", "25", "--network", "happy", "--unread-only", "--exclude-reacted-by-self"],
+);
+assert.deepEqual(
+  buildCliqContextArgs({{
+    account,
+    channelId: "C123",
+    limit: 30,
+    before: 0,
+    after: 2,
+  }}),
+  [
+    "context",
+    "--limit",
+    "30",
+    "--network",
+    "happy",
+    "--channel-id",
+    "C123",
+    "--before",
+    "0",
+    "--after",
+    "2",
+  ],
+);
+
+const chats = await listCliqChats({{ account, limit: 25 }});
+assert.equal(chats.chats.length, 2);
+assert.equal(chats.chats[0].id, "CHAT-1");
+
+const contextPayload = await fetchCliqContext({{
+  account,
+  chatId: "CHAT-1",
+  limit: 30,
+}});
+assert.equal(contextPayload.chatId, "CHAT-1");
+assert.ok(Array.isArray(contextPayload.messages));
+
+const events = normalizeCliqWatchMessages({{
+  accountId: "default",
+  network: "happy",
+  payload: contextPayload,
+  defaultChannelId: "C123",
+  mentionMatchers: [/@bot\\b/i],
+}});
+assert.equal(events.length, 2);
+assert.equal(events[0].chatId, "CHAT-1");
+assert.equal(events[0].channelId, "C123");
+assert.equal(events[0].threadId, "TH-7");
+assert.equal(events[0].peerId, "channel:C123");
+assert.equal(events[0].mentioned, true);
+assert.equal(
+  events[0].dedupeKey,
+  buildCliqInboundDedupeKey({{
+    accountId: "default",
+    network: "happy",
+    peerId: "channel:C123",
+    messageId: "M100",
+  }}),
+);
+assert.equal(
+  evaluateCliqPollingEventSecurity({{ account, event: events[0] }}).allowed,
+  true,
+);
+assert.equal(
+  evaluateCliqPollingEventSecurity({{ account, event: events[1] }}).allowed,
+  false,
+);
+
+const dedupe = new CliqInboundDedupeStore(100);
+const firstPass = dedupe.takeNew(events);
+const secondPass = dedupe.takeNew(events);
+assert.equal(firstPass.length, 2);
+assert.equal(secondPass.length, 0);
+
+const dispatched = [];
+const pollingDedupe = new CliqInboundDedupeStore(100);
+const firstPoll = await pollCliqInboundOnce({{
+  account,
+  dedupe: pollingDedupe,
+  mentionMatchers: [/@bot\\b/i],
+  onEvent: (event) => dispatched.push(event.messageId),
+}});
+assert.deepEqual(firstPoll.events.map((event) => event.messageId), ["M100", "DM1"]);
+assert.deepEqual(dispatched, ["M100", "DM1"]);
+assert.equal(firstPoll.dispatchedCount, 2);
+assert.equal(firstPoll.skipped.some((item) => item.reason === "security_denied" && item.securityReasonCode === "mention_required"), true);
+assert.equal(firstPoll.skipped.some((item) => item.reason === "invalid_message"), true);
+
+const secondPoll = await pollCliqInboundOnce({{
+  account,
+  dedupe: pollingDedupe,
+  mentionMatchers: [/@bot\\b/i],
+  onEvent: (event) => dispatched.push(event.messageId),
+}});
+assert.equal(secondPoll.events.length, 0);
+assert.equal(secondPoll.dispatchedCount, 0);
+assert.equal(secondPoll.skipped.filter((item) => item.reason === "duplicate").length, 3);
 """
     subprocess.run(
         ["node", "--input-type=module", "-e", script],

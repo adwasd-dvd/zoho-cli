@@ -6,14 +6,16 @@ This package includes the `cliq-channel-401` installable skeleton,
 `cliq-channel-402` config/SecretRef/setup slice, `cliq-channel-416` human
 setup UX slice, `cliq-channel-403` security/policy slice, and
 `cliq-channel-414` native SDK seam slice, `cliq-channel-404` CLI adapter slice,
-and `cliq-channel-405` outbound delivery slice. It declares the plugin/channel
+`cliq-channel-405` outbound delivery slice, and `cliq-channel-406` inbound
+polling slice. It declares the plugin/channel
 metadata, setup/runtime entrypoints, configured/auth-state probes, a native
 OpenClaw channel object, config schema metadata, DM pairing, group allowlist,
 mention gating, scoped employee policy gates, audit warnings,
 account/network/thread-aware session grammar, native mention-policy delegation,
-approval capability metadata, a JSON-safe `zoho cliq ...` process adapter, and
-native outbound send/reply/thread-reply delivery. Inbound delivery follows in
-later slices.
+approval capability metadata, a JSON-safe `zoho cliq ...` process adapter,
+native outbound send/reply/thread-reply delivery, and normalized/deduped
+polling fallback events from `zoho cliq chats` + `zoho cliq context`. Webhook
+delivery follows in later slices.
 
 ## Contract
 

@@ -66,7 +66,7 @@ Current implementation-only delta:
 - `cliq-210` also moved productivity/platform list command bodies (`events`, `reminders`, `meetings`, `databases`) into `zoho_cli/commands/cliq_productivity.py`; AI-user command patterns are unchanged.
 - `cliq-210` also moved platform-extension list command bodies (`widgets`, `map-tickers`, `custom-domains`, `custom-emails`) into `zoho_cli/commands/cliq_platform_extensions.py`; AI-user command patterns are unchanged.
 - `cliq-210` also moved channel/member/chat-control command bodies (`members`, channel lifecycle/member commands, `leave`, `mute`, `unmute`, `pin`, `unpin`, `pinned`) into `zoho_cli/commands/cliq_channel_management.py`; AI-user command patterns are unchanged.
-- v0.4 planning now reserves the next major feature lane for a native OpenClaw Cliq channel; CRM expansion moves to v0.5.
+- v0.4 native OpenClaw Cliq channel now has config/setup/security/session/CLI-adapter/outbound delivery plus fixture-backed inbound polling normalization/dedupe; webhook intake remains the next channel slice and CRM expansion moves to v0.5.
 
 ## Required behavior support after lane3 sync
 
@@ -78,6 +78,9 @@ After sync, ensure the AI user follows:
   - `zoho cliq status-react --status received|thinking|writing|testing|blocked|done|failed --clear-known`
 - context-before-reply in loops:
   - `zoho cliq context ...` before `zoho cliq reply ...`
+- native channel inbound polling dry-runs:
+  - normalize `zoho cliq chats --unread-only --exclude-reacted-by-self` + `zoho cliq context`
+  - skip self-authored messages and dedupe by account/network/chat/message before dispatch
 - native channel development/operation docs when relevant:
   - read `skill/references/openclaw-cliq-channel.md`
   - read `integrations/openclaw/CLIQ_CHANNEL_DEVELOPMENT_GUIDE.md`

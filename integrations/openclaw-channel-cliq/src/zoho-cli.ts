@@ -169,6 +169,22 @@ function normalizeOptionalText(
   return text || undefined;
 }
 
+function normalizePositiveInt(
+  value: number | undefined,
+  fallback: number,
+): number {
+  if (!Number.isFinite(value ?? Number.NaN)) return fallback;
+  return Math.max(1, Math.floor(value as number));
+}
+
+function normalizeNonNegativeInt(
+  value: number | undefined,
+  fallback: number,
+): number {
+  if (!Number.isFinite(value ?? Number.NaN)) return fallback;
+  return Math.max(0, Math.floor(value as number));
+}
+
 function networkArgs(account: CliqResolvedAccount): string[] {
   return account.network ? ["--network", account.network] : [];
 }
@@ -367,6 +383,67 @@ export function buildCliqDeliveryArgs(params: {
   });
 }
 
+export function buildCliqChatsArgs(params: {
+  account: CliqResolvedAccount;
+  limit?: number;
+  unreadOnly?: boolean;
+  excludeReactedBySelf?: boolean;
+}): string[] {
+  const args = [
+    "chats",
+    "--limit",
+    String(normalizePositiveInt(params.limit, 50)),
+    ...networkArgs(params.account),
+  ];
+  if (params.unreadOnly !== false) {
+    args.push("--unread-only");
+  }
+  if (params.excludeReactedBySelf) {
+    args.push("--exclude-reacted-by-self");
+  }
+  return args;
+}
+
+export function buildCliqContextArgs(params: {
+  account: CliqResolvedAccount;
+  chatId?: string | null;
+  channelId?: string | null;
+  messageId?: string | null;
+  before?: number;
+  after?: number;
+  limit?: number;
+}): string[] {
+  const chatId = normalizeOptionalText(params.chatId);
+  const channelId = normalizeOptionalText(params.channelId);
+  if (!chatId && !channelId) {
+    throw new Error("cliq context requires chatId or channelId");
+  }
+
+  const args = [
+    "context",
+    "--limit",
+    String(normalizePositiveInt(params.limit, 50)),
+    ...networkArgs(params.account),
+  ];
+  if (chatId) {
+    args.push("--chat-id", chatId);
+  }
+  if (channelId) {
+    args.push("--channel-id", channelId);
+  }
+  const messageId = normalizeOptionalText(params.messageId);
+  if (messageId) {
+    args.push("--message-id", messageId);
+  }
+  if (params.before !== undefined) {
+    args.push("--before", String(normalizeNonNegativeInt(params.before, 0)));
+  }
+  if (params.after !== undefined) {
+    args.push("--after", String(normalizeNonNegativeInt(params.after, 0)));
+  }
+  return args;
+}
+
 function readStringField(
   value: Record<string, unknown>,
   ...keys: string[]
@@ -402,6 +479,61 @@ function extractCliqMessageId(payload: unknown): string | undefined {
   return undefined;
 }
 
+function extractCliqChatsRows(payload: unknown): Record<string, unknown>[] {
+  if (Array.isArray(payload)) {
+    return payload.filter(
+      (item): item is Record<string, unknown> =>
+        Boolean(item) && typeof item === "object" && !Array.isArray(item),
+    );
+  }
+  if (!payload || typeof payload !== "object") return [];
+
+  const root = payload as Record<string, unknown>;
+  for (const key of ["chats", "data", "items", "records", "result", "results"]) {
+    const value = root[key];
+    if (Array.isArray(value)) {
+      return value.filter(
+        (item): item is Record<string, unknown> =>
+          Boolean(item) && typeof item === "object" && !Array.isArray(item),
+      );
+    }
+    if (value && typeof value === "object" && !Array.isArray(value)) {
+      const nested = extractCliqChatsRows(value);
+      if (nested.length > 0) return nested;
+    }
+  }
+  return [];
+}
+
+function extractCliqMessagesRows(payload: unknown): unknown[] {
+  if (Array.isArray(payload)) return payload;
+  if (!payload || typeof payload !== "object") return [];
+
+  const root = payload as Record<string, unknown>;
+  for (const key of ["messages", "data", "items", "records", "result"]) {
+    const value = root[key];
+    if (Array.isArray(value)) return value;
+    if (value && typeof value === "object" && !Array.isArray(value)) {
+      const nested = extractCliqMessagesRows(value);
+      if (nested.length > 0) return nested;
+    }
+  }
+  return [];
+}
+
+function normalizeContextPayload(
+  payload: unknown,
+): Record<string, unknown> {
+  if (!payload || typeof payload !== "object" || Array.isArray(payload)) {
+    return { messages: [] };
+  }
+  const root = payload as Record<string, unknown>;
+  return {
+    ...root,
+    messages: extractCliqMessagesRows(payload),
+  };
+}
+
 export async function sendCliqText(params: {
   account: CliqResolvedAccount;
   to: string;
@@ -414,4 +546,33 @@ export async function sendCliqText(params: {
     buildCliqDeliveryArgs(params),
   );
   return { messageId: extractCliqMessageId(result.stdout) };
+}
+
+export async function listCliqChats(params: {
+  account: CliqResolvedAccount;
+  limit?: number;
+  unreadOnly?: boolean;
+  excludeReactedBySelf?: boolean;
+}): Promise<{ chats: Record<string, unknown>[] }> {
+  const result = await runZohoCliqJson<unknown>(
+    params.account,
+    buildCliqChatsArgs(params),
+  );
+  return { chats: extractCliqChatsRows(result.stdout) };
+}
+
+export async function fetchCliqContext(params: {
+  account: CliqResolvedAccount;
+  chatId?: string | null;
+  channelId?: string | null;
+  messageId?: string | null;
+  before?: number;
+  after?: number;
+  limit?: number;
+}): Promise<Record<string, unknown>> {
+  const result = await runZohoCliqJson<unknown>(
+    params.account,
+    buildCliqContextArgs(params),
+  );
+  return normalizeContextPayload(result.stdout);
 }

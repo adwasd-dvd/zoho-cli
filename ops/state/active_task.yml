@@ -1,28 +1,23 @@
-id: cliq-channel-406
-title: implement Cliq inbound polling fallback with dedupe and normalized events
+id: cliq-channel-407
+title: implement Cliq webhook inbound normalization and verification
 module: openclaw_cliq_channel
 stage: ready
 status: ready
 owner: coder
-updated_at: '2026-05-05T04:03:04Z'
+updated_at: '2026-05-05T04:58:36Z'
 execution_mode: turbo_20x
 throughput_policy_ref: ops/state/execution_policy.yml
 success_criteria:
-  - poll `zoho cliq chats` / `zoho cliq context` through the JSON-safe adapter without calling Zoho REST APIs directly
-  - normalize inbound events with account id, network, chat id/channel id, sender id, message id, text, timestamp, and thread hints
-  - add dedupe state keyed by account/network/chat/message so one polling pass dispatches each message once
-  - keep self-authored and already-processed messages out of dispatch fixtures when the source data exposes that signal
-  - preserve group allowlist, mention gating, and scoped employee policy boundaries before agent dispatch
-  - keep fake `zoho` fixture coverage for unread channel/direct polling, context extraction, dedupe, empty pass, and adapter error paths
+  - register or expose the webhook inbound path expected by the current OpenClaw channel SDK without adding parallel send tools
+  - verify webhook signatures/secrets with redacted diagnostics and no raw secret logging
+  - normalize bot message and participation payloads into the same `CliqNormalizedInboundEvent` shape used by polling
+  - reuse group allowlist, mention gating, scoped employee policy, self-message skipping, and dedupe before dispatch
+  - keep fake webhook fixture coverage for valid payload, invalid signature, duplicate payload, mention-denied group payload, and direct-message payload
   - update Lane 2 docs, Lane 3 skill/docs, and Lane 1 state/progress docs
   - keep package-local `npm run typecheck`, `npm run build`, OpenClaw linked install, `plugins inspect zoho-cliq --json`, `plugins doctor`, focused tests, and `make ci` green
-next_if_done: implement cliq-channel-407 webhook inbound normalization and verification.
+next_if_done: implement cliq-channel-408 status reaction and read-ack lifecycle for native channel turns.
 progress:
+  - "2026-05-05T04:58:36Z cliq-channel-406 completed: `src/zoho-cli.ts` now wraps `zoho cliq chats --unread-only --exclude-reacted-by-self` and `zoho cliq context`; `src/inbound.ts` normalizes Cliq payloads into account/network/chat/message-keyed events, skips self-authored messages when signaled, detects mentions, evaluates existing allowlist/employee policy gates, and provides dedupe helpers; `src/polling.ts` runs one polling pass with optional dispatch callback. Fake `zoho` runtime coverage verifies accepted channel/direct messages, mention-denied group messages, duplicate suppression, and self-message skipping."
   - "2026-05-05T04:03:04Z cliq-channel-405 completed: `src/channel.ts` now exposes the native OpenClaw outbound adapter with `deliveryMode=direct` and markdown chunking; outbound text delivery resolves account config, calls `sendCliqText`, maps direct/channel/user sends to `zoho cliq send`, routes replies through `zoho cliq reply`, uses `--chat-id` thread routing when thread ids are present, returns message ids when present, and preserves classified/redacted adapter errors. Fake `zoho` runtime coverage verifies direct send, chat send, reply routing, thread-id routing, command arguments, and delivery metadata."
   - "2026-05-05T03:45:52Z cliq-channel-404 completed: `src/zoho-cli.ts` now runs `zoho cliq ...` via `runPluginCommandWithTimeout`, parses JSON stdout, injects account/config/env SecretRefs, redacts token/password/webhook diagnostics, classifies auth/scope/unsupported/invalid-json/timeout/missing-command/generic failures, and extracts message ids from send responses for the outbound handoff; fake `zoho` runtime tests cover success, env injection, redaction, send arg construction, auth/scope/unsupported/invalid-json/empty/timeout/missing-command paths."
-  - "2026-05-05T03:04:27Z cliq-channel-414 completed: added `src/session.ts` for account/network/chat/thread-aware Cliq session grammar, parent conversation candidates, explicit target parsing, thread-aware outbound routes, shared mention policy delegation with reply/quote/bot-thread implicit facts, authorized command-bypass boundaries, and native `approvalCapability` metadata."
-  - "2026-05-05T00:20:00Z cliq-channel-403 completed: runtime config/schema now includes `groupPolicy`, `groupAllowFrom`, `requireMention`, `employeeMode`, and `workScopes`; `src/security.ts` enforces DM pairing/allowlist, group allowlist, mention-required decisions, and unsafe-policy audit warnings; `src/employee-policy.ts` blocks chat-originated debug, install, config-write, secret-read, shell/system, and policy-bypass requests before dispatch."
-  - "2026-05-04T23:54:17Z cliq-channel-416 completed: setup wizard metadata now exposes operator setup states, env shortcut, text inputs, allowFrom handling, completion note, and disable behavior; `docs/releases/OPENCLAW_CLIQ_CHANNEL_SETUP.md` covers install, config/auth smoke, troubleshooting, disable/uninstall, and recovery."
-  - "2026-05-04T22:36:55Z cliq-channel-402 completed: `openclaw.plugin.json` and runtime `cliqChannelConfigSchema` now cover `defaultAccount/accounts`, account/config references, `network`, `cliPath`, `dmPolicy`, `allowFrom`, and `defaultTo`; setup writes env SecretRefs when `useEnv` is set and rejects plaintext token/password/secret-style inputs."
-  - "2026-05-04T22:03:50Z cliq-channel-401 completed: `integrations/openclaw-channel-cliq/` now has manifest/package metadata, setup/runtime entries, configured/auth-state probes, compiled dist runtime output, and channel skill; package-local `openclaw@2026.5.3-1` linked install + `plugins inspect zoho-cliq --json` discovers plugin `zoho-cliq` with channel `cliq`, and `plugins doctor` reports no issues."
-next_step: Start `cliq-channel-406` by building fixture-backed polling normalization and dedupe before live inbound tests.
+next_step: Start `cliq-channel-407` by adding webhook payload verification and reusing the polling normalizer/dedupe path.

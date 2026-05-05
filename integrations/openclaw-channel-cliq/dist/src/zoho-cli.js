@@ -110,6 +110,16 @@ function normalizeOptionalText(value) {
     const text = String(value).trim();
     return text || undefined;
 }
+function normalizePositiveInt(value, fallback) {
+    if (!Number.isFinite(value ?? Number.NaN))
+        return fallback;
+    return Math.max(1, Math.floor(value));
+}
+function normalizeNonNegativeInt(value, fallback) {
+    if (!Number.isFinite(value ?? Number.NaN))
+        return fallback;
+    return Math.max(0, Math.floor(value));
+}
 function networkArgs(account) {
     return account.network ? ["--network", account.network] : [];
 }
@@ -262,6 +272,51 @@ export function buildCliqDeliveryArgs(params) {
         text: params.text,
     });
 }
+export function buildCliqChatsArgs(params) {
+    const args = [
+        "chats",
+        "--limit",
+        String(normalizePositiveInt(params.limit, 50)),
+        ...networkArgs(params.account),
+    ];
+    if (params.unreadOnly !== false) {
+        args.push("--unread-only");
+    }
+    if (params.excludeReactedBySelf) {
+        args.push("--exclude-reacted-by-self");
+    }
+    return args;
+}
+export function buildCliqContextArgs(params) {
+    const chatId = normalizeOptionalText(params.chatId);
+    const channelId = normalizeOptionalText(params.channelId);
+    if (!chatId && !channelId) {
+        throw new Error("cliq context requires chatId or channelId");
+    }
+    const args = [
+        "context",
+        "--limit",
+        String(normalizePositiveInt(params.limit, 50)),
+        ...networkArgs(params.account),
+    ];
+    if (chatId) {
+        args.push("--chat-id", chatId);
+    }
+    if (channelId) {
+        args.push("--channel-id", channelId);
+    }
+    const messageId = normalizeOptionalText(params.messageId);
+    if (messageId) {
+        args.push("--message-id", messageId);
+    }
+    if (params.before !== undefined) {
+        args.push("--before", String(normalizeNonNegativeInt(params.before, 0)));
+    }
+    if (params.after !== undefined) {
+        args.push("--after", String(normalizeNonNegativeInt(params.after, 0)));
+    }
+    return args;
+}
 function readStringField(value, ...keys) {
     for (const key of keys) {
         const raw = value[key];
@@ -290,7 +345,63 @@ function extractCliqMessageId(payload) {
     }
     return undefined;
 }
+function extractCliqChatsRows(payload) {
+    if (Array.isArray(payload)) {
+        return payload.filter((item) => Boolean(item) && typeof item === "object" && !Array.isArray(item));
+    }
+    if (!payload || typeof payload !== "object")
+        return [];
+    const root = payload;
+    for (const key of ["chats", "data", "items", "records", "result", "results"]) {
+        const value = root[key];
+        if (Array.isArray(value)) {
+            return value.filter((item) => Boolean(item) && typeof item === "object" && !Array.isArray(item));
+        }
+        if (value && typeof value === "object" && !Array.isArray(value)) {
+            const nested = extractCliqChatsRows(value);
+            if (nested.length > 0)
+                return nested;
+        }
+    }
+    return [];
+}
+function extractCliqMessagesRows(payload) {
+    if (Array.isArray(payload))
+        return payload;
+    if (!payload || typeof payload !== "object")
+        return [];
+    const root = payload;
+    for (const key of ["messages", "data", "items", "records", "result"]) {
+        const value = root[key];
+        if (Array.isArray(value))
+            return value;
+        if (value && typeof value === "object" && !Array.isArray(value)) {
+            const nested = extractCliqMessagesRows(value);
+            if (nested.length > 0)
+                return nested;
+        }
+    }
+    return [];
+}
+function normalizeContextPayload(payload) {
+    if (!payload || typeof payload !== "object" || Array.isArray(payload)) {
+        return { messages: [] };
+    }
+    const root = payload;
+    return {
+        ...root,
+        messages: extractCliqMessagesRows(payload),
+    };
+}
 export async function sendCliqText(params) {
     const result = await runZohoCliqJson(params.account, buildCliqDeliveryArgs(params));
     return { messageId: extractCliqMessageId(result.stdout) };
+}
+export async function listCliqChats(params) {
+    const result = await runZohoCliqJson(params.account, buildCliqChatsArgs(params));
+    return { chats: extractCliqChatsRows(result.stdout) };
+}
+export async function fetchCliqContext(params) {
+    const result = await runZohoCliqJson(params.account, buildCliqContextArgs(params));
+    return normalizeContextPayload(result.stdout);
 }

@@ -2,6 +2,8 @@ import { defineChannelPluginEntry } from "openclaw/plugin-sdk/channel-core";
 import { cliqChannelConfigSchema } from "./src/config.js";
 import { CLIQ_CHANNEL_ID, CLIQ_PLUGIN_ID } from "./src/constants.js";
 import { zohoCliqPlugin } from "./src/channel.js";
+export { buildCliqInboundDedupeKey, createCliqInboundDedupeStore, evaluateCliqPollingEventSecurity, normalizeCliqContextMessages, normalizeCliqInboundMessage, normalizeCliqWatchMessages, } from "./src/inbound.js";
+export { pollCliqInboundOnce } from "./src/polling.js";
 export default defineChannelPluginEntry({
     id: CLIQ_PLUGIN_ID,
     name: "Zoho Cliq",

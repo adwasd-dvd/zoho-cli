@@ -84,7 +84,9 @@ Follow the stack from the architecture plan:
    native OpenClaw outbound adapter, maps send/reply/thread-reply through
    `sendCliqText`, preserves markdown chunking, and has fake `zoho` coverage for
    success plus classified/redacted failures)
-9. `cliq-channel-406` inbound polling fallback
+9. `cliq-channel-406` inbound polling fallback (complete; `chats` + `context`
+   polling normalizes events, skips self-authored messages, applies security,
+   and dedupes before optional dispatch)
 10. `cliq-channel-407` webhook inbound
 11. `cliq-channel-408` status/read lifecycle
 12. `cliq-channel-413` turn ledger and loop prevention
@@ -124,6 +126,12 @@ zoho cliq channel-contract --format openclaw
 
 If these helpers do not exist when plugin work begins, add the CLI helper first
 or keep a temporary plugin normalizer behind tests and mark it as temporary.
+
+Current plugin polling fallback status: `cliq-channel-406` keeps the runtime on
+the existing JSON-safe CLI path (`chats` + `context`), normalizes messages into
+the shared inbound event shape, skips self-authored messages when signaled, runs
+mention/allowlist/employee policy checks, and dedupes by
+account/network/chat/message before optional dispatch.
 
 ## AI-agent convenience checklist
 

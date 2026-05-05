@@ -373,7 +373,7 @@
 - id: cliq-channel-406
   title: implement Cliq inbound polling fallback with dedupe and normalized events
   module: openclaw_cliq_channel
-  stage: queued
+  stage: completed
   priority: high
   depends_on:
   - cliq-channel-405

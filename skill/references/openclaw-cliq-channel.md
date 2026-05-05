@@ -28,7 +28,11 @@ the OpenClaw command runner, parses JSON stdout, classifies common failures, and
 redacts stderr diagnostics. `cliq-channel-405` is complete: native outbound
 delivery now maps OpenClaw text sends/replies/thread replies to `zoho cliq send`,
 `zoho cliq reply`, and `zoho cliq thread-reply` while returning delivery
-message ids when the CLI response provides them.
+message ids when the CLI response provides them. `cliq-channel-406` is
+complete: inbound polling fallback now lists unread chats, fetches context,
+normalizes messages into account/network/chat/message-keyed events, skips
+self-authored messages, applies mention/allowlist/employee policy checks, and
+dedupes before optional dispatch.
 
 The v0.4 plugin targets OpenClaw `>=2026.5.3-1`. The upgraded global
 `OpenClaw 2026.5.3-1` host is suitable for native plugin checks; use
@@ -87,7 +91,8 @@ Human setup checkpoints:
 - `zoho` binary is detected.
 - Zoho Cliq login/scopes are valid.
 - Cliq network is selected.
-- Webhook is verified or polling fallback is intentionally enabled.
+- Webhook is verified or polling fallback is intentionally enabled; polling
+  dry-runs use `zoho cliq chats` plus `zoho cliq context`.
 - Pairing/allowlist/mention gating are enabled.
 - Scoped employee mode has a work-scope profile.
 - Test message or dry-run fixture succeeds.
@@ -99,7 +104,8 @@ Setup state codes:
 - `not_logged_in`: run `zoho login --with-cliq`.
 - `missing_scope`: re-auth and rerun `zoho cliq status --check-auth`.
 - `network_missing`: set `channels.cliq.accounts.<id>.network`.
-- `webhook_unverified`: configure webhook secret or wait for polling fallback.
+- `webhook_unverified`: configure webhook secret; polling fallback dry-runs can
+  still validate local intake normalization.
 - `allowlist_empty`: add trusted Cliq user ids to `allowFrom` and group/channel
   ids to `groupAllowFrom`.
 - `employee_scope_empty`: add a valid `workScopes.<profile>` entry.

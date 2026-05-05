@@ -16,9 +16,13 @@ This runbook is for the native OpenClaw `cliq` channel package in
   stdout, classifies common failures, and keeps diagnostics redacted.
 - Native outbound smoke testing is ready now: OpenClaw message delivery maps to
   `zoho cliq send`, `zoho cliq reply`, and `zoho cliq thread-reply`.
-- Inbound webhook or polling tests wait for `cliq-channel-406` and
-  `cliq-channel-407`.
-- Production/bidirectional testing waits for inbound runtime, loop prevention,
+- Inbound polling dry-run testing is ready now: unread chat polling uses
+  `zoho cliq chats --unread-only --exclude-reacted-by-self`, fetches context
+  with `zoho cliq context`, normalizes events, skips self-authored messages,
+  applies mention/allowlist/employee policy checks, and dedupes by
+  account/network/chat/message.
+- Inbound webhook tests wait for `cliq-channel-407`.
+- Production/bidirectional testing waits for webhook intake, loop prevention,
   and observability slices.
 
 ## Requirements
@@ -121,7 +125,7 @@ HOME="$PWD/.tmp/openclaw-home-2026.5.3-1" \
 | `not_logged_in` | Zoho auth/config is missing. | Run `zoho login --with-cliq`. |
 | `missing_scope` | Cliq scopes are incomplete. | Re-auth and rerun `zoho cliq status --check-auth`. |
 | `network_missing` | Cliq network is not set. | Set `channels.cliq.accounts.<id>.network`. |
-| `webhook_unverified` | Inbound webhook is not verified. | Configure `webhookSecret` or wait for polling fallback. |
+| `webhook_unverified` | Inbound webhook is not verified. | Configure `webhookSecret`; polling fallback dry-runs can still be tested locally. |
 | `allowlist_empty` | No trusted Cliq senders are configured. | Add trusted user ids to `allowFrom` and group/channel ids to `groupAllowFrom`. |
 | `employee_scope_empty` | Scoped employee mode has no work scope. | Add `workScopes.<profile>` or pick a valid `employeeMode.scopeProfile`. |
 
@@ -166,5 +170,5 @@ Recovery checklist:
 2. Reinstall with `openclaw plugins install ./integrations/openclaw-channel-cliq --link`.
 3. Run `openclaw plugins inspect zoho-cliq --json` and `openclaw plugins doctor`.
 4. Re-run `zoho cliq status --check-auth --network <network>`.
-5. Run only a controlled outbound smoke to one trusted target until inbound
-   runtime and loop prevention land.
+5. Run controlled outbound smoke and local inbound polling dry-runs only; wait
+   for webhook intake plus loop prevention before bidirectional production use.

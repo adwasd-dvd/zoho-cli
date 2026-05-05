@@ -117,6 +117,9 @@ Follow the stack from the architecture plan:
 18. `cliq-channel-412` compatibility maintenance (complete; matrix and repair
     workflow live in `docs/releases/OPENCLAW_CLIQ_CHANNEL_COMPATIBILITY.md`,
     with latest stable and beta early-warning checks passing)
+19. `cliq-channel-418` v0.4 RC packaging handoff (complete; RC decision,
+    evidence table, public Bot callback gate, cut steps, and non-goals live in
+    `docs/releases/OPENCLAW_CLIQ_CHANNEL_V0_4_RC_CHECKLIST.md`)
 
 Each slice should be independently testable. Prefer many small slices over one
 large plugin drop.

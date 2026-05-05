@@ -56,6 +56,8 @@ waits for a reachable tunnel or gateway URL. `cliq-channel-412` is complete:
 the host compatibility matrix and future SDK repair workflow live in
 `docs/releases/OPENCLAW_CLIQ_CHANNEL_COMPATIBILITY.md`, with `2026.5.3-1` as
 the v0.4 floor and `2026.5.4` / `2026.5.4-beta.3` passing early-warning checks.
+`cliq-channel-418` is complete: the RC decision checklist lives in
+`docs/releases/OPENCLAW_CLIQ_CHANNEL_V0_4_RC_CHECKLIST.md`.
 
 The v0.4 plugin targets OpenClaw `>=2026.5.3-1`. The upgraded global
 `OpenClaw 2026.5.3-1` host is suitable for native plugin checks; use
@@ -145,6 +147,12 @@ Compatibility runbook:
 
 ```text
 docs/releases/OPENCLAW_CLIQ_CHANNEL_COMPATIBILITY.md
+```
+
+RC checklist:
+
+```text
+docs/releases/OPENCLAW_CLIQ_CHANNEL_V0_4_RC_CHECKLIST.md
 ```
 
 Human setup checkpoints:

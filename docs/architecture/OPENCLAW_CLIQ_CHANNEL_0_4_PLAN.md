@@ -965,6 +965,18 @@ OpenClaw:
   Temp-HOME linked install/inspect/doctor checks while the v0.4 floor remains
   `>=2026.5.3-1`.
 
+### cliq-channel-418: v0.4 RC packaging handoff
+
+- Summarize included scope, green evidence, and remaining deployment blockers.
+- Add final operator checklist for public Bot callback verification, package
+  version decision, and npm artifact integrity handling.
+- Acceptance: an operator or AI maintainer can decide whether to cut a local
+  test RC, npm/GitHub RC, or defer production rollout without reading source.
+- Status: complete in
+  `docs/releases/OPENCLAW_CLIQ_CHANNEL_V0_4_RC_CHECKLIST.md`; local/operator RC
+  package is ready, and production rollout remains gated on public Bot callback
+  reachability.
+
 ## Test strategy
 
 ### Unit tests

@@ -51,6 +51,8 @@ Human setup and troubleshooting live in
 `../../docs/releases/OPENCLAW_CLIQ_CHANNEL_SETUP.md`.
 Host compatibility maintenance lives in
 `../../docs/releases/OPENCLAW_CLIQ_CHANNEL_COMPATIBILITY.md`.
+The v0.4 RC decision checklist lives in
+`../../docs/releases/OPENCLAW_CLIQ_CHANNEL_V0_4_RC_CHECKLIST.md`.
 
 ## Config example
 

@@ -19,17 +19,17 @@ cliq:
 
 openclaw_cliq_channel:
   priority: 3
-  status: in_progress
-  phase: compatibility_ready_rc_packaging_next
+  status: completed_for_rc
+  phase: rc_package_ready_external_callback_deferred
   target_release: v0.4.0
-  current_milestone: cliq-channel-418-rc-package
+  current_milestone: cliq-channel-418-rc-package-complete
   blockers:
     - "deferred: public Zoho Cliq Bot callback verification requires a reachable tunnel/gateway URL"
 
 crm:
   priority: 4
-  status: completed
-  phase: phase_1_read_only_complete_v0_5_followup_deferred
+  status: in_progress
+  phase: v0_5_sdk_evaluation
   target_release: v0.5.0
-  current_milestone: crm-v0.5-expansion
+  current_milestone: crm-003-sdk-evaluation
   blockers: []

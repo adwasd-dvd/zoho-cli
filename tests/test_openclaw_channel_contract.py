@@ -78,6 +78,7 @@ def test_openclaw_cliq_channel_docs_point_to_locked_contract():
     docs = [
         read("docs/architecture/OPENCLAW_CLIQ_CHANNEL_0_4_PLAN.md"),
         read("docs/releases/OPENCLAW_CLIQ_CHANNEL_COMPATIBILITY.md"),
+        read("docs/releases/OPENCLAW_CLIQ_CHANNEL_V0_4_RC_CHECKLIST.md"),
         read("integrations/openclaw/CLIQ_CHANNEL_DEVELOPMENT_GUIDE.md"),
         read("skill/references/openclaw-cliq-channel.md"),
     ]
@@ -109,3 +110,24 @@ def test_openclaw_cliq_channel_compatibility_runbook_has_repair_contract():
 
     for marker in required:
         assert marker in runbook
+
+
+def test_openclaw_cliq_channel_rc_checklist_has_cut_contract():
+    checklist = read("docs/releases/OPENCLAW_CLIQ_CHANNEL_V0_4_RC_CHECKLIST.md")
+
+    required = [
+        "RC package ready, deployment callback still external",
+        "cliq-channel-418",
+        "live_verification_pending",
+        "Public Bot callback",
+        "ZOHO_CLIQ_PUBLIC_WEBHOOK_URL",
+        "0.4.0-rc.1",
+        "expectedIntegrity",
+        "1777 passed in 49.10s",
+        "token_refresh_rate_limited",
+        "skip_deferred",
+        "Do not add parallel `cliq_send`",
+    ]
+
+    for marker in required:
+        assert marker in checklist

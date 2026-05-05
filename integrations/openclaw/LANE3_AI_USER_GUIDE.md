@@ -66,7 +66,7 @@ Current implementation-only delta:
 - `cliq-210` also moved productivity/platform list command bodies (`events`, `reminders`, `meetings`, `databases`) into `zoho_cli/commands/cliq_productivity.py`; AI-user command patterns are unchanged.
 - `cliq-210` also moved platform-extension list command bodies (`widgets`, `map-tickers`, `custom-domains`, `custom-emails`) into `zoho_cli/commands/cliq_platform_extensions.py`; AI-user command patterns are unchanged.
 - `cliq-210` also moved channel/member/chat-control command bodies (`members`, channel lifecycle/member commands, `leave`, `mute`, `unmute`, `pin`, `unpin`, `pinned`) into `zoho_cli/commands/cliq_channel_management.py`; AI-user command patterns are unchanged.
-- v0.4 native OpenClaw Cliq channel now has config/setup/security/session/CLI-adapter/outbound delivery, fixture-backed inbound polling normalization/dedupe, Bot webhook receive/auth/normalize intake at `/webhooks/cliq`, status/read lifecycle handling, turn-ledger loop prevention, native status/capability/routing diagnostics, AI-facing troubleshooting guidance, native dispatch, redacted observability/privacy diagnostics, the `ops/scripts/openclaw_cliq_live_smoke.sh` gate, and `docs/releases/OPENCLAW_CLIQ_CHANNEL_COMPATIBILITY.md`; public Bot callback verification still requires a reachable tunnel/gateway URL and CRM expansion moves to v0.5.
+- v0.4 native OpenClaw Cliq channel now has config/setup/security/session/CLI-adapter/outbound delivery, fixture-backed inbound polling normalization/dedupe, Bot webhook receive/auth/normalize intake at `/webhooks/cliq`, status/read lifecycle handling, turn-ledger loop prevention, native status/capability/routing diagnostics, AI-facing troubleshooting guidance, native dispatch, redacted observability/privacy diagnostics, the `ops/scripts/openclaw_cliq_live_smoke.sh` gate, `docs/releases/OPENCLAW_CLIQ_CHANNEL_COMPATIBILITY.md`, and `docs/releases/OPENCLAW_CLIQ_CHANNEL_V0_4_RC_CHECKLIST.md`; public Bot callback verification still requires a reachable tunnel/gateway URL and CRM expansion moves to v0.5.
 
 ## Required behavior support after lane3 sync
 
@@ -92,6 +92,10 @@ After sync, ensure the AI user follows:
   - read `docs/releases/OPENCLAW_CLIQ_CHANNEL_COMPATIBILITY.md` before changing host/plugin API floors
   - keep `>=2026.5.3-1` as the v0.4 floor unless a newer OpenClaw SDK is genuinely required
   - patch plugin adapter/setup metadata before changing Zoho CLI command contracts
+- native channel RC decisions:
+  - read `docs/releases/OPENCLAW_CLIQ_CHANNEL_V0_4_RC_CHECKLIST.md`
+  - keep local/operator RC package readiness separate from production rollout readiness
+  - require a reachable public Bot callback URL before claiming production incident readiness
 - native channel lifecycle smoke:
   - accepted webhook/polling events should produce lifecycle metadata and visible status reactions
   - read-ack/status failures are diagnostics and must not dispatch new inbound work

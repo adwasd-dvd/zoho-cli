@@ -370,8 +370,9 @@ assert(status.diagnostics.implementedSlices.includes("cliq-channel-417"));
 assert(status.diagnostics.implementedSlices.includes("cliq-channel-415"));
 assert(status.diagnostics.implementedSlices.includes("cliq-channel-411"));
 assert(status.diagnostics.implementedSlices.includes("cliq-channel-412"));
+assert(status.diagnostics.implementedSlices.includes("cliq-channel-418"));
 assert(status.diagnostics.smokeChecks.includes("ops/scripts/openclaw_cliq_live_smoke.sh"));
-assert.equal(status.diagnostics.nextSlice, "v0.4-rc-packaging");
+assert.equal(status.diagnostics.nextSlice, "public-bot-callback-verification");
 
 const capabilities = resolveCliqChannelCapabilitySummary({ cfg });
 assert.equal(capabilities.nativeMessageSurface, true);

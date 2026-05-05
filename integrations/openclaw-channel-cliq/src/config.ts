@@ -704,8 +704,9 @@ export function describeCliqAccountDiagnostics(account: CliqResolvedAccount) {
       "cliq-channel-415",
       "cliq-channel-411",
       "cliq-channel-412",
+      "cliq-channel-418",
     ],
-    nextSlice: "v0.4-rc-packaging",
+    nextSlice: "public-bot-callback-verification",
   };
 }
 

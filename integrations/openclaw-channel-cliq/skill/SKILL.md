@@ -47,6 +47,9 @@ Use this skill when operating through the native OpenClaw Zoho Cliq channel.
 - For host/plugin API changes, follow
   `docs/releases/OPENCLAW_CLIQ_CHANNEL_COMPATIBILITY.md` and patch OpenClaw
   adapter/setup metadata before changing Zoho CLI command contracts.
+- For v0.4 RC decisions, follow
+  `docs/releases/OPENCLAW_CLIQ_CHANNEL_V0_4_RC_CHECKLIST.md` and keep
+  production rollout blocked until public Bot callback reachability is verified.
 
 ## Required local readiness
 

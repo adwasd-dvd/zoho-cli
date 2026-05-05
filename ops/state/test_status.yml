@@ -1,16 +1,20 @@
-last_run_at: "2026-05-05T09:31:51Z"
+last_run_at: "2026-05-05T09:42:24Z"
 last_result: passing
-current_focus: cliq-channel-412-compatibility-maintenance-20260505T092712Z
+current_focus: cliq-channel-418-rc-packaging-20260505T094224Z
 suites:
   unit:
     status: passing
     notes:
+      - "cliq-channel-418 v0.4 RC packaging completed at 2026-05-05T09:42:24Z"
+      - "added `docs/releases/OPENCLAW_CLIQ_CHANNEL_V0_4_RC_CHECKLIST.md` with RC decision, included scope, green evidence table, public Bot callback deployment gate, RC cut steps, integrity guidance, and non-goals"
+      - "updated channel diagnostics so implemented slices include `cliq-channel-418` and `nextSlice=public-bot-callback-verification`"
+      - "./.venv/bin/python -m pytest -q tests/test_openclaw_channel_skeleton.py tests/test_openclaw_channel_contract.py tests/test_lane3_docs.py tests/test_markdown_update.py -> 33 passed in 10.67s"
       - "cliq-channel-412 compatibility maintenance completed at 2026-05-05T09:27:12Z"
       - "added `docs/releases/OPENCLAW_CLIQ_CHANNEL_COMPATIBILITY.md` with host matrix, revalidation commands, SDK repair workflow, and AI triage rules"
       - "refreshed SDK contract/docs for npm `openclaw@latest` `2026.5.4` and beta `2026.5.4-beta.3` while keeping v0.4 floor `>=2026.5.3-1`"
       - "Temp-HOME `npx -y openclaw@2026.5.4` linked install + inspect + doctor -> plugin loaded, channelIds [`cliq`], no plugin issues"
       - "Temp-HOME `npx -y openclaw@2026.5.4-beta.3` linked install + inspect + doctor -> plugin loaded, channelIds [`cliq`], no plugin issues"
-      - "make ci -> ruff format/check clean + pytest `1776 passed in 48.78s`"
+      - "make ci -> ruff format/check clean + pytest `1777 passed in 49.10s`"
       - "cliq-channel-411 live gate harness completed at 2026-05-05T09:08:31Z"
       - "added `ops/scripts/openclaw_cliq_live_smoke.sh` for redacted OpenClaw inspect/doctor/status/capabilities, local webhook missing-secret/authenticated-non-dispatch/authenticated-deny checks, safe polling probes, native polling adapter checks, and optional public webhook reachability"
       - "fixed Cliq inbound/webhook normalization so `message.id` is not copied into `chatId`; channel ids still normalize from `chat.channelId`"

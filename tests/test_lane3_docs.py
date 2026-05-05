@@ -47,6 +47,7 @@ def test_lane3_required_paths_exist() -> None:
         REPO_ROOT / "integrations" / "openclaw-channel-cliq" / "skill" / "SKILL.md",
         REPO_ROOT / "docs" / "releases" / "OPENCLAW_CLIQ_CHANNEL_SETUP.md",
         REPO_ROOT / "docs" / "releases" / "OPENCLAW_CLIQ_CHANNEL_COMPATIBILITY.md",
+        REPO_ROOT / "docs" / "releases" / "OPENCLAW_CLIQ_CHANNEL_V0_4_RC_CHECKLIST.md",
     ]
 
     for path in required:

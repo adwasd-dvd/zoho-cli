@@ -48,12 +48,32 @@ Use this skill when operating through the native OpenClaw Zoho Cliq channel.
 ## Required local readiness
 
 ```bash
+openclaw plugins inspect zoho-cliq --json
+openclaw channels status --channel cliq --deep
+openclaw channels capabilities --channel cliq
 zoho cliq status --check-auth --network <network>
 zoho cliq capabilities --network <network>
 ```
 
 If readiness fails, report the failing `zoho-cli` command, exit code,
 classified error kind, and redacted stderr summary.
+
+## Troubleshooting order
+
+1. Start with native OpenClaw status/capability/routing diagnostics.
+2. Fix setup states before sending or dispatching: `host_too_old`,
+   `zoho_missing`, `not_logged_in`, `missing_scope`, `network_missing`,
+   `webhook_unverified`, `allowlist_empty`, and `employee_scope_empty`.
+3. Treat `webhook_secret_missing` as a SecretRef/env configuration blocker; use
+   `ZOHO_CLIQ_WEBHOOK_SECRET` and rotate any value exposed in chat or
+   screenshots.
+4. Treat `native_agent_dispatch_pending` and `observability_bundle_pending` as
+   pre-production blockers. Controlled smoke is allowed, but do not claim
+   production bidirectional agent replies are ready.
+5. For unresolved routes, prefer explicit `channel:<id>`, `user:<id>`, or
+   `cliq:channel:<id>:thread:<thread_id>` targets.
+6. For repeated Zoho-side `not_supported` or `inactive_appaccount_user` errors,
+   report `skip_deferred` and keep unrelated channel work moving.
 
 ## Setup states
 

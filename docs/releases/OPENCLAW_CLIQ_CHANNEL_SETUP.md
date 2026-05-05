@@ -187,6 +187,27 @@ Deluge help (`https://www.zoho.com/deluge/help/`).
 | `allowlist_empty` | No trusted Cliq senders are configured. | Add trusted user ids to `allowFrom` and group/channel ids to `groupAllowFrom`. |
 | `employee_scope_empty` | Scoped employee mode has no work scope. | Add `workScopes.<profile>` or pick a valid `employeeMode.scopeProfile`. |
 
+## AI diagnostic prompts
+
+When an AI agent is operating the channel, it should inspect diagnostics in this
+order before trying ad hoc Cliq API calls:
+
+1. `openclaw plugins inspect zoho-cliq --json`
+2. `openclaw channels status --channel cliq --deep`
+3. `openclaw channels capabilities --channel cliq`
+4. routing diagnostics for the intended `channel:<id>`, `user:<id>`, or
+   `cliq:channel:<id>:thread:<thread_id>` target
+5. `zoho cliq status --check-auth --network <network>`
+
+Diagnostic blockers that are not setup-state names:
+
+| Blocker | Meaning | AI action |
+| --- | --- | --- |
+| `webhook_secret_missing` | No SecretRef/env webhook secret is configured. | Set `webhookSecret` to `ZOHO_CLIQ_WEBHOOK_SECRET`, test a controlled Bot POST, and rotate exposed values. |
+| `native_agent_dispatch_pending` | Full agent turn dispatch is not production-ready yet. | Run only controlled smoke; do not claim production bidirectional agent replies are ready. |
+| `observability_bundle_pending` | Production incident diagnostics are not complete yet. | Keep reports redacted and wait for the observability slice before production rollout. |
+| repeated `not_supported` / `inactive_appaccount_user` | Zoho-side endpoint availability is blocking a specific live check. | Mark the check `skip_deferred` and continue unrelated local channel work. |
+
 ## Security smoke
 
 Before live traffic, keep these defaults unless an operator explicitly accepts

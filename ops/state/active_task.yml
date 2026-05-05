@@ -1,26 +1,27 @@
-id: cliq-channel-410
-title: align AI-facing docs skill references CLI help and troubleshooting for native Cliq channel
+id: cliq-channel-417
+title: wire accepted Cliq events into native OpenClaw agent turn dispatch
 module: openclaw_cliq_channel
 stage: ready
 status: ready
 owner: coder
-updated_at: '2026-05-05T07:47:01Z'
+updated_at: '2026-05-05T08:01:29Z'
 execution_mode: turbo_20x
 throughput_policy_ref: ops/state/execution_policy.yml
 success_criteria:
-  - align `skill/SKILL.md` and `skill/references/openclaw-cliq-channel.md` with implemented native channel behavior
-  - align `integrations/openclaw/*` AI guides and troubleshooting copy with setup/status/capability/routing diagnostics
-  - ensure docs and help guidance do not imply unavailable production bidirectional agent dispatch before native dispatch and observability land
-  - add or update docs/grep coverage for native Cliq channel AI-facing instructions as needed
-  - keep OpenClaw setup/runtime/CLI metadata aligned with the implemented channel behavior
+  - discover the current OpenClaw native inbound/agent dispatch API without adding custom `cliq_send` or custom approval tools
+  - connect accepted webhook and polling events to native OpenClaw agent turn dispatch exactly once after security, lifecycle, and turn-ledger gates pass
+  - preserve duplicate/active/dead-letter loop prevention and keep denied or unsupported events as terminal diagnostics
+  - route agent replies back through the native Cliq outbound adapter with account/network/chat/thread session context
+  - add fake host/runtime coverage for trusted webhook dispatch, trusted polling dispatch, denied events, duplicate events, and dispatch failure
   - update Lane 2 docs, Lane 3 skill/docs, and Lane 1 state/progress docs
   - keep package-local `npm run typecheck`, `npm run build`, OpenClaw linked install, `plugins inspect zoho-cliq --json`, `plugins doctor`, focused tests, and `make ci` green
 next_if_done: complete cliq-channel-415 observability privacy retention rate-limit diagnostics and npm integrity hardening.
 progress:
+  - "2026-05-05T08:01:29Z cliq-channel-410 completed: root skill, native channel skill, Lane 3 guide, setup runbook, development guide, README, and lane3 docs tests now map setup states, diagnostic blockers, explicit route formats, and production blockers to AI-safe next actions. The next active slice is corrected to `cliq-channel-417` native agent turn dispatch before observability, so the channel line stays focused on Discord-like native behavior."
   - "2026-05-05T07:47:01Z cliq-channel-409 completed: `src/status.ts` exports native status/capability/routing diagnostics, setup status lines now expose webhook/polling/lifecycle/turn-ledger readiness, channel capability prompts describe Bot webhook/polling intake and turn-ledger protection, and fake-runtime coverage verifies controlled-smoke readiness plus normalized route/session facts without leaking secrets or message bodies."
   - "2026-05-05T07:31:57Z cliq-channel-413 completed: `src/turn-ledger.ts` adds handler-scoped in-memory turn ownership for accepted webhook and polling events, with duplicate completed-event skips, same-conversation active burst coalescing, bounded failed-turn dead-lettering, safe idempotency/correlation metadata, and turn summaries returned through webhook/polling results. Fake-runtime coverage verifies completed duplicate suppression, active burst coalescing, dispatch-failure dead-letter, and dead-letter replay blocking."
   - "2026-05-05T07:21:02Z cliq-channel-408 completed: `src/lifecycle.ts` wraps accepted native webhook and polling events with `received -> thinking -> mark-read -> done` lifecycle handling, attempts `failed` on dispatch errors, records status/read failures as terminal diagnostics, and reuses the existing JSON-safe `zoho` process adapter through new `status-react` and `mark-read` helpers. Webhook responses and polling results now expose lifecycle metadata, with fake-runtime coverage for success, unsupported read-ack degradation, and dispatch failure."
   - "2026-05-05T06:20:03Z cliq-channel-407 completed: `src/webhook.ts` registers exact OpenClaw plugin HTTP routes such as `/webhooks/cliq`, verifies `X-Cliq-Webhook-Secret` via SecretRef/env config, filters multi-account candidates by webhook path, parses JSON/form/Deluge payload bodies, accepts Message/Mention/Participation/Context handlers, ignores unrelated handler kinds, normalizes to the same inbound event shape as polling, and applies dedupe plus allowlist/mention/employee security gates before the optional dispatch callback."
   - "2026-05-05T04:58:36Z cliq-channel-406 completed: `src/zoho-cli.ts` now wraps `zoho cliq chats --unread-only --exclude-reacted-by-self` and `zoho cliq context`; `src/inbound.ts` normalizes Cliq payloads into account/network/chat/message-keyed events, skips self-authored messages when signaled, detects mentions, evaluates existing allowlist/employee policy gates, and provides dedupe helpers; `src/polling.ts` runs one polling pass with optional dispatch callback. Fake `zoho` runtime coverage verifies accepted channel/direct messages, mention-denied group messages, duplicate suppression, and self-message skipping."
   - "2026-05-05T04:03:04Z cliq-channel-405 completed: `src/channel.ts` now exposes the native OpenClaw outbound adapter with `deliveryMode=direct` and markdown chunking; outbound text delivery resolves account config, calls `sendCliqText`, maps direct/channel/user sends to `zoho cliq send`, routes replies through `zoho cliq reply`, uses `--chat-id` thread routing when thread ids are present, returns message ids when present, and preserves classified/redacted adapter errors. Fake `zoho` runtime coverage verifies direct send, chat send, reply routing, thread-id routing, command arguments, and delivery metadata."
-next_step: Start `cliq-channel-410` by aligning AI-facing docs, skill references, CLI help, and troubleshooting around the implemented native Cliq channel surfaces.
+next_step: Start `cliq-channel-417` by wiring accepted webhook/polling events into OpenClaw native agent turn dispatch.

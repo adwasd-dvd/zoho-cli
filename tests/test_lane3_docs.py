@@ -160,3 +160,32 @@ def test_lane3_examples_use_zoho_binary_not_legacy_command_forms() -> None:
             assert not pattern.search(text), (
                 f"legacy command pattern {pattern.pattern!r} found in {path}"
             )
+
+
+def test_native_cliq_channel_ai_troubleshooting_contract_present() -> None:
+    docs = [
+        SKILL_ROOT / "SKILL.md",
+        SKILL_ROOT / "references" / "openclaw-cliq-channel.md",
+        REPO_ROOT / "integrations" / "openclaw" / "LANE3_AI_USER_GUIDE.md",
+        REPO_ROOT / "integrations" / "openclaw" / "CLIQ_CHANNEL_DEVELOPMENT_GUIDE.md",
+        REPO_ROOT / "integrations" / "openclaw-channel-cliq" / "skill" / "SKILL.md",
+        REPO_ROOT / "docs" / "releases" / "OPENCLAW_CLIQ_CHANNEL_SETUP.md",
+    ]
+    combined = "\n".join(path.read_text(encoding="utf-8") for path in docs)
+
+    for marker in [
+        "openclaw plugins inspect zoho-cliq --json",
+        "openclaw channels status --channel cliq --deep",
+        "openclaw channels capabilities --channel cliq",
+        "zoho cliq status --check-auth --network <network>",
+        "webhook_secret_missing",
+        "ZOHO_CLIQ_WEBHOOK_SECRET",
+        "native_agent_dispatch_pending",
+        "observability_bundle_pending",
+        "do not claim production bidirectional agent replies are ready",
+        "channel:<id>",
+        "user:<id>",
+        "cliq:channel:<id>:thread:<thread_id>",
+        "skip_deferred",
+    ]:
+        assert marker in combined

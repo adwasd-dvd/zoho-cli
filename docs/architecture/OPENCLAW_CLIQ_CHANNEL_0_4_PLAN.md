@@ -898,9 +898,30 @@ OpenClaw:
 ### cliq-channel-410: AI-facing docs and skill alignment
 
 - Update README, Lane 3 guide, skill references, and CLI help guidance.
+  Complete with the root skill, native channel skill, Lane 3 guide, development
+  guide, setup runbook, README, and tests aligned on the diagnostic-first
+  workflow.
 - Add troubleshooting prompts for missing login/scopes/network/webhook secret.
+  Complete with an AI troubleshooting ladder for `not_logged_in`,
+  `missing_scope`, `network_missing`, `webhook_unverified`,
+  `webhook_secret_missing`, `allowlist_empty`, `employee_scope_empty`,
+  `target_unresolved`, `native_agent_dispatch_pending`,
+  `observability_bundle_pending`, and repeated Zoho-side `not_supported` /
+  `inactive_appaccount_user` blockers.
 - Acceptance: an OpenClaw AI agent can install, diagnose, and use the channel
-  from docs without reading source code.
+  from docs without reading source code. Complete for controlled smoke and
+  diagnostics; docs explicitly forbid claiming production bidirectional replies
+  until native dispatch and observability land.
+
+### cliq-channel-417: Native agent turn dispatch
+
+- Wire accepted webhook and polling events into OpenClaw's native agent turn
+  dispatch surface instead of fixture-only optional callbacks.
+- Preserve the existing security gates, lifecycle wrapper, turn ledger,
+  dead-letter behavior, and native outbound reply routing.
+- Acceptance: a trusted Bot webhook event and polling event can start exactly
+  one OpenClaw agent turn and route the reply back through the Cliq outbound
+  adapter, while duplicate/denied/dead-letter events fail closed.
 
 ### cliq-channel-415: Observability, privacy, and supply-chain hardening
 

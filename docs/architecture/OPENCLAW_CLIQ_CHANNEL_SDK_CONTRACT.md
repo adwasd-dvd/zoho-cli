@@ -462,6 +462,14 @@ approval surfaces while explicitly keeping custom send tools disabled. Routing
 diagnostics normalize Cliq targets and return account/network/chat/thread-aware
 session routes without exposing message bodies or secrets.
 
+`cliq-channel-410` aligns AI-facing documentation around those diagnostics.
+Agents must inspect native status/capability/routing summaries before ad hoc
+CLI probing, map setup states and diagnostic blockers to one safe next action,
+use explicit `channel:<id>` / `user:<id>` / thread targets, treat repeated
+Zoho-side endpoint gaps as `skip_deferred`, and avoid claiming production
+bidirectional replies while `native_agent_dispatch_pending` or
+`observability_bundle_pending` remains true.
+
 ## Compatibility rule
 
 Before every plugin implementation slice:

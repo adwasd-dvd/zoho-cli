@@ -342,7 +342,8 @@ assert.equal(status.diagnostics.productionReadiness, "pending_native_dispatch_ob
 assert(status.statusLines.some((line) => line.includes("turn ledger")));
 assert(status.diagnostics.implementedSlices.includes("cliq-channel-413"));
 assert(status.diagnostics.implementedSlices.includes("cliq-channel-409"));
-assert.equal(status.diagnostics.nextSlice, "cliq-channel-410");
+assert(status.diagnostics.implementedSlices.includes("cliq-channel-410"));
+assert.equal(status.diagnostics.nextSlice, "cliq-channel-417");
 
 const capabilities = resolveCliqChannelCapabilitySummary({ cfg });
 assert.equal(capabilities.nativeMessageSurface, true);

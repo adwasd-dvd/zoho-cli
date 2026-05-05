@@ -690,8 +690,9 @@ export function describeCliqAccountDiagnostics(account: CliqResolvedAccount) {
       "cliq-channel-408",
       "cliq-channel-413",
       "cliq-channel-409",
+      "cliq-channel-410",
     ],
-    nextSlice: "cliq-channel-410",
+    nextSlice: "cliq-channel-417",
   };
 }
 

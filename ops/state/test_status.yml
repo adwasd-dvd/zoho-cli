@@ -1,10 +1,27 @@
-last_run_at: "2026-05-05T07:54:15Z"
+last_run_at: "2026-05-05T08:05:01Z"
 last_result: passing
-current_focus: cliq-channel-409-native-ux-diagnostics-20260505T075415Z
+current_focus: cliq-channel-410-ai-troubleshooting-alignment-20260505T080501Z
 suites:
   unit:
     status: passing
     notes:
+      - "cliq-channel-410 AI troubleshooting alignment completed at 2026-05-05T08:05:01Z"
+      - "updated root skill, native channel skill, Lane 3 guide, setup runbook, development guide, README, SDK contract, roadmap, and ops state so AI agents use native diagnostics first and map setup/diagnostic blockers to safe next actions"
+      - "added lane3 docs coverage for OpenClaw status/capabilities checks, `webhook_secret_missing`, `ZOHO_CLIQ_WEBHOOK_SECRET`, explicit route formats, production-bidirectional guardrails, and `skip_deferred` endpoint-limit handling"
+      - "corrected the next active channel slice to `cliq-channel-417` native agent turn dispatch before observability/privacy hardening"
+      - "npm --prefix integrations/openclaw-channel-cliq run typecheck -> passed"
+      - "npm --prefix integrations/openclaw-channel-cliq run build -> passed"
+      - "./.venv/bin/python -m pytest -q tests/test_openclaw_channel_skeleton.py tests/test_openclaw_channel_contract.py tests/test_lane3_docs.py tests/test_markdown_update.py -> 29 passed in 11.35s"
+      - "package-local OpenClaw linked install in temp HOME -> passed"
+      - "package-local OpenClaw plugins inspect zoho-cliq --json -> plugin status loaded, channelIds [`cliq`], diagnostics []"
+      - "package-local OpenClaw plugins doctor -> No plugin issues detected."
+      - "global OpenClaw plugins inspect zoho-cliq --json -> plugin status loaded, channelIds [`cliq`], diagnostics []"
+      - "global OpenClaw plugins doctor -> No plugin issues detected."
+      - "node JSON parse for package/manifest -> PLUGIN_JSON_OK"
+      - "ruby YAML parse for ops/workflow state -> YAML_PARSE_OK"
+      - "git diff --check -> clean"
+      - "make ci -> ruff format/check clean + pytest `1773 passed in 48.65s`"
+      - "post-README/next-slice focused recheck -> openclaw channel/lane3/markdown tests `29 passed in 9.43s`; YAML parse and git diff --check stayed clean"
       - "cliq-channel-409 native UX diagnostics completed at 2026-05-05T07:54:15Z"
       - "added `src/status.ts` with OpenClaw-native status, capability, and routing diagnostic summaries for account/setup state, webhook/polling/lifecycle/turn-ledger readiness, controlled-smoke readiness, production blockers, native message/approval facts, and normalized session routes"
       - "expanded setup wizard status lines and channel prompt capabilities so Bot webhook/polling intake, status/read lifecycle, and turn-ledger protection are visible to operator/agent surfaces"

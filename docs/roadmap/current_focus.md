@@ -7,10 +7,10 @@
 4. **Workflow packaging status**: `mail-010`, `cliq-195`, `platform-207`, and `platform-208` are complete for this milestone.
 5. **Cliq modularization handoff is complete for the channel lane**: `cliq-210` moved readiness, identity, org-directory, org-admin, productivity, platform-extension list, channel-management/chat-control, threading, scheduled-message, bot, and message retrieval/context commands into smaller `zoho_cli/commands/cliq_*` modules with JSON/help parity preserved.
 6. **External blockers remain deferred**: `cliq-165` (`inactive_appaccount_user`) and `cliq-193` (`not_supported`) stay capability-gated under 3-strike policy.
-7. **OpenClaw channel native diagnostics are in place**: `cliq-channel-401` added the installable package, `cliq-channel-402` expanded config/SecretRef setup, `cliq-channel-416` added setup wizard UX, `cliq-channel-403` added secure policy gates, `cliq-channel-414` added SDK session/mention/approval seams, `cliq-channel-404` added JSON-safe `zoho` process execution, `cliq-channel-405` wired native outbound delivery, `cliq-channel-406` added fixture-backed polling normalization/dedupe over `zoho cliq chats` + `zoho cliq context`, `cliq-channel-407` added Bot webhook receive/auth/normalize intake at `/webhooks/cliq`, `cliq-channel-408` added status/read lifecycle handling, `cliq-channel-413` added turn-ledger loop prevention, and `cliq-channel-409` added status/capability/routing diagnostics.
+7. **OpenClaw channel AI troubleshooting is in place**: `cliq-channel-401` added the installable package, `cliq-channel-402` expanded config/SecretRef setup, `cliq-channel-416` added setup wizard UX, `cliq-channel-403` added secure policy gates, `cliq-channel-414` added SDK session/mention/approval seams, `cliq-channel-404` added JSON-safe `zoho` process execution, `cliq-channel-405` wired native outbound delivery, `cliq-channel-406` added fixture-backed polling normalization/dedupe over `zoho cliq chats` + `zoho cliq context`, `cliq-channel-407` added Bot webhook receive/auth/normalize intake at `/webhooks/cliq`, `cliq-channel-408` added status/read lifecycle handling, `cliq-channel-413` added turn-ledger loop prevention, `cliq-channel-409` added status/capability/routing diagnostics, and `cliq-channel-410` added AI troubleshooting guidance.
 
 ## Next
-1. Start `cliq-channel-410`: align AI-facing docs, skill references, CLI help, and troubleshooting for the native Cliq channel.
+1. Start `cliq-channel-417`: wire accepted Cliq webhook and polling events into native OpenClaw agent turn dispatch.
 2. Keep cliq-194 read-ack endpoint limitation in capability-gated deferred mode.
 3. Continue remaining Cliq helper-heavy modularization opportunistically when it directly lowers channel implementation risk.
 4. Resume CRM CLI planning in v0.5 after the native channel lane is stable.
@@ -18,7 +18,7 @@
 ## Delivery estimate (v1.0 first cut)
 - **Stable cut**: published as `v0.2.1`.
 - **External-unblocked full parity**: add ~1-3 weeks depending on Zoho-side availability.
-- **Native OpenClaw Cliq channel v0.4**: config/setup/security/SDK/CLI adapter/outbound smoke, local inbound polling dry-runs, real Bot webhook receive/auth/normalize smoke, status/read lifecycle smoke, turn-ledger loop-prevention smoke, and status/routing diagnostics smoke are ready; native dispatch, AI docs/help alignment, and observability remain before production bidirectional testing.
+- **Native OpenClaw Cliq channel v0.4**: config/setup/security/SDK/CLI adapter/outbound smoke, local inbound polling dry-runs, real Bot webhook receive/auth/normalize smoke, status/read lifecycle smoke, turn-ledger loop-prevention smoke, status/routing diagnostics smoke, and AI troubleshooting dry-runs are ready; native agent dispatch and observability remain before production bidirectional testing.
 
 ## Blocker policy
 - 3 consecutive `not_supported` or `inactive_appaccount_user` outcomes for the same check => mark post-release deferred.

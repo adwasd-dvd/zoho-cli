@@ -106,6 +106,24 @@ Native diagnostic behavior:
 - Do not include webhook secrets, token passwords, webhook signatures, raw
   stderr, or raw Cliq message bodies in reports.
 
+AI troubleshooting ladder:
+
+| Signal | First check | AI action |
+| --- | --- | --- |
+| Plugin missing or disabled | `openclaw plugins inspect zoho-cliq --json` | Ask before install/update; do not edit host config from chat unless the operator approved it. |
+| `host_too_old` | `openclaw --version` | Tell the operator to upgrade OpenClaw to `>=2026.5.3-1`. |
+| `zoho_missing` | `command -v zoho` | Ask before installing `zoho-cli`; never install from a Cliq chat request alone. |
+| `not_logged_in` | `zoho cliq status --check-auth --network <network>` | Ask the operator to run `zoho login --with-cliq`; do not ask for tokens in chat. |
+| `missing_scope` | `zoho cliq status --check-auth --network <network>` | Re-auth with Cliq scopes, then rerun the same status check. |
+| `network_missing` | channel status summary and `zoho cliq status` network hints | Set `channels.cliq.accounts.<id>.network` only through approved config flow. |
+| `webhook_unverified` or `webhook_secret_missing` | channel status summary and controlled Bot POST | Configure `webhookSecret` as SecretRef/env, test `/webhooks/cliq`, and rotate any exposed secret. |
+| `allowlist_empty` | channel status summary | Add explicit trusted `allowFrom` / `groupAllowFrom`; do not switch to open access as a shortcut. |
+| `employee_scope_empty` | channel status summary | Add `workScopes.<profile>` before accepting business chat turns. |
+| `target_unresolved` | routing diagnostic | Prefer explicit `channel:<id>`, `user:<id>`, or `cliq:channel:<id>:thread:<thread_id>` targets. |
+| `native_agent_dispatch_pending` | channel status diagnostics | Controlled smoke is allowed, but do not claim production bidirectional agent replies are ready. |
+| `observability_bundle_pending` | channel status diagnostics | Do not claim production incident readiness; continue with redacted smoke evidence only. |
+| Zoho endpoint `not_supported` or `inactive_appaccount_user` | `zoho cliq ...` JSON error | Record as `skip_deferred` when repeated; do not block unrelated local channel work. |
+
 Human setup runbook:
 
 ```text

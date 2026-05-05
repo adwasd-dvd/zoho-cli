@@ -100,10 +100,13 @@ Follow the stack from the architecture plan:
 13. `cliq-channel-409` OpenClaw native UX (complete; `src/status.ts` exports
     status, capability, and routing diagnostics; setup status lines now expose
     webhook, polling, lifecycle, and turn-ledger readiness)
-14. `cliq-channel-410` AI-facing docs and skill alignment
-15. `cliq-channel-415` observability, privacy, and supply-chain hardening
-16. `cliq-channel-411` live verification and release gate
-17. `cliq-channel-412` compatibility maintenance
+14. `cliq-channel-410` AI-facing docs and skill alignment (complete; root
+    skill, native channel skill, Lane 3 guide, setup runbook, and development
+    guide now map diagnostics/setup blockers to AI-safe next actions)
+15. `cliq-channel-417` native agent turn dispatch
+16. `cliq-channel-415` observability, privacy, and supply-chain hardening
+17. `cliq-channel-411` live verification and release gate
+18. `cliq-channel-412` compatibility maintenance
 
 Each slice should be independently testable. Prefer many small slices over one
 large plugin drop.
@@ -141,7 +144,8 @@ the existing JSON-safe CLI path (`chats` + `context`), `cliq-channel-407` adds
 Bot webhook intake at `/webhooks/cliq`, `cliq-channel-408` wraps accepted events
 with status/read lifecycle handling, `cliq-channel-413` wraps dispatch with a
 native turn ledger, and `cliq-channel-409` exposes native status/capability/
-routing diagnostics. Both inbound paths normalize messages into the shared
+routing diagnostics, and `cliq-channel-410` aligns AI-facing troubleshooting.
+Both inbound paths normalize messages into the shared
 inbound event shape, run mention/allowlist/employee policy checks, dedupe by
 account/network/chat/message before optional dispatch, keep status/read failures
 as terminal diagnostics, prevent duplicate/active/dead-lettered turns from
@@ -282,6 +286,32 @@ Recommended setup-state copy should stay short:
 | `allowlist_empty` | Group messages are blocked. | Add allowed channels/users. |
 | `employee_scope_empty` | Employee mode needs a work scope. | Add `workScopes.<profile>`. |
 | `host_too_old` | OpenClaw is too old for this plugin. | Upgrade OpenClaw. |
+
+## AI troubleshooting prompts
+
+AI agents should use this order before touching lower-level CLI probes:
+
+1. `openclaw plugins inspect zoho-cliq --json`
+2. `openclaw channels status --channel cliq --deep`
+3. `openclaw channels capabilities --channel cliq`
+4. route/session diagnostics for the proposed target
+5. `zoho cliq status --check-auth --network <network>`
+6. the specific `zoho cliq ...` command needed for a smoke or fallback
+
+Map diagnostic signals to one next action:
+
+| Signal | Agent response |
+| --- | --- |
+| `not_logged_in` | Ask the operator to run `zoho login --with-cliq`; never request token values in chat. |
+| `missing_scope` | Re-auth with Cliq scopes and rerun `zoho cliq status --check-auth`. |
+| `network_missing` | Set `channels.cliq.accounts.<id>.network` through approved config flow. |
+| `webhook_unverified` / `webhook_secret_missing` | Configure `webhookSecret` as SecretRef/env (`ZOHO_CLIQ_WEBHOOK_SECRET`), POST a controlled Bot handler event, and rotate exposed secrets. |
+| `allowlist_empty` | Add explicit `allowFrom` / `groupAllowFrom`; do not flip to open access for convenience. |
+| `employee_scope_empty` | Add `workScopes.<profile>` before accepting business chat turns. |
+| `target_unresolved` | Ask for or infer an explicit `channel:<id>`, `user:<id>`, or `cliq:channel:<id>:thread:<thread_id>` route. |
+| `native_agent_dispatch_pending` | Controlled smoke can continue, but do not claim production bidirectional agent replies are ready. |
+| `observability_bundle_pending` | Keep reports redacted and do not claim production incident readiness. |
+| repeated Zoho `not_supported` / `inactive_appaccount_user` | Record `skip_deferred` and keep unrelated channel work moving. |
 
 ## Security checklist
 

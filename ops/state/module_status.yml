@@ -20,9 +20,9 @@ cliq:
 openclaw_cliq_channel:
   priority: 3
   status: in_progress
-  phase: native_ux_ready_ai_docs_next
+  phase: ai_docs_ready_native_dispatch_next
   target_release: v0.4.0
-  current_milestone: cliq-channel-410-ai-docs-troubleshooting
+  current_milestone: cliq-channel-417-native-agent-dispatch
   blockers: []
 
 crm:

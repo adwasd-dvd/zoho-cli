@@ -95,7 +95,7 @@ HOME="$PWD/.tmp/openclaw-home-2026.5.3-1" \
               "role": "employee",
               "allowedSurfaces": ["cliq", "mail"],
               "crm": "read_only",
-              "requiresReviewFor": ["mail.send_with_review", "external_send", "delete", "install", "config_write"]
+              "requiresReviewFor": ["mail.send_with_review", "external_send", "delete", "system.install", "system.config_write"]
             }
           },
           "defaultTo": "channel:<channel_id>"

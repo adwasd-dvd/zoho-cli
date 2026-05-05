@@ -2,6 +2,7 @@
 set -euo pipefail
 
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)"
+CHECKED_AT="$(date -u +%Y-%m-%dT%H:%M:%SZ)"
 ZOHO_BIN="${ZOHO_BIN:-"$ROOT/.venv/bin/zoho"}"
 OPENCLAW_BIN="${OPENCLAW_BIN:-openclaw}"
 NETWORK="${ZOHO_CLIQ_NETWORK:-happydistrouklimited}"
@@ -63,7 +64,7 @@ check_route_binding() {
   if [[ -z "$EXPECTED_AGENT_ID" ]]; then
     if [[ "$ROUTE_BINDING_ONLY" == "1" ]]; then
       printf '\n== openclaw cliq route binding gate ==\n'
-      emit_route_json "$(printf '{"status":"error","error":"expected_agent_missing","channel":"cliq","accountId":"%s"}' "$EXPECTED_ACCOUNT_ID")"
+      emit_route_json "$(printf '{"schemaVersion":1,"kind":"openclaw_cliq_route_preflight","runId":"%s","checkedAt":"%s","status":"error","error":"expected_agent_missing","channel":"cliq","accountId":"%s"}' "$SMOKE_RUN_ID" "$CHECKED_AT" "$EXPECTED_ACCOUNT_ID")"
       return 1
     fi
     printf '\n== openclaw cliq route binding gate skipped ==\n'
@@ -81,9 +82,19 @@ const expectedAgentId = process.argv[1];
 const expectedModel = process.argv[2];
 const expectedAccountId = process.argv[3] || "default";
 const configPath = process.argv[4];
+const runId = process.argv[5];
+const checkedAt = process.argv[6];
+const basePayload = {
+  schemaVersion: 1,
+  kind: "openclaw_cliq_route_preflight",
+  runId,
+  checkedAt,
+  channel: "cliq",
+  accountId: expectedAccountId,
+};
 
 const fail = (error, details = {}) => {
-  console.log(JSON.stringify({ status: "error", error, channel: "cliq", accountId: expectedAccountId, ...details }));
+  console.log(JSON.stringify({ ...basePayload, status: "error", error, ...details }));
   process.exit(1);
 };
 
@@ -115,13 +126,14 @@ if (expectedModel && agent.model !== expectedModel) {
   fail("agent_model_mismatch", { expectedAgentId, expectedModel, actualModel: agent.model ?? null });
 }
 console.log(JSON.stringify({
+  ...basePayload,
   status: "ok",
-  channel: "cliq",
-  accountId: expectedAccountId,
+  expectedAgentId,
+  expectedModel: expectedModel || null,
   agentId: binding.agentId,
   model: agent.model ?? null
 }));
-' "$EXPECTED_AGENT_ID" "$EXPECTED_AGENT_MODEL" "$EXPECTED_ACCOUNT_ID" "$OPENCLAW_CONFIG_PATH")"
+' "$EXPECTED_AGENT_ID" "$EXPECTED_AGENT_MODEL" "$EXPECTED_ACCOUNT_ID" "$OPENCLAW_CONFIG_PATH" "$SMOKE_RUN_ID" "$CHECKED_AT")"
   route_status=$?
   set -e
   emit_route_json "$route_output"

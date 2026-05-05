@@ -212,12 +212,14 @@ smoke is pinned to a named account/model pair. Set
 `ZOHO_CLIQ_ROUTE_BINDING_ONLY=1` for an offline preflight that runs only this
 binding check; use `OPENCLAW_CONFIG_PATH` to point it at a temporary or
 operator-provided config file. Set `ZOHO_CLIQ_ROUTE_REPORT_FILE` when automation
-needs the route result written as a single JSON evidence file. Route gate
-failures are machine-readable JSON with `status=error` and error codes such as
-`route_binding_missing`, `expected_agent_missing`, `agent_binding_mismatch`,
-`agent_missing`, or `agent_model_mismatch`. In route-only mode,
-`ZOHO_CLIQ_EXPECTED_AGENT_ID` is required so the preflight cannot pass without
-checking a route.
+needs the route result written as a single JSON evidence file. The evidence uses
+`schemaVersion=1`, includes `kind=openclaw_cliq_route_preflight`, `runId`,
+`checkedAt`, expected/actual agent facts, and does not include the local config
+path. Route gate failures are machine-readable JSON with `status=error` and
+error codes such as `route_binding_missing`, `expected_agent_missing`,
+`agent_binding_mismatch`, `agent_missing`, or `agent_model_mismatch`. In
+route-only mode, `ZOHO_CLIQ_EXPECTED_AGENT_ID` is required so the preflight
+cannot pass without checking a route.
 
 `token_refresh_rate_limited` and repeated endpoint availability failures are
 recorded as `skip_deferred` so the gate does not hammer Zoho refresh endpoints

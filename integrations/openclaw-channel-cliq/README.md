@@ -3,11 +3,12 @@
 Native OpenClaw channel package for Zoho Cliq, backed by `zoho-cli`.
 
 This package includes the `cliq-channel-401` installable skeleton,
-`cliq-channel-402` config/SecretRef/setup slice, and `cliq-channel-416` human
-setup UX slice. It declares the plugin/channel
+`cliq-channel-402` config/SecretRef/setup slice, `cliq-channel-416` human
+setup UX slice, and `cliq-channel-403` security/policy slice. It declares the plugin/channel
 metadata, setup/runtime entrypoints, configured/auth-state probes, a minimal
-OpenClaw channel object, config schema metadata, and a typed `zoho cliq send`
-argument contract. Security hardening, process execution, inbound delivery, and
+OpenClaw channel object, config schema metadata, DM pairing, group allowlist,
+mention gating, scoped employee policy gates, audit warnings, and a typed
+`zoho cliq send` argument contract. Process execution, inbound delivery, and
 outbound behavior follow in later slices.
 
 ## Contract
@@ -53,8 +54,24 @@ Human setup and troubleshooting live in
             "provider": "default",
             "id": "ZOHO_CLIQ_WEBHOOK_SECRET"
           },
-          "dmPolicy": "allowlist",
+          "dmPolicy": "pairing",
+          "groupPolicy": "allowlist",
           "allowFrom": ["123456789"],
+          "groupAllowFrom": ["channel:123456789"],
+          "requireMention": true,
+          "employeeMode": {
+            "enabled": true,
+            "scopeProfile": "default",
+            "policy": "strict"
+          },
+          "workScopes": {
+            "default": {
+              "role": "employee",
+              "allowedSurfaces": ["cliq", "mail"],
+              "crm": "read_only",
+              "requiresReviewFor": ["mail.send_with_review", "external_send", "delete", "system.install", "system.config_write"]
+            }
+          },
           "defaultTo": "channel:123456789"
         }
       }
@@ -84,7 +101,7 @@ Use a host satisfying `>=2026.5.3-1` for inspect/install validation. The local
 
 The setup wizard exposes these operator states: `host_too_old`,
 `zoho_missing`, `not_logged_in`, `missing_scope`, `network_missing`,
-`webhook_unverified`, and `allowlist_empty`.
+`webhook_unverified`, `allowlist_empty`, and `employee_scope_empty`.
 
 The wizard offers:
 
@@ -94,6 +111,19 @@ The wizard offers:
   `ZOHO_CLIQ_WEBHOOK_SECRET`
 - DM allowlist entry handling
 - account disable behavior for OpenClaw setup surfaces
+
+## Security posture
+
+- `dmPolicy` defaults to `pairing`; approved/pairing users are stored in
+  `allowFrom`.
+- `groupPolicy` defaults to `allowlist`; group/channel intake uses
+  `groupAllowFrom` and still requires a bot mention by default.
+- `employeeMode.enabled=true` blocks chat-originated debug, install,
+  config-write, secret-read, shell/system, and policy-bypass requests before
+  agent dispatch.
+- `dmPolicy=open`, `groupPolicy=open`, `allowFrom=["*"]`,
+  `groupAllowFrom=["*"]`, `requireMention=false`, or disabled employee mode
+  produce audit warnings.
 
 ## Runtime boundary
 

@@ -12,6 +12,10 @@ Use this skill when operating through the native OpenClaw Zoho Cliq channel.
   signatures, or private message bodies in logs.
 - In group/channel conversations, require an explicit bot mention unless config
   allows a narrower implicit mention policy.
+- Keep `dmPolicy=pairing`, `groupPolicy=allowlist`, `requireMention=true`, and
+  `employeeMode.enabled=true` as the normal production posture.
+- Refuse chat-originated debug, install, config-write, secret-read,
+  shell/system, and policy-bypass requests before agent dispatch.
 - Configure sensitive values with SecretRef/env references. Do not ask for or
   store plaintext token passwords, webhook secrets, OAuth tokens, bot tokens, app
   tokens, or private keys in setup input.
@@ -34,7 +38,9 @@ redacted stderr summary.
 - `missing_scope`: re-auth and rerun `zoho cliq status --check-auth`.
 - `network_missing`: set the Cliq network.
 - `webhook_unverified`: configure webhook secret or choose polling later.
-- `allowlist_empty`: add trusted Cliq user ids to `allowFrom`.
+- `allowlist_empty`: add trusted Cliq user ids to `allowFrom` and group/channel
+  ids to `groupAllowFrom`.
+- `employee_scope_empty`: add a valid `workScopes.<profile>` entry.
 
 ## Config shape
 
@@ -63,8 +69,24 @@ redacted stderr summary.
           },
           "network": "<network>",
           "cliPath": "zoho",
-          "dmPolicy": "allowlist",
-          "allowFrom": ["<cliq_user_id>"]
+          "dmPolicy": "pairing",
+          "groupPolicy": "allowlist",
+          "allowFrom": ["<cliq_user_id>"],
+          "groupAllowFrom": ["channel:<channel_id>"],
+          "requireMention": true,
+          "employeeMode": {
+            "enabled": true,
+            "scopeProfile": "default",
+            "policy": "strict"
+          },
+          "workScopes": {
+            "default": {
+              "role": "employee",
+              "allowedSurfaces": ["cliq", "mail"],
+              "crm": "read_only",
+              "requiresReviewFor": ["mail.send_with_review", "external_send", "delete", "system.install", "system.config_write"]
+            }
+          }
         }
       }
     }

@@ -22,6 +22,8 @@
 - Rebuilt the package runtime and revalidated package-local OpenClaw install/inspect/doctor with `openclaw@2026.5.3-1`; process execution is still intentionally deferred to `cliq-channel-404`, so real outbound message delivery starts after `cliq-channel-404` + `cliq-channel-405`.
 - Completed `cliq-channel-416` by adding setup wizard metadata for operator status lines, env shortcut, text inputs, allowlist handling, completion guidance, and account disable behavior without introducing process execution.
 - Added `docs/releases/OPENCLAW_CLIQ_CHANNEL_SETUP.md` with install, config/auth smoke, setup-state troubleshooting, disable/uninstall, and recovery guidance; real outbound testing remains gated by `cliq-channel-404` and `cliq-channel-405`.
+- Completed `cliq-channel-403` by adding secure-by-default runtime policy surfaces: DM pairing is the default, group/channel access defaults to `groupPolicy=allowlist`, group contexts require mention by default, unsafe open/wildcard/no-mention/employee-disabled settings emit audit warnings, and scoped employee mode blocks chat-originated debug, install, config-write, secret-read, shell/system, and policy-bypass requests before dispatch.
+- Added native allowlist adapter metadata for DM and group scopes, plus `src/security.ts` and `src/employee-policy.ts` so later inbound slices can enforce the same decisions before agent dispatch.
 
 ### Architecture / modularization (2026-05-04T18:19:47Z)
 - Started `cliq-210` post-RC modularization by extracting the `zoho cliq status` and `zoho cliq capabilities` command bodies into `zoho_cli/commands/cliq_readiness.py`, leaving `zoho_cli/cli.py` with runtime dependency injection plus existing Typer registration only. Command names, help text, and JSON output are unchanged.

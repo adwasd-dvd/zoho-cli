@@ -67,7 +67,9 @@ Follow the stack from the architecture plan:
    schema covers account/config refs plus SecretRef credentials)
 4. `cliq-channel-416` human install and setup UX (complete; setup wizard exposes
    operator states, env shortcut, text inputs, allowFrom, and disable behavior)
-5. `cliq-channel-403` security, pairing, and scoped employee mode
+5. `cliq-channel-403` security, pairing, and scoped employee mode (complete;
+   DM pairing default, group allowlist, mention gating, scoped employee policy,
+   and audit warnings are in runtime metadata/helpers)
 6. `cliq-channel-414` native SDK policy seams
 7. `cliq-channel-404` CLI adapter
 8. `cliq-channel-405` outbound delivery
@@ -159,8 +161,24 @@ Current config baseline:
           },
           "network": "<network>",
           "cliPath": "zoho",
-          "dmPolicy": "allowlist",
-          "allowFrom": ["<cliq_user_id>"]
+          "dmPolicy": "pairing",
+          "groupPolicy": "allowlist",
+          "allowFrom": ["<cliq_user_id>"],
+          "groupAllowFrom": ["channel:<channel_id>"],
+          "requireMention": true,
+          "employeeMode": {
+            "enabled": true,
+            "scopeProfile": "default",
+            "policy": "strict"
+          },
+          "workScopes": {
+            "default": {
+              "role": "employee",
+              "allowedSurfaces": ["cliq", "mail"],
+              "crm": "read_only",
+              "requiresReviewFor": ["external_send", "delete", "install", "config_write"]
+            }
+          }
         }
       }
     }
@@ -200,6 +218,7 @@ Recommended setup-state copy should stay short:
 | `network_missing` | Cliq network is not selected. | Choose a network. |
 | `webhook_unverified` | Webhook delivery is not verified. | Verify webhook or use polling. |
 | `allowlist_empty` | Group messages are blocked. | Add allowed channels/users. |
+| `employee_scope_empty` | Employee mode needs a work scope. | Add `workScopes.<profile>`. |
 | `host_too_old` | OpenClaw is too old for this plugin. | Upgrade OpenClaw. |
 
 ## Security checklist
@@ -207,7 +226,8 @@ Recommended setup-state copy should stay short:
 - `dmPolicy=pairing` by default.
 - `groupPolicy=allowlist` by default.
 - `requireMention=true` by default for group/channel contexts.
-- `allowFrom` is required for group/channel use.
+- `allowFrom` stores paired/allowed DM senders; `groupAllowFrom` stores allowed
+  group/channel routes or senders.
 - `employeeMode.enabled=true` by default for production examples.
 - Normal chat cannot trigger debug, install, config-write, secret-read,
   shell/system, or policy-bypass intents.
@@ -215,7 +235,8 @@ Recommended setup-state copy should stay short:
   system/developer instructions.
 - Admin override, if ever enabled, is explicit, audited, and restricted to
   `adminAllowFrom`.
-- `groupPolicy=open` and `allowFrom=["*"]` emit warnings.
+- `groupPolicy=open`, `allowFrom=["*"]`, `groupAllowFrom=["*"]`,
+  `requireMention=false`, and disabled employee mode emit warnings.
 - SecretRef fields are registered and documented.
 - Plaintext secrets are never required in committed examples.
 - Self-authored messages are ignored.

@@ -62,8 +62,28 @@
               "disabled"
             ]
           },
+          "groupPolicy": {
+            "type": "string",
+            "enum": [
+              "allowlist",
+              "open",
+              "disabled"
+            ]
+          },
+          "groupAllowFrom": {
+            "$ref": "#/definitions/allowFrom"
+          },
           "allowFrom": {
             "$ref": "#/definitions/allowFrom"
+          },
+          "requireMention": {
+            "type": "boolean"
+          },
+          "employeeMode": {
+            "$ref": "#/definitions/employeeMode"
+          },
+          "workScopes": {
+            "$ref": "#/definitions/workScopes"
           },
           "defaultTo": {
             "type": "string",
@@ -129,6 +149,87 @@
               ]
             }
           },
+          "stringList": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "minLength": 1
+            }
+          },
+          "employeeMode": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "enabled": {
+                "type": "boolean"
+              },
+              "scopeProfile": {
+                "type": "string",
+                "minLength": 1
+              },
+              "policy": {
+                "type": "string",
+                "enum": [
+                  "strict",
+                  "review"
+                ]
+              },
+              "allowDebugFromChannel": {
+                "type": "boolean"
+              },
+              "allowInstallFromChannel": {
+                "type": "boolean"
+              },
+              "allowConfigWritesFromChannel": {
+                "type": "boolean"
+              },
+              "adminAllowFrom": {
+                "$ref": "#/definitions/allowFrom"
+              },
+              "allowedIntents": {
+                "$ref": "#/definitions/stringList"
+              },
+              "deniedIntents": {
+                "$ref": "#/definitions/stringList"
+              }
+            }
+          },
+          "workScope": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "role": {
+                "type": "string",
+                "minLength": 1
+              },
+              "allowedSurfaces": {
+                "$ref": "#/definitions/stringList"
+              },
+              "crm": {
+                "type": "string",
+                "enum": [
+                  "none",
+                  "read_only",
+                  "read_write"
+                ]
+              },
+              "requiresReviewFor": {
+                "$ref": "#/definitions/stringList"
+              },
+              "allowedIntents": {
+                "$ref": "#/definitions/stringList"
+              },
+              "deniedIntents": {
+                "$ref": "#/definitions/stringList"
+              }
+            }
+          },
+          "workScopes": {
+            "type": "object",
+            "additionalProperties": {
+              "$ref": "#/definitions/workScope"
+            }
+          },
           "account": {
             "type": "object",
             "additionalProperties": false,
@@ -169,8 +270,28 @@
                   "disabled"
                 ]
               },
+              "groupPolicy": {
+                "type": "string",
+                "enum": [
+                  "allowlist",
+                  "open",
+                  "disabled"
+                ]
+              },
+              "groupAllowFrom": {
+                "$ref": "#/definitions/allowFrom"
+              },
               "allowFrom": {
                 "$ref": "#/definitions/allowFrom"
+              },
+              "requireMention": {
+                "type": "boolean"
+              },
+              "employeeMode": {
+                "$ref": "#/definitions/employeeMode"
+              },
+              "workScopes": {
+                "$ref": "#/definitions/workScopes"
               },
               "defaultTo": {
                 "type": "string",
@@ -202,7 +323,31 @@
         },
         "allowFrom": {
           "label": "Allowed Cliq senders",
-          "help": "Zoho Cliq user ids allowed to talk to this channel."
+          "help": "Zoho Cliq user ids allowed to DM this channel or complete pairing."
+        },
+        "groupAllowFrom": {
+          "label": "Allowed Cliq group senders",
+          "help": "Zoho Cliq user/channel ids allowed to trigger group/channel intake.",
+          "advanced": true
+        },
+        "groupPolicy": {
+          "label": "Group policy",
+          "help": "Default is allowlist; open mode emits a security warning.",
+          "advanced": true
+        },
+        "requireMention": {
+          "label": "Require mention",
+          "help": "Require an explicit bot mention in group/channel conversations."
+        },
+        "employeeMode": {
+          "label": "Scoped employee mode",
+          "help": "Blocks chat-originated debug, install, config-write, secret-read, shell/system, and policy-bypass requests.",
+          "advanced": true
+        },
+        "workScopes": {
+          "label": "Employee work scopes",
+          "help": "Defines the business surfaces and review requirements available from Cliq.",
+          "advanced": true
         },
         "accounts": {
           "label": "Cliq accounts",

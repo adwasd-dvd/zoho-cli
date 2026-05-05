@@ -1,4 +1,43 @@
 import { CLIQ_CHANNEL_ID, DEFAULT_ACCOUNT_ID, DEFAULT_ZOHO_CLI, } from "./constants.js";
+export const DEFAULT_CLIQ_EMPLOYEE_MODE = {
+    enabled: true,
+    scopeProfile: "default",
+    policy: "strict",
+    allowDebugFromChannel: false,
+    allowInstallFromChannel: false,
+    allowConfigWritesFromChannel: false,
+    adminAllowFrom: [],
+    allowedIntents: [
+        "cliq.reply",
+        "cliq.status",
+        "mail.triage",
+        "mail.reply",
+        "mail.send_with_review",
+        "external_send",
+    ],
+    deniedIntents: [
+        "system.debug",
+        "system.install",
+        "system.config_write",
+        "system.exec",
+        "secrets.read",
+        "policy.bypass",
+    ],
+};
+export const DEFAULT_CLIQ_WORK_SCOPES = {
+    default: {
+        role: "employee",
+        allowedSurfaces: ["cliq", "mail"],
+        crm: "read_only",
+        requiresReviewFor: [
+            "mail.send_with_review",
+            "external_send",
+            "delete",
+            "system.install",
+            "system.config_write",
+        ],
+    },
+};
 const secretRefSchema = {
     type: "object",
     additionalProperties: false,
@@ -46,6 +85,68 @@ const allowFromSchema = {
         ],
     },
 };
+const stringListSchema = {
+    type: "array",
+    items: {
+        type: "string",
+        minLength: 1,
+    },
+};
+const employeeModeSchema = {
+    type: "object",
+    additionalProperties: false,
+    properties: {
+        enabled: {
+            type: "boolean",
+        },
+        scopeProfile: {
+            type: "string",
+            minLength: 1,
+        },
+        policy: {
+            type: "string",
+            enum: ["strict", "review"],
+        },
+        allowDebugFromChannel: {
+            type: "boolean",
+        },
+        allowInstallFromChannel: {
+            type: "boolean",
+        },
+        allowConfigWritesFromChannel: {
+            type: "boolean",
+        },
+        adminAllowFrom: {
+            $ref: "#/definitions/allowFrom",
+        },
+        allowedIntents: stringListSchema,
+        deniedIntents: stringListSchema,
+    },
+};
+const workScopeSchema = {
+    type: "object",
+    additionalProperties: false,
+    properties: {
+        role: {
+            type: "string",
+            minLength: 1,
+        },
+        allowedSurfaces: stringListSchema,
+        crm: {
+            type: "string",
+            enum: ["none", "read_only", "read_write"],
+        },
+        requiresReviewFor: stringListSchema,
+        allowedIntents: stringListSchema,
+        deniedIntents: stringListSchema,
+    },
+};
+const workScopesSchema = {
+    type: "object",
+    additionalProperties: {
+        $ref: "#/definitions/workScope",
+    },
+};
 const accountSchema = {
     type: "object",
     additionalProperties: false,
@@ -73,7 +174,21 @@ const accountSchema = {
             type: "string",
             enum: ["allowlist", "pairing", "open", "disabled"],
         },
+        groupPolicy: {
+            type: "string",
+            enum: ["allowlist", "open", "disabled"],
+        },
+        groupAllowFrom: allowFromSchema,
         allowFrom: allowFromSchema,
+        requireMention: {
+            type: "boolean",
+        },
+        employeeMode: {
+            $ref: "#/definitions/employeeMode",
+        },
+        workScopes: {
+            $ref: "#/definitions/workScopes",
+        },
         defaultTo: {
             type: "string",
             minLength: 1,
@@ -112,7 +227,21 @@ export const cliqChannelConfigSchema = {
                 type: "string",
                 enum: ["allowlist", "pairing", "open", "disabled"],
             },
+            groupPolicy: {
+                type: "string",
+                enum: ["allowlist", "open", "disabled"],
+            },
+            groupAllowFrom: allowFromSchema,
             allowFrom: allowFromSchema,
+            requireMention: {
+                type: "boolean",
+            },
+            employeeMode: {
+                $ref: "#/definitions/employeeMode",
+            },
+            workScopes: {
+                $ref: "#/definitions/workScopes",
+            },
             defaultTo: {
                 type: "string",
                 minLength: 1,
@@ -127,6 +256,9 @@ export const cliqChannelConfigSchema = {
         definitions: {
             secretRef: secretRefSchema,
             account: accountSchema,
+            employeeMode: employeeModeSchema,
+            workScope: workScopeSchema,
+            workScopes: workScopesSchema,
         },
     },
     uiHints: {
@@ -151,7 +283,31 @@ export const cliqChannelConfigSchema = {
         },
         allowFrom: {
             label: "Allowed Cliq senders",
-            help: "Zoho Cliq user ids allowed to talk to this channel.",
+            help: "Zoho Cliq user ids allowed to DM this channel or complete pairing.",
+        },
+        groupAllowFrom: {
+            label: "Allowed Cliq group senders",
+            help: "Zoho Cliq user/channel ids allowed to trigger group/channel intake.",
+            advanced: true,
+        },
+        groupPolicy: {
+            label: "Group policy",
+            help: "Default is allowlist; open mode emits a security warning.",
+            advanced: true,
+        },
+        requireMention: {
+            label: "Require mention",
+            help: "Require an explicit bot mention in group/channel conversations.",
+        },
+        employeeMode: {
+            label: "Scoped employee mode",
+            help: "Blocks chat-originated debug, install, config-write, secret-read, shell/system, and policy-bypass requests.",
+            advanced: true,
+        },
+        workScopes: {
+            label: "Employee work scopes",
+            help: "Defines the business surfaces and review requirements available from Cliq.",
+            advanced: true,
         },
         accounts: {
             label: "Cliq accounts",
@@ -181,7 +337,12 @@ function hasTopLevelAccount(section) {
         section.tokenPassword ||
         section.webhookSecret ||
         section.dmPolicy ||
+        section.groupPolicy ||
         section.defaultTo ||
+        section.requireMention !== undefined ||
+        section.employeeMode ||
+        section.workScopes ||
+        (Array.isArray(section.groupAllowFrom) && section.groupAllowFrom.length > 0) ||
         (Array.isArray(section.allowFrom) && section.allowFrom.length > 0));
 }
 function mergeAccount(section, accountId) {
@@ -192,6 +353,18 @@ function mergeAccount(section, accountId) {
         ...topLevel,
         ...accounts[accountId],
     };
+}
+function mergeWorkScopes(...configs) {
+    const merged = {};
+    for (const config of configs) {
+        for (const [profile, scope] of Object.entries(config ?? {})) {
+            merged[profile] = {
+                ...(merged[profile] ?? {}),
+                ...scope,
+            };
+        }
+    }
+    return merged;
 }
 export function listCliqAccountIds(cfg) {
     const section = readCliqSection(cfg);
@@ -223,12 +396,26 @@ export function resolveCliqAccount(cfg, accountId) {
         dmPolicy: entry.dmPolicy ||
             entry.dmSecurity ||
             section.dmPolicy ||
-            section.dmSecurity,
+            section.dmSecurity ||
+            "pairing",
+        groupPolicy: entry.groupPolicy || section.groupPolicy || "allowlist",
+        groupAllowFrom: Array.isArray(entry.groupAllowFrom)
+            ? entry.groupAllowFrom
+            : Array.isArray(section.groupAllowFrom)
+                ? section.groupAllowFrom
+                : [],
         allowFrom: Array.isArray(entry.allowFrom)
             ? entry.allowFrom
             : Array.isArray(section.allowFrom)
                 ? section.allowFrom
                 : [],
+        requireMention: entry.requireMention ?? section.requireMention ?? true,
+        employeeMode: {
+            ...DEFAULT_CLIQ_EMPLOYEE_MODE,
+            ...(section.employeeMode ?? {}),
+            ...(entry.employeeMode ?? {}),
+        },
+        workScopes: mergeWorkScopes(DEFAULT_CLIQ_WORK_SCOPES, section.workScopes, entry.workScopes),
         defaultTo: entry.defaultTo || section.defaultTo,
     };
 }
@@ -296,6 +483,16 @@ export function describeCliqAccount(account) {
         credentialSource: inputSource(account.accountEmail) || inputSource(account.configPath),
         dmPolicy: account.dmPolicy,
         allowFrom: account.allowFrom.map(String),
+        audit: {
+            groupPolicy: account.groupPolicy,
+            groupAllowFrom: account.groupAllowFrom.map(String),
+            requireMention: account.requireMention,
+            employeeMode: {
+                enabled: account.employeeMode.enabled,
+                scopeProfile: account.employeeMode.scopeProfile,
+                policy: account.employeeMode.policy,
+            },
+        },
         cliPath: account.cliPath,
         probe: {
             accountEmail: configValuePreview(account.accountEmail),
@@ -379,8 +576,17 @@ export function applyCliqAccountConfig(params) {
             ? envSecretRef("ZOHO_CLIQ_WEBHOOK_SECRET")
             : accounts[params.accountId]?.webhookSecret,
         defaultTo: params.input.audience ?? accounts[params.accountId]?.defaultTo,
-        dmPolicy: accounts[params.accountId]?.dmPolicy ?? "allowlist",
+        dmPolicy: accounts[params.accountId]?.dmPolicy ?? "pairing",
+        groupPolicy: accounts[params.accountId]?.groupPolicy ?? "allowlist",
+        requireMention: accounts[params.accountId]?.requireMention ?? true,
+        employeeMode: accounts[params.accountId]?.employeeMode ?? {
+            ...DEFAULT_CLIQ_EMPLOYEE_MODE,
+        },
+        workScopes: accounts[params.accountId]?.workScopes ?? {
+            ...DEFAULT_CLIQ_WORK_SCOPES,
+        },
         allowFrom: params.input.dmAllowlist ?? accounts[params.accountId]?.allowFrom ?? [],
+        groupAllowFrom: params.input.groupChannels ?? accounts[params.accountId]?.groupAllowFrom ?? [],
         enabled: true,
     };
     section.accounts = accounts;

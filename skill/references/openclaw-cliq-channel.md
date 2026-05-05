@@ -16,7 +16,9 @@ channel now has schema-backed account/config metadata, env SecretRef references
 for token password and webhook secret, and setup validation that rejects
 plaintext token-style fields. `cliq-channel-416` is complete: setup wizard
 metadata now exposes operator state copy, env shortcut, setup text inputs,
-allowlist handling, and disable behavior.
+allowlist handling, and disable behavior. `cliq-channel-403` is complete:
+runtime metadata now defaults to DM pairing, group allowlist, mention gating,
+scoped employee mode, and audit warnings for unsafe open access.
 
 The v0.4 plugin targets OpenClaw `>=2026.5.3-1`. The local
 `OpenClaw 2026.4.15` install is too old for plugin install/inspect validation,
@@ -86,7 +88,9 @@ Setup state codes:
 - `missing_scope`: re-auth and rerun `zoho cliq status --check-auth`.
 - `network_missing`: set `channels.cliq.accounts.<id>.network`.
 - `webhook_unverified`: configure webhook secret or wait for polling fallback.
-- `allowlist_empty`: add trusted Cliq user ids to `allowFrom`.
+- `allowlist_empty`: add trusted Cliq user ids to `allowFrom` and group/channel
+  ids to `groupAllowFrom`.
+- `employee_scope_empty`: add a valid `workScopes.<profile>` entry.
 
 Config reference shape:
 
@@ -115,8 +119,24 @@ Config reference shape:
           },
           "network": "<network>",
           "cliPath": "zoho",
-          "dmPolicy": "allowlist",
-          "allowFrom": ["<cliq_user_id>"]
+          "dmPolicy": "pairing",
+          "groupPolicy": "allowlist",
+          "allowFrom": ["<cliq_user_id>"],
+          "groupAllowFrom": ["channel:<channel_id>"],
+          "requireMention": true,
+          "employeeMode": {
+            "enabled": true,
+            "scopeProfile": "default",
+            "policy": "strict"
+          },
+          "workScopes": {
+            "default": {
+              "role": "employee",
+              "allowedSurfaces": ["cliq", "mail"],
+              "crm": "read_only",
+              "requiresReviewFor": ["mail.send_with_review", "external_send", "delete", "system.install", "system.config_write"]
+            }
+          }
         }
       }
     }

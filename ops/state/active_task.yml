@@ -1,23 +1,26 @@
-id: cliq-channel-403
-title: implement secure-by-default pairing, allowlist, scoped employee mode, mention gating, and audit warnings
+id: cliq-channel-414
+title: align session grammar mention policy approval capability and runtime namespaces with OpenClaw SDK
 module: openclaw_cliq_channel
 stage: queued
 status: ready
 owner: coder
-updated_at: '2026-05-04T23:54:17Z'
+updated_at: '2026-05-05T00:20:00Z'
 execution_mode: turbo_20x
 throughput_policy_ref: ops/state/execution_policy.yml
 success_criteria:
-  - implement DM pairing state and allowlist enforcement aligned with OpenClaw native security surfaces
-  - keep group/channel operation mention-gated by default and add audit warnings for unsafe open access
-  - add scoped employee mode policy metadata that blocks chat-originated debug, install, config-write, secret-read, shell/system, and policy-bypass requests
+  - implement account/network-aware session grammar for DM, group, channel, thread, and parent fallback routing
+  - gather Cliq mention facts and delegate final decisions to OpenClaw shared inbound mention helpers
+  - expose OpenClaw native approval capability facts instead of custom approval tools
+  - keep command bypass constrained by source, pairing, allowlist, mention, and scoped employee policy gates
+  - keep runtime gateway methods out of reserved OpenClaw admin namespaces
   - keep package-local `npm run typecheck`, `npm run build`, OpenClaw linked install, `plugins inspect zoho-cliq --json`, and `plugins doctor` green
   - update Lane 2 docs, Lane 3 skill/docs, and Lane 1 state/progress docs
-next_if_done: implement cliq-channel-414 native SDK policy seams, then cliq-channel-404 CLI adapter.
+next_if_done: implement cliq-channel-404 JSON-safe zoho CLI adapter.
 progress:
+  - "2026-05-05T00:20:00Z cliq-channel-403 completed: runtime config/schema now includes `groupPolicy`, `groupAllowFrom`, `requireMention`, `employeeMode`, and `workScopes`; `src/security.ts` enforces DM pairing/allowlist, group allowlist, mention-required decisions, and unsafe-policy audit warnings; `src/employee-policy.ts` blocks chat-originated debug, install, config-write, secret-read, shell/system, and policy-bypass requests before dispatch."
   - "2026-05-04T23:54:17Z cliq-channel-416 completed: setup wizard metadata now exposes operator setup states, env shortcut, text inputs, allowFrom handling, completion note, and disable behavior; `docs/releases/OPENCLAW_CLIQ_CHANNEL_SETUP.md` covers install, config/auth smoke, troubleshooting, disable/uninstall, and recovery."
   - "2026-05-04T23:56:24Z cliq-channel-416 validation: `npm --prefix integrations/openclaw-channel-cliq run typecheck`, `npm --prefix integrations/openclaw-channel-cliq run build`, focused OpenClaw/Lane3 tests (`17 passed`), package-local linked install, `plugins inspect zoho-cliq --json`, `plugins doctor`, YAML parse, `git diff --check`, and `make ci` (`1761 passed`) passed."
   - "2026-05-04T22:36:55Z cliq-channel-402 completed: `openclaw.plugin.json` and runtime `cliqChannelConfigSchema` now cover `defaultAccount/accounts`, account/config references, `network`, `cliPath`, `dmPolicy`, `allowFrom`, and `defaultTo`; setup writes env SecretRefs when `useEnv` is set and rejects plaintext token/password/secret-style inputs."
   - "2026-05-04T22:39:13Z cliq-channel-402 validation: `npm --prefix integrations/openclaw-channel-cliq run typecheck`, `npm --prefix integrations/openclaw-channel-cliq run build`, focused OpenClaw/Lane3 tests (`16 passed`), package-local linked install, `plugins inspect zoho-cliq --json`, `plugins doctor`, YAML parse, `git diff --check`, and `make ci` (`1760 passed`) passed."
   - "2026-05-04T22:03:50Z cliq-channel-401 completed: `integrations/openclaw-channel-cliq/` now has manifest/package metadata, setup/runtime entries, configured/auth-state probes, compiled dist runtime output, and channel skill; package-local `openclaw@2026.5.3-1` linked install + `plugins inspect zoho-cliq --json` discovers plugin `zoho-cliq` with channel `cliq`, and `plugins doctor` reports no issues."
-next_step: Start `cliq-channel-403` secure pairing/allowlist/scoped employee mode now that human setup UX is in place.
+next_step: Start `cliq-channel-414` native SDK policy seams now that security policy helpers are in place.

@@ -279,6 +279,7 @@ channels:
         dmPolicy: pairing
         groupPolicy: allowlist
         allowFrom: []
+        groupAllowFrom: []
         requireMention: true
         employeeMode:
           enabled: true
@@ -308,10 +309,11 @@ channels:
               - mail
             crm: read_only
             requiresReviewFor:
+              - mail.send_with_review
               - external_send
               - delete
-              - install
-              - config_write
+              - system.install
+              - system.config_write
         polling:
           enabled: true
           intervalSeconds: 60
@@ -328,6 +330,7 @@ Security notes:
 - `groupPolicy=open` is allowed only as an explicit opt-in and must trigger an
   audit warning.
 - `allowFrom=["*"]` is allowed only with an explicit warning.
+- `groupAllowFrom=["*"]` is allowed only with an explicit warning.
 - `configWrites` should default to false outside setup flows.
 - `employeeMode.enabled=true` should be the recommended production default.
 - Chat-originated requests to debug, install packages, change config, execute
@@ -746,8 +749,8 @@ OpenClaw:
   compatibility, Zoho CLI detection, auth/scopes, network selection,
   webhook/polling choice, security defaults, employee scope, and test message.
   Complete for setup wizard status, env shortcut, text inputs, allowFrom, and
-  disable behavior; employee scope and test message stay linked to later
-  security/outbound slices.
+  disable behavior; employee scope state is now covered by `cliq-channel-403`,
+  while the test message stays linked to later outbound slices.
 - Normalize setup failures into actionable user-facing states. Complete for
   `host_too_old`, `zoho_missing`, `not_logged_in`, `missing_scope`,
   `network_missing`, `webhook_unverified`, and `allowlist_empty`.
@@ -761,11 +764,19 @@ OpenClaw:
 ### cliq-channel-403: Security, pairing, and scoped employee mode
 
 - Implement DM pairing, group allowlist, mention gating, and audit warnings.
+  Complete for runtime policy helpers, native allowlist adapter metadata, and
+  `createChatChannelPlugin` security warning/audit surfaces.
 - Implement `employeeMode` and `workScopes` policy enforcement.
+  Complete in `src/employee-policy.ts` for scoped employee defaults and denied
+  chat-originated system actions.
 - Block chat-originated debug, install, config-write, secret-read, shell/system,
   and policy-bypass requests by default.
+  Complete before inbound dispatch integration; `cliq-channel-414/406` will
+  wire these decisions into live inbound routes.
 - Acceptance: unsafe open access emits warnings; allowlist denies unknown
   senders; out-of-scope employee requests are refused before agent dispatch.
+  Complete in package runtime policy functions; live inbound fixture coverage
+  remains in the inbound slices.
 
 ### cliq-channel-414: Native SDK policy seams
 

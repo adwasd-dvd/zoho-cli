@@ -6,12 +6,15 @@ This runbook is for the native OpenClaw `cliq` channel package in
 ## Current readiness
 
 - Config/auth smoke testing is ready now.
+- Security policy smoke testing is ready now: DM pairing, group allowlist,
+  mention gating, scoped employee mode, and unsafe-policy audit warnings are in
+  the package runtime.
 - Real outbound message testing waits for `cliq-channel-404` and
   `cliq-channel-405`.
 - Inbound webhook or polling tests wait for `cliq-channel-406` and
   `cliq-channel-407`.
-- Production testing waits for pairing, allowlist, scoped employee mode, loop
-  prevention, and observability slices.
+- Production testing waits for loop prevention, inbound runtime, outbound
+  delivery, and observability slices.
 
 ## Requirements
 
@@ -77,8 +80,24 @@ HOME="$PWD/.tmp/openclaw-home-2026.5.3-1" \
             "provider": "default",
             "id": "ZOHO_CLIQ_WEBHOOK_SECRET"
           },
-          "dmPolicy": "allowlist",
+          "dmPolicy": "pairing",
+          "groupPolicy": "allowlist",
           "allowFrom": ["<trusted_cliq_user_id>"],
+          "groupAllowFrom": ["channel:<channel_id>"],
+          "requireMention": true,
+          "employeeMode": {
+            "enabled": true,
+            "scopeProfile": "default",
+            "policy": "strict"
+          },
+          "workScopes": {
+            "default": {
+              "role": "employee",
+              "allowedSurfaces": ["cliq", "mail"],
+              "crm": "read_only",
+              "requiresReviewFor": ["mail.send_with_review", "external_send", "delete", "install", "config_write"]
+            }
+          },
           "defaultTo": "channel:<channel_id>"
         }
       }
@@ -97,7 +116,23 @@ HOME="$PWD/.tmp/openclaw-home-2026.5.3-1" \
 | `missing_scope` | Cliq scopes are incomplete. | Re-auth and rerun `zoho cliq status --check-auth`. |
 | `network_missing` | Cliq network is not set. | Set `channels.cliq.accounts.<id>.network`. |
 | `webhook_unverified` | Inbound webhook is not verified. | Configure `webhookSecret` or wait for polling fallback. |
-| `allowlist_empty` | No trusted Cliq senders are configured. | Add trusted user ids to `allowFrom`. |
+| `allowlist_empty` | No trusted Cliq senders are configured. | Add trusted user ids to `allowFrom` and group/channel ids to `groupAllowFrom`. |
+| `employee_scope_empty` | Scoped employee mode has no work scope. | Add `workScopes.<profile>` or pick a valid `employeeMode.scopeProfile`. |
+
+## Security smoke
+
+Before live traffic, keep these defaults unless an operator explicitly accepts
+the audit warning:
+
+- `dmPolicy=pairing`
+- `groupPolicy=allowlist`
+- `requireMention=true`
+- `employeeMode.enabled=true`
+
+Chat-originated requests to debug internals, install plugins/packages, write
+config, read secrets, run shell/system actions, or bypass policy are refused
+before agent dispatch. Add trusted DM users to `allowFrom`; add trusted
+group/channel routes or senders to `groupAllowFrom`.
 
 ## Disable, uninstall, and recovery
 

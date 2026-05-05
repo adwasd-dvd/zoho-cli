@@ -345,7 +345,7 @@
 - id: cliq-channel-403
   title: implement secure-by-default pairing, allowlist, scoped employee mode, mention gating, and audit warnings
   module: openclaw_cliq_channel
-  stage: queued
+  stage: completed
   priority: high
   depends_on:
   - cliq-channel-416

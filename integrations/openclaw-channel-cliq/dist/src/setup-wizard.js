@@ -29,6 +29,10 @@ export const CLIQ_SETUP_STATE_COPY = {
         copy: "Group and DM allowlist is empty.",
         nextAction: "Add trusted Zoho Cliq user ids to allowFrom.",
     },
+    employee_scope_empty: {
+        copy: "Scoped employee mode needs a work scope.",
+        nextAction: "Set employeeMode.scopeProfile and matching workScopes entry.",
+    },
 };
 function hasValue(value) {
     if (typeof value === "string")
@@ -50,7 +54,7 @@ function normalizeCliqDmPolicy(value) {
         value === "open" ||
         value === "disabled"
         ? value
-        : "allowlist";
+        : "pairing";
 }
 function splitAllowFrom(raw) {
     return raw
@@ -79,6 +83,12 @@ function describeAuthState(account) {
     }
     return "zoho config: not set";
 }
+function hasEmployeeScope(account) {
+    if (account.employeeMode.enabled === false)
+        return true;
+    const scopeProfile = account.employeeMode.scopeProfile || "default";
+    return Boolean(account.workScopes[scopeProfile]);
+}
 export function resolveCliqSetupStateCodes(params) {
     const account = resolveCliqAccount(params.cfg, params.accountId);
     const env = params.env ?? process.env;
@@ -95,9 +105,15 @@ export function resolveCliqSetupStateCodes(params) {
     if (!hasValue(account.webhookSecret) && !env.ZOHO_CLIQ_WEBHOOK_SECRET) {
         states.push("webhook_unverified");
     }
-    if (normalizeCliqDmPolicy(account.dmPolicy) === "allowlist" &&
-        account.allowFrom.length === 0) {
+    if (((normalizeCliqDmPolicy(account.dmPolicy) === "allowlist" &&
+        account.allowFrom.length === 0) ||
+        (account.groupPolicy === "allowlist" &&
+            account.groupAllowFrom.length === 0 &&
+            account.allowFrom.length === 0))) {
         states.push("allowlist_empty");
+    }
+    if (!hasEmployeeScope(account)) {
+        states.push("employee_scope_empty");
     }
     return Array.from(new Set(states));
 }
@@ -113,7 +129,11 @@ export function resolveCliqSetupStatusLines(params) {
         `cli: ${account.cliPath || DEFAULT_ZOHO_CLI}`,
         describeAuthState(account),
         `dm policy: ${normalizeCliqDmPolicy(account.dmPolicy)}`,
+        `group policy: ${account.groupPolicy}`,
+        `require mention: ${account.requireMention ? "yes" : "no"}`,
         `allowFrom: ${account.allowFrom.length}`,
+        `groupAllowFrom: ${account.groupAllowFrom.length}`,
+        `employee scope: ${account.employeeMode.scopeProfile || "default"}`,
     ];
     if (states.length === 0 && params.configured) {
         return [
@@ -165,6 +185,7 @@ export const cliqSetupWizard = {
             "Use zoho-cli for OAuth and Zoho API compatibility.",
             "Use SecretRef/env values for token password and webhook secret.",
             "Do not paste OAuth tokens, bot tokens, app tokens, or private keys.",
+            "Scoped employee mode blocks chat-originated debug, installs, config writes, shell/system requests, and secret reads.",
         ],
     },
     envShortcut: {
@@ -278,7 +299,7 @@ export const cliqSetupWizard = {
         helpTitle: "Allowed Zoho Cliq senders",
         helpLines: [
             "Use Zoho Cliq user ids for people allowed to talk to the agent.",
-            "Keep this list narrow for real environments.",
+            "Keep this list narrow; group/channel intake also uses groupAllowFrom.",
         ],
         message: "Allowed Cliq user ids",
         placeholder: "123456789, user:987654321",
@@ -298,7 +319,9 @@ export const cliqSetupWizard = {
             accountId,
             patch: {
                 allowFrom,
+                groupAllowFrom: allowFrom,
                 dmPolicy: "allowlist",
+                groupPolicy: "allowlist",
                 enabled: true,
             },
         }),
@@ -309,6 +332,7 @@ export const cliqSetupWizard = {
             "Run zoho cliq status --check-auth --network <network>.",
             "Send testing starts after cliq-channel-404 and cliq-channel-405.",
             "Keep webhook secrets and token passwords in SecretRef/env values.",
+            "Keep dmPolicy=pairing and groupPolicy=allowlist unless an operator accepts the audit warning.",
         ],
     },
     disable: (cfg) => {

@@ -12,13 +12,38 @@ export type CliqAccountConfig = {
     webhookSecret?: SecretInput;
     dmPolicy?: string;
     dmSecurity?: string;
+    groupPolicy?: string;
+    groupAllowFrom?: Array<string | number>;
     allowFrom?: Array<string | number>;
+    requireMention?: boolean;
+    employeeMode?: CliqEmployeeModeConfig;
+    workScopes?: CliqWorkScopesConfig;
     defaultTo?: string;
 };
 export type CliqChannelConfig = CliqAccountConfig & {
     defaultAccount?: string;
     accounts?: Record<string, CliqAccountConfig>;
 };
+export type CliqEmployeeModeConfig = {
+    enabled?: boolean;
+    scopeProfile?: string;
+    policy?: "strict" | "review";
+    allowDebugFromChannel?: boolean;
+    allowInstallFromChannel?: boolean;
+    allowConfigWritesFromChannel?: boolean;
+    adminAllowFrom?: Array<string | number>;
+    allowedIntents?: string[];
+    deniedIntents?: string[];
+};
+export type CliqWorkScopeConfig = {
+    role?: string;
+    allowedSurfaces?: string[];
+    crm?: "none" | "read_only" | "read_write";
+    requiresReviewFor?: string[];
+    allowedIntents?: string[];
+    deniedIntents?: string[];
+};
+export type CliqWorkScopesConfig = Record<string, CliqWorkScopeConfig>;
 export type CliqResolvedAccount = {
     accountId: string;
     name?: string;
@@ -30,9 +55,16 @@ export type CliqResolvedAccount = {
     tokenPassword?: SecretInput;
     webhookSecret?: SecretInput;
     dmPolicy?: string;
+    groupPolicy: string;
+    groupAllowFrom: Array<string | number>;
     allowFrom: Array<string | number>;
+    requireMention: boolean;
+    employeeMode: CliqEmployeeModeConfig;
+    workScopes: CliqWorkScopesConfig;
     defaultTo?: string;
 };
+export declare const DEFAULT_CLIQ_EMPLOYEE_MODE: Required<Pick<CliqEmployeeModeConfig, "enabled" | "scopeProfile" | "policy" | "allowDebugFromChannel" | "allowInstallFromChannel" | "allowConfigWritesFromChannel">> & Pick<CliqEmployeeModeConfig, "adminAllowFrom" | "allowedIntents" | "deniedIntents">;
+export declare const DEFAULT_CLIQ_WORK_SCOPES: CliqWorkScopesConfig;
 export declare const cliqChannelConfigSchema: ChannelConfigSchema;
 export declare function listCliqAccountIds(cfg: OpenClawConfig): string[];
 export declare function defaultCliqAccountId(cfg: OpenClawConfig): string;

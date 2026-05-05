@@ -158,7 +158,15 @@ Required manifest baseline after `cliq-channel-402`:
             "type": "string",
             "enum": ["allowlist", "pairing", "open", "disabled"]
           },
+          "groupPolicy": {
+            "type": "string",
+            "enum": ["allowlist", "open", "disabled"]
+          },
           "allowFrom": { "$ref": "#/definitions/allowFrom" },
+          "groupAllowFrom": { "$ref": "#/definitions/allowFrom" },
+          "requireMention": { "type": "boolean" },
+          "employeeMode": { "$ref": "#/definitions/employeeMode" },
+          "workScopes": { "$ref": "#/definitions/workScopes" },
           "defaultTo": { "type": "string", "minLength": 1 },
           "accounts": {
             "type": "object",
@@ -191,6 +199,33 @@ Required manifest baseline after `cliq-channel-402`:
               ]
             }
           },
+          "employeeMode": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "enabled": { "type": "boolean" },
+              "scopeProfile": { "type": "string", "minLength": 1 },
+              "policy": { "type": "string", "enum": ["strict", "review"] },
+              "allowDebugFromChannel": { "type": "boolean" },
+              "allowInstallFromChannel": { "type": "boolean" },
+              "allowConfigWritesFromChannel": { "type": "boolean" },
+              "adminAllowFrom": { "$ref": "#/definitions/allowFrom" }
+            }
+          },
+          "workScope": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "role": { "type": "string", "minLength": 1 },
+              "allowedSurfaces": { "type": "array", "items": { "type": "string" } },
+              "crm": { "type": "string", "enum": ["none", "read_only", "read_write"] },
+              "requiresReviewFor": { "type": "array", "items": { "type": "string" } }
+            }
+          },
+          "workScopes": {
+            "type": "object",
+            "additionalProperties": { "$ref": "#/definitions/workScope" }
+          },
           "account": {
             "type": "object",
             "additionalProperties": false,
@@ -205,7 +240,15 @@ Required manifest baseline after `cliq-channel-402`:
                 "type": "string",
                 "enum": ["allowlist", "pairing", "open", "disabled"]
               },
+              "groupPolicy": {
+                "type": "string",
+                "enum": ["allowlist", "open", "disabled"]
+              },
               "allowFrom": { "$ref": "#/definitions/allowFrom" },
+              "groupAllowFrom": { "$ref": "#/definitions/allowFrom" },
+              "requireMention": { "type": "boolean" },
+              "employeeMode": { "$ref": "#/definitions/employeeMode" },
+              "workScopes": { "$ref": "#/definitions/workScopes" },
               "defaultTo": { "type": "string", "minLength": 1 }
             }
           }
@@ -250,6 +293,7 @@ import {
   matchesMentionWithExplicit,
   resolveInboundMentionDecision,
 } from "openclaw/plugin-sdk/channel-inbound";
+import { buildDmGroupAccountAllowlistAdapter } from "openclaw/plugin-sdk/allowlist-config-edit";
 import type { SecretInput, SecretRef } from "openclaw/plugin-sdk/secret-ref-runtime";
 ```
 
@@ -261,6 +305,10 @@ Required runtime surfaces:
   allowlist handling, completion guidance, and disable behavior.
 - `createChatChannelPlugin(...)` for DM security, pairing, threading, and
   outbound delivery composition.
+- `allowlist` adapter via `buildDmGroupAccountAllowlistAdapter(...)` for
+  native DM/group allowlist reads and edits.
+- `security.collectWarnings(...)` and `security.collectAuditFindings(...)` for
+  unsafe `open`/wildcard/no-mention/employee-disabled posture.
 - `defineChannelPluginEntry(...)` for the full runtime entry.
 - `defineSetupPluginEntry(...)` for setup-only startup.
 - `messaging.resolveSessionConversation(...)` for account/network/chat/thread
@@ -309,10 +357,25 @@ states with one clear next action each:
 - `network_missing`
 - `webhook_unverified`
 - `allowlist_empty`
+- `employee_scope_empty`
 
 The wizard must not perform process execution before `cliq-channel-404`; it only
 describes status, writes config patches, and points operators at the relevant
 `zoho` / `openclaw` commands.
+
+## Security and employee policy contract
+
+`cliq-channel-403` adds these runtime-owned policy modules:
+
+- `src/security.ts` evaluates DM pairing, DM allowlist, group allowlist,
+  mention-required posture, and unsafe-policy audit warnings.
+- `src/employee-policy.ts` classifies and blocks chat-originated debug,
+  install, config-write, secret-read, shell/system, and policy-bypass requests
+  before agent dispatch.
+
+Secure defaults are `dmPolicy=pairing`, `groupPolicy=allowlist`,
+`requireMention=true`, and `employeeMode.enabled=true`. Group/channel
+allowlisting uses `groupAllowFrom`; DM pairing/allowlist uses `allowFrom`.
 
 ## CLI contract
 

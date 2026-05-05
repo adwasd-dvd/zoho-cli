@@ -68,7 +68,12 @@ def test_openclaw_cliq_channel_manifest_matches_contract() -> None:
         "tokenPassword",
         "webhookSecret",
         "dmPolicy",
+        "groupPolicy",
+        "groupAllowFrom",
         "allowFrom",
+        "requireMention",
+        "employeeMode",
+        "workScopes",
     }.issubset(properties)
     assert properties["tokenPassword"] == {"$ref": "#/definitions/secretRef"}
     assert properties["webhookSecret"] == {"$ref": "#/definitions/secretRef"}
@@ -84,10 +89,20 @@ def test_openclaw_cliq_channel_manifest_matches_contract() -> None:
     assert definitions["account"]["properties"]["tokenPassword"] == {
         "$ref": "#/definitions/secretRef"
     }
+    assert definitions["account"]["properties"]["groupPolicy"]["enum"] == [
+        "allowlist",
+        "open",
+        "disabled",
+    ]
+    assert definitions["employeeMode"]["properties"]["scopeProfile"]["minLength"] == 1
+    assert definitions["workScopes"]["additionalProperties"] == {
+        "$ref": "#/definitions/workScope"
+    }
 
     ui_hints = manifest["channelConfigs"]["cliq"]["uiHints"]
     assert ui_hints["tokenPassword"]["sensitive"] is True
     assert ui_hints["webhookSecret"]["sensitive"] is True
+    assert ui_hints["employeeMode"]["advanced"] is True
 
 
 def test_openclaw_cliq_channel_sources_use_locked_sdk_surfaces() -> None:
@@ -99,6 +114,8 @@ def test_openclaw_cliq_channel_sources_use_locked_sdk_surfaces() -> None:
             read("auth-presence.ts"),
             read("src/channel.ts"),
             read("src/config.ts"),
+            read("src/employee-policy.ts"),
+            read("src/security.ts"),
             read("src/setup-wizard.ts"),
             read("src/zoho-cli.ts"),
         ]
@@ -116,13 +133,17 @@ def test_openclaw_cliq_channel_sources_use_locked_sdk_surfaces() -> None:
         "openclaw/plugin-sdk/secret-ref-runtime",
         "setupWizard",
         "cliqSetupWizard",
+        "buildDmGroupAccountAllowlistAdapter",
+        "evaluateCliqInboundSecurity",
+        "evaluateCliqEmployeePolicy",
+        "groupPolicy",
+        "employeeMode",
     ]:
         assert marker in source
 
     assert "cliq_send" not in source
     assert "ChannelPlugin.approvals" not in source
     assert "child_process" not in source
-    assert "cliq-channel-404" in source
 
 
 def test_openclaw_cliq_channel_setup_uses_env_secret_refs() -> None:
@@ -161,6 +182,8 @@ def test_openclaw_cliq_channel_dist_runtime_outputs_exist() -> None:
         "dist/src/channel.js",
         "dist/src/config.js",
         "dist/src/constants.js",
+        "dist/src/employee-policy.js",
+        "dist/src/security.js",
         "dist/src/setup-wizard.js",
         "dist/src/zoho-cli.js",
     ]:
@@ -171,6 +194,8 @@ def test_openclaw_cliq_channel_dist_runtime_outputs_exist() -> None:
             read("dist/index.js"),
             read("dist/setup-entry.js"),
             read("dist/src/channel.js"),
+            read("dist/src/employee-policy.js"),
+            read("dist/src/security.js"),
             read("dist/src/setup-wizard.js"),
             read("dist/src/zoho-cli.js"),
         ]
@@ -190,6 +215,7 @@ def test_openclaw_cliq_channel_setup_wizard_has_operator_states() -> None:
         "network_missing",
         "webhook_unverified",
         "allowlist_empty",
+        "employee_scope_empty",
         "envShortcut",
         "disable:",
         "resolveCliqSetupStatusLines",
@@ -199,3 +225,47 @@ def test_openclaw_cliq_channel_setup_wizard_has_operator_states() -> None:
         "ZOHO_CLIQ_WEBHOOK_SECRET",
     ]:
         assert marker in source
+
+
+def test_openclaw_cliq_channel_security_policy_is_secure_by_default() -> None:
+    channel = read("src/channel.ts")
+    config = read("src/config.ts")
+    security = read("src/security.ts")
+    employee = read("src/employee-policy.ts")
+
+    assert 'defaultPolicy: "pairing"' in channel
+    assert "resolveRequireMention" in channel
+    assert "collectCliqSecurityWarnings" in channel
+    assert "collectCliqSecurityAuditFindings" in channel
+    assert "normalizeCliqAllowEntry" in channel
+
+    for marker in [
+        'dmPolicy: accounts[params.accountId]?.dmPolicy ?? "pairing"',
+        'groupPolicy: accounts[params.accountId]?.groupPolicy ?? "allowlist"',
+        "requireMention: accounts[params.accountId]?.requireMention ?? true",
+        "DEFAULT_CLIQ_EMPLOYEE_MODE",
+        "DEFAULT_CLIQ_WORK_SCOPES",
+    ]:
+        assert marker in config
+
+    for marker in [
+        "dm_pairing_required",
+        "group_allowlist_denied",
+        "mention_required",
+        "groupPolicy=open",
+        "allowFrom includes '*'",
+        "employeeMode.enabled=false",
+    ]:
+        assert marker in security
+
+    for marker in [
+        "system.debug",
+        "system.install",
+        "system.config_write",
+        "system.exec",
+        "secrets.read",
+        "policy.bypass",
+        "employee_admin_override_denied",
+        "employee_scope_empty",
+    ]:
+        assert marker in employee

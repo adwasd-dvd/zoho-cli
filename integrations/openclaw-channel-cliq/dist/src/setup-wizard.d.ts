@@ -29,6 +29,10 @@ export declare const CLIQ_SETUP_STATE_COPY: {
         readonly copy: "Group and DM allowlist is empty.";
         readonly nextAction: "Add trusted Zoho Cliq user ids to allowFrom.";
     };
+    readonly employee_scope_empty: {
+        readonly copy: "Scoped employee mode needs a work scope.";
+        readonly nextAction: "Set employeeMode.scopeProfile and matching workScopes entry.";
+    };
 };
 export type CliqSetupStateCode = keyof typeof CLIQ_SETUP_STATE_COPY;
 export declare function resolveCliqSetupStateCodes(params: {

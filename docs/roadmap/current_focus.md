@@ -7,10 +7,10 @@
 4. **Workflow packaging status**: `mail-010`, `cliq-195`, `platform-207`, and `platform-208` are complete for this milestone.
 5. **Cliq modularization handoff is complete for the channel lane**: `cliq-210` moved readiness, identity, org-directory, org-admin, productivity, platform-extension list, channel-management/chat-control, threading, scheduled-message, bot, and message retrieval/context commands into smaller `zoho_cli/commands/cliq_*` modules with JSON/help parity preserved.
 6. **External blockers remain deferred**: `cliq-165` (`inactive_appaccount_user`) and `cliq-193` (`not_supported`) stay capability-gated under 3-strike policy.
-7. **OpenClaw channel setup UX is actionable**: `cliq-channel-401` added the installable package, `cliq-channel-402` expanded config/SecretRef setup, and `cliq-channel-416` added setup wizard status lines, env shortcut, text inputs, allowlist handling, disable behavior, and an operator runbook while package-local OpenClaw install/inspect/doctor stays green.
+7. **OpenClaw channel security posture is ready for wiring**: `cliq-channel-401` added the installable package, `cliq-channel-402` expanded config/SecretRef setup, `cliq-channel-416` added setup wizard UX, and `cliq-channel-403` added DM pairing, group allowlist, mention gating, scoped employee mode, and audit warnings while package-local OpenClaw install/inspect/doctor stays green.
 
 ## Next
-1. Start `cliq-channel-403`: implement secure pairing, allowlist enforcement, scoped employee mode, mention gating, and audit warnings.
+1. Start `cliq-channel-414`: wire native SDK policy seams for session grammar, mention facts, command bypass boundaries, and approval capability.
 2. Keep cliq-194 read-ack endpoint limitation in capability-gated deferred mode.
 3. Continue remaining Cliq helper-heavy modularization opportunistically when it directly lowers channel implementation risk.
 4. Resume CRM CLI planning in v0.5 after the native channel lane is stable.
@@ -18,7 +18,7 @@
 ## Delivery estimate (v1.0 first cut)
 - **Stable cut**: published as `v0.2.1`.
 - **External-unblocked full parity**: add ~1-3 weeks depending on Zoho-side availability.
-- **Native OpenClaw Cliq channel v0.4**: config/setup UX is complete enough for real config/auth smoke; first real Cliq send testing starts after `cliq-channel-404` CLI process execution plus `cliq-channel-405` outbound delivery, with security/inbound hardening still staged.
+- **Native OpenClaw Cliq channel v0.4**: config/setup/security policy smoke is ready; first real Cliq send testing starts after `cliq-channel-404` CLI process execution plus `cliq-channel-405` outbound delivery, with live inbound wiring still staged.
 
 ## Blocker policy
 - 3 consecutive `not_supported` or `inactive_appaccount_user` outcomes for the same check => mark post-release deferred.

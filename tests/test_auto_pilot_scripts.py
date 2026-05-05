@@ -524,6 +524,62 @@ def test_openclaw_cliq_live_smoke_route_binding_only_mode(tmp_path: Path) -> Non
     assert "ZOHO_CLIQ_EXPECTED_ACCOUNT_ID" in script
     assert "ZOHO_CLIQ_ROUTE_BINDING_ONLY" in script
     assert "OPENCLAW_CONFIG_PATH" in script
-    assert "missing cliq/${expectedAccountId} binding" in script
     assert 'match.channel === "cliq"' in script
-    assert "assert.equal(binding.agentId, expectedAgentId)" in script
+    assert "agent_binding_mismatch" in script
+
+
+def test_openclaw_cliq_live_smoke_route_binding_only_reports_mismatch(
+    tmp_path: Path,
+) -> None:
+    config_path = tmp_path / "openclaw.json"
+    config_path.write_text(
+        json.dumps(
+            {
+                "bindings": [
+                    {
+                        "agentId": "main",
+                        "match": {"channel": "cliq", "accountId": "default"},
+                    }
+                ],
+                "agents": {
+                    "list": [
+                        {"id": "main", "model": "openai-codex/gpt-5.3-codex"},
+                        {
+                            "id": "zoho-employee-test",
+                            "model": "openai-codex/gpt-5.3-codex",
+                        },
+                    ]
+                },
+            }
+        )
+    )
+
+    result = subprocess.run(
+        ["bash", str(OPENCLAW_CLIQ_LIVE_SMOKE_SCRIPT)],
+        cwd=REPO_ROOT,
+        env={
+            **os.environ,
+            "OPENCLAW_CONFIG_PATH": str(config_path),
+            "ZOHO_CLIQ_ROUTE_BINDING_ONLY": "1",
+            "ZOHO_CLIQ_EXPECTED_AGENT_ID": "zoho-employee-test",
+        },
+        capture_output=True,
+        text=True,
+        check=False,
+    )
+
+    output = f"{result.stdout}\n{result.stderr}"
+    assert result.returncode == 1, output
+    payload_lines = [
+        line
+        for line in result.stdout.splitlines()
+        if line.startswith("{") and '"status":"error"' in line
+    ]
+    assert len(payload_lines) == 1, output
+    payload = json.loads(payload_lines[0])
+    assert payload["error"] == "agent_binding_mismatch"
+    assert payload["expectedAgentId"] == "zoho-employee-test"
+    assert payload["actualAgentId"] == "main"
+    assert payload["channel"] == "cliq"
+    assert payload["accountId"] == "default"
+    assert "AssertionError" not in output

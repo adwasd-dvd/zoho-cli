@@ -57,26 +57,44 @@ check_route_binding() {
   fi
   printf '\n== openclaw cliq route binding gate ==\n'
   node --input-type=module -e '
-import assert from "node:assert/strict";
 import fs from "node:fs";
 
 const expectedAgentId = process.argv[1];
 const expectedModel = process.argv[2];
 const expectedAccountId = process.argv[3] || "default";
 const configPath = process.argv[4];
-const cfg = JSON.parse(fs.readFileSync(configPath, "utf8"));
+
+const fail = (error, details = {}) => {
+  console.log(JSON.stringify({ status: "error", error, channel: "cliq", accountId: expectedAccountId, ...details }));
+  process.exit(1);
+};
+
+let cfg;
+try {
+  cfg = JSON.parse(fs.readFileSync(configPath, "utf8"));
+} catch (error) {
+  const message = error instanceof Error ? error.message.split("\n")[0] : String(error);
+  fail("config_read_failed", { message });
+}
+
 const bindings = Array.isArray(cfg.bindings) ? cfg.bindings : [];
 const binding = bindings.find((entry) => {
   const match = entry?.match ?? {};
   return match.channel === "cliq" && (match.accountId ?? "default") === expectedAccountId;
 });
-assert.ok(binding, `missing cliq/${expectedAccountId} binding`);
-assert.equal(binding.agentId, expectedAgentId);
+if (!binding) {
+  fail("route_binding_missing", { expectedAgentId });
+}
+if (binding.agentId !== expectedAgentId) {
+  fail("agent_binding_mismatch", { expectedAgentId, actualAgentId: binding.agentId ?? null });
+}
 const agents = Array.isArray(cfg.agents?.list) ? cfg.agents.list : [];
 const agent = agents.find((entry) => entry?.id === expectedAgentId);
-assert.ok(agent, `missing agent ${expectedAgentId}`);
-if (expectedModel) {
-  assert.equal(agent.model, expectedModel);
+if (!agent) {
+  fail("agent_missing", { expectedAgentId });
+}
+if (expectedModel && agent.model !== expectedModel) {
+  fail("agent_model_mismatch", { expectedAgentId, expectedModel, actualModel: agent.model ?? null });
 }
 console.log(JSON.stringify({
   status: "ok",

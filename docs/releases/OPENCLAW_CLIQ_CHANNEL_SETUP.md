@@ -211,7 +211,9 @@ verifies `cliq/<account>` binding, and can also enforce
 smoke is pinned to a named account/model pair. Set
 `ZOHO_CLIQ_ROUTE_BINDING_ONLY=1` for an offline preflight that runs only this
 binding check; use `OPENCLAW_CONFIG_PATH` to point it at a temporary or
-operator-provided config file.
+operator-provided config file. Route gate failures are machine-readable JSON
+with `status=error` and error codes such as `route_binding_missing`,
+`agent_binding_mismatch`, `agent_missing`, or `agent_model_mismatch`.
 
 `token_refresh_rate_limited` and repeated endpoint availability failures are
 recorded as `skip_deferred` so the gate does not hammer Zoho refresh endpoints

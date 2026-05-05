@@ -40,6 +40,9 @@ CRM SDK planning:
 - `zoho crm write-audit` (`crm-010`: redacted JSONL audit inspection for
   `crm.write.plan` and `crm.write.gate`; use `--audit-file` or
   `ZOHO_CRM_WRITE_AUDIT`; events must report `rawFieldValuesStored=false`)
+- `zoho crm fixture-plan` (`crm-011`: controlled live fixture readiness gate,
+  `policyId=crm-011-controlled-live-fixture-gate`, no CRM writes,
+  `liveWritesEnabled=false`)
 - `docs/architecture/CRM_WRITE_SURFACE_CONTRACT.md`
 
 GitHub intake:

@@ -11509,6 +11509,74 @@ def crm_write_audit(
     )
 
 
+@crm_app.command("fixture-plan")
+def crm_fixture_plan(
+    module: Optional[str] = typer.Option(
+        None,
+        "--module",
+        "-m",
+        help="CRM module API name for the controlled fixture.",
+    ),
+    duplicate_check_fields: List[str] = typer.Option(
+        [],
+        "--duplicate-check-field",
+        help="Duplicate/unique Field API name expected for the fixture (repeatable).",
+    ),
+    idempotency_key: Optional[str] = typer.Option(
+        None,
+        "--idempotency-key",
+        help="Idempotency key expected for the controlled fixture.",
+    ),
+    payload_digest: Optional[str] = typer.Option(
+        None,
+        "--payload-digest",
+        help="Payload digest from the reviewed upsert dry-run.",
+    ),
+    audit_file: Optional[str] = typer.Option(
+        None,
+        "--audit-file",
+        help="Override CRM write audit JSONL path.",
+    ),
+    evidence_limit: int = typer.Option(
+        1000,
+        "--evidence-limit",
+        help="Max audit events to inspect for fixture evidence.",
+    ),
+) -> None:
+    """Plan the controlled live CRM fixture gate without writing data."""
+    path, path_meta = _crm_write_audit_path(audit_file)
+    try:
+        audit_events = (
+            _crm.read_crm_write_audit_events(path, limit=evidence_limit)
+            if path is not None
+            else []
+        )
+    except ValueError as exc:
+        utils.error_exit("invalid_audit_query", str(exc))
+
+    payload = _crm.crm_controlled_live_fixture_policy(
+        module_api_name=module,
+        duplicate_check_fields=list(duplicate_check_fields),
+        idempotency_key=idempotency_key,
+        payload_digest=payload_digest,
+        audit_events=audit_events,
+    )
+    payload["auditFile"] = str(path) if path is not None else ""
+    payload["auditFileExists"] = path.exists() if path is not None else False
+    payload["auditPath"] = path_meta
+
+    cfg = _cfg()
+    email = _S.account or _config.default_account(cfg)
+    payload["auditPersistence"] = _persist_crm_write_audit(
+        payload,
+        event_type="crm.write.fixture_plan",
+        account=email,
+        source_command="zoho crm fixture-plan",
+        audit_file=audit_file,
+    )
+    utils.output(payload)
+
+
 @crm_app.command("modules")
 def crm_modules(
     limit: int = typer.Option(50, "--limit", "-n", help="Max modules to return."),

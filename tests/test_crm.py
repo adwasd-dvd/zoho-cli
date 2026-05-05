@@ -275,6 +275,59 @@ def test_append_and_read_crm_write_audit_events(tmp_path: Path) -> None:
     assert events == [second]
 
 
+def test_crm_controlled_live_fixture_policy_requires_audit_evidence() -> None:
+    policy = crm.crm_controlled_live_fixture_policy(module_api_name="Leads")
+
+    assert policy["policyId"] == "crm-011-controlled-live-fixture-gate"
+    assert policy["liveWritesEnabled"] is False
+    assert policy["decision"] == "defer_controlled_live_fixture"
+    assert policy["auditEvidence"]["hasDryRunPlan"] is False
+    assert "dry_run_audit_evidence_missing" in policy["blockingReasons"]
+    assert "idempotency_key_required" in policy["blockingReasons"]
+
+
+def test_crm_controlled_live_fixture_policy_matches_audit_evidence() -> None:
+    plan = crm.build_crm_upsert_dry_run(
+        module_api_name="Leads",
+        payload={"Last_Name": "Wang", "Email": "wang@example.com"},
+        duplicate_check_fields=["Email"],
+        idempotency_key="fixture-123",
+    )
+    plan_event = crm.build_crm_write_audit_event(
+        payload=plan,
+        event_type="crm.write.plan",
+        created_at="2026-05-05T11:20:00Z",
+    )
+    gate = crm.crm_upsert_live_gate_policy(
+        module_api_name="Leads",
+        granted_scopes=["ZohoCRM.modules.Leads.WRITE"],
+        auth_checked=True,
+    )
+    gate_event = crm.build_crm_write_audit_event(
+        payload=gate,
+        event_type="crm.write.gate",
+        created_at="2026-05-05T11:21:00Z",
+    )
+
+    policy = crm.crm_controlled_live_fixture_policy(
+        module_api_name="Leads",
+        duplicate_check_fields=["Email"],
+        idempotency_key="fixture-123",
+        payload_digest=plan["payloadDigest"],
+        audit_events=[plan_event, gate_event],
+    )
+
+    assert policy["auditEvidence"]["hasDryRunPlan"] is True
+    assert policy["auditEvidence"]["hasGate"] is True
+    assert policy["auditEvidence"]["hasScopeEvidence"] is True
+    assert "dry_run_audit_evidence_missing" not in policy["blockingReasons"]
+    assert "upsert_gate_audit_evidence_missing" not in policy["blockingReasons"]
+    assert "upsert_scope_evidence_missing" not in policy["blockingReasons"]
+    assert (
+        "controlled_live_fixture_execution_not_implemented" in policy["blockingReasons"]
+    )
+
+
 @respx.mock
 def test_crm_client_modules() -> None:
     client = crm.ZohoCrmClient("fake-token", base_url="https://www.zohoapis.com/crm/v2")

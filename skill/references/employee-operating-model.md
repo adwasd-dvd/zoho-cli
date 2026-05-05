@@ -82,3 +82,6 @@ In `crm-010`, dry-run and gate commands persist redacted JSONL audit events.
 Use `zoho crm write-audit` to inspect them, prefer `--audit-file` or
 `ZOHO_CRM_WRITE_AUDIT` for isolated agent runs, and verify
 `rawFieldValuesStored=false`.
+Before any real-environment CRM test, run `zoho crm fixture-plan` against the
+same audit file. Treat its blockers and `liveWritesEnabled=false` as
+authoritative until a later guarded fixture execution slice exists.

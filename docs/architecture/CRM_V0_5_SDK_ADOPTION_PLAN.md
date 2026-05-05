@@ -1,6 +1,6 @@
 # CRM v0.5 SDK adoption plan
 
-Updated: `2026-05-05T11:14:00Z`.
+Updated: `2026-05-05T11:23:21Z`.
 
 This is the `crm-003` handoff for phasing the official Zoho CRM server-side
 Python SDK into `zoho-cli` without breaking the current AI-safe CLI contract.
@@ -148,6 +148,16 @@ adapter proves parity on the read-only surface. The CLI contract remains:
   stores.
 - Live CRM writes remain disabled.
 
+## Implemented in crm-011
+
+- Added `crm_controlled_live_fixture_policy()` and `zoho crm fixture-plan`.
+- The command reads redacted write audit events and reports whether matching
+  dry-run, upsert-gate, and accepted-scope evidence exists for a proposed
+  controlled fixture.
+- `fixture-plan` persists `crm.write.fixture_plan` when audit storage is
+  configured.
+- Live CRM writes remain disabled.
+
 ## v0.5 slices
 
 1. `crm-004` SDK adapter skeleton (completed):
@@ -179,10 +189,13 @@ adapter proves parity on the read-only surface. The CLI contract remains:
    - persist CRM write dry-run/live gate audit events before any future network
      write;
    - add replay/search guidance for AI agents and operators.
-8. `crm-011` controlled live fixture gate:
+8. `crm-011` controlled live fixture gate (completed):
    - define the smallest safe real-CRM fixture for upsert validation;
    - require explicit operator approval and persisted audit evidence before any
      network write is attempted.
+9. `crm-012` guarded fixture execution harness:
+   - decide whether a special fixture-only execution path should exist;
+   - keep normal `zoho crm upsert --execute` blocked.
 
 ## Non-goals
 

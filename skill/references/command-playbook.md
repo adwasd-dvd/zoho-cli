@@ -138,6 +138,20 @@ zoho crm write-audit \
 Audit events should show `rawFieldValuesStored=false`; do not paste raw field
 values, tokens, or secrets into audit reports.
 
+For a future real-environment CRM test, plan the fixture gate first:
+
+```bash
+zoho crm fixture-plan \
+  --audit-file /tmp/zoho-crm-audit.jsonl \
+  --module Leads \
+  --duplicate-check-field Email \
+  --idempotency-key crm-leads-upsert-$(date +%F) \
+  --payload-digest sha256:<reviewed-digest>
+```
+
+`crm-011` reports dry-run/gate/scope audit evidence and fixture blockers. It is
+not a live write command; `liveWritesEnabled=false` remains authoritative.
+
 ## Bridge fallback (explicit)
 
 ```bash

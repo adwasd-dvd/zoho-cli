@@ -11,6 +11,7 @@
 - Added `crm-008` upsert dry-run: `zoho crm upsert` accepts `--data-json` or `--data-file`, duplicate-check fields, and an idempotency key, then returns an audit-friendly dry-run envelope with field names, record count, payload digest, record digests, required confirmation, and no raw field values; `--execute` remains blocked with `live_write_not_enabled`.
 - Added `crm-009` live upsert gate planning: `crm_upsert_live_gate_policy()` plus `zoho crm upsert-gate` report `liveWritesEnabled=false`, accepted upsert scopes, matching granted scopes, and blocking reasons such as `audit_persistence_not_implemented` and `controlled_live_fixture_not_recorded` before any live CRM write can be enabled.
 - Added `crm-010` write audit persistence: `zoho crm upsert` and `zoho crm upsert-gate` now append redacted JSONL audit events (`crm.write.plan` / `crm.write.gate`) with `rawFieldValuesStored=false`, `--audit-file` / `ZOHO_CRM_WRITE_AUDIT` overrides, and `zoho crm write-audit` for recent event inspection while live writes remain blocked.
+- Added `crm-011` controlled live fixture planning: `crm_controlled_live_fixture_policy()` plus `zoho crm fixture-plan` inspect redacted audit evidence for matching dry-run, gate, and OAuth-scope facts, persist `crm.write.fixture_plan`, and keep live writes disabled with explicit fixture blockers.
 
 ### Final release (2026-05-04T21:15:20Z)
 - Promoted `0.2.1rc1` to final `0.2.1` after the RC gate stayed green; no additional CLI behavior change was introduced for the final promotion.

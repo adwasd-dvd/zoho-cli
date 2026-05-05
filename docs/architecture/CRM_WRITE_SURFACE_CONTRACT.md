@@ -1,6 +1,6 @@
 # CRM write-surface safety contract
 
-Updated: `2026-05-05T11:14:00Z`.
+Updated: `2026-05-05T11:23:21Z`.
 
 This is the `crm-007` contract for adding CRM write commands without making AI
 agents accidentally mutate production data.
@@ -110,6 +110,35 @@ They do not store raw field values, tokens, or secrets, and expose
 
 Live `upsert` execution remains disabled after `crm-010`. The next safe slice is
 controlled live fixture evidence.
+
+## Implemented in crm-011
+
+`zoho crm fixture-plan` now evaluates controlled live fixture readiness without
+writing CRM data:
+
+```bash
+zoho crm fixture-plan \
+  --module Leads \
+  --duplicate-check-field Email \
+  --idempotency-key crm-leads-import-2026-05-05 \
+  --payload-digest sha256:<reviewed-digest> \
+  --audit-file /tmp/zoho-crm-audit.jsonl
+```
+
+The command reads recent redacted audit events and reports:
+
+- `policyId=crm-011-controlled-live-fixture-gate`
+- `liveWritesEnabled=false`
+- `decision=defer_controlled_live_fixture`
+- whether matching `crm.write.plan` evidence exists
+- whether matching `crm.write.gate` and accepted-scope evidence exists
+- required gates before any future controlled live fixture
+- blockers such as `operator_fixture_approval_required`,
+  `fixture_cleanup_plan_required`, and
+  `controlled_live_fixture_execution_not_implemented`
+
+`fixture-plan` also persists a `crm.write.fixture_plan` audit event when an
+audit path is configured. It is a readiness gate, not an execution command.
 
 ## Official API references
 

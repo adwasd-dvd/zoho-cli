@@ -12,7 +12,7 @@ import pytest
 import respx
 from typer.testing import CliRunner
 
-from zoho_cli import auth, crm_sdk
+from zoho_cli import auth, crm as _crm, crm_sdk
 from zoho_cli.cli import app
 
 # ---------------------------------------------------------------------------
@@ -27347,6 +27347,102 @@ def test_crm_write_audit_lists_recent_events(tmp_path: Path) -> None:
     assert event["eventType"] == "crm.write.plan"
     assert event["module"] == "Leads"
     assert event["rawFieldValuesStored"] is False
+    assert "Wang" not in result.output
+    assert "wang@example.com" not in result.output
+
+
+def test_crm_fixture_plan_reports_missing_evidence(tmp_path: Path) -> None:
+    audit_path = tmp_path / "crm_audit.jsonl"
+    result = runner.invoke(
+        app,
+        [
+            "crm",
+            "fixture-plan",
+            "--module",
+            "Leads",
+            "--duplicate-check-field",
+            "Email",
+            "--idempotency-key",
+            "fixture-123",
+            "--audit-file",
+            str(audit_path),
+        ],
+    )
+
+    assert result.exit_code == 0, result.output
+    payload = json.loads(result.output)
+    assert payload["policyId"] == "crm-011-controlled-live-fixture-gate"
+    assert payload["liveWritesEnabled"] is False
+    assert payload["auditEvidence"]["hasDryRunPlan"] is False
+    assert "dry_run_audit_evidence_missing" in payload["blockingReasons"]
+    assert payload["auditPersistence"]["status"] == "persisted"
+
+
+def test_crm_fixture_plan_uses_existing_audit_evidence(tmp_path: Path) -> None:
+    audit_path = tmp_path / "crm_audit.jsonl"
+    upsert_result = runner.invoke(
+        app,
+        [
+            "crm",
+            "upsert",
+            "--module",
+            "Leads",
+            "--data-json",
+            '{"Last_Name":"Wang","Email":"wang@example.com"}',
+            "--duplicate-check-field",
+            "Email",
+            "--idempotency-key",
+            "fixture-123",
+            "--audit-file",
+            str(audit_path),
+        ],
+    )
+    assert upsert_result.exit_code == 0, upsert_result.output
+    upsert_payload = json.loads(upsert_result.output)
+    gate_event = _crm.crm_upsert_live_gate_policy(
+        module_api_name="Leads",
+        granted_scopes=["ZohoCRM.modules.Leads.WRITE"],
+        auth_checked=True,
+    )
+    _crm.append_crm_write_audit_event(
+        audit_path,
+        _crm.build_crm_write_audit_event(
+            payload=gate_event,
+            event_type="crm.write.gate",
+            created_at="2026-05-05T11:22:00Z",
+        ),
+    )
+
+    result = runner.invoke(
+        app,
+        [
+            "crm",
+            "fixture-plan",
+            "--module",
+            "Leads",
+            "--duplicate-check-field",
+            "Email",
+            "--idempotency-key",
+            "fixture-123",
+            "--payload-digest",
+            upsert_payload["payloadDigest"],
+            "--audit-file",
+            str(audit_path),
+        ],
+    )
+
+    assert result.exit_code == 0, result.output
+    payload = json.loads(result.output)
+    assert payload["auditEvidence"]["hasDryRunPlan"] is True
+    assert payload["auditEvidence"]["hasGate"] is True
+    assert payload["auditEvidence"]["hasScopeEvidence"] is True
+    assert "dry_run_audit_evidence_missing" not in payload["blockingReasons"]
+    assert "upsert_gate_audit_evidence_missing" not in payload["blockingReasons"]
+    assert "upsert_scope_evidence_missing" not in payload["blockingReasons"]
+    assert (
+        "controlled_live_fixture_execution_not_implemented"
+        in payload["blockingReasons"]
+    )
     assert "Wang" not in result.output
     assert "wang@example.com" not in result.output
 

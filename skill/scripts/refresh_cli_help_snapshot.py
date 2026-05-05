@@ -18,6 +18,7 @@ COMMAND_SUFFIXES: list[list[str]] = [
     ["crm", "upsert", "--help"],
     ["crm", "upsert-gate", "--help"],
     ["crm", "write-audit", "--help"],
+    ["crm", "fixture-plan", "--help"],
 ]
 
 

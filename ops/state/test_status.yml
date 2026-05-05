@@ -1,10 +1,19 @@
-last_run_at: "2026-05-05T11:19:08Z"
+last_run_at: "2026-05-05T11:28:21Z"
 last_result: passing
-current_focus: crm-010-write-audit-persistence-full-ci-20260505T111908Z
+current_focus: crm-011-controlled-live-fixture-full-ci-20260505T112821Z
 suites:
   unit:
     status: passing
     notes:
+      - "crm-011 controlled live fixture gate completed at 2026-05-05T11:23:21Z"
+      - "make ci -> ruff format/check clean + pytest `1828 passed in 50.71s`"
+      - "added `crm_controlled_live_fixture_policy()` plus `zoho crm fixture-plan`"
+      - "`zoho crm fixture-plan` reads redacted dry-run/gate audit evidence, persists `crm.write.fixture_plan`, and keeps raw CRM field values out of audit storage"
+      - "fixture planning output keeps `liveWritesEnabled=false`, `decision=defer_controlled_live_fixture`, and blocks on operator approval, cleanup evidence, and unimplemented controlled execution"
+      - "./.venv/bin/python -m pytest -q tests/test_crm.py tests/test_cli.py -k 'crm' tests/test_lane3_docs.py tests/test_markdown_update.py -> 59 passed, 866 deselected in 0.89s"
+      - "manual fixture probe: `zoho crm upsert` + `zoho crm upsert-gate` + `zoho crm fixture-plan` with temp `--audit-file` -> policy `crm-011-controlled-live-fixture-gate`, `liveWritesEnabled=false`, `decision=defer_controlled_live_fixture`, dry-run/gate evidence true, blockers present, `REDACTION_OK`"
+      - "ruby YAML parse for ops/workflow state -> YAML_PARSE_OK"
+      - "git diff --check -> clean"
       - "crm-010 write audit persistence completed at 2026-05-05T11:14:00Z"
       - "make ci -> ruff format/check clean + pytest `1824 passed in 50.92s`"
       - "added redacted CRM write audit JSONL helpers and `zoho crm write-audit`"

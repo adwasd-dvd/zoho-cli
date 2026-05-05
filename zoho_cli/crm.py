@@ -40,6 +40,7 @@ CRM_UPSERT_LIVE_GATE_POLICY_ID = "crm-009-live-upsert-gate"
 CRM_WRITE_AUDIT_EVENT_VERSION = 1
 CRM_WRITE_AUDIT_DEFAULT_FILENAME = "crm_write_audit.jsonl"
 CRM_WRITE_AUDIT_DEFAULT_LIMIT = 20
+CRM_CONTROLLED_LIVE_FIXTURE_POLICY_ID = "crm-011-controlled-live-fixture-gate"
 
 
 def crm_sdk_status(
@@ -472,6 +473,8 @@ def build_crm_write_audit_event(
         "requiredConfirmation": payload.get("requiredConfirmation", ""),
         "confirmationMatches": payload.get("confirmation", {}).get("matches"),
         "scopeGate": _crm_safe_scope_gate(payload.get("scopeGate", {})),
+        "fixture": payload.get("fixture", {}),
+        "auditEvidence": payload.get("auditEvidence", {}),
         "blockingReasons": list(payload.get("blockingReasons", [])),
         "policyId": payload.get("policyId")
         or payload.get("audit", {}).get("policyId", ""),
@@ -542,6 +545,119 @@ def read_crm_write_audit_events(
         events.append(event)
 
     return events[-limit:]
+
+
+def crm_controlled_live_fixture_policy(
+    *,
+    module_api_name: str | None = None,
+    duplicate_check_fields: list[str] | None = None,
+    idempotency_key: str | None = None,
+    payload_digest: str | None = None,
+    audit_events: list[dict] | None = None,
+) -> dict:
+    """Plan the controlled live CRM upsert fixture gate without enabling writes."""
+
+    module = (module_api_name or "").strip()
+    duplicate_fields = _clean_string_list(duplicate_check_fields)
+    key = (idempotency_key or "").strip()
+    digest = (payload_digest or "").strip()
+    events = audit_events or []
+
+    plan_events = [
+        event
+        for event in events
+        if event.get("eventType") == "crm.write.plan"
+        and event.get("operation") == "upsert"
+        and (not module or event.get("module") == module)
+        and (not key or event.get("idempotencyKey") == key)
+        and (not digest or event.get("payloadDigest") == digest)
+    ]
+    gate_events = [
+        event
+        for event in events
+        if event.get("eventType") == "crm.write.gate"
+        and event.get("operation") == "upsert"
+        and (not module or event.get("module") == module)
+    ]
+    matching_scope_events = [
+        event
+        for event in gate_events
+        if event.get("scopeGate", {}).get("hasAcceptedScope") is True
+    ]
+
+    blocking_reasons = [
+        "live_writes_disabled_by_policy",
+        "controlled_live_fixture_execution_not_implemented",
+    ]
+    if not module:
+        blocking_reasons.append("module_required")
+    if not duplicate_fields:
+        blocking_reasons.append("duplicate_check_field_required")
+    if not key:
+        blocking_reasons.append("idempotency_key_required")
+    if not plan_events:
+        blocking_reasons.append("dry_run_audit_evidence_missing")
+    if not gate_events:
+        blocking_reasons.append("upsert_gate_audit_evidence_missing")
+    if not matching_scope_events:
+        blocking_reasons.append("upsert_scope_evidence_missing")
+    blocking_reasons.extend(
+        [
+            "operator_fixture_approval_required",
+            "fixture_cleanup_plan_required",
+            "controlled_live_fixture_not_recorded",
+        ]
+    )
+
+    fixture_label = ""
+    if module and key:
+        fixture_label = f"zoho-cli-fixture:{module}:{key}"
+
+    return {
+        "policyId": CRM_CONTROLLED_LIVE_FIXTURE_POLICY_ID,
+        "operation": "upsert",
+        "stage": "planning",
+        "liveWritesEnabled": False,
+        "decision": "defer_controlled_live_fixture",
+        "module": module,
+        "duplicateCheckFields": duplicate_fields,
+        "idempotencyKey": key,
+        "payloadDigest": digest,
+        "fixture": {
+            "label": fixture_label,
+            "recordCount": 1,
+            "mustUseDedicatedTestRecord": True,
+            "mustBeRecoverable": True,
+            "cleanupPlanRequired": True,
+        },
+        "auditEvidence": {
+            "eventsConsidered": len(events),
+            "matchingPlanEvents": len(plan_events),
+            "matchingGateEvents": len(gate_events),
+            "matchingScopeEvents": len(matching_scope_events),
+            "hasDryRunPlan": bool(plan_events),
+            "hasGate": bool(gate_events),
+            "hasScopeEvidence": bool(matching_scope_events),
+            "matchingPlanEventIds": [event.get("eventId", "") for event in plan_events],
+            "matchingGateEventIds": [event.get("eventId", "") for event in gate_events],
+        },
+        "requiredGatesBeforeLiveFixture": [
+            "dedicated CRM sandbox/test record selected",
+            "dry-run audit event persisted for the exact payload",
+            "upsert gate audit event persisted with accepted OAuth scope",
+            "exact payloadDigest reviewed by operator",
+            "idempotency key reviewed by operator",
+            "duplicate-check fields reviewed by operator",
+            "operator explicitly approves the controlled fixture",
+            "cleanup/recovery plan recorded before network write",
+        ],
+        "blockingReasons": blocking_reasons,
+        "next": [
+            "Run `zoho crm upsert` with --audit-file or configured audit storage.",
+            "Run `zoho crm upsert-gate --check-auth` against the same module.",
+            "Review `zoho crm write-audit` before any future live fixture command.",
+        ],
+    }
 
 
 def normalize_crm_upsert_payload(

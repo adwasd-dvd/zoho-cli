@@ -278,12 +278,19 @@
 - id: crm-003
   title: evaluate and phase in official Zoho CRM server-side SDK in v0.5 follow-up slices
   module: crm
-  stage: in_progress
+  stage: completed
   priority: medium
   depends_on:
   - crm-002
   - platform-202
   - cliq-channel-418
+- id: crm-004
+  title: build official Zoho CRM SDK adapter skeleton behind the existing JSON contract
+  module: crm
+  stage: in_progress
+  priority: high
+  depends_on:
+  - crm-003
 - id: platform-208
   title: finalize module-first CLI information architecture (retire legacy root mail aliases after deprecation window and normalize level-2/3 help taxonomy)
   module: platform

@@ -51,7 +51,12 @@
 
 When CRM is available, start with read-only commands:
 
+- `zoho crm sdk-status`
 - `zoho crm modules`
 - `zoho crm fields --module <module>`
 - `zoho crm list --module <module> --limit <n>`
 - `zoho crm get --module <module> <record_id>`
+
+For CRM SDK migration or v0.5 work, read
+`docs/architecture/CRM_V0_5_SDK_ADOPTION_PLAN.md` and keep the SDK adapter behind
+parity gates until the JSON-safe read surface is proven.

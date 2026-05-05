@@ -29,7 +29,7 @@ openclaw_cliq_channel:
 crm:
   priority: 4
   status: in_progress
-  phase: v0_5_sdk_evaluation
+  phase: v0_5_sdk_adapter_skeleton
   target_release: v0.5.0
-  current_milestone: crm-003-sdk-evaluation
+  current_milestone: crm-004-sdk-adapter-skeleton
   blockers: []

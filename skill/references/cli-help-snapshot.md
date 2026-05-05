@@ -1,6 +1,6 @@
 # CLI help snapshot
 
-Generated at: `2026-04-24T17:50:55Z`
+Generated at: `2026-05-05T09:52:02Z`
 
 Use this file as a quick command-surface reference for the skill.
 
@@ -9,12 +9,12 @@ Use this file as a quick command-surface reference for the skill.
 Exit code: `0`
 
 ```text
-                                                                                
- Usage: zoho [OPTIONS] COMMAND [ARGS]...                                        
-                                                                                
- Zoho CLI (v0.2.0) — unified multi-product CLI for Mail, Cliq, and CRM. Use     
- module-first commands: `zoho mail ...`, `zoho cliq ...`, `zoho crm ...`.       
-                                                                                
+
+ Usage: zoho [OPTIONS] COMMAND [ARGS]...
+
+ Zoho CLI (v0.2.1) — unified multi-product CLI for Mail, Cliq, and CRM. Use
+ module-first commands: `zoho mail ...`, `zoho cliq ...`, `zoho crm ...`.
+
 ╭─ Options ────────────────────────────────────────────────────────────────────╮
 │ --account  -a      TEXT  Account e-mail to use. [env var: ZOHO_ACCOUNT]      │
 │ --config           TEXT  Path to config.json. [env var: ZOHO_CONFIG]         │
@@ -26,12 +26,12 @@ Exit code: `0`
 ╭─ Commands ───────────────────────────────────────────────────────────────────╮
 │ login     Authenticate via Zoho OAuth 2.0.                                   │
 │ mail      Mail module commands. Includes message operations plus mail        │
-│           support subgroups (`mail attachment`, `mail folders`, `mail        │
-│           labels`).                                                          │
+│           support subgroups (`zoho mail attachment`, `zoho mail folders`,    │
+│           `zoho mail labels`).                                               │
 │ cliq      Cliq module operations.                                            │
 │ crm       CRM module operations.                                             │
 │ config    Configuration helpers.                                             │
-│ membrane  Membrane bridge operations (experimental).                         │
+│ membrane  Membrane bridge operations.                                        │
 ╰──────────────────────────────────────────────────────────────────────────────╯
 ```
 
@@ -40,11 +40,11 @@ Exit code: `0`
 Exit code: `0`
 
 ```text
-                                                                                
- Usage: zoho login [OPTIONS]                                                    
-                                                                                
- Authenticate via Zoho OAuth 2.0.                                               
-                                                                                
+
+ Usage: zoho login [OPTIONS]
+
+ Authenticate via Zoho OAuth 2.0.
+
 ╭─ Options ────────────────────────────────────────────────────────────────────╮
 │ --account           -a      TEXT     Account e-mail. [env var: ZOHO_ACCOUNT] │
 │ --port                      INTEGER  Local port for the OAuth callback       │
@@ -54,8 +54,8 @@ Exit code: `0`
 │                                      browser (headless/remote use).          │
 │ --with-cliq                          Include recommended Cliq OAuth scopes   │
 │                                      in this login flow.                     │
-│ --with-cliq-export                   Include Cliq maintenance export OAuth   │
-│                                      scopes in this login flow.              │
+│ --with-cliq-export                   Include Cliq chat export OAuth scopes   │
+│                                      in this login flow.                     │
 │ --with-crm                           Include recommended CRM OAuth scopes in │
 │                                      this login flow.                        │
 │ --scope                     TEXT     Additional OAuth scope(s) to include    │
@@ -71,11 +71,11 @@ Exit code: `0`
 Exit code: `0`
 
 ```text
-                                                                                
- Usage: zoho config [OPTIONS] COMMAND [ARGS]...                                 
-                                                                                
- Configuration helpers.                                                         
-                                                                                
+
+ Usage: zoho config [OPTIONS] COMMAND [ARGS]...
+
+ Configuration helpers.
+
 ╭─ Options ────────────────────────────────────────────────────────────────────╮
 │ --help          Show this message and exit.                                  │
 ╰──────────────────────────────────────────────────────────────────────────────╯
@@ -91,12 +91,12 @@ Exit code: `0`
 Exit code: `0`
 
 ```text
-                                                                                
- Usage: zoho mail [OPTIONS] COMMAND [ARGS]...                                   
-                                                                                
- Mail module commands. Includes message operations plus mail support subgroups  
- (`mail attachment`, `mail folders`, `mail labels`).                            
-                                                                                
+
+ Usage: zoho mail [OPTIONS] COMMAND [ARGS]...
+
+ Mail module commands. Includes message operations plus mail support subgroups
+ (`zoho mail attachment`, `zoho mail folders`, `zoho mail labels`).
+
 ╭─ Options ────────────────────────────────────────────────────────────────────╮
 │ --help          Show this message and exit.                                  │
 ╰──────────────────────────────────────────────────────────────────────────────╯
@@ -134,71 +134,51 @@ Exit code: `0`
 Exit code: `0`
 
 ```text
-                                                                                
- Usage: zoho cliq [OPTIONS] COMMAND [ARGS]...                                   
-                                                                                
- Cliq module operations.                                                        
-                                                                                
+
+ Usage: zoho cliq [OPTIONS] COMMAND [ARGS]...
+
+ Cliq module operations.
+
 ╭─ Options ────────────────────────────────────────────────────────────────────╮
 │ --network        TEXT  Default Cliq network slug for this invocation. You    │
 │                        can still override with per-command --network.        │
 │ --help                 Show this message and exit.                           │
 ╰──────────────────────────────────────────────────────────────────────────────╯
 ╭─ Commands ───────────────────────────────────────────────────────────────────╮
-│ status                         Show Cliq scaffold readiness and inferred API │
+│ status                         Show Cliq auth readiness and inferred API     │
 │                                endpoint.                                     │
 │ bridge-run                     Run one Cliq action through membrane bridge   │
 │                                (explicit opt-in).                            │
 │ capabilities                   Probe currently-available Cliq read           │
-│                                capabilities for this token and org.          │
+│                                capabilities for this account and network.    │
 │ channels                       List Cliq channels.                           │
 │ chats                          List Cliq chats (DM/group conversation        │
 │                                descriptors).                                 │
 │ users                          List Cliq users.                              │
-│ teams                          List Cliq org-admin teams (cliq-190 phase-1   │
-│                                slice).                                       │
-│ departments                    List Cliq org-admin departments (cliq-190     │
-│                                phase-1 slice).                               │
-│ roles                          List Cliq org-admin roles (cliq-190 phase-1   │
-│                                slice).                                       │
-│ designations                   List Cliq org-admin designations (cliq-190    │
-│                                phase-1 slice).                               │
-│ user-status                    List Cliq org-admin user-status values        │
-│                                (cliq-190 phase-1 slice).                     │
-│ userfields                     List Cliq org-admin userfields (cliq-190      │
-│                                phase-1 slice).                               │
-│ events                         List Cliq collaboration events (cliq-191      │
-│                                first slice).                                 │
-│ reminders                      List Cliq collaboration reminders (cliq-191   │
-│                                second slice).                                │
-│ meetings                       List Cliq collaboration calls/meetings        │
-│                                (cliq-191 third slice).                       │
-│ databases                      List Cliq platform-extension databases        │
-│                                (cliq-192 first slice).                       │
-│ widgets                        List Cliq platform-extension widgets          │
-│                                (cliq-192 second slice).                      │
-│ map-tickers                    List Cliq platform map tickers (cliq-192      │
-│                                third slice).                                 │
-│ custom-domains                 List Cliq platform custom domains (cliq-192   │
-│                                fourth slice).                                │
-│ custom-emails                  List Cliq platform custom emails (cliq-192    │
-│                                fifth slice).                                 │
-│ apps                           List Cliq app-governance apps (cliq-193 first │
-│                                slice).                                       │
-│ app-get                        Get one Cliq app-governance app by id         │
-│                                (cliq-193 second slice).                      │
+│ teams                          List Cliq teams.                              │
+│ departments                    List Cliq departments.                        │
+│ roles                          List Cliq roles.                              │
+│ designations                   List Cliq designations.                       │
+│ user-status                    List Cliq user-status values.                 │
+│ userfields                     List Cliq user fields.                        │
+│ events                         List Cliq collaboration events.               │
+│ reminders                      List Cliq collaboration reminders.            │
+│ meetings                       List Cliq collaboration calls and meetings.   │
+│ databases                      List Cliq databases.                          │
+│ widgets                        List Cliq widgets.                            │
+│ map-tickers                    List Cliq map tickers.                        │
+│ custom-domains                 List Cliq custom domains.                     │
+│ custom-emails                  List Cliq custom emails.                      │
+│ apps                           List Cliq apps.                               │
+│ app-get                        Get one Cliq app by id.                       │
 │ apps-bridge-run                Run Cliq apps listing through membrane bridge │
 │                                (explicit opt-in).                            │
 │ app-get-bridge-run             Run Cliq app detail lookup through membrane   │
 │                                bridge (explicit opt-in).                     │
-│ app-permissions                List one app's governance permissions/scopes  │
-│                                (cliq-193 third slice).                       │
-│ app-permission-get             Get one app-governance permission by id       │
-│                                (cliq-193 eighth slice).                      │
-│ app-installs                   List one app's governance installs (cliq-193  │
-│                                fourth slice).                                │
-│ app-install-get                Get one app-governance install by id          │
-│                                (cliq-193 seventh slice).                     │
+│ app-permissions                List one app's permissions and scopes.        │
+│ app-permission-get             Get one app permission by id.                 │
+│ app-installs                   List one app's installs.                      │
+│ app-install-get                Get one app install by id.                    │
 │ app-permissions-bridge-run     Run Cliq app-permission listing through       │
 │                                membrane bridge (explicit opt-in).            │
 │ app-permission-get-bridge-run  Run Cliq app-permission detail through        │
@@ -207,16 +187,14 @@ Exit code: `0`
 │                                bridge (explicit opt-in).                     │
 │ app-installs-bridge-run        Run Cliq app-install listing through membrane │
 │                                bridge (explicit opt-in).                     │
-│ app-commands                   List one app's governance commands (cliq-193  │
-│                                fifth slice).                                 │
-│ app-command-get                Get one app's governance command by id        │
-│                                (cliq-193 sixth slice).                       │
+│ app-commands                   List one app's commands.                      │
+│ app-command-get                Get one app command by id.                    │
 │ app-commands-bridge-run        Run Cliq app-command listing through membrane │
 │                                bridge (explicit opt-in).                     │
 │ app-command-get-bridge-run     Run Cliq app-command detail through membrane  │
 │                                bridge (explicit opt-in).                     │
 │ export-chats                   Export Cliq chats or one chat's message       │
-│                                history via maintenance API.                  │
+│                                history.                                      │
 │ export-chats-bridge-run        Run Cliq export-chats through membrane bridge │
 │                                (explicit opt-in).                            │
 │ whoami                         Best-effort identity check for the current    │
@@ -263,15 +241,14 @@ Exit code: `0`
 │ context                        Build a local context window for a            │
 │                                channel/chat (optionally around one message). │
 │ watch-context                  Emit a stable incremental context payload for │
-│                                OpenClaw-style watch loops.                   │
+│                                watch loops.                                  │
 │ watch-act                      Execute one deterministic action from watch   │
 │                                payload.                                      │
 │ reply                          Reply to a Cliq message.                      │
 │ edit                           Edit a Cliq message.                          │
 │ delete                         Delete a Cliq message.                        │
 │ react                          Add/remove a reaction to a Cliq message.      │
-│ status-react                   Set one agent-status reaction on a message    │
-│                                (read fallback for operators/agents).         │
+│ status-react                   Set one status reaction on a Cliq message.    │
 │ mark-read                      Mark one Cliq message as read/acknowledged.   │
 │ voice-send                     Send a voice/audio message link to a channel  │
 │                                or user.                                      │
@@ -287,17 +264,18 @@ Exit code: `0`
 Exit code: `0`
 
 ```text
-                                                                                
- Usage: zoho crm [OPTIONS] COMMAND [ARGS]...                                    
-                                                                                
- CRM module operations.                                                         
-                                                                                
+
+ Usage: zoho crm [OPTIONS] COMMAND [ARGS]...
+
+ CRM module operations.
+
 ╭─ Options ────────────────────────────────────────────────────────────────────╮
 │ --help          Show this message and exit.                                  │
 ╰──────────────────────────────────────────────────────────────────────────────╯
 ╭─ Commands ───────────────────────────────────────────────────────────────────╮
-│ status      Show CRM scaffold readiness and inferred API endpoint.           │
-│ modules     List CRM modules (read-only scaffold endpoint).                  │
+│ status      Show CRM auth readiness and inferred API endpoint.               │
+│ sdk-status  Show official Zoho CRM SDK adapter readiness.                    │
+│ modules     List CRM modules available to the account.                       │
 │ fields      List fields for a CRM module.                                    │
 │ list        List records from a CRM module.                                  │
 │ get         Get a single CRM record by id.                                   │

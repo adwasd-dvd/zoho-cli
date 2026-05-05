@@ -1,11 +1,18 @@
-last_run_at: "2026-05-05T09:42:24Z"
+last_run_at: "2026-05-05T09:58:27Z"
 last_result: passing
-current_focus: cliq-channel-418-rc-packaging-20260505T094224Z
+current_focus: crm-003-sdk-readiness-full-ci-20260505T095827Z
 suites:
   unit:
     status: passing
     notes:
       - "cliq-channel-418 v0.4 RC packaging completed at 2026-05-05T09:42:24Z"
+      - "make ci -> ruff format/check clean + pytest `1781 passed in 51.02s`"
+      - "crm-003 SDK readiness completed at 2026-05-05T09:55:45Z"
+      - "added `zoho crm sdk-status`, optional `zoho-cli[crm-sdk]` packaging for official `zohocrmsdk8_0==5.0.0`, `docs/architecture/CRM_V0_5_SDK_ADOPTION_PLAN.md`, and Lane 2/3 docs while keeping the CRM HTTP adapter default"
+      - "./.venv/bin/python -m pytest -q tests/test_crm.py tests/test_cli.py -k 'crm' tests/test_lane3_docs.py tests/test_markdown_update.py -> 24 passed, 866 deselected in 0.55s"
+      - "./.venv/bin/python -m zoho_cli crm sdk-status | jq '.sdk.distribution, .sdk.targetVersion, .sdk.installed, .sdk.defaultAdapter, .sdk.proposedAdapter' -> `zohocrmsdk8_0`, `5.0.0`, `false`, `http-v2`, `sdk-v8`"
+      - "ruby YAML parse for ops/workflow state -> YAML_PARSE_OK"
+      - "git diff --check -> clean"
       - "added `docs/releases/OPENCLAW_CLIQ_CHANNEL_V0_4_RC_CHECKLIST.md` with RC decision, included scope, green evidence table, public Bot callback deployment gate, RC cut steps, integrity guidance, and non-goals"
       - "updated channel diagnostics so implemented slices include `cliq-channel-418` and `nextSlice=public-bot-callback-verification`"
       - "./.venv/bin/python -m pytest -q tests/test_openclaw_channel_skeleton.py tests/test_openclaw_channel_contract.py tests/test_lane3_docs.py tests/test_markdown_update.py -> 33 passed in 10.67s"

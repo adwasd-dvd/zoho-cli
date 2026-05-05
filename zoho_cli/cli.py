@@ -11147,6 +11147,12 @@ def crm_status(
     utils.output(payload)
 
 
+@crm_app.command("sdk-status")
+def crm_sdk_status() -> None:
+    """Show official Zoho CRM SDK adapter readiness."""
+    utils.output(_crm.crm_sdk_status())
+
+
 @crm_app.command("modules")
 def crm_modules(
     limit: int = typer.Option(50, "--limit", "-n", help="Max modules to return."),

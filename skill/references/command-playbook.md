@@ -58,6 +58,7 @@ zoho cliq status-react <msg_id> --status failed  --chat-id <chat_id> --network h
 
 ```bash
 zoho crm status --check-auth
+zoho crm sdk-status
 zoho crm modules
 zoho crm fields --module Leads
 zoho crm list --module Leads --limit 5

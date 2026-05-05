@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+from collections.abc import Callable
+from importlib import metadata
 from urllib.parse import urlparse
 
 import httpx
@@ -13,6 +15,71 @@ DEFAULT_CRM_SCOPES = [
     "ZohoCRM.modules.ALL",
     "ZohoCRM.settings.ALL",
 ]
+
+CRM_SDK_DISTRIBUTION = "zohocrmsdk8_0"
+CRM_SDK_IMPORT_PACKAGE = "zohocrmsdk"
+CRM_SDK_TARGET_VERSION = "5.0.0"
+CRM_SDK_OPTIONAL_EXTRA = "crm-sdk"
+CRM_SDK_DEFAULT_ADAPTER = "http-v2"
+CRM_SDK_PROPOSED_ADAPTER = "sdk-v8"
+
+
+def crm_sdk_status(
+    *,
+    version_lookup: Callable[[str], str] | None = None,
+) -> dict:
+    """Return AI-safe readiness facts for the official Zoho CRM Python SDK."""
+
+    lookup = version_lookup or metadata.version
+    installed_version: str | None = None
+    lookup_error: str | None = None
+
+    try:
+        installed_version = lookup(CRM_SDK_DISTRIBUTION)
+    except metadata.PackageNotFoundError:
+        installed_version = None
+    except Exception as exc:  # pragma: no cover - defensive diagnostic path.
+        lookup_error = type(exc).__name__
+
+    installed = installed_version is not None
+
+    return {
+        "module": "crm",
+        "sdk": {
+            "name": "Zoho CRM Python SDK 8.0",
+            "distribution": CRM_SDK_DISTRIBUTION,
+            "importPackage": CRM_SDK_IMPORT_PACKAGE,
+            "targetVersion": CRM_SDK_TARGET_VERSION,
+            "installed": installed,
+            "installedVersion": installed_version,
+            "versionMatchesTarget": (
+                installed_version == CRM_SDK_TARGET_VERSION if installed else False
+            ),
+            "lookupError": lookup_error,
+            "optionalExtra": CRM_SDK_OPTIONAL_EXTRA,
+            "installCommand": f"pip install 'zoho-cli[{CRM_SDK_OPTIONAL_EXTRA}]'",
+            "defaultAdapter": CRM_SDK_DEFAULT_ADAPTER,
+            "proposedAdapter": CRM_SDK_PROPOSED_ADAPTER,
+            "adoptionStage": "evaluation",
+            "apiVersion": "v8",
+            "sources": [
+                "https://github.com/zoho/zohocrm-python-sdk-8.0",
+                "https://www.zoho.com/crm/developer/docs/sdk/server-side/python-sdk.html",
+                "https://www.zoho.com/crm/developer/docs/api/v8/",
+            ],
+        },
+        "contracts": {
+            "jsonStdout": True,
+            "stderrDiagnostics": True,
+            "currentCliAdapter": CRM_SDK_DEFAULT_ADAPTER,
+            "sdkAdapterMustPreserveOutputShape": True,
+        },
+        "next": [
+            "Keep the current HTTP adapter as the default until SDK parity tests pass.",
+            "Use the optional SDK dependency only behind an adapter boundary.",
+            "Start with read-only modules/fields/records parity before write commands.",
+        ],
+    }
 
 
 def missing_crm_scopes(granted_scopes: list[str] | None) -> list[str]:

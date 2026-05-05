@@ -64,8 +64,9 @@ uv tool install .
 
 ### 🚧 Zoho CRM (read-only scaffold implemented)
 
-- Implemented commands: `crm status`, `crm modules`, `crm fields`, `crm list`, `crm get`, `crm search`
-- Current limitation: live verification is blocked because the test account is not in a CRM org.
+- Implemented commands: `crm status`, `crm sdk-status`, `crm modules`, `crm fields`, `crm list`, `crm get`, `crm search`
+- SDK adoption: `crm-003` added `zoho crm sdk-status` plus optional `zoho-cli[crm-sdk]` packaging for official `zohocrmsdk8_0==5.0.0`; the current HTTP adapter remains the default until SDK parity tests pass. Plan: `docs/architecture/CRM_V0_5_SDK_ADOPTION_PLAN.md`.
+- Current limitation: deeper SDK/live validation remains capability-gated until CRM org access and read-only parity evidence are available.
 
 ### 🧪 Membrane bridge (experimental fast-fallback)
 
@@ -163,7 +164,7 @@ Project state lives in `ops/state/*.yml`:
 | Mail | ✅ Completed | stabilization_complete | Shipping baseline is stable. |
 | Cliq | ✅ Completed for RC | workflow_packaging_complete_with_deferred_external_blockers | Mail+Cliq AI-employee core is ready for RC; endpoint-limited tail is deferred post-RC. |
 | OpenClaw Cliq channel | 🚧 In progress | rc_package_ready_external_callback_deferred | `cliq-channel-401/402/416/403/414/404/405/406/407/408/413/409/410/417/415/411/412/418` added the installable package, config/setup UX, security/employee policy gates, SDK session/mention/approval seams, JSON-safe CLI process execution, native outbound delivery, normalized/deduped inbound polling, Bot webhook intake, status/read lifecycle handling, turn-ledger loop prevention, status/capability/routing diagnostics, AI troubleshooting docs, native OpenClaw agent turn dispatch, redacted observability/privacy diagnostics, the redacted fake/live smoke gate harness, host compatibility maintenance runbook, and v0.4 RC checklist. |
-| CRM | ✅ Completed for phase 1 | phase_1_read_only_commands_implemented | Read-only scaffold is present; deeper CRM work resumes in v0.5 after the v0.4 channel. |
+| CRM | 🚧 In progress | v0_5_sdk_evaluation | Read-only scaffold is present; `crm-003` added SDK readiness diagnostics and optional SDK packaging while preserving the current JSON-safe HTTP adapter as default. |
 
 ### Current platform lane (AI-employee v1)
 
@@ -179,7 +180,7 @@ Project state lives in `ops/state/*.yml`:
 ### Current release posture
 
 - Current version: `0.2.1`
-- Next active target: CRM v0.5 planning while public native Cliq Bot callback verification waits on a reachable tunnel/gateway URL.
+- Next active target: CRM v0.5 SDK adapter skeleton while public native Cliq Bot callback verification waits on a reachable tunnel/gateway URL.
 - Release candidate: `false`
 - Broad automated gate: final `make release-gate && make ci` is green for `0.2.1`; [v0.2.1](https://github.com/adwasd-dvd/zoho-cli/releases/tag/v0.2.1) is the current stable release.
 
@@ -198,7 +199,7 @@ Project state lives in `ops/state/*.yml`:
 2. Keep remaining Cliq helper-heavy modularization opportunistic while the
    channel lane moves.
 3. Continue the native OpenClaw Cliq channel in v0.4 with native agent turn dispatch next.
-4. Resume deeper CRM work in v0.5 after the channel lane is stable.
+4. Start the CRM SDK adapter skeleton behind the existing JSON-safe CLI contract.
 
 ---
 
@@ -211,7 +212,7 @@ Project state lives in `ops/state/*.yml`:
 | v0.2.1 | Mail+Cliq AI-employee stable release | ✅ Released |
 | v0.3.x | Cliq live parity and export unblock closure | ⏳ Pending external unblock |
 | v0.4.x | Native OpenClaw Zoho Cliq channel | 📋 Next active product lane |
-| v0.5.x | CRM live validation and follow-on CRM work | 📋 Planned |
+| v0.5.x | CRM SDK adapter, live validation, and follow-on CRM work | 🚧 Active |
 
 ---
 

@@ -1,22 +1,24 @@
-id: crm-003
-title: evaluate and phase in official Zoho CRM server-side SDK in v0.5 follow-up slices
+id: crm-004
+title: build official Zoho CRM SDK adapter skeleton behind the existing JSON contract
 module: crm
 stage: in_progress
 status: in_progress
 owner: coder
-updated_at: '2026-05-05T09:42:24Z'
+updated_at: '2026-05-05T09:49:08Z'
 execution_mode: turbo_20x
 throughput_policy_ref: ops/state/execution_policy.yml
 success_criteria:
-  - review current CRM read-only command surface and live auth constraints
-  - compare official Zoho CRM SDK fit against the existing HTTP client and CLI JSON contracts
-  - propose v0.5 CRM implementation slices that preserve AI-safe output, docs lanes, and test gates
-  - keep docs, skill, and ops state aligned before starting CRM code changes
-next_if_done: begin the first approved CRM v0.5 implementation slice.
+  - create a small CRM SDK adapter boundary without importing the SDK in normal HTTP paths
+  - map existing account/config region data to SDK data-center environment choices
+  - keep SDK token/resource files under CLI-managed cache paths, never the project root
+  - expose read-only adapter methods that return plain dict/list JSON-compatible payloads
+  - preserve current CRM command output shapes and keep the HTTP adapter default
+next_if_done: run read-only SDK parity tests for modules/fields/list/get/search behind an explicit gate.
 progress:
+  - "2026-05-05T09:49:08Z crm-003 completed: reviewed the existing CRM read-only surface and official Zoho CRM Python SDK v8 sources; added `zoho crm sdk-status`, optional `zoho-cli[crm-sdk]` packaging for `zohocrmsdk8_0==5.0.0`, `docs/architecture/CRM_V0_5_SDK_ADOPTION_PLAN.md`, Lane 2/3 docs, help snapshot, and focused CRM/CLI tests while keeping the current JSON-safe HTTP adapter as default."
   - "2026-05-05T09:42:24Z cliq-channel-418 completed: added `docs/releases/OPENCLAW_CLIQ_CHANNEL_V0_4_RC_CHECKLIST.md` with included scope, green evidence, remaining public Bot callback gate, RC cut steps, package integrity guidance, and non-goals. Native Cliq channel v0.4 is ready for local/operator RC testing; production rollout remains gated on public Bot callback reachability. Full `make ci` passed with `1777 passed in 49.10s`."
   - "2026-05-05T09:31:51Z cliq-channel-412 completed: added `docs/releases/OPENCLAW_CLIQ_CHANNEL_COMPATIBILITY.md`, refreshed the SDK contract and docs with OpenClaw compatibility matrix evidence, verified Temp-HOME linked install/inspect/doctor against global `2026.5.3-1`, npm latest `2026.5.4`, and npm beta `2026.5.4-beta.3` without raising the v0.4 host floor, and kept `make ci` green with `1776 passed in 48.78s`."
   - "2026-05-05T09:17:12Z cliq-channel-411 completed: added `ops/scripts/openclaw_cliq_live_smoke.sh` for redacted fake/live smoke checks, classified Zoho refresh throttling as `rate_limited`/`skip_deferred`, fixed webhook/inbound normalization so `message.id` is not misclassified as `chatId`, and recorded live evidence: OpenClaw plugin/channel checks pass; Zoho auth/capability/polling probes pass; local webhook auth/security gates pass; native polling returns an empty but valid event set; public Bot callback remains deferred until a reachable tunnel/gateway URL is configured. Full `make ci` passed with `1775 passed in 47.39s`."
   - "2026-05-05T08:44:45Z cliq-channel-415 completed: added `src/observability.ts` and `src/privacy.ts` for redacted audit events, stable correlation ids, diagnostic bundles, webhook/polling/lifecycle/turn-ledger/native dispatch rate-limit diagnostics, privacy retention rules, dead-letter replay guidance, and npm integrity checklist placeholders. Status diagnostics now advertise `observabilityBundle=true`, `productionReadiness=pending_live_verification`, blocker `live_verification_pending`, implemented slice `cliq-channel-415`, and `nextSlice=cliq-channel-411`."
   - "2026-05-05T08:25:45Z cliq-channel-417 completed: `src/native-dispatch.ts` maps accepted Cliq webhook/polling events into OpenClaw native channel turns, records session/last-route metadata, delivers agent replies through the Cliq outbound adapter, and fake host coverage verifies trusted webhook dispatch, trusted polling dispatch, denied events, duplicate suppression, and dispatch-failure dead-lettering."
-next_step: Start `crm-003` by reviewing the current CRM command surface, SDK options, live auth status, and v0.5 slice plan before code changes.
+next_step: Start `crm-004` by creating the SDK adapter skeleton, data-center mapping, cache-path policy, and read-only adapter shape tests before wiring commands to it.

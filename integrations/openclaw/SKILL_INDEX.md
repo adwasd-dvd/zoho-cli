@@ -17,6 +17,10 @@ Native channel planning:
 - `docs/releases/OPENCLAW_CLIQ_CHANNEL_SETUP.md`
 - `skill/references/openclaw-cliq-channel.md`
 
+CRM SDK planning:
+- `docs/architecture/CRM_V0_5_SDK_ADOPTION_PLAN.md`
+- `zoho crm sdk-status`
+
 GitHub intake:
 - `skill/references/github-intake-workflow.md`
 - `.github/ISSUE_TEMPLATE/*`

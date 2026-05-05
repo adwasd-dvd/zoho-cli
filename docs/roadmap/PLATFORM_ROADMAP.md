@@ -56,8 +56,8 @@ Definition of done:
 
 Current posture:
 - the read-only CRM baseline is implemented
-- live validation and deeper CRM workflows are deferred until v0.5
-- v0.4 is reserved for the native OpenClaw Cliq channel
+- `crm-003` has started v0.5 SDK adoption with `zoho crm sdk-status`, optional `zoho-cli[crm-sdk]` packaging for official `zohocrmsdk8_0==5.0.0`, and an adapter plan
+- live validation and deeper CRM workflows are gated behind SDK/read-only parity evidence
 
 ### Phase B3 — v1 AI-employee release gate (RC)
 

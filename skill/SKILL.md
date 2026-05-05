@@ -49,6 +49,11 @@ Use this skill as the default operating contract for an OpenClaw agent acting li
 - For v0.4 native Cliq channel RC decisions, follow
   `docs/releases/OPENCLAW_CLIQ_CHANNEL_V0_4_RC_CHECKLIST.md`; production rollout
   still requires public Bot callback verification.
+- For CRM SDK work, run `zoho crm sdk-status` first. Treat
+  `zohocrmsdk8_0==5.0.0` as optional `zoho-cli[crm-sdk]` readiness, keep the
+  current HTTP adapter as default, and follow
+  `docs/architecture/CRM_V0_5_SDK_ADOPTION_PLAN.md` before changing CRM command
+  output shapes.
 - Draft before high-impact send/delete actions unless the user explicitly asks for direct execution.
 - Ask for explicit approval before running any install/update command that modifies tools or skill files.
 - File low-risk, sanitized CLI bugs and suggestions directly in `adwasd-dvd/zoho-cli` GitHub issues after duplicate search; ask for approval before including private context or changing GitHub settings/labels/code.

@@ -42,7 +42,7 @@ This repository expands in this order:
 
 - Cliq endpoints with stable `not_supported` / `inactive_appaccount_user` outcomes
 - native OpenClaw Cliq channel packaging (v0.4)
-- CRM deep operational flows (beyond current verified read baseline)
+- CRM deep operational flows beyond the v0.5 SDK adapter/read-only parity lane
 - Zoho Books command surface
 - fully native multi-channel provider expansion (outside current Cliq-first channel path)
 
@@ -57,7 +57,7 @@ Unify product work around one operator-facing flow:
 
 ## Guardrails
 
-- Do not start new CRM feature work until the v0.4 native OpenClaw Cliq channel lane is stable.
+- Keep CRM SDK work behind an adapter/parity gate; do not change default CRM command output until `crm-004+` parity evidence is recorded.
 - Patch releases must not mix in new modules.
 - All cron/agents read and write the same state files in `ops/state/`.
 - Unsupported external endpoints follow 3-strike deferred policy and must not stall unrelated v1.0 slices.
@@ -81,7 +81,7 @@ This section is the lock point for `platform-204` and the handoff baseline for `
 ### Explicit v1 boundaries
 
 - **In v1**: Mail + Cliq operational core, persona/memory/work contract, focused acceptance gates.
-- **Post-v1**: native OpenClaw Cliq channel in v0.4, CRM deep workflows in v0.5, Books surface, unsupported Cliq endpoints, and non-critical cliq-195 tail hardening.
+- **Post-v1**: native OpenClaw Cliq channel in v0.4, CRM SDK adapter/read-only parity in v0.5, Books surface, unsupported Cliq endpoints, and non-critical cliq-195 tail hardening.
 
 ### Platform-205 handoff requirements
 

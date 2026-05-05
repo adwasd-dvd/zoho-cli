@@ -1,5 +1,7 @@
 """Tests for zoho_cli.crm helpers."""
 
+from importlib import metadata
+
 import httpx
 import respx
 
@@ -24,6 +26,31 @@ def test_infer_crm_base_url_defaults_to_com() -> None:
 def test_missing_crm_scopes_reports_missing_values() -> None:
     missing = crm.missing_crm_scopes(["ZohoCRM.modules.ALL"])
     assert missing == ["ZohoCRM.settings.ALL"]
+
+
+def test_crm_sdk_status_reports_missing_sdk() -> None:
+    def missing(_: str) -> str:
+        raise metadata.PackageNotFoundError
+
+    result = crm.crm_sdk_status(version_lookup=missing)
+
+    assert result["sdk"]["distribution"] == "zohocrmsdk8_0"
+    assert result["sdk"]["targetVersion"] == "5.0.0"
+    assert result["sdk"]["installed"] is False
+    assert result["sdk"]["installedVersion"] is None
+    assert result["sdk"]["versionMatchesTarget"] is False
+    assert result["sdk"]["optionalExtra"] == "crm-sdk"
+    assert result["sdk"]["defaultAdapter"] == "http-v2"
+    assert result["sdk"]["proposedAdapter"] == "sdk-v8"
+    assert result["contracts"]["sdkAdapterMustPreserveOutputShape"] is True
+
+
+def test_crm_sdk_status_reports_installed_target_version() -> None:
+    result = crm.crm_sdk_status(version_lookup=lambda _: "5.0.0")
+
+    assert result["sdk"]["installed"] is True
+    assert result["sdk"]["installedVersion"] == "5.0.0"
+    assert result["sdk"]["versionMatchesTarget"] is True
 
 
 @respx.mock

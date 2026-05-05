@@ -29,6 +29,7 @@ dev = [
 pdf = ["pdfplumber>=0.11"]
 word = ["python-docx>=1.0"]
 csv = ["pandas>=2.0"]
+crm-sdk = ["zohocrmsdk8_0==5.0.0"]
 
 [tool.hatch.build.targets.wheel]
 packages = ["zoho_cli"]

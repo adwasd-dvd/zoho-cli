@@ -45,6 +45,7 @@ def test_lane3_required_paths_exist() -> None:
         REPO_ROOT / "integrations" / "openclaw-channel-cliq" / "package.json",
         REPO_ROOT / "integrations" / "openclaw-channel-cliq" / "openclaw.plugin.json",
         REPO_ROOT / "integrations" / "openclaw-channel-cliq" / "skill" / "SKILL.md",
+        REPO_ROOT / "docs" / "architecture" / "CRM_V0_5_SDK_ADOPTION_PLAN.md",
         REPO_ROOT / "docs" / "releases" / "OPENCLAW_CLIQ_CHANNEL_SETUP.md",
         REPO_ROOT / "docs" / "releases" / "OPENCLAW_CLIQ_CHANNEL_COMPATIBILITY.md",
         REPO_ROOT / "docs" / "releases" / "OPENCLAW_CLIQ_CHANNEL_V0_4_RC_CHECKLIST.md",
@@ -190,5 +191,29 @@ def test_native_cliq_channel_ai_troubleshooting_contract_present() -> None:
         "user:<id>",
         "cliq:channel:<id>:thread:<thread_id>",
         "skip_deferred",
+    ]:
+        assert marker in combined
+
+
+def test_crm_sdk_adoption_contract_present() -> None:
+    docs = [
+        SKILL_ROOT / "SKILL.md",
+        SKILL_ROOT / "references" / "employee-operating-model.md",
+        SKILL_ROOT / "references" / "command-playbook.md",
+        SKILL_ROOT / "references" / "cli-help-snapshot.md",
+        REPO_ROOT / "integrations" / "openclaw" / "LANE3_AI_USER_GUIDE.md",
+        REPO_ROOT / "integrations" / "openclaw" / "SKILL_INDEX.md",
+        REPO_ROOT / "docs" / "architecture" / "CRM_V0_5_SDK_ADOPTION_PLAN.md",
+    ]
+    combined = "\n".join(path.read_text(encoding="utf-8") for path in docs)
+
+    for marker in [
+        "zoho crm sdk-status",
+        "zohocrmsdk8_0==5.0.0",
+        "zoho-cli[crm-sdk]",
+        "CRM_V0_5_SDK_ADOPTION_PLAN.md",
+        "http-v2",
+        "sdk-v8",
+        "JSON-safe",
     ]:
         assert marker in combined

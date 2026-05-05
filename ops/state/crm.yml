@@ -1,5 +1,10 @@
 module: CRM
-updated_at: "2026-04-17T03:44:29Z"
-status: completed
+updated_at: "2026-05-05T09:49:08Z"
+status: in_progress
+phase: v0_5_sdk_adapter_skeleton
 blockers: []
-next_small_step: monitor for regressions while focus remains on cliq-193 and platform-200
+current_milestone: crm-004-sdk-adapter-skeleton
+last_completed:
+  id: crm-003
+  summary: "Added `zoho crm sdk-status`, optional `zoho-cli[crm-sdk]` packaging for official `zohocrmsdk8_0==5.0.0`, and `docs/architecture/CRM_V0_5_SDK_ADOPTION_PLAN.md` while keeping the HTTP adapter default."
+next_small_step: create the SDK adapter boundary and read-only JSON shape tests without changing default CRM command behavior

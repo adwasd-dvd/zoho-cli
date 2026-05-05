@@ -226,6 +226,7 @@ def test_crm_help_hides_scaffold_wording() -> None:
 
     assert result.exit_code == 0, result.output
     assert "Show CRM auth readiness and inferred API endpoint." in result.output
+    assert "Show official Zoho CRM SDK adapter readiness." in result.output
     assert "List CRM modules available to the account." in result.output
     assert "scaffold" not in result.output
 
@@ -26998,6 +26999,18 @@ def test_crm_status_check_auth(mock_config: Path, mock_token_refresh: Any) -> No
 
     payload = json.loads(result.output)
     assert payload["auth"] == "ok"
+
+
+def test_crm_sdk_status_command() -> None:
+    result = runner.invoke(app, ["crm", "sdk-status"])
+    assert result.exit_code == 0, result.output
+
+    payload = json.loads(result.output)
+    assert payload["module"] == "crm"
+    assert payload["sdk"]["distribution"] == "zohocrmsdk8_0"
+    assert payload["sdk"]["targetVersion"] == "5.0.0"
+    assert payload["sdk"]["defaultAdapter"] == "http-v2"
+    assert payload["contracts"]["sdkAdapterMustPreserveOutputShape"] is True
 
 
 @respx.mock

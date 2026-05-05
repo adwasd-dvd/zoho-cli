@@ -110,7 +110,10 @@ Follow the stack from the architecture plan:
     (complete; redacted audit events, diagnostic bundles, privacy retention,
     rate-limit diagnostics, dead-letter replay guidance, and npm integrity
     placeholders are now part of the native channel surface)
-17. `cliq-channel-411` live verification and release gate
+17. `cliq-channel-411` live verification and release gate (complete; the
+    repo-level smoke gate covers OpenClaw inspect/doctor/status/capabilities,
+    local webhook auth/security checks, safe polling probes, `rate_limited`
+    classification, and public webhook reachability deferral)
 18. `cliq-channel-412` compatibility maintenance
 
 Each slice should be independently testable. Prefer many small slices over one
@@ -150,14 +153,25 @@ Bot webhook intake at `/webhooks/cliq`, `cliq-channel-408` wraps accepted events
 with status/read lifecycle handling, `cliq-channel-413` wraps dispatch with a
 native turn ledger, `cliq-channel-409` exposes native status/capability/
 routing diagnostics, `cliq-channel-410` aligns AI-facing troubleshooting, and
-`cliq-channel-417` wires accepted events into native OpenClaw agent turns.
+`cliq-channel-417` wires accepted events into native OpenClaw agent turns;
+`cliq-channel-415` adds redacted observability/privacy diagnostics; and
+`cliq-channel-411` adds the live smoke gate harness.
 Both inbound paths normalize messages into the shared
 inbound event shape, run mention/allowlist/employee policy checks, dedupe by
 account/network/chat/message before optional dispatch, keep status/read failures
 as terminal diagnostics, prevent duplicate/active/dead-lettered turns from
 starting repeated agent work, and report controlled-smoke readiness without
-leaking secrets or message bodies. Observability and privacy hardening remain
-in the next slice.
+leaking secrets or message bodies. Public Bot callback verification remains a
+deployment prerequisite when no reachable tunnel or gateway URL is configured.
+
+Live gate command:
+
+```bash
+ops/scripts/openclaw_cliq_live_smoke.sh
+```
+
+Treat `token_refresh_rate_limited` as `skip_deferred`; do not repeatedly refresh
+Zoho OAuth in tight loops.
 
 ## AI-agent convenience checklist
 

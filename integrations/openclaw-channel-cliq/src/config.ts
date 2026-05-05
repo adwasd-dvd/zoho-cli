@@ -684,6 +684,7 @@ export function describeCliqAccountDiagnostics(account: CliqResolvedAccount) {
       "openclaw plugins inspect zoho-cliq --json",
       "openclaw plugins doctor",
       "POST a trusted Bot handler payload to /webhooks/cliq",
+      "ops/scripts/openclaw_cliq_live_smoke.sh",
     ],
     implementedSlices: [
       "cliq-channel-401",
@@ -701,8 +702,9 @@ export function describeCliqAccountDiagnostics(account: CliqResolvedAccount) {
       "cliq-channel-410",
       "cliq-channel-417",
       "cliq-channel-415",
+      "cliq-channel-411",
     ],
-    nextSlice: "cliq-channel-411",
+    nextSlice: "cliq-channel-412",
   };
 }
 

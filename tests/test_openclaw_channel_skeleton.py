@@ -368,7 +368,9 @@ assert(status.diagnostics.implementedSlices.includes("cliq-channel-409"));
 assert(status.diagnostics.implementedSlices.includes("cliq-channel-410"));
 assert(status.diagnostics.implementedSlices.includes("cliq-channel-417"));
 assert(status.diagnostics.implementedSlices.includes("cliq-channel-415"));
-assert.equal(status.diagnostics.nextSlice, "cliq-channel-411");
+assert(status.diagnostics.implementedSlices.includes("cliq-channel-411"));
+assert(status.diagnostics.smokeChecks.includes("ops/scripts/openclaw_cliq_live_smoke.sh"));
+assert.equal(status.diagnostics.nextSlice, "cliq-channel-412");
 
 const capabilities = resolveCliqChannelCapabilitySummary({ cfg });
 assert.equal(capabilities.nativeMessageSurface, true);
@@ -415,6 +417,7 @@ import {
   resolveCliqPrivacyRetentionPolicy,
 } from "./integrations/openclaw-channel-cliq/dist/src/privacy.js";
 import { createCliqTurnLedgerStore } from "./integrations/openclaw-channel-cliq/dist/src/turn-ledger.js";
+import { normalizeCliqWebhookPayload } from "./integrations/openclaw-channel-cliq/dist/src/webhook.js";
 
 const cfg = {
   channels: {
@@ -444,6 +447,22 @@ const event = normalizeCliqInboundMessage({
   mentionMatchers: [/@bot\\b/i],
 });
 assert.ok(event);
+assert.equal(event.chatId, undefined);
+assert.equal(event.channelId, "C123");
+const webhookNormalized = normalizeCliqWebhookPayload({
+  account,
+  payload: {
+    handler: "mention",
+    message: { id: "M-WEBHOOK", text: "@bot webhook smoke" },
+    user: { id: "U2" },
+    chat: { channelId: "C123", chatType: "channel" },
+  },
+  mentionMatchers: [/@bot\\b/i],
+});
+assert.ok(webhookNormalized.event);
+assert.equal(webhookNormalized.event.chatId, undefined);
+assert.equal(webhookNormalized.event.channelId, "C123");
+assert.equal(webhookNormalized.event.messageId, "M-WEBHOOK");
 const ledger = createCliqTurnLedgerStore({ now: () => Date.parse("2026-05-05T00:00:00Z") });
 const begin = ledger.begin(event);
 assert.equal(begin.accepted, true);
@@ -2065,6 +2084,10 @@ if (mode === "scope") {
   console.error("OAUTH_SCOPE_MISMATCH missing_scope ZohoCliq.Messages.READ");
   process.exit(1);
 }
+if (mode === "rate") {
+  console.error('{"status":"error","error":"token_refresh_rate_limited","details":"too many requests"}');
+  process.exit(1);
+}
 if (mode === "unsupported") {
   console.error("request_url_invalid endpoint is not supported");
   process.exit(1);
@@ -2129,6 +2152,7 @@ async function expectKind(mode, expectedKind, expectedExitCode = 1, timeoutMs = 
 }}
 
 await expectKind("auth", "auth_missing");
+await expectKind("rate", "rate_limited");
 await expectKind("scope", "scope_missing");
 await expectKind("unsupported", "unsupported_endpoint");
 await expectKind("invalid", "invalid_json", 0);

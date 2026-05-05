@@ -38,8 +38,9 @@ This runbook is for the native OpenClaw `cliq` channel package in
   capabilities, and target routing previews without exposing secrets or message
   bodies.
 - Production/bidirectional agent replies now have native dispatch plus redacted
-  observability support; the remaining production gate is fake plus live
-  verification.
+  observability support. The fake/live gate harness is in place; public Bot
+  callback verification remains a deployment prerequisite when no reachable
+  tunnel or gateway URL is configured.
 
 ## Requirements
 
@@ -175,6 +176,29 @@ References: Zoho Cliq Bot Mention Handler
 (`https://www.zoho.com/cliq/help/platform/bot-mentionshandler.html`) and Zoho
 Deluge help (`https://www.zoho.com/deluge/help/`).
 
+## Live smoke gate
+
+Run the repository smoke gate from the project root after OpenClaw is configured
+and the gateway is running:
+
+```bash
+ops/scripts/openclaw_cliq_live_smoke.sh
+```
+
+The script checks Zoho Cliq auth/capability probes, OpenClaw plugin
+inspect/doctor, channel status/capabilities, local webhook missing-secret
+rejection, authenticated non-dispatch handling, authenticated allowlist-deny
+handling, safe unread polling, and native polling adapter behavior. It reads
+`ZOHO_CLIQ_WEBHOOK_SECRET` from the environment or `launchctl` and never prints
+the secret. Override `ZOHO_CLIQ_NETWORK`, `OPENCLAW_GATEWAY_URL`,
+`ZOHO_CLIQ_WEBHOOK_PATH`, or `ZOHO_CLIQ_PUBLIC_WEBHOOK_URL` when testing a
+non-default network, gateway, path, or public tunnel.
+
+`token_refresh_rate_limited` and repeated endpoint availability failures are
+recorded as `skip_deferred` so the gate does not hammer Zoho refresh endpoints
+or block unrelated local channel work. A public Bot callback cannot pass until a
+reachable tunnel/gateway URL is configured and the Bot handler points to it.
+
 ## Setup states
 
 | State | Meaning | Next action |
@@ -207,6 +231,7 @@ Diagnostic blockers that are not setup-state names:
 | `webhook_secret_missing` | No SecretRef/env webhook secret is configured. | Set `webhookSecret` to `ZOHO_CLIQ_WEBHOOK_SECRET`, test a controlled Bot POST, and rotate exposed values. |
 | native dispatch failure / dead-letter | A trusted event reached dispatch but the OpenClaw turn failed or was dead-lettered. | Inspect turn id, dispatch error, and dead-letter metadata before replay; do not retry blindly. |
 | `live_verification_pending` | Redacted production diagnostics are ready, but fake plus live verification has not passed yet. | Keep reports redacted and run the verification gate before production rollout. |
+| `token_refresh_rate_limited` | Zoho OAuth refresh is temporarily throttled. | Mark the check `skip_deferred`, wait for cooldown, and avoid bursty probe loops. |
 | repeated `not_supported` / `inactive_appaccount_user` | Zoho-side endpoint availability is blocking a specific live check. | Mark the check `skip_deferred` and continue unrelated local channel work. |
 
 ## Security smoke
@@ -253,5 +278,6 @@ Recovery checklist:
 5. Run controlled outbound smoke, local inbound polling dry-runs, a real Bot
    webhook receive/auth/normalize smoke, status/read lifecycle smoke,
    turn-ledger loop-prevention smoke, status/routing diagnostics smoke, and a
-   controlled native dispatch and redacted diagnostic bundle smoke. Wait for the
-   fake plus live verification gate before production agent rollout.
+   controlled native dispatch and redacted diagnostic bundle smoke through
+   `ops/scripts/openclaw_cliq_live_smoke.sh`. Wait for a reachable public Bot
+   callback before production agent rollout.

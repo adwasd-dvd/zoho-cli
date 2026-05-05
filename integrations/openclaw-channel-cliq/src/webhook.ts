@@ -444,7 +444,13 @@ function enrichMessageFromWebhook(params: {
   copyFirstText({
     target: message,
     targetKeys: ["chatId", "chat_id", "conversationId", "conversation_id"],
-    sources: [message, chat, root],
+    sources: [message, root],
+    sourceKeys: ["chatId", "chat_id", "conversationId", "conversation_id"],
+  });
+  copyFirstText({
+    target: message,
+    targetKeys: ["chatId", "chat_id", "conversationId", "conversation_id"],
+    sources: [chat],
     sourceKeys: ["chatId", "chat_id", "conversationId", "conversation_id", "id"],
   });
   copyFirstText({

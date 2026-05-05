@@ -1,5 +1,5 @@
 import type { CliqResolvedAccount } from "./config.js";
-export type ZohoCliqCommandErrorKind = "auth_missing" | "scope_missing" | "unsupported_endpoint" | "invalid_json" | "timeout" | "command_not_found" | "command_failed";
+export type ZohoCliqCommandErrorKind = "auth_missing" | "rate_limited" | "scope_missing" | "unsupported_endpoint" | "invalid_json" | "timeout" | "command_not_found" | "command_failed";
 export type ZohoCliJsonResult<T = unknown> = {
     command: string[];
     stdout: T;

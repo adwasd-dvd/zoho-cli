@@ -429,14 +429,14 @@
 - id: cliq-channel-411
   title: run fake and live verification gate for v0.4 native Cliq channel
   module: openclaw_cliq_channel
-  stage: ready
+  stage: completed
   priority: high
   depends_on:
   - cliq-channel-415
 - id: cliq-channel-412
   title: document OpenClaw host compatibility maintenance and future repair workflow
   module: openclaw_cliq_channel
-  stage: queued
+  stage: in_progress
   priority: medium
   depends_on:
   - cliq-channel-411

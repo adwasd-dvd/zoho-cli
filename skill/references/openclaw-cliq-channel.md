@@ -48,7 +48,11 @@ OpenClaw-native status, capability, and routing diagnostics; setup status lines
 show webhook, polling, lifecycle, and turn-ledger readiness; capability
 diagnostics advertise native message/approval surfaces without custom send
 tools; and route diagnostics normalize account/network/chat/thread-aware targets
-without exposing secrets or message bodies.
+without exposing secrets or message bodies. `cliq-channel-411` is complete: the
+repo now has `ops/scripts/openclaw_cliq_live_smoke.sh` for redacted fake/live
+gate checks, `rate_limited` classification for Zoho refresh throttling, and
+local webhook security smoke coverage while public Bot callback verification
+waits for a reachable tunnel or gateway URL.
 
 The v0.4 plugin targets OpenClaw `>=2026.5.3-1`. The upgraded global
 `OpenClaw 2026.5.3-1` host is suitable for native plugin checks; use
@@ -93,6 +97,7 @@ openclaw channels status --channel cliq --deep
 openclaw channels capabilities --channel cliq
 openclaw security audit --json
 zoho cliq status --check-auth --network <network>
+ops/scripts/openclaw_cliq_live_smoke.sh
 ```
 
 Native diagnostic behavior:
@@ -102,8 +107,9 @@ Native diagnostic behavior:
 - Use setup state codes, controlled-smoke readiness, production blockers, and
   normalized session routes to decide the next operator action.
 - Native agent dispatch is implemented for accepted webhook/polling events.
-  Redacted audit events and diagnostic bundles are available; treat
-  `live_verification_pending` as the remaining pre-production blocker.
+  Redacted audit events and diagnostic bundles are available; use the smoke
+  gate script before production rollout and treat missing public Bot callback
+  reachability as a deployment blocker.
 - Do not include webhook secrets, token passwords, webhook signatures, raw
   stderr, or raw Cliq message bodies in reports.
 
@@ -122,7 +128,8 @@ AI troubleshooting ladder:
 | `employee_scope_empty` | channel status summary | Add `workScopes.<profile>` before accepting business chat turns. |
 | `target_unresolved` | routing diagnostic | Prefer explicit `channel:<id>`, `user:<id>`, or `cliq:channel:<id>:thread:<thread_id>` targets. |
 | native dispatch failure / dead-letter | webhook or polling turn diagnostics | Do not retry blindly; inspect the turn id, dispatch error, and dead-letter metadata before replay. |
-| `live_verification_pending` | channel status diagnostics | Do not claim production incident readiness until the fake plus live verification gate passes; continue with redacted diagnostic bundle evidence only. |
+| `live_verification_pending` | channel status diagnostics | Do not claim production incident readiness until the smoke gate and public Bot callback pass; continue with redacted diagnostic bundle evidence only. |
+| `token_refresh_rate_limited` | `zoho cliq ...` JSON error or native polling adapter error kind `rate_limited` | Record as `skip_deferred`, wait for cooldown, and avoid bursty probe loops. |
 | Zoho endpoint `not_supported` or `inactive_appaccount_user` | `zoho cliq ...` JSON error | Record as `skip_deferred` when repeated; do not block unrelated local channel work. |
 
 Human setup runbook:
@@ -143,6 +150,9 @@ Human setup checkpoints:
 - Webhook is verified with a controlled Bot handler POST to `/webhooks/cliq`, or
   polling fallback is intentionally enabled; polling dry-runs use
   `zoho cliq chats` plus `zoho cliq context`.
+- The live smoke gate script is run from the repo root, with
+  `token_refresh_rate_limited` recorded as `skip_deferred` and public callback
+  reachability deferred only when no tunnel/gateway URL is configured.
 - Pairing/allowlist/mention gating are enabled.
 - Scoped employee mode has a work-scope profile.
 - Test message or dry-run fixture succeeds.

@@ -20,10 +20,11 @@ cliq:
 openclaw_cliq_channel:
   priority: 3
   status: in_progress
-  phase: observability_ready_live_verification_next
+  phase: live_gate_harness_ready_compatibility_next
   target_release: v0.4.0
-  current_milestone: cliq-channel-411-live-verification-gate
-  blockers: []
+  current_milestone: cliq-channel-412-compatibility-maintenance
+  blockers:
+    - "deferred: public Zoho Cliq Bot callback verification requires a reachable tunnel/gateway URL"
 
 crm:
   priority: 4

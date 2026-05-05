@@ -12,7 +12,8 @@ polling slice, `cliq-channel-407` webhook inbound slice,
 turn-ledger loop-prevention slice, `cliq-channel-409` native UX/status
 diagnostics slice, and `cliq-channel-410` AI troubleshooting docs slice. It
 also includes the `cliq-channel-417` native agent turn dispatch slice and the
-`cliq-channel-415` observability/privacy hardening slice. It
+`cliq-channel-415` observability/privacy hardening slice plus the
+`cliq-channel-411` fake/live smoke gate harness. It
 declares the plugin/channel metadata, setup/runtime entrypoints,
 configured/auth-state probes, a native
 OpenClaw channel object, config schema metadata, DM pairing, group allowlist,
@@ -29,6 +30,9 @@ native channel turn runtime and route replies through the Cliq outbound adapter.
 Redacted audit events, correlation ids, diagnostic bundles, rate-limit
 diagnostics, privacy retention rules, dead-letter replay guidance, and the npm
 integrity release placeholder are now part of the channel diagnostics surface.
+The live smoke harness records Zoho refresh throttling as `rate_limited` /
+`skip_deferred` and keeps public Bot callback verification separate from local
+gateway/webhook security gates.
 
 ## Contract
 
@@ -151,6 +155,7 @@ npm run build
 openclaw plugins install . --link
 openclaw plugins inspect zoho-cliq --json
 openclaw plugins doctor
+../../ops/scripts/openclaw_cliq_live_smoke.sh
 ```
 
 Use a host satisfying `>=2026.5.3-1` for inspect/install validation. The
@@ -195,10 +200,10 @@ The plugin shells out to `zoho cliq ...` and parses JSON stdout. It must not cal
 Zoho REST APIs directly or expose parallel `cliq_send`/`cliq_reply` agent tools
 when OpenClaw core message and approval surfaces already cover those behaviors.
 The process adapter classifies auth, scope, unsupported endpoint, invalid JSON,
-timeout, missing-command, and generic failures while keeping stderr diagnostics
-redacted. Native outbound delivery uses OpenClaw's shared message surface with
-markdown chunking and maps text sends to `zoho cliq send`, message replies to
-`zoho cliq reply`, and thread delivery to `zoho cliq thread-reply`.
+timeout, rate-limit, missing-command, and generic failures while keeping stderr
+diagnostics redacted. Native outbound delivery uses OpenClaw's shared message
+surface with markdown chunking and maps text sends to `zoho cliq send`, message
+replies to `zoho cliq reply`, and thread delivery to `zoho cliq thread-reply`.
 Inbound webhook delivery registers OpenClaw plugin HTTP routes with
 `auth: "plugin"` and exact matching. Accepted events can be observed through
 the native OpenClaw channel turn runtime. Accepted webhook and polling events
@@ -213,4 +218,5 @@ capability, and routing summaries for OpenClaw/operator diagnostics.
 message bodies, raw webhook payloads, token passwords, webhook secrets,
 authorization headers, and raw signatures are excluded. The Lane 3 docs now map
 setup states, diagnostic blockers, and explicit routing targets to AI-safe next
-actions. Live verification is the remaining channel gate.
+actions. Public Bot callback verification remains a deployment prerequisite
+when no reachable tunnel/gateway URL is configured.

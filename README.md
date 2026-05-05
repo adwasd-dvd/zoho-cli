@@ -162,7 +162,7 @@ Project state lives in `ops/state/*.yml`:
 | --- | --- | --- | --- |
 | Mail | ✅ Completed | stabilization_complete | Shipping baseline is stable. |
 | Cliq | ✅ Completed for RC | workflow_packaging_complete_with_deferred_external_blockers | Mail+Cliq AI-employee core is ready for RC; endpoint-limited tail is deferred post-RC. |
-| OpenClaw Cliq channel | 🚧 In progress | observability_ready_live_verification_next | `cliq-channel-401/402/416/403/414/404/405/406/407/408/413/409/410/417/415` added the installable package, config/setup UX, security/employee policy gates, SDK session/mention/approval seams, JSON-safe CLI process execution, native outbound delivery, normalized/deduped inbound polling, Bot webhook intake, status/read lifecycle handling, turn-ledger loop prevention, status/capability/routing diagnostics, AI troubleshooting docs, native OpenClaw agent turn dispatch, and redacted observability/privacy diagnostics. |
+| OpenClaw Cliq channel | 🚧 In progress | live_gate_harness_ready_external_callback_deferred | `cliq-channel-401/402/416/403/414/404/405/406/407/408/413/409/410/417/415/411` added the installable package, config/setup UX, security/employee policy gates, SDK session/mention/approval seams, JSON-safe CLI process execution, native outbound delivery, normalized/deduped inbound polling, Bot webhook intake, status/read lifecycle handling, turn-ledger loop prevention, status/capability/routing diagnostics, AI troubleshooting docs, native OpenClaw agent turn dispatch, redacted observability/privacy diagnostics, and the redacted fake/live smoke gate harness. |
 | CRM | ✅ Completed for phase 1 | phase_1_read_only_commands_implemented | Read-only scaffold is present; deeper CRM work resumes in v0.5 after the v0.4 channel. |
 
 ### Current platform lane (AI-employee v1)
@@ -179,12 +179,14 @@ Project state lives in `ops/state/*.yml`:
 ### Current release posture
 
 - Current version: `0.2.1`
-- Next active target: fake plus live verification gate for the native Cliq channel (`cliq-channel-411`).
+- Next active target: host compatibility maintenance and future repair workflow for the native Cliq channel (`cliq-channel-412`).
 - Release candidate: `false`
 - Broad automated gate: final `make release-gate && make ci` is green for `0.2.1`; [v0.2.1](https://github.com/adwasd-dvd/zoho-cli/releases/tag/v0.2.1) is the current stable release.
 
 ### Deferred external blockers (do not block release)
 
+- Native Cliq public Bot callback verification requires a reachable tunnel/gateway URL; local webhook auth/security gates pass.
+- Zoho refresh throttling can recur in bursty live probe loops; treat `token_refresh_rate_limited` as `skip_deferred` and rerun after cooldown.
 - Cliq-194 live read-ack endpoint is still unsupported on active network/token, but runtime continuity is capability-gated (watch-act falls back safely instead of hard-failing).
 - Cliq maintenance export verification (`cliq-165`) is blocked by API-side `inactive_appaccount_user`.
 - Several Cliq endpoints are still unsupported on the current org/network (`not_supported`) or require extra scopes.

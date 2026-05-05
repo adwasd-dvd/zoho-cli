@@ -82,6 +82,14 @@ function classifyZohoCliError(stderr) {
     if (text.includes("timeout") || text.includes("timed out")) {
         return "timeout";
     }
+    if (text.includes("token_refresh_rate_limited") ||
+        text.includes("rate_limited") ||
+        text.includes("rate limited") ||
+        text.includes("rate limit") ||
+        text.includes("too many requests") ||
+        text.includes("try again after")) {
+        return "rate_limited";
+    }
     if (text.includes("missing_scope") ||
         text.includes("insufficient_scope") ||
         text.includes("oauth_scope_mismatch") ||

@@ -419,7 +419,8 @@ export function normalizeCliqInboundMessage(params: {
   }
 
   const chat = isRecord(params.chat) ? params.chat : undefined;
-  const raw = readFirstRecord(message, ["raw"]) ?? message;
+  const rawRecord = readFirstRecord(message, ["raw"]);
+  const raw = rawRecord ?? message;
   const messageId =
     readFirstText(message, ["messageId", "message_id", "msgId", "msg_id", "id"]) ??
     readFirstText(raw, ["messageId", "message_id", "msgId", "msg_id", "id"]);
@@ -452,7 +453,12 @@ export function normalizeCliqInboundMessage(params: {
 
   const chatId =
     readFirstText(message, ["chatId", "chat_id", "conversationId", "conversation_id"]) ??
-    readFirstText(raw, ["chatId", "chat_id", "conversationId", "conversation_id"]) ??
+    readFirstText(rawRecord, [
+      "chatId",
+      "chat_id",
+      "conversationId",
+      "conversation_id",
+    ]) ??
     readFirstText(chat, [
       "chatId",
       "chat_id",

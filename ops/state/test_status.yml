@@ -1,10 +1,21 @@
-last_run_at: "2026-05-05T08:48:17Z"
+last_run_at: "2026-05-05T09:17:12Z"
 last_result: passing
-current_focus: cliq-channel-415-observability-privacy-20260505T084445Z
+current_focus: cliq-channel-411-live-gate-harness-20260505T090831Z
 suites:
   unit:
     status: passing
     notes:
+      - "cliq-channel-411 live gate harness completed at 2026-05-05T09:08:31Z"
+      - "added `ops/scripts/openclaw_cliq_live_smoke.sh` for redacted OpenClaw inspect/doctor/status/capabilities, local webhook missing-secret/authenticated-non-dispatch/authenticated-deny checks, safe polling probes, native polling adapter checks, and optional public webhook reachability"
+      - "fixed Cliq inbound/webhook normalization so `message.id` is not copied into `chatId`; channel ids still normalize from `chat.channelId`"
+      - "classified Zoho refresh throttling as adapter kind `rate_limited` and live smoke `skip_deferred` instead of generic auth failure"
+      - "current live smoke evidence: local OpenClaw plugin/channel checks pass; Zoho auth/capability/polling probes pass; local webhook security gates pass; native polling returns an empty but valid event set; public webhook reachability is deferred because no tunnel/gateway URL is configured"
+      - "npm --prefix integrations/openclaw-channel-cliq run typecheck -> passed"
+      - "npm --prefix integrations/openclaw-channel-cliq run build -> passed"
+      - "./.venv/bin/python -m pytest -q tests/test_openclaw_channel_skeleton.py tests/test_openclaw_channel_contract.py tests/test_lane3_docs.py tests/test_markdown_update.py -> 31 passed in 10.78s"
+      - "ops/scripts/openclaw_cliq_live_smoke.sh -> passed with Zoho auth/capability/polling probes OK, local webhook missing-secret/authenticated-non-dispatch/authenticated-deny OK, native polling OK with zero events, and public webhook reachability skipped until `ZOHO_CLIQ_PUBLIC_WEBHOOK_URL` is set"
+      - "make ci -> ruff format/check clean + pytest `1775 passed in 47.39s`"
+      - "temp HOME package-linked `openclaw plugins install . --link` + `plugins inspect zoho-cliq --json` + `plugins doctor` -> plugin loaded, channelIds [`cliq`], no plugin issues"
       - "cliq-channel-415 observability/privacy hardening completed at 2026-05-05T08:44:45Z"
       - "added `src/observability.ts` and `src/privacy.ts` for redacted audit events, stable correlation ids, diagnostic bundles, rate-limit diagnostics, privacy retention policy, dead-letter replay guidance, and npm integrity checklist placeholders"
       - "wired webhook, polling, and native dispatch paths to emit redacted audit events without webhook secrets, token passwords, raw signatures, or raw message bodies"

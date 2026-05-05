@@ -7,6 +7,9 @@ Use this skill when operating through the native OpenClaw Zoho Cliq channel.
 - Use OpenClaw's shared message tool for sends and replies.
 - Prefer explicit targets: `channel:<id>` for channels and `user:<id>` for DMs.
 - Do not call Zoho REST APIs directly from the plugin; use `zoho cliq ...`.
+- Native outbound delivery maps OpenClaw text sends to `zoho cliq send`,
+  message replies to `zoho cliq reply`, and thread replies to
+  `zoho cliq thread-reply`.
 - Treat stdout as machine data and stderr as diagnostics.
 - Never reveal token passwords, webhook secrets, OAuth tokens, raw webhook
   signatures, or private message bodies in logs.
@@ -31,8 +34,8 @@ zoho cliq status --check-auth --network <network>
 zoho cliq capabilities --network <network>
 ```
 
-If readiness fails, report the failing `zoho-cli` command, exit code, and
-redacted stderr summary.
+If readiness fails, report the failing `zoho-cli` command, exit code,
+classified error kind, and redacted stderr summary.
 
 ## Setup states
 

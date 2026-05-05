@@ -761,7 +761,8 @@ OpenClaw:
   `docs/releases/OPENCLAW_CLIQ_CHANNEL_SETUP.md`.
 - Acceptance: a human operator can install, configure, disable, uninstall, and
   diagnose config/auth smoke from UI/setup surfaces and docs without reading
-  source; real sends remain gated by `cliq-channel-404` and `cliq-channel-405`.
+  source; controlled outbound smoke is now covered by `cliq-channel-405`, while
+  production/bidirectional testing remains gated by inbound loop prevention.
 
 ### cliq-channel-403: Security, pairing, and scoped employee mode
 
@@ -798,16 +799,24 @@ OpenClaw:
 
 ### cliq-channel-404: CLI adapter
 
-- Implement `zoho-cli.ts` command runner with JSON stdout parsing.
-- Classify known CLI errors and preserve stderr diagnostics safely.
+- Implement `zoho-cli.ts` command runner with JSON stdout parsing. Complete via
+  `runPluginCommandWithTimeout`.
+- Classify known CLI errors and preserve stderr diagnostics safely. Complete for
+  auth missing, scope missing, unsupported endpoint, invalid JSON, timeout,
+  command-not-found, and generic command failure.
 - Acceptance: fake `zoho` fixtures cover success, auth missing, scope missing,
-  unsupported endpoint, invalid JSON, timeout.
+  unsupported endpoint, invalid JSON, timeout, missing command, env injection,
+  redaction, and message-id extraction. Complete with runtime skeleton tests.
 
 ### cliq-channel-405: Outbound delivery
 
-- Implement direct/channel reply and send.
-- Implement text chunk behavior aligned with OpenClaw outbound limits.
-- Acceptance: OpenClaw outbound calls map to expected CLI invocations.
+- Implement direct/channel reply and send. Complete through
+  `cliqOutboundAdapter` and `sendCliqText`.
+- Implement text chunk behavior aligned with OpenClaw outbound limits. Complete
+  via `chunkerMode: "markdown"` on the native outbound adapter.
+- Acceptance: OpenClaw outbound calls map to expected CLI invocations. Complete
+  with fake `zoho` coverage for `send`, `reply`, `thread-reply`, message-id
+  extraction, and classified/redacted failure propagation.
 
 ### cliq-channel-406: Inbound polling fallback
 

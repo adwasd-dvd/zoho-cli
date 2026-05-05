@@ -359,14 +359,14 @@
 - id: cliq-channel-404
   title: implement JSON-safe zoho CLI adapter for channel runtime
   module: openclaw_cliq_channel
-  stage: queued
+  stage: completed
   priority: high
   depends_on:
   - cliq-channel-414
 - id: cliq-channel-405
   title: implement native OpenClaw outbound delivery through zoho cliq send/reply
   module: openclaw_cliq_channel
-  stage: queued
+  stage: completed
   priority: high
   depends_on:
   - cliq-channel-404

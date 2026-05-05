@@ -37,6 +37,8 @@ The plugin should:
   approves a separate experimental spike.
 - Treat `zoho` stdout as JSON.
 - Treat `zoho` stderr as diagnostics only.
+- Keep `zoho` process execution inside `src/zoho-cli.ts` and preserve
+  classified errors plus redacted stderr.
 - Do not log resolved secrets.
 - Do not default group/channel access to open.
 - Keep scoped employee mode enabled by default for production installs.
@@ -74,8 +76,14 @@ Follow the stack from the architecture plan:
    handles account/network/thread-aware session grammar, shared mention policy
    delegation is wired, authorized command bypass is bounded, and
    `approvalCapability` advertises native approvals)
-7. `cliq-channel-404` CLI adapter
-8. `cliq-channel-405` outbound delivery
+7. `cliq-channel-404` CLI adapter (complete; `src/zoho-cli.ts` uses
+   `runPluginCommandWithTimeout`, parses JSON stdout, classifies common
+   failures, redacts diagnostics, injects env/SecretRef values, and has fake
+   `zoho` runtime coverage)
+8. `cliq-channel-405` outbound delivery (complete; `src/channel.ts` exposes the
+   native OpenClaw outbound adapter, maps send/reply/thread-reply through
+   `sendCliqText`, preserves markdown chunking, and has fake `zoho` coverage for
+   success plus classified/redacted failures)
 9. `cliq-channel-406` inbound polling fallback
 10. `cliq-channel-407` webhook inbound
 11. `cliq-channel-408` status/read lifecycle
@@ -99,6 +107,7 @@ zoho cliq capabilities --network <network>
 zoho cliq chats --network <network> --unread-only --exclude-reacted-by-self
 zoho cliq context --network <network> --chat-id <chat_id> --limit 20
 zoho cliq reply <message_id> --network <network> --chat-id <chat_id> --text "..."
+zoho cliq thread-reply <thread_id> --network <network> --chat-id <chat_id> --text "..."
 zoho cliq send --network <network> --channel-id <channel_id> --text "..."
 zoho cliq send --network <network> --user-id <user_id> --text "..."
 zoho cliq mark-read <message_id> --network <network> --chat-id <chat_id>

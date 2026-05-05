@@ -6,6 +6,7 @@ import { CLIQ_CHANNEL_ID } from "./constants.js";
 import { collectCliqSecurityAuditFindings, collectCliqSecurityWarnings, normalizeCliqAllowEntry, } from "./security.js";
 import { buildCliqOutboundSessionRoute, inferCliqTargetChatType, normalizeCliqTarget, parseCliqExplicitTarget, resolveCliqSessionConversation, resolveCliqSessionTarget, } from "./session.js";
 import { cliqSetupWizard } from "./setup-wizard.js";
+import { sendCliqText } from "./zoho-cli.js";
 const cliqCapabilities = {
     chatTypes: ["direct", "group", "channel", "thread"],
     reactions: true,
@@ -68,6 +69,30 @@ const cliqMessagingAdapter = {
             threadId: params.threadId,
             currentSessionKey: params.currentSessionKey,
         });
+    },
+};
+const cliqOutboundAdapter = {
+    deliveryMode: "direct",
+    chunkerMode: "markdown",
+    sendText: async (ctx) => {
+        const account = resolveCliqAccount(ctx.cfg, ctx.accountId);
+        const sent = await sendCliqText({
+            account,
+            to: ctx.to,
+            text: ctx.text,
+            replyToId: ctx.replyToId ?? null,
+            threadId: ctx.threadId ?? null,
+        });
+        return {
+            channel: CLIQ_CHANNEL_ID,
+            messageId: sent.messageId ||
+                `cliq-${Date.now()}-${Math.random().toString(36).slice(2, 10)}`,
+            conversationId: ctx.to,
+            meta: {
+                replyToId: ctx.replyToId ?? undefined,
+                threadId: ctx.threadId ?? undefined,
+            },
+        };
     },
 };
 const cliqApprovalCapability = {
@@ -158,6 +183,7 @@ export const zohoCliqPlugin = createChatChannelPlugin({
     threading: {
         topLevelReplyToMode: "reply",
     },
+    outbound: cliqOutboundAdapter,
 });
 export function resolveCliqMentionDecision(params) {
     const wasMentioned = matchesMentionWithExplicit({

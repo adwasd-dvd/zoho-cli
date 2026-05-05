@@ -315,6 +315,12 @@ Required runtime surfaces:
 - `defineSetupPluginEntry(...)` for setup-only startup.
 - `messaging.resolveSessionConversation(...)` via `src/session.ts` for
   account/network/chat/thread session grammar and parent candidates.
+- `src/zoho-cli.ts` via `runPluginCommandWithTimeout(...)` for JSON-safe
+  `zoho cliq ...` process execution, classified errors, and redacted stderr
+  diagnostics.
+- Native `outbound.sendText(...)` via `src/channel.ts` and `sendCliqText(...)`
+  for direct send, message reply, and thread-reply delivery through OpenClaw's
+  shared message surface.
 - `resolveInboundMentionDecision({ facts, policy })` for the final mention gate.
 - `approvalCapability`, not `ChannelPlugin.approvals`, for native approval facts.
 
@@ -361,9 +367,9 @@ states with one clear next action each:
 - `allowlist_empty`
 - `employee_scope_empty`
 
-The wizard must not perform process execution before `cliq-channel-404`; it only
-describes status, writes config patches, and points operators at the relevant
-`zoho` / `openclaw` commands.
+The wizard must not perform process execution directly; runtime execution is
+owned by `src/zoho-cli.ts`, while setup describes status, writes config patches,
+and points operators at the relevant `zoho` / `openclaw` commands.
 
 ## Security and employee policy contract
 
@@ -394,6 +400,7 @@ zoho cliq context --network <network> --chat-id <chat_id> --limit 20
 zoho cliq reply <message_id> --network <network> --chat-id <chat_id> --text "..."
 zoho cliq send --network <network> --channel-id <channel_id> --text "..."
 zoho cliq send --network <network> --user-id <user_id> --text "..."
+zoho cliq thread-reply <thread_id> --network <network> --chat-id <chat_id> --text "..."
 zoho cliq mark-read <message_id> --network <network> --chat-id <chat_id>
 zoho cliq status-react <message_id> --network <network> --chat-id <chat_id> --status done
 ```

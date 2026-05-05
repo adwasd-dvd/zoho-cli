@@ -1,29 +1,28 @@
-id: cliq-channel-404
-title: implement JSON-safe zoho CLI adapter for channel runtime
+id: cliq-channel-406
+title: implement Cliq inbound polling fallback with dedupe and normalized events
 module: openclaw_cliq_channel
 stage: ready
 status: ready
 owner: coder
-updated_at: '2026-05-05T03:04:27Z'
+updated_at: '2026-05-05T04:03:04Z'
 execution_mode: turbo_20x
 throughput_policy_ref: ops/state/execution_policy.yml
 success_criteria:
-  - implement `src/zoho-cli.ts` process runner with JSON stdout parsing
-  - classify auth missing, scope missing, unsupported endpoint, invalid JSON, timeout, and command-not-found safely
-  - preserve redacted stderr diagnostics without contaminating JSON stdout
-  - wire account env/config SecretRefs into spawned `zoho` commands without logging raw secrets
-  - keep real sends deferred to `cliq-channel-405`; adapter fixtures should use fake `zoho`
+  - poll `zoho cliq chats` / `zoho cliq context` through the JSON-safe adapter without calling Zoho REST APIs directly
+  - normalize inbound events with account id, network, chat id/channel id, sender id, message id, text, timestamp, and thread hints
+  - add dedupe state keyed by account/network/chat/message so one polling pass dispatches each message once
+  - keep self-authored and already-processed messages out of dispatch fixtures when the source data exposes that signal
+  - preserve group allowlist, mention gating, and scoped employee policy boundaries before agent dispatch
+  - keep fake `zoho` fixture coverage for unread channel/direct polling, context extraction, dedupe, empty pass, and adapter error paths
   - update Lane 2 docs, Lane 3 skill/docs, and Lane 1 state/progress docs
   - keep package-local `npm run typecheck`, `npm run build`, OpenClaw linked install, `plugins inspect zoho-cliq --json`, `plugins doctor`, focused tests, and `make ci` green
-next_if_done: implement cliq-channel-405 native OpenClaw outbound delivery through `zoho cliq send/reply`.
+next_if_done: implement cliq-channel-407 webhook inbound normalization and verification.
 progress:
-  - "2026-05-05T03:07:58Z cliq-channel-414 validation: package typecheck/build passed; focused OpenClaw/Lane3 tests passed (`20 passed`); package-local linked install, `plugins inspect zoho-cliq --json`, `plugins doctor`, global plugin inspect/doctor, JSON parse, YAML parse, `git diff --check`, and `make ci` (`1764 passed`) all passed."
-  - "2026-05-05T03:04:27Z cliq-channel-414 completed: added `src/session.ts` for account/network/chat/thread-aware Cliq session grammar, parent conversation candidates, explicit target parsing, thread-aware outbound routes, shared mention policy delegation with reply/quote/bot-thread implicit facts, authorized command-bypass boundaries, and native `approvalCapability` metadata. Process execution remains deferred to cliq-channel-404."
-  - "2026-05-05T02:28:13Z cliq-channel-414 increment: added native `approvalCapability` to `src/channel.ts` (`getActionAvailabilityState`, `getExecInitiatingSurfaceState`, `describeExecApprovalSetup`) so the plugin advertises OpenClaw approval surfaces without custom approval tools; updated skeleton marker test coverage for `approvalCapability`; package-local typecheck/build and focused SDK-surface test are green."
+  - "2026-05-05T04:03:04Z cliq-channel-405 completed: `src/channel.ts` now exposes the native OpenClaw outbound adapter with `deliveryMode=direct` and markdown chunking; outbound text delivery resolves account config, calls `sendCliqText`, maps direct/channel/user sends to `zoho cliq send`, routes replies through `zoho cliq reply`, uses `--chat-id` thread routing when thread ids are present, returns message ids when present, and preserves classified/redacted adapter errors. Fake `zoho` runtime coverage verifies direct send, chat send, reply routing, thread-id routing, command arguments, and delivery metadata."
+  - "2026-05-05T03:45:52Z cliq-channel-404 completed: `src/zoho-cli.ts` now runs `zoho cliq ...` via `runPluginCommandWithTimeout`, parses JSON stdout, injects account/config/env SecretRefs, redacts token/password/webhook diagnostics, classifies auth/scope/unsupported/invalid-json/timeout/missing-command/generic failures, and extracts message ids from send responses for the outbound handoff; fake `zoho` runtime tests cover success, env injection, redaction, send arg construction, auth/scope/unsupported/invalid-json/empty/timeout/missing-command paths."
+  - "2026-05-05T03:04:27Z cliq-channel-414 completed: added `src/session.ts` for account/network/chat/thread-aware Cliq session grammar, parent conversation candidates, explicit target parsing, thread-aware outbound routes, shared mention policy delegation with reply/quote/bot-thread implicit facts, authorized command-bypass boundaries, and native `approvalCapability` metadata."
   - "2026-05-05T00:20:00Z cliq-channel-403 completed: runtime config/schema now includes `groupPolicy`, `groupAllowFrom`, `requireMention`, `employeeMode`, and `workScopes`; `src/security.ts` enforces DM pairing/allowlist, group allowlist, mention-required decisions, and unsafe-policy audit warnings; `src/employee-policy.ts` blocks chat-originated debug, install, config-write, secret-read, shell/system, and policy-bypass requests before dispatch."
   - "2026-05-04T23:54:17Z cliq-channel-416 completed: setup wizard metadata now exposes operator setup states, env shortcut, text inputs, allowFrom handling, completion note, and disable behavior; `docs/releases/OPENCLAW_CLIQ_CHANNEL_SETUP.md` covers install, config/auth smoke, troubleshooting, disable/uninstall, and recovery."
-  - "2026-05-04T23:56:24Z cliq-channel-416 validation: `npm --prefix integrations/openclaw-channel-cliq run typecheck`, `npm --prefix integrations/openclaw-channel-cliq run build`, focused OpenClaw/Lane3 tests (`17 passed`), package-local linked install, `plugins inspect zoho-cliq --json`, `plugins doctor`, YAML parse, `git diff --check`, and `make ci` (`1761 passed`) passed."
   - "2026-05-04T22:36:55Z cliq-channel-402 completed: `openclaw.plugin.json` and runtime `cliqChannelConfigSchema` now cover `defaultAccount/accounts`, account/config references, `network`, `cliPath`, `dmPolicy`, `allowFrom`, and `defaultTo`; setup writes env SecretRefs when `useEnv` is set and rejects plaintext token/password/secret-style inputs."
-  - "2026-05-04T22:39:13Z cliq-channel-402 validation: `npm --prefix integrations/openclaw-channel-cliq run typecheck`, `npm --prefix integrations/openclaw-channel-cliq run build`, focused OpenClaw/Lane3 tests (`16 passed`), package-local linked install, `plugins inspect zoho-cliq --json`, `plugins doctor`, YAML parse, `git diff --check`, and `make ci` (`1760 passed`) passed."
   - "2026-05-04T22:03:50Z cliq-channel-401 completed: `integrations/openclaw-channel-cliq/` now has manifest/package metadata, setup/runtime entries, configured/auth-state probes, compiled dist runtime output, and channel skill; package-local `openclaw@2026.5.3-1` linked install + `plugins inspect zoho-cliq --json` discovers plugin `zoho-cliq` with channel `cliq`, and `plugins doctor` reports no issues."
-next_step: Start `cliq-channel-404` with a fixture-backed JSON-safe process runner in `integrations/openclaw-channel-cliq/src/zoho-cli.ts`.
+next_step: Start `cliq-channel-406` by building fixture-backed polling normalization and dedupe before live inbound tests.

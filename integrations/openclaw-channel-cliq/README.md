@@ -5,14 +5,15 @@ Native OpenClaw channel package for Zoho Cliq, backed by `zoho-cli`.
 This package includes the `cliq-channel-401` installable skeleton,
 `cliq-channel-402` config/SecretRef/setup slice, `cliq-channel-416` human
 setup UX slice, `cliq-channel-403` security/policy slice, and
-`cliq-channel-414` native SDK seam slice. It declares the plugin/channel
-metadata, setup/runtime entrypoints, configured/auth-state probes, a minimal
+`cliq-channel-414` native SDK seam slice, `cliq-channel-404` CLI adapter slice,
+and `cliq-channel-405` outbound delivery slice. It declares the plugin/channel
+metadata, setup/runtime entrypoints, configured/auth-state probes, a native
 OpenClaw channel object, config schema metadata, DM pairing, group allowlist,
 mention gating, scoped employee policy gates, audit warnings,
 account/network/thread-aware session grammar, native mention-policy delegation,
-approval capability metadata, and a typed `zoho cliq send` argument contract.
-Process execution, inbound delivery, and outbound behavior follow in later
-slices.
+approval capability metadata, a JSON-safe `zoho cliq ...` process adapter, and
+native outbound send/reply/thread-reply delivery. Inbound delivery follows in
+later slices.
 
 ## Contract
 
@@ -138,3 +139,8 @@ The wizard offers:
 The plugin shells out to `zoho cliq ...` and parses JSON stdout. It must not call
 Zoho REST APIs directly or expose parallel `cliq_send`/`cliq_reply` agent tools
 when OpenClaw core message and approval surfaces already cover those behaviors.
+The process adapter classifies auth, scope, unsupported endpoint, invalid JSON,
+timeout, missing-command, and generic failures while keeping stderr diagnostics
+redacted. Native outbound delivery uses OpenClaw's shared message surface with
+markdown chunking and maps text sends to `zoho cliq send`, message replies to
+`zoho cliq reply`, and thread delivery to `zoho cliq thread-reply`.

@@ -177,7 +177,7 @@ export function resolveCliqSetupStatusLines(params: {
     return [
       ...lines,
       "auth_check: run zoho cliq status --check-auth before live use.",
-      "send_check: real sends start after cliq-channel-404 and cliq-channel-405.",
+      "send_check: controlled outbound smoke is available for a trusted target.",
     ];
   }
 
@@ -402,7 +402,7 @@ export const cliqSetupWizard: ChannelSetupWizard = {
     title: "Before live use",
     lines: [
       "Run zoho cliq status --check-auth --network <network>.",
-      "Send testing starts after cliq-channel-404 and cliq-channel-405.",
+      "Run only a controlled outbound smoke until inbound loop prevention lands.",
       "Keep webhook secrets and token passwords in SecretRef/env values.",
       "Keep dmPolicy=pairing and groupPolicy=allowlist unless an operator accepts the audit warning.",
     ],

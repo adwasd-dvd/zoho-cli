@@ -23,6 +23,12 @@ scoped employee mode, and audit warnings for unsafe open access.
 mention decisions delegate to OpenClaw's shared inbound helper with bounded
 authorized command bypass, and review-required actions advertise native
 `approvalCapability` facts instead of custom approval tools.
+`cliq-channel-404` is complete: `src/zoho-cli.ts` runs `zoho cliq ...` through
+the OpenClaw command runner, parses JSON stdout, classifies common failures, and
+redacts stderr diagnostics. `cliq-channel-405` is complete: native outbound
+delivery now maps OpenClaw text sends/replies/thread replies to `zoho cliq send`,
+`zoho cliq reply`, and `zoho cliq thread-reply` while returning delivery
+message ids when the CLI response provides them.
 
 The v0.4 plugin targets OpenClaw `>=2026.5.3-1`. The upgraded global
 `OpenClaw 2026.5.3-1` host is suitable for native plugin checks; use
@@ -34,6 +40,8 @@ CRM expansion is intentionally moved to v0.5.
 - OpenClaw owns channel routing, sessions, pairing, security, and outbound
   delivery.
 - `zoho-cli` owns Zoho API compatibility and JSON command contracts.
+- The Cliq channel process adapter owns `zoho cliq ...` execution,
+  classification, and redacted diagnostics.
 - The channel plugin calls `zoho cliq ...` instead of using Zoho REST APIs
   directly.
 - Human operators should install through OpenClaw's plugin/channel setup
@@ -153,7 +161,9 @@ Fallback commands:
 ```bash
 zoho cliq chats --network <network> --unread-only --exclude-reacted-by-self
 zoho cliq context --network <network> --chat-id <chat_id> --limit 20
+zoho cliq send --network <network> --channel-id <channel_id> --text "..."
 zoho cliq reply <message_id> --network <network> --chat-id <chat_id> --text "..."
+zoho cliq thread-reply <thread_id> --network <network> --chat-id <chat_id> --text "..."
 ```
 
 ## Safety defaults

@@ -12,12 +12,14 @@ This runbook is for the native OpenClaw `cliq` channel package in
 - SDK seam smoke testing is ready now: session routing is
   account/network/thread aware, mention policy delegates to OpenClaw shared
   helpers, and review-required actions advertise native approval capability.
-- Real outbound message testing waits for `cliq-channel-404` and
-  `cliq-channel-405`.
+- CLI adapter smoke testing is ready now: `zoho` process execution parses JSON
+  stdout, classifies common failures, and keeps diagnostics redacted.
+- Native outbound smoke testing is ready now: OpenClaw message delivery maps to
+  `zoho cliq send`, `zoho cliq reply`, and `zoho cliq thread-reply`.
 - Inbound webhook or polling tests wait for `cliq-channel-406` and
   `cliq-channel-407`.
-- Production testing waits for loop prevention, inbound runtime, outbound
-  delivery, and observability slices.
+- Production/bidirectional testing waits for inbound runtime, loop prevention,
+  and observability slices.
 
 ## Requirements
 
@@ -164,4 +166,5 @@ Recovery checklist:
 2. Reinstall with `openclaw plugins install ./integrations/openclaw-channel-cliq --link`.
 3. Run `openclaw plugins inspect zoho-cliq --json` and `openclaw plugins doctor`.
 4. Re-run `zoho cliq status --check-auth --network <network>`.
-5. Keep real send tests paused until the outbound delivery slice lands.
+5. Run only a controlled outbound smoke to one trusted target until inbound
+   runtime and loop prevention land.

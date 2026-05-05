@@ -5,9 +5,8 @@ import { defaultCliqAccountId, listCliqAccountIds, resolveCliqAccount, } from ".
 import { CLIQ_CHANNEL_ID, CLIQ_WEBHOOK_SECRET_HEADER, DEFAULT_ACCOUNT_ID, DEFAULT_CLIQ_WEBHOOK_PATH, } from "./constants.js";
 import { createCliqInboundDedupeStore, evaluateCliqPollingEventSecurity, normalizeCliqInboundMessage, } from "./inbound.js";
 import { createCliqNativeEventDispatcher } from "./native-dispatch.js";
+import { buildCliqAuditEvent, CLIQ_WEBHOOK_BODY_MAX_BYTES, CLIQ_WEBHOOK_BODY_TIMEOUT_MS, CLIQ_WEBHOOK_MAX_IN_FLIGHT_PER_KEY, CLIQ_WEBHOOK_MAX_TRACKED_KEYS, CLIQ_WEBHOOK_RATE_LIMIT_MAX_REQUESTS, CLIQ_WEBHOOK_RATE_LIMIT_WINDOW_MS, emitCliqAuditEvent, } from "./observability.js";
 import { resolveCliqTurnLedger, runCliqInboundTurn, } from "./turn-ledger.js";
-const BODY_MAX_BYTES = 512 * 1024;
-const BODY_TIMEOUT_MS = 5_000;
 function isRecord(value) {
     return Boolean(value) && typeof value === "object" && !Array.isArray(value);
 }
@@ -396,6 +395,20 @@ function webhookReasonForTurnSkip(reason) {
         return "dead_lettered";
     return "duplicate";
 }
+function emitWebhookAudit(params) {
+    emitCliqAuditEvent(params.options.logger, buildCliqAuditEvent({
+        kind: "webhook_ingress",
+        outcome: params.outcome,
+        account: params.options.account,
+        source: "webhook",
+        handlerKind: params.handlerKind,
+        reason: params.reason,
+        event: params.event,
+        security: params.security,
+        turn: params.turn,
+        lifecycle: params.lifecycle,
+    }));
+}
 export async function processCliqWebhookPayload(options) {
     const dedupe = options.dedupe ?? createCliqInboundDedupeStore();
     const turnLedger = options.resolvedTurnLedger ?? resolveCliqTurnLedger(options.turnLedger);
@@ -405,6 +418,11 @@ export async function processCliqWebhookPayload(options) {
         mentionMatchers: options.mentionMatchers,
     });
     if (!envelope) {
+        emitWebhookAudit({
+            options,
+            outcome: "ignored",
+            reason: "invalid_payload",
+        });
         return {
             ok: true,
             accepted: false,
@@ -414,6 +432,12 @@ export async function processCliqWebhookPayload(options) {
         };
     }
     if (!shouldAcceptHandler(envelope.handlerKind)) {
+        emitWebhookAudit({
+            options,
+            outcome: "ignored",
+            handlerKind: envelope.handlerKind,
+            reason: "unsupported_handler",
+        });
         return {
             ok: true,
             accepted: false,
@@ -424,6 +448,12 @@ export async function processCliqWebhookPayload(options) {
         };
     }
     if (!event) {
+        emitWebhookAudit({
+            options,
+            outcome: "ignored",
+            handlerKind: envelope.handlerKind,
+            reason: "invalid_payload",
+        });
         return {
             ok: true,
             accepted: false,
@@ -435,6 +465,14 @@ export async function processCliqWebhookPayload(options) {
     }
     const existingTurn = turnLedger?.get(event);
     if (existingTurn?.state === "dead_letter") {
+        emitWebhookAudit({
+            options,
+            outcome: "skipped",
+            handlerKind: envelope.handlerKind,
+            reason: "dead_lettered",
+            event,
+            turn: existingTurn,
+        });
         return {
             ok: true,
             accepted: false,
@@ -447,6 +485,14 @@ export async function processCliqWebhookPayload(options) {
         };
     }
     if (existingTurn?.state === "completed") {
+        emitWebhookAudit({
+            options,
+            outcome: "skipped",
+            handlerKind: envelope.handlerKind,
+            reason: "duplicate",
+            event,
+            turn: existingTurn,
+        });
         return {
             ok: true,
             accepted: false,
@@ -459,6 +505,14 @@ export async function processCliqWebhookPayload(options) {
         };
     }
     if (!dedupe.claim(event)) {
+        emitWebhookAudit({
+            options,
+            outcome: "skipped",
+            handlerKind: envelope.handlerKind,
+            reason: "duplicate",
+            event,
+            turn: existingTurn,
+        });
         return {
             ok: true,
             accepted: false,
@@ -476,6 +530,14 @@ export async function processCliqWebhookPayload(options) {
         event,
     });
     if (!security.allowed) {
+        emitWebhookAudit({
+            options,
+            outcome: "denied",
+            handlerKind: envelope.handlerKind,
+            reason: security.reasonCode,
+            event,
+            security,
+        });
         return {
             ok: true,
             accepted: false,
@@ -504,6 +566,16 @@ export async function processCliqWebhookPayload(options) {
         dedupe.forget(event);
     }
     if (turn.skipped) {
+        emitWebhookAudit({
+            options,
+            outcome: "skipped",
+            handlerKind: envelope.handlerKind,
+            reason: webhookReasonForTurnSkip(turn.skipReason),
+            event,
+            security,
+            turn: turn.turn,
+            lifecycle: turn.lifecycle,
+        });
         return {
             ok: true,
             accepted: false,
@@ -516,6 +588,16 @@ export async function processCliqWebhookPayload(options) {
             turn: turn.turn,
         };
     }
+    emitWebhookAudit({
+        options,
+        outcome: turn.error ? "failed" : turn.dispatched ? "dispatched" : "accepted",
+        handlerKind: envelope.handlerKind,
+        reason: turn.error,
+        event,
+        security,
+        turn: turn.turn,
+        lifecycle: turn.lifecycle,
+    });
     return {
         ok: true,
         accepted: true,
@@ -583,13 +665,13 @@ export function createCliqWebhookHttpHandler(options) {
     const dedupe = options.dedupe ?? createCliqInboundDedupeStore();
     const turnLedger = resolveCliqTurnLedger(options.turnLedger);
     const rateLimiter = createFixedWindowRateLimiter({
-        windowMs: 60_000,
-        maxRequests: 120,
-        maxTrackedKeys: 2048,
+        windowMs: CLIQ_WEBHOOK_RATE_LIMIT_WINDOW_MS,
+        maxRequests: CLIQ_WEBHOOK_RATE_LIMIT_MAX_REQUESTS,
+        maxTrackedKeys: CLIQ_WEBHOOK_MAX_TRACKED_KEYS,
     });
     const inFlightLimiter = createWebhookInFlightLimiter({
-        maxInFlightPerKey: 4,
-        maxTrackedKeys: 2048,
+        maxInFlightPerKey: CLIQ_WEBHOOK_MAX_IN_FLIGHT_PER_KEY,
+        maxTrackedKeys: CLIQ_WEBHOOK_MAX_TRACKED_KEYS,
     });
     return async (req, res) => {
         const clientKey = req.socket.remoteAddress ?? "unknown";
@@ -622,8 +704,8 @@ export function createCliqWebhookHttpHandler(options) {
             const body = await readWebhookBodyOrReject({
                 req,
                 res,
-                maxBytes: BODY_MAX_BYTES,
-                timeoutMs: BODY_TIMEOUT_MS,
+                maxBytes: CLIQ_WEBHOOK_BODY_MAX_BYTES,
+                timeoutMs: CLIQ_WEBHOOK_BODY_TIMEOUT_MS,
                 profile: "post-auth",
                 invalidBodyMessage: "invalid Cliq webhook body",
             });

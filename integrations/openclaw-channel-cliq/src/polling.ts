@@ -1,4 +1,4 @@
-import type { OpenClawConfig } from "openclaw/plugin-sdk";
+import type { OpenClawConfig, PluginLogger } from "openclaw/plugin-sdk";
 
 import type { CliqResolvedAccount } from "./config.js";
 import {
@@ -19,6 +19,8 @@ import {
   type CliqTurnLedgerOption,
 } from "./turn-ledger.js";
 import type { CliqNativeEventDispatcher } from "./native-dispatch.js";
+import { buildCliqAuditEvent, emitCliqAuditEvent } from "./observability.js";
+import type { CliqInboundSecurityDecision } from "./security.js";
 import { fetchCliqContext, listCliqChats } from "./zoho-cli.js";
 
 export type CliqPollingSkipReason =
@@ -59,6 +61,7 @@ export type CliqPollingOptions = {
   turnLedger?: CliqTurnLedgerOption;
   nativeDispatch?: CliqNativeEventDispatcher;
   onEvent?: (event: CliqNormalizedInboundEvent) => void | Promise<void>;
+  logger?: Partial<PluginLogger>;
 };
 
 function isRecord(value: unknown): value is Record<string, unknown> {
@@ -116,6 +119,31 @@ function extractMessages(context: unknown): unknown[] {
   return Array.isArray(messages) ? messages : [];
 }
 
+function emitPollingAudit(params: {
+  options: CliqPollingOptions;
+  outcome: "accepted" | "ignored" | "denied" | "failed" | "dispatched" | "skipped";
+  reason?: string;
+  event?: CliqNormalizedInboundEvent;
+  security?: CliqInboundSecurityDecision;
+  turn?: CliqInboundTurnResult["turn"];
+  lifecycle?: CliqInboundLifecycleResult;
+}): void {
+  emitCliqAuditEvent(
+    params.options.logger,
+    buildCliqAuditEvent({
+      kind: "polling_ingress",
+      outcome: params.outcome,
+      account: params.options.account,
+      source: "polling",
+      reason: params.reason,
+      event: params.event,
+      security: params.security as Record<string, unknown> | undefined,
+      turn: params.turn,
+      lifecycle: params.lifecycle,
+    }),
+  );
+}
+
 export async function pollCliqInboundOnce(
   options: CliqPollingOptions,
 ): Promise<CliqPollingResult> {
@@ -136,6 +164,11 @@ export async function pollCliqInboundOnce(
   for (const chat of chats.chats) {
     const lookup = resolveChatLookup(chat);
     if (!lookup.chatId && !lookup.channelId) {
+      emitPollingAudit({
+        options,
+        outcome: "ignored",
+        reason: "invalid_chat",
+      });
       skipped.push({ reason: "invalid_chat", chat });
       continue;
     }
@@ -157,11 +190,22 @@ export async function pollCliqInboundOnce(
         selfUserIds: options.selfUserIds,
       });
       if (!event) {
+        emitPollingAudit({
+          options,
+          outcome: "ignored",
+          reason: "invalid_message",
+        });
         skipped.push({ reason: "invalid_message", chat, message });
         continue;
       }
 
       if (!dedupe.claim(event)) {
+        emitPollingAudit({
+          options,
+          outcome: "skipped",
+          reason: "duplicate",
+          event,
+        });
         skipped.push({ reason: "duplicate", chat, message, event });
         continue;
       }
@@ -172,6 +216,13 @@ export async function pollCliqInboundOnce(
         event,
       });
       if (!security.allowed) {
+        emitPollingAudit({
+          options,
+          outcome: "denied",
+          reason: security.reasonCode,
+          event,
+          security,
+        });
         skipped.push({
           reason: "security_denied",
           chat,
@@ -206,6 +257,20 @@ export async function pollCliqInboundOnce(
           dedupe.forget(event);
         }
         if (turnResult.skipped) {
+          emitPollingAudit({
+            options,
+            outcome: "skipped",
+            reason:
+              turnResult.skipReason === "conversation_active"
+                ? "turn_active"
+                : turnResult.skipReason === "dead_lettered"
+                  ? "dead_lettered"
+                  : "duplicate",
+            event,
+            security,
+            turn: turnResult.turn,
+            lifecycle: turnResult.lifecycle,
+          });
           skipped.push({
             reason:
               turnResult.skipReason === "conversation_active"
@@ -220,6 +285,26 @@ export async function pollCliqInboundOnce(
         }
         if (turnResult.lifecycle) lifecycle.push(turnResult.lifecycle);
         if (turnResult.dispatched) dispatchedCount += 1;
+        emitPollingAudit({
+          options,
+          outcome: turnResult.error
+            ? "failed"
+            : turnResult.dispatched
+              ? "dispatched"
+              : "accepted",
+          reason: turnResult.error,
+          event,
+          security,
+          turn: turnResult.turn,
+          lifecycle: turnResult.lifecycle,
+        });
+      } else {
+        emitPollingAudit({
+          options,
+          outcome: "accepted",
+          event,
+          security,
+        });
       }
     }
   }

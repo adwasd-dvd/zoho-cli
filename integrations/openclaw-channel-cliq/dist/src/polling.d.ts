@@ -1,4 +1,4 @@
-import type { OpenClawConfig } from "openclaw/plugin-sdk";
+import type { OpenClawConfig, PluginLogger } from "openclaw/plugin-sdk";
 import type { CliqResolvedAccount } from "./config.js";
 import { type CliqInboundDedupeStore, type CliqMentionMatcher, type CliqNormalizedInboundEvent } from "./inbound.js";
 import { type CliqInboundLifecycleResult } from "./lifecycle.js";
@@ -33,5 +33,6 @@ export type CliqPollingOptions = {
     turnLedger?: CliqTurnLedgerOption;
     nativeDispatch?: CliqNativeEventDispatcher;
     onEvent?: (event: CliqNormalizedInboundEvent) => void | Promise<void>;
+    logger?: Partial<PluginLogger>;
 };
 export declare function pollCliqInboundOnce(options: CliqPollingOptions): Promise<CliqPollingResult>;

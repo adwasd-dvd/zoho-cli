@@ -18,7 +18,25 @@ export {
   createCliqNativeEventDispatcher,
   dispatchCliqEventToNativeOpenClaw,
 } from "./src/native-dispatch.js";
+export {
+  buildCliqAuditEvent,
+  buildCliqCorrelationId,
+  buildCliqDiagnosticBundle,
+  correlationIdForCliqEvent,
+  describeCliqObservabilityDiagnostics,
+  describeCliqRateLimitDiagnostics,
+  describeCliqReleaseIntegrityDiagnostics,
+  emitCliqAuditEvent,
+  summarizeCliqInboundEventForDiagnostics,
+} from "./src/observability.js";
 export { pollCliqInboundOnce } from "./src/polling.js";
+export {
+  CLIQ_REDACTED,
+  isCliqSensitiveDiagnosticKey,
+  redactCliqDiagnosticObject,
+  redactCliqDiagnosticValue,
+  resolveCliqPrivacyRetentionPolicy,
+} from "./src/privacy.js";
 export {
   resolveCliqChannelCapabilitySummary,
   resolveCliqChannelStatusSummary,

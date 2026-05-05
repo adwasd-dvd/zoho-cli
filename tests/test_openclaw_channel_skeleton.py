@@ -127,7 +127,9 @@ def test_openclaw_cliq_channel_sources_use_locked_sdk_surfaces() -> None:
             read("src/inbound.ts"),
             read("src/lifecycle.ts"),
             read("src/native-dispatch.ts"),
+            read("src/observability.ts"),
             read("src/polling.ts"),
+            read("src/privacy.ts"),
             read("src/session.ts"),
             read("src/security.ts"),
             read("src/setup-wizard.ts"),
@@ -176,6 +178,10 @@ def test_openclaw_cliq_channel_sources_use_locked_sdk_surfaces() -> None:
         "runCliqInboundLifecycle",
         "dispatchCliqEventToNativeOpenClaw",
         "createCliqNativeEventDispatcher",
+        "buildCliqDiagnosticBundle",
+        "redactCliqDiagnosticObject",
+        "resolveCliqPrivacyRetentionPolicy",
+        "describeCliqRateLimitDiagnostics",
         "runtime.turn.run",
         "resolveAgentRoute",
         "sendTextMediaPayload",
@@ -251,7 +257,9 @@ def test_openclaw_cliq_channel_dist_runtime_outputs_exist() -> None:
         "dist/src/inbound.js",
         "dist/src/lifecycle.js",
         "dist/src/native-dispatch.js",
+        "dist/src/observability.js",
         "dist/src/polling.js",
+        "dist/src/privacy.js",
         "dist/src/session.js",
         "dist/src/security.js",
         "dist/src/setup-wizard.js",
@@ -271,7 +279,9 @@ def test_openclaw_cliq_channel_dist_runtime_outputs_exist() -> None:
             read("dist/src/inbound.js"),
             read("dist/src/lifecycle.js"),
             read("dist/src/native-dispatch.js"),
+            read("dist/src/observability.js"),
             read("dist/src/polling.js"),
+            read("dist/src/privacy.js"),
             read("dist/src/session.js"),
             read("dist/src/security.js"),
             read("dist/src/setup-wizard.js"),
@@ -346,19 +356,26 @@ assert.equal(status.configured, true);
 assert.deepEqual(status.setupStates, []);
 assert.equal(status.diagnostics.capabilities.inboundWebhook, true);
 assert.equal(status.diagnostics.capabilities.turnLedger, true);
-assert.equal(status.diagnostics.productionReadiness, "pending_observability_bundle");
+assert.equal(status.diagnostics.capabilities.observabilityBundle, true);
+assert.equal(status.diagnostics.capabilities.rateLimitDiagnostics, true);
+assert.equal(status.diagnostics.productionReadiness, "pending_live_verification");
+assert.deepEqual(status.diagnostics.blockers, ["live_verification_pending"]);
+assert.equal(status.diagnostics.observability.rateLimits.webhook.maxRequests, 120);
+assert.equal(status.diagnostics.observability.privacy.rawMessageBodies, "never_in_diagnostics");
 assert(status.statusLines.some((line) => line.includes("turn ledger")));
 assert(status.diagnostics.implementedSlices.includes("cliq-channel-413"));
 assert(status.diagnostics.implementedSlices.includes("cliq-channel-409"));
 assert(status.diagnostics.implementedSlices.includes("cliq-channel-410"));
 assert(status.diagnostics.implementedSlices.includes("cliq-channel-417"));
-assert.equal(status.diagnostics.nextSlice, "cliq-channel-415");
+assert(status.diagnostics.implementedSlices.includes("cliq-channel-415"));
+assert.equal(status.diagnostics.nextSlice, "cliq-channel-411");
 
 const capabilities = resolveCliqChannelCapabilitySummary({ cfg });
 assert.equal(capabilities.nativeMessageSurface, true);
 assert.equal(capabilities.nativeApprovalSurface, true);
 assert.equal(capabilities.customSendTools, false);
 assert.equal(capabilities.capabilities.nativeAgentDispatch, true);
+assert.equal(capabilities.capabilities.redactedAuditEvents, true);
 
 const route = resolveCliqRoutingDiagnostic({
   cfg,
@@ -370,6 +387,144 @@ assert.equal(route.chatType, "channel");
 assert.equal(route.nativeId, "C123");
 assert.equal(route.threadId, "T9");
 assert.equal(route.sessionRoute.to, "channel:C123");
+"""
+    subprocess.run(
+        ["node", "--input-type=module", "-e", script],
+        cwd=ROOT,
+        check=True,
+        text=True,
+        capture_output=True,
+    )
+
+
+def test_openclaw_cliq_channel_observability_privacy_runtime() -> None:
+    script = """
+import assert from "node:assert/strict";
+import { resolveCliqAccount } from "./integrations/openclaw-channel-cliq/dist/src/config.js";
+import { normalizeCliqInboundMessage } from "./integrations/openclaw-channel-cliq/dist/src/inbound.js";
+import {
+  buildCliqAuditEvent,
+  buildCliqCorrelationId,
+  buildCliqDiagnosticBundle,
+  describeCliqRateLimitDiagnostics,
+  describeCliqReleaseIntegrityDiagnostics,
+} from "./integrations/openclaw-channel-cliq/dist/src/observability.js";
+import {
+  CLIQ_REDACTED,
+  redactCliqDiagnosticObject,
+  resolveCliqPrivacyRetentionPolicy,
+} from "./integrations/openclaw-channel-cliq/dist/src/privacy.js";
+import { createCliqTurnLedgerStore } from "./integrations/openclaw-channel-cliq/dist/src/turn-ledger.js";
+
+const cfg = {
+  channels: {
+    cliq: {
+      accounts: {
+        default: {
+          network: "happy",
+          webhookSecret: { source: "env", provider: "default", id: "ZOHO_CLIQ_WEBHOOK_SECRET" },
+          tokenPassword: { source: "env", provider: "default", id: "ZOHO_TOKEN_PASSWORD" },
+          groupPolicy: "allowlist",
+          groupAllowFrom: ["channel:C123"],
+        },
+      },
+    },
+  },
+};
+const account = resolveCliqAccount(cfg, "default");
+const event = normalizeCliqInboundMessage({
+  accountId: "default",
+  network: "happy",
+  chat: { channelId: "C123", chatType: "channel" },
+  message: {
+    id: "M1",
+    text: "@bot this body must not appear in diagnostics",
+    user: { id: "U2", name: "Alice" },
+  },
+  mentionMatchers: [/@bot\\b/i],
+});
+assert.ok(event);
+const ledger = createCliqTurnLedgerStore({ now: () => Date.parse("2026-05-05T00:00:00Z") });
+const begin = ledger.begin(event);
+assert.equal(begin.accepted, true);
+const failedTurn = ledger.fail(event, new Error("dispatch failed"));
+const audit = buildCliqAuditEvent({
+  kind: "webhook_ingress",
+  outcome: "denied",
+  account,
+  source: "webhook",
+  handlerKind: "mention",
+  reason: "mention_required",
+  event,
+  security: {
+    reasonCode: "mention_required",
+    webhookSecret: "SHOULD_NOT_LEAK",
+    rawSignature: "SHOULD_NOT_LEAK_EITHER",
+    message: { text: "raw body leak" },
+  },
+  turn: failedTurn,
+  now: () => new Date("2026-05-05T00:00:01Z"),
+});
+const auditText = JSON.stringify(audit);
+assert.match(audit.correlationId, /^cliq-[0-9a-f]{16}$/);
+assert.equal(audit.event.textLength, event.text.length);
+assert(!auditText.includes(event.text));
+assert(!auditText.includes("SHOULD_NOT_LEAK"));
+assert(!auditText.includes("raw body leak"));
+assert(auditText.includes(CLIQ_REDACTED));
+
+const bundle = buildCliqDiagnosticBundle({
+  account,
+  event,
+  turn: failedTurn,
+  nativeDispatch: {
+    target: "channel:C123",
+    deliveryCount: 0,
+    tokenPassword: "SHOULD_NOT_LEAK",
+    payload: "@bot this body must not appear in diagnostics",
+  },
+  source: "webhook",
+  now: () => new Date("2026-05-05T00:00:02Z"),
+});
+const bundleText = JSON.stringify(bundle);
+assert.equal(bundle.rateLimits.webhook.maxRequests, 120);
+assert.equal(bundle.privacy.rawMessageBodies, "never_in_diagnostics");
+assert.equal(bundle.privacy.deadLetterRetention.replayDefault, "blocked");
+assert.equal(bundle.releaseIntegrity.npmExpectedIntegrity, "<filled-at-release>");
+assert(!bundleText.includes(event.text));
+assert(!bundleText.includes("SHOULD_NOT_LEAK"));
+
+const redacted = redactCliqDiagnosticObject({
+  tokenPassword: "secret",
+  messageText: "body",
+  messageId: "M1",
+  nested: { authorization: "bearer secret" },
+});
+assert.equal(redacted.tokenPassword, CLIQ_REDACTED);
+assert.equal(redacted.messageText, CLIQ_REDACTED);
+assert.equal(redacted.messageId, "M1");
+assert.equal(redacted.nested.authorization, CLIQ_REDACTED);
+
+const firstCorrelation = buildCliqCorrelationId({
+  accountId: event.accountId,
+  network: event.network,
+  source: "webhook",
+  messageId: event.messageId,
+  peerId: event.peerId,
+  dedupeKey: event.dedupeKey,
+});
+const secondCorrelation = buildCliqCorrelationId({
+  accountId: event.accountId,
+  network: event.network,
+  source: "webhook",
+  messageId: event.messageId,
+  peerId: event.peerId,
+  dedupeKey: event.dedupeKey,
+});
+assert.equal(firstCorrelation, secondCorrelation);
+assert.equal(describeCliqRateLimitDiagnostics().webhook.bodyTimeoutMs, 5000);
+assert.equal(resolveCliqPrivacyRetentionPolicy().turnLedgerRetention.containsRawBodies, false);
+assert.equal(describeCliqReleaseIntegrityDiagnostics().localLinkedDevelopmentAllowed, true);
 """
     subprocess.run(
         ["node", "--input-type=module", "-e", script],

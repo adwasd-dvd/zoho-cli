@@ -68,8 +68,9 @@ classified error kind, and redacted stderr summary.
    `ZOHO_CLIQ_WEBHOOK_SECRET` and rotate any value exposed in chat or
    screenshots.
 4. Native dispatch is implemented for accepted webhook/polling events. Treat
-   dispatch failures/dead letters as terminal diagnostics and keep
-   `observability_bundle_pending` as the remaining production blocker.
+   dispatch failures/dead letters as terminal diagnostics, use the redacted
+   diagnostic bundle for support handoff, and keep `live_verification_pending`
+   as the remaining production blocker.
 5. For unresolved routes, prefer explicit `channel:<id>`, `user:<id>`, or
    `cliq:channel:<id>:thread:<thread_id>` targets.
 6. For repeated Zoho-side `not_supported` or `inactive_appaccount_user` errors,

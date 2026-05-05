@@ -1,4 +1,5 @@
 import { CLIQ_CHANNEL_ID, DEFAULT_ACCOUNT_ID, DEFAULT_CLIQ_WEBHOOK_PATH, DEFAULT_ZOHO_CLI, } from "./constants.js";
+import { describeCliqObservabilityDiagnostics } from "./observability.js";
 export const DEFAULT_CLIQ_EMPLOYEE_MODE = {
     enabled: true,
     scopeProfile: "default",
@@ -495,7 +496,12 @@ export function describeCliqCapabilityDiagnostics(account) {
         scopedEmployeeMode: account.employeeMode.enabled !== false,
         nativeApprovalCapability: true,
         nativeAgentDispatch: true,
-        observabilityBundle: false,
+        observabilityBundle: true,
+        redactedAuditEvents: true,
+        rateLimitDiagnostics: true,
+        privacyRetention: true,
+        deadLetterReplayGuard: true,
+        npmIntegrityPlaceholder: true,
     };
 }
 export function describeCliqAccountDiagnostics(account) {
@@ -515,14 +521,15 @@ export function describeCliqAccountDiagnostics(account) {
     if (account.employeeMode.enabled === false) {
         blockers.push("employee_mode_disabled");
     }
-    blockers.push("observability_bundle_pending");
+    const productionBlockers = blockers.length > 0 ? blockers : ["live_verification_pending"];
     return {
-        readiness: blockers.length <= 2 ? "controlled_smoke_ready" : "setup_required",
-        productionReadiness: "pending_observability_bundle",
+        readiness: blockers.length === 0 ? "controlled_smoke_ready" : "setup_required",
+        productionReadiness: blockers.length === 0 ? "pending_live_verification" : "setup_required",
         webhookPath: account.webhookPath,
         defaultTarget: account.defaultTo,
         capabilities,
-        blockers,
+        blockers: productionBlockers,
+        observability: describeCliqObservabilityDiagnostics(),
         smokeChecks: [
             "zoho cliq status --check-auth --network <network>",
             "openclaw plugins inspect zoho-cliq --json",
@@ -544,8 +551,9 @@ export function describeCliqAccountDiagnostics(account) {
             "cliq-channel-409",
             "cliq-channel-410",
             "cliq-channel-417",
+            "cliq-channel-415",
         ],
-        nextSlice: "cliq-channel-415",
+        nextSlice: "cliq-channel-411",
     };
 }
 export function describeCliqAccount(account) {

@@ -47,6 +47,8 @@ def test_openclaw_cliq_channel_contract_uses_current_sdk_seams():
         "src/session.ts",
         "src/status.ts",
         "src/native-dispatch.ts",
+        "src/observability.ts",
+        "src/privacy.ts",
         "src/zoho-cli.ts",
         "runPluginCommandWithTimeout",
         "outbound.sendText",

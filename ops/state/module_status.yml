@@ -20,9 +20,9 @@ cliq:
 openclaw_cliq_channel:
   priority: 3
   status: in_progress
-  phase: native_agent_dispatch_ready_observability_next
+  phase: observability_ready_live_verification_next
   target_release: v0.4.0
-  current_milestone: cliq-channel-415-observability-privacy-hardening
+  current_milestone: cliq-channel-411-live-verification-gate
   blockers: []
 
 crm:

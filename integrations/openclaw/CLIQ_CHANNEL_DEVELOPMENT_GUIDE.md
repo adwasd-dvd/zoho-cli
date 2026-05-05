@@ -107,6 +107,9 @@ Follow the stack from the architecture plan:
     and polling events now enter OpenClaw native channel turns and route replies
     through the Cliq outbound adapter)
 16. `cliq-channel-415` observability, privacy, and supply-chain hardening
+    (complete; redacted audit events, diagnostic bundles, privacy retention,
+    rate-limit diagnostics, dead-letter replay guidance, and npm integrity
+    placeholders are now part of the native channel surface)
 17. `cliq-channel-411` live verification and release gate
 18. `cliq-channel-412` compatibility maintenance
 
@@ -313,7 +316,7 @@ Map diagnostic signals to one next action:
 | `employee_scope_empty` | Add `workScopes.<profile>` before accepting business chat turns. |
 | `target_unresolved` | Ask for or infer an explicit `channel:<id>`, `user:<id>`, or `cliq:channel:<id>:thread:<thread_id>` route. |
 | native dispatch failure / dead-letter | Inspect turn id, dispatch error, and dead-letter metadata before replay; do not retry blindly. |
-| `observability_bundle_pending` | Keep reports redacted and do not claim production incident readiness. |
+| `live_verification_pending` | Keep reports redacted and do not claim production incident readiness until the fake plus live verification gate passes. |
 | repeated Zoho `not_supported` / `inactive_appaccount_user` | Record `skip_deferred` and keep unrelated channel work moving. |
 
 ## Security checklist
@@ -407,7 +410,8 @@ Check whether Zoho auth is healthy.
   outbound delivery.
 - Carry safe correlation ids across webhook/polling event, turn ledger, CLI
   invocation, and OpenClaw delivery result.
-- Provide a redacted diagnostic bundle/runbook for operators.
+- Provide a redacted diagnostic bundle/runbook for operators. Complete in
+  `src/observability.ts` and `src/privacy.ts`; live verification remains next.
 - Do not persist raw message bodies, attachments, auth headers, webhook
   signatures, tokens, or secrets by default.
 - Document turn ledger/dead-letter purge and replay.

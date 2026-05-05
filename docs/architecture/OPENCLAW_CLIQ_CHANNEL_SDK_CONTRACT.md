@@ -346,6 +346,10 @@ Required runtime surfaces:
   readiness blockers, implemented/next slices, native message/approval facts,
   and normalized target/session routes, but must not expose secrets, webhook
   signatures, token passwords, raw stderr, or message bodies.
+- `src/observability.ts` and `src/privacy.ts` for redacted audit events,
+  correlation ids, support diagnostic bundles, rate-limit diagnostics, privacy
+  retention policy, dead-letter replay guidance, and npm artifact integrity
+  checklist placeholders.
 - `resolveInboundMentionDecision({ facts, policy })` for the final mention gate.
 - `approvalCapability`, not `ChannelPlugin.approvals`, for native approval facts.
 
@@ -466,13 +470,14 @@ approval surfaces while explicitly keeping custom send tools disabled. Routing
 diagnostics normalize Cliq targets and return account/network/chat/thread-aware
 session routes without exposing message bodies or secrets.
 
-`cliq-channel-410` aligns AI-facing documentation around those diagnostics, and
+`cliq-channel-410` aligns AI-facing documentation around those diagnostics,
 `cliq-channel-417` wires accepted webhook/polling events into native OpenClaw
-agent turns. Agents must inspect native status/capability/routing summaries
-before ad hoc CLI probing, map setup states and diagnostic blockers to one safe
-next action, use explicit `channel:<id>` / `user:<id>` / thread targets, treat
+agent turns, and `cliq-channel-415` adds the redacted observability/privacy
+bundle. Agents must inspect native status/capability/routing summaries before
+ad hoc CLI probing, map setup states and diagnostic blockers to one safe next
+action, use explicit `channel:<id>` / `user:<id>` / thread targets, treat
 repeated Zoho-side endpoint gaps as `skip_deferred`, and keep production
-incident-readiness claims blocked while `observability_bundle_pending` remains
+incident-readiness claims blocked while `live_verification_pending` remains
 true.
 
 ## Compatibility rule

@@ -1,7 +1,9 @@
 export { buildCliqInboundDedupeKey, createCliqInboundDedupeStore, evaluateCliqPollingEventSecurity, normalizeCliqContextMessages, normalizeCliqInboundMessage, normalizeCliqWatchMessages, } from "./src/inbound.js";
 export { runCliqInboundLifecycle } from "./src/lifecycle.js";
 export { createCliqNativeEventDispatcher, dispatchCliqEventToNativeOpenClaw, } from "./src/native-dispatch.js";
+export { buildCliqAuditEvent, buildCliqCorrelationId, buildCliqDiagnosticBundle, correlationIdForCliqEvent, describeCliqObservabilityDiagnostics, describeCliqRateLimitDiagnostics, describeCliqReleaseIntegrityDiagnostics, emitCliqAuditEvent, summarizeCliqInboundEventForDiagnostics, } from "./src/observability.js";
 export { pollCliqInboundOnce } from "./src/polling.js";
+export { CLIQ_REDACTED, isCliqSensitiveDiagnosticKey, redactCliqDiagnosticObject, redactCliqDiagnosticValue, resolveCliqPrivacyRetentionPolicy, } from "./src/privacy.js";
 export { resolveCliqChannelCapabilitySummary, resolveCliqChannelStatusSummary, resolveCliqRoutingDiagnostic, } from "./src/status.js";
 export { buildCliqTurnConversationKey, buildCliqTurnId, createCliqTurnLedgerStore, resolveCliqTurnLedger, runCliqInboundTurn, } from "./src/turn-ledger.js";
 export { createCliqWebhookHttpHandler, evaluateCliqWebhookEventSecurity, listCliqWebhookRoutePaths, normalizeCliqWebhookPayload, normalizeCliqWebhookPath, parseCliqWebhookPayload, processCliqWebhookPayload, registerCliqWebhookRoutes, verifyCliqWebhookSecret, } from "./src/webhook.js";

@@ -1,22 +1,22 @@
-id: cliq-channel-415
-title: implement observability privacy retention rate-limit diagnostics and npm integrity hardening
+id: cliq-channel-411
+title: run fake and live verification gate for v0.4 native Cliq channel
 module: openclaw_cliq_channel
 stage: ready
 status: ready
 owner: coder
-updated_at: '2026-05-05T08:25:45Z'
+updated_at: '2026-05-05T08:44:45Z'
 execution_mode: turbo_20x
 throughput_policy_ref: ops/state/execution_policy.yml
 success_criteria:
-  - add redacted native dispatch/ingress audit events with correlation ids that never include webhook secrets, token passwords, raw signatures, or raw message bodies
-  - expose rate-limit, webhook, polling, lifecycle, turn-ledger, and native dispatch diagnostics in status/capability summaries
-  - document privacy retention boundaries for Cliq message metadata, dead-letter entries, and local diagnostic bundles
-  - add dead-letter replay guidance that requires explicit operator action and preserves loop-prevention semantics
-  - add npm artifact integrity/release checklist placeholders without blocking local linked-package development
-  - update Lane 2 docs, Lane 3 skill/docs, and Lane 1 state/progress docs
-  - keep package-local `npm run typecheck`, `npm run build`, OpenClaw linked install, `plugins inspect zoho-cliq --json`, `plugins doctor`, focused tests, and `make ci` green
-next_if_done: run cliq-channel-411 fake and live verification gate for v0.4 native Cliq channel.
+  - run package-local `npm run typecheck` and `npm run build`
+  - run OpenClaw linked install, `plugins inspect zoho-cliq --json`, and `plugins doctor`
+  - run focused OpenClaw channel tests plus lane docs tests
+  - run fake host verification for webhook, polling, lifecycle, turn-ledger, native dispatch, redacted diagnostics, and outbound delivery
+  - prepare live verification commands for the configured Zoho Cliq Bot/webhook without exposing secrets or raw message bodies
+  - record live verification outcomes as pass/fail/skip_deferred with redacted diagnostic bundle evidence
+  - keep `make ci` green before marking the v0.4 channel gate complete
+next_if_done: prepare v0.4 native Cliq channel release candidate packaging and compatibility maintenance (`cliq-channel-412`).
 progress:
-  - "2026-05-05T08:25:45Z cliq-channel-417 completed: `src/native-dispatch.ts` maps accepted Cliq webhook/polling events into OpenClaw native channel turns, records session/last-route metadata, delivers agent replies through the Cliq outbound adapter, and fake host coverage verifies trusted webhook dispatch, trusted polling dispatch, denied events, duplicate suppression, and dispatch-failure dead-lettering. The next active slice is `cliq-channel-415` observability/privacy hardening."
-  - "2026-05-05T08:01:29Z cliq-channel-410 completed: root skill, native channel skill, Lane 3 guide, setup runbook, development guide, README, and lane3 docs tests now map setup states, diagnostic blockers, explicit route formats, and production blockers to AI-safe next actions. The next active slice is corrected to `cliq-channel-417` native agent turn dispatch before observability, so the channel line stays focused on Discord-like native behavior."
-next_step: Start `cliq-channel-415` by adding redacted diagnostics, privacy/retention guidance, dead-letter replay rules, and npm integrity release hardening.
+  - "2026-05-05T08:44:45Z cliq-channel-415 completed: added `src/observability.ts` and `src/privacy.ts` for redacted audit events, stable correlation ids, diagnostic bundles, webhook/polling/lifecycle/turn-ledger/native dispatch rate-limit diagnostics, privacy retention rules, dead-letter replay guidance, and npm integrity checklist placeholders. Status diagnostics now advertise `observabilityBundle=true`, `productionReadiness=pending_live_verification`, blocker `live_verification_pending`, implemented slice `cliq-channel-415`, and `nextSlice=cliq-channel-411`."
+  - "2026-05-05T08:25:45Z cliq-channel-417 completed: `src/native-dispatch.ts` maps accepted Cliq webhook/polling events into OpenClaw native channel turns, records session/last-route metadata, delivers agent replies through the Cliq outbound adapter, and fake host coverage verifies trusted webhook dispatch, trusted polling dispatch, denied events, duplicate suppression, and dispatch-failure dead-lettering."
+next_step: Start `cliq-channel-411` by running fake/package-local verification, then prepare redacted live Bot webhook and polling verification commands for the configured environment.

@@ -39,8 +39,10 @@ Use this skill as the default operating contract for an OpenClaw agent acting li
   facts, and never report webhook secrets, token passwords, raw stderr, webhook
   signatures, or raw message bodies.
 - Native Cliq agent dispatch is now implemented for accepted webhook/polling
-  events; keep `observability_bundle_pending` as the remaining production
-  blocker and do not claim production incident readiness until that slice lands.
+  events, and redacted audit/diagnostic bundles are now available; treat
+  `live_verification_pending` as the remaining production blocker and do not
+  claim production incident readiness until controlled fake plus live
+  verification passes.
 - Draft before high-impact send/delete actions unless the user explicitly asks for direct execution.
 - Ask for explicit approval before running any install/update command that modifies tools or skill files.
 - File low-risk, sanitized CLI bugs and suggestions directly in `adwasd-dvd/zoho-cli` GitHub issues after duplicate search; ask for approval before including private context or changing GitHub settings/labels/code.

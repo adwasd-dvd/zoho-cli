@@ -1,6 +1,7 @@
 import { formatTextWithAttachmentLinks, hasOutboundReplyContent, resolveOutboundMediaUrls, sendTextMediaPayload, } from "openclaw/plugin-sdk/reply-payload";
 import { resolveInboundLastRouteSessionKey } from "openclaw/plugin-sdk/routing";
 import { CLIQ_CHANNEL_ID } from "./constants.js";
+import { buildCliqAuditEvent, emitCliqAuditEvent } from "./observability.js";
 import { buildCliqSessionPeerId, normalizeCliqSessionToken, } from "./session.js";
 function isRecord(value) {
     return Boolean(value) && typeof value === "object" && !Array.isArray(value);
@@ -217,97 +218,139 @@ export async function dispatchCliqEventToNativeOpenClaw(options) {
         count: 0,
         messageIds: [],
     };
-    const result = await runtime.turn.run({
-        channel: CLIQ_CHANNEL_ID,
-        accountId: route.accountId,
-        raw: options.event,
-        adapter: {
-            ingest: () => ({
-                id: options.event.messageId,
-                timestamp,
-                rawText: options.event.text,
-                textForAgent: options.event.text,
-                textForCommands: options.event.text,
-                raw: options.event.raw,
-            }),
-            resolveTurn: () => ({
-                cfg,
-                channel: CLIQ_CHANNEL_ID,
-                accountId: route.accountId,
-                agentId: route.agentId,
-                routeSessionKey: route.sessionKey,
-                storePath,
-                ctxPayload,
-                recordInboundSession: runtime.session.recordInboundSession,
-                dispatchReplyWithBufferedBlockDispatcher: runtime.reply.dispatchReplyWithBufferedBlockDispatcher,
-                record: {
-                    createIfMissing: true,
-                    updateLastRoute: {
-                        sessionKey: updateLastRouteSessionKey,
-                        channel: CLIQ_CHANNEL_ID,
-                        to: facts.target,
-                        accountId: route.accountId,
-                        ...(options.event.threadId ? { threadId: options.event.threadId } : {}),
-                    },
-                    onRecordError: (error) => {
-                        options.logger?.warn?.(`[zoho-cliq] native inbound session record failed: ${errorText(error)}`);
-                    },
-                },
-                delivery: {
-                    deliver: async (payload) => {
-                        if (payload.isReasoning === true ||
-                            !hasOutboundReplyContent(payload, { trimText: true })) {
-                            return { visibleReplySent: false };
-                        }
-                        const adapter = await runtime.outbound.loadAdapter(CLIQ_CHANNEL_ID);
-                        if (!adapter?.sendText) {
-                            throw new Error("cliq_outbound_adapter_unavailable");
-                        }
-                        const mediaUrls = resolveOutboundMediaUrls(payload);
-                        const outboundPayload = mediaUrls.length > 0 && !adapter.sendMedia
-                            ? {
-                                ...payload,
-                                text: formatTextWithAttachmentLinks(payload.text, mediaUrls),
-                                mediaUrl: undefined,
-                                mediaUrls: [],
-                            }
-                            : payload;
-                        const sent = await sendTextMediaPayload({
+    let result;
+    try {
+        result = await runtime.turn.run({
+            channel: CLIQ_CHANNEL_ID,
+            accountId: route.accountId,
+            raw: options.event,
+            adapter: {
+                ingest: () => ({
+                    id: options.event.messageId,
+                    timestamp,
+                    rawText: options.event.text,
+                    textForAgent: options.event.text,
+                    textForCommands: options.event.text,
+                    raw: options.event.raw,
+                }),
+                resolveTurn: () => ({
+                    cfg,
+                    channel: CLIQ_CHANNEL_ID,
+                    accountId: route.accountId,
+                    agentId: route.agentId,
+                    routeSessionKey: route.sessionKey,
+                    storePath,
+                    ctxPayload,
+                    recordInboundSession: runtime.session.recordInboundSession,
+                    dispatchReplyWithBufferedBlockDispatcher: runtime.reply.dispatchReplyWithBufferedBlockDispatcher,
+                    record: {
+                        createIfMissing: true,
+                        updateLastRoute: {
+                            sessionKey: updateLastRouteSessionKey,
                             channel: CLIQ_CHANNEL_ID,
-                            ctx: {
-                                cfg,
-                                accountId: route.accountId,
-                                to: facts.target,
-                                text: outboundPayload.text ?? "",
+                            to: facts.target,
+                            accountId: route.accountId,
+                            ...(options.event.threadId ? { threadId: options.event.threadId } : {}),
+                        },
+                        onRecordError: (error) => {
+                            options.logger?.warn?.(`[zoho-cliq] native inbound session record failed: ${errorText(error)}`);
+                        },
+                    },
+                    delivery: {
+                        deliver: async (payload) => {
+                            if (payload.isReasoning === true ||
+                                !hasOutboundReplyContent(payload, { trimText: true })) {
+                                return { visibleReplySent: false };
+                            }
+                            const adapter = await runtime.outbound.loadAdapter(CLIQ_CHANNEL_ID);
+                            if (!adapter?.sendText) {
+                                throw new Error("cliq_outbound_adapter_unavailable");
+                            }
+                            const mediaUrls = resolveOutboundMediaUrls(payload);
+                            const outboundPayload = mediaUrls.length > 0 && !adapter.sendMedia
+                                ? {
+                                    ...payload,
+                                    text: formatTextWithAttachmentLinks(payload.text, mediaUrls),
+                                    mediaUrl: undefined,
+                                    mediaUrls: [],
+                                }
+                                : payload;
+                            const sent = await sendTextMediaPayload({
+                                channel: CLIQ_CHANNEL_ID,
+                                ctx: {
+                                    cfg,
+                                    accountId: route.accountId,
+                                    to: facts.target,
+                                    text: outboundPayload.text ?? "",
+                                    replyToId: outboundPayload.replyToId ?? options.event.messageId,
+                                    threadId: options.event.threadId ?? null,
+                                    payload: outboundPayload,
+                                },
+                                adapter,
+                            });
+                            deliveryStats.count += 1;
+                            const messageId = deliveryResultMessageId(sent);
+                            if (messageId)
+                                deliveryStats.messageIds.push(messageId);
+                            return {
+                                messageIds: messageId ? [messageId] : [],
                                 replyToId: outboundPayload.replyToId ?? options.event.messageId,
-                                threadId: options.event.threadId ?? null,
-                                payload: outboundPayload,
-                            },
-                            adapter,
-                        });
-                        deliveryStats.count += 1;
-                        const messageId = deliveryResultMessageId(sent);
-                        if (messageId)
-                            deliveryStats.messageIds.push(messageId);
-                        return {
-                            messageIds: messageId ? [messageId] : [],
-                            replyToId: outboundPayload.replyToId ?? options.event.messageId,
-                            threadId: options.event.threadId,
-                            visibleReplySent: Boolean(messageId || outboundPayload.text),
-                        };
+                                threadId: options.event.threadId,
+                                visibleReplySent: Boolean(messageId || outboundPayload.text),
+                            };
+                        },
+                        onError: (error, info) => {
+                            options.logger?.warn?.(`[zoho-cliq] native ${info.kind} reply delivery failed: ${errorText(error)}`);
+                        },
                     },
-                    onError: (error, info) => {
-                        options.logger?.warn?.(`[zoho-cliq] native ${info.kind} reply delivery failed: ${errorText(error)}`);
-                    },
-                },
-            }),
+                }),
+            },
+            log: (event) => {
+                if (event.event === "error") {
+                    options.logger?.warn?.(`[zoho-cliq] native turn ${event.stage} failed for ${event.messageId ?? options.event.messageId}: ${errorText(event.error)}`);
+                }
+            },
+        });
+    }
+    catch (error) {
+        emitCliqAuditEvent(options.logger, buildCliqAuditEvent({
+            kind: "native_dispatch",
+            outcome: "failed",
+            account: options.account,
+            source: options.source ?? "manual",
+            handlerKind: options.handlerKind,
+            reason: errorText(error),
+            event: options.event,
+            security: options.security,
+            nativeDispatch: {
+                target: facts.target,
+                routeSessionKey: route.sessionKey,
+                deliveryCount: deliveryStats.count,
+                messageIds: deliveryStats.messageIds,
+            },
+        }));
+        throw error;
+    }
+    emitCliqAuditEvent(options.logger, buildCliqAuditEvent({
+        kind: "native_dispatch",
+        outcome: dispatched(result) ? "dispatched" : "skipped",
+        account: options.account,
+        source: options.source ?? "manual",
+        handlerKind: options.handlerKind,
+        event: options.event,
+        security: options.security,
+        nativeDispatch: {
+            admission: result.admission.kind,
+            agentId: route.agentId,
+            matchedBy: route.matchedBy,
+            target: facts.target,
+            routeSessionKey: dispatched(result)
+                ? result.routeSessionKey
+                : result.routeSessionKey,
+            deliveryCount: deliveryStats.count,
+            messageIds: deliveryStats.messageIds,
         },
-        log: (event) => {
-            if (event.event === "error") {
-                options.logger?.warn?.(`[zoho-cliq] native turn ${event.stage} failed for ${event.messageId ?? options.event.messageId}: ${errorText(event.error)}`);
-            }
-        },
-    });
+    }));
     return {
         ok: true,
         dispatched: dispatched(result),

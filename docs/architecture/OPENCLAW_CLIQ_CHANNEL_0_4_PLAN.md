@@ -894,7 +894,8 @@ OpenClaw:
 - Acceptance: channel looks and behaves like a native OpenClaw channel.
   Complete for local/native surfaces with runtime tests covering status,
   capability, and route/session diagnostics; native dispatch is now covered by
-  `cliq-channel-417`, and observability remains in the next slice.
+  `cliq-channel-417`, and redacted observability/privacy diagnostics are
+  covered by `cliq-channel-415`.
 
 ### cliq-channel-410: AI-facing docs and skill alignment
 
@@ -907,12 +908,12 @@ OpenClaw:
   `missing_scope`, `network_missing`, `webhook_unverified`,
   `webhook_secret_missing`, `allowlist_empty`, `employee_scope_empty`,
   `target_unresolved`, native dispatch failure/dead-letter diagnostics,
-  `observability_bundle_pending`, and repeated Zoho-side `not_supported` /
+  `live_verification_pending`, and repeated Zoho-side `not_supported` /
   `inactive_appaccount_user` blockers.
 - Acceptance: an OpenClaw AI agent can install, diagnose, and use the channel
   from docs without reading source code. Complete for controlled smoke and
   diagnostics; docs explicitly forbid claiming production incident readiness
-  until observability lands.
+  until fake plus live verification passes.
 
 ### cliq-channel-417: Native agent turn dispatch
 
@@ -933,6 +934,11 @@ OpenClaw:
   limit status, privacy retention rules, and dead-letter replay guidance.
 - Add npm artifact integrity pinning to release flow when the package is
   published.
+- Status: complete in `src/observability.ts` and `src/privacy.ts`; status and
+  capability diagnostics now advertise the redacted observability bundle, rate
+  limits, privacy retention rules, dead-letter replay guard, and release
+  integrity placeholder. The active production blocker is now
+  `live_verification_pending`.
 - Acceptance: operators can diagnose production incidents without exposing
   secrets or raw chat bodies, and release artifacts fail closed on integrity
   mismatch.

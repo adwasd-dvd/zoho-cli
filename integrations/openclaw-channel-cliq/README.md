@@ -11,7 +11,8 @@ polling slice, `cliq-channel-407` webhook inbound slice,
 `cliq-channel-408` status/read lifecycle slice, `cliq-channel-413`
 turn-ledger loop-prevention slice, `cliq-channel-409` native UX/status
 diagnostics slice, and `cliq-channel-410` AI troubleshooting docs slice. It
-also includes the `cliq-channel-417` native agent turn dispatch slice. It
+also includes the `cliq-channel-417` native agent turn dispatch slice and the
+`cliq-channel-415` observability/privacy hardening slice. It
 declares the plugin/channel metadata, setup/runtime entrypoints,
 configured/auth-state probes, a native
 OpenClaw channel object, config schema metadata, DM pairing, group allowlist,
@@ -25,6 +26,9 @@ turn ledger for duplicate/active/dead-letter loop prevention, and status/
 capability/routing diagnostic summaries plus AI-facing troubleshooting guidance
 for operator surfaces. Accepted webhook and polling events now enter OpenClaw's
 native channel turn runtime and route replies through the Cliq outbound adapter.
+Redacted audit events, correlation ids, diagnostic bundles, rate-limit
+diagnostics, privacy retention rules, dead-letter replay guidance, and the npm
+integrity release placeholder are now part of the channel diagnostics surface.
 
 ## Contract
 
@@ -204,7 +208,9 @@ ledger blocks duplicate completed events, coalesces concurrent
 same-conversation bursts, and dead-letters failed turns after bounded attempts.
 `src/native-dispatch.ts` records session and last-route metadata, then delivers
 agent replies through the Cliq outbound adapter. `src/status.ts` exposes status,
-capability, and routing summaries for OpenClaw/operator diagnostics, and the
-Lane 3 docs now map setup states, diagnostic blockers, and explicit routing
-targets to AI-safe next actions. Observability and privacy hardening are the
-next channel slices.
+capability, and routing summaries for OpenClaw/operator diagnostics.
+`src/observability.ts` and `src/privacy.ts` keep support bundles redacted:
+message bodies, raw webhook payloads, token passwords, webhook secrets,
+authorization headers, and raw signatures are excluded. The Lane 3 docs now map
+setup states, diagnostic blockers, and explicit routing targets to AI-safe next
+actions. Live verification is the remaining channel gate.

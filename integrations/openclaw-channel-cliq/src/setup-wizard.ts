@@ -226,7 +226,7 @@ export const cliqSetupWizard: ChannelSetupWizard = {
     resolveStatusLines: resolveCliqSetupStatusLines,
     resolveSelectionHint: ({ configured }) =>
       configured
-        ? "Ready for controlled channel smoke; native dispatch/observability still pending."
+        ? "Ready for controlled channel smoke; live verification is the remaining production gate."
         : "Run setup before selecting Zoho Cliq for agents.",
     resolveQuickstartScore: ({ cfg, accountId, configured }) => {
       const states = resolveCliqSetupStateCodes({ cfg, accountId });
@@ -407,7 +407,7 @@ export const cliqSetupWizard: ChannelSetupWizard = {
     title: "Before live use",
     lines: [
       "Run zoho cliq status --check-auth --network <network>.",
-      "Run only controlled smoke until native dispatch/observability lands.",
+      "Run controlled webhook, polling, lifecycle, native dispatch, and redacted diagnostics smokes before production.",
       "Keep webhook secrets and token passwords in SecretRef/env values.",
       "Keep dmPolicy=pairing and groupPolicy=allowlist unless an operator accepts the audit warning.",
     ],

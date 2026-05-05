@@ -87,6 +87,11 @@ export declare function describeCliqCapabilityDiagnostics(account: CliqResolvedA
     nativeApprovalCapability: boolean;
     nativeAgentDispatch: boolean;
     observabilityBundle: boolean;
+    redactedAuditEvents: boolean;
+    rateLimitDiagnostics: boolean;
+    privacyRetention: boolean;
+    deadLetterReplayGuard: boolean;
+    npmIntegrityPlaceholder: boolean;
 };
 export declare function describeCliqAccountDiagnostics(account: CliqResolvedAccount): {
     readiness: string;
@@ -107,8 +112,54 @@ export declare function describeCliqAccountDiagnostics(account: CliqResolvedAcco
         nativeApprovalCapability: boolean;
         nativeAgentDispatch: boolean;
         observabilityBundle: boolean;
+        redactedAuditEvents: boolean;
+        rateLimitDiagnostics: boolean;
+        privacyRetention: boolean;
+        deadLetterReplayGuard: boolean;
+        npmIntegrityPlaceholder: boolean;
     };
     blockers: string[];
+    observability: {
+        redactedAuditEvents: boolean;
+        correlationIds: boolean;
+        diagnosticBundle: boolean;
+        rateLimitDiagnostics: boolean;
+        privacyRetention: boolean;
+        deadLetterReplayGuard: boolean;
+        npmIntegrityPlaceholder: boolean;
+        rateLimits: {
+            webhook: {
+                windowMs: number;
+                maxRequests: number;
+                maxInFlightPerKey: number;
+                maxTrackedKeys: number;
+                key: string;
+                bodyMaxBytes: number;
+                bodyTimeoutMs: number;
+                rejectionStage: string;
+            };
+            polling: {
+                defaultChatLimit: number;
+                defaultContextLimit: number;
+                dedupe: string;
+                selfAuthoredMessagesSkipped: boolean;
+            };
+            lifecycle: {
+                statusReadAckFailures: string;
+                recursiveDispatchOnLifecycleFailure: boolean;
+            };
+            nativeDispatch: {
+                emptyOrReasoningPayloadsSkipped: boolean;
+                missingOutboundAdapterError: string;
+            };
+        };
+        privacy: import("./privacy.js").CliqPrivacyRetentionPolicy;
+        releaseIntegrity: {
+            npmExpectedIntegrity: string;
+            localLinkedDevelopmentAllowed: boolean;
+            releaseChecklist: string[];
+        };
+    };
     smokeChecks: string[];
     implementedSlices: string[];
     nextSlice: string;

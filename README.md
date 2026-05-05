@@ -58,9 +58,9 @@ uv tool install .
 
 - Package: `integrations/openclaw-channel-cliq/` (`@adwasd/openclaw-zoho-cliq`, plugin id `zoho-cliq`, channel id `cliq`)
 - Host target: OpenClaw `>=2026.5.3-1`; the upgraded global host is verified at `OpenClaw 2026.5.3-1`, and package-local validation remains available for isolated checks.
-- Current slice: `cliq-channel-410` is complete; the channel now has account/network-aware session grammar, secure policy gates, native approval metadata, a JSON-safe `zoho` process adapter, native outbound send/reply/thread-reply delivery, fixture-backed inbound polling normalization/dedupe through `zoho cliq chats` + `zoho cliq context`, a Bot webhook intake route at `/webhooks/cliq` with secret verification, shared status/read lifecycle handling, a native turn ledger for duplicate/active/dead-letter loop prevention, operator-readable status/capability/routing diagnostics, and AI-facing troubleshooting docs.
+- Current slice: `cliq-channel-417` is complete; the channel now has account/network-aware session grammar, secure policy gates, native approval metadata, a JSON-safe `zoho` process adapter, native outbound send/reply/thread-reply delivery, fixture-backed inbound polling normalization/dedupe through `zoho cliq chats` + `zoho cliq context`, a Bot webhook intake route at `/webhooks/cliq` with secret verification, shared status/read lifecycle handling, a native turn ledger for duplicate/active/dead-letter loop prevention, operator-readable status/capability/routing diagnostics, AI-facing troubleshooting docs, and native OpenClaw agent turn dispatch for accepted webhook/polling events.
 - Setup runbook: `docs/releases/OPENCLAW_CLIQ_CHANNEL_SETUP.md`.
-- Controlled live outbound smoke, local inbound polling dry-runs, real Bot webhook receive/auth/normalize smoke, status/read lifecycle smoke, turn-ledger loop-prevention smoke, status/routing diagnostics smoke, and AI troubleshooting dry-runs are now unblocked for trusted targets; production/bidirectional agent replies still wait for native dispatch and observability slices.
+- Controlled live outbound smoke, local inbound polling dry-runs, real Bot webhook receive/auth/normalize smoke, status/read lifecycle smoke, turn-ledger loop-prevention smoke, status/routing diagnostics smoke, AI troubleshooting dry-runs, and fake host native dispatch smoke are now unblocked for trusted targets; production readiness still waits for observability/privacy hardening.
 
 ### 🚧 Zoho CRM (read-only scaffold implemented)
 
@@ -162,7 +162,7 @@ Project state lives in `ops/state/*.yml`:
 | --- | --- | --- | --- |
 | Mail | ✅ Completed | stabilization_complete | Shipping baseline is stable. |
 | Cliq | ✅ Completed for RC | workflow_packaging_complete_with_deferred_external_blockers | Mail+Cliq AI-employee core is ready for RC; endpoint-limited tail is deferred post-RC. |
-| OpenClaw Cliq channel | 🚧 In progress | ai_docs_ready_native_dispatch_next | `cliq-channel-401/402/416/403/414/404/405/406/407/408/413/409/410` added the installable package, config/setup UX, security/employee policy gates, SDK session/mention/approval seams, JSON-safe CLI process execution, native outbound delivery, normalized/deduped inbound polling, Bot webhook intake, status/read lifecycle handling, turn-ledger loop prevention, status/capability/routing diagnostics, and AI troubleshooting docs. |
+| OpenClaw Cliq channel | 🚧 In progress | native_agent_dispatch_ready_observability_next | `cliq-channel-401/402/416/403/414/404/405/406/407/408/413/409/410/417` added the installable package, config/setup UX, security/employee policy gates, SDK session/mention/approval seams, JSON-safe CLI process execution, native outbound delivery, normalized/deduped inbound polling, Bot webhook intake, status/read lifecycle handling, turn-ledger loop prevention, status/capability/routing diagnostics, AI troubleshooting docs, and native OpenClaw agent turn dispatch for accepted webhook/polling events. |
 | CRM | ✅ Completed for phase 1 | phase_1_read_only_commands_implemented | Read-only scaffold is present; deeper CRM work resumes in v0.5 after the v0.4 channel. |
 
 ### Current platform lane (AI-employee v1)
@@ -179,7 +179,7 @@ Project state lives in `ops/state/*.yml`:
 ### Current release posture
 
 - Current version: `0.2.1`
-- Next active target: wire accepted Cliq webhook and polling events into native OpenClaw agent turn dispatch (`cliq-channel-417`).
+- Next active target: observability, privacy, retention, rate-limit diagnostics, and npm integrity hardening for the native Cliq channel (`cliq-channel-415`).
 - Release candidate: `false`
 - Broad automated gate: final `make release-gate && make ci` is green for `0.2.1`; [v0.2.1](https://github.com/adwasd-dvd/zoho-cli/releases/tag/v0.2.1) is the current stable release.
 

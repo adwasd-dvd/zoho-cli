@@ -14,6 +14,10 @@ export {
   normalizeCliqWatchMessages,
 } from "./src/inbound.js";
 export { runCliqInboundLifecycle } from "./src/lifecycle.js";
+export {
+  createCliqNativeEventDispatcher,
+  dispatchCliqEventToNativeOpenClaw,
+} from "./src/native-dispatch.js";
 export { pollCliqInboundOnce } from "./src/polling.js";
 export {
   resolveCliqChannelCapabilitySummary,

@@ -415,14 +415,14 @@
 - id: cliq-channel-417
   title: wire accepted Cliq events into native OpenClaw agent turn dispatch
   module: openclaw_cliq_channel
-  stage: ready
+  stage: completed
   priority: high
   depends_on:
   - cliq-channel-410
 - id: cliq-channel-415
   title: implement observability privacy retention rate-limit diagnostics and npm integrity hardening
   module: openclaw_cliq_channel
-  stage: queued
+  stage: ready
   priority: high
   depends_on:
   - cliq-channel-417

@@ -67,9 +67,9 @@ classified error kind, and redacted stderr summary.
 3. Treat `webhook_secret_missing` as a SecretRef/env configuration blocker; use
    `ZOHO_CLIQ_WEBHOOK_SECRET` and rotate any value exposed in chat or
    screenshots.
-4. Treat `native_agent_dispatch_pending` and `observability_bundle_pending` as
-   pre-production blockers. Controlled smoke is allowed, but do not claim
-   production bidirectional agent replies are ready.
+4. Native dispatch is implemented for accepted webhook/polling events. Treat
+   dispatch failures/dead letters as terminal diagnostics and keep
+   `observability_bundle_pending` as the remaining production blocker.
 5. For unresolved routes, prefer explicit `channel:<id>`, `user:<id>`, or
    `cliq:channel:<id>:thread:<thread_id>` targets.
 6. For repeated Zoho-side `not_supported` or `inactive_appaccount_user` errors,

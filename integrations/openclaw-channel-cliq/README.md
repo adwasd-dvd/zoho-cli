@@ -11,6 +11,7 @@ polling slice, `cliq-channel-407` webhook inbound slice,
 `cliq-channel-408` status/read lifecycle slice, `cliq-channel-413`
 turn-ledger loop-prevention slice, `cliq-channel-409` native UX/status
 diagnostics slice, and `cliq-channel-410` AI troubleshooting docs slice. It
+also includes the `cliq-channel-417` native agent turn dispatch slice. It
 declares the plugin/channel metadata, setup/runtime entrypoints,
 configured/auth-state probes, a native
 OpenClaw channel object, config schema metadata, DM pairing, group allowlist,
@@ -22,7 +23,8 @@ fallback events from `zoho cliq chats` + `zoho cliq context`, and Bot webhook
 intake at `/webhooks/cliq`, shared status/read lifecycle handling, a native
 turn ledger for duplicate/active/dead-letter loop prevention, and status/
 capability/routing diagnostic summaries plus AI-facing troubleshooting guidance
-for operator surfaces.
+for operator surfaces. Accepted webhook and polling events now enter OpenClaw's
+native channel turn runtime and route replies through the Cliq outbound adapter.
 
 ## Contract
 
@@ -195,12 +197,14 @@ markdown chunking and maps text sends to `zoho cliq send`, message replies to
 `zoho cliq reply`, and thread delivery to `zoho cliq thread-reply`.
 Inbound webhook delivery registers OpenClaw plugin HTTP routes with
 `auth: "plugin"` and exact matching. Accepted events can be observed through
-the runtime callback today. Accepted webhook and polling events now use the
-shared lifecycle wrapper: `received -> thinking`, optional dispatch, `mark-read`,
-and `done`; dispatch failures attempt `failed`. The turn ledger blocks duplicate
-completed events, coalesces concurrent same-conversation bursts, and dead-letters
-failed turns after bounded attempts. `src/status.ts` exposes status,
+the native OpenClaw channel turn runtime. Accepted webhook and polling events
+now use the shared lifecycle wrapper: `received -> thinking`, native agent
+dispatch, `mark-read`, and `done`; dispatch failures attempt `failed`. The turn
+ledger blocks duplicate completed events, coalesces concurrent
+same-conversation bursts, and dead-letters failed turns after bounded attempts.
+`src/native-dispatch.ts` records session and last-route metadata, then delivers
+agent replies through the Cliq outbound adapter. `src/status.ts` exposes status,
 capability, and routing summaries for OpenClaw/operator diagnostics, and the
 Lane 3 docs now map setup states, diagnostic blockers, and explicit routing
-targets to AI-safe next actions. Full agent turn dispatch, observability, and
-privacy hardening are the next channel slices.
+targets to AI-safe next actions. Observability and privacy hardening are the
+next channel slices.

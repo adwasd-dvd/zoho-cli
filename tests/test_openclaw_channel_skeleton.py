@@ -126,6 +126,7 @@ def test_openclaw_cliq_channel_sources_use_locked_sdk_surfaces() -> None:
             read("src/employee-policy.ts"),
             read("src/inbound.ts"),
             read("src/lifecycle.ts"),
+            read("src/native-dispatch.ts"),
             read("src/polling.ts"),
             read("src/session.ts"),
             read("src/security.ts"),
@@ -173,6 +174,11 @@ def test_openclaw_cliq_channel_sources_use_locked_sdk_surfaces() -> None:
         "normalizeCliqInboundMessage",
         "pollCliqInboundOnce",
         "runCliqInboundLifecycle",
+        "dispatchCliqEventToNativeOpenClaw",
+        "createCliqNativeEventDispatcher",
+        "runtime.turn.run",
+        "resolveAgentRoute",
+        "sendTextMediaPayload",
         "runCliqInboundTurn",
         "createCliqTurnLedgerStore",
         "buildCliqTurnConversationKey",
@@ -244,6 +250,7 @@ def test_openclaw_cliq_channel_dist_runtime_outputs_exist() -> None:
         "dist/src/employee-policy.js",
         "dist/src/inbound.js",
         "dist/src/lifecycle.js",
+        "dist/src/native-dispatch.js",
         "dist/src/polling.js",
         "dist/src/session.js",
         "dist/src/security.js",
@@ -263,6 +270,7 @@ def test_openclaw_cliq_channel_dist_runtime_outputs_exist() -> None:
             read("dist/src/employee-policy.js"),
             read("dist/src/inbound.js"),
             read("dist/src/lifecycle.js"),
+            read("dist/src/native-dispatch.js"),
             read("dist/src/polling.js"),
             read("dist/src/session.js"),
             read("dist/src/security.js"),
@@ -338,18 +346,19 @@ assert.equal(status.configured, true);
 assert.deepEqual(status.setupStates, []);
 assert.equal(status.diagnostics.capabilities.inboundWebhook, true);
 assert.equal(status.diagnostics.capabilities.turnLedger, true);
-assert.equal(status.diagnostics.productionReadiness, "pending_native_dispatch_observability");
+assert.equal(status.diagnostics.productionReadiness, "pending_observability_bundle");
 assert(status.statusLines.some((line) => line.includes("turn ledger")));
 assert(status.diagnostics.implementedSlices.includes("cliq-channel-413"));
 assert(status.diagnostics.implementedSlices.includes("cliq-channel-409"));
 assert(status.diagnostics.implementedSlices.includes("cliq-channel-410"));
-assert.equal(status.diagnostics.nextSlice, "cliq-channel-417");
+assert(status.diagnostics.implementedSlices.includes("cliq-channel-417"));
+assert.equal(status.diagnostics.nextSlice, "cliq-channel-415");
 
 const capabilities = resolveCliqChannelCapabilitySummary({ cfg });
 assert.equal(capabilities.nativeMessageSurface, true);
 assert.equal(capabilities.nativeApprovalSurface, true);
 assert.equal(capabilities.customSendTools, false);
-assert.equal(capabilities.capabilities.nativeAgentDispatch, false);
+assert.equal(capabilities.capabilities.nativeAgentDispatch, true);
 
 const route = resolveCliqRoutingDiagnostic({
   cfg,
@@ -1382,6 +1391,353 @@ const unsupported = await processCliqWebhookPayload({
 assert.equal(unsupported.accepted, false);
 assert.equal(unsupported.reason, "unsupported_handler");
 assert.equal(unsupported.handlerKind, "call");
+"""
+    script = script.replace("__FAKE_ZOHO__", json.dumps(str(fake_zoho)))
+    subprocess.run(
+        ["node", "--input-type=module", "-e", script],
+        cwd=ROOT,
+        check=True,
+        text=True,
+        capture_output=True,
+    )
+
+
+def test_openclaw_cliq_channel_native_agent_dispatch_runtime(tmp_path) -> None:
+    fake_zoho = tmp_path / "fake-zoho.mjs"
+    fake_zoho.write_text(
+        """#!/usr/bin/env node
+const args = process.argv.slice(2);
+if (args[0] !== "cliq") {
+  console.error("expected cliq command");
+  process.exit(7);
+}
+
+if (args[1] === "chats") {
+  console.log(JSON.stringify({
+    chats: [
+      { id: "CHAT-POLL", chat_type: "channel", channel_id: "C456" }
+    ]
+  }));
+  process.exit(0);
+}
+
+if (args[1] === "context") {
+  console.log(JSON.stringify({
+    chatId: "CHAT-POLL",
+    channelId: "C456",
+    messages: [
+      { messageId: "MPOLL", senderId: "U2", text: "@bot poll me", timestamp: "2026-05-05T08:00:00Z" }
+    ]
+  }));
+  process.exit(0);
+}
+
+console.log(JSON.stringify({ ok: true, args }));
+""",
+        encoding="utf-8",
+    )
+    fake_zoho.chmod(0o755)
+
+    script = """
+import assert from "node:assert/strict";
+import { resolveCliqAccount } from "./integrations/openclaw-channel-cliq/dist/src/config.js";
+import { CliqInboundDedupeStore } from "./integrations/openclaw-channel-cliq/dist/src/inbound.js";
+import { dispatchCliqEventToNativeOpenClaw } from "./integrations/openclaw-channel-cliq/dist/src/native-dispatch.js";
+import { pollCliqInboundOnce } from "./integrations/openclaw-channel-cliq/dist/src/polling.js";
+import { createCliqTurnLedgerStore } from "./integrations/openclaw-channel-cliq/dist/src/turn-ledger.js";
+import { processCliqWebhookPayload } from "./integrations/openclaw-channel-cliq/dist/src/webhook.js";
+
+const cfg = {
+  channels: {
+    cliq: {
+      accounts: {
+        default: {
+          network: "happy",
+          cliPath: __FAKE_ZOHO__,
+          dmPolicy: "allowlist",
+          allowFrom: ["U2"],
+          groupPolicy: "allowlist",
+          groupAllowFrom: ["channel:C123", "channel:C456"],
+          requireMention: true,
+        },
+      },
+    },
+  },
+};
+const account = resolveCliqAccount(cfg, "default");
+
+function createFakeRuntime() {
+  const sent = [];
+  const records = [];
+  let failDispatch = false;
+  const runtime = {
+    channel: {
+      routing: {
+        resolveAgentRoute: ({ channel, accountId, peer }) => ({
+          agentId: "main",
+          channel,
+          accountId: accountId || "default",
+          sessionKey: `agent:main:${channel}:${peer.kind}:${peer.id}`,
+          mainSessionKey: "agent:main:main",
+          lastRoutePolicy: "session",
+          matchedBy: "default",
+        }),
+      },
+      session: {
+        resolveStorePath: (_store, { agentId }) => `/tmp/${agentId}.sessions.json`,
+        recordInboundSession: async (params) => {
+          records.push(params);
+        },
+      },
+      reply: {
+        dispatchReplyWithBufferedBlockDispatcher: async ({ dispatcherOptions }) => {
+          if (failDispatch) throw new Error("native dispatch failed");
+          await dispatcherOptions.deliver({ text: "agent reply" }, { kind: "final" });
+          return { queuedFinal: true, counts: { final: 1, block: 0, tool: 0 } };
+        },
+      },
+      outbound: {
+        loadAdapter: async () => ({
+          deliveryMode: "direct",
+          sendText: async (ctx) => {
+            const messageId = `OUT-${sent.length + 1}`;
+            sent.push(ctx);
+            return {
+              channel: "cliq",
+              messageId,
+              conversationId: ctx.to,
+              meta: { replyToId: ctx.replyToId, threadId: ctx.threadId },
+            };
+          },
+        }),
+      },
+      turn: {
+        buildContext: (params) => ({
+          Body: params.message.body ?? params.message.rawBody,
+          BodyForAgent: params.message.bodyForAgent ?? params.message.rawBody,
+          RawBody: params.message.rawBody,
+          CommandBody: params.message.commandBody ?? params.message.rawBody,
+          BodyForCommands: params.message.commandBody ?? params.message.rawBody,
+          From: params.from,
+          To: params.reply.to,
+          SessionKey: params.route.routeSessionKey,
+          AccountId: params.route.accountId ?? params.accountId,
+          MessageSid: params.messageId,
+          ReplyToId: params.reply.replyToId,
+          ChatType: params.conversation.kind,
+          ConversationLabel: params.conversation.label,
+          SenderId: params.sender.id,
+          SenderName: params.sender.name ?? params.sender.displayLabel,
+          Timestamp: params.timestamp,
+          WasMentioned: params.access?.mentions?.wasMentioned,
+          OriginatingChannel: params.channel,
+          OriginatingTo: params.reply.originatingTo,
+          MessageThreadId: params.reply.messageThreadId,
+          NativeChannelId: params.reply.nativeChannelId,
+          ExplicitDeliverRoute: params.extra?.ExplicitDeliverRoute,
+          CommandAuthorized: false,
+        }),
+        run: async (params) => {
+          const input = await params.adapter.ingest(params.raw);
+          assert.ok(input);
+          const resolved = await params.adapter.resolveTurn(input, {
+            kind: "message",
+            canStartAgentTurn: true,
+          }, {});
+          await resolved.recordInboundSession({
+            storePath: resolved.storePath,
+            sessionKey: resolved.ctxPayload.SessionKey ?? resolved.routeSessionKey,
+            ctx: resolved.ctxPayload,
+            createIfMissing: resolved.record?.createIfMissing,
+            updateLastRoute: resolved.record?.updateLastRoute,
+            onRecordError: resolved.record?.onRecordError ?? (() => {}),
+          });
+          const dispatchResult = await resolved.dispatchReplyWithBufferedBlockDispatcher({
+            ctx: resolved.ctxPayload,
+            cfg: resolved.cfg,
+            dispatcherOptions: {
+              deliver: async (payload, info) => {
+                await resolved.delivery.deliver(payload, info);
+              },
+              onError: resolved.delivery.onError,
+            },
+          });
+          const result = {
+            admission: { kind: "dispatch" },
+            dispatched: true,
+            ctxPayload: resolved.ctxPayload,
+            routeSessionKey: resolved.routeSessionKey,
+            dispatchResult,
+          };
+          await params.adapter.onFinalize?.(result);
+          return result;
+        },
+      },
+    },
+  };
+  return {
+    runtime,
+    sent,
+    records,
+    setFailDispatch: (value) => {
+      failDispatch = value;
+    },
+  };
+}
+
+const fake = createFakeRuntime();
+const webhookDedupe = new CliqInboundDedupeStore(100);
+const webhookLedger = createCliqTurnLedgerStore();
+const nativeResults = [];
+const mentionPayload = {
+  handler: "mention",
+  message: { id: "M1", text: "@bot hello", threadId: "T9" },
+  user: { id: "U2", name: "Alice" },
+  chat: { channelId: "C123", chatType: "channel" },
+};
+
+const accepted = await processCliqWebhookPayload({
+  cfg,
+  account,
+  payload: mentionPayload,
+  dedupe: webhookDedupe,
+  turnLedger: webhookLedger,
+  lifecycle: false,
+  mentionMatchers: [/@bot\\b/i],
+  onEvent: async (event, context) => {
+    nativeResults.push(await dispatchCliqEventToNativeOpenClaw({
+      cfg,
+      runtime: fake.runtime,
+      account: context.account,
+      event,
+      source: "webhook",
+      handlerKind: context.handlerKind,
+      security: context.security,
+    }));
+  },
+});
+assert.equal(accepted.accepted, true);
+assert.equal(accepted.dispatched, true);
+assert.equal(nativeResults.length, 1);
+assert.equal(nativeResults[0].target, "channel:C123");
+assert.equal(nativeResults[0].threadId, "T9");
+assert.equal(nativeResults[0].deliveryCount, 1);
+assert.deepEqual(nativeResults[0].messageIds, ["OUT-1"]);
+assert.equal(fake.sent[0].to, "channel:C123");
+assert.equal(fake.sent[0].replyToId, "M1");
+assert.equal(fake.sent[0].threadId, "T9");
+assert.equal(fake.records[0].updateLastRoute.channel, "cliq");
+assert.equal(fake.records[0].updateLastRoute.to, "channel:C123");
+assert.equal(fake.records[0].updateLastRoute.threadId, "T9");
+
+const duplicate = await processCliqWebhookPayload({
+  cfg,
+  account,
+  payload: mentionPayload,
+  dedupe: webhookDedupe,
+  turnLedger: webhookLedger,
+  lifecycle: false,
+  mentionMatchers: [/@bot\\b/i],
+  onEvent: () => {
+    throw new Error("duplicate must not dispatch");
+  },
+});
+assert.equal(duplicate.accepted, false);
+assert.equal(duplicate.reason, "duplicate");
+assert.equal(fake.sent.length, 1);
+
+const denied = await processCliqWebhookPayload({
+  cfg,
+  account,
+  payload: {
+    handler: "message",
+    message: { id: "M2", text: "hello without mention" },
+    user: { id: "U2" },
+    chat: { channelId: "C123", chatType: "channel" },
+  },
+  dedupe: webhookDedupe,
+  turnLedger: webhookLedger,
+  lifecycle: false,
+});
+assert.equal(denied.accepted, false);
+assert.equal(denied.reason, "security_denied");
+assert.equal(fake.sent.length, 1);
+
+fake.setFailDispatch(true);
+const failed = await processCliqWebhookPayload({
+  cfg,
+  account,
+  payload: {
+    handler: "mention",
+    message: { id: "MFAIL", text: "@bot fail" },
+    user: { id: "U2" },
+    chat: { channelId: "C123", chatType: "channel" },
+  },
+  dedupe: webhookDedupe,
+  turnLedger: webhookLedger,
+  lifecycle: false,
+  mentionMatchers: [/@bot\\b/i],
+  onEvent: async (event, context) => {
+    await dispatchCliqEventToNativeOpenClaw({
+      cfg,
+      runtime: fake.runtime,
+      account: context.account,
+      event,
+      source: "webhook",
+      handlerKind: context.handlerKind,
+      security: context.security,
+    });
+  },
+});
+assert.equal(failed.accepted, true);
+assert.equal(failed.dispatched, false);
+assert.equal(failed.turn.state, "dead_letter");
+assert.match(failed.dispatchError, /native dispatch failed/);
+assert.equal(fake.sent.length, 1);
+
+fake.setFailDispatch(false);
+const pollDedupe = new CliqInboundDedupeStore(100);
+const pollLedger = createCliqTurnLedgerStore();
+const pollResults = [];
+const firstPoll = await pollCliqInboundOnce({
+  cfg,
+  account,
+  dedupe: pollDedupe,
+  turnLedger: pollLedger,
+  lifecycle: false,
+  mentionMatchers: [/@bot\\b/i],
+  nativeDispatch: async (event, context) => {
+    pollResults.push(await dispatchCliqEventToNativeOpenClaw({
+      cfg,
+      runtime: fake.runtime,
+      account: context.account,
+      event,
+      source: "polling",
+      security: context.security,
+    }));
+  },
+});
+assert.deepEqual(firstPoll.events.map((event) => event.messageId), ["MPOLL"]);
+assert.equal(firstPoll.dispatchedCount, 1);
+assert.equal(pollResults.length, 1);
+assert.equal(pollResults[0].target, "channel:C456");
+assert.equal(fake.sent.at(-1).to, "channel:C456");
+assert.equal(fake.sent.at(-1).replyToId, "MPOLL");
+
+const secondPoll = await pollCliqInboundOnce({
+  cfg,
+  account,
+  dedupe: pollDedupe,
+  turnLedger: pollLedger,
+  lifecycle: false,
+  mentionMatchers: [/@bot\\b/i],
+  nativeDispatch: () => {
+    throw new Error("duplicate polling event must not dispatch");
+  },
+});
+assert.equal(secondPoll.events.length, 0);
+assert.equal(secondPoll.dispatchedCount, 0);
+assert.equal(fake.sent.length, 2);
 """
     script = script.replace("__FAKE_ZOHO__", json.dumps(str(fake_zoho)))
     subprocess.run(

@@ -1,5 +1,6 @@
 export { buildCliqInboundDedupeKey, createCliqInboundDedupeStore, evaluateCliqPollingEventSecurity, normalizeCliqContextMessages, normalizeCliqInboundMessage, normalizeCliqWatchMessages, } from "./src/inbound.js";
 export { runCliqInboundLifecycle } from "./src/lifecycle.js";
+export { createCliqNativeEventDispatcher, dispatchCliqEventToNativeOpenClaw, } from "./src/native-dispatch.js";
 export { pollCliqInboundOnce } from "./src/polling.js";
 export { resolveCliqChannelCapabilitySummary, resolveCliqChannelStatusSummary, resolveCliqRoutingDiagnostic, } from "./src/status.js";
 export { buildCliqTurnConversationKey, buildCliqTurnId, createCliqTurnLedgerStore, resolveCliqTurnLedger, runCliqInboundTurn, } from "./src/turn-ledger.js";

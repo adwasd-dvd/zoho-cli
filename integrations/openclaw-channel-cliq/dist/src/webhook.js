@@ -4,6 +4,7 @@ import { beginWebhookRequestPipelineOrReject, createFixedWindowRateLimiter, crea
 import { defaultCliqAccountId, listCliqAccountIds, resolveCliqAccount, } from "./config.js";
 import { CLIQ_CHANNEL_ID, CLIQ_WEBHOOK_SECRET_HEADER, DEFAULT_ACCOUNT_ID, DEFAULT_CLIQ_WEBHOOK_PATH, } from "./constants.js";
 import { createCliqInboundDedupeStore, evaluateCliqPollingEventSecurity, normalizeCliqInboundMessage, } from "./inbound.js";
+import { createCliqNativeEventDispatcher } from "./native-dispatch.js";
 import { resolveCliqTurnLedger, runCliqInboundTurn, } from "./turn-ledger.js";
 const BODY_MAX_BYTES = 512 * 1024;
 const BODY_TIMEOUT_MS = 5_000;
@@ -678,6 +679,7 @@ export function createCliqWebhookHttpHandler(options) {
     };
 }
 export function registerCliqWebhookRoutes(api) {
+    const nativeDispatcher = createCliqNativeEventDispatcher(api);
     for (const path of listCliqWebhookRoutePaths(api.config)) {
         api.registerHttpRoute({
             path,
@@ -688,6 +690,12 @@ export function registerCliqWebhookRoutes(api) {
                 cfg: api.config,
                 webhookPath: path,
                 logger: api.logger,
+                onEvent: async (event, context) => {
+                    await nativeDispatcher(event, {
+                        ...context,
+                        source: "webhook",
+                    });
+                },
             }),
         });
         api.logger.info?.(`[zoho-cliq] registered webhook route ${path}`);

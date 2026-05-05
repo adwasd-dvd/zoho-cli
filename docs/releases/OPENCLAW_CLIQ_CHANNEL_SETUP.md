@@ -204,7 +204,7 @@ Diagnostic blockers that are not setup-state names:
 | Blocker | Meaning | AI action |
 | --- | --- | --- |
 | `webhook_secret_missing` | No SecretRef/env webhook secret is configured. | Set `webhookSecret` to `ZOHO_CLIQ_WEBHOOK_SECRET`, test a controlled Bot POST, and rotate exposed values. |
-| `native_agent_dispatch_pending` | Full agent turn dispatch is not production-ready yet. | Run only controlled smoke; do not claim production bidirectional agent replies are ready. |
+| native dispatch failure / dead-letter | A trusted event reached dispatch but the OpenClaw turn failed or was dead-lettered. | Inspect turn id, dispatch error, and dead-letter metadata before replay; do not retry blindly. |
 | `observability_bundle_pending` | Production incident diagnostics are not complete yet. | Keep reports redacted and wait for the observability slice before production rollout. |
 | repeated `not_supported` / `inactive_appaccount_user` | Zoho-side endpoint availability is blocking a specific live check. | Mark the check `skip_deferred` and continue unrelated local channel work. |
 
@@ -251,6 +251,6 @@ Recovery checklist:
 4. Re-run `zoho cliq status --check-auth --network <network>`.
 5. Run controlled outbound smoke, local inbound polling dry-runs, a real Bot
    webhook receive/auth/normalize smoke, status/read lifecycle smoke,
-   turn-ledger loop-prevention smoke, and status/routing diagnostics smoke. Wait
-   for native dispatch and observability before bidirectional production agent
-   replies.
+   turn-ledger loop-prevention smoke, status/routing diagnostics smoke, and a
+   controlled native dispatch smoke. Wait for observability/privacy hardening
+   before production agent rollout.

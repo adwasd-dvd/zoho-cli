@@ -3,6 +3,7 @@ import type { CliqResolvedAccount } from "./config.js";
 import { type CliqInboundDedupeStore, type CliqMentionMatcher, type CliqNormalizedInboundEvent } from "./inbound.js";
 import { type CliqInboundLifecycleResult } from "./lifecycle.js";
 import { runCliqInboundTurn, type CliqInboundTurnResult, type CliqTurnLedgerOption } from "./turn-ledger.js";
+import type { CliqNativeEventDispatcher } from "./native-dispatch.js";
 export type CliqPollingSkipReason = "invalid_chat" | "invalid_message" | "duplicate" | "security_denied" | "turn_active" | "dead_lettered";
 export type CliqPollingSkippedEvent = {
     reason: CliqPollingSkipReason;
@@ -30,6 +31,7 @@ export type CliqPollingOptions = {
     dedupe?: CliqInboundDedupeStore;
     lifecycle?: Parameters<typeof runCliqInboundTurn>[0]["lifecycle"];
     turnLedger?: CliqTurnLedgerOption;
+    nativeDispatch?: CliqNativeEventDispatcher;
     onEvent?: (event: CliqNormalizedInboundEvent) => void | Promise<void>;
 };
 export declare function pollCliqInboundOnce(options: CliqPollingOptions): Promise<CliqPollingResult>;

@@ -39,6 +39,7 @@ import {
   type CliqInboundLifecycleOption,
   type CliqInboundLifecycleResult,
 } from "./lifecycle.js";
+import { createCliqNativeEventDispatcher } from "./native-dispatch.js";
 import type { CliqInboundSecurityDecision } from "./security.js";
 import {
   resolveCliqTurnLedger,
@@ -895,6 +896,7 @@ export function createCliqWebhookHttpHandler(
 }
 
 export function registerCliqWebhookRoutes(api: OpenClawPluginApi): void {
+  const nativeDispatcher = createCliqNativeEventDispatcher(api);
   for (const path of listCliqWebhookRoutePaths(api.config)) {
     api.registerHttpRoute({
       path,
@@ -905,6 +907,12 @@ export function registerCliqWebhookRoutes(api: OpenClawPluginApi): void {
         cfg: api.config,
         webhookPath: path,
         logger: api.logger,
+        onEvent: async (event, context) => {
+          await nativeDispatcher(event, {
+            ...context,
+            source: "webhook",
+          });
+        },
       }),
     });
     api.logger.info?.(`[zoho-cliq] registered webhook route ${path}`);

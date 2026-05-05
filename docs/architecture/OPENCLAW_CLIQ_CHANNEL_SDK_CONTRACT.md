@@ -337,6 +337,10 @@ Required runtime surfaces:
   duplicate completed events, coalesces same-conversation active bursts,
   dead-letters failed turns after bounded attempts, and carries safe
   correlation/idempotency metadata for later diagnostics.
+- `src/native-dispatch.ts` for accepted inbound agent dispatch. It must use
+  `api.runtime.channel.turn.run` / `runtime.channel.turn` helpers, record
+  session and last-route metadata, and deliver replies through the native Cliq
+  outbound adapter instead of custom send tools.
 - `src/status.ts` for OpenClaw-native status, capability, and routing
   diagnostic summaries. These summaries may expose setup state codes,
   readiness blockers, implemented/next slices, native message/approval facts,
@@ -462,13 +466,14 @@ approval surfaces while explicitly keeping custom send tools disabled. Routing
 diagnostics normalize Cliq targets and return account/network/chat/thread-aware
 session routes without exposing message bodies or secrets.
 
-`cliq-channel-410` aligns AI-facing documentation around those diagnostics.
-Agents must inspect native status/capability/routing summaries before ad hoc
-CLI probing, map setup states and diagnostic blockers to one safe next action,
-use explicit `channel:<id>` / `user:<id>` / thread targets, treat repeated
-Zoho-side endpoint gaps as `skip_deferred`, and avoid claiming production
-bidirectional replies while `native_agent_dispatch_pending` or
-`observability_bundle_pending` remains true.
+`cliq-channel-410` aligns AI-facing documentation around those diagnostics, and
+`cliq-channel-417` wires accepted webhook/polling events into native OpenClaw
+agent turns. Agents must inspect native status/capability/routing summaries
+before ad hoc CLI probing, map setup states and diagnostic blockers to one safe
+next action, use explicit `channel:<id>` / `user:<id>` / thread targets, treat
+repeated Zoho-side endpoint gaps as `skip_deferred`, and keep production
+incident-readiness claims blocked while `observability_bundle_pending` remains
+true.
 
 ## Compatibility rule
 

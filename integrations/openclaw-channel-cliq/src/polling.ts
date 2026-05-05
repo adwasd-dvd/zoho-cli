@@ -18,6 +18,7 @@ import {
   type CliqInboundTurnResult,
   type CliqTurnLedgerOption,
 } from "./turn-ledger.js";
+import type { CliqNativeEventDispatcher } from "./native-dispatch.js";
 import { fetchCliqContext, listCliqChats } from "./zoho-cli.js";
 
 export type CliqPollingSkipReason =
@@ -56,6 +57,7 @@ export type CliqPollingOptions = {
   dedupe?: CliqInboundDedupeStore;
   lifecycle?: Parameters<typeof runCliqInboundTurn>[0]["lifecycle"];
   turnLedger?: CliqTurnLedgerOption;
+  nativeDispatch?: CliqNativeEventDispatcher;
   onEvent?: (event: CliqNormalizedInboundEvent) => void | Promise<void>;
 };
 
@@ -182,13 +184,22 @@ export async function pollCliqInboundOnce(
       }
 
       events.push(event);
-      if (options.onEvent) {
+      const dispatchEvent = options.nativeDispatch
+        ? async (acceptedEvent: CliqNormalizedInboundEvent) => {
+            await options.nativeDispatch?.(acceptedEvent, {
+              account: options.account,
+              source: "polling",
+              security,
+            });
+          }
+        : options.onEvent;
+      if (dispatchEvent) {
         const turnResult = await runCliqInboundTurn({
           account: options.account,
           event,
           turnLedger,
           lifecycle: options.lifecycle,
-          onEvent: options.onEvent,
+          onEvent: dispatchEvent,
         });
         turns.push(turnResult);
         if (turnResult.turn.state === "failed") {

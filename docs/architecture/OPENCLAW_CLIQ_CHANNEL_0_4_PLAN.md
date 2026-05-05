@@ -773,8 +773,9 @@ OpenClaw:
 - Acceptance: a human operator can install, configure, disable, uninstall, and
   diagnose config/auth smoke from UI/setup surfaces and docs without reading
   source; controlled outbound smoke is now covered by `cliq-channel-405`, and
-  inbound loop prevention is covered by `cliq-channel-413`. Production
-  bidirectional testing remains gated by native dispatch and observability.
+  inbound loop prevention is covered by `cliq-channel-413`, and native
+  dispatch is covered by `cliq-channel-417`. Production readiness remains gated
+  by observability/privacy hardening.
 
 ### cliq-channel-403: Security, pairing, and scoped employee mode
 
@@ -889,11 +890,11 @@ OpenClaw:
 - Ensure `openclaw channels list/status/capabilities` output is helpful.
   Complete for package-exported status/capability summaries that keep secrets
   and message bodies out of diagnostics while exposing setup blockers,
-  controlled-smoke readiness, and the remaining production blockers.
+  controlled-smoke readiness, and the remaining production blocker.
 - Acceptance: channel looks and behaves like a native OpenClaw channel.
   Complete for local/native surfaces with runtime tests covering status,
-  capability, and route/session diagnostics; full production bidirectional
-  dispatch and observability remain in later slices.
+  capability, and route/session diagnostics; native dispatch is now covered by
+  `cliq-channel-417`, and observability remains in the next slice.
 
 ### cliq-channel-410: AI-facing docs and skill alignment
 
@@ -905,13 +906,13 @@ OpenClaw:
   Complete with an AI troubleshooting ladder for `not_logged_in`,
   `missing_scope`, `network_missing`, `webhook_unverified`,
   `webhook_secret_missing`, `allowlist_empty`, `employee_scope_empty`,
-  `target_unresolved`, `native_agent_dispatch_pending`,
+  `target_unresolved`, native dispatch failure/dead-letter diagnostics,
   `observability_bundle_pending`, and repeated Zoho-side `not_supported` /
   `inactive_appaccount_user` blockers.
 - Acceptance: an OpenClaw AI agent can install, diagnose, and use the channel
   from docs without reading source code. Complete for controlled smoke and
-  diagnostics; docs explicitly forbid claiming production bidirectional replies
-  until native dispatch and observability land.
+  diagnostics; docs explicitly forbid claiming production incident readiness
+  until observability lands.
 
 ### cliq-channel-417: Native agent turn dispatch
 
@@ -922,6 +923,9 @@ OpenClaw:
 - Acceptance: a trusted Bot webhook event and polling event can start exactly
   one OpenClaw agent turn and route the reply back through the Cliq outbound
   adapter, while duplicate/denied/dead-letter events fail closed.
+- Status: complete in `src/native-dispatch.ts`; webhook registration now uses
+  `createCliqNativeEventDispatcher`, and polling exposes the same
+  `nativeDispatch` path for service/test callers.
 
 ### cliq-channel-415: Observability, privacy, and supply-chain hardening
 

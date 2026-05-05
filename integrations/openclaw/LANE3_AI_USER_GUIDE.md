@@ -96,7 +96,7 @@ After sync, ensure the AI user follows:
   - use setup states, readiness blockers, and normalized route/session facts to decide the next operator action
   - do not copy webhook secrets, token passwords, raw stderr, webhook signatures, or message bodies into reports
   - treat `webhook_secret_missing` as a SecretRef/env blocker and use `ZOHO_CLIQ_WEBHOOK_SECRET`
-  - treat `native_agent_dispatch_pending` and `observability_bundle_pending` as pre-production blockers; do not claim production bidirectional agent replies are ready
+  - native dispatch is implemented for accepted webhook/polling events; treat `observability_bundle_pending` as the remaining pre-production blocker and keep reports redacted
   - report repeated Zoho-side `not_supported` or `inactive_appaccount_user` results as `skip_deferred` instead of blocking unrelated channel work
   - prefer explicit routing targets such as `channel:<id>`, `user:<id>`, or `cliq:channel:<id>:thread:<thread_id>`
 - native channel development/operation docs when relevant:

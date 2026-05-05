@@ -1,10 +1,28 @@
-last_run_at: "2026-05-05T08:05:01Z"
+last_run_at: "2026-05-05T08:32:34Z"
 last_result: passing
-current_focus: cliq-channel-410-ai-troubleshooting-alignment-20260505T080501Z
+current_focus: cliq-channel-417-native-agent-dispatch-20260505T082545Z
 suites:
   unit:
     status: passing
     notes:
+      - "cliq-channel-417 native agent turn dispatch completed at 2026-05-05T08:25:45Z"
+      - "added `src/native-dispatch.ts` to map accepted Cliq webhook/polling events into OpenClaw native channel turns, record session/last-route metadata, and deliver replies through the Cliq outbound adapter"
+      - "wired webhook registration through `createCliqNativeEventDispatcher` and added `nativeDispatch` to polling so accepted events dispatch exactly once after security, lifecycle, and turn-ledger gates"
+      - "updated status diagnostics so `nativeAgentDispatch=true`, `productionReadiness=pending_observability_bundle`, and `nextSlice=cliq-channel-415`"
+      - "expanded fake host/runtime coverage for trusted webhook dispatch, trusted polling dispatch, denied events, duplicate suppression, and dispatch failure dead-lettering"
+      - "npm --prefix integrations/openclaw-channel-cliq run typecheck -> passed"
+      - "npm --prefix integrations/openclaw-channel-cliq run build -> passed"
+      - "pytest -q tests/test_openclaw_channel_skeleton.py -> 18 passed in 10.51s"
+      - "./.venv/bin/python -m pytest -q tests/test_openclaw_channel_skeleton.py tests/test_openclaw_channel_contract.py tests/test_lane3_docs.py tests/test_markdown_update.py -> 30 passed in 11.61s"
+      - "package-local OpenClaw linked install in temp HOME -> passed"
+      - "package-local OpenClaw plugins inspect zoho-cliq --json -> plugin status loaded, channelIds [`cliq`], diagnostics []"
+      - "package-local OpenClaw plugins doctor -> No plugin issues detected."
+      - "global OpenClaw plugins inspect zoho-cliq --json -> plugin status loaded, channelIds [`cliq`], diagnostics []"
+      - "global OpenClaw plugins doctor -> No plugin issues detected."
+      - "node JSON parse for package/manifest -> PLUGIN_JSON_OK"
+      - "ruby YAML parse for ops/workflow state -> YAML_PARSE_OK"
+      - "git diff --check -> clean"
+      - "make ci -> ruff format/check clean + pytest `1774 passed in 50.45s`"
       - "cliq-channel-410 AI troubleshooting alignment completed at 2026-05-05T08:05:01Z"
       - "updated root skill, native channel skill, Lane 3 guide, setup runbook, development guide, README, SDK contract, roadmap, and ops state so AI agents use native diagnostics first and map setup/diagnostic blockers to safe next actions"
       - "added lane3 docs coverage for OpenClaw status/capabilities checks, `webhook_secret_missing`, `ZOHO_CLIQ_WEBHOOK_SECRET`, explicit route formats, production-bidirectional guardrails, and `skip_deferred` endpoint-limit handling"

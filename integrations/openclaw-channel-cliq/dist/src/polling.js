@@ -111,13 +111,22 @@ export async function pollCliqInboundOnce(options) {
                 continue;
             }
             events.push(event);
-            if (options.onEvent) {
+            const dispatchEvent = options.nativeDispatch
+                ? async (acceptedEvent) => {
+                    await options.nativeDispatch?.(acceptedEvent, {
+                        account: options.account,
+                        source: "polling",
+                        security,
+                    });
+                }
+                : options.onEvent;
+            if (dispatchEvent) {
                 const turnResult = await runCliqInboundTurn({
                     account: options.account,
                     event,
                     turnLedger,
                     lifecycle: options.lifecycle,
-                    onEvent: options.onEvent,
+                    onEvent: dispatchEvent,
                 });
                 turns.push(turnResult);
                 if (turnResult.turn.state === "failed") {

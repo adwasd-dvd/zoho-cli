@@ -1,5 +1,5 @@
 project: zoho-cli
-updated_at: '2026-05-05T08:01:29Z'
+updated_at: '2026-05-05T08:25:45Z'
 status: v0.2.1-final-release
 throughput_mode: turbo_20x
 throughput_policy_ref: ops/state/execution_policy.yml
@@ -9,7 +9,7 @@ module_order:
 - Mail
 - Cliq
 - CRM
-current_focus: "Turbo 20x mode active: v0.2.1 is stable; cliq-channel-410 completed native OpenClaw Cliq AI docs/help/troubleshooting alignment, and cliq-channel-417 native agent turn dispatch is next."
+current_focus: "Turbo 20x mode active: v0.2.1 is stable; cliq-channel-417 completed native OpenClaw Cliq agent turn dispatch, and cliq-channel-415 observability/privacy hardening is next."
 primary_blockers:
 - cliq-194 live read-ack endpoint remains unsupported on happydistrouklimited for the active token, but watch-act continuity is now capability-gated (`status=ok`, `fallbackUsed=true`, `readAckSupported=false`) and treated as deferred/non-blocking for forward platform execution
 - cliq live unread-filter probe now authenticates successfully but returned zero unread chats (`count=0`), so behavioral validation against real reacted unread traffic remains pending fresh unread activity
@@ -32,8 +32,9 @@ primary_blockers:
   returns `not_supported`)
 - calls/meetings endpoints are unsupported on current token/network (`cliq meetings`
   now returns `not_supported` in focused live verification)
-next_step: "Start cliq-channel-417: wire accepted Cliq webhook and polling events into native OpenClaw agent turn dispatch."
+next_step: "Start cliq-channel-415: add redacted diagnostics, privacy/retention guidance, dead-letter replay rules, rate-limit status, and npm integrity hardening."
 additional_info:
+- "2026-05-05 cliq-channel-417 native agent turn dispatch at 2026-05-05T08:25:45Z added `src/native-dispatch.ts`, wired webhook registration through `createCliqNativeEventDispatcher`, added polling `nativeDispatch`, updated status diagnostics so `nativeAgentDispatch=true` and `nextSlice=cliq-channel-415`, and expanded fake host/runtime coverage for trusted webhook dispatch, trusted polling dispatch, denied events, duplicate suppression, and dispatch failure dead-lettering. The next active slice is `cliq-channel-415` observability/privacy hardening."
 - "2026-05-05 cliq-channel-410 AI troubleshooting alignment at 2026-05-05T08:01:29Z updated the root skill, native channel skill, Lane 3 guide, setup runbook, development guide, README, and lane3 docs tests so AI agents use native status/capability/routing diagnostics first, map setup states and diagnostic blockers to one safe next action, avoid claiming production bidirectional replies while native dispatch/observability are pending, and treat repeated Zoho-side endpoint limits as `skip_deferred`. The next active slice is corrected to `cliq-channel-417` native agent turn dispatch before observability."
 - "2026-05-05 cliq-channel-409 native UX diagnostics at 2026-05-05T07:47:01Z added `src/status.ts` for OpenClaw-native status, capability, and routing summaries. Diagnostics report setup states, webhook/polling/lifecycle/turn-ledger readiness, controlled-smoke readiness, production blockers, native message/approval facts, and normalized account/network/chat/thread session routes without leaking secrets or raw message bodies. Status/routing diagnostics smoke is unblocked; production bidirectional replies still wait for native dispatch and observability."
 - "2026-05-05 cliq-channel-413 turn-ledger loop prevention at 2026-05-05T07:31:57Z added `src/turn-ledger.ts` for handler-scoped in-memory turn ownership around accepted native webhook and polling events. The ledger records safe turn/correlation/idempotency metadata, skips duplicate completed events, coalesces active same-conversation bursts, dead-letters failed turns after bounded attempts, blocks dead-letter replays, and returns turn summaries through webhook/polling results. Real Bot turn-ledger smoke is unblocked; production bidirectional replies still wait for native dispatch and observability."

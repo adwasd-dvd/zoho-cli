@@ -103,7 +103,9 @@ Follow the stack from the architecture plan:
 14. `cliq-channel-410` AI-facing docs and skill alignment (complete; root
     skill, native channel skill, Lane 3 guide, setup runbook, and development
     guide now map diagnostics/setup blockers to AI-safe next actions)
-15. `cliq-channel-417` native agent turn dispatch
+15. `cliq-channel-417` native agent turn dispatch (complete; accepted webhook
+    and polling events now enter OpenClaw native channel turns and route replies
+    through the Cliq outbound adapter)
 16. `cliq-channel-415` observability, privacy, and supply-chain hardening
 17. `cliq-channel-411` live verification and release gate
 18. `cliq-channel-412` compatibility maintenance
@@ -143,15 +145,16 @@ Current plugin inbound status: `cliq-channel-406` keeps the polling runtime on
 the existing JSON-safe CLI path (`chats` + `context`), `cliq-channel-407` adds
 Bot webhook intake at `/webhooks/cliq`, `cliq-channel-408` wraps accepted events
 with status/read lifecycle handling, `cliq-channel-413` wraps dispatch with a
-native turn ledger, and `cliq-channel-409` exposes native status/capability/
-routing diagnostics, and `cliq-channel-410` aligns AI-facing troubleshooting.
+native turn ledger, `cliq-channel-409` exposes native status/capability/
+routing diagnostics, `cliq-channel-410` aligns AI-facing troubleshooting, and
+`cliq-channel-417` wires accepted events into native OpenClaw agent turns.
 Both inbound paths normalize messages into the shared
 inbound event shape, run mention/allowlist/employee policy checks, dedupe by
 account/network/chat/message before optional dispatch, keep status/read failures
 as terminal diagnostics, prevent duplicate/active/dead-lettered turns from
 starting repeated agent work, and report controlled-smoke readiness without
-leaking secrets or message bodies. Full agent turn dispatch and observability
-remain in the next slices.
+leaking secrets or message bodies. Observability and privacy hardening remain
+in the next slice.
 
 ## AI-agent convenience checklist
 
@@ -309,7 +312,7 @@ Map diagnostic signals to one next action:
 | `allowlist_empty` | Add explicit `allowFrom` / `groupAllowFrom`; do not flip to open access for convenience. |
 | `employee_scope_empty` | Add `workScopes.<profile>` before accepting business chat turns. |
 | `target_unresolved` | Ask for or infer an explicit `channel:<id>`, `user:<id>`, or `cliq:channel:<id>:thread:<thread_id>` route. |
-| `native_agent_dispatch_pending` | Controlled smoke can continue, but do not claim production bidirectional agent replies are ready. |
+| native dispatch failure / dead-letter | Inspect turn id, dispatch error, and dead-letter metadata before replay; do not retry blindly. |
 | `observability_bundle_pending` | Keep reports redacted and do not claim production incident readiness. |
 | repeated Zoho `not_supported` / `inactive_appaccount_user` | Record `skip_deferred` and keep unrelated channel work moving. |
 

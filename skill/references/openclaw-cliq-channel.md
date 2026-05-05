@@ -101,8 +101,8 @@ Native diagnostic behavior:
   to lower-level `zoho cliq ...` probes.
 - Use setup state codes, controlled-smoke readiness, production blockers, and
   normalized session routes to decide the next operator action.
-- Treat `native_agent_dispatch_pending` and `observability_bundle_pending` as
-  expected pre-production blockers until those slices land.
+- Native agent dispatch is implemented for accepted webhook/polling events;
+  treat `observability_bundle_pending` as the remaining pre-production blocker.
 - Do not include webhook secrets, token passwords, webhook signatures, raw
   stderr, or raw Cliq message bodies in reports.
 
@@ -120,7 +120,7 @@ AI troubleshooting ladder:
 | `allowlist_empty` | channel status summary | Add explicit trusted `allowFrom` / `groupAllowFrom`; do not switch to open access as a shortcut. |
 | `employee_scope_empty` | channel status summary | Add `workScopes.<profile>` before accepting business chat turns. |
 | `target_unresolved` | routing diagnostic | Prefer explicit `channel:<id>`, `user:<id>`, or `cliq:channel:<id>:thread:<thread_id>` targets. |
-| `native_agent_dispatch_pending` | channel status diagnostics | Controlled smoke is allowed, but do not claim production bidirectional agent replies are ready. |
+| native dispatch failure / dead-letter | webhook or polling turn diagnostics | Do not retry blindly; inspect the turn id, dispatch error, and dead-letter metadata before replay. |
 | `observability_bundle_pending` | channel status diagnostics | Do not claim production incident readiness; continue with redacted smoke evidence only. |
 | Zoho endpoint `not_supported` or `inactive_appaccount_user` | `zoho cliq ...` JSON error | Record as `skip_deferred` when repeated; do not block unrelated local channel work. |
 

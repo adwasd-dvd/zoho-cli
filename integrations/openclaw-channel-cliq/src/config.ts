@@ -640,7 +640,7 @@ export function describeCliqCapabilityDiagnostics(account: CliqResolvedAccount) 
     turnLedger: true,
     scopedEmployeeMode: account.employeeMode.enabled !== false,
     nativeApprovalCapability: true,
-    nativeAgentDispatch: false,
+    nativeAgentDispatch: true,
     observabilityBundle: false,
   };
 }
@@ -661,12 +661,11 @@ export function describeCliqAccountDiagnostics(account: CliqResolvedAccount) {
   if (account.employeeMode.enabled === false) {
     blockers.push("employee_mode_disabled");
   }
-  blockers.push("native_agent_dispatch_pending");
   blockers.push("observability_bundle_pending");
 
   return {
     readiness: blockers.length <= 2 ? "controlled_smoke_ready" : "setup_required",
-    productionReadiness: "pending_native_dispatch_observability",
+    productionReadiness: "pending_observability_bundle",
     webhookPath: account.webhookPath,
     defaultTarget: account.defaultTo,
     capabilities,
@@ -691,8 +690,9 @@ export function describeCliqAccountDiagnostics(account: CliqResolvedAccount) {
       "cliq-channel-413",
       "cliq-channel-409",
       "cliq-channel-410",
+      "cliq-channel-417",
     ],
-    nextSlice: "cliq-channel-417",
+    nextSlice: "cliq-channel-415",
   };
 }
 

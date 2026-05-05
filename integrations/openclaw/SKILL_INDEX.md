@@ -33,6 +33,10 @@ CRM SDK planning:
   `--duplicate-check-field`, `--idempotency-key`, `payloadDigest`,
   `recordDigests`, `requiredConfirmation`; `--execute` returns
   `live_write_not_enabled`)
+- `zoho crm upsert-gate` (`crm-009`: guarded live-upsert decision,
+  `liveWritesEnabled=false`, scope matching, `decision=defer_live_execution`,
+  blockers include `audit_persistence_not_implemented` and
+  `controlled_live_fixture_not_recorded`)
 - `docs/architecture/CRM_WRITE_SURFACE_CONTRACT.md`
 
 GitHub intake:

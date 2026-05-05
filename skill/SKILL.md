@@ -65,6 +65,11 @@ Use this skill as the default operating contract for an OpenClaw agent acting li
   duplicate-check fields, and an idempotency key; inspect `payloadDigest` and
   `requiredConfirmation`; do not pass `--execute` expecting a live CRM write
   because it is blocked with `live_write_not_enabled`.
+  In `crm-009`, run `zoho crm upsert-gate` before considering live execution:
+  it reports `liveWritesEnabled=false`, scope matches, and blockers including
+  `audit_persistence_not_implemented` and `controlled_live_fixture_not_recorded`.
+  Keep live CRM writes disabled until those blockers are cleared in code and
+  docs.
 - Draft before high-impact send/delete actions unless the user explicitly asks for direct execution.
 - Ask for explicit approval before running any install/update command that modifies tools or skill files.
 - File low-risk, sanitized CLI bugs and suggestions directly in `adwasd-dvd/zoho-cli` GitHub issues after duplicate search; ask for approval before including private context or changing GitHub settings/labels/code.

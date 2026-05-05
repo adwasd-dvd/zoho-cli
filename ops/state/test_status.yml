@@ -1,10 +1,20 @@
-last_run_at: "2026-05-05T10:54:12Z"
+last_run_at: "2026-05-05T11:05:53Z"
 last_result: passing
-current_focus: crm-008-upsert-dry-run-full-ci-20260505T105412Z
+current_focus: crm-009-live-upsert-gate-full-ci-20260505T110553Z
 suites:
   unit:
     status: passing
     notes:
+      - "crm-009 live upsert gate completed at 2026-05-05T11:00:28Z"
+      - "make ci -> ruff format/check clean + pytest `1821 passed in 48.59s`"
+      - "added `crm_upsert_live_gate_policy()` plus `zoho crm upsert-gate`; output includes `liveWritesEnabled=false`, `decision=defer_live_execution`, `scopeGate`, and `blockingReasons`"
+      - "`--check-auth` can refresh OAuth scope evidence without writing CRM data"
+      - "live upsert remains blocked by policy until audit persistence and controlled live fixture evidence exist"
+      - "configured OAuth scopes are parsed from both list and comma/space-delimited string config forms"
+      - "./.venv/bin/python -m pytest -q tests/test_crm.py tests/test_cli.py -k crm tests/test_lane3_docs.py tests/test_markdown_update.py -> 51 passed, 866 deselected in 0.73s"
+      - "./.venv/bin/python -m zoho_cli crm upsert-gate --module Leads | jq '.policyId, .liveWritesEnabled, .decision, .scopeGate.hasAcceptedScope, .blockingReasons' -> `crm-009-live-upsert-gate`, `false`, `defer_live_execution`, `false`, blockers include `live_writes_disabled_by_policy`, `audit_persistence_not_implemented`, `controlled_live_fixture_not_recorded`"
+      - "ruby YAML parse for ops/workflow state -> YAML_PARSE_OK"
+      - "git diff --check -> clean"
       - "crm-008 upsert dry-run completed at 2026-05-05T10:52:22Z"
       - "make ci -> ruff format/check clean + pytest `1816 passed in 49.57s`"
       - "added `zoho crm upsert` as dry-run-only with `--data-json`/`--data-file`, duplicate-check fields, and idempotency key"

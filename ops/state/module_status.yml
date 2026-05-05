@@ -29,7 +29,7 @@ openclaw_cliq_channel:
 crm:
   priority: 4
   status: in_progress
-  phase: v0_5_live_upsert_gate_planning
+  phase: v0_5_write_audit_persistence
   target_release: v0.5.0
-  current_milestone: crm-009-live-upsert-gate
+  current_milestone: crm-010-write-audit-persistence
   blockers: []

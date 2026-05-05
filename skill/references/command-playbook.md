@@ -105,6 +105,18 @@ Use the returned `payloadDigest`, `fieldNames`, `recordCount`, and
 `requiredConfirmation` for review. The command does not echo raw field values.
 `--execute` is intentionally blocked with `live_write_not_enabled`.
 
+Before any future live upsert decision, inspect the gate:
+
+```bash
+zoho crm upsert-gate --module Leads
+zoho crm upsert-gate --module Leads --check-auth
+```
+
+`crm-009` keeps `liveWritesEnabled=false` and `decision=defer_live_execution`.
+Use `scopeGate.matchingScopes` only as readiness evidence; blockers such as
+`audit_persistence_not_implemented` and `controlled_live_fixture_not_recorded`
+mean live writes remain disabled.
+
 ## Bridge fallback (explicit)
 
 ```bash

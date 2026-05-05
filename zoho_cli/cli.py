@@ -11295,6 +11295,58 @@ def crm_upsert(
     utils.output(plan)
 
 
+@crm_app.command("upsert-gate")
+def crm_upsert_gate(
+    module: Optional[str] = typer.Option(
+        None,
+        "--module",
+        "-m",
+        help="CRM module API name to evaluate for module-specific upsert scopes.",
+    ),
+    check_auth: bool = typer.Option(
+        False,
+        "--check-auth",
+        help="Refresh OAuth and evaluate live granted scopes for the selected account.",
+    ),
+) -> None:
+    """Show the guarded live-upsert gate without writing data."""
+    cfg = _cfg()
+    email = _S.account or _config.default_account(cfg)
+    account_cfg = cfg.get("accounts", {}).get(email, {}) if email else {}
+    granted_scopes = auth.parse_scope_value(account_cfg.get("scopes", []))
+    auth_checked = False
+    auth_payload: dict[str, Any] = {"checked": False}
+
+    if check_auth:
+        if not email:
+            utils.error_exit("not_logged_in", "No default account configured.")
+        cid, csec = _require_credentials(cfg)
+        token_info = auth.refresh_access_token_info(
+            email,
+            cid,
+            csec,
+            accounts_base_url=account_cfg.get("accounts_server"),
+        )
+        auth_checked = True
+        live_scopes = auth.parse_scope_value(token_info.get("scopes", []))
+        if live_scopes:
+            granted_scopes = list(live_scopes)
+        auth_payload = {
+            "checked": True,
+            "status": "ok",
+            "account": email,
+        }
+
+    payload = _crm.crm_upsert_live_gate_policy(
+        module_api_name=module,
+        granted_scopes=granted_scopes,
+        auth_checked=auth_checked,
+    )
+    payload["account"] = email or ""
+    payload["auth"] = auth_payload
+    utils.output(payload)
+
+
 @crm_app.command("modules")
 def crm_modules(
     limit: int = typer.Option(50, "--limit", "-n", help="Max modules to return."),

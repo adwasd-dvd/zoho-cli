@@ -1,20 +1,21 @@
-id: crm-009
-title: plan guarded live CRM upsert execution gate
+id: crm-010
+title: persist CRM write audit events before live execution
 module: crm
 stage: in_progress
 status: in_progress
 owner: coder
-updated_at: '2026-05-05T10:52:22Z'
+updated_at: '2026-05-05T11:00:28Z'
 execution_mode: turbo_20x
 throughput_policy_ref: ops/state/execution_policy.yml
 success_criteria:
-  - decide whether live `zoho crm upsert --execute` should be enabled in this RC line or remain blocked
-  - specify OAuth scope checks, confirmation, idempotency, audit persistence, and response mapping required for live execution
-  - preserve the dry-run output contract and no raw field values by default
-  - keep delete/update/create live paths out of scope
-  - update Lane 2/3 docs and Lane 1 state with the live upsert gate decision
-next_if_done: implement guarded live upsert only if safety gate decision is positive and testable without risking unrelated CRM writes.
+  - add a local JSONL audit store for CRM write planning events without raw field values by default
+  - persist dry-run upsert and upsert-gate events before any future network write path can be considered
+  - expose a small CLI inspection command for recent CRM write audit events
+  - preserve `liveWritesEnabled=false` and keep `zoho crm upsert --execute` blocked
+  - update Lane 2/3 docs and Lane 1 state with audit persistence behavior
+next_if_done: record controlled live fixture requirements and only then revisit guarded live CRM upsert execution.
 progress:
+  - "2026-05-05T11:00:28Z crm-009 completed: added `crm_upsert_live_gate_policy()` and `zoho crm upsert-gate`; the gate reports `liveWritesEnabled=false`, `decision=defer_live_execution`, accepted scope candidates, configured/live granted scopes, matching scopes, and blockers including `live_writes_disabled_by_policy`, `audit_persistence_not_implemented`, and `controlled_live_fixture_not_recorded`; `--check-auth` can refresh OAuth scope evidence without writing CRM data; Lane 2/3 docs and help snapshot were refreshed; focused CRM/Lane 3 tests and manual CLI probes passed."
   - "2026-05-05T10:52:22Z crm-008 completed: added `zoho crm upsert` as dry-run-only; accepted `--data-json` or `--data-file`, duplicate-check fields, and idempotency key; normalized single records and full request bodies; returned JSON-safe audit output with `fieldNames`, `recordCount`, `payloadDigest`, `recordDigests`, `requiredConfirmation`, endpoint metadata, and no raw field values; kept `--execute` blocked with `confirm_required` or `live_write_not_enabled`; refreshed Lane 2/3 docs and help snapshot; focused CRM/Lane 3 tests and manual CLI probes passed."
   - "2026-05-05T10:42:55Z crm-007 completed: added `crm_write_surface_policy()` plus `zoho crm write-plan`; exposed `writeSurfacePolicy` through `zoho crm status`, `zoho crm sdk-status`, and `zoho crm write-plan`; locked `writesEnabled=false`, dry-run default, exact confirmation, idempotency-key, JSON-payload, and audit-envelope requirements; chose `upsert` as the first implementation candidate and kept `delete` blocked; added `docs/architecture/CRM_WRITE_SURFACE_CONTRACT.md`; refreshed Lane 2/3 docs and help snapshot; focused CRM/Lane 3 tests plus CLI diagnostic probes passed."
   - "2026-05-05T10:33:29Z crm-006 completed: locked `crm_api_version_policy()` in code and diagnostics; HTTP v2 remains the default CRM adapter/version to preserve current output shapes, SDK/API v8 remains explicit-only through `--adapter sdk-v8`, HTTP v8 base inference is available only for compatibility work, and `zoho crm status` plus `zoho crm sdk-status` expose `apiVersionPolicy`. Focused lint, format, CRM tests, Lane 3 docs tests, markdown update tests, and CLI diagnostic probes passed."
@@ -22,8 +23,4 @@ progress:
   - "2026-05-05T10:09:33Z crm-004 completed: added `zoho_cli/crm_sdk.py` as the optional official SDK boundary with data-center mapping for existing account hosts, CLI-managed resource/token cache paths with `ZOHO_CRM_SDK_RESOURCE_PATH` override, lazy SDK binding imports, `ZohoCrmSdkAdapter` read-only method skeletons, SDK response normalization into plain dict/list JSON, and `zoho crm sdk-status` `adapterSkeleton` diagnostics while preserving the current `http-v2` default."
   - "2026-05-05T09:49:08Z crm-003 completed: reviewed the existing CRM read-only surface and official Zoho CRM Python SDK v8 sources; added `zoho crm sdk-status`, optional `zoho-cli[crm-sdk]` packaging for `zohocrmsdk8_0==5.0.0`, `docs/architecture/CRM_V0_5_SDK_ADOPTION_PLAN.md`, Lane 2/3 docs, help snapshot, and focused CRM/CLI tests while keeping the current JSON-safe HTTP adapter as default."
   - "2026-05-05T09:42:24Z cliq-channel-418 completed: added `docs/releases/OPENCLAW_CLIQ_CHANNEL_V0_4_RC_CHECKLIST.md` with included scope, green evidence, remaining public Bot callback gate, RC cut steps, package integrity guidance, and non-goals. Native Cliq channel v0.4 is ready for local/operator RC testing; production rollout remains gated on public Bot callback reachability. Full `make ci` passed with `1777 passed in 49.10s`."
-  - "2026-05-05T09:31:51Z cliq-channel-412 completed: added `docs/releases/OPENCLAW_CLIQ_CHANNEL_COMPATIBILITY.md`, refreshed the SDK contract and docs with OpenClaw compatibility matrix evidence, verified Temp-HOME linked install/inspect/doctor against global `2026.5.3-1`, npm latest `2026.5.4`, and npm beta `2026.5.4-beta.3` without raising the v0.4 host floor, and kept `make ci` green with `1776 passed in 48.78s`."
-  - "2026-05-05T09:17:12Z cliq-channel-411 completed: added `ops/scripts/openclaw_cliq_live_smoke.sh` for redacted fake/live smoke checks, classified Zoho refresh throttling as `rate_limited`/`skip_deferred`, fixed webhook/inbound normalization so `message.id` is not misclassified as `chatId`, and recorded live evidence: OpenClaw plugin/channel checks pass; Zoho auth/capability/polling probes pass; local webhook auth/security gates pass; native polling returns an empty but valid event set; public Bot callback remains deferred until a reachable tunnel/gateway URL is configured. Full `make ci` passed with `1775 passed in 47.39s`."
-  - "2026-05-05T08:44:45Z cliq-channel-415 completed: added `src/observability.ts` and `src/privacy.ts` for redacted audit events, stable correlation ids, diagnostic bundles, webhook/polling/lifecycle/turn-ledger/native dispatch rate-limit diagnostics, privacy retention rules, dead-letter replay guidance, and npm integrity checklist placeholders. Status diagnostics now advertise `observabilityBundle=true`, `productionReadiness=pending_live_verification`, blocker `live_verification_pending`, implemented slice `cliq-channel-415`, and `nextSlice=cliq-channel-411`."
-  - "2026-05-05T08:25:45Z cliq-channel-417 completed: `src/native-dispatch.ts` maps accepted Cliq webhook/polling events into OpenClaw native channel turns, records session/last-route metadata, delivers agent replies through the Cliq outbound adapter, and fake host coverage verifies trusted webhook dispatch, trusted polling dispatch, denied events, duplicate suppression, and dispatch-failure dead-lettering."
-next_step: Start `crm-009` by deciding the guarded live upsert execution gate while keeping live writes blocked.
+next_step: Start `crm-010` by adding CRM write audit persistence while keeping live writes blocked.

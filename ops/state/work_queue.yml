@@ -322,10 +322,17 @@
 - id: crm-009
   title: plan guarded live CRM upsert execution gate
   module: crm
-  stage: in_progress
+  stage: completed
   priority: high
   depends_on:
   - crm-008
+- id: crm-010
+  title: persist CRM write audit events before live execution
+  module: crm
+  stage: in_progress
+  priority: high
+  depends_on:
+  - crm-009
 - id: platform-208
   title: finalize module-first CLI information architecture (retire legacy root mail aliases after deprecation window and normalize level-2/3 help taxonomy)
   module: platform

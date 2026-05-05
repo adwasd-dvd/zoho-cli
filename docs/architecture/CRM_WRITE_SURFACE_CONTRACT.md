@@ -1,6 +1,6 @@
 # CRM write-surface safety contract
 
-Updated: `2026-05-05T10:50:34Z`.
+Updated: `2026-05-05T10:57:41Z`.
 
 This is the `crm-007` contract for adding CRM write commands without making AI
 agents accidentally mutate production data.
@@ -52,6 +52,33 @@ exists, requires duplicate-check fields and an idempotency key, and emits:
 `--execute` is intentionally blocked in `crm-008`. If confirmation is missing,
 the command returns `confirm_required`; even with the exact confirmation it
 returns `live_write_not_enabled`.
+
+## Implemented in crm-009
+
+`zoho crm upsert-gate` now exposes the guarded live execution decision:
+
+```bash
+zoho crm upsert-gate --module Leads
+zoho crm upsert-gate --module Leads --check-auth
+```
+
+The command does not write CRM data. It reports:
+
+- `liveWritesEnabled=false`
+- `decision=defer_live_execution`
+- accepted OAuth scope candidates for the module
+- configured or live granted scopes
+- matching scopes, when present
+- blocking reasons:
+  - `live_writes_disabled_by_policy`
+  - `live_oauth_not_checked` unless `--check-auth` was used
+  - `upsert_scope_not_verified` when no accepted scope is present
+  - `audit_persistence_not_implemented`
+  - `controlled_live_fixture_not_recorded`
+
+The next safe slice is audit persistence for CRM write plans. Live `upsert`
+execution should stay disabled until audit events are persisted before any
+network write and a controlled live fixture is recorded.
 
 ## Official API references
 

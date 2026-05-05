@@ -57,7 +57,7 @@ Unify product work around one operator-facing flow:
 
 ## Guardrails
 
-- Keep CRM SDK work behind an adapter/parity gate; `crm-005` exposes only explicit `--adapter sdk-v8` read gates, `crm-006` keeps HTTP v2 as default, `crm-007` exposes write safety gates through `zoho crm write-plan`, and `crm-008` keeps `zoho crm upsert` dry-run-only with live writes blocked.
+- Keep CRM SDK work behind an adapter/parity gate; `crm-005` exposes only explicit `--adapter sdk-v8` read gates, `crm-006` keeps HTTP v2 as default, `crm-007` exposes write safety gates through `zoho crm write-plan`, `crm-008` keeps `zoho crm upsert` dry-run-only, and `crm-009` keeps live upsert blocked until audit persistence and controlled live fixture evidence exist.
 - Patch releases must not mix in new modules.
 - All cron/agents read and write the same state files in `ops/state/`.
 - Unsupported external endpoints follow 3-strike deferred policy and must not stall unrelated v1.0 slices.

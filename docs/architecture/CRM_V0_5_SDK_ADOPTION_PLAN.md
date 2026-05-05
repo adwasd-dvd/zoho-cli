@@ -1,6 +1,6 @@
 # CRM v0.5 SDK adoption plan
 
-Updated: `2026-05-05T10:50:34Z`.
+Updated: `2026-05-05T10:57:41Z`.
 
 This is the `crm-003` handoff for phasing the official Zoho CRM server-side
 Python SDK into `zoho-cli` without breaking the current AI-safe CLI contract.
@@ -126,6 +126,16 @@ adapter proves parity on the read-only surface. The CLI contract remains:
 - `--execute` remains blocked with `live_write_not_enabled` after exact
   confirmation, so no live CRM writes are enabled in this slice.
 
+## Implemented in crm-009
+
+- Added `crm_upsert_live_gate_policy()` and `zoho crm upsert-gate`.
+- The gate reports `liveWritesEnabled=false`, `decision=defer_live_execution`,
+  accepted upsert scopes, matching granted scopes, and blocking reasons.
+- `--check-auth` can refresh OAuth scopes for the selected account without
+  writing CRM data.
+- Live upsert remains blocked until audit persistence and controlled live
+  fixture evidence are implemented.
+
 ## v0.5 slices
 
 1. `crm-004` SDK adapter skeleton (completed):
@@ -149,10 +159,14 @@ adapter proves parity on the read-only surface. The CLI contract remains:
    - implement `zoho crm upsert` as dry-run by default;
    - require `--execute`, exact `--confirm`, idempotency key, and audit envelope
      before any live call.
-6. `crm-009` live upsert gate planning:
+6. `crm-009` live upsert gate planning (completed):
    - decide whether to enable live upsert execution in guarded mode;
    - require OAuth scope checks, exact confirmation, idempotency key, and audit
      output before any network write.
+7. `crm-010` write audit persistence:
+   - persist CRM write dry-run/live gate audit events before any future network
+     write;
+   - add replay/search guidance for AI agents and operators.
 
 ## Non-goals
 

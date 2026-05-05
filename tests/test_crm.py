@@ -187,6 +187,34 @@ def test_build_crm_upsert_dry_run_rejects_too_many_records() -> None:
         )
 
 
+def test_crm_upsert_live_gate_policy_keeps_writes_disabled() -> None:
+    policy = crm.crm_upsert_live_gate_policy()
+
+    assert policy["policyId"] == "crm-009-live-upsert-gate"
+    assert policy["liveWritesEnabled"] is False
+    assert policy["decision"] == "defer_live_execution"
+    assert "live_writes_disabled_by_policy" in policy["blockingReasons"]
+    assert (
+        "module_required_for_module_specific_scope_check" in policy["blockingReasons"]
+    )
+    assert policy["scopeGate"]["acceptedAny"] == ["ZohoCRM.modules.ALL"]
+
+
+def test_crm_upsert_live_gate_policy_matches_module_scope() -> None:
+    policy = crm.crm_upsert_live_gate_policy(
+        module_api_name="Leads",
+        granted_scopes=["ZohoCRM.modules.Leads.WRITE"],
+        auth_checked=True,
+    )
+
+    assert policy["module"] == "Leads"
+    assert policy["scopeGate"]["hasAcceptedScope"] is True
+    assert policy["scopeGate"]["matchingScopes"] == ["ZohoCRM.modules.Leads.WRITE"]
+    assert "live_oauth_not_checked" not in policy["blockingReasons"]
+    assert "upsert_scope_not_verified" not in policy["blockingReasons"]
+    assert "audit_persistence_not_implemented" in policy["blockingReasons"]
+
+
 @respx.mock
 def test_crm_client_modules() -> None:
     client = crm.ZohoCrmClient("fake-token", base_url="https://www.zohoapis.com/crm/v2")

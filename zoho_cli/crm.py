@@ -34,6 +34,7 @@ CRM_WRITE_OPERATIONS = ("upsert", "update", "create", "delete")
 CRM_WRITE_DRY_RUN_STATUS = "planned"
 CRM_WRITE_LIVE_STATUS = "blocked"
 CRM_UPSERT_ADAPTER = "http-v8"
+CRM_UPSERT_LIVE_GATE_POLICY_ID = "crm-009-live-upsert-gate"
 
 
 def crm_sdk_status(
@@ -355,6 +356,80 @@ def build_crm_upsert_dry_run(
             "Live upsert execution remains disabled in crm-008.",
         ],
     }
+
+
+def crm_upsert_live_gate_policy(
+    *,
+    module_api_name: str | None = None,
+    granted_scopes: list[str] | None = None,
+    auth_checked: bool = False,
+) -> dict:
+    """Return the guarded live-upsert gate decision without enabling writes."""
+
+    module = (module_api_name or "").strip()
+    accepted_scopes = crm_upsert_scope_candidates(module_api_name=module or None)
+    granted = granted_scopes or []
+    matching_scopes = [scope for scope in granted if scope in accepted_scopes]
+    has_scope = bool(matching_scopes)
+
+    blocking_reasons = ["live_writes_disabled_by_policy"]
+    if not module:
+        blocking_reasons.append("module_required_for_module_specific_scope_check")
+    if not auth_checked:
+        blocking_reasons.append("live_oauth_not_checked")
+    if not has_scope:
+        blocking_reasons.append("upsert_scope_not_verified")
+    blocking_reasons.extend(
+        [
+            "audit_persistence_not_implemented",
+            "controlled_live_fixture_not_recorded",
+        ]
+    )
+
+    return {
+        "policyId": CRM_UPSERT_LIVE_GATE_POLICY_ID,
+        "operation": "upsert",
+        "stage": "planning",
+        "liveWritesEnabled": False,
+        "decision": "defer_live_execution",
+        "module": module,
+        "authChecked": auth_checked,
+        "scopeGate": {
+            "acceptedAny": accepted_scopes,
+            "grantedScopes": granted,
+            "matchingScopes": matching_scopes,
+            "hasAcceptedScope": has_scope,
+        },
+        "requiredGatesBeforeEnable": [
+            "dry-run envelope reviewed",
+            "payloadDigest matched approved payload",
+            "exact confirmation matched",
+            "idempotency key present",
+            "OAuth scope verified for module upsert",
+            "audit event persisted before network write",
+            "controlled live fixture recorded",
+            "response mapped into the dry-run audit envelope",
+        ],
+        "blockingReasons": blocking_reasons,
+        "outOfScope": ["delete", "update", "create", "bulk live write enablement"],
+        "next": [
+            "Keep `zoho crm upsert --execute` blocked until every gate is implemented.",
+            "Use `zoho crm upsert` without --execute for dry-run evidence.",
+        ],
+    }
+
+
+def crm_upsert_scope_candidates(*, module_api_name: str | None = None) -> list[str]:
+    module = (module_api_name or "").strip()
+    candidates = ["ZohoCRM.modules.ALL"]
+    if module:
+        candidates.extend(
+            [
+                f"ZohoCRM.modules.{module}.WRITE",
+                f"ZohoCRM.modules.{module}.CREATE",
+            ]
+        )
+    return candidates
 
 
 def normalize_crm_upsert_payload(

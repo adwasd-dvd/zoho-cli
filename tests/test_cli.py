@@ -27180,6 +27180,83 @@ def test_crm_upsert_execute_is_blocked_even_with_confirmation() -> None:
     assert "live_write_not_enabled" in result.output
 
 
+def test_crm_upsert_gate_reports_blocked_policy(mock_config: Path) -> None:
+    result = runner.invoke(
+        app,
+        ["crm", "upsert-gate", "--module", "Leads"],
+        env=_cfg_env(mock_config),
+    )
+
+    assert result.exit_code == 0, result.output
+    payload = json.loads(result.output)
+    assert payload["policyId"] == "crm-009-live-upsert-gate"
+    assert payload["liveWritesEnabled"] is False
+    assert payload["decision"] == "defer_live_execution"
+    assert payload["module"] == "Leads"
+    assert payload["auth"]["checked"] is False
+    assert "live_writes_disabled_by_policy" in payload["blockingReasons"]
+    assert "live_oauth_not_checked" in payload["blockingReasons"]
+
+
+def test_crm_upsert_gate_uses_configured_scope(tmp_path: Path) -> None:
+    cfg = {
+        "client_id": "test_id",
+        "client_secret": "test_secret",
+        "default_account": ACCOUNT_EMAIL,
+        "accounts": {
+            ACCOUNT_EMAIL: {
+                "accountId": ACCOUNT_ID,
+                "scopes": ["ZohoCRM.modules.Leads.CREATE"],
+            }
+        },
+    }
+    cfg_path = tmp_path / "config.json"
+    cfg_path.write_text(json.dumps(cfg))
+
+    result = runner.invoke(
+        app,
+        ["crm", "upsert-gate", "--module", "Leads"],
+        env=_cfg_env(cfg_path),
+    )
+
+    assert result.exit_code == 0, result.output
+    payload = json.loads(result.output)
+    assert payload["scopeGate"]["hasAcceptedScope"] is True
+    assert payload["scopeGate"]["matchingScopes"] == ["ZohoCRM.modules.Leads.CREATE"]
+    assert "upsert_scope_not_verified" not in payload["blockingReasons"]
+    assert "audit_persistence_not_implemented" in payload["blockingReasons"]
+
+
+def test_crm_upsert_gate_parses_configured_scope_string(tmp_path: Path) -> None:
+    cfg = {
+        "client_id": "test_id",
+        "client_secret": "test_secret",
+        "default_account": ACCOUNT_EMAIL,
+        "accounts": {
+            ACCOUNT_EMAIL: {
+                "accountId": ACCOUNT_ID,
+                "scopes": "ZohoCRM.modules.Leads.WRITE,ZohoCRM.modules.ALL",
+            }
+        },
+    }
+    cfg_path = tmp_path / "config.json"
+    cfg_path.write_text(json.dumps(cfg))
+
+    result = runner.invoke(
+        app,
+        ["crm", "upsert-gate", "--module", "Leads"],
+        env=_cfg_env(cfg_path),
+    )
+
+    assert result.exit_code == 0, result.output
+    payload = json.loads(result.output)
+    assert payload["scopeGate"]["hasAcceptedScope"] is True
+    assert payload["scopeGate"]["matchingScopes"] == [
+        "ZohoCRM.modules.Leads.WRITE",
+        "ZohoCRM.modules.ALL",
+    ]
+
+
 def test_crm_sdk_status_command_uses_account_region(mock_config: Path) -> None:
     cfg = json.loads(mock_config.read_text())
     cfg["accounts"][ACCOUNT_EMAIL]["accounts_server"] = "https://accounts.zoho.eu"

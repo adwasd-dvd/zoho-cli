@@ -1,6 +1,6 @@
 # CLI help snapshot
 
-Generated at: `2026-05-05T10:48:12Z`
+Generated at: `2026-05-05T10:58:14Z`
 
 Use this file as a quick command-surface reference for the skill.
 
@@ -273,16 +273,17 @@ Exit code: `0`
 │ --help          Show this message and exit.                                  │
 ╰──────────────────────────────────────────────────────────────────────────────╯
 ╭─ Commands ───────────────────────────────────────────────────────────────────╮
-│ status      Show CRM auth readiness and inferred API endpoint.               │
-│ sdk-status  Show official Zoho CRM SDK adapter readiness.                    │
-│ write-plan  Show CRM write-surface safety gates without writing data.        │
-│ upsert      Plan a CRM upsert without writing data.                          │
-│ modules     List CRM modules available to the account.                       │
-│ fields      List fields for a CRM module.                                    │
-│ list        List records from a CRM module.                                  │
-│ get         Get a single CRM record by id.                                   │
-│ search      Search records in a CRM module.                                  │
-│ bridge-run  Run one CRM action through membrane bridge (explicit opt-in).    │
+│ status       Show CRM auth readiness and inferred API endpoint.              │
+│ sdk-status   Show official Zoho CRM SDK adapter readiness.                   │
+│ write-plan   Show CRM write-surface safety gates without writing data.       │
+│ upsert       Plan a CRM upsert without writing data.                         │
+│ upsert-gate  Show the guarded live-upsert gate without writing data.         │
+│ modules      List CRM modules available to the account.                      │
+│ fields       List fields for a CRM module.                                   │
+│ list         List records from a CRM module.                                 │
+│ get          Get a single CRM record by id.                                  │
+│ search       Search records in a CRM module.                                 │
+│ bridge-run   Run one CRM action through membrane bridge (explicit opt-in).   │
 ╰──────────────────────────────────────────────────────────────────────────────╯
 ```
 
@@ -321,5 +322,24 @@ Exit code: `0`
 │                                           supported.                         │
 │                                           [default: http-v8]                 │
 │    --help                                 Show this message and exit.        │
+╰──────────────────────────────────────────────────────────────────────────────╯
+```
+
+## `./.venv/bin/zoho crm upsert-gate --help`
+
+Exit code: `0`
+
+```text
+
+ Usage: zoho crm upsert-gate [OPTIONS]
+
+ Show the guarded live-upsert gate without writing data.
+
+╭─ Options ────────────────────────────────────────────────────────────────────╮
+│ --module      -m      TEXT  CRM module API name to evaluate for              │
+│                             module-specific upsert scopes.                   │
+│ --check-auth                Refresh OAuth and evaluate live granted scopes   │
+│                             for the selected account.                        │
+│ --help                      Show this message and exit.                      │
 ╰──────────────────────────────────────────────────────────────────────────────╯
 ```

@@ -74,3 +74,7 @@ Use `zoho crm upsert` only as a dry-run in `crm-008`; it returns
 `payloadDigest`, `recordDigests`, `fieldNames`, and `requiredConfirmation`
 without raw field values. `--execute` remains blocked with
 `live_write_not_enabled`.
+Run `zoho crm upsert-gate --module <module>` before any future live execution
+discussion. In `crm-009`, `liveWritesEnabled=false` and blockers include
+`audit_persistence_not_implemented` plus
+`controlled_live_fixture_not_recorded`, so live CRM writes stay disabled.

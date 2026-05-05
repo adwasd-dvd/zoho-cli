@@ -3,7 +3,8 @@
 This checklist is the `cliq-channel-418` handoff for deciding whether the
 native OpenClaw Zoho Cliq channel package can be cut as a v0.4 release
 candidate. `cliq-channel-419` codifies the local package artifact preflight
-used by this checklist.
+used by this checklist. `cliq-channel-420` adds real Zoho Bot handler templates
+for the remaining public callback gate.
 
 SDK contract source of truth:
 `docs/architecture/OPENCLAW_CLIQ_CHANNEL_SDK_CONTRACT.md`.
@@ -31,15 +32,15 @@ Do not claim production incident readiness while channel diagnostics report
 - Channel id: `cliq`
 - Host floor: OpenClaw `>=2026.5.3-1`
 - Implemented slices:
-  `cliq-channel-401/402/416/403/414/404/405/406/407/408/413/409/410/417/415/411/412/418/419`
+  `cliq-channel-401/402/416/403/414/404/405/406/407/408/413/409/410/417/415/411/412/418/419/420`
 
 ## Evidence
 
 | Gate | Latest result |
 | --- | --- |
 | TypeScript typecheck/build | `npm --prefix integrations/openclaw-channel-cliq run typecheck` and `run build` passed. |
-| Focused channel/docs tests | `tests/test_openclaw_channel_skeleton.py`, `tests/test_openclaw_channel_contract.py`, `tests/test_lane3_docs.py`, and `tests/test_markdown_update.py` passed with `34 passed`. |
-| Full CI | `make ci` passed with ruff format/check clean and `1840 passed in 48.40s`. |
+| Focused channel/docs tests | `tests/test_openclaw_channel_contract.py`, `tests/test_lane3_docs.py`, and `tests/test_markdown_update.py` passed with `16 passed`. |
+| Full CI | `make ci` passed with ruff format/check clean and `1841 passed in 48.97s`. |
 | Local live smoke | `ops/scripts/openclaw_cliq_live_smoke.sh` passed: Zoho auth/capability/polling OK, local webhook missing-secret/authenticated-non-dispatch/authenticated-deny OK, native polling OK with zero events. |
 | Package linked baseline | Temp-HOME `openclaw plugins install ./integrations/openclaw-channel-cliq --link`, `plugins inspect zoho-cliq --json`, and `plugins doctor` passed on global `OpenClaw 2026.5.3-1`. |
 | Latest stable host | Temp-HOME `npx -y openclaw@2026.5.4` linked install/inspect/doctor passed. |
@@ -53,7 +54,8 @@ Public Bot callback:
 1. Start or provision a reachable tunnel/gateway URL.
 2. Set `ZOHO_CLIQ_PUBLIC_WEBHOOK_URL` to that URL plus `/webhooks/cliq`.
 3. Configure Zoho Cliq Bot Message, Mention, Participation, or Context Handler
-   to POST to the same URL.
+   to POST to the same URL using
+   `docs/releases/OPENCLAW_CLIQ_BOT_HANDLER_TEMPLATES.md`.
 4. Rotate any webhook secret that appeared in screenshots, chat, logs, or docs.
 5. Run `ops/scripts/openclaw_cliq_live_smoke.sh`.
 6. Send a controlled trusted mention from Cliq and verify exactly one native

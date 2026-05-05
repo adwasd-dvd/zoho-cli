@@ -40,9 +40,11 @@ Use this skill as the default operating contract for an OpenClaw agent acting li
   signatures, or raw message bodies.
 - Native Cliq agent dispatch is now implemented for accepted webhook/polling
   events, and redacted audit/diagnostic bundles are now available; use
-  `ops/scripts/openclaw_cliq_live_smoke.sh` for the controlled gate, treat
-  `token_refresh_rate_limited` as `skip_deferred`, and do not claim production
-  incident readiness until a reachable public Bot callback is verified.
+  `docs/releases/OPENCLAW_CLIQ_BOT_HANDLER_TEMPLATES.md` before editing a real
+  Zoho Bot handler, use `ops/scripts/openclaw_cliq_live_smoke.sh` for the
+  controlled gate, treat `token_refresh_rate_limited` as `skip_deferred`, and do
+  not claim production incident readiness until a reachable public Bot callback
+  is verified.
 - For OpenClaw host upgrades or plugin SDK breakage, follow
   `docs/releases/OPENCLAW_CLIQ_CHANNEL_COMPATIBILITY.md` before changing
   business logic or raising the host floor.

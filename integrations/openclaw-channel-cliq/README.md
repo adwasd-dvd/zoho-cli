@@ -52,6 +52,8 @@ The source of truth is
 
 Human setup and troubleshooting live in
 `../../docs/releases/OPENCLAW_CLIQ_CHANNEL_SETUP.md`.
+Real Zoho Bot Deluge handler templates live in
+`../../docs/releases/OPENCLAW_CLIQ_BOT_HANDLER_TEMPLATES.md`.
 Host compatibility maintenance lives in
 `../../docs/releases/OPENCLAW_CLIQ_CHANNEL_COMPATIBILITY.md`.
 The v0.4 RC decision checklist lives in
@@ -125,6 +127,9 @@ to POST to the OpenClaw plugin route. The route verifies
 `X-Cliq-Webhook-Secret`, normalizes the payload into the same inbound event
 shape as polling, dedupes by account/network/chat/message, and applies the
 same allowlist, mention, and employee policy gates.
+
+Use `../../docs/releases/OPENCLAW_CLIQ_BOT_HANDLER_TEMPLATES.md` for
+copy-ready Message, Mention, Participation, and Context Handler Deluge code.
 
 ```deluge
 response = Map();

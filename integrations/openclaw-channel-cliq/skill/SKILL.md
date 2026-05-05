@@ -17,6 +17,9 @@ Use this skill when operating through the native OpenClaw Zoho Cliq channel.
   Message, Mention, Participation, and Context handlers must POST with
   `X-Cliq-Webhook-Secret`; normalize, dedupe, and apply the same security gates
   as polling before dispatch.
+- Before editing a real Zoho Bot, use the Deluge templates in
+  `docs/releases/OPENCLAW_CLIQ_BOT_HANDLER_TEMPLATES.md` and replace only the
+  public webhook URL plus rotated secret placeholders.
 - Accepted native webhook and polling events should run through the shared
   lifecycle wrapper. Use `zoho cliq status-react --clear-known` for visible
   status (`received`, `thinking`, `writing`, `testing`, `blocked`, `done`,

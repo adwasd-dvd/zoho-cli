@@ -22,7 +22,7 @@ openclaw_cliq_channel:
   status: completed_for_rc
   phase: rc_package_ready_external_callback_deferred
   target_release: v0.4.0
-  current_milestone: cliq-channel-419-rc-pack-preflight-script
+  current_milestone: cliq-channel-420-real-bot-handler-templates
   blockers:
     - "deferred: public Zoho Cliq Bot callback verification requires a reachable tunnel/gateway URL"
 

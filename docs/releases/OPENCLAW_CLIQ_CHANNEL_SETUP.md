@@ -62,6 +62,8 @@ For host compatibility updates, use
 For RC cut decisions, use
 `docs/releases/OPENCLAW_CLIQ_CHANNEL_V0_4_RC_CHECKLIST.md` and run
 `ops/scripts/openclaw_cliq_rc_pack.sh` before cutting an artifact.
+For real Zoho Bot handler code, use
+`docs/releases/OPENCLAW_CLIQ_BOT_HANDLER_TEMPLATES.md`.
 
 ## Install from the workspace
 
@@ -147,7 +149,8 @@ HOME="$PWD/.tmp/openclaw-home-2026.5.3-1" \
 Use a Bot Message, Mention, Participation, or Context Handler for inbound
 OpenClaw channel messages. Mention Handler is the best first live smoke because
 Zoho provides `message`, `mentions`, `user`, and `chat` objects to the Deluge
-script.
+script. Full Deluge templates for all four accepted handlers live in
+`docs/releases/OPENCLAW_CLIQ_BOT_HANDLER_TEMPLATES.md`.
 
 ```deluge
 response = Map();

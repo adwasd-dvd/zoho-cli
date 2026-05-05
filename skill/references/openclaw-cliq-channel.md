@@ -62,6 +62,9 @@ the v0.4 floor and `2026.5.4` / `2026.5.4-beta.3` passing early-warning checks.
 codifies the local RC package preflight by running typecheck/build, packing from
 the plugin directory, and writing ignored JSON release evidence without npm
 publish or version bump side effects.
+`cliq-channel-420` is complete: real Zoho Bot Deluge templates for Message,
+Mention, Participation, and Context handlers live in
+`docs/releases/OPENCLAW_CLIQ_BOT_HANDLER_TEMPLATES.md`.
 
 The v0.4 plugin targets OpenClaw `>=2026.5.3-1`. The upgraded global
 `OpenClaw 2026.5.3-1` host is suitable for native plugin checks; use
@@ -160,6 +163,12 @@ RC checklist:
 docs/releases/OPENCLAW_CLIQ_CHANNEL_V0_4_RC_CHECKLIST.md
 ```
 
+Real Bot handler templates:
+
+```text
+docs/releases/OPENCLAW_CLIQ_BOT_HANDLER_TEMPLATES.md
+```
+
 Human setup checkpoints:
 
 - OpenClaw host version is compatible.
@@ -172,6 +181,8 @@ Human setup checkpoints:
 - Webhook is verified with a controlled Bot handler POST to `/webhooks/cliq`, or
   polling fallback is intentionally enabled; polling dry-runs use
   `zoho cliq chats` plus `zoho cliq context`.
+- Real Zoho Bot handler edits use the Deluge templates and placeholders in
+  `docs/releases/OPENCLAW_CLIQ_BOT_HANDLER_TEMPLATES.md`.
 - The live smoke gate script is run from the repo root, with
   `token_refresh_rate_limited` recorded as `skip_deferred` and public callback
   reachability deferred only when no tunnel/gateway URL is configured.

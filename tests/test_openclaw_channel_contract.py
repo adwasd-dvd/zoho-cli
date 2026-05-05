@@ -120,13 +120,15 @@ def test_openclaw_cliq_channel_rc_checklist_has_cut_contract():
         "RC package ready, deployment callback still external",
         "cliq-channel-418",
         "cliq-channel-419",
+        "cliq-channel-420",
         "ops/scripts/openclaw_cliq_rc_pack.sh",
+        "OPENCLAW_CLIQ_BOT_HANDLER_TEMPLATES.md",
         "live_verification_pending",
         "Public Bot callback",
         "ZOHO_CLIQ_PUBLIC_WEBHOOK_URL",
         "0.4.0-rc.1",
         "expectedIntegrity",
-        "1840 passed in 48.40s",
+        "1841 passed in 48.97s",
         "token_refresh_rate_limited",
         "skip_deferred",
         "Do not add parallel `cliq_send`",
@@ -134,3 +136,35 @@ def test_openclaw_cliq_channel_rc_checklist_has_cut_contract():
 
     for marker in required:
         assert marker in checklist
+
+
+def test_openclaw_cliq_bot_handler_templates_cover_real_handlers():
+    templates = read("docs/releases/OPENCLAW_CLIQ_BOT_HANDLER_TEMPLATES.md")
+
+    required = [
+        "Bot Message Handler",
+        "Bot Mention Handler",
+        "Bot Participation Handler",
+        "Bot Context Handler",
+        "Deluge invokeUrl task",
+        "Message Handler",
+        "Mention Handler",
+        "Participation Handler",
+        "Context Handler",
+        "https://<your-tunnel-or-gateway>/webhooks/cliq",
+        "X-Cliq-Webhook-Secret",
+        "<rotated-secret>",
+        'payload.put("handler","message");',
+        'payload.put("handler","mention");',
+        'payload.put("handler","participation");',
+        'payload.put("handler","context");',
+        "body:payload.toString()",
+        "ZOHO_CLIQ_WEBHOOK_SECRET",
+        "Welcome, Incoming Webhook, Call, and Menu handlers",
+    ]
+
+    for marker in required:
+        assert marker in templates
+
+    assert "qSEeU3" not in templates
+    assert "trycloudflare.com" not in templates

@@ -1,10 +1,14 @@
-last_run_at: "2026-05-05T13:06:07Z"
+last_run_at: "2026-05-05T13:17:07Z"
 last_result: passing
-current_focus: cliq-channel-419-repeatable-rc-pack-preflight
+current_focus: cliq-channel-420-real-bot-handler-templates
 suites:
   unit:
     status: passing
     notes:
+      - "cliq-channel-420 real Bot handler templates completed at 2026-05-05T13:17:07Z"
+      - "added `docs/releases/OPENCLAW_CLIQ_BOT_HANDLER_TEMPLATES.md` with placeholder-only Deluge templates for Zoho Cliq Message, Mention, Participation, and Context handlers posting to `/webhooks/cliq` with `X-Cliq-Webhook-Secret`"
+      - "./.venv/bin/python -m pytest -q tests/test_openclaw_channel_contract.py tests/test_lane3_docs.py tests/test_markdown_update.py -> 16 passed in 0.02s"
+      - "make ci -> ruff format/check clean + pytest `1841 passed in 48.97s`"
       - "cliq-channel-419 repeatable RC package preflight completed at 2026-05-05T13:06:07Z"
       - "added `ops/scripts/openclaw_cliq_rc_pack.sh`; the script runs typecheck/build, packs from the plugin directory, writes ignored JSON summary evidence, and performs no npm publish or version bump"
       - "OPENCLAW_CLIQ_PACK_RUN_ID=20260505T125200Z-script-smoke ops/scripts/openclaw_cliq_rc_pack.sh -> tarball `adwasd-openclaw-zoho-cliq-0.4.0-alpha.0.tgz`, shasum `a77c6c1d26af1454c634a353e1a5ad642b4b5ccd`, integrity `sha512-DhO74Ol6jFvO6bvSzUWGLeX6Bv5OwAGXIoMZ1DVFedEMjB3vo9w/lW6MLUl8gE4Uv4RpmFRy7vwpwxJtr3fdkA==`, entry count 67"

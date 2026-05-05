@@ -124,6 +124,10 @@ Follow the stack from the architecture plan:
     `ops/scripts/openclaw_cliq_rc_pack.sh` runs typecheck/build, packs from the
     plugin directory, and writes ignored JSON release evidence without publishing
     or bumping the version)
+21. `cliq-channel-420` real Bot handler templates (complete;
+    `docs/releases/OPENCLAW_CLIQ_BOT_HANDLER_TEMPLATES.md` provides Deluge
+    templates for Message, Mention, Participation, and Context handlers with
+    placeholder webhook URL and rotated secret values)
 
 Each slice should be independently testable. Prefer many small slices over one
 large plugin drop.
@@ -164,8 +168,9 @@ native turn ledger, `cliq-channel-409` exposes native status/capability/
 routing diagnostics, `cliq-channel-410` aligns AI-facing troubleshooting, and
 `cliq-channel-417` wires accepted events into native OpenClaw agent turns;
 `cliq-channel-415` adds redacted observability/privacy diagnostics;
-`cliq-channel-411` adds the live smoke gate harness; and `cliq-channel-419`
-adds the repeatable local RC pack preflight.
+`cliq-channel-411` adds the live smoke gate harness; `cliq-channel-419` adds the
+repeatable local RC pack preflight; and `cliq-channel-420` adds real Bot Deluge
+handler templates.
 Both inbound paths normalize messages into the shared
 inbound event shape, run mention/allowlist/employee policy checks, dedupe by
 account/network/chat/message before optional dispatch, keep status/read failures

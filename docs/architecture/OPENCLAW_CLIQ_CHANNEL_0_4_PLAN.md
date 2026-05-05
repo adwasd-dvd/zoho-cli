@@ -990,6 +990,18 @@ OpenClaw:
   writes summary reports under `tests/auto_pilot/reports/` and tarballs under
   `.tmp/openclaw-cliq-rc-pack`.
 
+### cliq-channel-420: Real Bot handler templates
+
+- Add copy-ready Deluge templates for Zoho Cliq Bot Message, Mention,
+  Participation, and Context handlers.
+- Use placeholders for public webhook URL and rotated secret values.
+- Reference official Zoho handler and Deluge `invokeUrl` docs.
+- Acceptance: an operator can wire a real Bot to `/webhooks/cliq` without
+  copying secrets from chat, guessing handler attributes, or using unsupported
+  handler kinds.
+- Status: complete in
+  `docs/releases/OPENCLAW_CLIQ_BOT_HANDLER_TEMPLATES.md`.
+
 ## Test strategy
 
 ### Unit tests

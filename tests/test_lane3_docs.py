@@ -48,6 +48,7 @@ def test_lane3_required_paths_exist() -> None:
         REPO_ROOT / "docs" / "architecture" / "CRM_V0_5_SDK_ADOPTION_PLAN.md",
         REPO_ROOT / "docs" / "releases" / "CRM_V0_5_OPERATOR_FIXTURE_EVIDENCE.md",
         REPO_ROOT / "docs" / "releases" / "OPENCLAW_CLIQ_CHANNEL_SETUP.md",
+        REPO_ROOT / "docs" / "releases" / "OPENCLAW_CLIQ_BOT_HANDLER_TEMPLATES.md",
         REPO_ROOT / "docs" / "releases" / "OPENCLAW_CLIQ_CHANNEL_COMPATIBILITY.md",
         REPO_ROOT / "docs" / "releases" / "OPENCLAW_CLIQ_CHANNEL_V0_4_RC_CHECKLIST.md",
         REPO_ROOT / "ops" / "scripts" / "openclaw_cliq_rc_pack.sh",
@@ -194,6 +195,7 @@ def test_native_cliq_channel_ai_troubleshooting_contract_present() -> None:
         "cliq:channel:<id>:thread:<thread_id>",
         "skip_deferred",
         "ops/scripts/openclaw_cliq_rc_pack.sh",
+        "OPENCLAW_CLIQ_BOT_HANDLER_TEMPLATES.md",
     ]:
         assert marker in combined
 

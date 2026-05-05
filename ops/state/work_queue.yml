@@ -538,3 +538,10 @@
   priority: high
   depends_on:
   - cliq-channel-418
+- id: cliq-channel-420
+  title: document real Zoho Bot handler Deluge templates for native Cliq channel
+  module: openclaw_cliq_channel
+  stage: completed
+  priority: high
+  depends_on:
+  - cliq-channel-419

@@ -39,7 +39,7 @@ Do not claim production incident readiness while channel diagnostics report
 | --- | --- |
 | TypeScript typecheck/build | `npm --prefix integrations/openclaw-channel-cliq run typecheck` and `run build` passed. |
 | Focused channel/docs tests | `tests/test_openclaw_channel_skeleton.py`, `tests/test_openclaw_channel_contract.py`, `tests/test_lane3_docs.py`, and `tests/test_markdown_update.py` passed with `34 passed`. |
-| Full CI | `make ci` passed with ruff format/check clean and `1840 passed in 53.40s`. |
+| Full CI | `make ci` passed with ruff format/check clean and `1840 passed in 48.40s`. |
 | Local live smoke | `ops/scripts/openclaw_cliq_live_smoke.sh` passed: Zoho auth/capability/polling OK, local webhook missing-secret/authenticated-non-dispatch/authenticated-deny OK, native polling OK with zero events. |
 | Package linked baseline | Temp-HOME `openclaw plugins install ./integrations/openclaw-channel-cliq --link`, `plugins inspect zoho-cliq --json`, and `plugins doctor` passed on global `OpenClaw 2026.5.3-1`. |
 | Latest stable host | Temp-HOME `npx -y openclaw@2026.5.4` linked install/inspect/doctor passed. |

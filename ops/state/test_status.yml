@@ -13,7 +13,7 @@ suites:
       - "bash -n ops/scripts/openclaw_cliq_rc_pack.sh -> passed"
       - "./.venv/bin/ruff format --check tests/test_auto_pilot_scripts.py tests/test_lane3_docs.py tests/test_openclaw_channel_contract.py tests/test_openclaw_channel_skeleton.py -> 4 files already formatted"
       - "./.venv/bin/ruff check tests/test_auto_pilot_scripts.py tests/test_lane3_docs.py tests/test_openclaw_channel_contract.py tests/test_openclaw_channel_skeleton.py -> All checks passed"
-      - "make ci -> ruff format/check clean + pytest `1840 passed in 53.40s`"
+      - "make ci -> ruff format/check clean + pytest `1840 passed in 48.40s`"
       - "OpenClaw Cliq channel local package artifact preflight completed at 2026-05-05T12:15:14Z"
       - "npm --prefix integrations/openclaw-channel-cliq run typecheck -> passed"
       - "npm --prefix integrations/openclaw-channel-cliq run build -> passed"

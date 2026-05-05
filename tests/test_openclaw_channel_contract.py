@@ -126,7 +126,7 @@ def test_openclaw_cliq_channel_rc_checklist_has_cut_contract():
         "ZOHO_CLIQ_PUBLIC_WEBHOOK_URL",
         "0.4.0-rc.1",
         "expectedIntegrity",
-        "1840 passed in 53.40s",
+        "1840 passed in 48.40s",
         "token_refresh_rate_limited",
         "skip_deferred",
         "Do not add parallel `cliq_send`",

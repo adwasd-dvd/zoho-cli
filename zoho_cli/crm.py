@@ -9,6 +9,7 @@ from urllib.parse import urlparse
 import httpx
 
 from zoho_cli import utils
+from zoho_cli import crm_sdk
 
 
 DEFAULT_CRM_SCOPES = [
@@ -26,6 +27,8 @@ CRM_SDK_PROPOSED_ADAPTER = "sdk-v8"
 
 def crm_sdk_status(
     *,
+    account_cfg: dict | None = None,
+    account_email: str | None = None,
     version_lookup: Callable[[str], str] | None = None,
 ) -> dict:
     """Return AI-safe readiness facts for the official Zoho CRM Python SDK."""
@@ -74,6 +77,10 @@ def crm_sdk_status(
             "currentCliAdapter": CRM_SDK_DEFAULT_ADAPTER,
             "sdkAdapterMustPreserveOutputShape": True,
         },
+        "adapterSkeleton": crm_sdk.crm_sdk_adapter_status(
+            account_cfg=account_cfg,
+            account_email=account_email,
+        ),
         "next": [
             "Keep the current HTTP adapter as the default until SDK parity tests pass.",
             "Use the optional SDK dependency only behind an adapter boundary.",

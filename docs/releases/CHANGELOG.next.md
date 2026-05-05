@@ -4,6 +4,7 @@
 
 ### CRM v0.5 SDK adoption (2026-05-05T09:49:08Z)
 - Added the first `crm-003` SDK adoption slice: `zoho crm sdk-status` reports official Zoho CRM Python SDK readiness for `zohocrmsdk8_0==5.0.0`, `pyproject.toml` now exposes optional `zoho-cli[crm-sdk]`, and `docs/architecture/CRM_V0_5_SDK_ADOPTION_PLAN.md` locks the v0.5 adapter plan while keeping the current JSON-safe HTTP CRM adapter as default.
+- Added `crm-004` SDK adapter skeleton: `zoho_cli/crm_sdk.py` now maps account config to SDK data-center environments, keeps SDK resource/token files under CLI-managed cache paths (`ZOHO_CRM_SDK_RESOURCE_PATH` override), exposes default-disabled read-only adapter methods that normalize SDK models into JSON-safe dict/list payloads, and extends `zoho crm sdk-status` with `adapterSkeleton` diagnostics while preserving the `http-v2` default.
 
 ### Final release (2026-05-04T21:15:20Z)
 - Promoted `0.2.1rc1` to final `0.2.1` after the RC gate stayed green; no additional CLI behavior change was introduced for the final promotion.

@@ -27011,6 +27011,23 @@ def test_crm_sdk_status_command() -> None:
     assert payload["sdk"]["targetVersion"] == "5.0.0"
     assert payload["sdk"]["defaultAdapter"] == "http-v2"
     assert payload["contracts"]["sdkAdapterMustPreserveOutputShape"] is True
+    assert payload["adapterSkeleton"]["adapter"] == "sdk-v8"
+    assert payload["adapterSkeleton"]["defaultEnabled"] is False
+    assert payload["adapterSkeleton"]["currentCliAdapter"] == "http-v2"
+    assert payload["adapterSkeleton"]["preventsSdkCwdDefaults"] is True
+
+
+def test_crm_sdk_status_command_uses_account_region(mock_config: Path) -> None:
+    cfg = json.loads(mock_config.read_text())
+    cfg["accounts"][ACCOUNT_EMAIL]["accounts_server"] = "https://accounts.zoho.eu"
+    mock_config.write_text(json.dumps(cfg))
+
+    result = runner.invoke(app, ["crm", "sdk-status"], env=_cfg_env(mock_config))
+    assert result.exit_code == 0, result.output
+
+    payload = json.loads(result.output)
+    assert payload["adapterSkeleton"]["dataCenter"]["key"] == "eu"
+    assert payload["adapterSkeleton"]["resourcePath"].endswith("test_at_example.com")
 
 
 @respx.mock

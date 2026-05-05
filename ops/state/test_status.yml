@@ -1,10 +1,17 @@
-last_run_at: "2026-05-05T09:58:27Z"
+last_run_at: "2026-05-05T10:13:22Z"
 last_result: passing
-current_focus: crm-003-sdk-readiness-full-ci-20260505T095827Z
+current_focus: crm-004-sdk-adapter-skeleton-full-ci-20260505T101322Z
 suites:
   unit:
     status: passing
     notes:
+      - "crm-004 SDK adapter skeleton completed at 2026-05-05T10:09:33Z"
+      - "make ci -> ruff format/check clean + pytest `1793 passed in 49.21s`"
+      - "added `zoho_cli/crm_sdk.py` with optional SDK data-center mapping, CLI-managed resource/cache path policy via `ZOHO_CRM_SDK_RESOURCE_PATH`, lazy official SDK binding imports, read-only adapter skeleton methods, and JSON-safe SDK response normalization"
+      - "extended `zoho crm sdk-status` with `adapterSkeleton` diagnostics while preserving the `http-v2` CRM adapter default"
+      - "./.venv/bin/ruff check zoho_cli/crm_sdk.py zoho_cli/crm.py zoho_cli/cli.py tests/test_crm_sdk.py tests/test_crm.py tests/test_cli.py tests/test_lane3_docs.py -> All checks passed"
+      - "./.venv/bin/python -m pytest -q tests/test_crm_sdk.py tests/test_crm.py tests/test_cli.py -k 'crm' tests/test_lane3_docs.py tests/test_markdown_update.py -> 36 passed, 866 deselected in 1.93s"
+      - "./.venv/bin/python -m zoho_cli crm sdk-status | jq '.adapterSkeleton.adapter, .adapterSkeleton.dataCenter.key, .adapterSkeleton.defaultEnabled, .adapterSkeleton.outputShape.plainJson, .adapterSkeleton.preventsSdkCwdDefaults' -> `sdk-v8`, `us`, `false`, `true`, `true`"
       - "cliq-channel-418 v0.4 RC packaging completed at 2026-05-05T09:42:24Z"
       - "make ci -> ruff format/check clean + pytest `1781 passed in 51.02s`"
       - "crm-003 SDK readiness completed at 2026-05-05T09:55:45Z"

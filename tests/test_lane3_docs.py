@@ -214,6 +214,10 @@ def test_crm_sdk_adoption_contract_present() -> None:
         "CRM_V0_5_SDK_ADOPTION_PLAN.md",
         "http-v2",
         "sdk-v8",
+        "crm-004",
+        "zoho_cli/crm_sdk.py",
+        "ZOHO_CRM_SDK_RESOURCE_PATH",
+        "data-center",
         "JSON-safe",
     ]:
         assert marker in combined

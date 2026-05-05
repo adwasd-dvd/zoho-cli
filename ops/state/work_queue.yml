@@ -287,10 +287,17 @@
 - id: crm-004
   title: build official Zoho CRM SDK adapter skeleton behind the existing JSON contract
   module: crm
-  stage: in_progress
+  stage: completed
   priority: high
   depends_on:
   - crm-003
+- id: crm-005
+  title: prove CRM read-only parity through the official SDK adapter behind an explicit gate
+  module: crm
+  stage: in_progress
+  priority: high
+  depends_on:
+  - crm-004
 - id: platform-208
   title: finalize module-first CLI information architecture (retire legacy root mail aliases after deprecation window and normalize level-2/3 help taxonomy)
   module: platform

@@ -20,6 +20,8 @@ Native channel planning:
 CRM SDK planning:
 - `docs/architecture/CRM_V0_5_SDK_ADOPTION_PLAN.md`
 - `zoho crm sdk-status`
+- `zoho_cli/crm_sdk.py` (`crm-004` data-center/cache-path adapter skeleton,
+  default-disabled; `ZOHO_CRM_SDK_RESOURCE_PATH` override)
 
 GitHub intake:
 - `skill/references/github-intake-workflow.md`

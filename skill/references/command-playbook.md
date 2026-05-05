@@ -64,6 +64,11 @@ zoho crm fields --module Leads
 zoho crm list --module Leads --limit 5
 ```
 
+For SDK migration work, inspect `zoho crm sdk-status` and
+`docs/architecture/CRM_V0_5_SDK_ADOPTION_PLAN.md` first. `crm-004` keeps the
+`zoho_cli/crm_sdk.py` data-center adapter skeleton default-disabled; SDK
+resources must stay under `ZOHO_CRM_SDK_RESOURCE_PATH` or the CLI-managed cache.
+
 ## Bridge fallback (explicit)
 
 ```bash

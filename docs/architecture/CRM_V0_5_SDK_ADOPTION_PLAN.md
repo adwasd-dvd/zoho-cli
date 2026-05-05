@@ -1,6 +1,6 @@
 # CRM v0.5 SDK adoption plan
 
-Updated: `2026-05-05T09:49:08Z`.
+Updated: `2026-05-05T10:07:04Z`.
 
 This is the `crm-003` handoff for phasing the official Zoho CRM server-side
 Python SDK into `zoho-cli` without breaking the current AI-safe CLI contract.
@@ -55,9 +55,27 @@ adapter proves parity on the read-only surface. The CLI contract remains:
   adapter (`http-v2`), proposed adapter (`sdk-v8`), source links, and JSON
   contract reminders.
 
+## Implemented in crm-004
+
+- Added `zoho_cli/crm_sdk.py` as the optional SDK boundary. The module imports
+  without the SDK installed, so normal `http-v2` CRM commands stay lightweight.
+- Added SDK data-center mapping from existing account config hosts to official
+  production environments (`us`, `eu`, `in`, `au`, `jp`, `ca`, `cn`, `sa`).
+- Added a CLI-managed resource/cache policy. By default resources live under
+  the platform cache directory; operators can override with
+  `ZOHO_CRM_SDK_RESOURCE_PATH`. The skeleton prevents SDK cwd token/resource
+  defaults from becoming the project root behavior.
+- Added a read-only `ZohoCrmSdkAdapter` skeleton with injectable backend methods
+  for `modules`, `fields`, `list_records`, `get_record`, and `search_records`.
+  It normalizes SDK response/model objects into plain JSON-compatible dict/list
+  payloads for parity tests.
+- Extended `zoho crm sdk-status` with `adapterSkeleton` facts so AI agents can
+  see the resolved data-center, managed resource path, token-store path,
+  default-disabled status, and JSON-safe output contract.
+
 ## v0.5 slices
 
-1. `crm-004` SDK adapter skeleton:
+1. `crm-004` SDK adapter skeleton (completed):
    - create a small `zoho_cli/crm_sdk.py` boundary;
    - map Zoho data center from existing config;
    - initialize SDK resources under a CLI-managed cache directory;

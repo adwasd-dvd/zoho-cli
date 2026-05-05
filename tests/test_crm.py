@@ -43,6 +43,10 @@ def test_crm_sdk_status_reports_missing_sdk() -> None:
     assert result["sdk"]["defaultAdapter"] == "http-v2"
     assert result["sdk"]["proposedAdapter"] == "sdk-v8"
     assert result["contracts"]["sdkAdapterMustPreserveOutputShape"] is True
+    assert result["adapterSkeleton"]["adapter"] == "sdk-v8"
+    assert result["adapterSkeleton"]["currentCliAdapter"] == "http-v2"
+    assert result["adapterSkeleton"]["defaultEnabled"] is False
+    assert result["adapterSkeleton"]["outputShape"]["plainJson"] is True
 
 
 def test_crm_sdk_status_reports_installed_target_version() -> None:
@@ -51,6 +55,18 @@ def test_crm_sdk_status_reports_installed_target_version() -> None:
     assert result["sdk"]["installed"] is True
     assert result["sdk"]["installedVersion"] == "5.0.0"
     assert result["sdk"]["versionMatchesTarget"] is True
+
+
+def test_crm_sdk_status_uses_account_context_for_adapter_plan() -> None:
+    result = crm.crm_sdk_status(
+        account_cfg={"accounts_server": "https://accounts.zoho.eu"},
+        account_email="crm.bot@example.com",
+        version_lookup=lambda _: "5.0.0",
+    )
+
+    adapter = result["adapterSkeleton"]
+    assert adapter["dataCenter"]["key"] == "eu"
+    assert adapter["resourcePath"].endswith("crm.bot_at_example.com")
 
 
 @respx.mock

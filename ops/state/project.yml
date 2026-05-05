@@ -1,5 +1,5 @@
 project: zoho-cli
-updated_at: '2026-05-05T09:49:08Z'
+updated_at: '2026-05-05T10:09:33Z'
 status: v0.2.1-final-release
 throughput_mode: turbo_20x
 throughput_policy_ref: ops/state/execution_policy.yml
@@ -9,7 +9,7 @@ module_order:
 - Mail
 - Cliq
 - CRM
-current_focus: "Turbo 20x mode active: v0.2.1 is stable; native Cliq channel v0.4 RC package is ready for local/operator testing with public callback deferred, crm-003 SDK readiness is complete, and crm-004 SDK adapter skeleton is active."
+current_focus: "Turbo 20x mode active: v0.2.1 is stable; native Cliq channel v0.4 RC package is ready for local/operator testing with public callback deferred, crm-004 SDK adapter skeleton is complete, and crm-005 SDK read-only parity is active."
 primary_blockers:
 - native OpenClaw Cliq channel public Bot callback verification requires a reachable tunnel/gateway URL; local webhook auth/security gates pass and this is deferred for deployment wiring
 - cliq-194 live read-ack endpoint remains unsupported on happydistrouklimited for the active token, but watch-act continuity is now capability-gated (`status=ok`, `fallbackUsed=true`, `readAckSupported=false`) and treated as deferred/non-blocking for forward platform execution
@@ -33,8 +33,9 @@ primary_blockers:
   returns `not_supported`)
 - calls/meetings endpoints are unsupported on current token/network (`cliq meetings`
   now returns `not_supported` in focused live verification)
-next_step: "Start crm-004: build the official Zoho CRM SDK adapter skeleton behind the existing JSON-safe CRM command contract."
+next_step: "Start crm-005: wire official Zoho CRM SDK read-only parity behind an explicit adapter gate while keeping the HTTP adapter default."
 additional_info:
+- "2026-05-05 crm-004 SDK adapter skeleton at 2026-05-05T10:09:33Z added `zoho_cli/crm_sdk.py` with optional SDK data-center mapping, CLI-managed resource/token cache paths via `ZOHO_CRM_SDK_RESOURCE_PATH`, lazy official SDK binding imports, read-only adapter methods for modules/fields/list/get/search, JSON-safe SDK response normalization, and `zoho crm sdk-status` `adapterSkeleton` diagnostics. Default CRM commands still use `http-v2` until `crm-005` parity is proven."
 - "2026-05-05 crm-003 SDK adoption at 2026-05-05T09:49:08Z reviewed official Zoho CRM Python SDK v8 sources, confirmed `zohocrmsdk8_0==5.0.0` as the optional SDK target, added `zoho crm sdk-status`, exposed `zoho-cli[crm-sdk]`, refreshed Lane 2/3 docs and help snapshot, and added `docs/architecture/CRM_V0_5_SDK_ADOPTION_PLAN.md`. The current CRM HTTP adapter remains default until SDK read-only parity is proven."
 - "2026-05-05 cliq-channel-418 v0.4 RC packaging at 2026-05-05T09:42:24Z added `docs/releases/OPENCLAW_CLIQ_CHANNEL_V0_4_RC_CHECKLIST.md` with included scope, evidence table, remaining public Bot callback gate, RC cut steps, artifact integrity guidance, and non-goals. Native Cliq channel v0.4 is ready for local/operator RC testing; production rollout remains gated on public Bot callback reachability. Full `make ci` passed with `1777 passed in 49.10s`."
 - "2026-05-05 cliq-channel-412 compatibility maintenance at 2026-05-05T09:31:51Z added `docs/releases/OPENCLAW_CLIQ_CHANNEL_COMPATIBILITY.md`, refreshed SDK/setup/dev/skill docs with OpenClaw host matrix and future SDK repair workflow, verified global `2026.5.3-1`, npm latest `2026.5.4`, and npm beta `2026.5.4-beta.3` with Temp-HOME linked install/inspect/doctor, kept the v0.4 host floor at `>=2026.5.3-1`, and kept `make ci` green with `1776 passed in 48.78s`."

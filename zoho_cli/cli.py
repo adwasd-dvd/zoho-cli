@@ -11150,7 +11150,10 @@ def crm_status(
 @crm_app.command("sdk-status")
 def crm_sdk_status() -> None:
     """Show official Zoho CRM SDK adapter readiness."""
-    utils.output(_crm.crm_sdk_status())
+    cfg = _cfg()
+    email = _S.account or _config.default_account(cfg)
+    account_cfg = cfg.get("accounts", {}).get(email, {}) if email else {}
+    utils.output(_crm.crm_sdk_status(account_cfg=account_cfg, account_email=email))
 
 
 @crm_app.command("modules")

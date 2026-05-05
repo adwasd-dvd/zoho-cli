@@ -1,10 +1,10 @@
 module: CRM
-updated_at: "2026-05-05T09:49:08Z"
+updated_at: "2026-05-05T10:09:33Z"
 status: in_progress
-phase: v0_5_sdk_adapter_skeleton
+phase: v0_5_sdk_read_only_parity
 blockers: []
-current_milestone: crm-004-sdk-adapter-skeleton
+current_milestone: crm-005-sdk-read-only-parity
 last_completed:
-  id: crm-003
-  summary: "Added `zoho crm sdk-status`, optional `zoho-cli[crm-sdk]` packaging for official `zohocrmsdk8_0==5.0.0`, and `docs/architecture/CRM_V0_5_SDK_ADOPTION_PLAN.md` while keeping the HTTP adapter default."
-next_small_step: create the SDK adapter boundary and read-only JSON shape tests without changing default CRM command behavior
+  id: crm-004
+  summary: "Added `zoho_cli/crm_sdk.py` with optional SDK data-center mapping, CLI-managed cache/resource policy via `ZOHO_CRM_SDK_RESOURCE_PATH`, read-only adapter skeletons, JSON normalization, and `zoho crm sdk-status` adapter diagnostics while keeping the HTTP adapter default."
+next_small_step: wire fixture-backed SDK read-only parity behind an explicit adapter gate without changing default CRM command behavior

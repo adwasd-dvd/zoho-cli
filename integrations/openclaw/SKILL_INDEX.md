@@ -37,6 +37,9 @@ CRM SDK planning:
   `liveWritesEnabled=false`, scope matching, `decision=defer_live_execution`,
   blockers include `audit_persistence_not_implemented` and
   `controlled_live_fixture_not_recorded`)
+- `zoho crm write-audit` (`crm-010`: redacted JSONL audit inspection for
+  `crm.write.plan` and `crm.write.gate`; use `--audit-file` or
+  `ZOHO_CRM_WRITE_AUDIT`; events must report `rawFieldValuesStored=false`)
 - `docs/architecture/CRM_WRITE_SURFACE_CONTRACT.md`
 
 GitHub intake:

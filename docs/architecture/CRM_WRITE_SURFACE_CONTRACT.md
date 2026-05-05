@@ -1,6 +1,6 @@
 # CRM write-surface safety contract
 
-Updated: `2026-05-05T10:57:41Z`.
+Updated: `2026-05-05T11:14:00Z`.
 
 This is the `crm-007` contract for adding CRM write commands without making AI
 agents accidentally mutate production data.
@@ -76,9 +76,40 @@ The command does not write CRM data. It reports:
   - `audit_persistence_not_implemented`
   - `controlled_live_fixture_not_recorded`
 
-The next safe slice is audit persistence for CRM write plans. Live `upsert`
-execution should stay disabled until audit events are persisted before any
-network write and a controlled live fixture is recorded.
+## Implemented in crm-010
+
+CRM write planning events now persist to a redacted local JSONL audit store:
+
+```bash
+zoho crm upsert \
+  --module Leads \
+  --data-json '{"Last_Name":"Wang","Email":"wang@example.com"}' \
+  --duplicate-check-field Email \
+  --idempotency-key crm-leads-import-2026-05-05
+
+zoho crm upsert-gate --module Leads
+zoho crm write-audit --operation upsert --module Leads --limit 10
+```
+
+Persistence behavior:
+
+- `zoho crm upsert` records `crm.write.plan` before output or blocked
+  `--execute` errors.
+- `zoho crm upsert-gate` records `crm.write.gate`.
+- The default audit path is `crm_write_audit.jsonl` next to the configured Zoho
+  config file.
+- `ZOHO_CRM_WRITE_AUDIT` or `--audit-file` can override the JSONL path for CI,
+  agents, and controlled tests.
+- `zoho crm write-audit` lists recent events and supports `--operation`,
+  `--module`, `--event-type`, and `--limit`.
+
+Audit events include operation, module, field API names, record counts, payload
+digests, idempotency key, scope-gate facts, blockers, and persistence metadata.
+They do not store raw field values, tokens, or secrets, and expose
+`rawFieldValuesStored=false`.
+
+Live `upsert` execution remains disabled after `crm-010`. The next safe slice is
+controlled live fixture evidence.
 
 ## Official API references
 

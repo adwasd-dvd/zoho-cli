@@ -64,9 +64,9 @@ uv tool install .
 
 ### 🚧 Zoho CRM (read-only scaffold implemented)
 
-- Implemented commands: `crm status`, `crm sdk-status`, `crm write-plan`, `crm upsert` dry-run, `crm upsert-gate`, `crm modules`, `crm fields`, `crm list`, `crm get`, `crm search`
+- Implemented commands: `crm status`, `crm sdk-status`, `crm write-plan`, `crm upsert` dry-run, `crm upsert-gate`, `crm write-audit`, `crm modules`, `crm fields`, `crm list`, `crm get`, `crm search`
 - SDK adoption: `crm-003` added `zoho crm sdk-status` plus optional `zoho-cli[crm-sdk]` packaging for official `zohocrmsdk8_0==5.0.0`; `crm-004` added the optional `zoho_cli/crm_sdk.py` SDK adapter skeleton with data-center mapping and `ZOHO_CRM_SDK_RESOURCE_PATH`; `crm-005` added explicit `--adapter sdk-v8` read-only parity gates for modules/fields/list/get/search; `crm-006` locks the API version policy: HTTP v2 remains default, SDK/API v8 stays explicit. Plan: `docs/architecture/CRM_V0_5_SDK_ADOPTION_PLAN.md`.
-- Write planning: `crm-007` added `zoho crm write-plan` and `writeSurfacePolicy` diagnostics. `crm-008` added `zoho crm upsert` as dry-run-only: it accepts JSON payloads, records duplicate-check fields and idempotency key, returns field names plus payload digest, and blocks `--execute` with `live_write_not_enabled`. `crm-009` added `zoho crm upsert-gate` to keep live upsert deferred until OAuth scope, audit persistence, and controlled live fixture evidence are ready. Contract: `docs/architecture/CRM_WRITE_SURFACE_CONTRACT.md`.
+- Write planning: `crm-007` added `zoho crm write-plan` and `writeSurfacePolicy` diagnostics. `crm-008` added `zoho crm upsert` as dry-run-only: it accepts JSON payloads, records duplicate-check fields and idempotency key, returns field names plus payload digest, and blocks `--execute` with `live_write_not_enabled`. `crm-009` added `zoho crm upsert-gate` to keep live upsert deferred until OAuth scope, audit persistence, and controlled live fixture evidence are ready. `crm-010` added redacted JSONL audit persistence plus `zoho crm write-audit` for dry-run/gate events. Contract: `docs/architecture/CRM_WRITE_SURFACE_CONTRACT.md`.
 - Current limitation: deeper SDK/live validation and CRM live writes remain capability-gated until CRM org access and write-surface safety evidence are available.
 
 ### 🧪 Membrane bridge (experimental fast-fallback)
@@ -165,7 +165,7 @@ Project state lives in `ops/state/*.yml`:
 | Mail | ✅ Completed | stabilization_complete | Shipping baseline is stable. |
 | Cliq | ✅ Completed for RC | workflow_packaging_complete_with_deferred_external_blockers | Mail+Cliq AI-employee core is ready for RC; endpoint-limited tail is deferred post-RC. |
 | OpenClaw Cliq channel | 🚧 In progress | rc_package_ready_external_callback_deferred | `cliq-channel-401/402/416/403/414/404/405/406/407/408/413/409/410/417/415/411/412/418` added the installable package, config/setup UX, security/employee policy gates, SDK session/mention/approval seams, JSON-safe CLI process execution, native outbound delivery, normalized/deduped inbound polling, Bot webhook intake, status/read lifecycle handling, turn-ledger loop prevention, status/capability/routing diagnostics, AI troubleshooting docs, native OpenClaw agent turn dispatch, redacted observability/privacy diagnostics, the redacted fake/live smoke gate harness, host compatibility maintenance runbook, and v0.4 RC checklist. |
-| CRM | 🚧 In progress | v0_5_write_audit_persistence | Read-only scaffold is present; `crm-003/004/005/006/007/008/009` added SDK readiness diagnostics, optional SDK packaging, the default-disabled SDK adapter, explicit `--adapter sdk-v8` read-only gates, the HTTP v2 vs SDK/API v8 policy, machine-readable write safety gates, upsert dry-run output, and the live upsert gate while preserving the current JSON-safe HTTP adapter as default. |
+| CRM | 🚧 In progress | v0_5_controlled_live_fixture_planning | Read-only scaffold is present; `crm-003/004/005/006/007/008/009/010` added SDK readiness diagnostics, optional SDK packaging, the default-disabled SDK adapter, explicit `--adapter sdk-v8` read-only gates, the HTTP v2 vs SDK/API v8 policy, machine-readable write safety gates, upsert dry-run output, the live upsert gate, and redacted write audit persistence while preserving the current JSON-safe HTTP adapter as default. |
 
 ### Current platform lane (AI-employee v1)
 
@@ -181,7 +181,7 @@ Project state lives in `ops/state/*.yml`:
 ### Current release posture
 
 - Current version: `0.2.1`
-- Next active target: CRM v0.5 write audit persistence while public native Cliq Bot callback verification waits on a reachable tunnel/gateway URL.
+- Next active target: CRM v0.5 controlled live fixture planning while public native Cliq Bot callback verification waits on a reachable tunnel/gateway URL.
 - Release candidate: `false`
 - Broad automated gate: final `make release-gate && make ci` is green for `0.2.1`; [v0.2.1](https://github.com/adwasd-dvd/zoho-cli/releases/tag/v0.2.1) is the current stable release.
 
@@ -200,7 +200,7 @@ Project state lives in `ops/state/*.yml`:
 2. Keep remaining Cliq helper-heavy modularization opportunistic while the
    channel lane moves.
 3. Continue the native OpenClaw Cliq channel in v0.4 with native agent turn dispatch next.
-4. Add CRM write audit persistence next; keep live writes disabled until explicit approval, scopes, confirmation, idempotency, persisted audit output, and controlled live fixture evidence are locked in code.
+4. Plan the CRM controlled live fixture gate next; keep live writes disabled until explicit approval, scopes, confirmation, idempotency, persisted audit output, and controlled live fixture evidence are locked in code.
 
 ---
 

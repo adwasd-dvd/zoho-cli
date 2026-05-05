@@ -3,9 +3,11 @@
 from __future__ import annotations
 
 from collections.abc import Callable
+from datetime import datetime, timezone
 import hashlib
 from importlib import metadata
 import json
+from pathlib import Path
 from typing import Any
 from urllib.parse import urlparse
 
@@ -35,6 +37,9 @@ CRM_WRITE_DRY_RUN_STATUS = "planned"
 CRM_WRITE_LIVE_STATUS = "blocked"
 CRM_UPSERT_ADAPTER = "http-v8"
 CRM_UPSERT_LIVE_GATE_POLICY_ID = "crm-009-live-upsert-gate"
+CRM_WRITE_AUDIT_EVENT_VERSION = 1
+CRM_WRITE_AUDIT_DEFAULT_FILENAME = "crm_write_audit.jsonl"
+CRM_WRITE_AUDIT_DEFAULT_LIMIT = 20
 
 
 def crm_sdk_status(
@@ -432,6 +437,113 @@ def crm_upsert_scope_candidates(*, module_api_name: str | None = None) -> list[s
     return candidates
 
 
+def build_crm_write_audit_event(
+    *,
+    payload: dict,
+    event_type: str,
+    account: str | None = None,
+    source_command: str | None = None,
+    created_at: str | None = None,
+) -> dict:
+    """Build a redacted CRM write audit event from an already-safe envelope."""
+
+    timestamp = created_at or datetime.now(timezone.utc).isoformat()
+    event = {
+        "eventVersion": CRM_WRITE_AUDIT_EVENT_VERSION,
+        "eventType": event_type,
+        "createdAt": timestamp,
+        "account": account or "",
+        "sourceCommand": source_command or "",
+        "operation": payload.get("operation", ""),
+        "module": payload.get("module", ""),
+        "status": payload.get("status", ""),
+        "dryRun": payload.get("dryRun"),
+        "execute": payload.get("execute"),
+        "liveWritesEnabled": payload.get("liveWritesEnabled", False),
+        "decision": payload.get("decision", ""),
+        "recordCount": payload.get("recordCount"),
+        "fieldNames": list(payload.get("fieldNames", [])),
+        "duplicateCheckFields": list(payload.get("duplicateCheckFields", [])),
+        "payloadDigest": payload.get("payloadDigest", ""),
+        "recordDigests": list(payload.get("recordDigests", [])),
+        "adapter": payload.get("adapter", ""),
+        "apiVersion": payload.get("apiVersion", ""),
+        "idempotencyKey": payload.get("idempotencyKey", ""),
+        "requiredConfirmation": payload.get("requiredConfirmation", ""),
+        "confirmationMatches": payload.get("confirmation", {}).get("matches"),
+        "scopeGate": _crm_safe_scope_gate(payload.get("scopeGate", {})),
+        "blockingReasons": list(payload.get("blockingReasons", [])),
+        "policyId": payload.get("policyId")
+        or payload.get("audit", {}).get("policyId", ""),
+        "redactedFields": ["fieldValues", "tokens", "secrets"],
+        "rawFieldValuesStored": False,
+    }
+    event["eventDigest"] = _stable_json_digest(event)
+    event["eventId"] = f"crm-write-{event['eventDigest'].split(':', 1)[1][:16]}"
+    return event
+
+
+def append_crm_write_audit_event(path: Path, event: dict) -> dict:
+    """Append one CRM write audit event as JSONL and return persistence metadata."""
+
+    path.parent.mkdir(parents=True, exist_ok=True)
+    with path.open("a", encoding="utf-8") as fh:
+        fh.write(json.dumps(event, sort_keys=True, ensure_ascii=False))
+        fh.write("\n")
+    try:
+        path.chmod(0o600)
+    except OSError:  # pragma: no cover - best effort on non-POSIX filesystems.
+        pass
+
+    return {
+        "enabled": True,
+        "status": "persisted",
+        "path": str(path),
+        "eventId": event["eventId"],
+        "eventDigest": event["eventDigest"],
+        "rawFieldValuesStored": False,
+    }
+
+
+def read_crm_write_audit_events(
+    path: Path,
+    *,
+    limit: int = CRM_WRITE_AUDIT_DEFAULT_LIMIT,
+    operation: str | None = None,
+    module: str | None = None,
+    event_type: str | None = None,
+) -> list[dict]:
+    """Read recent CRM write audit events from a JSONL file."""
+
+    if limit < 1:
+        raise ValueError("limit must be greater than zero")
+    if not path.exists():
+        return []
+
+    filters = {
+        "operation": (operation or "").strip(),
+        "module": (module or "").strip(),
+        "eventType": (event_type or "").strip(),
+    }
+    events: list[dict] = []
+    for line in path.read_text(encoding="utf-8").splitlines():
+        if not line.strip():
+            continue
+        try:
+            event = json.loads(line)
+        except json.JSONDecodeError:
+            continue
+        if filters["operation"] and event.get("operation") != filters["operation"]:
+            continue
+        if filters["module"] and event.get("module") != filters["module"]:
+            continue
+        if filters["eventType"] and event.get("eventType") != filters["eventType"]:
+            continue
+        events.append(event)
+
+    return events[-limit:]
+
+
 def normalize_crm_upsert_payload(
     payload: Any,
     *,
@@ -507,6 +619,17 @@ def _stable_json_digest(value: Any) -> str:
         separators=(",", ":"),
     ).encode("utf-8")
     return f"sha256:{hashlib.sha256(encoded).hexdigest()}"
+
+
+def _crm_safe_scope_gate(scope_gate: Any) -> dict:
+    if not isinstance(scope_gate, dict):
+        return {}
+    return {
+        "acceptedAny": list(scope_gate.get("acceptedAny", [])),
+        "grantedScopes": list(scope_gate.get("grantedScopes", [])),
+        "matchingScopes": list(scope_gate.get("matchingScopes", [])),
+        "hasAcceptedScope": bool(scope_gate.get("hasAcceptedScope", False)),
+    }
 
 
 def missing_crm_scopes(granted_scopes: list[str] | None) -> list[str]:

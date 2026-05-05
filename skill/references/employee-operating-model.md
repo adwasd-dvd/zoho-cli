@@ -78,3 +78,7 @@ Run `zoho crm upsert-gate --module <module>` before any future live execution
 discussion. In `crm-009`, `liveWritesEnabled=false` and blockers include
 `audit_persistence_not_implemented` plus
 `controlled_live_fixture_not_recorded`, so live CRM writes stay disabled.
+In `crm-010`, dry-run and gate commands persist redacted JSONL audit events.
+Use `zoho crm write-audit` to inspect them, prefer `--audit-file` or
+`ZOHO_CRM_WRITE_AUDIT` for isolated agent runs, and verify
+`rawFieldValuesStored=false`.

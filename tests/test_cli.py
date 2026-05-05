@@ -27050,7 +27050,8 @@ def test_crm_write_plan_command_rejects_invalid_operation() -> None:
     assert "invalid_operation" in result.output
 
 
-def test_crm_upsert_dry_run_from_data_json() -> None:
+def test_crm_upsert_dry_run_from_data_json(tmp_path: Path) -> None:
+    audit_path = tmp_path / "crm_audit.jsonl"
     result = runner.invoke(
         app,
         [
@@ -27064,6 +27065,8 @@ def test_crm_upsert_dry_run_from_data_json() -> None:
             "Email",
             "--idempotency-key",
             "job-123",
+            "--audit-file",
+            str(audit_path),
         ],
     )
 
@@ -27080,12 +27083,17 @@ def test_crm_upsert_dry_run_from_data_json() -> None:
     assert payload["payloadDigest"].startswith("sha256:")
     assert payload["endpoint"]["path"] == "/Leads/upsert"
     assert payload["requiredConfirmation"] == "crm:upsert:Leads:1"
+    assert payload["auditPersistence"]["status"] == "persisted"
+    assert payload["auditPersistence"]["path"] == str(audit_path)
     assert "Wang" not in result.output
     assert "wang@example.com" not in result.output
+    assert "Wang" not in audit_path.read_text()
+    assert "wang@example.com" not in audit_path.read_text()
 
 
 def test_crm_upsert_dry_run_from_data_file(tmp_path: Path) -> None:
     payload_path = tmp_path / "lead.json"
+    audit_path = tmp_path / "crm_audit.jsonl"
     payload_path.write_text(
         json.dumps(
             {
@@ -27106,6 +27114,8 @@ def test_crm_upsert_dry_run_from_data_file(tmp_path: Path) -> None:
             str(payload_path),
             "--idempotency-key",
             "job-124",
+            "--audit-file",
+            str(audit_path),
         ],
     )
 
@@ -27113,6 +27123,7 @@ def test_crm_upsert_dry_run_from_data_file(tmp_path: Path) -> None:
     payload = json.loads(result.output)
     assert payload["duplicateCheckFields"] == ["Email"]
     assert payload["fieldNames"] == ["Last_Name", "Email"]
+    assert payload["auditPersistence"]["status"] == "persisted"
 
 
 def test_crm_upsert_requires_payload_source() -> None:
@@ -27134,7 +27145,8 @@ def test_crm_upsert_requires_payload_source() -> None:
     assert "invalid_payload_source" in result.output
 
 
-def test_crm_upsert_execute_requires_confirmation() -> None:
+def test_crm_upsert_execute_requires_confirmation(tmp_path: Path) -> None:
+    audit_path = tmp_path / "crm_audit.jsonl"
     result = runner.invoke(
         app,
         [
@@ -27149,14 +27161,20 @@ def test_crm_upsert_execute_requires_confirmation() -> None:
             "--idempotency-key",
             "job-126",
             "--execute",
+            "--audit-file",
+            str(audit_path),
         ],
     )
 
     assert result.exit_code == 1
     assert "confirm_required" in result.output
+    event = json.loads(audit_path.read_text().splitlines()[0])
+    assert event["execute"] is True
+    assert event["confirmationMatches"] is False
 
 
-def test_crm_upsert_execute_is_blocked_even_with_confirmation() -> None:
+def test_crm_upsert_execute_is_blocked_even_with_confirmation(tmp_path: Path) -> None:
+    audit_path = tmp_path / "crm_audit.jsonl"
     result = runner.invoke(
         app,
         [
@@ -27173,17 +27191,25 @@ def test_crm_upsert_execute_is_blocked_even_with_confirmation() -> None:
             "--execute",
             "--confirm",
             "crm:upsert:Leads:1",
+            "--audit-file",
+            str(audit_path),
         ],
     )
 
     assert result.exit_code == 1
     assert "live_write_not_enabled" in result.output
+    event = json.loads(audit_path.read_text().splitlines()[0])
+    assert event["execute"] is True
+    assert event["confirmationMatches"] is True
 
 
-def test_crm_upsert_gate_reports_blocked_policy(mock_config: Path) -> None:
+def test_crm_upsert_gate_reports_blocked_policy(
+    mock_config: Path, tmp_path: Path
+) -> None:
+    audit_path = tmp_path / "crm_audit.jsonl"
     result = runner.invoke(
         app,
-        ["crm", "upsert-gate", "--module", "Leads"],
+        ["crm", "upsert-gate", "--module", "Leads", "--audit-file", str(audit_path)],
         env=_cfg_env(mock_config),
     )
 
@@ -27194,8 +27220,12 @@ def test_crm_upsert_gate_reports_blocked_policy(mock_config: Path) -> None:
     assert payload["decision"] == "defer_live_execution"
     assert payload["module"] == "Leads"
     assert payload["auth"]["checked"] is False
+    assert payload["auditPersistence"]["status"] == "persisted"
     assert "live_writes_disabled_by_policy" in payload["blockingReasons"]
     assert "live_oauth_not_checked" in payload["blockingReasons"]
+    event = json.loads(audit_path.read_text().splitlines()[0])
+    assert event["eventType"] == "crm.write.gate"
+    assert event["rawFieldValuesStored"] is False
 
 
 def test_crm_upsert_gate_uses_configured_scope(tmp_path: Path) -> None:
@@ -27215,7 +27245,14 @@ def test_crm_upsert_gate_uses_configured_scope(tmp_path: Path) -> None:
 
     result = runner.invoke(
         app,
-        ["crm", "upsert-gate", "--module", "Leads"],
+        [
+            "crm",
+            "upsert-gate",
+            "--module",
+            "Leads",
+            "--audit-file",
+            str(tmp_path / "crm_audit.jsonl"),
+        ],
         env=_cfg_env(cfg_path),
     )
 
@@ -27244,7 +27281,14 @@ def test_crm_upsert_gate_parses_configured_scope_string(tmp_path: Path) -> None:
 
     result = runner.invoke(
         app,
-        ["crm", "upsert-gate", "--module", "Leads"],
+        [
+            "crm",
+            "upsert-gate",
+            "--module",
+            "Leads",
+            "--audit-file",
+            str(tmp_path / "crm_audit.jsonl"),
+        ],
         env=_cfg_env(cfg_path),
     )
 
@@ -27255,6 +27299,56 @@ def test_crm_upsert_gate_parses_configured_scope_string(tmp_path: Path) -> None:
         "ZohoCRM.modules.Leads.WRITE",
         "ZohoCRM.modules.ALL",
     ]
+
+
+def test_crm_write_audit_lists_recent_events(tmp_path: Path) -> None:
+    audit_path = tmp_path / "crm_audit.jsonl"
+    upsert_result = runner.invoke(
+        app,
+        [
+            "crm",
+            "upsert",
+            "--module",
+            "Leads",
+            "--data-json",
+            '{"Last_Name":"Wang","Email":"wang@example.com"}',
+            "--duplicate-check-field",
+            "Email",
+            "--idempotency-key",
+            "job-128",
+            "--audit-file",
+            str(audit_path),
+        ],
+    )
+    assert upsert_result.exit_code == 0, upsert_result.output
+
+    result = runner.invoke(
+        app,
+        [
+            "crm",
+            "write-audit",
+            "--audit-file",
+            str(audit_path),
+            "--operation",
+            "upsert",
+            "--module",
+            "Leads",
+            "--limit",
+            "5",
+        ],
+    )
+
+    assert result.exit_code == 0, result.output
+    payload = json.loads(result.output)
+    assert payload["status"] == "ok"
+    assert payload["exists"] is True
+    assert payload["count"] == 1
+    event = payload["events"][0]
+    assert event["eventType"] == "crm.write.plan"
+    assert event["module"] == "Leads"
+    assert event["rawFieldValuesStored"] is False
+    assert "Wang" not in result.output
+    assert "wang@example.com" not in result.output
 
 
 def test_crm_sdk_status_command_uses_account_region(mock_config: Path) -> None:

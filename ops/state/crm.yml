@@ -1,10 +1,10 @@
 module: CRM
-updated_at: "2026-05-05T11:00:28Z"
+updated_at: "2026-05-05T11:14:00Z"
 status: in_progress
-phase: v0_5_write_audit_persistence
+phase: v0_5_controlled_live_fixture_planning
 blockers: []
-current_milestone: crm-010-write-audit-persistence
+current_milestone: crm-011-controlled-live-fixture-gate
 last_completed:
-  id: crm-009
-  summary: "Added `zoho crm upsert-gate` with `liveWritesEnabled=false`, scope matching, `decision=defer_live_execution`, and blockers for audit persistence plus controlled live fixture evidence before any live upsert can be enabled."
-next_small_step: add local CRM write audit persistence for dry-run and gate events while keeping live writes blocked
+  id: crm-010
+  summary: "Added redacted CRM write audit JSONL persistence for `zoho crm upsert` and `zoho crm upsert-gate`, plus `zoho crm write-audit`; events expose `rawFieldValuesStored=false` and live writes remain blocked."
+next_small_step: define controlled live upsert fixture evidence requirements while keeping normal live writes blocked

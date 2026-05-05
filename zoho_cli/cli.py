@@ -11224,6 +11224,67 @@ def _load_crm_write_payload(
         )
 
 
+def _crm_write_audit_path(
+    audit_file: str | None = None,
+    *,
+    for_write: bool = False,
+) -> tuple[Path | None, dict[str, Any]]:
+    if audit_file:
+        path = Path(audit_file).expanduser()
+        return path, {"enabled": True, "source": "option", "path": str(path)}
+
+    env_path = os.environ.get("ZOHO_CRM_WRITE_AUDIT")
+    if env_path:
+        path = Path(env_path).expanduser()
+        return path, {"enabled": True, "source": "env", "path": str(path)}
+
+    cfg_path = _config.config_path(_S.config_path)
+    path = cfg_path.parent / _crm.CRM_WRITE_AUDIT_DEFAULT_FILENAME
+    has_config_anchor = bool(_S.config_path or os.environ.get("ZOHO_CONFIG"))
+    if has_config_anchor or cfg_path.exists():
+        return path, {"enabled": True, "source": "config", "path": str(path)}
+
+    if for_write:
+        return None, {
+            "enabled": False,
+            "status": "skipped",
+            "reason": "config_path_not_initialized",
+            "path": str(path),
+            "rawFieldValuesStored": False,
+        }
+
+    return path, {"enabled": True, "source": "default", "path": str(path)}
+
+
+def _persist_crm_write_audit(
+    payload: dict,
+    *,
+    event_type: str,
+    account: str | None,
+    source_command: str,
+    audit_file: str | None,
+) -> dict[str, Any]:
+    path, path_meta = _crm_write_audit_path(audit_file, for_write=True)
+    if path is None:
+        return path_meta
+
+    event = _crm.build_crm_write_audit_event(
+        payload=payload,
+        event_type=event_type,
+        account=account,
+        source_command=source_command,
+    )
+    try:
+        meta = _crm.append_crm_write_audit_event(path, event)
+    except OSError as exc:
+        utils.error_exit(
+            "audit_persistence_failed",
+            f"Could not persist CRM write audit event to {path}: {exc}",
+        )
+    meta["source"] = path_meta["source"]
+    return meta
+
+
 @crm_app.command("upsert")
 def crm_upsert(
     module: str = typer.Option(
@@ -11264,6 +11325,11 @@ def crm_upsert(
         "--adapter",
         help="CRM write adapter for the plan. Currently only http-v8 is supported.",
     ),
+    audit_file: Optional[str] = typer.Option(
+        None,
+        "--audit-file",
+        help="Override CRM write audit JSONL path.",
+    ),
 ) -> None:
     """Plan a CRM upsert without writing data."""
     payload = _load_crm_write_payload(data_json=data_json, data_file=data_file)
@@ -11280,6 +11346,16 @@ def crm_upsert(
         )
     except ValueError as exc:
         utils.error_exit("invalid_upsert_payload", str(exc))
+
+    cfg = _cfg()
+    email = _S.account or _config.default_account(cfg)
+    plan["auditPersistence"] = _persist_crm_write_audit(
+        plan,
+        event_type="crm.write.plan",
+        account=email,
+        source_command="zoho crm upsert",
+        audit_file=audit_file,
+    )
 
     if execute:
         if not plan["confirmation"]["matches"]:
@@ -11307,6 +11383,11 @@ def crm_upsert_gate(
         False,
         "--check-auth",
         help="Refresh OAuth and evaluate live granted scopes for the selected account.",
+    ),
+    audit_file: Optional[str] = typer.Option(
+        None,
+        "--audit-file",
+        help="Override CRM write audit JSONL path.",
     ),
 ) -> None:
     """Show the guarded live-upsert gate without writing data."""
@@ -11344,7 +11425,88 @@ def crm_upsert_gate(
     )
     payload["account"] = email or ""
     payload["auth"] = auth_payload
+    payload["auditPersistence"] = _persist_crm_write_audit(
+        payload,
+        event_type="crm.write.gate",
+        account=email,
+        source_command="zoho crm upsert-gate",
+        audit_file=audit_file,
+    )
     utils.output(payload)
+
+
+@crm_app.command("write-audit")
+def crm_write_audit(
+    limit: int = typer.Option(
+        _crm.CRM_WRITE_AUDIT_DEFAULT_LIMIT,
+        "--limit",
+        "-n",
+        help="Max recent audit events to return.",
+    ),
+    operation: Optional[str] = typer.Option(
+        None,
+        "--operation",
+        help="Filter by CRM write operation.",
+    ),
+    module: Optional[str] = typer.Option(
+        None,
+        "--module",
+        "-m",
+        help="Filter by CRM module API name.",
+    ),
+    event_type: Optional[str] = typer.Option(
+        None,
+        "--event-type",
+        help="Filter by audit event type, for example crm.write.plan.",
+    ),
+    audit_file: Optional[str] = typer.Option(
+        None,
+        "--audit-file",
+        help="Override CRM write audit JSONL path.",
+    ),
+) -> None:
+    """List recent redacted CRM write audit events."""
+    path, path_meta = _crm_write_audit_path(audit_file)
+    if path is None:
+        utils.output(
+            {
+                "status": "ok",
+                "auditFile": "",
+                "exists": False,
+                "count": 0,
+                "events": [],
+                "path": path_meta,
+            }
+        )
+        return
+
+    try:
+        events = _crm.read_crm_write_audit_events(
+            path,
+            limit=limit,
+            operation=operation,
+            module=module,
+            event_type=event_type,
+        )
+    except ValueError as exc:
+        utils.error_exit("invalid_audit_query", str(exc))
+
+    utils.output(
+        {
+            "status": "ok",
+            "auditFile": str(path),
+            "exists": path.exists(),
+            "limit": limit,
+            "filters": {
+                "operation": operation or "",
+                "module": module or "",
+                "eventType": event_type or "",
+            },
+            "count": len(events),
+            "events": events,
+            "path": path_meta,
+        }
+    )
 
 
 @crm_app.command("modules")

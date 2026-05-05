@@ -29,7 +29,7 @@ openclaw_cliq_channel:
 crm:
   priority: 4
   status: in_progress
-  phase: v0_5_write_audit_persistence
+  phase: v0_5_controlled_live_fixture_planning
   target_release: v0.5.0
-  current_milestone: crm-010-write-audit-persistence
+  current_milestone: crm-011-controlled-live-fixture-gate
   blockers: []

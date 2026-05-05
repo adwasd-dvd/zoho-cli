@@ -15,6 +15,9 @@ COMMAND_SUFFIXES: list[list[str]] = [
     ["mail", "--help"],
     ["cliq", "--help"],
     ["crm", "--help"],
+    ["crm", "upsert", "--help"],
+    ["crm", "upsert-gate", "--help"],
+    ["crm", "write-audit", "--help"],
 ]
 
 
@@ -22,7 +25,8 @@ def _run_command(base_tokens: list[str], suffix: list[str]) -> tuple[str, int, s
     cmd = base_tokens + suffix
     proc = subprocess.run(cmd, capture_output=True, text=True)
     text = proc.stdout if proc.stdout.strip() else proc.stderr
-    return " ".join(shlex.quote(token) for token in cmd), proc.returncode, text.rstrip()
+    output = "\n".join(line.rstrip() for line in text.rstrip().splitlines())
+    return " ".join(shlex.quote(token) for token in cmd), proc.returncode, output
 
 
 def _build_snapshot(base_tokens: list[str]) -> str:

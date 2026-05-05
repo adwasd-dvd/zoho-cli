@@ -1,10 +1,10 @@
 # CLI help snapshot
 
-Generated at: `2026-05-05T10:58:14Z`
+Generated at: `2026-05-05T11:17:50Z`
 
 Use this file as a quick command-surface reference for the skill.
 
-## `./.venv/bin/zoho --help`
+## `zoho --help`
 
 Exit code: `0`
 
@@ -35,7 +35,7 @@ Exit code: `0`
 ╰──────────────────────────────────────────────────────────────────────────────╯
 ```
 
-## `./.venv/bin/zoho login --help`
+## `zoho login --help`
 
 Exit code: `0`
 
@@ -66,7 +66,7 @@ Exit code: `0`
 ╰──────────────────────────────────────────────────────────────────────────────╯
 ```
 
-## `./.venv/bin/zoho config --help`
+## `zoho config --help`
 
 Exit code: `0`
 
@@ -86,7 +86,7 @@ Exit code: `0`
 ╰──────────────────────────────────────────────────────────────────────────────╯
 ```
 
-## `./.venv/bin/zoho mail --help`
+## `zoho mail --help`
 
 Exit code: `0`
 
@@ -129,7 +129,7 @@ Exit code: `0`
 ╰──────────────────────────────────────────────────────────────────────────────╯
 ```
 
-## `./.venv/bin/zoho cliq --help`
+## `zoho cliq --help`
 
 Exit code: `0`
 
@@ -259,7 +259,7 @@ Exit code: `0`
 ╰──────────────────────────────────────────────────────────────────────────────╯
 ```
 
-## `./.venv/bin/zoho crm --help`
+## `zoho crm --help`
 
 Exit code: `0`
 
@@ -278,6 +278,7 @@ Exit code: `0`
 │ write-plan   Show CRM write-surface safety gates without writing data.       │
 │ upsert       Plan a CRM upsert without writing data.                         │
 │ upsert-gate  Show the guarded live-upsert gate without writing data.         │
+│ write-audit  List recent redacted CRM write audit events.                    │
 │ modules      List CRM modules available to the account.                      │
 │ fields       List fields for a CRM module.                                   │
 │ list         List records from a CRM module.                                 │
@@ -287,7 +288,7 @@ Exit code: `0`
 ╰──────────────────────────────────────────────────────────────────────────────╯
 ```
 
-## `./.venv/bin/zoho crm upsert --help`
+## `zoho crm upsert --help`
 
 Exit code: `0`
 
@@ -321,11 +322,13 @@ Exit code: `0`
 │                                           Currently only http-v8 is          │
 │                                           supported.                         │
 │                                           [default: http-v8]                 │
+│    --audit-file                     TEXT  Override CRM write audit JSONL     │
+│                                           path.                              │
 │    --help                                 Show this message and exit.        │
 ╰──────────────────────────────────────────────────────────────────────────────╯
 ```
 
-## `./.venv/bin/zoho crm upsert-gate --help`
+## `zoho crm upsert-gate --help`
 
 Exit code: `0`
 
@@ -340,6 +343,29 @@ Exit code: `0`
 │                             module-specific upsert scopes.                   │
 │ --check-auth                Refresh OAuth and evaluate live granted scopes   │
 │                             for the selected account.                        │
+│ --audit-file          TEXT  Override CRM write audit JSONL path.             │
 │ --help                      Show this message and exit.                      │
+╰──────────────────────────────────────────────────────────────────────────────╯
+```
+
+## `zoho crm write-audit --help`
+
+Exit code: `0`
+
+```text
+
+ Usage: zoho crm write-audit [OPTIONS]
+
+ List recent redacted CRM write audit events.
+
+╭─ Options ────────────────────────────────────────────────────────────────────╮
+│ --limit       -n      INTEGER  Max recent audit events to return.            │
+│                                [default: 20]                                 │
+│ --operation           TEXT     Filter by CRM write operation.                │
+│ --module      -m      TEXT     Filter by CRM module API name.                │
+│ --event-type          TEXT     Filter by audit event type, for example       │
+│                                crm.write.plan.                               │
+│ --audit-file          TEXT     Override CRM write audit JSONL path.          │
+│ --help                         Show this message and exit.                   │
 ╰──────────────────────────────────────────────────────────────────────────────╯
 ```

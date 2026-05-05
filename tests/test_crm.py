@@ -2,6 +2,7 @@
 
 from importlib import metadata
 import json
+from pathlib import Path
 
 import httpx
 import pytest
@@ -213,6 +214,65 @@ def test_crm_upsert_live_gate_policy_matches_module_scope() -> None:
     assert "live_oauth_not_checked" not in policy["blockingReasons"]
     assert "upsert_scope_not_verified" not in policy["blockingReasons"]
     assert "audit_persistence_not_implemented" in policy["blockingReasons"]
+
+
+def test_build_crm_write_audit_event_redacts_upsert_values() -> None:
+    plan = crm.build_crm_upsert_dry_run(
+        module_api_name="Leads",
+        payload={"Last_Name": "Wang", "Email": "wang@example.com"},
+        duplicate_check_fields=["Email"],
+        idempotency_key="job-123",
+    )
+
+    event = crm.build_crm_write_audit_event(
+        payload=plan,
+        event_type="crm.write.plan",
+        account="ops@example.com",
+        source_command="zoho crm upsert",
+        created_at="2026-05-05T11:10:00Z",
+    )
+    encoded = json.dumps(event, ensure_ascii=False)
+
+    assert event["eventVersion"] == crm.CRM_WRITE_AUDIT_EVENT_VERSION
+    assert event["eventType"] == "crm.write.plan"
+    assert event["account"] == "ops@example.com"
+    assert event["rawFieldValuesStored"] is False
+    assert event["fieldNames"] == ["Last_Name", "Email"]
+    assert event["payloadDigest"].startswith("sha256:")
+    assert event["eventDigest"].startswith("sha256:")
+    assert event["eventId"].startswith("crm-write-")
+    assert "Wang" not in encoded
+    assert "wang@example.com" not in encoded
+
+
+def test_append_and_read_crm_write_audit_events(tmp_path: Path) -> None:
+    audit_path = tmp_path / "crm_audit.jsonl"
+    first = crm.build_crm_write_audit_event(
+        payload=crm.crm_upsert_live_gate_policy(module_api_name="Leads"),
+        event_type="crm.write.gate",
+        source_command="zoho crm upsert-gate",
+        created_at="2026-05-05T11:11:00Z",
+    )
+    second = crm.build_crm_write_audit_event(
+        payload=crm.crm_upsert_live_gate_policy(module_api_name="Contacts"),
+        event_type="crm.write.gate",
+        source_command="zoho crm upsert-gate",
+        created_at="2026-05-05T11:12:00Z",
+    )
+
+    meta = crm.append_crm_write_audit_event(audit_path, first)
+    crm.append_crm_write_audit_event(audit_path, second)
+
+    assert meta["status"] == "persisted"
+    assert meta["path"] == str(audit_path)
+    assert audit_path.stat().st_mode & 0o777 == 0o600
+    events = crm.read_crm_write_audit_events(
+        audit_path,
+        limit=1,
+        module="Contacts",
+        event_type="crm.write.gate",
+    )
+    assert events == [second]
 
 
 @respx.mock

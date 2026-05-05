@@ -117,6 +117,27 @@ Use `scopeGate.matchingScopes` only as readiness evidence; blockers such as
 `audit_persistence_not_implemented` and `controlled_live_fixture_not_recorded`
 mean live writes remain disabled.
 
+`crm-010` persists redacted JSONL audit events for dry-run and gate commands.
+Use `--audit-file` or `ZOHO_CRM_WRITE_AUDIT` to isolate an agent run:
+
+```bash
+zoho crm upsert \
+  --module Leads \
+  --data-json '{"Last_Name":"Example","Email":"example@example.com"}' \
+  --duplicate-check-field Email \
+  --idempotency-key crm-leads-upsert-$(date +%F) \
+  --audit-file /tmp/zoho-crm-audit.jsonl
+
+zoho crm write-audit \
+  --audit-file /tmp/zoho-crm-audit.jsonl \
+  --operation upsert \
+  --module Leads \
+  --limit 10
+```
+
+Audit events should show `rawFieldValuesStored=false`; do not paste raw field
+values, tokens, or secrets into audit reports.
+
 ## Bridge fallback (explicit)
 
 ```bash

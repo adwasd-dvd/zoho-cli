@@ -42,7 +42,20 @@ CRM_WRITE_AUDIT_DEFAULT_FILENAME = "crm_write_audit.jsonl"
 CRM_WRITE_AUDIT_DEFAULT_LIMIT = 20
 CRM_CONTROLLED_LIVE_FIXTURE_POLICY_ID = "crm-011-controlled-live-fixture-gate"
 CRM_CONTROLLED_FIXTURE_EXECUTION_POLICY_ID = "crm-012-guarded-fixture-execution-harness"
+CRM_OPERATOR_FIXTURE_EVIDENCE_POLICY_ID = "crm-014-operator-fixture-evidence"
 CRM_LIVE_FIXTURE_ENV_VAR = "ZOHO_CRM_ALLOW_LIVE_FIXTURE"
+CRM_FIXTURE_EVIDENCE_REQUIRED_REPORTS = (
+    "upsertPlan",
+    "upsertGate",
+    "fixturePlan",
+    "fixtureExecutePlan",
+    "auditSummary",
+)
+CRM_FIXTURE_EVIDENCE_EXPECTED_DRY_RUN_BLOCKERS = {
+    "operator_fixture_approval_mismatch",
+    "live_fixture_env_not_enabled",
+    "execute_flag_required",
+}
 
 
 def crm_sdk_status(
@@ -914,6 +927,269 @@ def summarize_crm_upsert_response(
         "records": records,
         "recordIds": record_ids,
         "rawResponseStored": False,
+    }
+
+
+def crm_operator_fixture_evidence_status(
+    *,
+    summary: dict,
+    audit_events: list[dict] | None = None,
+    report_files_present: dict[str, bool] | None = None,
+) -> dict:
+    """Validate redacted evidence from the controlled CRM fixture smoke harness."""
+
+    safe_summary = summary if isinstance(summary, dict) else {}
+    events = audit_events or []
+    report_presence_input = report_files_present or {}
+    reports = safe_summary.get("reports", {})
+    if not isinstance(reports, dict):
+        reports = {}
+
+    module = str(safe_summary.get("module") or "")
+    key = str(safe_summary.get("idempotencyKey") or "")
+    digest = str(safe_summary.get("payloadDigest") or "")
+    duplicate_field = str(safe_summary.get("duplicateField") or "")
+    execute_requested = bool(safe_summary.get("executeRequested"))
+
+    required_report_keys = list(CRM_FIXTURE_EVIDENCE_REQUIRED_REPORTS)
+    if execute_requested or safe_summary.get("liveResultRecorded") is True:
+        required_report_keys.append("fixtureExecuteResult")
+
+    report_evidence: dict[str, dict[str, Any]] = {}
+    missing_reports: list[str] = []
+    for report_key in required_report_keys:
+        report_path = str(reports.get(report_key) or "")
+        exists = bool(report_path) and bool(report_presence_input.get(report_key))
+        report_evidence[report_key] = {"path": report_path, "exists": exists}
+        if not exists:
+            missing_reports.append(report_key)
+
+    def event_matches(
+        event: dict,
+        event_type: str,
+        *,
+        require_payload: bool = True,
+        require_key: bool = True,
+    ) -> bool:
+        if event.get("eventType") != event_type:
+            return False
+        if event.get("operation") != "upsert":
+            return False
+        if module and event.get("module") != module:
+            return False
+        if require_key and key and event.get("idempotencyKey") != key:
+            return False
+        if require_payload and digest and event.get("payloadDigest") != digest:
+            return False
+        return True
+
+    plan_events = [
+        event
+        for event in events
+        if event_matches(event, "crm.write.plan", require_payload=True)
+    ]
+    gate_events = [
+        event
+        for event in events
+        if event_matches(
+            event,
+            "crm.write.gate",
+            require_payload=False,
+            require_key=False,
+        )
+    ]
+    scope_events = [
+        event
+        for event in gate_events
+        if event.get("scopeGate", {}).get("hasAcceptedScope") is True
+    ]
+    fixture_plan_events = [
+        event
+        for event in events
+        if event_matches(event, "crm.write.fixture_plan", require_payload=True)
+        and event.get("auditEvidence", {}).get("hasDryRunPlan") is True
+        and event.get("auditEvidence", {}).get("hasGate") is True
+        and event.get("auditEvidence", {}).get("hasScopeEvidence") is True
+    ]
+    attempt_events = [
+        event
+        for event in events
+        if event_matches(event, "crm.write.fixture_attempt", require_payload=True)
+    ]
+    result_events = [
+        event
+        for event in events
+        if event_matches(event, "crm.write.fixture_result", require_payload=True)
+    ]
+
+    last_attempt = attempt_events[-1] if attempt_events else {}
+    attempt_blockers = _clean_string_list(last_attempt.get("blockingReasons"))
+    unexpected_attempt_blockers = [
+        reason
+        for reason in attempt_blockers
+        if reason not in CRM_FIXTURE_EVIDENCE_EXPECTED_DRY_RUN_BLOCKERS
+    ]
+    cleanup_plan_recorded = any(
+        event.get("cleanupPlan", {}).get("provided") is True
+        and event.get("cleanupPlan", {}).get("descriptionStored") is False
+        for event in [*attempt_events, *result_events]
+    )
+    network_write_recorded = any(
+        event.get("execution", {}).get("networkWriteAttempted") is True
+        for event in result_events
+    )
+
+    redaction_contract = safe_summary.get("redactionContract", {})
+    if not isinstance(redaction_contract, dict):
+        redaction_contract = {}
+    summary_redaction_ok = all(
+        redaction_contract.get(key) is False
+        for key in (
+            "rawFieldValuesStored",
+            "rawApprovalStored",
+            "rawCleanupPlanStored",
+            "rawApiResponseStored",
+        )
+    )
+    audit_redaction_ok = all(
+        event.get("rawFieldValuesStored") is False
+        and event.get("fixtureApproval", {}).get("rawApprovalStored") is not True
+        and event.get("cleanupPlan", {}).get("descriptionStored") is not True
+        and event.get("responseSummary", {}).get("rawResponseStored") is not True
+        for event in events
+    )
+    redaction_ok = summary_redaction_ok and audit_redaction_ok
+    reports_ok = not missing_reports
+
+    evidence_ok = all(
+        [
+            bool(plan_events),
+            bool(gate_events),
+            bool(scope_events),
+            bool(fixture_plan_events),
+            bool(attempt_events),
+            cleanup_plan_recorded,
+            bool(safe_summary.get("requiredApproval")),
+        ]
+    )
+    operator_ready = (
+        reports_ok and redaction_ok and evidence_ok and not unexpected_attempt_blockers
+    )
+    live_fixture_recorded = network_write_recorded and bool(result_events)
+
+    blocking_reasons: list[str] = []
+    if not safe_summary:
+        blocking_reasons.append("summary_required")
+    for missing in missing_reports:
+        blocking_reasons.append(f"report_missing_{missing}")
+    if not redaction_ok:
+        blocking_reasons.append("redaction_contract_failed")
+    if not plan_events:
+        blocking_reasons.append("dry_run_audit_evidence_missing")
+    if not gate_events:
+        blocking_reasons.append("upsert_gate_audit_evidence_missing")
+    if not scope_events:
+        blocking_reasons.append("upsert_scope_evidence_missing")
+    if not fixture_plan_events:
+        blocking_reasons.append("fixture_plan_audit_evidence_missing")
+    if not attempt_events:
+        blocking_reasons.append("fixture_attempt_audit_evidence_missing")
+    if not cleanup_plan_recorded:
+        blocking_reasons.append("fixture_cleanup_plan_required")
+    if not safe_summary.get("requiredApproval"):
+        blocking_reasons.append("fixture_required_approval_missing")
+    if unexpected_attempt_blockers:
+        blocking_reasons.append("unexpected_fixture_attempt_blockers_present")
+    if safe_summary.get("liveResultRecorded") is True and not live_fixture_recorded:
+        blocking_reasons.append("fixture_result_audit_evidence_missing")
+
+    if live_fixture_recorded and reports_ok and redaction_ok:
+        status = "live_fixture_recorded"
+        decision = "operator_fixture_evidence_recorded"
+        blocking_reasons = []
+    elif operator_ready:
+        status = "ready_for_operator_live_fixture"
+        decision = "await_operator_live_fixture"
+        blocking_reasons = ["live_fixture_not_recorded"]
+    else:
+        status = "incomplete"
+        decision = "complete_missing_fixture_evidence"
+
+    return {
+        "policyId": CRM_OPERATOR_FIXTURE_EVIDENCE_POLICY_ID,
+        "operation": "upsert",
+        "stage": "operator-fixture-evidence",
+        "status": status,
+        "decision": decision,
+        "module": module,
+        "duplicateCheckFields": [duplicate_field] if duplicate_field else [],
+        "idempotencyKey": key,
+        "payloadDigest": digest,
+        "runId": str(safe_summary.get("runId") or ""),
+        "executeRequested": execute_requested,
+        "liveResultRecorded": live_fixture_recorded,
+        "releaseEvidenceReady": live_fixture_recorded,
+        "requiredApprovalPresent": bool(safe_summary.get("requiredApproval")),
+        "reportEvidence": {
+            "requiredReports": required_report_keys,
+            "missingReports": missing_reports,
+            "reports": report_evidence,
+        },
+        "auditEvidence": {
+            "eventsConsidered": len(events),
+            "matchingPlanEvents": len(plan_events),
+            "matchingGateEvents": len(gate_events),
+            "matchingScopeEvents": len(scope_events),
+            "matchingFixturePlanEvents": len(fixture_plan_events),
+            "matchingFixtureAttemptEvents": len(attempt_events),
+            "matchingFixtureResultEvents": len(result_events),
+            "hasDryRunPlan": bool(plan_events),
+            "hasGate": bool(gate_events),
+            "hasScopeEvidence": bool(scope_events),
+            "hasFixturePlan": bool(fixture_plan_events),
+            "hasFixtureAttempt": bool(attempt_events),
+            "hasFixtureResult": bool(result_events),
+            "matchingPlanEventIds": [event.get("eventId", "") for event in plan_events],
+            "matchingGateEventIds": [event.get("eventId", "") for event in gate_events],
+            "matchingFixturePlanEventIds": [
+                event.get("eventId", "") for event in fixture_plan_events
+            ],
+            "matchingFixtureAttemptEventIds": [
+                event.get("eventId", "") for event in attempt_events
+            ],
+            "matchingFixtureResultEventIds": [
+                event.get("eventId", "") for event in result_events
+            ],
+        },
+        "redaction": {
+            "summaryContractOk": summary_redaction_ok,
+            "auditEventsOk": audit_redaction_ok,
+            "ok": redaction_ok,
+            "rawFieldValuesStored": False,
+            "rawApprovalStored": False,
+            "rawCleanupPlanStored": False,
+            "rawApiResponseStored": False,
+        },
+        "operatorReadiness": {
+            "readyForLiveFixture": operator_ready,
+            "cleanupPlanRecorded": cleanup_plan_recorded,
+            "expectedDryRunBlockers": sorted(
+                CRM_FIXTURE_EVIDENCE_EXPECTED_DRY_RUN_BLOCKERS
+            ),
+            "attemptBlockingReasons": attempt_blockers,
+            "unexpectedAttemptBlockingReasons": unexpected_attempt_blockers,
+            "requiredLiveEnv": [
+                "ZOHO_CRM_FIXTURE_EXECUTE=1",
+                f"{CRM_LIVE_FIXTURE_ENV_VAR}=1",
+            ],
+        },
+        "blockingReasons": blocking_reasons,
+        "next": [
+            "Run `ops/scripts/crm_fixture_live_smoke.sh` without live env gates first.",
+            "Review the summary with `zoho crm fixture-evidence --summary-file <summary.json>`.",
+            "Run the live fixture only when status is ready_for_operator_live_fixture and the operator deliberately sets both live env gates.",
+            "Keep normal `zoho crm upsert --execute` blocked.",
+        ],
     }
 
 

@@ -27659,6 +27659,83 @@ def test_crm_fixture_execute_runs_with_all_gates(
     assert "wang@example.com" not in audit_path.read_text()
 
 
+def test_crm_fixture_evidence_reports_operator_ready(tmp_path: Path) -> None:
+    audit_path, upsert_payload = _prepare_crm_fixture_audit(tmp_path)
+    dry_run_result = runner.invoke(
+        app,
+        [
+            "crm",
+            "fixture-execute",
+            "--module",
+            "Leads",
+            "--data-json",
+            '{"Last_Name":"Wang","Email":"wang@example.com"}',
+            "--duplicate-check-field",
+            "Email",
+            "--idempotency-key",
+            "fixture-123",
+            "--payload-digest",
+            upsert_payload["payloadDigest"],
+            "--cleanup-plan",
+            "remove or update fixture record after validation",
+            "--audit-file",
+            str(audit_path),
+        ],
+    )
+    assert dry_run_result.exit_code == 0, dry_run_result.output
+    dry_run_payload = json.loads(dry_run_result.output)
+
+    report_paths = {
+        "upsertPlan": tmp_path / "upsert-plan.json",
+        "upsertGate": tmp_path / "upsert-gate.json",
+        "fixturePlan": tmp_path / "fixture-plan.json",
+        "fixtureExecutePlan": tmp_path / "fixture-execute-plan.json",
+        "auditSummary": tmp_path / "audit-summary.json",
+    }
+    for report_path in report_paths.values():
+        report_path.write_text("{}", encoding="utf-8")
+    summary_path = tmp_path / "crm_fixture_live_smoke_summary.json"
+    summary_path.write_text(
+        json.dumps(
+            {
+                "summaryVersion": 1,
+                "runId": "fixture-run-123",
+                "module": "Leads",
+                "duplicateField": "Email",
+                "idempotencyKey": "fixture-123",
+                "payloadDigest": upsert_payload["payloadDigest"],
+                "requiredApproval": dry_run_payload["requiredApproval"],
+                "auditFile": str(audit_path),
+                "executeRequested": False,
+                "liveResultRecorded": False,
+                "reports": {key: str(path) for key, path in report_paths.items()},
+                "redactionContract": {
+                    "rawFieldValuesStored": False,
+                    "rawApprovalStored": False,
+                    "rawCleanupPlanStored": False,
+                    "rawApiResponseStored": False,
+                },
+            }
+        ),
+        encoding="utf-8",
+    )
+
+    result = runner.invoke(
+        app,
+        ["crm", "fixture-evidence", "--summary-file", str(summary_path)],
+    )
+
+    assert result.exit_code == 0, result.output
+    payload = json.loads(result.output)
+    assert payload["policyId"] == "crm-014-operator-fixture-evidence"
+    assert payload["status"] == "ready_for_operator_live_fixture"
+    assert payload["operatorReadiness"]["readyForLiveFixture"] is True
+    assert payload["auditFile"] == str(audit_path)
+    assert payload["redaction"]["ok"] is True
+    assert "Wang" not in result.output
+    assert "wang@example.com" not in result.output
+
+
 def test_crm_sdk_status_command_uses_account_region(mock_config: Path) -> None:
     cfg = json.loads(mock_config.read_text())
     cfg["accounts"][ACCOUNT_EMAIL]["accounts_server"] = "https://accounts.zoho.eu"

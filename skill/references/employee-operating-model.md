@@ -94,3 +94,8 @@ persisted dry-run/gate/fixture-plan audit evidence. It records
 In `crm-013`, use `ops/scripts/crm_fixture_live_smoke.sh` as the preferred
 operator smoke path. It creates redacted reports and only runs live when
 `ZOHO_CRM_FIXTURE_EXECUTE=1` and `ZOHO_CRM_ALLOW_LIVE_FIXTURE=1` are both set.
+In `crm-014`, use `zoho crm fixture-evidence --summary-file <summary.json>` to
+classify smoke reports before and after a real fixture. Treat
+`ready_for_operator_live_fixture` as the last pre-live status and
+`live_fixture_recorded` as the only release evidence status for a completed CRM
+fixture write.

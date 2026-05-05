@@ -50,6 +50,9 @@ CRM SDK planning:
 - `ops/scripts/crm_fixture_live_smoke.sh` (`crm-013`: repeatable controlled CRM
   fixture smoke reports; skips live execution unless `ZOHO_CRM_FIXTURE_EXECUTE=1`
   and `ZOHO_CRM_ALLOW_LIVE_FIXTURE=1`)
+- `zoho crm fixture-evidence` (`crm-014`: smoke summary/audit checker,
+  `policyId=crm-014-operator-fixture-evidence`, reports `incomplete`,
+  `ready_for_operator_live_fixture`, or `live_fixture_recorded`)
 - `docs/architecture/CRM_WRITE_SURFACE_CONTRACT.md`
 
 GitHub intake:

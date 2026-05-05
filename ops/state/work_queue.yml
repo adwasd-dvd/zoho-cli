@@ -357,10 +357,17 @@
 - id: crm-014
   title: collect operator-approved CRM fixture evidence
   module: crm
-  stage: in_progress
+  stage: completed
   priority: high
   depends_on:
   - crm-013
+- id: crm-015
+  title: run operator-approved CRM fixture live evidence
+  module: crm
+  stage: in_progress
+  priority: high
+  depends_on:
+  - crm-014
 - id: platform-208
   title: finalize module-first CLI information architecture (retire legacy root mail aliases after deprecation window and normalize level-2/3 help taxonomy)
   module: platform

@@ -1,10 +1,18 @@
-last_run_at: "2026-05-05T11:57:57Z"
+last_run_at: "2026-05-05T12:12:49Z"
 last_result: passing
-current_focus: crm-013-controlled-fixture-smoke-full-ci-20260505T115757Z
+current_focus: crm-014-operator-fixture-evidence-full-ci-20260505T121249Z
 suites:
   unit:
     status: passing
     notes:
+      - "crm-014 operator fixture evidence checker completed at 2026-05-05T12:04:56Z"
+      - "make ci -> ruff format/check clean + pytest `1839 passed in 57.63s`"
+      - "added `crm_operator_fixture_evidence_status()` and `zoho crm fixture-evidence`"
+      - "`zoho crm fixture-evidence` reads a smoke summary and redacted audit JSONL, resolves report paths, checks dry-run/gate/scope/fixture-plan/fixture-attempt/fixture-result evidence, verifies redaction, and classifies status as `incomplete`, `ready_for_operator_live_fixture`, or `live_fixture_recorded` without writing CRM data"
+      - "added `docs/releases/CRM_V0_5_OPERATOR_FIXTURE_EVIDENCE.md` and refreshed Lane 2/3 docs plus CLI help snapshot"
+      - "./.venv/bin/python -m pytest -q tests/test_crm.py tests/test_cli.py -k 'fixture_evidence or operator_fixture_evidence' -> 3 passed, 921 deselected in 1.71s"
+      - "./.venv/bin/python -m pytest -q tests/test_lane3_docs.py tests/test_markdown_update.py -> 10 passed in 0.01s"
+      - "normal `zoho crm upsert --execute` remains blocked by policy"
       - "crm-013 controlled fixture smoke harness completed at 2026-05-05T11:51:41Z"
       - "make ci -> ruff format/check clean + pytest `1836 passed in 51.83s`"
       - "added `ops/scripts/crm_fixture_live_smoke.sh`"

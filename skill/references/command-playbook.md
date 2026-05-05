@@ -204,6 +204,17 @@ ZOHO_CRM_FIXTURE_CLEANUP_PLAN="remove or update the dedicated fixture record aft
 ops/scripts/crm_fixture_live_smoke.sh
 ```
 
+Classify the smoke reports before and after a live fixture:
+
+```bash
+zoho crm fixture-evidence \
+  --summary-file tests/auto_pilot/reports/crm_fixture_live_smoke_summary_<run>.json
+```
+
+`crm-014` reports `incomplete`, `ready_for_operator_live_fixture`, or
+`live_fixture_recorded`. Treat `redaction.ok=true` as required evidence and keep
+normal `zoho crm upsert --execute` blocked.
+
 ## Bridge fallback (explicit)
 
 ```bash

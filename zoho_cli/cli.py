@@ -11757,6 +11757,103 @@ def crm_fixture_execute(
     utils.output(payload)
 
 
+@crm_app.command("fixture-evidence")
+def crm_fixture_evidence(
+    summary_file: str = typer.Option(
+        ...,
+        "--summary-file",
+        help="Top-level JSON summary written by ops/scripts/crm_fixture_live_smoke.sh.",
+    ),
+    audit_file: Optional[str] = typer.Option(
+        None,
+        "--audit-file",
+        help="Override CRM write audit JSONL path; defaults to the summary auditFile.",
+    ),
+    evidence_limit: int = typer.Option(
+        1000,
+        "--evidence-limit",
+        help="Max audit events to inspect for fixture evidence.",
+    ),
+) -> None:
+    """Check controlled CRM fixture smoke evidence without writing data."""
+    summary_path = Path(summary_file).expanduser()
+    try:
+        summary = json.loads(summary_path.read_text(encoding="utf-8"))
+    except OSError as exc:
+        utils.error_exit(
+            "invalid_fixture_summary",
+            f"Cannot read fixture summary {summary_path}: {exc}",
+        )
+    except json.JSONDecodeError as exc:
+        utils.error_exit(
+            "invalid_fixture_summary",
+            f"Fixture summary must be JSON: {exc}",
+        )
+
+    if not isinstance(summary, dict):
+        utils.error_exit(
+            "invalid_fixture_summary", "Fixture summary must be a JSON object."
+        )
+
+    reports = summary.get("reports", {})
+    if not isinstance(reports, dict):
+        reports = {}
+    resolved_reports: dict[str, str] = {}
+    report_files_present: dict[str, bool] = {}
+    for report_key, report_path_value in reports.items():
+        report_path_text = str(report_path_value or "")
+        if not report_path_text:
+            resolved_reports[str(report_key)] = ""
+            report_files_present[str(report_key)] = False
+            continue
+        report_path = Path(report_path_text).expanduser()
+        if not report_path.is_absolute():
+            report_path = (summary_path.parent / report_path).resolve()
+        resolved_reports[str(report_key)] = str(report_path)
+        report_files_present[str(report_key)] = report_path.exists()
+
+    summary_for_check = dict(summary)
+    summary_for_check["reports"] = resolved_reports
+
+    audit_path_text = audit_file or str(summary.get("auditFile") or "")
+    audit_path: Path | None = None
+    audit_path_meta: dict[str, Any]
+    if audit_path_text:
+        audit_path = Path(audit_path_text).expanduser()
+        if not audit_path.is_absolute():
+            audit_path = (summary_path.parent / audit_path).resolve()
+        audit_path_meta = {
+            "enabled": True,
+            "source": "option" if audit_file else "summary",
+            "path": str(audit_path),
+        }
+    else:
+        audit_path, audit_path_meta = _crm_write_audit_path(None)
+
+    try:
+        audit_events = (
+            _crm.read_crm_write_audit_events(audit_path, limit=evidence_limit)
+            if audit_path is not None
+            else []
+        )
+    except ValueError as exc:
+        utils.error_exit("invalid_audit_query", str(exc))
+
+    payload = _crm.crm_operator_fixture_evidence_status(
+        summary=summary_for_check,
+        audit_events=audit_events,
+        report_files_present=report_files_present,
+    )
+    payload["summaryFile"] = str(summary_path)
+    payload["summaryFileExists"] = summary_path.exists()
+    payload["auditFile"] = str(audit_path) if audit_path is not None else ""
+    payload["auditFileExists"] = (
+        audit_path.exists() if audit_path is not None else False
+    )
+    payload["auditPath"] = audit_path_meta
+    utils.output(payload)
+
+
 @crm_app.command("modules")
 def crm_modules(
     limit: int = typer.Option(50, "--limit", "-n", help="Max modules to return."),

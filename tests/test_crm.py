@@ -423,6 +423,128 @@ def test_crm_guarded_fixture_execution_policy_allows_exact_fixture() -> None:
     assert policy["cleanupPlan"]["descriptionStored"] is False
 
 
+def _crm_fixture_smoke_summary(plan: dict, *, execute_requested: bool = False) -> dict:
+    reports = {
+        "upsertPlan": "/tmp/upsert.json",
+        "upsertGate": "/tmp/gate.json",
+        "fixturePlan": "/tmp/fixture-plan.json",
+        "fixtureExecutePlan": "/tmp/fixture-execute-plan.json",
+        "auditSummary": "/tmp/audit-summary.json",
+    }
+    if execute_requested:
+        reports["fixtureExecuteResult"] = "/tmp/fixture-execute-result.json"
+
+    return {
+        "summaryVersion": 1,
+        "runId": "fixture-run-123",
+        "module": "Leads",
+        "duplicateField": "Email",
+        "idempotencyKey": "fixture-123",
+        "payloadDigest": plan["payloadDigest"],
+        "requiredApproval": crm.crm_fixture_approval_token(
+            module_api_name="Leads",
+            payload_digest=plan["payloadDigest"],
+            idempotency_key="fixture-123",
+        ),
+        "auditFile": "/tmp/crm_audit.jsonl",
+        "executeRequested": execute_requested,
+        "liveResultRecorded": execute_requested,
+        "reports": reports,
+        "redactionContract": {
+            "rawFieldValuesStored": False,
+            "rawApprovalStored": False,
+            "rawCleanupPlanStored": False,
+            "rawApiResponseStored": False,
+        },
+    }
+
+
+def test_crm_operator_fixture_evidence_status_ready_for_operator_live() -> None:
+    plan, events = _build_crm_fixture_audit_events()
+    attempt = crm.crm_guarded_fixture_execution_policy(
+        module_api_name="Leads",
+        duplicate_check_fields=["Email"],
+        idempotency_key="fixture-123",
+        payload_digest=plan["payloadDigest"],
+        cleanup_plan="remove or update fixture record after validation",
+        audit_events=events,
+        execute=False,
+        env_allows_live_fixture=False,
+        record_count=1,
+        field_names=plan["fieldNames"],
+    )
+    attempt_event = crm.build_crm_write_audit_event(
+        payload=attempt,
+        event_type="crm.write.fixture_attempt",
+        created_at="2026-05-05T12:00:00Z",
+    )
+    summary = _crm_fixture_smoke_summary(plan)
+
+    evidence = crm.crm_operator_fixture_evidence_status(
+        summary=summary,
+        audit_events=[*events, attempt_event],
+        report_files_present={key: True for key in summary["reports"]},
+    )
+
+    assert evidence["policyId"] == "crm-014-operator-fixture-evidence"
+    assert evidence["status"] == "ready_for_operator_live_fixture"
+    assert evidence["decision"] == "await_operator_live_fixture"
+    assert evidence["operatorReadiness"]["readyForLiveFixture"] is True
+    assert evidence["releaseEvidenceReady"] is False
+    assert evidence["blockingReasons"] == ["live_fixture_not_recorded"]
+    assert evidence["redaction"]["ok"] is True
+
+
+def test_crm_operator_fixture_evidence_status_records_live_result() -> None:
+    plan, events = _build_crm_fixture_audit_events()
+    approval = crm.crm_fixture_approval_token(
+        module_api_name="Leads",
+        payload_digest=plan["payloadDigest"],
+        idempotency_key="fixture-123",
+    )
+    result_payload = crm.crm_guarded_fixture_execution_policy(
+        module_api_name="Leads",
+        duplicate_check_fields=["Email"],
+        idempotency_key="fixture-123",
+        payload_digest=plan["payloadDigest"],
+        fixture_approval=approval,
+        cleanup_plan="remove or update fixture record after validation",
+        audit_events=events,
+        execute=True,
+        env_allows_live_fixture=True,
+        record_count=1,
+        field_names=plan["fieldNames"],
+    )
+    result_payload["execution"]["networkWriteAttempted"] = True
+    result_payload["status"] = "succeeded"
+    result_payload["responseSummary"] = {
+        "httpStatus": 201,
+        "isSuccess": True,
+        "recordCount": 1,
+        "recordIds": ["4150868000003194003"],
+        "records": [],
+        "rawResponseStored": False,
+    }
+    result_event = crm.build_crm_write_audit_event(
+        payload=result_payload,
+        event_type="crm.write.fixture_result",
+        created_at="2026-05-05T12:01:00Z",
+    )
+    summary = _crm_fixture_smoke_summary(plan, execute_requested=True)
+
+    evidence = crm.crm_operator_fixture_evidence_status(
+        summary=summary,
+        audit_events=[*events, result_event],
+        report_files_present={key: True for key in summary["reports"]},
+    )
+
+    assert evidence["status"] == "live_fixture_recorded"
+    assert evidence["decision"] == "operator_fixture_evidence_recorded"
+    assert evidence["liveResultRecorded"] is True
+    assert evidence["releaseEvidenceReady"] is True
+    assert evidence["blockingReasons"] == []
+
+
 def test_summarize_crm_upsert_response_redacts_user_names() -> None:
     summary = crm.summarize_crm_upsert_response(
         {

@@ -184,6 +184,20 @@ adapter proves parity on the read-only surface. The CLI contract remains:
 - The script requires a dedicated payload file and cleanup plan before live
   execution and never passes `--execute` when the environment gate is absent.
 
+## Implemented in crm-014
+
+- Added `crm_operator_fixture_evidence_status()` and
+  `zoho crm fixture-evidence`.
+- The command reads a smoke summary, resolves referenced report files, reads the
+  redacted CRM write audit JSONL, and classifies evidence as `incomplete`,
+  `ready_for_operator_live_fixture`, or `live_fixture_recorded`.
+- It checks for dry-run plan, upsert-gate, accepted-scope, fixture-plan,
+  fixture-attempt, and fixture-result audit evidence without making a network
+  write.
+- It reports the `crm-014-operator-fixture-evidence` policy, redaction facts,
+  missing reports/events, expected dry-run blockers, and live env gates.
+- Broad CRM writes remain disabled.
+
 ## v0.5 slices
 
 1. `crm-004` SDK adapter skeleton (completed):
@@ -227,7 +241,11 @@ adapter proves parity on the read-only surface. The CLI contract remains:
      approval, scopes, cleanup plan, and environment gates are ready;
    - generate redacted report paths for dry-run evidence and future live
      attempt/result evidence.
-11. `crm-014` operator fixture evidence:
+11. `crm-014` operator fixture evidence checker (completed):
+   - add a CLI evidence checker for the smoke summary and audit JSONL;
+   - classify operator readiness and recorded live fixture evidence without
+     writing CRM data.
+12. `crm-015` operator live fixture evidence:
    - use the smoke script against a real dedicated CRM fixture payload when the
      operator provides one;
    - archive redacted reports and decide whether v0.5 should broaden guarded

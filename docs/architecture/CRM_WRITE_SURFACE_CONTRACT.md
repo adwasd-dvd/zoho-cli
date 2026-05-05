@@ -1,6 +1,6 @@
 # CRM write-surface safety contract
 
-Updated: `2026-05-05T11:51:41Z`.
+Updated: `2026-05-05T12:04:56Z`.
 
 This is the `crm-007` contract for adding CRM write commands without making AI
 agents accidentally mutate production data.
@@ -220,6 +220,31 @@ ops/scripts/crm_fixture_live_smoke.sh
 The script never echoes the raw payload and does not pass `--execute` unless
 both live environment gates are present. It is the recommended real-environment
 CRM test entrypoint for operators and AI agents.
+
+## Implemented in crm-014
+
+`zoho crm fixture-evidence` checks the smoke harness output without writing CRM
+data:
+
+```bash
+zoho crm fixture-evidence \
+  --summary-file tests/auto_pilot/reports/crm_fixture_live_smoke_summary_<run>.json
+```
+
+It reads the top-level smoke summary, resolves the referenced report files,
+reads the redacted audit JSONL, and reports:
+
+- `policyId=crm-014-operator-fixture-evidence`
+- `status=ready_for_operator_live_fixture` when dry-run evidence is complete and
+  the only remaining step is a deliberate operator live run
+- `status=live_fixture_recorded` when a network write attempt and
+  `crm.write.fixture_result` are both present
+- missing reports or audit events before a live fixture is attempted
+- redaction facts for raw field values, approval text, cleanup text, and raw API
+  responses
+
+This command is the RC evidence checker. It does not enable broad CRM writes;
+normal `zoho crm upsert --execute` stays blocked.
 
 ## Official API references
 

@@ -29,7 +29,8 @@ openclaw_cliq_channel:
 crm:
   priority: 4
   status: in_progress
-  phase: v0_5_operator_fixture_live_evidence
+  phase: v0_5_operator_fixture_live_run
   target_release: v0.5.0
-  current_milestone: crm-014-operator-fixture-evidence
-  blockers: []
+  current_milestone: crm-015-operator-live-fixture-run
+  blockers:
+    - "operator-provided dedicated CRM fixture payload and cleanup approval required before live fixture execution"

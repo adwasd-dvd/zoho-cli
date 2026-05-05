@@ -18,9 +18,26 @@ def test_infer_crm_base_url_from_accounts_host() -> None:
     assert url == "https://www.zohoapis.com/crm/v2"
 
 
+def test_infer_crm_base_url_supports_explicit_v8() -> None:
+    url = crm.infer_crm_base_url(
+        accounts_server="https://accounts.zoho.eu",
+        api_version="v8",
+    )
+    assert url == "https://www.zohoapis.eu/crm/v8"
+
+
 def test_infer_crm_base_url_defaults_to_com() -> None:
     url = crm.infer_crm_base_url()
     assert url == "https://www.zohoapis.com/crm/v2"
+
+
+def test_infer_crm_base_url_rejects_unknown_api_version() -> None:
+    try:
+        crm.infer_crm_base_url(api_version="v9")
+    except ValueError as exc:
+        assert "unsupported CRM API version" in str(exc)
+    else:  # pragma: no cover - defensive assertion branch.
+        raise AssertionError("expected ValueError")
 
 
 def test_missing_crm_scopes_reports_missing_values() -> None:
@@ -47,6 +64,8 @@ def test_crm_sdk_status_reports_missing_sdk() -> None:
     assert result["adapterSkeleton"]["currentCliAdapter"] == "http-v2"
     assert result["adapterSkeleton"]["defaultEnabled"] is False
     assert result["adapterSkeleton"]["outputShape"]["plainJson"] is True
+    assert result["apiVersionPolicy"]["defaultHttpApiVersion"] == "v2"
+    assert result["apiVersionPolicy"]["sdkApiVersion"] == "v8"
 
 
 def test_crm_sdk_status_reports_installed_target_version() -> None:
@@ -67,6 +86,17 @@ def test_crm_sdk_status_uses_account_context_for_adapter_plan() -> None:
     adapter = result["adapterSkeleton"]
     assert adapter["dataCenter"]["key"] == "eu"
     assert adapter["resourcePath"].endswith("crm.bot_at_example.com")
+
+
+def test_crm_api_version_policy_preserves_default_http_v2() -> None:
+    policy = crm.crm_api_version_policy()
+
+    assert policy["defaultAdapter"] == "http-v2"
+    assert policy["defaultHttpApiVersion"] == "v2"
+    assert policy["sdkAdapter"] == "sdk-v8"
+    assert policy["sdkApiVersion"] == "v8"
+    assert policy["selection"]["sdkV8"] == "explicit --adapter sdk-v8 only"
+    assert policy["defaultBehavior"] == "preserve-current-output-shapes"
 
 
 @respx.mock

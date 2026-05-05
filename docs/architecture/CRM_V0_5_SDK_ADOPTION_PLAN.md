@@ -1,6 +1,6 @@
 # CRM v0.5 SDK adoption plan
 
-Updated: `2026-05-05T10:18:58Z`.
+Updated: `2026-05-05T10:28:49Z`.
 
 This is the `crm-003` handoff for phasing the official Zoho CRM server-side
 Python SDK into `zoho-cli` without breaking the current AI-safe CLI contract.
@@ -90,6 +90,18 @@ adapter proves parity on the read-only surface. The CLI contract remains:
 - Refreshed Lane 3 help snapshot so agents can see the explicit `--adapter`
   gate before attempting SDK mode.
 
+## Implemented in crm-006
+
+- Locked the v0.5 API version policy in code via `crm_api_version_policy()`.
+- Current default remains `http-v2` against CRM API v2 to preserve existing
+  output shapes.
+- SDK mode remains explicit with `--adapter sdk-v8` and uses CRM API v8.
+- HTTP v8 URL inference is available for compatibility work
+  (`infer_crm_base_url(api_version="v8")`), but HTTP v8 is not the default.
+- `zoho crm status` and `zoho crm sdk-status` now expose `apiVersionPolicy` so
+  AI agents can see the HTTP v2 versus SDK/API v8 decision before choosing a
+  path.
+
 ## v0.5 slices
 
 1. `crm-004` SDK adapter skeleton (completed):
@@ -102,7 +114,7 @@ adapter proves parity on the read-only surface. The CLI contract remains:
      the SDK adapter behind an explicit flag/config gate;
    - preserve current HTTP adapter as default;
    - add parity fixtures and live smoke commands.
-3. `crm-006` v8 REST alignment:
+3. `crm-006` v8 REST alignment (completed):
    - decide whether the default HTTP adapter should move from `/crm/v2` to
      `/crm/v8`;
    - keep version selection explicit if v2 and v8 responses differ.

@@ -23,6 +23,9 @@ CRM_SDK_TARGET_VERSION = "5.0.0"
 CRM_SDK_OPTIONAL_EXTRA = "crm-sdk"
 CRM_SDK_DEFAULT_ADAPTER = "http-v2"
 CRM_SDK_PROPOSED_ADAPTER = "sdk-v8"
+CRM_HTTP_DEFAULT_API_VERSION = "v2"
+CRM_SDK_API_VERSION = "v8"
+CRM_HTTP_SUPPORTED_API_VERSIONS = ("v2", "v8")
 
 
 def crm_sdk_status(
@@ -77,6 +80,7 @@ def crm_sdk_status(
             "currentCliAdapter": CRM_SDK_DEFAULT_ADAPTER,
             "sdkAdapterMustPreserveOutputShape": True,
         },
+        "apiVersionPolicy": crm_api_version_policy(),
         "adapterSkeleton": crm_sdk.crm_sdk_adapter_status(
             account_cfg=account_cfg,
             account_email=account_email,
@@ -89,6 +93,25 @@ def crm_sdk_status(
     }
 
 
+def crm_api_version_policy() -> dict:
+    """Return the CRM HTTP/SDK API version policy locked for v0.5."""
+
+    return {
+        "defaultAdapter": CRM_SDK_DEFAULT_ADAPTER,
+        "defaultHttpApiVersion": CRM_HTTP_DEFAULT_API_VERSION,
+        "sdkAdapter": CRM_SDK_PROPOSED_ADAPTER,
+        "sdkApiVersion": CRM_SDK_API_VERSION,
+        "httpSupportedApiVersions": list(CRM_HTTP_SUPPORTED_API_VERSIONS),
+        "selection": {
+            "httpV2": "default",
+            "sdkV8": "explicit --adapter sdk-v8 only",
+            "httpV8": "available for explicit compatibility work, not default",
+        },
+        "defaultBehavior": "preserve-current-output-shapes",
+        "migrationGate": "do-not-switch-defaults-until-v8-live-shape-parity-is-recorded",
+    }
+
+
 def missing_crm_scopes(granted_scopes: list[str] | None) -> list[str]:
     granted = set(granted_scopes or [])
     return [s for s in DEFAULT_CRM_SCOPES if s not in granted]
@@ -98,20 +121,28 @@ def infer_crm_base_url(
     *,
     mail_base_url: str | None = None,
     accounts_server: str | None = None,
+    api_version: str = CRM_HTTP_DEFAULT_API_VERSION,
 ) -> str:
     """Infer CRM API base URL from known Zoho region hosts."""
 
+    if api_version not in CRM_HTTP_SUPPORTED_API_VERSIONS:
+        raise ValueError(f"unsupported CRM API version: {api_version}")
+
     def _from_host(scheme: str, host: str) -> str | None:
         if host.startswith("mail.zoho."):
-            return f"{scheme}://www.zohoapis.{host.removeprefix('mail.zoho.')}/crm/v2"
+            return (
+                f"{scheme}://www.zohoapis.{host.removeprefix('mail.zoho.')}"
+                f"/crm/{api_version}"
+            )
         if host.startswith("accounts.zoho."):
             return (
-                f"{scheme}://www.zohoapis.{host.removeprefix('accounts.zoho.')}/crm/v2"
+                f"{scheme}://www.zohoapis.{host.removeprefix('accounts.zoho.')}"
+                f"/crm/{api_version}"
             )
         if host.startswith("mail.zohocloud."):
-            return f"{scheme}://www.{host.removeprefix('mail.')}/crm/v2"
+            return f"{scheme}://www.{host.removeprefix('mail.')}/crm/{api_version}"
         if host.startswith("accounts.zohocloud."):
-            return f"{scheme}://www.{host.removeprefix('accounts.')}/crm/v2"
+            return f"{scheme}://www.{host.removeprefix('accounts.')}/crm/{api_version}"
         return None
 
     if mail_base_url:
@@ -126,7 +157,7 @@ def infer_crm_base_url(
         if inferred:
             return inferred
 
-    return "https://www.zohoapis.com/crm/v2"
+    return f"https://www.zohoapis.com/crm/{api_version}"
 
 
 class ZohoCrmClient:

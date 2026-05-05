@@ -57,7 +57,7 @@ Unify product work around one operator-facing flow:
 
 ## Guardrails
 
-- Keep CRM SDK work behind an adapter/parity gate; `crm-005` exposes only explicit `--adapter sdk-v8` read gates, and default CRM command output must not change until v8 alignment evidence is recorded.
+- Keep CRM SDK work behind an adapter/parity gate; `crm-005` exposes only explicit `--adapter sdk-v8` read gates, `crm-006` keeps HTTP v2 as default, and CRM writes must stay planned-only until safety gates are locked.
 - Patch releases must not mix in new modules.
 - All cron/agents read and write the same state files in `ops/state/`.
 - Unsupported external endpoints follow 3-strike deferred policy and must not stall unrelated v1.0 slices.

@@ -75,6 +75,10 @@ zoho crm modules --adapter sdk-v8
 zoho crm list --module Leads --adapter sdk-v8 --limit 5
 ```
 
+`zoho crm status` and `zoho crm sdk-status` expose `apiVersionPolicy`; keep
+HTTP v2 as default and SDK/API v8 explicit-only unless a later compatibility
+slice records live shape parity.
+
 ## Bridge fallback (explicit)
 
 ```bash

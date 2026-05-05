@@ -24,6 +24,8 @@ CRM SDK planning:
   default-disabled; `ZOHO_CRM_SDK_RESOURCE_PATH` override)
 - `crm modules|fields|list|get|search --adapter sdk-v8` (`crm-005` explicit
   SDK read gates; default remains `http-v2`)
+- `apiVersionPolicy` from `zoho crm status` / `zoho crm sdk-status` (`crm-006`:
+  HTTP v2 default, SDK/API v8 explicit-only)
 
 GitHub intake:
 - `skill/references/github-intake-workflow.md`

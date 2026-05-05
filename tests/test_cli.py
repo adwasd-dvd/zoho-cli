@@ -26958,6 +26958,8 @@ def test_crm_status_scaffold_info(mock_config: Path) -> None:
     assert payload["hasAccount"] is True
     assert payload["hasAccountId"] is True
     assert payload["baseUrl"] == "https://www.zohoapis.com/crm/v2"
+    assert payload["apiVersionPolicy"]["defaultHttpApiVersion"] == "v2"
+    assert payload["apiVersionPolicy"]["sdkApiVersion"] == "v8"
     assert payload["oauthReady"] is False
     assert "ZohoCRM.modules.ALL" in payload["missingScopes"]
 

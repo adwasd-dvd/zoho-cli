@@ -1,10 +1,19 @@
-last_run_at: "2026-05-05T10:26:18Z"
+last_run_at: "2026-05-05T10:35:30Z"
 last_result: passing
-current_focus: crm-005-sdk-read-only-parity-full-ci-20260505T102618Z
+current_focus: crm-006-api-version-policy-full-ci-20260505T103530Z
 suites:
   unit:
     status: passing
     notes:
+      - "crm-006 API version policy completed at 2026-05-05T10:33:29Z"
+      - "make ci -> ruff format/check clean + pytest `1801 passed in 48.79s`"
+      - "locked `crm_api_version_policy()` and exposed `apiVersionPolicy` through `zoho crm status` plus `zoho crm sdk-status`"
+      - "HTTP v2 remains the default CRM adapter/version; SDK/API v8 remains explicit-only through `--adapter sdk-v8`; HTTP v8 base inference is compatibility-only until live shape parity evidence exists"
+      - "./.venv/bin/python -m pytest -q tests/test_crm.py tests/test_cli.py -k crm tests/test_lane3_docs.py tests/test_markdown_update.py -> 32 passed, 866 deselected in 1.97s"
+      - "./.venv/bin/python -m zoho_cli crm status | jq '.apiVersionPolicy.defaultHttpApiVersion, .apiVersionPolicy.sdkApiVersion, .apiVersionPolicy.selection.sdkV8' -> `v2`, `v8`, `explicit --adapter sdk-v8 only`"
+      - "./.venv/bin/python -m zoho_cli crm sdk-status | jq '.apiVersionPolicy.defaultAdapter, .apiVersionPolicy.defaultHttpApiVersion, .apiVersionPolicy.sdkApiVersion' -> `http-v2`, `v2`, `v8`"
+      - "ruby YAML parse for ops/workflow state -> YAML_PARSE_OK"
+      - "git diff --check -> clean"
       - "crm-005 SDK read-only parity gates completed at 2026-05-05T10:21:33Z"
       - "make ci -> ruff format/check clean + pytest `1798 passed in 48.33s`"
       - "added explicit `--adapter http-v2|sdk-v8` to `crm modules`, `crm fields`, `crm list`, `crm get`, and `crm search`; default remains `http-v2`"

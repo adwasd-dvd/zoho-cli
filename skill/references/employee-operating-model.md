@@ -63,3 +63,6 @@ parity gates until the JSON-safe read surface is proven. The `crm-004`
 boundary lives in `zoho_cli/crm_sdk.py`; do not enable it by default. Use
 `--adapter sdk-v8` only for explicit SDK parity work, and keep SDK data-center
 resources under `ZOHO_CRM_SDK_RESOURCE_PATH` or the CLI-managed cache path.
+Honor `apiVersionPolicy`: HTTP v2 is the default path, SDK/API v8 is
+explicit-only, and write commands remain planning-only until safety gates are
+locked.

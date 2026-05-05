@@ -301,10 +301,17 @@
 - id: crm-006
   title: decide CRM v8 REST alignment and explicit API version policy
   module: crm
-  stage: in_progress
+  stage: completed
   priority: high
   depends_on:
   - crm-005
+- id: crm-007
+  title: plan CRM write-surface safety gates and audit-friendly command contract
+  module: crm
+  stage: in_progress
+  priority: high
+  depends_on:
+  - crm-006
 - id: platform-208
   title: finalize module-first CLI information architecture (retire legacy root mail aliases after deprecation window and normalize level-2/3 help taxonomy)
   module: platform

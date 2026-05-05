@@ -11139,6 +11139,7 @@ def crm_status(
             mail_base_url=account_cfg.get("mail_base_url"),
             accounts_server=account_cfg.get("accounts_server"),
         ),
+        "apiVersionPolicy": _crm.crm_api_version_policy(),
         "requiredScopes": _crm.DEFAULT_CRM_SCOPES,
         "grantedScopes": account_cfg.get("scopes", []),
         "next": [

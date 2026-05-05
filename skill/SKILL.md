@@ -54,7 +54,9 @@ Use this skill as the default operating contract for an OpenClaw agent acting li
   current HTTP adapter as default, use `zoho_cli/crm_sdk.py` only as the
   default-disabled SDK adapter boundary, use `--adapter sdk-v8` only when the
   user or task explicitly asks for SDK mode, keep SDK resources under
-  `ZOHO_CRM_SDK_RESOURCE_PATH` or the CLI-managed cache path, and follow
+  `ZOHO_CRM_SDK_RESOURCE_PATH` or the CLI-managed cache path, preserve the
+  `apiVersionPolicy` decision that HTTP v2 is default and SDK/API v8 is
+  explicit-only, and follow
   `docs/architecture/CRM_V0_5_SDK_ADOPTION_PLAN.md` before changing CRM command
   output shapes.
 - Draft before high-impact send/delete actions unless the user explicitly asks for direct execution.

@@ -1,10 +1,10 @@
 module: CRM
-updated_at: "2026-05-05T10:21:33Z"
+updated_at: "2026-05-05T10:33:29Z"
 status: in_progress
-phase: v0_5_v8_alignment
+phase: v0_5_write_surface_planning
 blockers: []
-current_milestone: crm-006-v8-alignment
+current_milestone: crm-007-write-surface-safety-contract
 last_completed:
-  id: crm-005
-  summary: "Added explicit `--adapter sdk-v8` read gates for modules/fields/list/get/search, official SDK backend initialization from CLI-refreshed access tokens, structured SDK availability errors, and fixture-backed parity tests while keeping `http-v2` as default."
-next_small_step: lock the CRM HTTP v2 versus SDK/API v8 alignment policy before changing any default command behavior
+  id: crm-006
+  summary: "Locked `crm_api_version_policy()` and exposed it through `zoho crm status` plus `zoho crm sdk-status`: HTTP v2 remains default, SDK/API v8 remains explicit-only, and HTTP v8 inference is compatibility-only until live shape parity evidence exists."
+next_small_step: document CRM write-surface dry-run confirmation idempotency and audit gates before enabling create/update/delete behavior

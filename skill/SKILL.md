@@ -103,6 +103,12 @@ Use this skill as the default operating contract for an OpenClaw agent acting li
   after the smoke script; proceed only when it reports
   `ready_for_operator_live_fixture` for a deliberate live run, or
   `live_fixture_recorded` for completed evidence.
+  In `crm-015`, use
+  `docs/releases/CRM_V0_5_FIXTURE_PAYLOAD_TEMPLATE.json` only as a copy/edit
+  starting point for the operator's `/tmp/lead-fixture.json`; it contains
+  `.example.invalid` placeholder data and must be replaced with a dedicated
+  operator-owned test email plus cleanup plan before any live fixture gates are
+  considered.
 - Draft before high-impact send/delete actions unless the user explicitly asks for direct execution.
 - Ask for explicit approval before running any install/update command that modifies tools or skill files.
 - File low-risk, sanitized CLI bugs and suggestions directly in `adwasd-dvd/zoho-cli` GitHub issues after duplicate search; ask for approval before including private context or changing GitHub settings/labels/code.

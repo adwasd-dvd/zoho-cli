@@ -4,7 +4,7 @@ module: crm
 stage: in_progress
 status: in_progress
 owner: coder
-updated_at: '2026-05-05T12:04:56Z'
+updated_at: '2026-05-05T20:08:21Z'
 execution_mode: turbo_20x
 throughput_policy_ref: ops/state/execution_policy.yml
 success_criteria:
@@ -17,6 +17,7 @@ success_criteria:
   - update Lane 2/3 docs and Lane 1 state
 next_if_done: decide whether CRM v0.5 should broaden guarded upsert support or stop at fixture evidence for the RC.
 progress:
+  - "2026-05-05T20:08:21Z crm-015 operator handoff tightened: added `docs/releases/CRM_V0_5_FIXTURE_PAYLOAD_TEMPLATE.json` as a safe one-record Leads template with `.example.invalid` placeholder data, refreshed the operator fixture evidence runbook and Lane 3 guidance so agents copy/edit it outside the repo, require a dedicated operator-owned test email plus cleanup plan before live mode, and keep normal `zoho crm upsert --execute` blocked."
   - "2026-05-05T12:04:56Z crm-014 completed: added `crm_operator_fixture_evidence_status()` and `zoho crm fixture-evidence`; the command reads a smoke summary and redacted audit JSONL, resolves report paths, checks dry-run/gate/scope/fixture-plan/fixture-attempt/fixture-result evidence, verifies the redaction contract, and classifies evidence as `incomplete`, `ready_for_operator_live_fixture`, or `live_fixture_recorded` without writing CRM data; focused CRM CLI/helper tests and Lane 3 docs tests passed."
   - "2026-05-05T11:51:41Z crm-013 completed: added `ops/scripts/crm_fixture_live_smoke.sh`; the script defaults to dry-run, runs `zoho crm upsert`, `zoho crm upsert-gate --check-auth`, `zoho crm fixture-plan`, `zoho crm fixture-execute` dry-run, and `zoho crm write-audit`, writes redacted report files plus a top-level summary, and refuses live execution unless both `ZOHO_CRM_FIXTURE_EXECUTE=1` and `ZOHO_CRM_ALLOW_LIVE_FIXTURE=1` are set with a payload file and cleanup plan; focused script tests and shell syntax checks passed."
   - "2026-05-05T11:37:34Z crm-012 completed: added `crm_guarded_fixture_execution_policy()` and `zoho crm fixture-execute`; the command defaults to dry-run, reports `requiredApproval`, requires `ZOHO_CRM_ALLOW_LIVE_FIXTURE=1`, exact `--fixture-approval`, `--cleanup-plan`, matching payload digest/idempotency, and persisted dry-run/gate/fixture-plan audit evidence for `--execute`, persists redacted `crm.write.fixture_attempt` and `crm.write.fixture_result`, summarizes CRM API responses without raw field values, and keeps normal `zoho crm upsert --execute` blocked; focused fixture execution tests passed."
@@ -26,4 +27,4 @@ progress:
   - "2026-05-05T10:52:22Z crm-008 completed: added `zoho crm upsert` as dry-run-only; accepted `--data-json` or `--data-file`, duplicate-check fields, and idempotency key; normalized single records and full request bodies; returned JSON-safe audit output with `fieldNames`, `recordCount`, `payloadDigest`, `recordDigests`, `requiredConfirmation`, endpoint metadata, and no raw field values; kept `--execute` blocked with `confirm_required` or `live_write_not_enabled`; refreshed Lane 2/3 docs and help snapshot; focused CRM/Lane 3 tests and manual CLI probes passed."
   - "2026-05-05T10:42:55Z crm-007 completed: added `crm_write_surface_policy()` plus `zoho crm write-plan`; exposed `writeSurfacePolicy` through `zoho crm status`, `zoho crm sdk-status`, and `zoho crm write-plan`; locked `writesEnabled=false`, dry-run default, exact confirmation, idempotency-key, JSON-payload, and audit-envelope requirements; chose `upsert` as the first implementation candidate and kept `delete` blocked; added `docs/architecture/CRM_WRITE_SURFACE_CONTRACT.md`; refreshed Lane 2/3 docs and help snapshot; focused CRM/Lane 3 tests plus CLI diagnostic probes passed."
   - "2026-05-05T10:33:29Z crm-006 completed: locked `crm_api_version_policy()` in code and diagnostics; HTTP v2 remains the default CRM adapter/version to preserve current output shapes, SDK/API v8 remains explicit-only through `--adapter sdk-v8`, HTTP v8 base inference is available only for compatibility work, and `zoho crm status` plus `zoho crm sdk-status` expose `apiVersionPolicy`. Focused lint, format, CRM tests, Lane 3 docs tests, markdown update tests, and CLI diagnostic probes passed."
-next_step: Start `crm-015` by waiting for an operator-provided dedicated CRM fixture payload before any live write.
+next_step: Start the live portion of `crm-015` only after the operator copies/edits the template into a dedicated payload, provides a cleanup plan, and enables the exact live fixture gates.

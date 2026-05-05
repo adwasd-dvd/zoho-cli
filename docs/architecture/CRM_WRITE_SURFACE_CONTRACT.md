@@ -1,6 +1,6 @@
 # CRM write-surface safety contract
 
-Updated: `2026-05-05T12:04:56Z`.
+Updated: `2026-05-05T20:08:21Z`.
 
 This is the `crm-007` contract for adding CRM write commands without making AI
 agents accidentally mutate production data.
@@ -245,6 +245,19 @@ reads the redacted audit JSONL, and reports:
 
 This command is the RC evidence checker. It does not enable broad CRM writes;
 normal `zoho crm upsert --execute` stays blocked.
+
+## Operator payload template
+
+`docs/releases/CRM_V0_5_FIXTURE_PAYLOAD_TEMPLATE.json` is the copy-only starting
+point for the `crm-015` operator fixture payload. It intentionally uses an
+`.example.invalid` email and `replace-me` marker so it is safe for dry-run
+planning but not a live payload.
+
+Before live mode, the operator must copy it outside the repo, keep it to one
+`Leads` record, replace `Email` with a dedicated test address, and provide a
+cleanup plan that can remove or update the resulting fixture record. The live
+fixture path still requires the smoke script, exact approval token,
+`ZOHO_CRM_FIXTURE_EXECUTE=1`, and `ZOHO_CRM_ALLOW_LIVE_FIXTURE=1`.
 
 ## Official API references
 

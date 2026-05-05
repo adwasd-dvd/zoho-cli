@@ -188,6 +188,15 @@ normal `zoho crm upsert --execute` blocked.
 For operator/live smoke evidence, prefer the repeatable script:
 
 ```bash
+cp docs/releases/CRM_V0_5_FIXTURE_PAYLOAD_TEMPLATE.json /tmp/lead-fixture.json
+$EDITOR /tmp/lead-fixture.json
+```
+
+The template is safe for dry-run planning only. Before live mode, replace the
+`.example.invalid` email with a dedicated operator-owned test address and keep
+the payload to one `Leads` record with a cleanup plan.
+
+```bash
 ZOHO_CRM_FIXTURE_PAYLOAD_FILE=/tmp/lead-fixture.json \
 ZOHO_CRM_FIXTURE_CLEANUP_PLAN="remove or update the dedicated fixture record after validation" \
 ops/scripts/crm_fixture_live_smoke.sh

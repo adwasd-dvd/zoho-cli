@@ -1,10 +1,18 @@
-last_run_at: "2026-05-05T14:28:57Z"
+last_run_at: "2026-05-05T20:08:21Z"
 last_result: passing
-current_focus: cliq-channel-422-rc-artifact-metadata
+current_focus: crm-015-operator-payload-template
 suites:
   unit:
     status: passing
     notes:
+      - "crm-015 operator payload template handoff completed at 2026-05-05T20:08:21Z"
+      - "added `docs/releases/CRM_V0_5_FIXTURE_PAYLOAD_TEMPLATE.json` as a safe one-record Leads starting payload with `.example.invalid` placeholder data"
+      - "refreshed operator fixture evidence runbook, CRM write contract, README, Lane 3 skill docs, and Lane 1 state so agents copy/edit the template outside the repo, require a dedicated operator-owned test email plus cleanup plan before live mode, and keep normal `zoho crm upsert --execute` blocked"
+      - "./.venv/bin/python -m pytest -q tests/test_lane3_docs.py::test_lane3_required_paths_exist tests/test_lane3_docs.py::test_crm_sdk_adoption_contract_present tests/test_lane3_docs.py::test_crm_fixture_payload_template_is_safe_single_record tests/test_markdown_update.py -> 4 passed in 0.02s"
+      - "./.venv/bin/python -m pytest -q tests/test_lane3_docs.py tests/test_markdown_update.py -> 11 passed in 0.02s"
+      - "./.venv/bin/ruff format --check tests/test_lane3_docs.py -> 1 file already formatted"
+      - "ruby YAML parse for project/crm/active_task/test_status -> YAML_PARSE_OK"
+      - "git diff --check -> passed"
       - "cliq-channel-422 RC artifact metadata promotion completed at 2026-05-05T14:22:51Z"
       - "bumped native Cliq channel package, plugin manifest, runtime constants, generated `dist/`, and package metadata tests to `0.4.0-rc.1`"
       - "npm --prefix integrations/openclaw-channel-cliq run typecheck -> passed"

@@ -132,6 +132,9 @@ After sync, ensure the AI user follows:
   - prefer `ops/scripts/crm_fixture_live_smoke.sh` for operator smoke reports;
     it skips live execution unless `ZOHO_CRM_FIXTURE_EXECUTE=1` and
     `ZOHO_CRM_ALLOW_LIVE_FIXTURE=1` are both set
+  - use `docs/releases/CRM_V0_5_FIXTURE_PAYLOAD_TEMPLATE.json` only as a
+    copy/edit starting point; replace the `.example.invalid` email with a
+    dedicated operator-owned CRM test address before live mode
   - run `zoho crm fixture-evidence --summary-file <summary.json>` after smoke
     runs; require `ready_for_operator_live_fixture` before live mode and
     `live_fixture_recorded` for completed evidence

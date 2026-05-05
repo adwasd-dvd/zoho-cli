@@ -55,6 +55,9 @@ CRM SDK planning:
 - `zoho crm fixture-evidence` (`crm-014`: smoke summary/audit checker,
   `policyId=crm-014-operator-fixture-evidence`, reports `incomplete`,
   `ready_for_operator_live_fixture`, or `live_fixture_recorded`)
+- `docs/releases/CRM_V0_5_FIXTURE_PAYLOAD_TEMPLATE.json` (`crm-015`: safe
+  one-record `Leads` template with `.example.invalid` placeholder data; copy and
+  edit outside the repo before live fixture mode)
 - `docs/architecture/CRM_WRITE_SURFACE_CONTRACT.md`
 
 GitHub intake:

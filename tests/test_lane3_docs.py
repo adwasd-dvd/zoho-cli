@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import json
 import re
 from pathlib import Path
 
@@ -47,6 +48,7 @@ def test_lane3_required_paths_exist() -> None:
         REPO_ROOT / "integrations" / "openclaw-channel-cliq" / "skill" / "SKILL.md",
         REPO_ROOT / "docs" / "architecture" / "CRM_V0_5_SDK_ADOPTION_PLAN.md",
         REPO_ROOT / "docs" / "releases" / "CRM_V0_5_OPERATOR_FIXTURE_EVIDENCE.md",
+        REPO_ROOT / "docs" / "releases" / "CRM_V0_5_FIXTURE_PAYLOAD_TEMPLATE.json",
         REPO_ROOT / "docs" / "releases" / "OPENCLAW_CLIQ_CHANNEL_SETUP.md",
         REPO_ROOT / "docs" / "releases" / "OPENCLAW_CLIQ_BOT_HANDLER_TEMPLATES.md",
         REPO_ROOT / "docs" / "releases" / "OPENCLAW_CLIQ_CHANNEL_COMPATIBILITY.md",
@@ -221,6 +223,8 @@ def test_crm_sdk_adoption_contract_present() -> None:
         REPO_ROOT / "integrations" / "openclaw" / "SKILL_INDEX.md",
         REPO_ROOT / "docs" / "architecture" / "CRM_V0_5_SDK_ADOPTION_PLAN.md",
         REPO_ROOT / "docs" / "architecture" / "CRM_WRITE_SURFACE_CONTRACT.md",
+        REPO_ROOT / "docs" / "releases" / "CRM_V0_5_OPERATOR_FIXTURE_EVIDENCE.md",
+        REPO_ROOT / "docs" / "releases" / "CRM_V0_5_FIXTURE_PAYLOAD_TEMPLATE.json",
     ]
     combined = "\n".join(path.read_text(encoding="utf-8") for path in docs)
 
@@ -242,6 +246,7 @@ def test_crm_sdk_adoption_contract_present() -> None:
         "crm-012",
         "crm-013",
         "crm-014",
+        "crm-015",
         "zoho_cli/crm_sdk.py",
         "--adapter sdk-v8",
         "apiVersionPolicy",
@@ -270,6 +275,10 @@ def test_crm_sdk_adoption_contract_present() -> None:
         "ZOHO_CRM_FIXTURE_EXECUTE",
         "crm.write.fixture_attempt",
         "crm.write.fixture_result",
+        "CRM_V0_5_FIXTURE_PAYLOAD_TEMPLATE.json",
+        ".example.invalid",
+        "dedicated operator-owned test",
+        "copy/edit",
         "--audit-file",
         "--fixture-approval",
         "--cleanup-plan",
@@ -287,3 +296,20 @@ def test_crm_sdk_adoption_contract_present() -> None:
         "JSON-safe",
     ]:
         assert marker in combined
+
+
+def test_crm_fixture_payload_template_is_safe_single_record() -> None:
+    template_path = (
+        REPO_ROOT / "docs" / "releases" / "CRM_V0_5_FIXTURE_PAYLOAD_TEMPLATE.json"
+    )
+    text = template_path.read_text(encoding="utf-8")
+    payload = json.loads(text)
+
+    assert isinstance(payload, dict)
+    assert "data" not in payload
+    assert {"Last_Name", "Company", "Email", "Description"} <= set(payload)
+    assert payload["Email"].endswith("@example.invalid")
+    assert "replace-me" in payload["Email"]
+    assert "dedicated operator-owned test address" in payload["Description"]
+    assert "--execute" not in text
+    assert "ZOHO_CRM_ALLOW_LIVE_FIXTURE" not in text

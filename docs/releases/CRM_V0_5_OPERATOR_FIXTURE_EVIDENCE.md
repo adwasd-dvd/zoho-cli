@@ -8,6 +8,23 @@ write before deciding whether CRM v0.5 can broaden guarded upsert support.
 Prepare a dedicated fixture payload outside the repo. Use a record that is safe
 to create or update and easy to clean up.
 
+Start from the repo template, but do not use it unchanged for live mode:
+
+```bash
+cp docs/releases/CRM_V0_5_FIXTURE_PAYLOAD_TEMPLATE.json /tmp/lead-fixture.json
+$EDITOR /tmp/lead-fixture.json
+```
+
+Payload checklist:
+
+- Keep the file to one `Leads` record, not a list or bulk import body.
+- Keep `Last_Name`, `Company`, and `Email` present.
+- Replace the `.example.invalid` email with a dedicated operator-owned CRM test
+  address before any live fixture.
+- Use fake, searchable values that are not customer, employee, or private data.
+- Make the cleanup plan specific enough to remove or update the resulting test
+  record by the returned CRM id or dedicated test email.
+
 ```bash
 ZOHO_CRM_FIXTURE_PAYLOAD_FILE=/tmp/lead-fixture.json \
 ZOHO_CRM_FIXTURE_IDEMPOTENCY_KEY=crm-fixture-$(date +%F) \

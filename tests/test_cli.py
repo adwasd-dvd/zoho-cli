@@ -12,7 +12,7 @@ import pytest
 import respx
 from typer.testing import CliRunner
 
-from zoho_cli import auth
+from zoho_cli import auth, crm_sdk
 from zoho_cli.cli import app
 
 # ---------------------------------------------------------------------------
@@ -27028,6 +27028,61 @@ def test_crm_sdk_status_command_uses_account_region(mock_config: Path) -> None:
     payload = json.loads(result.output)
     assert payload["adapterSkeleton"]["dataCenter"]["key"] == "eu"
     assert payload["adapterSkeleton"]["resourcePath"].endswith("test_at_example.com")
+
+
+def test_crm_modules_sdk_adapter_gate(
+    mock_config: Path, mock_token_refresh: Any
+) -> None:
+    mock_client = MagicMock()
+    mock_client.modules.return_value = {"data": [{"api_name": "Leads"}]}
+
+    with patch(
+        "zoho_cli.cli._crm_sdk.build_official_crm_sdk_adapter",
+        return_value=mock_client,
+    ) as build:
+        result = runner.invoke(
+            app,
+            ["crm", "modules", "--adapter", "sdk-v8", "--limit", "2"],
+            env=_cfg_env(mock_config),
+        )
+
+    assert result.exit_code == 0, result.output
+    payload = json.loads(result.output)
+    assert payload[0]["api_name"] == "Leads"
+    mock_client.modules.assert_called_once_with(limit=2, page=1)
+    assert build.call_args.kwargs["access_token"] == "fake-access-token"
+    assert build.call_args.kwargs["account_email"] == ACCOUNT_EMAIL
+
+
+def test_crm_sdk_adapter_missing_sdk_reports_json_error(
+    mock_config: Path, mock_token_refresh: Any
+) -> None:
+    with patch(
+        "zoho_cli.cli._crm_sdk.build_official_crm_sdk_adapter",
+        side_effect=crm_sdk.CrmSdkUnavailableError(
+            "sdk_not_installed",
+            "Install the optional dependency with: pip install 'zoho-cli[crm-sdk]'",
+        ),
+    ):
+        result = runner.invoke(
+            app,
+            ["crm", "modules", "--adapter", "sdk-v8"],
+            env=_cfg_env(mock_config),
+        )
+
+    assert result.exit_code == 1
+    assert "sdk_not_installed" in result.output
+
+
+def test_crm_invalid_adapter_is_rejected(mock_config: Path) -> None:
+    result = runner.invoke(
+        app,
+        ["crm", "modules", "--adapter", "wat"],
+        env=_cfg_env(mock_config),
+    )
+
+    assert result.exit_code == 1
+    assert "invalid_adapter" in result.output
 
 
 @respx.mock

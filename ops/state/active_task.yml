@@ -1,20 +1,21 @@
-id: crm-005
-title: prove CRM read-only parity through the official SDK adapter behind an explicit gate
+id: crm-006
+title: decide CRM v8 REST alignment and explicit API version policy
 module: crm
 stage: in_progress
 status: in_progress
 owner: coder
-updated_at: '2026-05-05T10:09:33Z'
+updated_at: '2026-05-05T10:21:33Z'
 execution_mode: turbo_20x
 throughput_policy_ref: ops/state/execution_policy.yml
 success_criteria:
-  - attach the official SDK backend only behind an explicit adapter flag/config gate
-  - cover modules/fields/list/get/search parity with fixtures before any live SDK use
-  - preserve current CRM command output shapes and keep the HTTP adapter default
-  - keep SDK resource/token files under CLI-managed cache paths, never the project root
-  - record docs and AI skill usage for how agents choose HTTP versus SDK mode
-next_if_done: evaluate v8 REST alignment and decide whether HTTP v2/v8 version selection needs to stay explicit.
+  - compare current HTTP v2 endpoints with SDK/API v8 expectations for read-only commands
+  - document whether HTTP adapter version selection must stay explicit
+  - preserve current default command output shapes unless a compatibility plan exists
+  - keep SDK mode opt-in through `--adapter sdk-v8`
+  - update Lane 2/3 docs and Lane 1 state with the v8 alignment decision
+next_if_done: plan CRM write-surface safety gates only after read-version policy is locked.
 progress:
+  - "2026-05-05T10:21:33Z crm-005 completed: added explicit `--adapter http-v2|sdk-v8` gates to `crm modules`, `crm fields`, `crm list`, `crm get`, and `crm search`; kept `http-v2` as default; initialized official SDK mode from the CLI-refreshed access token behind `zoho_cli/crm_sdk.py`; returned structured SDK availability errors; added fixture-backed parity coverage for SDK operation parameters and JSON-safe normalization; refreshed Lane 2/3 docs and help snapshot."
   - "2026-05-05T10:09:33Z crm-004 completed: added `zoho_cli/crm_sdk.py` as the optional official SDK boundary with data-center mapping for existing account hosts, CLI-managed resource/token cache paths with `ZOHO_CRM_SDK_RESOURCE_PATH` override, lazy SDK binding imports, `ZohoCrmSdkAdapter` read-only method skeletons, SDK response normalization into plain dict/list JSON, and `zoho crm sdk-status` `adapterSkeleton` diagnostics while preserving the current `http-v2` default."
   - "2026-05-05T09:49:08Z crm-003 completed: reviewed the existing CRM read-only surface and official Zoho CRM Python SDK v8 sources; added `zoho crm sdk-status`, optional `zoho-cli[crm-sdk]` packaging for `zohocrmsdk8_0==5.0.0`, `docs/architecture/CRM_V0_5_SDK_ADOPTION_PLAN.md`, Lane 2/3 docs, help snapshot, and focused CRM/CLI tests while keeping the current JSON-safe HTTP adapter as default."
   - "2026-05-05T09:42:24Z cliq-channel-418 completed: added `docs/releases/OPENCLAW_CLIQ_CHANNEL_V0_4_RC_CHECKLIST.md` with included scope, green evidence, remaining public Bot callback gate, RC cut steps, package integrity guidance, and non-goals. Native Cliq channel v0.4 is ready for local/operator RC testing; production rollout remains gated on public Bot callback reachability. Full `make ci` passed with `1777 passed in 49.10s`."
@@ -22,4 +23,4 @@ progress:
   - "2026-05-05T09:17:12Z cliq-channel-411 completed: added `ops/scripts/openclaw_cliq_live_smoke.sh` for redacted fake/live smoke checks, classified Zoho refresh throttling as `rate_limited`/`skip_deferred`, fixed webhook/inbound normalization so `message.id` is not misclassified as `chatId`, and recorded live evidence: OpenClaw plugin/channel checks pass; Zoho auth/capability/polling probes pass; local webhook auth/security gates pass; native polling returns an empty but valid event set; public Bot callback remains deferred until a reachable tunnel/gateway URL is configured. Full `make ci` passed with `1775 passed in 47.39s`."
   - "2026-05-05T08:44:45Z cliq-channel-415 completed: added `src/observability.ts` and `src/privacy.ts` for redacted audit events, stable correlation ids, diagnostic bundles, webhook/polling/lifecycle/turn-ledger/native dispatch rate-limit diagnostics, privacy retention rules, dead-letter replay guidance, and npm integrity checklist placeholders. Status diagnostics now advertise `observabilityBundle=true`, `productionReadiness=pending_live_verification`, blocker `live_verification_pending`, implemented slice `cliq-channel-415`, and `nextSlice=cliq-channel-411`."
   - "2026-05-05T08:25:45Z cliq-channel-417 completed: `src/native-dispatch.ts` maps accepted Cliq webhook/polling events into OpenClaw native channel turns, records session/last-route metadata, delivers agent replies through the Cliq outbound adapter, and fake host coverage verifies trusted webhook dispatch, trusted polling dispatch, denied events, duplicate suppression, and dispatch-failure dead-lettering."
-next_step: Start `crm-005` by wiring fixture-backed SDK read-only parity behind an explicit adapter gate without changing default CRM command behavior.
+next_step: Start `crm-006` by documenting and testing the CRM HTTP v2 versus SDK/API v8 version policy before any default behavior change.

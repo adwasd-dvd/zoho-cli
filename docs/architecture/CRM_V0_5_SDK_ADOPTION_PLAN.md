@@ -1,6 +1,6 @@
 # CRM v0.5 SDK adoption plan
 
-Updated: `2026-05-05T10:07:04Z`.
+Updated: `2026-05-05T10:18:58Z`.
 
 This is the `crm-003` handoff for phasing the official Zoho CRM server-side
 Python SDK into `zoho-cli` without breaking the current AI-safe CLI contract.
@@ -73,6 +73,23 @@ adapter proves parity on the read-only surface. The CLI contract remains:
   see the resolved data-center, managed resource path, token-store path,
   default-disabled status, and JSON-safe output contract.
 
+## Implemented in crm-005
+
+- Added an explicit `--adapter http-v2|sdk-v8` option to read-only commands:
+  `crm modules`, `crm fields`, `crm list`, `crm get`, and `crm search`.
+- Kept `http-v2` as the default. `sdk-v8` is opt-in only and returns a
+  structured `sdk_not_installed`/`sdk_initialization_failed` error when the
+  optional SDK path is unavailable.
+- Added `OfficialZohoCrmSdkBackend` to initialize the official SDK from the
+  CLI-refreshed access token, not by changing the base OAuth storage contract.
+  SDK token/resource files remain under the CLI-managed resource path.
+- Added fixture-backed parity coverage for SDK operation parameter mapping:
+  modules, fields, list records, get record, and search records all normalize
+  SDK responses into the same JSON-safe dict/list payload shape expected by
+  command handlers.
+- Refreshed Lane 3 help snapshot so agents can see the explicit `--adapter`
+  gate before attempting SDK mode.
+
 ## v0.5 slices
 
 1. `crm-004` SDK adapter skeleton (completed):
@@ -80,7 +97,7 @@ adapter proves parity on the read-only surface. The CLI contract remains:
    - map Zoho data center from existing config;
    - initialize SDK resources under a CLI-managed cache directory;
    - expose read-only adapter methods returning plain dict/list JSON.
-2. `crm-005` read-only parity:
+2. `crm-005` read-only parity (completed):
    - make `modules`, `fields`, `list`, `get`, and `search` runnable through
      the SDK adapter behind an explicit flag/config gate;
    - preserve current HTTP adapter as default;

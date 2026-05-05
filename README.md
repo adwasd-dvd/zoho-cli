@@ -65,7 +65,7 @@ uv tool install .
 ### 🚧 Zoho CRM (read-only scaffold implemented)
 
 - Implemented commands: `crm status`, `crm sdk-status`, `crm modules`, `crm fields`, `crm list`, `crm get`, `crm search`
-- SDK adoption: `crm-003` added `zoho crm sdk-status` plus optional `zoho-cli[crm-sdk]` packaging for official `zohocrmsdk8_0==5.0.0`; `crm-004` added the optional `zoho_cli/crm_sdk.py` SDK adapter skeleton with data-center mapping, `ZOHO_CRM_SDK_RESOURCE_PATH` cache/resource policy, and JSON-safe read-only adapter shape tests. The current HTTP adapter remains the default until SDK parity tests pass. Plan: `docs/architecture/CRM_V0_5_SDK_ADOPTION_PLAN.md`.
+- SDK adoption: `crm-003` added `zoho crm sdk-status` plus optional `zoho-cli[crm-sdk]` packaging for official `zohocrmsdk8_0==5.0.0`; `crm-004` added the optional `zoho_cli/crm_sdk.py` SDK adapter skeleton with data-center mapping and `ZOHO_CRM_SDK_RESOURCE_PATH`; `crm-005` added explicit `--adapter sdk-v8` read-only parity gates for modules/fields/list/get/search. The current HTTP adapter remains the default. Plan: `docs/architecture/CRM_V0_5_SDK_ADOPTION_PLAN.md`.
 - Current limitation: deeper SDK/live validation remains capability-gated until CRM org access and read-only parity evidence are available.
 
 ### 🧪 Membrane bridge (experimental fast-fallback)
@@ -164,7 +164,7 @@ Project state lives in `ops/state/*.yml`:
 | Mail | ✅ Completed | stabilization_complete | Shipping baseline is stable. |
 | Cliq | ✅ Completed for RC | workflow_packaging_complete_with_deferred_external_blockers | Mail+Cliq AI-employee core is ready for RC; endpoint-limited tail is deferred post-RC. |
 | OpenClaw Cliq channel | 🚧 In progress | rc_package_ready_external_callback_deferred | `cliq-channel-401/402/416/403/414/404/405/406/407/408/413/409/410/417/415/411/412/418` added the installable package, config/setup UX, security/employee policy gates, SDK session/mention/approval seams, JSON-safe CLI process execution, native outbound delivery, normalized/deduped inbound polling, Bot webhook intake, status/read lifecycle handling, turn-ledger loop prevention, status/capability/routing diagnostics, AI troubleshooting docs, native OpenClaw agent turn dispatch, redacted observability/privacy diagnostics, the redacted fake/live smoke gate harness, host compatibility maintenance runbook, and v0.4 RC checklist. |
-| CRM | 🚧 In progress | v0_5_sdk_parity | Read-only scaffold is present; `crm-003/004` added SDK readiness diagnostics, optional SDK packaging, and the default-disabled SDK adapter skeleton while preserving the current JSON-safe HTTP adapter as default. |
+| CRM | 🚧 In progress | v0_5_v8_alignment | Read-only scaffold is present; `crm-003/004/005` added SDK readiness diagnostics, optional SDK packaging, the default-disabled SDK adapter, and explicit `--adapter sdk-v8` read-only gates while preserving the current JSON-safe HTTP adapter as default. |
 
 ### Current platform lane (AI-employee v1)
 
@@ -180,7 +180,7 @@ Project state lives in `ops/state/*.yml`:
 ### Current release posture
 
 - Current version: `0.2.1`
-- Next active target: CRM v0.5 read-only SDK parity behind an explicit gate while public native Cliq Bot callback verification waits on a reachable tunnel/gateway URL.
+- Next active target: CRM v0.5 v8 REST alignment decision while public native Cliq Bot callback verification waits on a reachable tunnel/gateway URL.
 - Release candidate: `false`
 - Broad automated gate: final `make release-gate && make ci` is green for `0.2.1`; [v0.2.1](https://github.com/adwasd-dvd/zoho-cli/releases/tag/v0.2.1) is the current stable release.
 
@@ -199,7 +199,7 @@ Project state lives in `ops/state/*.yml`:
 2. Keep remaining Cliq helper-heavy modularization opportunistic while the
    channel lane moves.
 3. Continue the native OpenClaw Cliq channel in v0.4 with native agent turn dispatch next.
-4. Prove CRM SDK read-only parity behind an explicit adapter gate before changing default command behavior.
+4. Decide CRM v8 REST alignment and keep version selection explicit if HTTP v2/v8 output differs.
 
 ---
 

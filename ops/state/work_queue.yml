@@ -294,10 +294,17 @@
 - id: crm-005
   title: prove CRM read-only parity through the official SDK adapter behind an explicit gate
   module: crm
-  stage: in_progress
+  stage: completed
   priority: high
   depends_on:
   - crm-004
+- id: crm-006
+  title: decide CRM v8 REST alignment and explicit API version policy
+  module: crm
+  stage: in_progress
+  priority: high
+  depends_on:
+  - crm-005
 - id: platform-208
   title: finalize module-first CLI information architecture (retire legacy root mail aliases after deprecation window and normalize level-2/3 help taxonomy)
   module: platform

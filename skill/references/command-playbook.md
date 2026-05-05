@@ -68,6 +68,12 @@ For SDK migration work, inspect `zoho crm sdk-status` and
 `docs/architecture/CRM_V0_5_SDK_ADOPTION_PLAN.md` first. `crm-004` keeps the
 `zoho_cli/crm_sdk.py` data-center adapter skeleton default-disabled; SDK
 resources must stay under `ZOHO_CRM_SDK_RESOURCE_PATH` or the CLI-managed cache.
+Use explicit `--adapter sdk-v8` only for SDK parity checks:
+
+```bash
+zoho crm modules --adapter sdk-v8
+zoho crm list --module Leads --adapter sdk-v8 --limit 5
+```
 
 ## Bridge fallback (explicit)
 

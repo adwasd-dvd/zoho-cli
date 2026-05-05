@@ -22,6 +22,8 @@ CRM SDK planning:
 - `zoho crm sdk-status`
 - `zoho_cli/crm_sdk.py` (`crm-004` data-center/cache-path adapter skeleton,
   default-disabled; `ZOHO_CRM_SDK_RESOURCE_PATH` override)
+- `crm modules|fields|list|get|search --adapter sdk-v8` (`crm-005` explicit
+  SDK read gates; default remains `http-v2`)
 
 GitHub intake:
 - `skill/references/github-intake-workflow.md`

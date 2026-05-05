@@ -52,7 +52,8 @@ Use this skill as the default operating contract for an OpenClaw agent acting li
 - For CRM SDK work, run `zoho crm sdk-status` first. Treat
   `zohocrmsdk8_0==5.0.0` as optional `zoho-cli[crm-sdk]` readiness, keep the
   current HTTP adapter as default, use `zoho_cli/crm_sdk.py` only as the
-  default-disabled `crm-004` SDK adapter boundary, keep SDK resources under
+  default-disabled SDK adapter boundary, use `--adapter sdk-v8` only when the
+  user or task explicitly asks for SDK mode, keep SDK resources under
   `ZOHO_CRM_SDK_RESOURCE_PATH` or the CLI-managed cache path, and follow
   `docs/architecture/CRM_V0_5_SDK_ADOPTION_PLAN.md` before changing CRM command
   output shapes.

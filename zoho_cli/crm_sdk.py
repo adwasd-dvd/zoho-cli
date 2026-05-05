@@ -221,9 +221,14 @@ class CrmSdkBindings:
     FileStore: object
     UserSignature: object
     SDKConfig: object
+    ParameterMap: object
     ModulesOperations: object
     FieldsOperations: object
     RecordOperations: object
+    GetFieldsParam: object
+    GetRecordParam: object
+    GetRecordsParam: object
+    SearchRecordsParam: object
     DataCenter: object
     environment_spec: CrmSdkEnvironmentSpec
 
@@ -398,6 +403,7 @@ def load_crm_sdk_bindings(
         "FileStore": "zohocrmsdk.src.com.zoho.api.authenticator.store.file_store.FileStore",
         "UserSignature": "zohocrmsdk.src.com.zoho.crm.api.user_signature.UserSignature",
         "SDKConfig": "zohocrmsdk.src.com.zoho.crm.api.sdk_config.SDKConfig",
+        "ParameterMap": "zohocrmsdk.src.com.zoho.crm.api.parameter_map.ParameterMap",
         "ModulesOperations": (
             "zohocrmsdk.src.com.zoho.crm.api.modules."
             "modules_operations.ModulesOperations"
@@ -407,6 +413,19 @@ def load_crm_sdk_bindings(
         ),
         "RecordOperations": (
             "zohocrmsdk.src.com.zoho.crm.api.record.record_operations.RecordOperations"
+        ),
+        "GetFieldsParam": (
+            "zohocrmsdk.src.com.zoho.crm.api.fields.fields_operations.GetFieldsParam"
+        ),
+        "GetRecordParam": (
+            "zohocrmsdk.src.com.zoho.crm.api.record.record_operations.GetRecordParam"
+        ),
+        "GetRecordsParam": (
+            "zohocrmsdk.src.com.zoho.crm.api.record.record_operations.GetRecordsParam"
+        ),
+        "SearchRecordsParam": (
+            "zohocrmsdk.src.com.zoho.crm.api.record."
+            "record_operations.SearchRecordsParam"
         ),
         "DataCenter": spec.sdk_class_path,
     }
@@ -427,9 +446,14 @@ def load_crm_sdk_bindings(
         FileStore=loaded["FileStore"],
         UserSignature=loaded["UserSignature"],
         SDKConfig=loaded["SDKConfig"],
+        ParameterMap=loaded["ParameterMap"],
         ModulesOperations=loaded["ModulesOperations"],
         FieldsOperations=loaded["FieldsOperations"],
         RecordOperations=loaded["RecordOperations"],
+        GetFieldsParam=loaded["GetFieldsParam"],
+        GetRecordParam=loaded["GetRecordParam"],
+        GetRecordsParam=loaded["GetRecordsParam"],
+        SearchRecordsParam=loaded["SearchRecordsParam"],
         DataCenter=loaded["DataCenter"],
         environment_spec=spec,
     )
@@ -558,3 +582,126 @@ class ZohoCrmSdkAdapter:
             limit=limit,
             page=page,
         )
+
+
+class OfficialZohoCrmSdkBackend:
+    """Thin read-only backend over the official SDK operation classes."""
+
+    def __init__(self, bindings: CrmSdkBindings) -> None:
+        self._bindings = bindings
+
+    def _params(self) -> object:
+        return self._bindings.ParameterMap()
+
+    @staticmethod
+    def _add_param(param_map: object, param: object, value: object) -> None:
+        if value is None:
+            return
+        if isinstance(value, str) and not value:
+            return
+        add = getattr(param_map, "add")
+        add(param, value)
+
+    def modules(self, *, limit: int = 50, page: int = 1) -> object:
+        _ = (limit, page)
+        return self._bindings.ModulesOperations().get_modules()
+
+    def fields(
+        self, module_api_name: str, *, limit: int = 200, page: int = 1
+    ) -> object:
+        _ = (limit, page)
+        params = self._params()
+        self._add_param(params, self._bindings.GetFieldsParam.module, module_api_name)
+        return self._bindings.FieldsOperations().get_fields(params)
+
+    def list_records(
+        self,
+        module_api_name: str,
+        *,
+        limit: int = 50,
+        page: int = 1,
+        fields: list[str] | None = None,
+    ) -> object:
+        params = self._params()
+        self._add_param(params, self._bindings.GetRecordsParam.per_page, limit)
+        self._add_param(params, self._bindings.GetRecordsParam.page, page)
+        if fields:
+            self._add_param(
+                params,
+                self._bindings.GetRecordsParam.fields,
+                ",".join(fields),
+            )
+        return self._bindings.RecordOperations(module_api_name).get_records(params)
+
+    def get_record(
+        self,
+        module_api_name: str,
+        record_id: str,
+        *,
+        fields: list[str] | None = None,
+    ) -> object:
+        params = self._params()
+        if fields:
+            self._add_param(
+                params,
+                self._bindings.GetRecordParam.fields,
+                ",".join(fields),
+            )
+        return self._bindings.RecordOperations(module_api_name).get_record(
+            record_id,
+            params,
+        )
+
+    def search_records(
+        self,
+        module_api_name: str,
+        *,
+        criteria: str | None = None,
+        word: str | None = None,
+        limit: int = 50,
+        page: int = 1,
+    ) -> object:
+        params = self._params()
+        self._add_param(params, self._bindings.SearchRecordsParam.per_page, limit)
+        self._add_param(params, self._bindings.SearchRecordsParam.page, page)
+        self._add_param(params, self._bindings.SearchRecordsParam.criteria, criteria)
+        self._add_param(params, self._bindings.SearchRecordsParam.word, word)
+        return self._bindings.RecordOperations(module_api_name).search_records(params)
+
+
+def build_official_crm_sdk_adapter(
+    *,
+    access_token: str,
+    account_cfg: Mapping[str, Any] | None = None,
+    account_email: str | None = None,
+) -> ZohoCrmSdkAdapter:
+    """Initialize the official SDK behind the explicit `sdk-v8` gate."""
+
+    spec = crm_sdk_environment_spec_for_account(account_cfg)
+    bindings = load_crm_sdk_bindings(data_center_key=spec.key)
+    resource_path = crm_sdk_resource_path(account_email=account_email, create=True)
+    token_store_path = crm_sdk_token_store_path(resource_path)
+
+    try:
+        environment = bindings.DataCenter.PRODUCTION()
+        token = bindings.OAuthToken(
+            access_token=access_token,
+            api_domain=spec.api_domain,
+            find_user=False,
+        )
+        store = bindings.FileStore(str(token_store_path))
+        sdk_config = bindings.SDKConfig()
+        bindings.Initializer.initialize(
+            environment=environment,
+            token=token,
+            store=store,
+            sdk_config=sdk_config,
+            resource_path=str(resource_path),
+        )
+    except Exception as exc:
+        raise CrmSdkUnavailableError(
+            "sdk_initialization_failed",
+            f"Official CRM SDK initialization failed: {type(exc).__name__}",
+        ) from exc
+
+    return ZohoCrmSdkAdapter(OfficialZohoCrmSdkBackend(bindings))

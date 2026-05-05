@@ -1,10 +1,10 @@
 module: CRM
-updated_at: "2026-05-05T10:09:33Z"
+updated_at: "2026-05-05T10:21:33Z"
 status: in_progress
-phase: v0_5_sdk_read_only_parity
+phase: v0_5_v8_alignment
 blockers: []
-current_milestone: crm-005-sdk-read-only-parity
+current_milestone: crm-006-v8-alignment
 last_completed:
-  id: crm-004
-  summary: "Added `zoho_cli/crm_sdk.py` with optional SDK data-center mapping, CLI-managed cache/resource policy via `ZOHO_CRM_SDK_RESOURCE_PATH`, read-only adapter skeletons, JSON normalization, and `zoho crm sdk-status` adapter diagnostics while keeping the HTTP adapter default."
-next_small_step: wire fixture-backed SDK read-only parity behind an explicit adapter gate without changing default CRM command behavior
+  id: crm-005
+  summary: "Added explicit `--adapter sdk-v8` read gates for modules/fields/list/get/search, official SDK backend initialization from CLI-refreshed access tokens, structured SDK availability errors, and fixture-backed parity tests while keeping `http-v2` as default."
+next_small_step: lock the CRM HTTP v2 versus SDK/API v8 alignment policy before changing any default command behavior

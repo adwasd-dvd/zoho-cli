@@ -1,10 +1,10 @@
 # CLI help snapshot
 
-Generated at: `2026-05-05T09:52:02Z`
+Generated at: `2026-05-05T10:24:41Z`
 
 Use this file as a quick command-surface reference for the skill.
 
-## `zoho --help`
+## `./.venv/bin/zoho --help`
 
 Exit code: `0`
 
@@ -35,7 +35,7 @@ Exit code: `0`
 ╰──────────────────────────────────────────────────────────────────────────────╯
 ```
 
-## `zoho login --help`
+## `./.venv/bin/zoho login --help`
 
 Exit code: `0`
 
@@ -66,7 +66,7 @@ Exit code: `0`
 ╰──────────────────────────────────────────────────────────────────────────────╯
 ```
 
-## `zoho config --help`
+## `./.venv/bin/zoho config --help`
 
 Exit code: `0`
 
@@ -86,7 +86,7 @@ Exit code: `0`
 ╰──────────────────────────────────────────────────────────────────────────────╯
 ```
 
-## `zoho mail --help`
+## `./.venv/bin/zoho mail --help`
 
 Exit code: `0`
 
@@ -129,7 +129,7 @@ Exit code: `0`
 ╰──────────────────────────────────────────────────────────────────────────────╯
 ```
 
-## `zoho cliq --help`
+## `./.venv/bin/zoho cliq --help`
 
 Exit code: `0`
 
@@ -259,7 +259,7 @@ Exit code: `0`
 ╰──────────────────────────────────────────────────────────────────────────────╯
 ```
 
-## `zoho crm --help`
+## `./.venv/bin/zoho crm --help`
 
 Exit code: `0`
 

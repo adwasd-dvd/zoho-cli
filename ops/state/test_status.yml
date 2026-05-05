@@ -1,10 +1,16 @@
-last_run_at: "2026-05-05T10:13:22Z"
+last_run_at: "2026-05-05T10:26:18Z"
 last_result: passing
-current_focus: crm-004-sdk-adapter-skeleton-full-ci-20260505T101322Z
+current_focus: crm-005-sdk-read-only-parity-full-ci-20260505T102618Z
 suites:
   unit:
     status: passing
     notes:
+      - "crm-005 SDK read-only parity gates completed at 2026-05-05T10:21:33Z"
+      - "make ci -> ruff format/check clean + pytest `1798 passed in 48.33s`"
+      - "added explicit `--adapter http-v2|sdk-v8` to `crm modules`, `crm fields`, `crm list`, `crm get`, and `crm search`; default remains `http-v2`"
+      - "SDK mode initializes from the CLI-refreshed access token, keeps resources under the managed SDK path, and returns structured SDK availability errors"
+      - "./.venv/bin/python -m pytest -q tests/test_crm_sdk.py tests/test_crm.py tests/test_cli.py -k 'crm' tests/test_lane3_docs.py tests/test_markdown_update.py -> 41 passed, 866 deselected in 0.65s"
+      - "./.venv/bin/python -m zoho_cli crm modules --adapter sdk-v8 -> exit 1 with JSON error `sdk_not_installed` when optional SDK is not installed"
       - "crm-004 SDK adapter skeleton completed at 2026-05-05T10:09:33Z"
       - "make ci -> ruff format/check clean + pytest `1793 passed in 49.21s`"
       - "added `zoho_cli/crm_sdk.py` with optional SDK data-center mapping, CLI-managed resource/cache path policy via `ZOHO_CRM_SDK_RESOURCE_PATH`, lazy official SDK binding imports, read-only adapter skeleton methods, and JSON-safe SDK response normalization"

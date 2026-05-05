@@ -53,6 +53,7 @@ from zoho_cli import (
     cliq as _cliq,
     config as _config,
     crm as _crm,
+    crm_sdk as _crm_sdk,
     folders as _folders,
     mail as _mail,
     storage,
@@ -677,7 +678,18 @@ def _collect_configured_cliq_targets(
     return account_rows, sorted(seen_networks)
 
 
-def _get_crm_client(cfg: dict, email: str) -> ZohoCrmClient:
+def _validate_crm_adapter(adapter: str) -> str:
+    value = adapter.strip().lower()
+    if value not in {_crm.CRM_SDK_DEFAULT_ADAPTER, _crm.CRM_SDK_PROPOSED_ADAPTER}:
+        utils.error_exit(
+            "invalid_adapter",
+            "Unsupported CRM adapter. Use one of: http-v2, sdk-v8.",
+        )
+    return value
+
+
+def _get_crm_client(cfg: dict, email: str, *, adapter: str = "http-v2") -> object:
+    adapter = _validate_crm_adapter(adapter)
     cid, csec = _require_credentials(cfg)
     account_cfg = cfg.get("accounts", {}).get(email, {})
     access_token = auth.refresh_access_token(
@@ -686,6 +698,16 @@ def _get_crm_client(cfg: dict, email: str) -> ZohoCrmClient:
         csec,
         accounts_base_url=account_cfg.get("accounts_server"),
     )
+    if adapter == _crm.CRM_SDK_PROPOSED_ADAPTER:
+        try:
+            return _crm_sdk.build_official_crm_sdk_adapter(
+                access_token=access_token,
+                account_cfg=account_cfg,
+                account_email=email,
+            )
+        except _crm_sdk.CrmSdkUnavailableError as exc:
+            utils.error_exit(exc.code, exc.details)
+
     return ZohoCrmClient(
         access_token,
         base_url=_crm.infer_crm_base_url(
@@ -11160,11 +11182,16 @@ def crm_sdk_status() -> None:
 def crm_modules(
     limit: int = typer.Option(50, "--limit", "-n", help="Max modules to return."),
     page: int = typer.Option(1, "--page", help="Result page number."),
+    adapter: str = typer.Option(
+        _crm.CRM_SDK_DEFAULT_ADAPTER,
+        "--adapter",
+        help="CRM read adapter: http-v2 (default) or sdk-v8.",
+    ),
 ) -> None:
     """List CRM modules available to the account."""
     cfg = _cfg()
     email = _require_account(cfg)
-    client = _get_crm_client(cfg, email)
+    client = _get_crm_client(cfg, email, adapter=adapter)
 
     resp = client.modules(limit=limit, page=page)
     data = resp.get("data", resp)
@@ -11178,11 +11205,16 @@ def crm_fields(
     ),
     limit: int = typer.Option(200, "--limit", "-n", help="Max fields to return."),
     page: int = typer.Option(1, "--page", help="Result page number."),
+    adapter: str = typer.Option(
+        _crm.CRM_SDK_DEFAULT_ADAPTER,
+        "--adapter",
+        help="CRM read adapter: http-v2 (default) or sdk-v8.",
+    ),
 ) -> None:
     """List fields for a CRM module."""
     cfg = _cfg()
     email = _require_account(cfg)
-    client = _get_crm_client(cfg, email)
+    client = _get_crm_client(cfg, email, adapter=adapter)
 
     resp = client.fields(module, limit=limit, page=page)
     data = resp.get("data", resp)
@@ -11199,11 +11231,16 @@ def crm_list(
     fields: List[str] = typer.Option(
         [], "--field", help="Field API name to include (repeatable)."
     ),
+    adapter: str = typer.Option(
+        _crm.CRM_SDK_DEFAULT_ADAPTER,
+        "--adapter",
+        help="CRM read adapter: http-v2 (default) or sdk-v8.",
+    ),
 ) -> None:
     """List records from a CRM module."""
     cfg = _cfg()
     email = _require_account(cfg)
-    client = _get_crm_client(cfg, email)
+    client = _get_crm_client(cfg, email, adapter=adapter)
 
     resp = client.list_records(module, limit=limit, page=page, fields=list(fields))
     data = resp.get("data", resp)
@@ -11219,11 +11256,16 @@ def crm_get(
     fields: List[str] = typer.Option(
         [], "--field", help="Field API name to include (repeatable)."
     ),
+    adapter: str = typer.Option(
+        _crm.CRM_SDK_DEFAULT_ADAPTER,
+        "--adapter",
+        help="CRM read adapter: http-v2 (default) or sdk-v8.",
+    ),
 ) -> None:
     """Get a single CRM record by id."""
     cfg = _cfg()
     email = _require_account(cfg)
-    client = _get_crm_client(cfg, email)
+    client = _get_crm_client(cfg, email, adapter=adapter)
 
     resp = client.get_record(module, record_id, fields=list(fields))
     data = resp.get("data", resp)
@@ -11246,6 +11288,11 @@ def crm_search(
     ),
     limit: int = typer.Option(50, "--limit", "-n", help="Max records to return."),
     page: int = typer.Option(1, "--page", help="Result page number."),
+    adapter: str = typer.Option(
+        _crm.CRM_SDK_DEFAULT_ADAPTER,
+        "--adapter",
+        help="CRM read adapter: http-v2 (default) or sdk-v8.",
+    ),
 ) -> None:
     """Search records in a CRM module."""
     if bool(criteria) == bool(word):
@@ -11253,7 +11300,7 @@ def crm_search(
 
     cfg = _cfg()
     email = _require_account(cfg)
-    client = _get_crm_client(cfg, email)
+    client = _get_crm_client(cfg, email, adapter=adapter)
 
     resp = client.search_records(
         module,

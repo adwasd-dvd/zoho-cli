@@ -60,6 +60,6 @@ When CRM is available, start with read-only commands:
 For CRM SDK migration or v0.5 work, read
 `docs/architecture/CRM_V0_5_SDK_ADOPTION_PLAN.md` and keep the SDK adapter behind
 parity gates until the JSON-safe read surface is proven. The `crm-004`
-boundary lives in `zoho_cli/crm_sdk.py`; do not enable it by default, and keep
-SDK data-center resources under `ZOHO_CRM_SDK_RESOURCE_PATH` or the
-CLI-managed cache path.
+boundary lives in `zoho_cli/crm_sdk.py`; do not enable it by default. Use
+`--adapter sdk-v8` only for explicit SDK parity work, and keep SDK data-center
+resources under `ZOHO_CRM_SDK_RESOURCE_PATH` or the CLI-managed cache path.

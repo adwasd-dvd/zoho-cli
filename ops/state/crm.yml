@@ -1,10 +1,10 @@
 module: CRM
-updated_at: "2026-05-05T10:42:55Z"
+updated_at: "2026-05-05T10:52:22Z"
 status: in_progress
-phase: v0_5_upsert_dry_run
+phase: v0_5_live_upsert_gate_planning
 blockers: []
-current_milestone: crm-008-upsert-dry-run-contract
+current_milestone: crm-009-live-upsert-gate
 last_completed:
-  id: crm-007
-  summary: "Added `zoho crm write-plan` and `writeSurfacePolicy` diagnostics with `writesEnabled=false`, dry-run default, exact confirmation, idempotency-key, JSON-payload, audit-envelope requirements, upsert as the first implementation candidate, and delete blocked until a later safety slice."
-next_small_step: implement `zoho crm upsert` dry-run output without enabling live CRM writes
+  id: crm-008
+  summary: "Added `zoho crm upsert` as dry-run-only with JSON payload/file input, duplicate-check fields, idempotency key, payload/record digests, required confirmation, redacted audit output, and `--execute` blocked by `live_write_not_enabled`."
+next_small_step: decide guarded live upsert execution gate while keeping delete update and create live paths out of scope

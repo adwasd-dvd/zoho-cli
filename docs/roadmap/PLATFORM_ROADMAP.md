@@ -56,7 +56,7 @@ Definition of done:
 
 Current posture:
 - the read-only CRM baseline is implemented
-- `crm-003/004/005/006/007` have started v0.5 SDK adoption with `zoho crm sdk-status`, optional `zoho-cli[crm-sdk]` packaging for official `zohocrmsdk8_0==5.0.0`, the default-disabled `zoho_cli/crm_sdk.py` adapter, explicit `--adapter sdk-v8` read-only gates, the HTTP v2 versus SDK/API v8 policy, and `zoho crm write-plan` safety gates with `writesEnabled=false`
+- `crm-003/004/005/006/007/008` have started v0.5 SDK adoption with `zoho crm sdk-status`, optional `zoho-cli[crm-sdk]` packaging for official `zohocrmsdk8_0==5.0.0`, the default-disabled `zoho_cli/crm_sdk.py` adapter, explicit `--adapter sdk-v8` read-only gates, the HTTP v2 versus SDK/API v8 policy, `zoho crm write-plan` safety gates with `writesEnabled=false`, and `zoho crm upsert` dry-run output with payload digest/audit metadata while live writes stay blocked
 - live validation and deeper CRM workflows are gated behind SDK/read-only parity evidence
 
 ### Phase B3 — v1 AI-employee release gate (RC)

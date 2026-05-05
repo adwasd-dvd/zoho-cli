@@ -29,6 +29,10 @@ CRM SDK planning:
 - `zoho crm write-plan` / `writeSurfacePolicy` (`crm-007`: `writesEnabled=false`,
   dry-run default, exact confirmation, idempotency, JSON payload, audit envelope;
   upsert next, delete blocked)
+- `zoho crm upsert` (`crm-008`: dry-run-only, `--data-json` / `--data-file`,
+  `--duplicate-check-field`, `--idempotency-key`, `payloadDigest`,
+  `recordDigests`, `requiredConfirmation`; `--execute` returns
+  `live_write_not_enabled`)
 - `docs/architecture/CRM_WRITE_SURFACE_CONTRACT.md`
 
 GitHub intake:

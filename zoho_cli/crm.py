@@ -3,7 +3,10 @@
 from __future__ import annotations
 
 from collections.abc import Callable
+import hashlib
 from importlib import metadata
+import json
+from typing import Any
 from urllib.parse import urlparse
 
 import httpx
@@ -28,6 +31,9 @@ CRM_SDK_API_VERSION = "v8"
 CRM_HTTP_SUPPORTED_API_VERSIONS = ("v2", "v8")
 CRM_WRITE_POLICY_ID = "crm-007-write-surface-contract"
 CRM_WRITE_OPERATIONS = ("upsert", "update", "create", "delete")
+CRM_WRITE_DRY_RUN_STATUS = "planned"
+CRM_WRITE_LIVE_STATUS = "blocked"
+CRM_UPSERT_ADAPTER = "http-v8"
 
 
 def crm_sdk_status(
@@ -271,6 +277,161 @@ def _crm_write_operation_contracts() -> dict:
             "risk": "high",
         },
     }
+
+
+def build_crm_upsert_dry_run(
+    *,
+    module_api_name: str,
+    payload: Any,
+    duplicate_check_fields: list[str],
+    idempotency_key: str,
+    confirm: str | None = None,
+    execute: bool = False,
+    adapter: str = CRM_UPSERT_ADAPTER,
+) -> dict:
+    """Build a JSON-safe CRM upsert dry-run envelope without raw field values."""
+
+    module = module_api_name.strip()
+    if not module:
+        raise ValueError("module API name is required")
+
+    key = idempotency_key.strip()
+    if not key:
+        raise ValueError("idempotency key is required")
+
+    adapter_value = adapter.strip().lower()
+    if adapter_value != CRM_UPSERT_ADAPTER:
+        raise ValueError(f"unsupported CRM upsert adapter: {adapter}")
+
+    normalized = normalize_crm_upsert_payload(
+        payload,
+        duplicate_check_fields=duplicate_check_fields,
+    )
+    record_count = len(normalized["data"])
+    required_confirmation = f"crm:upsert:{module}:{record_count}"
+    provided_confirmation = (confirm or "").strip()
+    payload_digest = _stable_json_digest(normalized)
+
+    return {
+        "status": CRM_WRITE_LIVE_STATUS if execute else CRM_WRITE_DRY_RUN_STATUS,
+        "dryRun": not execute,
+        "execute": execute,
+        "liveWritesEnabled": False,
+        "operation": "upsert",
+        "module": module,
+        "recordCount": record_count,
+        "fieldNames": _crm_record_field_names(normalized["data"]),
+        "duplicateCheckFields": normalized["duplicate_check_fields"],
+        "payloadDigest": payload_digest,
+        "recordDigests": [_stable_json_digest(record) for record in normalized["data"]],
+        "adapter": adapter_value,
+        "apiVersion": CRM_SDK_API_VERSION,
+        "endpoint": {
+            "method": "POST",
+            "path": f"/{module}/upsert",
+            "basePath": f"/crm/{CRM_SDK_API_VERSION}",
+        },
+        "idempotencyKey": key,
+        "requiredConfirmation": required_confirmation,
+        "confirmation": {
+            "provided": provided_confirmation,
+            "matches": provided_confirmation == required_confirmation,
+        },
+        "payloadShape": {
+            "topLevelKeys": sorted(normalized.keys()),
+            "recordCount": record_count,
+            "fieldNames": _crm_record_field_names(normalized["data"]),
+        },
+        "audit": {
+            "event": "crm.write.plan",
+            "policyId": CRM_WRITE_POLICY_ID,
+            "payloadDigest": payload_digest,
+            "idempotencyKey": key,
+            "redactedFields": ["fieldValues"],
+            "liveWritesEnabled": False,
+        },
+        "next": [
+            "Review the dry-run envelope and requiredConfirmation.",
+            "Live upsert execution remains disabled in crm-008.",
+        ],
+    }
+
+
+def normalize_crm_upsert_payload(
+    payload: Any,
+    *,
+    duplicate_check_fields: list[str],
+) -> dict:
+    """Normalize upsert input into a request-shaped payload."""
+
+    if isinstance(payload, list):
+        normalized: dict[str, Any] = {"data": payload}
+    elif isinstance(payload, dict):
+        if "data" in payload:
+            normalized = dict(payload)
+        else:
+            normalized = {"data": [payload]}
+    else:
+        raise ValueError("upsert payload must be a JSON object or array")
+
+    records = normalized.get("data")
+    if not isinstance(records, list) or not records:
+        raise ValueError("upsert payload must include a non-empty data array")
+    if len(records) > 100:
+        raise ValueError("upsert payload can include at most 100 records")
+    if not all(isinstance(record, dict) for record in records):
+        raise ValueError("each upsert record must be a JSON object")
+
+    explicit_duplicate_fields = _clean_string_list(duplicate_check_fields)
+    payload_duplicate_fields = _clean_string_list(
+        normalized.get("duplicate_check_fields")
+    )
+    resolved_duplicate_fields = explicit_duplicate_fields or payload_duplicate_fields
+    if not resolved_duplicate_fields:
+        raise ValueError("at least one duplicate check field is required")
+
+    normalized["data"] = records
+    normalized["duplicate_check_fields"] = resolved_duplicate_fields
+    return normalized
+
+
+def _clean_string_list(value: Any) -> list[str]:
+    if value is None:
+        return []
+    if isinstance(value, str):
+        candidates = [value]
+    elif isinstance(value, (list, tuple)):
+        candidates = list(value)
+    else:
+        return []
+
+    cleaned: list[str] = []
+    for item in candidates:
+        if not isinstance(item, str):
+            continue
+        stripped = item.strip()
+        if stripped and stripped not in cleaned:
+            cleaned.append(stripped)
+    return cleaned
+
+
+def _crm_record_field_names(records: list[dict]) -> list[str]:
+    fields: list[str] = []
+    for record in records:
+        for key in record:
+            if key not in fields:
+                fields.append(key)
+    return fields
+
+
+def _stable_json_digest(value: Any) -> str:
+    encoded = json.dumps(
+        value,
+        ensure_ascii=False,
+        sort_keys=True,
+        separators=(",", ":"),
+    ).encode("utf-8")
+    return f"sha256:{hashlib.sha256(encoded).hexdigest()}"
 
 
 def missing_crm_scopes(granted_scopes: list[str] | None) -> list[str]:

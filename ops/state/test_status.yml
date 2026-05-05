@@ -1,10 +1,20 @@
-last_run_at: "2026-05-05T10:44:47Z"
+last_run_at: "2026-05-05T10:54:12Z"
 last_result: passing
-current_focus: crm-007-write-surface-policy-full-ci-20260505T104447Z
+current_focus: crm-008-upsert-dry-run-full-ci-20260505T105412Z
 suites:
   unit:
     status: passing
     notes:
+      - "crm-008 upsert dry-run completed at 2026-05-05T10:52:22Z"
+      - "make ci -> ruff format/check clean + pytest `1816 passed in 49.57s`"
+      - "added `zoho crm upsert` as dry-run-only with `--data-json`/`--data-file`, duplicate-check fields, and idempotency key"
+      - "dry-run output includes `fieldNames`, `recordCount`, `payloadDigest`, `recordDigests`, `requiredConfirmation`, endpoint metadata, and redacted audit metadata without raw field values"
+      - "`--execute` remains blocked by `confirm_required` or `live_write_not_enabled`"
+      - "./.venv/bin/python -m pytest -q tests/test_crm.py tests/test_cli.py -k crm tests/test_lane3_docs.py tests/test_markdown_update.py -> 47 passed, 866 deselected in 0.68s"
+      - "./.venv/bin/python -m zoho_cli crm upsert --module Leads --data-json '{\"Last_Name\":\"Wang\",\"Email\":\"wang@example.com\"}' --duplicate-check-field Email --idempotency-key job-123 | jq '.status, .dryRun, .liveWritesEnabled, .payloadDigest, .requiredConfirmation, .fieldNames' -> `planned`, `true`, `false`, `sha256:...`, `crm:upsert:Leads:1`, `[Last_Name, Email]`"
+      - "./.venv/bin/python -m zoho_cli crm upsert ... --execute --confirm crm:upsert:Leads:1 -> exit 1 JSON error `live_write_not_enabled`"
+      - "ruby YAML parse for ops/workflow state -> YAML_PARSE_OK"
+      - "git diff --check -> clean"
       - "crm-007 write-surface safety contract completed at 2026-05-05T10:42:55Z"
       - "make ci -> ruff format/check clean + pytest `1807 passed in 50.84s`"
       - "added `crm_write_surface_policy()` plus `zoho crm write-plan`; exposed `writeSurfacePolicy` through `zoho crm status`, `zoho crm sdk-status`, and `zoho crm write-plan`"

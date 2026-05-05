@@ -61,6 +61,10 @@ Use this skill as the default operating contract for an OpenClaw agent acting li
   output shapes. For CRM writes, run `zoho crm write-plan` first and obey
   `writeSurfacePolicy`: `writesEnabled=false` in `crm-007`, upsert is only the
   next dry-run candidate, and delete stays blocked until a later safety slice.
+  In `crm-008`, `zoho crm upsert` is dry-run-only: use JSON payload input,
+  duplicate-check fields, and an idempotency key; inspect `payloadDigest` and
+  `requiredConfirmation`; do not pass `--execute` expecting a live CRM write
+  because it is blocked with `live_write_not_enabled`.
 - Draft before high-impact send/delete actions unless the user explicitly asks for direct execution.
 - Ask for explicit approval before running any install/update command that modifies tools or skill files.
 - File low-risk, sanitized CLI bugs and suggestions directly in `adwasd-dvd/zoho-cli` GitHub issues after duplicate search; ask for approval before including private context or changing GitHub settings/labels/code.

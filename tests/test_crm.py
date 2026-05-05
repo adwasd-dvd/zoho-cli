@@ -1,6 +1,7 @@
 """Tests for zoho_cli.crm helpers."""
 
 from importlib import metadata
+import json
 
 import httpx
 import pytest
@@ -124,6 +125,66 @@ def test_crm_write_surface_policy_filters_operation() -> None:
 def test_crm_write_surface_policy_rejects_unknown_operation() -> None:
     with pytest.raises(ValueError, match="unsupported CRM write operation"):
         crm.crm_write_surface_policy(operation="merge")
+
+
+def test_build_crm_upsert_dry_run_wraps_record_and_redacts_values() -> None:
+    plan = crm.build_crm_upsert_dry_run(
+        module_api_name="Leads",
+        payload={"Last_Name": "Wang", "Email": "wang@example.com"},
+        duplicate_check_fields=["Email"],
+        idempotency_key="job-123",
+    )
+
+    assert plan["status"] == "planned"
+    assert plan["dryRun"] is True
+    assert plan["liveWritesEnabled"] is False
+    assert plan["operation"] == "upsert"
+    assert plan["module"] == "Leads"
+    assert plan["recordCount"] == 1
+    assert plan["fieldNames"] == ["Last_Name", "Email"]
+    assert plan["duplicateCheckFields"] == ["Email"]
+    assert plan["payloadDigest"].startswith("sha256:")
+    assert plan["endpoint"]["path"] == "/Leads/upsert"
+    assert plan["requiredConfirmation"] == "crm:upsert:Leads:1"
+    assert plan["confirmation"]["matches"] is False
+    assert "Wang" not in json.dumps(plan)
+    assert "wang@example.com" not in json.dumps(plan)
+
+
+def test_build_crm_upsert_dry_run_uses_payload_duplicate_fields() -> None:
+    plan = crm.build_crm_upsert_dry_run(
+        module_api_name="Contacts",
+        payload={
+            "data": [{"Last_Name": "Singh", "Email": "singh@example.com"}],
+            "duplicate_check_fields": ["Email"],
+        },
+        duplicate_check_fields=[],
+        idempotency_key="job-124",
+        confirm="crm:upsert:Contacts:1",
+    )
+
+    assert plan["duplicateCheckFields"] == ["Email"]
+    assert plan["confirmation"]["matches"] is True
+
+
+def test_build_crm_upsert_dry_run_requires_duplicate_fields() -> None:
+    with pytest.raises(ValueError, match="duplicate check field"):
+        crm.build_crm_upsert_dry_run(
+            module_api_name="Leads",
+            payload={"Last_Name": "Wang"},
+            duplicate_check_fields=[],
+            idempotency_key="job-125",
+        )
+
+
+def test_build_crm_upsert_dry_run_rejects_too_many_records() -> None:
+    with pytest.raises(ValueError, match="at most 100 records"):
+        crm.build_crm_upsert_dry_run(
+            module_api_name="Leads",
+            payload=[{"Last_Name": str(i)} for i in range(101)],
+            duplicate_check_fields=["Email"],
+            idempotency_key="job-126",
+        )
 
 
 @respx.mock

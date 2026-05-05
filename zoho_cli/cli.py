@@ -11196,6 +11196,105 @@ def crm_write_plan(
     utils.output(payload)
 
 
+def _load_crm_write_payload(
+    *,
+    data_json: str | None,
+    data_file: str | None,
+) -> Any:
+    if bool(data_json) == bool(data_file):
+        utils.error_exit(
+            "invalid_payload_source",
+            "Provide exactly one of --data-json or --data-file.",
+        )
+
+    if data_file:
+        path = Path(data_file).expanduser()
+        try:
+            raw = path.read_text(encoding="utf-8")
+        except OSError as exc:
+            utils.error_exit("invalid_payload_file", f"Cannot read {path}: {exc}")
+    else:
+        raw = data_json or ""
+
+    try:
+        return json.loads(raw)
+    except json.JSONDecodeError as exc:
+        utils.error_exit(
+            "invalid_payload_json", f"CRM write payload must be JSON: {exc}"
+        )
+
+
+@crm_app.command("upsert")
+def crm_upsert(
+    module: str = typer.Option(
+        ..., "--module", "-m", help="CRM module API name (for example Leads)."
+    ),
+    data_json: Optional[str] = typer.Option(
+        None,
+        "--data-json",
+        help="JSON object/array or full upsert request body for dry-run planning.",
+    ),
+    data_file: Optional[str] = typer.Option(
+        None,
+        "--data-file",
+        help="Path to JSON object/array or full upsert request body for dry-run planning.",
+    ),
+    duplicate_check_fields: List[str] = typer.Option(
+        [],
+        "--duplicate-check-field",
+        help="Duplicate/unique Field API name to use for upsert matching (repeatable).",
+    ),
+    idempotency_key: Optional[str] = typer.Option(
+        None,
+        "--idempotency-key",
+        help="Caller-provided idempotency key recorded in the dry-run audit envelope.",
+    ),
+    execute: bool = typer.Option(
+        False,
+        "--execute",
+        help="Attempt live execution. Currently blocked; dry-run is the supported mode.",
+    ),
+    confirm: Optional[str] = typer.Option(
+        None,
+        "--confirm",
+        help="Exact confirmation phrase reported by the dry-run output.",
+    ),
+    adapter: str = typer.Option(
+        _crm.CRM_UPSERT_ADAPTER,
+        "--adapter",
+        help="CRM write adapter for the plan. Currently only http-v8 is supported.",
+    ),
+) -> None:
+    """Plan a CRM upsert without writing data."""
+    payload = _load_crm_write_payload(data_json=data_json, data_file=data_file)
+
+    try:
+        plan = _crm.build_crm_upsert_dry_run(
+            module_api_name=module,
+            payload=payload,
+            duplicate_check_fields=list(duplicate_check_fields),
+            idempotency_key=idempotency_key or "",
+            confirm=confirm,
+            execute=execute,
+            adapter=adapter,
+        )
+    except ValueError as exc:
+        utils.error_exit("invalid_upsert_payload", str(exc))
+
+    if execute:
+        if not plan["confirmation"]["matches"]:
+            utils.error_exit(
+                "confirm_required",
+                f"Pass --confirm {plan['requiredConfirmation']} to acknowledge this CRM upsert request.",
+            )
+        utils.error_exit(
+            "live_write_not_enabled",
+            "Live CRM upsert execution is not enabled in crm-008. Re-run without --execute to inspect the dry-run plan.",
+        )
+
+    utils.output(plan)
+
+
 @crm_app.command("modules")
 def crm_modules(
     limit: int = typer.Option(50, "--limit", "-n", help="Max modules to return."),

@@ -27050,6 +27050,136 @@ def test_crm_write_plan_command_rejects_invalid_operation() -> None:
     assert "invalid_operation" in result.output
 
 
+def test_crm_upsert_dry_run_from_data_json() -> None:
+    result = runner.invoke(
+        app,
+        [
+            "crm",
+            "upsert",
+            "--module",
+            "Leads",
+            "--data-json",
+            '{"Last_Name":"Wang","Email":"wang@example.com"}',
+            "--duplicate-check-field",
+            "Email",
+            "--idempotency-key",
+            "job-123",
+        ],
+    )
+
+    assert result.exit_code == 0, result.output
+    payload = json.loads(result.output)
+    assert payload["status"] == "planned"
+    assert payload["dryRun"] is True
+    assert payload["liveWritesEnabled"] is False
+    assert payload["operation"] == "upsert"
+    assert payload["module"] == "Leads"
+    assert payload["recordCount"] == 1
+    assert payload["fieldNames"] == ["Last_Name", "Email"]
+    assert payload["duplicateCheckFields"] == ["Email"]
+    assert payload["payloadDigest"].startswith("sha256:")
+    assert payload["endpoint"]["path"] == "/Leads/upsert"
+    assert payload["requiredConfirmation"] == "crm:upsert:Leads:1"
+    assert "Wang" not in result.output
+    assert "wang@example.com" not in result.output
+
+
+def test_crm_upsert_dry_run_from_data_file(tmp_path: Path) -> None:
+    payload_path = tmp_path / "lead.json"
+    payload_path.write_text(
+        json.dumps(
+            {
+                "data": [{"Last_Name": "Singh", "Email": "singh@example.com"}],
+                "duplicate_check_fields": ["Email"],
+            }
+        )
+    )
+
+    result = runner.invoke(
+        app,
+        [
+            "crm",
+            "upsert",
+            "--module",
+            "Leads",
+            "--data-file",
+            str(payload_path),
+            "--idempotency-key",
+            "job-124",
+        ],
+    )
+
+    assert result.exit_code == 0, result.output
+    payload = json.loads(result.output)
+    assert payload["duplicateCheckFields"] == ["Email"]
+    assert payload["fieldNames"] == ["Last_Name", "Email"]
+
+
+def test_crm_upsert_requires_payload_source() -> None:
+    result = runner.invoke(
+        app,
+        [
+            "crm",
+            "upsert",
+            "--module",
+            "Leads",
+            "--duplicate-check-field",
+            "Email",
+            "--idempotency-key",
+            "job-125",
+        ],
+    )
+
+    assert result.exit_code == 1
+    assert "invalid_payload_source" in result.output
+
+
+def test_crm_upsert_execute_requires_confirmation() -> None:
+    result = runner.invoke(
+        app,
+        [
+            "crm",
+            "upsert",
+            "--module",
+            "Leads",
+            "--data-json",
+            '{"Last_Name":"Wang","Email":"wang@example.com"}',
+            "--duplicate-check-field",
+            "Email",
+            "--idempotency-key",
+            "job-126",
+            "--execute",
+        ],
+    )
+
+    assert result.exit_code == 1
+    assert "confirm_required" in result.output
+
+
+def test_crm_upsert_execute_is_blocked_even_with_confirmation() -> None:
+    result = runner.invoke(
+        app,
+        [
+            "crm",
+            "upsert",
+            "--module",
+            "Leads",
+            "--data-json",
+            '{"Last_Name":"Wang","Email":"wang@example.com"}',
+            "--duplicate-check-field",
+            "Email",
+            "--idempotency-key",
+            "job-127",
+            "--execute",
+            "--confirm",
+            "crm:upsert:Leads:1",
+        ],
+    )
+
+    assert result.exit_code == 1
+    assert "live_write_not_enabled" in result.output
+
+
 def test_crm_sdk_status_command_uses_account_region(mock_config: Path) -> None:
     cfg = json.loads(mock_config.read_text())
     cfg["accounts"][ACCOUNT_EMAIL]["accounts_server"] = "https://accounts.zoho.eu"

@@ -29,7 +29,7 @@ openclaw_cliq_channel:
 crm:
   priority: 4
   status: in_progress
-  phase: v0_5_upsert_dry_run
+  phase: v0_5_live_upsert_gate_planning
   target_release: v0.5.0
-  current_milestone: crm-008-upsert-dry-run-contract
+  current_milestone: crm-009-live-upsert-gate
   blockers: []

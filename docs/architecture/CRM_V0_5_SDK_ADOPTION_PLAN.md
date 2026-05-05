@@ -1,6 +1,6 @@
 # CRM v0.5 SDK adoption plan
 
-Updated: `2026-05-05T10:40:21Z`.
+Updated: `2026-05-05T10:50:34Z`.
 
 This is the `crm-003` handoff for phasing the official Zoho CRM server-side
 Python SDK into `zoho-cli` without breaking the current AI-safe CLI contract.
@@ -115,6 +115,17 @@ adapter proves parity on the read-only surface. The CLI contract remains:
 - Added `docs/architecture/CRM_WRITE_SURFACE_CONTRACT.md` as the source of truth
   for CRM write command planning.
 
+## Implemented in crm-008
+
+- Added `zoho crm upsert` as a dry-run-only command.
+- The command accepts `--data-json` or `--data-file`, duplicate-check fields,
+  and an idempotency key.
+- Dry-run output includes `fieldNames`, `recordCount`, `payloadDigest`,
+  `recordDigests`, `requiredConfirmation`, and audit metadata without raw field
+  values.
+- `--execute` remains blocked with `live_write_not_enabled` after exact
+  confirmation, so no live CRM writes are enabled in this slice.
+
 ## v0.5 slices
 
 1. `crm-004` SDK adapter skeleton (completed):
@@ -134,10 +145,14 @@ adapter proves parity on the read-only surface. The CLI contract remains:
 4. `crm-007` write-surface planning (completed):
    - only after read parity is green, add draft-first create/update/delete
      commands with scope checks, confirmation gates, and audit-friendly output.
-5. `crm-008` first write dry-run implementation:
+5. `crm-008` first write dry-run implementation (completed):
    - implement `zoho crm upsert` as dry-run by default;
    - require `--execute`, exact `--confirm`, idempotency key, and audit envelope
      before any live call.
+6. `crm-009` live upsert gate planning:
+   - decide whether to enable live upsert execution in guarded mode;
+   - require OAuth scope checks, exact confirmation, idempotency key, and audit
+     output before any network write.
 
 ## Non-goals
 

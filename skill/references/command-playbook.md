@@ -91,6 +91,20 @@ default, exact confirmation, idempotency-key, JSON-payload, and audit-envelope
 requirements. Do not invent live write commands while `writesEnabled=false`;
 the next candidate is `zoho crm upsert` dry-run, and delete remains blocked.
 
+`crm-008` implements that first dry-run command:
+
+```bash
+zoho crm upsert \
+  --module Leads \
+  --data-json '{"Last_Name":"Example","Email":"example@example.com"}' \
+  --duplicate-check-field Email \
+  --idempotency-key crm-leads-upsert-$(date +%F)
+```
+
+Use the returned `payloadDigest`, `fieldNames`, `recordCount`, and
+`requiredConfirmation` for review. The command does not echo raw field values.
+`--execute` is intentionally blocked with `live_write_not_enabled`.
+
 ## Bridge fallback (explicit)
 
 ```bash

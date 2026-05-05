@@ -1,6 +1,6 @@
 # CRM write-surface safety contract
 
-Updated: `2026-05-05T10:40:21Z`.
+Updated: `2026-05-05T10:50:34Z`.
 
 This is the `crm-007` contract for adding CRM write commands without making AI
 agents accidentally mutate production data.
@@ -22,6 +22,36 @@ CRM writes are **not enabled** in this slice.
 The current read adapter remains `http-v2`. Write implementation should target
 CRM API v8 explicitly through the later write command contract, not by changing
 read defaults.
+
+## Implemented in crm-008
+
+`zoho crm upsert` is now implemented as a dry-run-only command.
+
+Supported input:
+
+```bash
+zoho crm upsert \
+  --module Leads \
+  --data-json '{"Last_Name":"Wang","Email":"wang@example.com"}' \
+  --duplicate-check-field Email \
+  --idempotency-key crm-leads-import-2026-05-05
+```
+
+The command accepts either `--data-json` or `--data-file`, wraps a single JSON
+record into a `data` array, preserves a full request body when `data` already
+exists, requires duplicate-check fields and an idempotency key, and emits:
+
+- `status=planned`
+- `dryRun=true`
+- `liveWritesEnabled=false`
+- `payloadDigest` and per-record `recordDigests`
+- `fieldNames`, `recordCount`, and `duplicateCheckFields`
+- `requiredConfirmation`
+- redacted audit metadata without raw field values
+
+`--execute` is intentionally blocked in `crm-008`. If confirmation is missing,
+the command returns `confirm_required`; even with the exact confirmation it
+returns `live_write_not_enabled`.
 
 ## Official API references
 
@@ -93,7 +123,7 @@ Live output must preserve the same envelope and add Zoho response details under
 
 ## Non-goals
 
-- Do not enable live CRM writes in `crm-007`.
+- Do not enable live CRM writes in `crm-007` or `crm-008`.
 - Do not switch read commands from HTTP v2 to v8 as part of write planning.
 - Do not implement delete before upsert/update/create safety evidence exists.
 - Do not accept non-JSON ad hoc payload strings for AI-facing write commands.

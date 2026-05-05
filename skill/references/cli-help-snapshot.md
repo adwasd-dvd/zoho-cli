@@ -1,6 +1,6 @@
 # CLI help snapshot
 
-Generated at: `2026-05-05T10:40:21Z`
+Generated at: `2026-05-05T10:48:12Z`
 
 Use this file as a quick command-surface reference for the skill.
 
@@ -276,11 +276,50 @@ Exit code: `0`
 │ status      Show CRM auth readiness and inferred API endpoint.               │
 │ sdk-status  Show official Zoho CRM SDK adapter readiness.                    │
 │ write-plan  Show CRM write-surface safety gates without writing data.        │
+│ upsert      Plan a CRM upsert without writing data.                          │
 │ modules     List CRM modules available to the account.                       │
 │ fields      List fields for a CRM module.                                    │
 │ list        List records from a CRM module.                                  │
 │ get         Get a single CRM record by id.                                   │
 │ search      Search records in a CRM module.                                  │
 │ bridge-run  Run one CRM action through membrane bridge (explicit opt-in).    │
+╰──────────────────────────────────────────────────────────────────────────────╯
+```
+
+## `./.venv/bin/zoho crm upsert --help`
+
+Exit code: `0`
+
+```text
+
+ Usage: zoho crm upsert [OPTIONS]
+
+ Plan a CRM upsert without writing data.
+
+╭─ Options ────────────────────────────────────────────────────────────────────╮
+│ *  --module                 -m      TEXT  CRM module API name (for example   │
+│                                           Leads).                            │
+│                                           [required]                         │
+│    --data-json                      TEXT  JSON object/array or full upsert   │
+│                                           request body for dry-run planning. │
+│    --data-file                      TEXT  Path to JSON object/array or full  │
+│                                           upsert request body for dry-run    │
+│                                           planning.                          │
+│    --duplicate-check-field          TEXT  Duplicate/unique Field API name to │
+│                                           use for upsert matching            │
+│                                           (repeatable).                      │
+│    --idempotency-key                TEXT  Caller-provided idempotency key    │
+│                                           recorded in the dry-run audit      │
+│                                           envelope.                          │
+│    --execute                              Attempt live execution. Currently  │
+│                                           blocked; dry-run is the supported  │
+│                                           mode.                              │
+│    --confirm                        TEXT  Exact confirmation phrase reported │
+│                                           by the dry-run output.             │
+│    --adapter                        TEXT  CRM write adapter for the plan.    │
+│                                           Currently only http-v8 is          │
+│                                           supported.                         │
+│                                           [default: http-v8]                 │
+│    --help                                 Show this message and exit.        │
 ╰──────────────────────────────────────────────────────────────────────────────╯
 ```

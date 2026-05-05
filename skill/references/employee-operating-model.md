@@ -70,3 +70,7 @@ Run `zoho crm write-plan` before CRM write work; `crm-007` exposes
 `writeSurfacePolicy` with `writesEnabled=false`, dry-run default, exact
 confirmation, idempotency, JSON payload, and audit requirements. Treat upsert as
 the next dry-run candidate and keep delete blocked.
+Use `zoho crm upsert` only as a dry-run in `crm-008`; it returns
+`payloadDigest`, `recordDigests`, `fieldNames`, and `requiredConfirmation`
+without raw field values. `--execute` remains blocked with
+`live_write_not_enabled`.

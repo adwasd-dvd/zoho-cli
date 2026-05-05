@@ -57,7 +57,9 @@ CRM SDK planning:
   `ready_for_operator_live_fixture`, or `live_fixture_recorded`)
 - `docs/releases/CRM_V0_5_FIXTURE_PAYLOAD_TEMPLATE.json` (`crm-015`: safe
   one-record `Leads` template with `.example.invalid` placeholder data; copy and
-  edit outside the repo before live fixture mode)
+  edit outside the repo before live fixture mode; smoke reports
+  `payloadTemplatePlaceholders.emailCount` and blocks
+  `fixture_payload_placeholder_email` for live placeholder emails)
 - `docs/architecture/CRM_WRITE_SURFACE_CONTRACT.md`
 
 GitHub intake:

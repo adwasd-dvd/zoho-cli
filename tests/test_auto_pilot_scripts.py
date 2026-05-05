@@ -441,6 +441,7 @@ def test_crm_fixture_live_smoke_defaults_to_dry_run(tmp_path: Path) -> None:
     assert summary["executeRequested"] is False
     assert summary["liveResultRecorded"] is False
     assert summary["requiredApproval"] == "crm:fixture:upsert:Leads:abc123:fixture-test"
+    assert summary["payloadTemplatePlaceholders"] == {"emailCount": 0}
 
 
 def test_crm_fixture_live_smoke_requires_env_for_execute(tmp_path: Path) -> None:
@@ -470,6 +471,47 @@ def test_crm_fixture_live_smoke_requires_env_for_execute(tmp_path: Path) -> None
     output = f"{result.stdout}\n{result.stderr}"
     assert result.returncode == 2, output
     assert "ZOHO_CRM_ALLOW_LIVE_FIXTURE_not_set" in output
+    calls = [json.loads(line) for line in calls_path.read_text().splitlines()]
+    assert not any("--execute" in call for call in calls)
+
+
+def test_crm_fixture_live_smoke_blocks_placeholder_email_for_execute(
+    tmp_path: Path,
+) -> None:
+    fake_zoho, calls_path = _write_fake_zoho_for_crm_fixture_smoke(tmp_path)
+    payload_file = tmp_path / "fixture.json"
+    payload_file.write_text(
+        json.dumps(
+            {
+                "Last_Name": "ZohoCliFixtureReplaceMe",
+                "Email": "zoho-cli-fixture+replace-me@example.invalid",
+            }
+        )
+    )
+
+    result = subprocess.run(
+        ["bash", str(CRM_FIXTURE_SMOKE_SCRIPT)],
+        cwd=REPO_ROOT,
+        env={
+            **os.environ,
+            "ZOHO_BIN": str(fake_zoho),
+            "FAKE_ZOHO_CALLS": str(calls_path),
+            "ZOHO_CRM_FIXTURE_PAYLOAD_FILE": str(payload_file),
+            "ZOHO_CRM_FIXTURE_REPORT_DIR": str(tmp_path / "reports"),
+            "ZOHO_CRM_FIXTURE_IDEMPOTENCY_KEY": "fixture-test",
+            "ZOHO_CRM_FIXTURE_CLEANUP_PLAN": "remove fixture record after validation",
+            "ZOHO_CRM_FIXTURE_EXECUTE": "1",
+            "ZOHO_CRM_ALLOW_LIVE_FIXTURE": "1",
+            "ZOHO_CRM_FIXTURE_RUN_ID": "unit-test-placeholder",
+        },
+        capture_output=True,
+        text=True,
+        check=False,
+    )
+
+    output = f"{result.stdout}\n{result.stderr}"
+    assert result.returncode == 2, output
+    assert "fixture_payload_placeholder_email" in output
     calls = [json.loads(line) for line in calls_path.read_text().splitlines()]
     assert not any("--execute" in call for call in calls)
 

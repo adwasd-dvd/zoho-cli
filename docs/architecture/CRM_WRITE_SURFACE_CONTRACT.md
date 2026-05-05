@@ -1,6 +1,6 @@
 # CRM write-surface safety contract
 
-Updated: `2026-05-05T20:08:21Z`.
+Updated: `2026-05-05T20:24:21Z`.
 
 This is the `crm-007` contract for adding CRM write commands without making AI
 agents accidentally mutate production data.
@@ -258,6 +258,11 @@ Before live mode, the operator must copy it outside the repo, keep it to one
 cleanup plan that can remove or update the resulting fixture record. The live
 fixture path still requires the smoke script, exact approval token,
 `ZOHO_CRM_FIXTURE_EXECUTE=1`, and `ZOHO_CRM_ALLOW_LIVE_FIXTURE=1`.
+
+The smoke script summarizes unresolved template emails as
+`payloadTemplatePlaceholders.emailCount`. It refuses live execution with
+`fixture_payload_placeholder_email` when `Email` still contains `example.invalid`
+or `replace-me`.
 
 ## Official API references
 

@@ -25,6 +25,10 @@ Payload checklist:
 - Make the cleanup plan specific enough to remove or update the resulting test
   record by the returned CRM id or dedicated test email.
 
+The smoke script records `payloadTemplatePlaceholders.emailCount` in its summary
+and refuses live mode with `fixture_payload_placeholder_email` while the payload
+email still contains `example.invalid` or `replace-me`.
+
 ```bash
 ZOHO_CRM_FIXTURE_PAYLOAD_FILE=/tmp/lead-fixture.json \
 ZOHO_CRM_FIXTURE_IDEMPOTENCY_KEY=crm-fixture-$(date +%F) \
@@ -49,6 +53,8 @@ Expected dry-run status before any live write:
 
 If the status is `incomplete`, fix the reported missing report, audit event,
 scope evidence, cleanup plan, or redaction blocker before considering live mode.
+Before live mode, also inspect the smoke summary JSON directly and require
+`payloadTemplatePlaceholders.emailCount=0`.
 
 ## Live fixture evidence
 

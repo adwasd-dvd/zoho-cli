@@ -279,6 +279,8 @@ def test_crm_sdk_adoption_contract_present() -> None:
         ".example.invalid",
         "dedicated operator-owned test",
         "copy/edit",
+        "payloadTemplatePlaceholders",
+        "fixture_payload_placeholder_email",
         "--audit-file",
         "--fixture-approval",
         "--cleanup-plan",

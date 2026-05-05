@@ -135,6 +135,8 @@ After sync, ensure the AI user follows:
   - use `docs/releases/CRM_V0_5_FIXTURE_PAYLOAD_TEMPLATE.json` only as a
     copy/edit starting point; replace the `.example.invalid` email with a
     dedicated operator-owned CRM test address before live mode
+  - verify `payloadTemplatePlaceholders.emailCount=0`; live smoke blocks with
+    `fixture_payload_placeholder_email` if template email markers remain
   - run `zoho crm fixture-evidence --summary-file <summary.json>` after smoke
     runs; require `ready_for_operator_live_fixture` before live mode and
     `live_fixture_recorded` for completed evidence

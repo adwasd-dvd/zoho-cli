@@ -1,5 +1,5 @@
 module: CRM
-updated_at: "2026-05-05T20:08:21Z"
+updated_at: "2026-05-05T20:24:21Z"
 status: in_progress
 phase: v0_5_operator_fixture_live_run
 blockers:
@@ -8,4 +8,4 @@ current_milestone: crm-015-operator-live-fixture-run
 last_completed:
   id: crm-014
   summary: "Added `zoho crm fixture-evidence` to classify controlled fixture smoke summaries and redacted audit JSONL as `incomplete`, `ready_for_operator_live_fixture`, or `live_fixture_recorded` without writing CRM data."
-next_small_step: have the operator copy/edit `docs/releases/CRM_V0_5_FIXTURE_PAYLOAD_TEMPLATE.json` into a dedicated payload, then run dry-run smoke before any live env gates
+next_small_step: run dry-run smoke on the operator-edited payload and require `payloadTemplatePlaceholders.emailCount=0` before any live env gates

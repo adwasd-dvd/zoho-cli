@@ -1,10 +1,18 @@
-last_run_at: "2026-05-05T20:08:21Z"
+last_run_at: "2026-05-05T20:24:21Z"
 last_result: passing
-current_focus: crm-015-operator-payload-template
+current_focus: crm-015-smoke-placeholder-guard
 suites:
   unit:
     status: passing
     notes:
+      - "crm-015 smoke placeholder guard completed at 2026-05-05T20:24:21Z"
+      - "`ops/scripts/crm_fixture_live_smoke.sh` now records `payloadTemplatePlaceholders.emailCount` and blocks live fixture execution with `fixture_payload_placeholder_email` when payload emails still contain `example.invalid` or `replace-me`"
+      - "./.venv/bin/python -m pytest -q tests/test_auto_pilot_scripts.py -k 'crm_fixture_live_smoke' -> 3 passed, 8 deselected in 1.11s"
+      - "./.venv/bin/python -m pytest -q tests/test_lane3_docs.py tests/test_markdown_update.py -> 11 passed in 0.02s"
+      - "bash -n ops/scripts/crm_fixture_live_smoke.sh -> passed"
+      - "./.venv/bin/ruff format --check tests/test_auto_pilot_scripts.py tests/test_lane3_docs.py -> 2 files already formatted"
+      - "ruby YAML parse for project/crm/active_task/test_status -> YAML_PARSE_OK"
+      - "git diff --check -> passed"
       - "crm-015 operator payload template handoff completed at 2026-05-05T20:08:21Z"
       - "added `docs/releases/CRM_V0_5_FIXTURE_PAYLOAD_TEMPLATE.json` as a safe one-record Leads starting payload with `.example.invalid` placeholder data"
       - "refreshed operator fixture evidence runbook, CRM write contract, README, Lane 3 skill docs, and Lane 1 state so agents copy/edit the template outside the repo, require a dedicated operator-owned test email plus cleanup plan before live mode, and keep normal `zoho crm upsert --execute` blocked"

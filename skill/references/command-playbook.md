@@ -194,7 +194,9 @@ $EDITOR /tmp/lead-fixture.json
 
 The template is safe for dry-run planning only. Before live mode, replace the
 `.example.invalid` email with a dedicated operator-owned test address and keep
-the payload to one `Leads` record with a cleanup plan.
+the payload to one `Leads` record with a cleanup plan. The smoke summary reports
+`payloadTemplatePlaceholders.emailCount`, and live mode fails with
+`fixture_payload_placeholder_email` if template email markers remain.
 
 ```bash
 ZOHO_CRM_FIXTURE_PAYLOAD_FILE=/tmp/lead-fixture.json \

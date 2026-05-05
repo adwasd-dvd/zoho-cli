@@ -34,6 +34,22 @@ if ! command -v "$JQ_BIN" >/dev/null 2>&1; then
   exit 2
 fi
 
+PAYLOAD_PLACEHOLDER_EMAIL_COUNT="$("$JQ_BIN" -r '
+  def records:
+    if type == "object" and (.data? | type) == "array" then .data[]
+    elif type == "array" then .[]
+    else .
+    end;
+  [
+    records
+    | .Email? // empty
+    | tostring
+    | ascii_downcase
+    | select((contains("example.invalid")) or (contains("replace-me")))
+  ]
+  | length
+' "$PAYLOAD_FILE")"
+
 mkdir -p "$REPORT_DIR"
 
 PLAN_JSON="$REPORT_DIR/crm_fixture_upsert_plan_$SMOKE_RUN_ID.json"
@@ -97,6 +113,11 @@ if [[ "$EXECUTE" == "1" ]]; then
     printf 'reason=ZOHO_CRM_ALLOW_LIVE_FIXTURE_not_set\n' >&2
     exit 2
   fi
+  if [[ "$PAYLOAD_PLACEHOLDER_EMAIL_COUNT" != "0" ]]; then
+    printf '\n== crm fixture live execution blocked ==\n'
+    printf 'reason=fixture_payload_placeholder_email\n' >&2
+    exit 2
+  fi
   if [[ -z "$CLEANUP_PLAN" ]]; then
     printf '\n== crm fixture live execution blocked ==\n'
     printf 'reason=ZOHO_CRM_FIXTURE_CLEANUP_PLAN_required\n' >&2
@@ -139,6 +160,7 @@ run_json "crm write audit summary" "$AUDIT_SUMMARY_JSON" "$ZOHO_BIN" crm write-a
   --arg executePlanReport "$EXECUTE_PLAN_JSON" \
   --arg executeResultReport "$EXECUTE_RESULT_JSON" \
   --arg auditSummaryReport "$AUDIT_SUMMARY_JSON" \
+  --argjson payloadPlaceholderEmailCount "$PAYLOAD_PLACEHOLDER_EMAIL_COUNT" \
   --argjson executeRequested "$([[ "$EXECUTE" == "1" ]] && echo true || echo false)" \
   --argjson liveResultRecorded "$LIVE_RESULT_RECORDED" \
   '{
@@ -150,6 +172,9 @@ run_json "crm write audit summary" "$AUDIT_SUMMARY_JSON" "$ZOHO_BIN" crm write-a
     payloadDigest: $payloadDigest,
     requiredApproval: $requiredApproval,
     auditFile: $auditFile,
+    payloadTemplatePlaceholders: {
+      emailCount: $payloadPlaceholderEmailCount
+    },
     executeRequested: $executeRequested,
     liveResultRecorded: $liveResultRecorded,
     reports: {

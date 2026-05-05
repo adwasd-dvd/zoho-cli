@@ -4,7 +4,7 @@ module: crm
 stage: in_progress
 status: in_progress
 owner: coder
-updated_at: '2026-05-05T20:08:21Z'
+updated_at: '2026-05-05T20:24:21Z'
 execution_mode: turbo_20x
 throughput_policy_ref: ops/state/execution_policy.yml
 success_criteria:
@@ -17,6 +17,7 @@ success_criteria:
   - update Lane 2/3 docs and Lane 1 state
 next_if_done: decide whether CRM v0.5 should broaden guarded upsert support or stop at fixture evidence for the RC.
 progress:
+  - "2026-05-05T20:24:21Z crm-015 smoke guard tightened: `ops/scripts/crm_fixture_live_smoke.sh` now computes `payloadTemplatePlaceholders.emailCount`, records it in the redacted summary, and refuses live fixture execution with `fixture_payload_placeholder_email` when the payload email still contains `example.invalid` or `replace-me`; focused script/Lane 3 tests passed and normal `zoho crm upsert --execute` remains blocked."
   - "2026-05-05T20:08:21Z crm-015 operator handoff tightened: added `docs/releases/CRM_V0_5_FIXTURE_PAYLOAD_TEMPLATE.json` as a safe one-record Leads template with `.example.invalid` placeholder data, refreshed the operator fixture evidence runbook and Lane 3 guidance so agents copy/edit it outside the repo, require a dedicated operator-owned test email plus cleanup plan before live mode, and keep normal `zoho crm upsert --execute` blocked."
   - "2026-05-05T12:04:56Z crm-014 completed: added `crm_operator_fixture_evidence_status()` and `zoho crm fixture-evidence`; the command reads a smoke summary and redacted audit JSONL, resolves report paths, checks dry-run/gate/scope/fixture-plan/fixture-attempt/fixture-result evidence, verifies the redaction contract, and classifies evidence as `incomplete`, `ready_for_operator_live_fixture`, or `live_fixture_recorded` without writing CRM data; focused CRM CLI/helper tests and Lane 3 docs tests passed."
   - "2026-05-05T11:51:41Z crm-013 completed: added `ops/scripts/crm_fixture_live_smoke.sh`; the script defaults to dry-run, runs `zoho crm upsert`, `zoho crm upsert-gate --check-auth`, `zoho crm fixture-plan`, `zoho crm fixture-execute` dry-run, and `zoho crm write-audit`, writes redacted report files plus a top-level summary, and refuses live execution unless both `ZOHO_CRM_FIXTURE_EXECUTE=1` and `ZOHO_CRM_ALLOW_LIVE_FIXTURE=1` are set with a payload file and cleanup plan; focused script tests and shell syntax checks passed."

@@ -108,7 +108,9 @@ Use this skill as the default operating contract for an OpenClaw agent acting li
   starting point for the operator's `/tmp/lead-fixture.json`; it contains
   `.example.invalid` placeholder data and must be replaced with a dedicated
   operator-owned test email plus cleanup plan before any live fixture gates are
-  considered.
+  considered. The smoke script reports
+  `payloadTemplatePlaceholders.emailCount` and blocks live mode with
+  `fixture_payload_placeholder_email` if template email markers remain.
 - Draft before high-impact send/delete actions unless the user explicitly asks for direct execution.
 - Ask for explicit approval before running any install/update command that modifies tools or skill files.
 - File low-risk, sanitized CLI bugs and suggestions directly in `adwasd-dvd/zoho-cli` GitHub issues after duplicate search; ask for approval before including private context or changing GitHub settings/labels/code.

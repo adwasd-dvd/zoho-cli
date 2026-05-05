@@ -11,6 +11,9 @@ EXPORT_RECHECK_SCRIPT = (
     REPO_ROOT / "tests" / "auto_pilot" / "run_cliq_export_scope_recheck.sh"
 )
 CRM_FIXTURE_SMOKE_SCRIPT = REPO_ROOT / "ops" / "scripts" / "crm_fixture_live_smoke.sh"
+OPENCLAW_CLIQ_RC_PACK_SCRIPT = (
+    REPO_ROOT / "ops" / "scripts" / "openclaw_cliq_rc_pack.sh"
+)
 
 
 def test_export_scope_recheck_runner_propagates_probe_exit_codes(
@@ -247,6 +250,121 @@ raise SystemExit(3)
     assert summary["scopeBlocked"] is False
     assert summary["rateLimited"] is True
     assert summary["recommendedNext"] == "wait_for_refresh_cooldown_then_rerun"
+
+
+def test_openclaw_cliq_rc_pack_script_runs_pack_from_package_dir(
+    tmp_path: Path,
+) -> None:
+    package_dir = tmp_path / "openclaw-channel-cliq"
+    package_dir.mkdir()
+    (package_dir / "package.json").write_text(
+        json.dumps(
+            {
+                "name": "@adwasd/openclaw-zoho-cliq",
+                "version": "0.4.0-alpha.0",
+            }
+        )
+    )
+    calls_path = tmp_path / "fake_npm_calls.jsonl"
+    fake_npm = tmp_path / "fake_npm.py"
+    fake_npm.write_text(
+        """#!/usr/bin/env python3
+import json
+import os
+import sys
+from pathlib import Path
+
+args = sys.argv[1:]
+expected_package_dir = Path(os.environ["EXPECTED_PACKAGE_DIR"])
+calls_path = Path(os.environ["FAKE_NPM_CALLS"])
+with calls_path.open("a", encoding="utf-8") as fh:
+    fh.write(json.dumps({"args": args, "cwd": os.getcwd()}) + "\\n")
+
+if args == ["--prefix", str(expected_package_dir), "run", "typecheck"]:
+    raise SystemExit(0)
+if args == ["--prefix", str(expected_package_dir), "run", "build"]:
+    raise SystemExit(0)
+
+if args[:1] == ["pack"]:
+    if Path.cwd() != expected_package_dir:
+        print(json.dumps({"status": "error", "error": "wrong_cwd"}))
+        raise SystemExit(8)
+    destination = Path(args[args.index("--pack-destination") + 1])
+    destination.mkdir(parents=True, exist_ok=True)
+    filename = "adwasd-openclaw-zoho-cliq-0.4.0-alpha.0.tgz"
+    (destination / filename).write_bytes(b"fake-tarball")
+    print(json.dumps([{
+        "id": "@adwasd/openclaw-zoho-cliq@0.4.0-alpha.0",
+        "name": "@adwasd/openclaw-zoho-cliq",
+        "version": "0.4.0-alpha.0",
+        "filename": filename,
+        "size": 12,
+        "unpackedSize": 34,
+        "shasum": "abc123",
+        "integrity": "sha512-test",
+        "files": [{"path": "README.md"}, {"path": "dist/index.js"}],
+        "bundled": []
+    }]))
+    raise SystemExit(0)
+
+print(json.dumps({"status": "error", "error": "unexpected_args", "args": args}))
+raise SystemExit(9)
+"""
+    )
+    fake_npm.chmod(fake_npm.stat().st_mode | stat.S_IXUSR)
+
+    reports_dir = tmp_path / "reports"
+    pack_dir = tmp_path / "pack"
+    result = subprocess.run(
+        ["bash", str(OPENCLAW_CLIQ_RC_PACK_SCRIPT)],
+        cwd=REPO_ROOT,
+        env={
+            **os.environ,
+            "NPM_BIN": str(fake_npm),
+            "FAKE_NPM_CALLS": str(calls_path),
+            "EXPECTED_PACKAGE_DIR": str(package_dir),
+            "OPENCLAW_CLIQ_PACKAGE_DIR": str(package_dir),
+            "OPENCLAW_CLIQ_PACK_DIR": str(pack_dir),
+            "OPENCLAW_CLIQ_PACK_REPORT_DIR": str(reports_dir),
+            "OPENCLAW_CLIQ_PACK_RUN_ID": "unit-test",
+        },
+        capture_output=True,
+        text=True,
+        check=False,
+    )
+
+    output = f"{result.stdout}\n{result.stderr}"
+    assert result.returncode == 0, output
+    summary_path = reports_dir / "openclaw_cliq_rc_pack_summary_unit-test.json"
+    raw_pack_path = reports_dir / "openclaw_cliq_rc_pack_unit-test.pack.json"
+    assert summary_path.exists()
+    assert raw_pack_path.exists()
+
+    summary = json.loads(summary_path.read_text())
+    assert summary["status"] == "passed"
+    assert summary["packageDir"] == str(package_dir)
+    assert summary["pack"]["name"] == "@adwasd/openclaw-zoho-cliq"
+    assert summary["pack"]["version"] == "0.4.0-alpha.0"
+    assert summary["pack"]["entryCount"] == 2
+    assert summary["releasePosture"] == {
+        "publishPerformed": False,
+        "versionBumped": False,
+        "expectedIntegrityPlaceholder": "<filled-at-release>",
+    }
+    assert Path(summary["pack"]["tarballPath"]).exists()
+
+    calls = [json.loads(line) for line in calls_path.read_text().splitlines()]
+    assert {
+        "args": ["--prefix", str(package_dir), "run", "typecheck"],
+        "cwd": str(REPO_ROOT),
+    } in calls
+    assert {
+        "args": ["--prefix", str(package_dir), "run", "build"],
+        "cwd": str(REPO_ROOT),
+    } in calls
+    pack_calls = [call for call in calls if call["args"][:1] == ["pack"]]
+    assert len(pack_calls) == 1
+    assert pack_calls[0]["cwd"] == str(package_dir)
 
 
 def _write_fake_zoho_for_crm_fixture_smoke(tmp_path: Path) -> tuple[Path, Path]:

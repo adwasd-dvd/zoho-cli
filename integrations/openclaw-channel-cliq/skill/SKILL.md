@@ -50,6 +50,8 @@ Use this skill when operating through the native OpenClaw Zoho Cliq channel.
 - For v0.4 RC decisions, follow
   `docs/releases/OPENCLAW_CLIQ_CHANNEL_V0_4_RC_CHECKLIST.md` and keep
   production rollout blocked until public Bot callback reachability is verified.
+- Before cutting a local/operator or npm/GitHub RC artifact, run
+  `ops/scripts/openclaw_cliq_rc_pack.sh`; it must not publish or bump versions.
 
 ## Required local readiness
 
@@ -60,6 +62,7 @@ openclaw channels capabilities --channel cliq
 zoho cliq status --check-auth --network <network>
 zoho cliq capabilities --network <network>
 ops/scripts/openclaw_cliq_live_smoke.sh
+ops/scripts/openclaw_cliq_rc_pack.sh
 ```
 
 If readiness fails, report the failing `zoho-cli` command, exit code,

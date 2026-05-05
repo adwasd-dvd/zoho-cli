@@ -58,6 +58,10 @@ the host compatibility matrix and future SDK repair workflow live in
 the v0.4 floor and `2026.5.4` / `2026.5.4-beta.3` passing early-warning checks.
 `cliq-channel-418` is complete: the RC decision checklist lives in
 `docs/releases/OPENCLAW_CLIQ_CHANNEL_V0_4_RC_CHECKLIST.md`.
+`cliq-channel-419` is complete: `ops/scripts/openclaw_cliq_rc_pack.sh` now
+codifies the local RC package preflight by running typecheck/build, packing from
+the plugin directory, and writing ignored JSON release evidence without npm
+publish or version bump side effects.
 
 The v0.4 plugin targets OpenClaw `>=2026.5.3-1`. The upgraded global
 `OpenClaw 2026.5.3-1` host is suitable for native plugin checks; use
@@ -103,6 +107,7 @@ openclaw channels capabilities --channel cliq
 openclaw security audit --json
 zoho cliq status --check-auth --network <network>
 ops/scripts/openclaw_cliq_live_smoke.sh
+ops/scripts/openclaw_cliq_rc_pack.sh
 ```
 
 Native diagnostic behavior:
@@ -170,6 +175,8 @@ Human setup checkpoints:
 - The live smoke gate script is run from the repo root, with
   `token_refresh_rate_limited` recorded as `skip_deferred` and public callback
   reachability deferred only when no tunnel/gateway URL is configured.
+- The RC pack preflight script is run from the repo root before cutting an
+  artifact; its summary JSON remains under ignored `tests/auto_pilot/reports/`.
 - Pairing/allowlist/mention gating are enabled.
 - Scoped employee mode has a work-scope profile.
 - Test message or dry-run fixture succeeds.

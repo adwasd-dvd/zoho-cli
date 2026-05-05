@@ -60,7 +60,8 @@ file fallback. Do not paste OAuth tokens or webhook secrets into setup prompts.
 For host compatibility updates, use
 `docs/releases/OPENCLAW_CLIQ_CHANNEL_COMPATIBILITY.md`.
 For RC cut decisions, use
-`docs/releases/OPENCLAW_CLIQ_CHANNEL_V0_4_RC_CHECKLIST.md`.
+`docs/releases/OPENCLAW_CLIQ_CHANNEL_V0_4_RC_CHECKLIST.md` and run
+`ops/scripts/openclaw_cliq_rc_pack.sh` before cutting an artifact.
 
 ## Install from the workspace
 

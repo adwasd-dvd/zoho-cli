@@ -531,3 +531,10 @@
   priority: high
   depends_on:
   - cliq-channel-412
+- id: cliq-channel-419
+  title: codify repeatable native Cliq channel RC package preflight
+  module: openclaw_cliq_channel
+  stage: completed
+  priority: high
+  depends_on:
+  - cliq-channel-418

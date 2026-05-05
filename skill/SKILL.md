@@ -48,7 +48,9 @@ Use this skill as the default operating contract for an OpenClaw agent acting li
   business logic or raising the host floor.
 - For v0.4 native Cliq channel RC decisions, follow
   `docs/releases/OPENCLAW_CLIQ_CHANNEL_V0_4_RC_CHECKLIST.md`; production rollout
-  still requires public Bot callback verification.
+  still requires public Bot callback verification. Run
+  `ops/scripts/openclaw_cliq_rc_pack.sh` before cutting a local/operator or
+  npm/GitHub RC artifact.
 - For CRM SDK work, run `zoho crm sdk-status` first. Treat
   `zohocrmsdk8_0==5.0.0` as optional `zoho-cli[crm-sdk]` readiness, keep the
   current HTTP adapter as default, use `zoho_cli/crm_sdk.py` only as the

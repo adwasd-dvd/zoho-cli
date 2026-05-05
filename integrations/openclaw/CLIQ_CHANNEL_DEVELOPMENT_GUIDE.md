@@ -120,6 +120,10 @@ Follow the stack from the architecture plan:
 19. `cliq-channel-418` v0.4 RC packaging handoff (complete; RC decision,
     evidence table, public Bot callback gate, cut steps, and non-goals live in
     `docs/releases/OPENCLAW_CLIQ_CHANNEL_V0_4_RC_CHECKLIST.md`)
+20. `cliq-channel-419` repeatable RC package preflight (complete;
+    `ops/scripts/openclaw_cliq_rc_pack.sh` runs typecheck/build, packs from the
+    plugin directory, and writes ignored JSON release evidence without publishing
+    or bumping the version)
 
 Each slice should be independently testable. Prefer many small slices over one
 large plugin drop.
@@ -159,8 +163,9 @@ with status/read lifecycle handling, `cliq-channel-413` wraps dispatch with a
 native turn ledger, `cliq-channel-409` exposes native status/capability/
 routing diagnostics, `cliq-channel-410` aligns AI-facing troubleshooting, and
 `cliq-channel-417` wires accepted events into native OpenClaw agent turns;
-`cliq-channel-415` adds redacted observability/privacy diagnostics; and
-`cliq-channel-411` adds the live smoke gate harness.
+`cliq-channel-415` adds redacted observability/privacy diagnostics;
+`cliq-channel-411` adds the live smoke gate harness; and `cliq-channel-419`
+adds the repeatable local RC pack preflight.
 Both inbound paths normalize messages into the shared
 inbound event shape, run mention/allowlist/employee policy checks, dedupe by
 account/network/chat/message before optional dispatch, keep status/read failures
@@ -173,6 +178,7 @@ Live gate command:
 
 ```bash
 ops/scripts/openclaw_cliq_live_smoke.sh
+ops/scripts/openclaw_cliq_rc_pack.sh
 ```
 
 Treat `token_refresh_rate_limited` as `skip_deferred`; do not repeatedly refresh

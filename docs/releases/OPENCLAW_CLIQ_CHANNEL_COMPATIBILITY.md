@@ -3,7 +3,7 @@
 This runbook is the `cliq-channel-412` maintenance contract for the native
 OpenClaw Zoho Cliq channel package in `integrations/openclaw-channel-cliq/`.
 
-Updated: `2026-05-05T09:21:50Z`.
+Updated: `2026-05-05T12:53:50Z`.
 
 ## Compatibility matrix
 
@@ -25,6 +25,7 @@ openclaw --version
 npm view openclaw version dist-tags --json
 npm --prefix integrations/openclaw-channel-cliq run typecheck
 npm --prefix integrations/openclaw-channel-cliq run build
+ops/scripts/openclaw_cliq_rc_pack.sh
 ```
 
 Baseline host check:

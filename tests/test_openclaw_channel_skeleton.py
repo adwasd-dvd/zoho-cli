@@ -270,28 +270,6 @@ def test_openclaw_cliq_channel_dist_runtime_outputs_exist() -> None:
     ]:
         assert (PLUGIN_ROOT / path).exists(), f"missing build output: {path}"
 
-    built = "\n".join(
-        [
-            read("dist/index.js"),
-            read("dist/setup-entry.js"),
-            read("dist/src/channel.js"),
-            read("dist/src/employee-policy.js"),
-            read("dist/src/inbound.js"),
-            read("dist/src/lifecycle.js"),
-            read("dist/src/native-dispatch.js"),
-            read("dist/src/observability.js"),
-            read("dist/src/polling.js"),
-            read("dist/src/privacy.js"),
-            read("dist/src/session.js"),
-            read("dist/src/security.js"),
-            read("dist/src/setup-wizard.js"),
-            read("dist/src/status.js"),
-            read("dist/src/turn-ledger.js"),
-            read("dist/src/webhook.js"),
-            read("dist/src/zoho-cli.js"),
-        ]
-    )
-
 
 def test_openclaw_cliq_channel_setup_wizard_has_operator_states() -> None:
     source = read("src/setup-wizard.ts")
@@ -371,7 +349,9 @@ assert(status.diagnostics.implementedSlices.includes("cliq-channel-415"));
 assert(status.diagnostics.implementedSlices.includes("cliq-channel-411"));
 assert(status.diagnostics.implementedSlices.includes("cliq-channel-412"));
 assert(status.diagnostics.implementedSlices.includes("cliq-channel-418"));
+assert(status.diagnostics.implementedSlices.includes("cliq-channel-419"));
 assert(status.diagnostics.smokeChecks.includes("ops/scripts/openclaw_cliq_live_smoke.sh"));
+assert(status.diagnostics.smokeChecks.includes("ops/scripts/openclaw_cliq_rc_pack.sh"));
 assert.equal(status.diagnostics.nextSlice, "public-bot-callback-verification");
 
 const capabilities = resolveCliqChannelCapabilitySummary({ cfg });

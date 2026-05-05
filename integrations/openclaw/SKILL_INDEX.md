@@ -15,6 +15,7 @@ Native channel planning:
 - `integrations/openclaw/CLIQ_CHANNEL_DEVELOPMENT_GUIDE.md`
 - `integrations/openclaw-channel-cliq/`
 - `docs/releases/OPENCLAW_CLIQ_CHANNEL_SETUP.md`
+- `ops/scripts/openclaw_cliq_rc_pack.sh`
 - `skill/references/openclaw-cliq-channel.md`
 
 CRM SDK planning:

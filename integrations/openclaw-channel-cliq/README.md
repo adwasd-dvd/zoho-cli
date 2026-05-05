@@ -13,8 +13,9 @@ turn-ledger loop-prevention slice, `cliq-channel-409` native UX/status
 diagnostics slice, and `cliq-channel-410` AI troubleshooting docs slice. It
 also includes the `cliq-channel-417` native agent turn dispatch slice and the
 `cliq-channel-415` observability/privacy hardening slice plus the
-`cliq-channel-411` fake/live smoke gate harness and `cliq-channel-412`
-compatibility maintenance slice. It
+`cliq-channel-411` fake/live smoke gate harness, `cliq-channel-412`
+compatibility maintenance slice, and `cliq-channel-419` repeatable RC pack
+preflight script. It
 declares the plugin/channel metadata, setup/runtime entrypoints,
 configured/auth-state probes, a native
 OpenClaw channel object, config schema metadata, DM pairing, group allowlist,
@@ -33,7 +34,9 @@ diagnostics, privacy retention rules, dead-letter replay guidance, and the npm
 integrity release placeholder are now part of the channel diagnostics surface.
 The live smoke harness records Zoho refresh throttling as `rate_limited` /
 `skip_deferred` and keeps public Bot callback verification separate from local
-gateway/webhook security gates.
+gateway/webhook security gates. The RC pack harness runs typecheck/build and
+packs from the package directory, then writes an ignored JSON summary for
+release evidence without publishing or bumping the version.
 
 ## Contract
 
@@ -53,6 +56,9 @@ Host compatibility maintenance lives in
 `../../docs/releases/OPENCLAW_CLIQ_CHANNEL_COMPATIBILITY.md`.
 The v0.4 RC decision checklist lives in
 `../../docs/releases/OPENCLAW_CLIQ_CHANNEL_V0_4_RC_CHECKLIST.md`.
+
+Repeatable local RC package preflight:
+`../../ops/scripts/openclaw_cliq_rc_pack.sh`.
 
 ## Config example
 
@@ -161,6 +167,7 @@ openclaw plugins install . --link
 openclaw plugins inspect zoho-cliq --json
 openclaw plugins doctor
 ../../ops/scripts/openclaw_cliq_live_smoke.sh
+../../ops/scripts/openclaw_cliq_rc_pack.sh
 ```
 
 Use a host satisfying `>=2026.5.3-1` for inspect/install validation. The

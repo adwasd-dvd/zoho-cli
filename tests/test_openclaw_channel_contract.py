@@ -106,6 +106,7 @@ def test_openclaw_cliq_channel_compatibility_runbook_has_repair_contract():
         "npx -y openclaw@latest",
         "npx -y openclaw@beta",
         "ops/scripts/openclaw_cliq_live_smoke.sh",
+        "ops/scripts/openclaw_cliq_rc_pack.sh",
     ]
 
     for marker in required:
@@ -118,12 +119,14 @@ def test_openclaw_cliq_channel_rc_checklist_has_cut_contract():
     required = [
         "RC package ready, deployment callback still external",
         "cliq-channel-418",
+        "cliq-channel-419",
+        "ops/scripts/openclaw_cliq_rc_pack.sh",
         "live_verification_pending",
         "Public Bot callback",
         "ZOHO_CLIQ_PUBLIC_WEBHOOK_URL",
         "0.4.0-rc.1",
         "expectedIntegrity",
-        "1777 passed in 49.10s",
+        "1840 passed in 53.40s",
         "token_refresh_rate_limited",
         "skip_deferred",
         "Do not add parallel `cliq_send`",

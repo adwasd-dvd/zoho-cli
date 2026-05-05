@@ -2,12 +2,13 @@
 
 This checklist is the `cliq-channel-418` handoff for deciding whether the
 native OpenClaw Zoho Cliq channel package can be cut as a v0.4 release
-candidate.
+candidate. `cliq-channel-419` codifies the local package artifact preflight
+used by this checklist.
 
 SDK contract source of truth:
 `docs/architecture/OPENCLAW_CLIQ_CHANNEL_SDK_CONTRACT.md`.
 
-Updated: `2026-05-05T12:15:14Z`.
+Updated: `2026-05-05T13:06:07Z`.
 
 ## Decision
 
@@ -30,20 +31,20 @@ Do not claim production incident readiness while channel diagnostics report
 - Channel id: `cliq`
 - Host floor: OpenClaw `>=2026.5.3-1`
 - Implemented slices:
-  `cliq-channel-401/402/416/403/414/404/405/406/407/408/413/409/410/417/415/411/412/418`
+  `cliq-channel-401/402/416/403/414/404/405/406/407/408/413/409/410/417/415/411/412/418/419`
 
 ## Evidence
 
 | Gate | Latest result |
 | --- | --- |
 | TypeScript typecheck/build | `npm --prefix integrations/openclaw-channel-cliq run typecheck` and `run build` passed. |
-| Focused channel/docs tests | `tests/test_openclaw_channel_skeleton.py`, `tests/test_openclaw_channel_contract.py`, `tests/test_lane3_docs.py`, and `tests/test_markdown_update.py` passed with `33 passed`. |
-| Full CI | `make ci` passed with ruff format/check clean and `1777 passed in 49.10s`. |
+| Focused channel/docs tests | `tests/test_openclaw_channel_skeleton.py`, `tests/test_openclaw_channel_contract.py`, `tests/test_lane3_docs.py`, and `tests/test_markdown_update.py` passed with `34 passed`. |
+| Full CI | `make ci` passed with ruff format/check clean and `1840 passed in 53.40s`. |
 | Local live smoke | `ops/scripts/openclaw_cliq_live_smoke.sh` passed: Zoho auth/capability/polling OK, local webhook missing-secret/authenticated-non-dispatch/authenticated-deny OK, native polling OK with zero events. |
 | Package linked baseline | Temp-HOME `openclaw plugins install ./integrations/openclaw-channel-cliq --link`, `plugins inspect zoho-cliq --json`, and `plugins doctor` passed on global `OpenClaw 2026.5.3-1`. |
 | Latest stable host | Temp-HOME `npx -y openclaw@2026.5.4` linked install/inspect/doctor passed. |
 | Beta early warning | Temp-HOME `npx -y openclaw@2026.5.4-beta.3` linked install/inspect/doctor passed. |
-| Local package artifact preflight | `npm pack --json --pack-destination .tmp/openclaw-cliq-rc-pack` passed after typecheck/build for `@adwasd/openclaw-zoho-cliq@0.4.0-alpha.0`; tarball `adwasd-openclaw-zoho-cliq-0.4.0-alpha.0.tgz`, size `93516`, unpacked size `464886`, entry count `67`, shasum `eb0579eaa8776cf015719d07b04fcd8a05a7285a`, integrity `sha512-oIChoy8CJjduamkrUB5ru/Brq8rYvb+qiZVph18AgJEUYoL2bwiiw+G1Sqf5CvvRXSEYSCINfdZ8XZ/AQdz/OA==`. |
+| Local package artifact preflight | `ops/scripts/openclaw_cliq_rc_pack.sh` passed at `2026-05-05T12:53:50Z`; the script reran typecheck/build and then packed from the plugin directory into `.tmp/openclaw-cliq-rc-pack`. Tarball `adwasd-openclaw-zoho-cliq-0.4.0-alpha.0.tgz`, size `93548`, unpacked size `465042`, entry count `67`, shasum `a77c6c1d26af1454c634a353e1a5ad642b4b5ccd`, integrity `sha512-DhO74Ol6jFvO6bvSzUWGLeX6Bv5OwAGXIoMZ1DVFedEMjB3vo9w/lW6MLUl8gE4Uv4RpmFRy7vwpwxJtr3fdkA==`. Summary report path pattern: `tests/auto_pilot/reports/openclaw_cliq_rc_pack_summary_<run-id>.json`. |
 
 ## Remaining deployment gate
 
@@ -64,7 +65,8 @@ cooldown, and rerun without bursty refresh loops.
 ## RC cut steps
 
 1. Confirm `git status --short` is clean.
-2. Re-run focused channel/docs tests and `make ci`.
+2. Re-run `ops/scripts/openclaw_cliq_rc_pack.sh`, focused channel/docs tests,
+   and `make ci`.
 3. Re-run `docs/releases/OPENCLAW_CLIQ_CHANNEL_COMPATIBILITY.md` latest/beta
    checks if OpenClaw published a newer stable or beta after this checklist.
 4. Decide package version:

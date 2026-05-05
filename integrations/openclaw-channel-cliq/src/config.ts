@@ -685,6 +685,7 @@ export function describeCliqAccountDiagnostics(account: CliqResolvedAccount) {
       "openclaw plugins doctor",
       "POST a trusted Bot handler payload to /webhooks/cliq",
       "ops/scripts/openclaw_cliq_live_smoke.sh",
+      "ops/scripts/openclaw_cliq_rc_pack.sh",
     ],
     implementedSlices: [
       "cliq-channel-401",
@@ -705,6 +706,7 @@ export function describeCliqAccountDiagnostics(account: CliqResolvedAccount) {
       "cliq-channel-411",
       "cliq-channel-412",
       "cliq-channel-418",
+      "cliq-channel-419",
     ],
     nextSlice: "public-bot-callback-verification",
   };

@@ -977,6 +977,19 @@ OpenClaw:
   package is ready, and production rollout remains gated on public Bot callback
   reachability.
 
+### cliq-channel-419: Repeatable RC package preflight
+
+- Codify the local package artifact preflight in a repo script.
+- Run typecheck/build before packing and run `npm pack` from the plugin
+  directory so npm reads the package `package.json`.
+- Write ignored JSON evidence with package name, version, tarball path, size,
+  shasum, integrity, entry count, and release posture.
+- Acceptance: RC maintainers can regenerate local/operator package evidence
+  without publishing to npm, bumping versions, or hand-copying raw command output.
+- Status: complete with `ops/scripts/openclaw_cliq_rc_pack.sh`; the script
+  writes summary reports under `tests/auto_pilot/reports/` and tarballs under
+  `.tmp/openclaw-cliq-rc-pack`.
+
 ## Test strategy
 
 ### Unit tests

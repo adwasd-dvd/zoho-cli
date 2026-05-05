@@ -50,6 +50,7 @@ def test_lane3_required_paths_exist() -> None:
         REPO_ROOT / "docs" / "releases" / "OPENCLAW_CLIQ_CHANNEL_SETUP.md",
         REPO_ROOT / "docs" / "releases" / "OPENCLAW_CLIQ_CHANNEL_COMPATIBILITY.md",
         REPO_ROOT / "docs" / "releases" / "OPENCLAW_CLIQ_CHANNEL_V0_4_RC_CHECKLIST.md",
+        REPO_ROOT / "ops" / "scripts" / "openclaw_cliq_rc_pack.sh",
     ]
 
     for path in required:
@@ -192,6 +193,7 @@ def test_native_cliq_channel_ai_troubleshooting_contract_present() -> None:
         "user:<id>",
         "cliq:channel:<id>:thread:<thread_id>",
         "skip_deferred",
+        "ops/scripts/openclaw_cliq_rc_pack.sh",
     ]:
         assert marker in combined
 

@@ -3,7 +3,7 @@
 This runbook gives operator-copyable Deluge templates for connecting a real
 Zoho Cliq Bot to the native OpenClaw `cliq` channel webhook at `/webhooks/cliq`.
 
-Updated: `2026-05-05T13:20:00Z`.
+Updated: `2026-05-05T13:52:55Z`.
 
 Official references:
 
@@ -187,3 +187,11 @@ one native OpenClaw turn and one Cliq reply.
 6. Send one trusted Message or Mention from Cliq.
 7. Verify one accepted webhook event, one native OpenClaw turn, one Cliq reply,
    and no duplicate dispatch in the turn ledger.
+
+## Contract coverage
+
+`cliq-channel-421` adds runtime contract coverage for the four accepted handler
+families in this document. The OpenClaw channel webhook test processes Message,
+Mention, Participation, and Context shaped payloads through
+`processCliqWebhookPayload()` so template updates stay aligned with native
+normalization, security, dedupe, lifecycle, and turn-ledger behavior.

@@ -1,10 +1,15 @@
-last_run_at: "2026-05-05T13:17:07Z"
+last_run_at: "2026-05-05T13:52:55Z"
 last_result: passing
-current_focus: cliq-channel-420-real-bot-handler-templates
+current_focus: cliq-channel-421-bot-handler-runtime-contract
 suites:
   unit:
     status: passing
     notes:
+      - "cliq-channel-421 real Bot handler runtime contract coverage completed at 2026-05-05T13:52:55Z"
+      - "expanded `test_openclaw_cliq_channel_webhook_inbound_runtime` so Message, Mention, Participation, and Context shaped payloads process through native webhook intake"
+      - "./.venv/bin/python -m pytest -q tests/test_openclaw_channel_skeleton.py::test_openclaw_cliq_channel_webhook_inbound_runtime -> 1 passed in 1.68s"
+      - "./.venv/bin/python -m pytest -q tests/test_openclaw_channel_skeleton.py::test_openclaw_cliq_channel_webhook_inbound_runtime tests/test_openclaw_channel_contract.py tests/test_lane3_docs.py tests/test_markdown_update.py -> 17 passed in 1.52s"
+      - "make ci in default sandbox hit localhost bind `PermissionError` for OAuth callback tests; escalated rerun passed with ruff format/check clean + pytest `1841 passed in 51.63s`"
       - "cliq-channel-420 real Bot handler templates completed at 2026-05-05T13:17:07Z"
       - "added `docs/releases/OPENCLAW_CLIQ_BOT_HANDLER_TEMPLATES.md` with placeholder-only Deluge templates for Zoho Cliq Message, Mention, Participation, and Context handlers posting to `/webhooks/cliq` with `X-Cliq-Webhook-Secret`"
       - "./.venv/bin/python -m pytest -q tests/test_openclaw_channel_contract.py tests/test_lane3_docs.py tests/test_markdown_update.py -> 16 passed in 0.02s"

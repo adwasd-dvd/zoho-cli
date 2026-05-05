@@ -545,3 +545,10 @@
   priority: high
   depends_on:
   - cliq-channel-419
+- id: cliq-channel-421
+  title: verify real Bot handler template payloads through native webhook intake
+  module: openclaw_cliq_channel
+  stage: completed
+  priority: high
+  depends_on:
+  - cliq-channel-420

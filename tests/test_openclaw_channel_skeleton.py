@@ -1533,6 +1533,56 @@ assert.equal(direct.accepted, true);
 assert.equal(direct.event.chatType, "direct");
 assert.equal(direct.event.peerId, "user:U2");
 
+const participation = await processCliqWebhookPayload({
+  cfg,
+  account,
+  payload: {
+    handler: "participation",
+    operation: "message_sent",
+    data: {
+      message: { id: "P1", text: "@bot participate" },
+    },
+    message: { id: "P1", text: "@bot participate" },
+    user: { id: "U2", name: "Alice" },
+    chat: { channelId: "C123", chatType: "channel" },
+    environment: { network: "happy" },
+    access: { role: "member" },
+  },
+  dedupe,
+  turnLedger,
+  mentionMatchers: [/@bot\\b/i],
+});
+assert.equal(participation.accepted, true);
+assert.equal(participation.handlerKind, "participation");
+assert.equal(participation.event.messageId, "P1");
+assert.equal(participation.event.peerId, "channel:C123");
+assert.equal(participation.event.mentioned, true);
+
+const context = await processCliqWebhookPayload({
+  cfg,
+  account,
+  payload: {
+    handler: "context",
+    context_id: "CTX1",
+    answers: { task: "status" },
+    message: {
+      id: "CTX-M1",
+      text: "context CTX1 {task=status}",
+      context_id: "CTX1",
+      answers: { task: "status" },
+    },
+    user: { id: "U2", name: "Alice" },
+    chat: { chatId: "DM-CTX", chatType: "dm" },
+  },
+  dedupe,
+  turnLedger,
+});
+assert.equal(context.accepted, true);
+assert.equal(context.handlerKind, "context");
+assert.equal(context.event.messageId, "CTX-M1");
+assert.equal(context.event.chatType, "direct");
+assert.equal(context.event.peerId, "user:U2");
+
 const unsupported = await processCliqWebhookPayload({
   cfg,
   account,

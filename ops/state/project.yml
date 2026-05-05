@@ -1,5 +1,5 @@
 project: zoho-cli
-updated_at: '2026-05-05T13:17:07Z'
+updated_at: '2026-05-05T13:52:55Z'
 status: v0.2.1-final-release
 throughput_mode: turbo_20x
 throughput_policy_ref: ops/state/execution_policy.yml
@@ -35,6 +35,7 @@ primary_blockers:
   now returns `not_supported` in focused live verification)
 next_step: "Start crm-015: run the controlled CRM live fixture only after the operator provides a dedicated payload, cleanup plan, and live env gates; keep normal live writes blocked."
 additional_info:
+- "2026-05-05 cliq-channel-421 real Bot handler runtime contract coverage at 2026-05-05T13:52:55Z expanded webhook runtime tests so Message, Mention, Participation, and Context shaped payloads process through native normalization, security, dedupe, lifecycle, and turn-ledger behavior; this keeps `docs/releases/OPENCLAW_CLIQ_BOT_HANDLER_TEMPLATES.md` aligned with OpenClaw dispatch before public callback verification. Full `make ci` required sandbox escalation for localhost OAuth callback bind tests and passed with `1841 passed in 51.63s`."
 - "2026-05-05 cliq-channel-420 real Bot handler templates at 2026-05-05T13:17:07Z added `docs/releases/OPENCLAW_CLIQ_BOT_HANDLER_TEMPLATES.md` with Deluge templates for Zoho Cliq Message, Mention, Participation, and Context handlers; templates use placeholder public webhook URL and rotated secret values only, point handlers at `/webhooks/cliq`, document the safe first Mention Handler path, and keep Welcome/Incoming Webhook/Call/Menu handlers out of native OpenClaw turn dispatch for RC. Full `make ci` passed with `1841 passed in 48.97s`."
 - "2026-05-05 cliq-channel-419 repeatable RC package preflight at 2026-05-05T12:58:30Z added `ops/scripts/openclaw_cliq_rc_pack.sh`; the script runs package typecheck/build, packs from the plugin directory, writes ignored JSON evidence under `tests/auto_pilot/reports/`, keeps tarballs under `.tmp/openclaw-cliq-rc-pack`, and performs no npm publish or version bump. Local run generated `adwasd-openclaw-zoho-cliq-0.4.0-alpha.0.tgz` with shasum `a77c6c1d26af1454c634a353e1a5ad642b4b5ccd`, integrity `sha512-DhO74Ol6jFvO6bvSzUWGLeX6Bv5OwAGXIoMZ1DVFedEMjB3vo9w/lW6MLUl8gE4Uv4RpmFRy7vwpwxJtr3fdkA==`, and 67 entries; native diagnostics and Lane 3 docs now advertise the preflight. Full `make ci` passed with `1840 passed in 48.40s`."
 - "2026-05-05 OpenClaw Cliq channel local package artifact preflight at 2026-05-05T12:15:14Z reran `npm --prefix integrations/openclaw-channel-cliq run typecheck`, `npm --prefix integrations/openclaw-channel-cliq run build`, and `npm pack --json --pack-destination .tmp/openclaw-cliq-rc-pack` from the plugin directory; generated alpha tarball `adwasd-openclaw-zoho-cliq-0.4.0-alpha.0.tgz` with shasum `eb0579eaa8776cf015719d07b04fcd8a05a7285a`, integrity `sha512-oIChoy8CJjduamkrUB5ru/Brq8rYvb+qiZVph18AgJEUYoL2bwiiw+G1Sqf5CvvRXSEYSCINfdZ8XZ/AQdz/OA==`, and 67 entries. No package publish or version bump was performed."

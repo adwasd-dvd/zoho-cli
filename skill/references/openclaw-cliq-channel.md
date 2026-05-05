@@ -65,6 +65,9 @@ publish or version bump side effects.
 `cliq-channel-420` is complete: real Zoho Bot Deluge templates for Message,
 Mention, Participation, and Context handlers live in
 `docs/releases/OPENCLAW_CLIQ_BOT_HANDLER_TEMPLATES.md`.
+`cliq-channel-421` is complete: webhook runtime tests now process Message,
+Mention, Participation, and Context shaped payloads through native intake so the
+templates stay aligned with OpenClaw dispatch behavior.
 
 The v0.4 plugin targets OpenClaw `>=2026.5.3-1`. The upgraded global
 `OpenClaw 2026.5.3-1` host is suitable for native plugin checks; use

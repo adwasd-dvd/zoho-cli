@@ -121,6 +121,7 @@ def test_openclaw_cliq_channel_rc_checklist_has_cut_contract():
         "cliq-channel-418",
         "cliq-channel-419",
         "cliq-channel-420",
+        "cliq-channel-421",
         "ops/scripts/openclaw_cliq_rc_pack.sh",
         "OPENCLAW_CLIQ_BOT_HANDLER_TEMPLATES.md",
         "live_verification_pending",
@@ -128,7 +129,7 @@ def test_openclaw_cliq_channel_rc_checklist_has_cut_contract():
         "ZOHO_CLIQ_PUBLIC_WEBHOOK_URL",
         "0.4.0-rc.1",
         "expectedIntegrity",
-        "1841 passed in 48.97s",
+        "1841 passed in 51.63s",
         "token_refresh_rate_limited",
         "skip_deferred",
         "Do not add parallel `cliq_send`",
@@ -161,6 +162,8 @@ def test_openclaw_cliq_bot_handler_templates_cover_real_handlers():
         "body:payload.toString()",
         "ZOHO_CLIQ_WEBHOOK_SECRET",
         "Welcome, Incoming Webhook, Call, and Menu handlers",
+        "cliq-channel-421",
+        "processCliqWebhookPayload()",
     ]
 
     for marker in required:

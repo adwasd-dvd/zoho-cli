@@ -1002,6 +1002,17 @@ OpenClaw:
 - Status: complete in
   `docs/releases/OPENCLAW_CLIQ_BOT_HANDLER_TEMPLATES.md`.
 
+### cliq-channel-421: Real Bot handler runtime contract coverage
+
+- Add runtime tests that process Message, Mention, Participation, and Context
+  shaped Bot payloads through the native webhook intake.
+- Keep accepted handler templates aligned with normalization, security, dedupe,
+  lifecycle, and turn-ledger behavior.
+- Acceptance: all four RC-accepted Bot handler families can produce a native
+  OpenClaw inbound event under safe allowlist/mention policy conditions.
+- Status: complete in
+  `tests/test_openclaw_channel_skeleton.py::test_openclaw_cliq_channel_webhook_inbound_runtime`.
+
 ## Test strategy
 
 ### Unit tests

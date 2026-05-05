@@ -128,6 +128,10 @@ Follow the stack from the architecture plan:
     `docs/releases/OPENCLAW_CLIQ_BOT_HANDLER_TEMPLATES.md` provides Deluge
     templates for Message, Mention, Participation, and Context handlers with
     placeholder webhook URL and rotated secret values)
+22. `cliq-channel-421` real Bot handler runtime contract coverage (complete;
+    webhook runtime tests process Message, Mention, Participation, and Context
+    shaped payloads through native normalization/security/dedupe/lifecycle/ledger
+    handling)
 
 Each slice should be independently testable. Prefer many small slices over one
 large plugin drop.
@@ -169,8 +173,9 @@ routing diagnostics, `cliq-channel-410` aligns AI-facing troubleshooting, and
 `cliq-channel-417` wires accepted events into native OpenClaw agent turns;
 `cliq-channel-415` adds redacted observability/privacy diagnostics;
 `cliq-channel-411` adds the live smoke gate harness; `cliq-channel-419` adds the
-repeatable local RC pack preflight; and `cliq-channel-420` adds real Bot Deluge
-handler templates.
+repeatable local RC pack preflight; `cliq-channel-420` adds real Bot Deluge
+handler templates; and `cliq-channel-421` covers those accepted handler families
+in runtime webhook tests.
 Both inbound paths normalize messages into the shared
 inbound event shape, run mention/allowlist/employee policy checks, dedupe by
 account/network/chat/message before optional dispatch, keep status/read failures

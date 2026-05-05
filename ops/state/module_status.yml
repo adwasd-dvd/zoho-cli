@@ -29,7 +29,7 @@ openclaw_cliq_channel:
 crm:
   priority: 4
   status: in_progress
-  phase: v0_5_write_surface_planning
+  phase: v0_5_upsert_dry_run
   target_release: v0.5.0
-  current_milestone: crm-007-write-surface-safety-contract
+  current_milestone: crm-008-upsert-dry-run-contract
   blockers: []

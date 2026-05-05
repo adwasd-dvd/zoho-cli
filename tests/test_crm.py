@@ -3,6 +3,7 @@
 from importlib import metadata
 
 import httpx
+import pytest
 import respx
 
 from zoho_cli import crm
@@ -97,6 +98,32 @@ def test_crm_api_version_policy_preserves_default_http_v2() -> None:
     assert policy["sdkApiVersion"] == "v8"
     assert policy["selection"]["sdkV8"] == "explicit --adapter sdk-v8 only"
     assert policy["defaultBehavior"] == "preserve-current-output-shapes"
+
+
+def test_crm_write_surface_policy_disables_writes_and_prefers_upsert() -> None:
+    policy = crm.crm_write_surface_policy()
+
+    assert policy["policyId"] == "crm-007-write-surface-contract"
+    assert policy["writesEnabled"] is False
+    assert policy["defaultMode"] == "dry-run"
+    assert policy["firstImplementationCandidate"] == "upsert"
+    assert policy["globalRequiredGates"]["dryRunDefault"] is True
+    assert policy["globalRequiredGates"]["exactConfirmationRequired"] is True
+    assert policy["globalRequiredGates"]["idempotencyKeyRequired"] is True
+    assert policy["operations"]["upsert"]["stage"] == "first_candidate"
+    assert policy["operations"]["delete"]["stage"] == "blocked_until_later_slice"
+
+
+def test_crm_write_surface_policy_filters_operation() -> None:
+    policy = crm.crm_write_surface_policy(operation="UPDATE")
+
+    assert list(policy["operations"]) == ["update"]
+    assert policy["operations"]["update"]["method"] == "PUT"
+
+
+def test_crm_write_surface_policy_rejects_unknown_operation() -> None:
+    with pytest.raises(ValueError, match="unsupported CRM write operation"):
+        crm.crm_write_surface_policy(operation="merge")
 
 
 @respx.mock

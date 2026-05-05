@@ -1,6 +1,6 @@
 # CLI help snapshot
 
-Generated at: `2026-05-05T10:24:41Z`
+Generated at: `2026-05-05T10:40:21Z`
 
 Use this file as a quick command-surface reference for the skill.
 
@@ -275,6 +275,7 @@ Exit code: `0`
 ╭─ Commands ───────────────────────────────────────────────────────────────────╮
 │ status      Show CRM auth readiness and inferred API endpoint.               │
 │ sdk-status  Show official Zoho CRM SDK adapter readiness.                    │
+│ write-plan  Show CRM write-surface safety gates without writing data.        │
 │ modules     List CRM modules available to the account.                       │
 │ fields      List fields for a CRM module.                                    │
 │ list        List records from a CRM module.                                  │

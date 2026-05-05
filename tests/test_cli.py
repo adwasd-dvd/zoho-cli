@@ -26960,6 +26960,8 @@ def test_crm_status_scaffold_info(mock_config: Path) -> None:
     assert payload["baseUrl"] == "https://www.zohoapis.com/crm/v2"
     assert payload["apiVersionPolicy"]["defaultHttpApiVersion"] == "v2"
     assert payload["apiVersionPolicy"]["sdkApiVersion"] == "v8"
+    assert payload["writeSurfacePolicy"]["writesEnabled"] is False
+    assert payload["writeSurfacePolicy"]["firstImplementationCandidate"] == "upsert"
     assert payload["oauthReady"] is False
     assert "ZohoCRM.modules.ALL" in payload["missingScopes"]
 
@@ -27017,6 +27019,35 @@ def test_crm_sdk_status_command() -> None:
     assert payload["adapterSkeleton"]["defaultEnabled"] is False
     assert payload["adapterSkeleton"]["currentCliAdapter"] == "http-v2"
     assert payload["adapterSkeleton"]["preventsSdkCwdDefaults"] is True
+    assert payload["writeSurfacePolicy"]["writesEnabled"] is False
+
+
+def test_crm_write_plan_command() -> None:
+    result = runner.invoke(app, ["crm", "write-plan"])
+    assert result.exit_code == 0, result.output
+
+    payload = json.loads(result.output)
+    assert payload["policyId"] == "crm-007-write-surface-contract"
+    assert payload["writesEnabled"] is False
+    assert payload["globalRequiredGates"]["dryRunDefault"] is True
+    assert payload["operations"]["upsert"]["plannedCommand"] == "zoho crm upsert"
+    assert payload["operations"]["delete"]["stage"] == "blocked_until_later_slice"
+
+
+def test_crm_write_plan_command_filters_operation() -> None:
+    result = runner.invoke(app, ["crm", "write-plan", "--operation", "delete"])
+    assert result.exit_code == 0, result.output
+
+    payload = json.loads(result.output)
+    assert list(payload["operations"]) == ["delete"]
+    assert payload["operations"]["delete"]["risk"] == "high"
+
+
+def test_crm_write_plan_command_rejects_invalid_operation() -> None:
+    result = runner.invoke(app, ["crm", "write-plan", "--operation", "merge"])
+
+    assert result.exit_code == 1
+    assert "invalid_operation" in result.output
 
 
 def test_crm_sdk_status_command_uses_account_region(mock_config: Path) -> None:

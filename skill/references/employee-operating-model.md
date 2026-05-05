@@ -66,3 +66,7 @@ resources under `ZOHO_CRM_SDK_RESOURCE_PATH` or the CLI-managed cache path.
 Honor `apiVersionPolicy`: HTTP v2 is the default path, SDK/API v8 is
 explicit-only, and write commands remain planning-only until safety gates are
 locked.
+Run `zoho crm write-plan` before CRM write work; `crm-007` exposes
+`writeSurfacePolicy` with `writesEnabled=false`, dry-run default, exact
+confirmation, idempotency, JSON payload, and audit requirements. Treat upsert as
+the next dry-run candidate and keep delete blocked.

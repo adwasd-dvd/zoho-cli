@@ -11140,6 +11140,7 @@ def crm_status(
             accounts_server=account_cfg.get("accounts_server"),
         ),
         "apiVersionPolicy": _crm.crm_api_version_policy(),
+        "writeSurfacePolicy": _crm.crm_write_surface_policy(),
         "requiredScopes": _crm.DEFAULT_CRM_SCOPES,
         "grantedScopes": account_cfg.get("scopes", []),
         "next": [
@@ -11177,6 +11178,22 @@ def crm_sdk_status() -> None:
     email = _S.account or _config.default_account(cfg)
     account_cfg = cfg.get("accounts", {}).get(email, {}) if email else {}
     utils.output(_crm.crm_sdk_status(account_cfg=account_cfg, account_email=email))
+
+
+@crm_app.command("write-plan")
+def crm_write_plan(
+    operation: Optional[str] = typer.Option(
+        None,
+        "--operation",
+        help="Filter to one planned write operation: upsert, update, create, or delete.",
+    ),
+) -> None:
+    """Show CRM write-surface safety gates without writing data."""
+    try:
+        payload = _crm.crm_write_surface_policy(operation=operation)
+    except ValueError as exc:
+        utils.error_exit("invalid_operation", str(exc))
+    utils.output(payload)
 
 
 @crm_app.command("modules")

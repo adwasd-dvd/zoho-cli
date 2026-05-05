@@ -1,10 +1,21 @@
-last_run_at: "2026-05-05T10:35:30Z"
+last_run_at: "2026-05-05T10:44:47Z"
 last_result: passing
-current_focus: crm-006-api-version-policy-full-ci-20260505T103530Z
+current_focus: crm-007-write-surface-policy-full-ci-20260505T104447Z
 suites:
   unit:
     status: passing
     notes:
+      - "crm-007 write-surface safety contract completed at 2026-05-05T10:42:55Z"
+      - "make ci -> ruff format/check clean + pytest `1807 passed in 50.84s`"
+      - "added `crm_write_surface_policy()` plus `zoho crm write-plan`; exposed `writeSurfacePolicy` through `zoho crm status`, `zoho crm sdk-status`, and `zoho crm write-plan`"
+      - "locked `writesEnabled=false`, dry-run default, exact confirmation, idempotency-key, JSON-payload, and audit-envelope requirements"
+      - "chose `upsert` as the first implementation candidate and kept `delete` blocked until a later safety slice"
+      - "added `docs/architecture/CRM_WRITE_SURFACE_CONTRACT.md` and refreshed Lane 2/3 docs plus the CLI help snapshot"
+      - "./.venv/bin/python -m pytest -q tests/test_crm.py tests/test_cli.py -k crm tests/test_lane3_docs.py tests/test_markdown_update.py -> 38 passed, 866 deselected in 0.58s"
+      - "./.venv/bin/python -m zoho_cli crm write-plan | jq '.policyId, .writesEnabled, .firstImplementationCandidate, .globalRequiredGates.exactConfirmationRequired, .operations.delete.stage' -> `crm-007-write-surface-contract`, `false`, `upsert`, `true`, `blocked_until_later_slice`"
+      - "./.venv/bin/python -m zoho_cli crm status | jq '.writeSurfacePolicy.policyId, .writeSurfacePolicy.writesEnabled, .writeSurfacePolicy.firstImplementationCandidate' -> `crm-007-write-surface-contract`, `false`, `upsert`"
+      - "ruby YAML parse for ops/workflow state -> YAML_PARSE_OK"
+      - "git diff --check -> clean"
       - "crm-006 API version policy completed at 2026-05-05T10:33:29Z"
       - "make ci -> ruff format/check clean + pytest `1801 passed in 48.79s`"
       - "locked `crm_api_version_policy()` and exposed `apiVersionPolicy` through `zoho crm status` plus `zoho crm sdk-status`"

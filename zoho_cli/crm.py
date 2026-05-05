@@ -26,6 +26,8 @@ CRM_SDK_PROPOSED_ADAPTER = "sdk-v8"
 CRM_HTTP_DEFAULT_API_VERSION = "v2"
 CRM_SDK_API_VERSION = "v8"
 CRM_HTTP_SUPPORTED_API_VERSIONS = ("v2", "v8")
+CRM_WRITE_POLICY_ID = "crm-007-write-surface-contract"
+CRM_WRITE_OPERATIONS = ("upsert", "update", "create", "delete")
 
 
 def crm_sdk_status(
@@ -81,6 +83,7 @@ def crm_sdk_status(
             "sdkAdapterMustPreserveOutputShape": True,
         },
         "apiVersionPolicy": crm_api_version_policy(),
+        "writeSurfacePolicy": crm_write_surface_policy(),
         "adapterSkeleton": crm_sdk.crm_sdk_adapter_status(
             account_cfg=account_cfg,
             account_email=account_email,
@@ -109,6 +112,164 @@ def crm_api_version_policy() -> dict:
         },
         "defaultBehavior": "preserve-current-output-shapes",
         "migrationGate": "do-not-switch-defaults-until-v8-live-shape-parity-is-recorded",
+    }
+
+
+def crm_write_surface_policy(*, operation: str | None = None) -> dict:
+    """Return the CRM write-surface safety contract without enabling writes."""
+
+    operations = _crm_write_operation_contracts()
+    if operation is not None:
+        key = operation.strip().lower()
+        if key not in operations:
+            supported = ", ".join(CRM_WRITE_OPERATIONS)
+            raise ValueError(
+                f"unsupported CRM write operation: {operation}. Use one of: {supported}"
+            )
+        operations = {key: operations[key]}
+
+    return {
+        "policyId": CRM_WRITE_POLICY_ID,
+        "stage": "planning",
+        "writesEnabled": False,
+        "defaultMode": "dry-run",
+        "firstImplementationCandidate": "upsert",
+        "adapterPolicy": {
+            "currentReadDefault": CRM_SDK_DEFAULT_ADAPTER,
+            "writeCandidateApiVersion": CRM_SDK_API_VERSION,
+            "sdkAdapter": CRM_SDK_PROPOSED_ADAPTER,
+            "httpV8": "explicit compatibility path only",
+        },
+        "globalRequiredGates": {
+            "dryRunDefault": True,
+            "executeFlagRequired": True,
+            "exactConfirmationRequired": True,
+            "idempotencyKeyRequired": True,
+            "auditEnvelopeRequired": True,
+            "jsonPayloadOnly": True,
+            "fieldApiNamesOnly": True,
+            "recordLimitPerRequest": 100,
+            "destructiveOperationsBlockedUntilLaterSlice": True,
+        },
+        "auditEnvelope": {
+            "event": "crm.write.plan",
+            "include": [
+                "operation",
+                "module",
+                "recordCount",
+                "fieldNames",
+                "payloadDigest",
+                "adapter",
+                "apiVersion",
+                "idempotencyKey",
+                "dryRun",
+                "execute",
+                "confirmation",
+            ],
+            "redactByDefault": ["fieldValues", "tokens", "secrets"],
+        },
+        "plannedCommands": [
+            "zoho crm upsert",
+            "zoho crm update",
+            "zoho crm create",
+            "zoho crm delete",
+        ],
+        "operations": operations,
+        "officialApiReferences": [
+            "https://www.zoho.com/crm/developer/docs/api/v8/upsert-records.html",
+            "https://www.zoho.com/crm/developer/docs/api/v8/update-records.html",
+            "https://www.zoho.com/crm/developer/docs/api/v8/insert-records.html",
+            "https://www.zoho.com/crm/developer/docs/api/v8/delete-records.html",
+        ],
+        "next": [
+            "Implement `zoho crm upsert` first as dry-run by default.",
+            "Require --execute plus exact --confirm before any live write.",
+            "Keep delete blocked until create/update/upsert audit evidence is green.",
+        ],
+    }
+
+
+def _crm_write_operation_contracts() -> dict:
+    return {
+        "upsert": {
+            "stage": "first_candidate",
+            "plannedCommand": "zoho crm upsert",
+            "method": "POST",
+            "pathTemplate": "/{module_api_name}/upsert",
+            "apiVersion": CRM_SDK_API_VERSION,
+            "recordLimitPerRequest": 100,
+            "scopeFamily": "ZohoCRM.modules.ALL or module-specific write scope",
+            "requiredInputs": ["module", "records", "duplicateCheckFields"],
+            "requiredGates": [
+                "dry-run default",
+                "--execute for live call",
+                "--confirm crm:upsert:<module>:<recordCount>",
+                "--idempotency-key",
+                "payload digest in audit output",
+            ],
+            "idempotency": "Prefer external ID or duplicate-check fields; require an explicit idempotency key in the CLI contract.",
+            "risk": "medium",
+        },
+        "update": {
+            "stage": "planned_after_upsert",
+            "plannedCommand": "zoho crm update",
+            "method": "PUT",
+            "pathTemplate": "/{module_api_name}/{record_id}",
+            "apiVersion": CRM_SDK_API_VERSION,
+            "recordLimitPerRequest": 100,
+            "scopeFamily": "ZohoCRM.modules.ALL or module-specific write/update scope",
+            "requiredInputs": ["module", "recordId", "recordPatch"],
+            "requiredGates": [
+                "dry-run default",
+                "--execute for live call",
+                "--confirm crm:update:<module>:<recordId>",
+                "--idempotency-key",
+                "preflight read summary",
+                "payload digest in audit output",
+            ],
+            "idempotency": "Require record id plus idempotency key; prefer If-Unmodified-Since when available.",
+            "risk": "medium",
+        },
+        "create": {
+            "stage": "planned_after_upsert",
+            "plannedCommand": "zoho crm create",
+            "method": "POST",
+            "pathTemplate": "/{module_api_name}",
+            "apiVersion": CRM_SDK_API_VERSION,
+            "recordLimitPerRequest": 100,
+            "scopeFamily": "ZohoCRM.modules.ALL or module-specific create scope",
+            "requiredInputs": ["module", "records"],
+            "requiredGates": [
+                "dry-run default",
+                "--execute for live call",
+                "--confirm crm:create:<module>:<recordCount>",
+                "--idempotency-key",
+                "duplicate check warning",
+                "payload digest in audit output",
+            ],
+            "idempotency": "Prefer upsert when a stable duplicate/external ID field exists; otherwise require idempotency key and duplicate warning.",
+            "risk": "medium_high",
+        },
+        "delete": {
+            "stage": "blocked_until_later_slice",
+            "plannedCommand": "zoho crm delete",
+            "method": "DELETE",
+            "pathTemplate": "/{module_api_name}/{record_id}",
+            "apiVersion": CRM_SDK_API_VERSION,
+            "recordLimitPerRequest": 100,
+            "scopeFamily": "ZohoCRM.modules.ALL or module-specific delete scope",
+            "requiredInputs": ["module", "recordIds"],
+            "requiredGates": [
+                "dry-run default",
+                "--execute for live call",
+                "--confirm crm:delete:<module>:<recordCount>",
+                "--idempotency-key",
+                "preflight read summary",
+                "delete-specific audit event",
+            ],
+            "idempotency": "Blocked until recovery/soft-delete semantics and audit replay guidance are documented.",
+            "risk": "high",
+        },
     }
 
 

@@ -79,6 +79,18 @@ zoho crm list --module Leads --adapter sdk-v8 --limit 5
 HTTP v2 as default and SDK/API v8 explicit-only unless a later compatibility
 slice records live shape parity.
 
+Before any CRM write work, inspect the write contract:
+
+```bash
+zoho crm write-plan
+zoho crm write-plan --operation upsert
+```
+
+`crm-007` exposes `writeSurfacePolicy` with `writesEnabled=false`, dry-run
+default, exact confirmation, idempotency-key, JSON-payload, and audit-envelope
+requirements. Do not invent live write commands while `writesEnabled=false`;
+the next candidate is `zoho crm upsert` dry-run, and delete remains blocked.
+
 ## Bridge fallback (explicit)
 
 ```bash

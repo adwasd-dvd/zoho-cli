@@ -204,6 +204,7 @@ def test_crm_sdk_adoption_contract_present() -> None:
         REPO_ROOT / "integrations" / "openclaw" / "LANE3_AI_USER_GUIDE.md",
         REPO_ROOT / "integrations" / "openclaw" / "SKILL_INDEX.md",
         REPO_ROOT / "docs" / "architecture" / "CRM_V0_5_SDK_ADOPTION_PLAN.md",
+        REPO_ROOT / "docs" / "architecture" / "CRM_WRITE_SURFACE_CONTRACT.md",
     ]
     combined = "\n".join(path.read_text(encoding="utf-8") for path in docs)
 
@@ -217,9 +218,16 @@ def test_crm_sdk_adoption_contract_present() -> None:
         "crm-004",
         "crm-005",
         "crm-006",
+        "crm-007",
         "zoho_cli/crm_sdk.py",
         "--adapter sdk-v8",
         "apiVersionPolicy",
+        "zoho crm write-plan",
+        "writeSurfacePolicy",
+        "writesEnabled=false",
+        "idempotency",
+        "dry-run",
+        "CRM_WRITE_SURFACE_CONTRACT.md",
         "ZOHO_CRM_SDK_RESOURCE_PATH",
         "data-center",
         "JSON-safe",

@@ -26,6 +26,10 @@ CRM SDK planning:
   SDK read gates; default remains `http-v2`)
 - `apiVersionPolicy` from `zoho crm status` / `zoho crm sdk-status` (`crm-006`:
   HTTP v2 default, SDK/API v8 explicit-only)
+- `zoho crm write-plan` / `writeSurfacePolicy` (`crm-007`: `writesEnabled=false`,
+  dry-run default, exact confirmation, idempotency, JSON payload, audit envelope;
+  upsert next, delete blocked)
+- `docs/architecture/CRM_WRITE_SURFACE_CONTRACT.md`
 
 GitHub intake:
 - `skill/references/github-intake-workflow.md`

@@ -58,7 +58,9 @@ Use this skill as the default operating contract for an OpenClaw agent acting li
   `apiVersionPolicy` decision that HTTP v2 is default and SDK/API v8 is
   explicit-only, and follow
   `docs/architecture/CRM_V0_5_SDK_ADOPTION_PLAN.md` before changing CRM command
-  output shapes.
+  output shapes. For CRM writes, run `zoho crm write-plan` first and obey
+  `writeSurfacePolicy`: `writesEnabled=false` in `crm-007`, upsert is only the
+  next dry-run candidate, and delete stays blocked until a later safety slice.
 - Draft before high-impact send/delete actions unless the user explicitly asks for direct execution.
 - Ask for explicit approval before running any install/update command that modifies tools or skill files.
 - File low-risk, sanitized CLI bugs and suggestions directly in `adwasd-dvd/zoho-cli` GitHub issues after duplicate search; ask for approval before including private context or changing GitHub settings/labels/code.

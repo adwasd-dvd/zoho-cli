@@ -1,6 +1,6 @@
 # CRM v0.5 SDK adoption plan
 
-Updated: `2026-05-05T10:28:49Z`.
+Updated: `2026-05-05T10:40:21Z`.
 
 This is the `crm-003` handoff for phasing the official Zoho CRM server-side
 Python SDK into `zoho-cli` without breaking the current AI-safe CLI contract.
@@ -102,6 +102,19 @@ adapter proves parity on the read-only surface. The CLI contract remains:
   AI agents can see the HTTP v2 versus SDK/API v8 decision before choosing a
   path.
 
+## Implemented in crm-007
+
+- Added `crm_write_surface_policy()` and `zoho crm write-plan` so the future CRM
+  write surface is machine-readable before live writes exist.
+- Exposed `writeSurfacePolicy` through `zoho crm status`, `zoho crm sdk-status`,
+  and `zoho crm write-plan`.
+- Locked `writesEnabled=false`, dry-run default, exact confirmation,
+  idempotency-key, JSON-payload, and audit-envelope requirements.
+- Chose `upsert` as the first implementation candidate; `delete` remains blocked
+  until recovery/audit replay guidance is documented and tested.
+- Added `docs/architecture/CRM_WRITE_SURFACE_CONTRACT.md` as the source of truth
+  for CRM write command planning.
+
 ## v0.5 slices
 
 1. `crm-004` SDK adapter skeleton (completed):
@@ -118,9 +131,13 @@ adapter proves parity on the read-only surface. The CLI contract remains:
    - decide whether the default HTTP adapter should move from `/crm/v2` to
      `/crm/v8`;
    - keep version selection explicit if v2 and v8 responses differ.
-4. `crm-007` write-surface planning:
+4. `crm-007` write-surface planning (completed):
    - only after read parity is green, add draft-first create/update/delete
      commands with scope checks, confirmation gates, and audit-friendly output.
+5. `crm-008` first write dry-run implementation:
+   - implement `zoho crm upsert` as dry-run by default;
+   - require `--execute`, exact `--confirm`, idempotency key, and audit envelope
+     before any live call.
 
 ## Non-goals
 

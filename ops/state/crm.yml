@@ -1,10 +1,10 @@
 module: CRM
-updated_at: "2026-05-05T10:33:29Z"
+updated_at: "2026-05-05T10:42:55Z"
 status: in_progress
-phase: v0_5_write_surface_planning
+phase: v0_5_upsert_dry_run
 blockers: []
-current_milestone: crm-007-write-surface-safety-contract
+current_milestone: crm-008-upsert-dry-run-contract
 last_completed:
-  id: crm-006
-  summary: "Locked `crm_api_version_policy()` and exposed it through `zoho crm status` plus `zoho crm sdk-status`: HTTP v2 remains default, SDK/API v8 remains explicit-only, and HTTP v8 inference is compatibility-only until live shape parity evidence exists."
-next_small_step: document CRM write-surface dry-run confirmation idempotency and audit gates before enabling create/update/delete behavior
+  id: crm-007
+  summary: "Added `zoho crm write-plan` and `writeSurfacePolicy` diagnostics with `writesEnabled=false`, dry-run default, exact confirmation, idempotency-key, JSON-payload, audit-envelope requirements, upsert as the first implementation candidate, and delete blocked until a later safety slice."
+next_small_step: implement `zoho crm upsert` dry-run output without enabling live CRM writes

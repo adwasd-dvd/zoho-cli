@@ -204,6 +204,12 @@ the secret. Override `ZOHO_CLIQ_NETWORK`, `OPENCLAW_GATEWAY_URL`,
 `ZOHO_CLIQ_WEBHOOK_PATH`, or `ZOHO_CLIQ_PUBLIC_WEBHOOK_URL` when testing a
 non-default network, gateway, path, or public tunnel.
 
+Set `ZOHO_CLIQ_EXPECTED_AGENT_ID` before live rollout smoke when a Cliq account
+must route to a specific OpenClaw agent. The gate reads OpenClaw config,
+verifies `cliq/<account>` binding, and can also enforce
+`ZOHO_CLIQ_EXPECTED_AGENT_MODEL` plus `ZOHO_CLIQ_EXPECTED_ACCOUNT_ID` when the
+smoke is pinned to a named account/model pair.
+
 `token_refresh_rate_limited` and repeated endpoint availability failures are
 recorded as `skip_deferred` so the gate does not hammer Zoho refresh endpoints
 or block unrelated local channel work. Public Bot callback auth/reachability can
@@ -291,5 +297,7 @@ Recovery checklist:
    webhook receive/auth/normalize smoke, status/read lifecycle smoke,
    turn-ledger loop-prevention smoke, status/routing diagnostics smoke, and a
    controlled native dispatch and redacted diagnostic bundle smoke through
-   `ops/scripts/openclaw_cliq_live_smoke.sh`. Wait for a reachable public Bot
-   callback before production agent rollout.
+   `ops/scripts/openclaw_cliq_live_smoke.sh`, setting
+   `ZOHO_CLIQ_EXPECTED_AGENT_ID` when the account must route to a specific
+   agent. Finish with a controlled trusted Bot event that produces exactly one
+   native agent turn and one Cliq reply before production agent rollout.

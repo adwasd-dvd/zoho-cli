@@ -67,7 +67,10 @@ Trusted agent reply:
    `docs/releases/OPENCLAW_CLIQ_BOT_HANDLER_TEMPLATES.md`.
 4. Rotate any webhook secret that appeared in screenshots, chat, logs, or docs
    before production use.
-5. Run `ops/scripts/openclaw_cliq_live_smoke.sh`.
+5. Run `ops/scripts/openclaw_cliq_live_smoke.sh` with
+   `ZOHO_CLIQ_EXPECTED_AGENT_ID=zoho-employee-test` for the current operator
+   environment; set `ZOHO_CLIQ_EXPECTED_AGENT_MODEL` too when model pinning is
+   part of the smoke.
 6. Send a controlled trusted mention from Cliq and verify exactly one native
    OpenClaw turn routes to `zoho-employee-test`, uses a Codex model, and emits
    exactly one Cliq reply.

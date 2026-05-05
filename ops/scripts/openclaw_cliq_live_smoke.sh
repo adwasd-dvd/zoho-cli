@@ -8,6 +8,9 @@ NETWORK="${ZOHO_CLIQ_NETWORK:-happydistrouklimited}"
 GATEWAY_URL="${OPENCLAW_GATEWAY_URL:-http://127.0.0.1:18789}"
 WEBHOOK_PATH="${ZOHO_CLIQ_WEBHOOK_PATH:-/webhooks/cliq}"
 PUBLIC_WEBHOOK_URL="${ZOHO_CLIQ_PUBLIC_WEBHOOK_URL:-}"
+EXPECTED_AGENT_ID="${ZOHO_CLIQ_EXPECTED_AGENT_ID:-}"
+EXPECTED_AGENT_MODEL="${ZOHO_CLIQ_EXPECTED_AGENT_MODEL:-}"
+EXPECTED_ACCOUNT_ID="${ZOHO_CLIQ_EXPECTED_ACCOUNT_ID:-default}"
 SMOKE_RUN_ID="${ZOHO_CLIQ_SMOKE_RUN_ID:-$(date -u +%Y%m%dT%H%M%SZ)-$$}"
 SMOKE_RUN_ID="$(printf '%s' "$SMOKE_RUN_ID" | tr -c 'A-Za-z0-9_.:-' '_')"
 
@@ -51,6 +54,44 @@ run_step "openclaw plugin doctor" "$OPENCLAW_BIN" plugins doctor
 run_step "openclaw channel list" "$OPENCLAW_BIN" channels list
 run_step "openclaw channel status" "$OPENCLAW_BIN" channels status --channel cliq --deep
 run_step "openclaw channel capabilities" "$OPENCLAW_BIN" channels capabilities --channel cliq
+
+if [[ -n "$EXPECTED_AGENT_ID" ]]; then
+  printf '\n== openclaw cliq route binding gate ==\n'
+  node --input-type=module -e '
+import assert from "node:assert/strict";
+import fs from "node:fs";
+import os from "node:os";
+import path from "node:path";
+
+const expectedAgentId = process.argv[1];
+const expectedModel = process.argv[2];
+const expectedAccountId = process.argv[3] || "default";
+const cfg = JSON.parse(fs.readFileSync(path.join(os.homedir(), ".openclaw", "openclaw.json"), "utf8"));
+const bindings = Array.isArray(cfg.bindings) ? cfg.bindings : [];
+const binding = bindings.find((entry) => {
+  const match = entry?.match ?? {};
+  return match.channel === "cliq" && (match.accountId ?? "default") === expectedAccountId;
+});
+assert.ok(binding, `missing cliq/${expectedAccountId} binding`);
+assert.equal(binding.agentId, expectedAgentId);
+const agents = Array.isArray(cfg.agents?.list) ? cfg.agents.list : [];
+const agent = agents.find((entry) => entry?.id === expectedAgentId);
+assert.ok(agent, `missing agent ${expectedAgentId}`);
+if (expectedModel) {
+  assert.equal(agent.model, expectedModel);
+}
+console.log(JSON.stringify({
+  status: "ok",
+  channel: "cliq",
+  accountId: expectedAccountId,
+  agentId: binding.agentId,
+  model: agent.model ?? null
+}));
+' "$EXPECTED_AGENT_ID" "$EXPECTED_AGENT_MODEL" "$EXPECTED_ACCOUNT_ID"
+else
+  printf '\n== openclaw cliq route binding gate skipped ==\n'
+  printf 'reason=ZOHO_CLIQ_EXPECTED_AGENT_ID_missing\n'
+fi
 
 printf '\n== local webhook missing-secret gate ==\n'
 expect_status 401 curl -sS -X POST "$GATEWAY_URL$WEBHOOK_PATH" \

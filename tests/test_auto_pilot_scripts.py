@@ -11,6 +11,9 @@ EXPORT_RECHECK_SCRIPT = (
     REPO_ROOT / "tests" / "auto_pilot" / "run_cliq_export_scope_recheck.sh"
 )
 CRM_FIXTURE_SMOKE_SCRIPT = REPO_ROOT / "ops" / "scripts" / "crm_fixture_live_smoke.sh"
+OPENCLAW_CLIQ_LIVE_SMOKE_SCRIPT = (
+    REPO_ROOT / "ops" / "scripts" / "openclaw_cliq_live_smoke.sh"
+)
 OPENCLAW_CLIQ_RC_PACK_SCRIPT = (
     REPO_ROOT / "ops" / "scripts" / "openclaw_cliq_rc_pack.sh"
 )
@@ -469,3 +472,23 @@ def test_crm_fixture_live_smoke_requires_env_for_execute(tmp_path: Path) -> None
     assert "ZOHO_CRM_ALLOW_LIVE_FIXTURE_not_set" in output
     calls = [json.loads(line) for line in calls_path.read_text().splitlines()]
     assert not any("--execute" in call for call in calls)
+
+
+def test_openclaw_cliq_live_smoke_has_optional_route_binding_gate() -> None:
+    result = subprocess.run(
+        ["bash", "-n", str(OPENCLAW_CLIQ_LIVE_SMOKE_SCRIPT)],
+        cwd=REPO_ROOT,
+        capture_output=True,
+        text=True,
+        check=False,
+    )
+
+    output = f"{result.stdout}\n{result.stderr}"
+    assert result.returncode == 0, output
+    script = OPENCLAW_CLIQ_LIVE_SMOKE_SCRIPT.read_text()
+    assert "ZOHO_CLIQ_EXPECTED_AGENT_ID" in script
+    assert "ZOHO_CLIQ_EXPECTED_AGENT_MODEL" in script
+    assert "ZOHO_CLIQ_EXPECTED_ACCOUNT_ID" in script
+    assert "missing cliq/${expectedAccountId} binding" in script
+    assert 'match.channel === "cliq"' in script
+    assert "assert.equal(binding.agentId, expectedAgentId)" in script

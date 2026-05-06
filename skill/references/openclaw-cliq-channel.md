@@ -176,7 +176,9 @@ Native diagnostic behavior:
   `openclaw_cliq_trusted_reply_plan_<run-id>.json` report path. Use
   `nextAction`, `readyForFinalBundle`, `missingFacts`, and `readyFacts` as the
   machine-readable next-action contract; use `reportFiles` and `reportsReady`
-  for artifact handoff without embedding local paths.
+  for artifact handoff without embedding local paths. Plan redaction must keep
+  `rawIdsStored`, `hashValuesStored`, `localPathsStored`, and `secretsStored`
+  false.
   Use `ops/scripts/openclaw_cliq_hash_ref.sh` when hashing ids as a separate
   step; do not paste raw ids into evidence files.
 - Do not include webhook secrets, token passwords, webhook signatures, raw

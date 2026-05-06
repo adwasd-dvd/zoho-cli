@@ -111,7 +111,8 @@ sender/message/reply facts. The bundle writes this plan to
 `openclaw_cliq_trusted_reply_plan_<run-id>.json` report path. Use
 `nextAction`, `readyForFinalBundle`, `missingFacts`, and `readyFacts` as the
 machine-readable checklist, and `reportFiles` / `reportsReady` for report
-handoff without relying on absolute local paths.
+handoff without relying on absolute local paths. Require the plan `redaction`
+object to keep raw ids, hash values, local paths, and secrets out of reports.
 Use
 `ops/scripts/openclaw_cliq_hash_ref.sh` only when hashing live raw ids as a
 separate step; do not paste raw ids into evidence files.

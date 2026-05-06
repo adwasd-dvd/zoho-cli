@@ -1285,6 +1285,12 @@ def test_openclaw_cliq_trusted_reply_bundle_plan_only_lists_missing_live_facts(
         "evidence": False,
         "check": False,
     }
+    assert payload["redaction"] == {
+        "rawIdsStored": False,
+        "hashValuesStored": False,
+        "localPathsStored": False,
+        "secretsStored": False,
+    }
     assert str(reports_dir) not in result.stdout
     assert str(config_path) not in result.stdout
     assert payload["acceptedFactStates"] == ["hash", "raw"]
@@ -1372,6 +1378,7 @@ def test_openclaw_cliq_trusted_reply_bundle_plan_only_redacts_ready_raw_facts(
         "evidence": False,
         "check": False,
     }
+    assert payload["redaction"]["rawIdsStored"] is False
 
     plan_report = (
         reports_dir / "openclaw_cliq_trusted_reply_plan_unit-bundle-plan-ready.json"
@@ -1388,6 +1395,76 @@ def test_openclaw_cliq_trusted_reply_bundle_plan_only_redacts_ready_raw_facts(
     assert "delivery-raw-id" not in plan_report.read_text()
     assert not evidence_report.exists()
     assert not check_report.exists()
+
+
+def test_openclaw_cliq_trusted_reply_bundle_plan_only_redacts_hash_values(
+    tmp_path: Path,
+) -> None:
+    route_path = tmp_path / "route.json"
+    reports_dir = tmp_path / "reports"
+    sender_hash = _sha256_ref("sender-raw-id")
+    message_hash = _sha256_ref("message-raw-id")
+    delivery_hash = _sha256_ref("delivery-raw-id")
+    route_path.write_text(
+        json.dumps(
+            {
+                "schemaVersion": 1,
+                "kind": "openclaw_cliq_route_preflight",
+                "status": "ok",
+                "accountId": "default",
+                "agentId": "zoho-employee-test",
+                "model": "openai-codex/gpt-5.3-codex",
+            }
+        )
+    )
+
+    result = subprocess.run(
+        ["bash", str(OPENCLAW_CLIQ_TRUSTED_REPLY_EVIDENCE_BUNDLE_SCRIPT)],
+        cwd=REPO_ROOT,
+        env={
+            **os.environ,
+            "ZOHO_CLIQ_ROUTE_REPORT_FILE": str(route_path),
+            "ZOHO_CLIQ_TRUSTED_REPLY_PLAN_ONLY": "1",
+            "ZOHO_CLIQ_TRUSTED_REPLY_REPORT_DIR": str(reports_dir),
+            "ZOHO_CLIQ_TRUSTED_REPLY_RUN_ID": "unit-bundle-plan-hash",
+            "ZOHO_CLIQ_TRUSTED_SENDER_ID_HASH": sender_hash,
+            "ZOHO_CLIQ_TRUSTED_MESSAGE_ID_HASH": message_hash,
+            "ZOHO_CLIQ_DELIVERY_ID_HASH": delivery_hash,
+            "ZOHO_CLIQ_EXPECTED_AGENT_ID": "zoho-employee-test",
+        },
+        capture_output=True,
+        text=True,
+        check=False,
+    )
+
+    output = f"{result.stdout}\n{result.stderr}"
+    assert result.returncode == 0, output
+    assert sender_hash not in output
+    assert message_hash not in output
+    assert delivery_hash not in output
+
+    payload = json.loads(result.stdout)
+    assert payload["status"] == "ready_for_bundle_check"
+    assert payload["facts"] == {
+        "trustedSenderId": "hash",
+        "trustedMessageId": "hash",
+        "deliveryId": "hash",
+    }
+    assert payload["redaction"] == {
+        "rawIdsStored": False,
+        "hashValuesStored": False,
+        "localPathsStored": False,
+        "secretsStored": False,
+    }
+
+    plan_report = (
+        reports_dir / "openclaw_cliq_trusted_reply_plan_unit-bundle-plan-hash.json"
+    )
+    plan_text = plan_report.read_text()
+    assert json.loads(plan_text) == payload
+    assert sender_hash not in plan_text
+    assert message_hash not in plan_text
+    assert delivery_hash not in plan_text
 
 
 def test_openclaw_cliq_trusted_reply_bundle_reports_missing_agent(

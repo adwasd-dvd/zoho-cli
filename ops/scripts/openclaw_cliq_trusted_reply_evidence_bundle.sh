@@ -203,6 +203,7 @@ if [[ "$PLAN_ONLY" == "1" || "$PLAN_ONLY" == "true" ]]; then
     json_string "$CHECK_REPORT_NAME"
     printf '},'
     printf '"reportsReady":{"routePreflight":true,"plan":true,"evidence":false,"check":false},'
+    printf '"redaction":{"rawIdsStored":false,"hashValuesStored":false,"localPathsStored":false,"secretsStored":false},'
     printf '"acceptedFactStates":["hash","raw"],'
     printf '"requiredEnv":["ZOHO_CLIQ_TRUSTED_SENDER_ID_HASH or ZOHO_CLIQ_TRUSTED_SENDER_ID","ZOHO_CLIQ_TRUSTED_MESSAGE_ID_HASH or ZOHO_CLIQ_TRUSTED_MESSAGE_ID","ZOHO_CLIQ_DELIVERY_ID_HASH or ZOHO_CLIQ_DELIVERY_ID"],'
     printf '"nextCommand":"ops/scripts/openclaw_cliq_trusted_reply_evidence_bundle.sh"'

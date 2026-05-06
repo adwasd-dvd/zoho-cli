@@ -255,7 +255,8 @@ been captured. The plan is written to `ZOHO_CLIQ_TRUSTED_REPLY_PLAN_FILE` or
 `openclaw_cliq_trusted_reply_plan_<run-id>.json` under the report directory and
 includes `nextAction`, `readyForFinalBundle`, `missingFacts`, and `readyFacts`
 for machine-readable handoff, plus `reportFiles` and `reportsReady` for
-artifact handoff by filename.
+artifact handoff by filename. Its `redaction` object must keep raw ids, hash
+values, local paths, and secrets out of the plan.
 
 ## Setup states
 

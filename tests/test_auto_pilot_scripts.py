@@ -1245,6 +1245,75 @@ def test_openclaw_cliq_trusted_reply_bundle_reports_missing_agent(
     assert payload["error"] == "expected_agent_missing"
 
 
+def test_openclaw_cliq_trusted_reply_bundle_stops_on_route_mismatch(
+    tmp_path: Path,
+) -> None:
+    config_path = tmp_path / "openclaw.json"
+    reports_dir = tmp_path / "reports"
+    config_path.write_text(
+        json.dumps(
+            {
+                "bindings": [
+                    {
+                        "agentId": "main",
+                        "match": {"channel": "cliq", "accountId": "default"},
+                    }
+                ],
+                "agents": {
+                    "list": [
+                        {"id": "main", "model": "openai-codex/gpt-5.3-codex"},
+                        {
+                            "id": "zoho-employee-test",
+                            "model": "openai-codex/gpt-5.3-codex",
+                        },
+                    ]
+                },
+            }
+        )
+    )
+
+    result = subprocess.run(
+        ["bash", str(OPENCLAW_CLIQ_TRUSTED_REPLY_EVIDENCE_BUNDLE_SCRIPT)],
+        cwd=REPO_ROOT,
+        env={
+            **os.environ,
+            "OPENCLAW_CONFIG_PATH": str(config_path),
+            "ZOHO_CLIQ_TRUSTED_REPLY_REPORT_DIR": str(reports_dir),
+            "ZOHO_CLIQ_TRUSTED_REPLY_RUN_ID": "unit-bundle-route-mismatch",
+            "ZOHO_CLIQ_TRUSTED_SENDER_ID_HASH": "sha256:sender",
+            "ZOHO_CLIQ_TRUSTED_MESSAGE_ID_HASH": "sha256:message",
+            "ZOHO_CLIQ_DELIVERY_ID_HASH": "sha256:reply",
+            "ZOHO_CLIQ_EXPECTED_AGENT_ID": "zoho-employee-test",
+        },
+        capture_output=True,
+        text=True,
+        check=False,
+    )
+
+    output = f"{result.stdout}\n{result.stderr}"
+    assert result.returncode == 1, output
+    assert "openclaw cliq route binding gate" not in output
+    payload = json.loads(result.stdout)
+    assert payload["kind"] == "openclaw_cliq_route_preflight"
+    assert payload["error"] == "agent_binding_mismatch"
+    assert payload["expectedAgentId"] == "zoho-employee-test"
+    assert payload["actualAgentId"] == "main"
+
+    route_report = (
+        reports_dir / "openclaw_cliq_route_preflight_unit-bundle-route-mismatch.json"
+    )
+    evidence_report = (
+        reports_dir / "openclaw_cliq_trusted_reply_unit-bundle-route-mismatch.json"
+    )
+    check_report = (
+        reports_dir
+        / "openclaw_cliq_trusted_reply_check_unit-bundle-route-mismatch.json"
+    )
+    assert json.loads(route_report.read_text()) == payload
+    assert not evidence_report.exists()
+    assert not check_report.exists()
+
+
 def test_openclaw_cliq_trusted_reply_bundle_reports_missing_hash(
     tmp_path: Path,
 ) -> None:

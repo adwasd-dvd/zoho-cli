@@ -225,6 +225,8 @@ def test_native_cliq_channel_ai_troubleshooting_contract_present() -> None:
         "openclaw_cliq_trusted_reply_evidence_prepare.sh",
         "openclaw_cliq_trusted_reply_evidence_bundle_plan",
         "openclaw_cliq_trusted_reply_plan_<run-id>.json",
+        "nextAction",
+        "readyForFinalBundle",
         "missingFacts",
         "readyFacts",
         "openclaw_cliq_trusted_reply_evidence",

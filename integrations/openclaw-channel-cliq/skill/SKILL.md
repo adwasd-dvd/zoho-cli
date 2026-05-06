@@ -109,7 +109,8 @@ Before requesting a fresh trusted Bot Mention, run the bundle with
 sender/message/reply facts. The bundle writes this plan to
 `ZOHO_CLIQ_TRUSTED_REPLY_PLAN_FILE` or the default
 `openclaw_cliq_trusted_reply_plan_<run-id>.json` report path. Use
-`missingFacts` and `readyFacts` as the machine-readable checklist.
+`nextAction`, `readyForFinalBundle`, `missingFacts`, and `readyFacts` as the
+machine-readable checklist.
 Use
 `ops/scripts/openclaw_cliq_hash_ref.sh` only when hashing live raw ids as a
 separate step; do not paste raw ids into evidence files.

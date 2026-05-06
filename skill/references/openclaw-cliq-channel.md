@@ -174,7 +174,8 @@ Native diagnostic behavior:
   and reply delivery facts still need to be captured. Persist the plan through
   `ZOHO_CLIQ_TRUSTED_REPLY_PLAN_FILE` or the default
   `openclaw_cliq_trusted_reply_plan_<run-id>.json` report path. Use
-  `missingFacts` and `readyFacts` as the machine-readable next-action contract.
+  `nextAction`, `readyForFinalBundle`, `missingFacts`, and `readyFacts` as the
+  machine-readable next-action contract.
   Use `ops/scripts/openclaw_cliq_hash_ref.sh` when hashing ids as a separate
   step; do not paste raw ids into evidence files.
 - Do not include webhook secrets, token passwords, webhook signatures, raw

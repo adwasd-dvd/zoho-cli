@@ -1,5 +1,5 @@
 project: zoho-cli
-updated_at: '2026-05-06T03:10:53Z'
+updated_at: '2026-05-06T03:45:23Z'
 status: v0.2.1-final-release
 throughput_mode: turbo_20x
 throughput_policy_ref: ops/state/execution_policy.yml
@@ -9,7 +9,7 @@ module_order:
 - Mail
 - Cliq
 - CRM
-current_focus: "Turbo 20x mode active: v0.2.1 is stable; native Cliq channel v0.4 package metadata is promoted to 0.4.0-rc.1 with repeatable pack preflight, real Bot handler templates, runtime contract coverage, operator-tunnel public callback verification, route preflight evidence, hash-tight trusted reply evidence checking, template/secret-marker rejection tests, a trusted reply evidence prepare script, a raw-id-free hash-ref helper, and a one-shot trusted reply evidence bundle with persisted plan-only route checklist support and machine-readable missing/ready fact arrays; `cliq/default` is bound to the Codex-backed `zoho-employee-test` agent, actual controlled trusted reply evidence is pending, crm-014 operator fixture evidence checker is complete, and crm-015 operator live fixture run is gated on a dedicated payload."
+current_focus: "Turbo 20x mode active: v0.2.1 is stable; native Cliq channel v0.4 package metadata is promoted to 0.4.0-rc.1 with repeatable pack preflight, real Bot handler templates, runtime contract coverage, operator-tunnel public callback verification, route preflight evidence, hash-tight trusted reply evidence checking, template/secret-marker rejection tests, a trusted reply evidence prepare script, a raw-id-free hash-ref helper, and a one-shot trusted reply evidence bundle with persisted plan-only route checklist support, direct nextAction branching, and machine-readable missing/ready fact arrays; `cliq/default` is bound to the Codex-backed `zoho-employee-test` agent, actual controlled trusted reply evidence is pending, crm-014 operator fixture evidence checker is complete, and crm-015 operator live fixture run is gated on a dedicated payload."
 primary_blockers:
 - native OpenClaw Cliq channel durable public Bot callback deployment and controlled trusted agent reply evidence remain pending; operator-tunnel callback auth/reachability passes and `cliq/default` is routed to `zoho-employee-test`
 - cliq-194 live read-ack endpoint remains unsupported on happydistrouklimited for the active token, but watch-act continuity is now capability-gated (`status=ok`, `fallbackUsed=true`, `readAckSupported=false`) and treated as deferred/non-blocking for forward platform execution
@@ -35,6 +35,7 @@ primary_blockers:
   now returns `not_supported` in focused live verification)
 next_step: "First verify the controlled trusted Zoho Cliq Bot Mention routes to the Codex-backed `zoho-employee-test` agent and delivers exactly one Cliq reply, then run `ops/scripts/openclaw_cliq_trusted_reply_evidence_bundle.sh` to route-preflight/hash/prepare/check the redacted evidence and validate it as `trusted_reply_recorded`; then start crm-015 only after the operator provides a dedicated payload, cleanup plan, and live env gates; keep normal live writes blocked."
 additional_info:
+- "2026-05-06 OpenClaw Cliq trusted reply plan next-action contract at 2026-05-06T03:45:23Z added `nextAction` and `readyForFinalBundle` to `openclaw_cliq_trusted_reply_evidence_bundle_plan`, so agents can branch directly between `collect_live_delivery_facts` and `run_final_trusted_reply_bundle`."
 - "2026-05-06 OpenClaw Cliq trusted reply plan machine checklist at 2026-05-06T03:10:53Z added `missingFacts` and `readyFacts` arrays to the plan-only bundle report, plus coverage that raw trusted sender/message/reply ids are represented only as fact states and never echoed into stdout or persisted plan reports."
 - "2026-05-06 OpenClaw Cliq trusted reply plan report persistence at 2026-05-06T02:35:53Z persisted plan-only bundle output to `ZOHO_CLIQ_TRUSTED_REPLY_PLAN_FILE` or `openclaw_cliq_trusted_reply_plan_<run-id>.json`, giving operators/agents an auditable route-ready checklist before collecting live trusted sender/message/reply delivery facts."
 - "2026-05-06 OpenClaw Cliq trusted reply plan-only bundle preflight at 2026-05-06T01:59:52Z added `ZOHO_CLIQ_TRUSTED_REPLY_PLAN_ONLY=1` to `ops/scripts/openclaw_cliq_trusted_reply_evidence_bundle.sh`; it runs/uses route preflight, emits `openclaw_cliq_trusted_reply_evidence_bundle_plan`, reports `awaiting_live_delivery_facts` before sender/message/reply ids exist, and avoids creating trusted reply evidence/check reports. Lane 2/3 docs now tell agents to run this before asking for a fresh trusted Bot Mention."

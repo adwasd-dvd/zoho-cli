@@ -164,8 +164,12 @@ if [[ "$PLAN_ONLY" == "1" || "$PLAN_ONLY" == "true" ]]; then
     READY_FACTS_JSON="$(json_string_array "${READY_FACTS[@]}")"
   fi
   PLAN_STATUS="ready_for_bundle_check"
+  NEXT_ACTION="run_final_trusted_reply_bundle"
+  READY_FOR_FINAL_BUNDLE="true"
   if [[ "$SENDER_FACT" == "missing" || "$MESSAGE_FACT" == "missing" || "$DELIVERY_FACT" == "missing" ]]; then
     PLAN_STATUS="awaiting_live_delivery_facts"
+    NEXT_ACTION="collect_live_delivery_facts"
+    READY_FOR_FINAL_BUNDLE="false"
   fi
   PLAN_PAYLOAD="$(
     printf '{'
@@ -176,6 +180,8 @@ if [[ "$PLAN_ONLY" == "1" || "$PLAN_ONLY" == "true" ]]; then
     printf '"facts":{"trustedSenderId":"%s","trustedMessageId":"%s","deliveryId":"%s"},' "$SENDER_FACT" "$MESSAGE_FACT" "$DELIVERY_FACT"
     printf '"missingFacts":%s,' "$MISSING_FACTS_JSON"
     printf '"readyFacts":%s,' "$READY_FACTS_JSON"
+    printf '"nextAction":"%s",' "$NEXT_ACTION"
+    printf '"readyForFinalBundle":%s,' "$READY_FOR_FINAL_BUNDLE"
     printf '"acceptedFactStates":["hash","raw"],'
     printf '"requiredEnv":["ZOHO_CLIQ_TRUSTED_SENDER_ID_HASH or ZOHO_CLIQ_TRUSTED_SENDER_ID","ZOHO_CLIQ_TRUSTED_MESSAGE_ID_HASH or ZOHO_CLIQ_TRUSTED_MESSAGE_ID","ZOHO_CLIQ_DELIVERY_ID_HASH or ZOHO_CLIQ_DELIVERY_ID"],'
     printf '"nextCommand":"ops/scripts/openclaw_cliq_trusted_reply_evidence_bundle.sh"'

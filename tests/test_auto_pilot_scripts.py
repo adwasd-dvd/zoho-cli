@@ -1271,6 +1271,8 @@ def test_openclaw_cliq_trusted_reply_bundle_plan_only_lists_missing_live_facts(
         "deliveryId",
     ]
     assert payload["readyFacts"] == []
+    assert payload["nextAction"] == "collect_live_delivery_facts"
+    assert payload["readyForFinalBundle"] is False
     assert payload["acceptedFactStates"] == ["hash", "raw"]
     assert (
         "ZOHO_CLIQ_DELIVERY_ID_HASH or ZOHO_CLIQ_DELIVERY_ID" in payload["requiredEnv"]
@@ -1348,6 +1350,8 @@ def test_openclaw_cliq_trusted_reply_bundle_plan_only_redacts_ready_raw_facts(
         "trustedMessageId",
         "deliveryId",
     ]
+    assert payload["nextAction"] == "run_final_trusted_reply_bundle"
+    assert payload["readyForFinalBundle"] is True
 
     plan_report = (
         reports_dir / "openclaw_cliq_trusted_reply_plan_unit-bundle-plan-ready.json"

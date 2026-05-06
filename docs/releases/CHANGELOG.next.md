@@ -71,6 +71,7 @@
 - Guarded the trusted reply evidence bundle route mismatch path so blockers such as `agent_binding_mismatch` emit only the route preflight JSON and do not create trusted reply evidence/check reports.
 - Added `ZOHO_CLIQ_TRUSTED_REPLY_PLAN_ONLY=1` to the trusted reply evidence bundle so agents can run route preflight and receive an `openclaw_cliq_trusted_reply_evidence_bundle_plan` checklist before live sender/message/reply delivery facts exist.
 - Persisted that plan-only trusted reply checklist to `ZOHO_CLIQ_TRUSTED_REPLY_PLAN_FILE` or `openclaw_cliq_trusted_reply_plan_<run-id>.json` so route-ready pre-Bot evidence can be archived without creating trusted reply evidence/check reports.
+- Added `missingFacts` and `readyFacts` to the plan-only trusted reply checklist, with coverage that raw sender/message/reply ids are never echoed into stdout or persisted plan reports.
 
 ### Architecture / modularization (2026-05-04T18:19:47Z)
 - Started `cliq-210` post-RC modularization by extracting the `zoho cliq status` and `zoho cliq capabilities` command bodies into `zoho_cli/commands/cliq_readiness.py`, leaving `zoho_cli/cli.py` with runtime dependency injection plus existing Typer registration only. Command names, help text, and JSON output are unchanged.

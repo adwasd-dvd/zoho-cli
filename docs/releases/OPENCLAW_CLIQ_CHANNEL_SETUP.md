@@ -252,7 +252,8 @@ trusted Mention, run the bundle with `ZOHO_CLIQ_TRUSTED_REPLY_PLAN_ONLY=1`; the
 plan output `openclaw_cliq_trusted_reply_evidence_bundle_plan` should report
 `status=awaiting_live_delivery_facts` until the sender/message/reply ids have
 been captured. The plan is written to `ZOHO_CLIQ_TRUSTED_REPLY_PLAN_FILE` or
-`openclaw_cliq_trusted_reply_plan_<run-id>.json` under the report directory.
+`openclaw_cliq_trusted_reply_plan_<run-id>.json` under the report directory and
+includes `missingFacts` plus `readyFacts` for machine-readable handoff.
 
 ## Setup states
 

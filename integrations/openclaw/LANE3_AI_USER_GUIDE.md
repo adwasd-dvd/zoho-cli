@@ -104,7 +104,8 @@ After sync, ensure the AI user follows:
     `awaiting_live_delivery_facts` state means the remaining work is to capture
     sender/message/reply delivery facts after the real Bot turn; archive the
     `ZOHO_CLIQ_TRUSTED_REPLY_PLAN_FILE` report or the default plan report under
-    the trusted reply report directory
+    the trusted reply report directory; use `missingFacts` and `readyFacts` to
+    decide whether to collect live facts or run the final bundle
 - native channel RC pack preflight:
   - run `ops/scripts/openclaw_cliq_rc_pack.sh` from the repo root before cutting a local/operator or npm/GitHub RC artifact
   - keep generated tarballs under ignored `.tmp/openclaw-cliq-rc-pack`

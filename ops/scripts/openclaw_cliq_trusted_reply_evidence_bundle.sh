@@ -69,6 +69,20 @@ fact_state() {
   fi
 }
 
+json_string_array() {
+  local first=1
+  local value
+  printf '['
+  for value in "$@"; do
+    if [[ "$first" -eq 0 ]]; then
+      printf ','
+    fi
+    printf '"%s"' "$value"
+    first=0
+  done
+  printf ']'
+}
+
 if [[ ! -x "$HASH_SCRIPT" ]]; then
   emit_error "hash_ref_script_missing"
   exit 2
@@ -122,6 +136,33 @@ if [[ "$PLAN_ONLY" == "1" || "$PLAN_ONLY" == "true" ]]; then
   SENDER_FACT="$(fact_state "${ZOHO_CLIQ_TRUSTED_SENDER_ID_HASH:-}" "${ZOHO_CLIQ_TRUSTED_SENDER_ID:-}")"
   MESSAGE_FACT="$(fact_state "${ZOHO_CLIQ_TRUSTED_MESSAGE_ID_HASH:-}" "${ZOHO_CLIQ_TRUSTED_MESSAGE_ID:-}")"
   DELIVERY_FACT="$(fact_state "${ZOHO_CLIQ_DELIVERY_ID_HASH:-}" "${ZOHO_CLIQ_DELIVERY_ID:-}")"
+  MISSING_FACTS=()
+  READY_FACTS=()
+  if [[ "$SENDER_FACT" == "missing" ]]; then
+    MISSING_FACTS+=("trustedSenderId")
+  else
+    READY_FACTS+=("trustedSenderId")
+  fi
+  if [[ "$MESSAGE_FACT" == "missing" ]]; then
+    MISSING_FACTS+=("trustedMessageId")
+  else
+    READY_FACTS+=("trustedMessageId")
+  fi
+  if [[ "$DELIVERY_FACT" == "missing" ]]; then
+    MISSING_FACTS+=("deliveryId")
+  else
+    READY_FACTS+=("deliveryId")
+  fi
+  if [[ "${#MISSING_FACTS[@]}" -eq 0 ]]; then
+    MISSING_FACTS_JSON="[]"
+  else
+    MISSING_FACTS_JSON="$(json_string_array "${MISSING_FACTS[@]}")"
+  fi
+  if [[ "${#READY_FACTS[@]}" -eq 0 ]]; then
+    READY_FACTS_JSON="[]"
+  else
+    READY_FACTS_JSON="$(json_string_array "${READY_FACTS[@]}")"
+  fi
   PLAN_STATUS="ready_for_bundle_check"
   if [[ "$SENDER_FACT" == "missing" || "$MESSAGE_FACT" == "missing" || "$DELIVERY_FACT" == "missing" ]]; then
     PLAN_STATUS="awaiting_live_delivery_facts"
@@ -133,6 +174,8 @@ if [[ "$PLAN_ONLY" == "1" || "$PLAN_ONLY" == "true" ]]; then
     printf '"runId":"%s","checkedAt":"%s","status":"%s",' "$RUN_ID" "$CHECKED_AT" "$PLAN_STATUS"
     printf '"routeReportReady":true,'
     printf '"facts":{"trustedSenderId":"%s","trustedMessageId":"%s","deliveryId":"%s"},' "$SENDER_FACT" "$MESSAGE_FACT" "$DELIVERY_FACT"
+    printf '"missingFacts":%s,' "$MISSING_FACTS_JSON"
+    printf '"readyFacts":%s,' "$READY_FACTS_JSON"
     printf '"acceptedFactStates":["hash","raw"],'
     printf '"requiredEnv":["ZOHO_CLIQ_TRUSTED_SENDER_ID_HASH or ZOHO_CLIQ_TRUSTED_SENDER_ID","ZOHO_CLIQ_TRUSTED_MESSAGE_ID_HASH or ZOHO_CLIQ_TRUSTED_MESSAGE_ID","ZOHO_CLIQ_DELIVERY_ID_HASH or ZOHO_CLIQ_DELIVERY_ID"],'
     printf '"nextCommand":"ops/scripts/openclaw_cliq_trusted_reply_evidence_bundle.sh"'

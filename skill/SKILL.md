@@ -60,7 +60,12 @@ Use this skill as the default operating contract for an OpenClaw agent acting li
   real trusted reply has occurred: give it the expected agent/model and either
   raw id variables (`ZOHO_CLIQ_TRUSTED_SENDER_ID`,
   `ZOHO_CLIQ_TRUSTED_MESSAGE_ID`, `ZOHO_CLIQ_DELIVERY_ID`) or the three
-  `*_HASH` variables. It auto-runs route preflight when
+  `*_HASH` variables. Prefer `ZOHO_CLIQ_TRUSTED_REPLY_FACTS_FILE` when a
+  hash-only `openclaw_cliq_trusted_reply_facts` JSON is available; it must
+  contain only `trustedSenderIdHash`, `trustedMessageIdHash`, and
+  `deliveryIdHash` as `sha256:` references. Raw facts files are rejected with
+  `facts_file_raw_ids_present`, and secret markers are rejected with
+  `facts_file_secret_marker_present`. It auto-runs route preflight when
   `ZOHO_CLIQ_ROUTE_REPORT_FILE` is absent, then hashes, prepares, and checks
   evidence in one pass. If the auto-route preflight fails with blockers such as
   `agent_binding_mismatch`, the bundle exits non-zero with route JSON only and
@@ -78,6 +83,9 @@ Use this skill as the default operating contract for an OpenClaw agent acting li
   parse `collectionGuide` to keep the live step to exactly one trusted Mention,
   only `trustedSenderId` / `trustedMessageId` / `deliveryId`, and no
   `rawWebhookPayload`, `rawMessageBody`, `rawCliqReplyBody`, or `secrets`.
+  Prefer `collectionGuide.preferredFactSource=ZOHO_CLIQ_TRUSTED_REPLY_FACTS_FILE`
+  and `acceptedFactSources` containing `hashFactsFile` for handoff between
+  fact capture and final evidence checking.
   Require `redaction.rawIdsStored=false`, `redaction.hashValuesStored=false`,
   `redaction.localPathsStored=false`, and `redaction.secretsStored=false`.
 - Use `ops/scripts/openclaw_cliq_hash_ref.sh` to hash live raw Cliq ids through

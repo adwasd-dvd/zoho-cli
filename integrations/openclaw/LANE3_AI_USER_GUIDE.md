@@ -95,7 +95,13 @@ After sync, ensure the AI user follows:
     agent/model and either raw ids or `sha256:` references; the bundle
     auto-runs route preflight if no route report is provided; require
     `trusted_reply_recorded`; sender/message/reply ids must be `sha256:`
-    references only; if route preflight fails with `agent_binding_mismatch`,
+    references only; prefer `ZOHO_CLIQ_TRUSTED_REPLY_FACTS_FILE` with
+    `kind=openclaw_cliq_trusted_reply_facts`, `trustedSenderIdHash`,
+    `trustedMessageIdHash`, and `deliveryIdHash` when passing hash facts from
+    one agent/operator step to the final bundle; raw facts fields are rejected
+    with `facts_file_raw_ids_present`, and secret markers with
+    `facts_file_secret_marker_present`; if route preflight fails with
+    `agent_binding_mismatch`,
     keep only the route JSON and do not claim evidence/check reports; start from
     `docs/releases/OPENCLAW_CLIQ_TRUSTED_REPLY_EVIDENCE_TEMPLATE.json`
   - before asking for the trusted Mention, set
@@ -110,8 +116,10 @@ After sync, ensure the AI user follows:
     `collectionGuide` to limit the live step to exactly one trusted Mention,
     `trustedSenderId`, `trustedMessageId`, and `deliveryId`, with
     `rawWebhookPayload`, `rawMessageBody`, `rawCliqReplyBody`, and `secrets`
-    forbidden; require plan `redaction` booleans to keep raw ids, hash values,
-    local paths, and secrets out of the report
+    forbidden; use `acceptedFactSources` and
+    `preferredFactSource=ZOHO_CLIQ_TRUSTED_REPLY_FACTS_FILE` when a hash facts
+    file is available; require plan `redaction` booleans to keep raw ids, hash
+    values, local paths, and secrets out of the report
 - native channel RC pack preflight:
   - run `ops/scripts/openclaw_cliq_rc_pack.sh` from the repo root before cutting a local/operator or npm/GitHub RC artifact
   - keep generated tarballs under ignored `.tmp/openclaw-cliq-rc-pack`

@@ -260,7 +260,15 @@ artifact handoff by filename. Its `collectionGuide` tells agents to enforce
 `trustedSenderId`, `trustedMessageId`, and `deliveryId`, hash raw ids before
 evidence, and honor `forbiddenEvidence` by keeping `rawWebhookPayload`,
 `rawMessageBody`, `rawCliqReplyBody`, and `secrets` out of the artifact. Its
-`redaction` object must keep raw ids, hash values, local
+`acceptedFactSources` includes `env` and `hashFactsFile`; prefer
+`ZOHO_CLIQ_TRUSTED_REPLY_FACTS_FILE` for the final run when a hash-only local
+facts JSON is available. The facts file must use
+`kind=openclaw_cliq_trusted_reply_facts` and contain only
+`trustedSenderIdHash`, `trustedMessageIdHash`, and `deliveryIdHash` as
+`sha256:` references; the bundle rejects raw fields such as `trustedSenderId`,
+`trustedMessageId`, or `deliveryId` with `facts_file_raw_ids_present`, and
+rejects secret markers with `facts_file_secret_marker_present`. Its `redaction`
+object must keep raw ids, hash values, local
 paths, and secrets out of the plan.
 
 ## Setup states

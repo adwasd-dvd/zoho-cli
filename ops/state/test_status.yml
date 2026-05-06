@@ -1,10 +1,18 @@
-last_run_at: "2026-05-06T05:40:20Z"
+last_run_at: "2026-05-06T06:23:23Z"
 last_result: passing
-current_focus: cliq-channel-441-trusted-reply-plan-collection-guide
+current_focus: cliq-channel-442-trusted-reply-hash-facts-file
 suites:
   unit:
     status: passing
     notes:
+      - "cliq-channel-442 trusted reply hash facts file completed at 2026-05-06T06:19:02Z"
+      - "added `ZOHO_CLIQ_TRUSTED_REPLY_FACTS_FILE` support to `ops/scripts/openclaw_cliq_trusted_reply_evidence_bundle.sh`; the bundle accepts hash-only `openclaw_cliq_trusted_reply_facts` JSON with `trustedSenderIdHash`, `trustedMessageIdHash`, and `deliveryIdHash`, uses it in plan-only and final modes, rejects raw facts files with `facts_file_raw_ids_present`, and rejects secret markers with `facts_file_secret_marker_present`"
+      - "plan output now includes `acceptedFactSources=[env,hashFactsFile]`, `collectionGuide.preferredFactSource=ZOHO_CLIQ_TRUSTED_REPLY_FACTS_FILE`, and required-env alternatives that include the facts file without echoing its local path or hash values"
+      - "./.venv/bin/python -m pytest -q tests/test_auto_pilot_scripts.py -k 'openclaw_cliq_trusted_reply_bundle' tests/test_lane3_docs.py::test_native_cliq_channel_ai_troubleshooting_contract_present tests/test_markdown_update.py -> 12 passed, 21 deselected in 0.80s"
+      - "./.venv/bin/python -m pytest -q tests/test_auto_pilot_scripts.py -k 'openclaw_cliq' tests/test_lane3_docs.py tests/test_markdown_update.py -> 25 passed, 18 deselected in 1.44s"
+      - "bash -n ops/scripts/openclaw_cliq_trusted_reply_evidence_bundle.sh ops/scripts/openclaw_cliq_live_smoke.sh ops/scripts/openclaw_cliq_hash_ref.sh ops/scripts/openclaw_cliq_trusted_reply_evidence_prepare.sh ops/scripts/openclaw_cliq_trusted_reply_evidence.sh -> passed"
+      - "./.venv/bin/ruff format --check tests/test_auto_pilot_scripts.py tests/test_lane3_docs.py -> 2 files already formatted"
+      - "make ci -> ruff format/check clean + pytest `1867 passed in 52.14s`"
       - "cliq-channel-441 trusted reply plan collection guide completed at 2026-05-06T05:40:20Z"
       - "added `collectionGuide` to `openclaw_cliq_trusted_reply_evidence_bundle_plan` so agents know to send exactly one trusted Mention, collect only `trustedSenderId`, `trustedMessageId`, and `deliveryId`, hash raw ids before evidence, expect `trusted_reply_recorded`, and exclude `rawWebhookPayload`, `rawMessageBody`, `rawCliqReplyBody`, and `secrets`"
       - "./.venv/bin/python -m pytest -q tests/test_auto_pilot_scripts.py -k 'openclaw_cliq_trusted_reply_bundle' tests/test_lane3_docs.py::test_native_cliq_channel_ai_troubleshooting_contract_present tests/test_markdown_update.py -> 8 passed, 21 deselected in 0.61s"

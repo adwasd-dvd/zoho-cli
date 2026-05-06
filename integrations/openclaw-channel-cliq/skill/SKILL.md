@@ -102,6 +102,11 @@ route-preflight, hash, prepare, and check the artifact. Set
 report; otherwise the bundle writes one under its report directory. If route
 preflight fails with blockers such as `agent_binding_mismatch`, the bundle
 emits route JSON only and does not create trusted reply evidence/check reports.
+Before requesting a fresh trusted Bot Mention, run the bundle with
+`ZOHO_CLIQ_TRUSTED_REPLY_PLAN_ONLY=1`; expect
+`openclaw_cliq_trusted_reply_evidence_bundle_plan`, and treat
+`awaiting_live_delivery_facts` as the checklist state before collecting live
+sender/message/reply facts.
 Use
 `ops/scripts/openclaw_cliq_hash_ref.sh` only when hashing live raw ids as a
 separate step; do not paste raw ids into evidence files.

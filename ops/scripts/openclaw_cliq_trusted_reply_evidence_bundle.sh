@@ -13,6 +13,7 @@ REPORT_DIR="${ZOHO_CLIQ_TRUSTED_REPLY_REPORT_DIR:-"$ROOT/tests/auto_pilot/report
 ROUTE_REPORT_FILE="${ZOHO_CLIQ_ROUTE_REPORT_FILE:-"$REPORT_DIR/openclaw_cliq_route_preflight_${RUN_ID}.json"}"
 EVIDENCE_FILE="${ZOHO_CLIQ_TRUSTED_REPLY_EVIDENCE_FILE:-"$REPORT_DIR/openclaw_cliq_trusted_reply_${RUN_ID}.json"}"
 CHECK_REPORT_FILE="${ZOHO_CLIQ_TRUSTED_REPLY_REPORT_FILE:-"$REPORT_DIR/openclaw_cliq_trusted_reply_check_${RUN_ID}.json"}"
+PLAN_ONLY="${ZOHO_CLIQ_TRUSTED_REPLY_PLAN_ONLY:-}"
 
 emit_error() {
   local error="$1"
@@ -44,6 +45,18 @@ resolve_ref_into() {
   fi
   emit_error "$missing_error"
   return 2
+}
+
+fact_state() {
+  local hash_value="$1"
+  local raw_value="$2"
+  if [[ -n "$hash_value" ]]; then
+    printf 'hash'
+  elif [[ -n "$raw_value" ]]; then
+    printf 'raw'
+  else
+    printf 'missing'
+  fi
 }
 
 if [[ ! -x "$HASH_SCRIPT" ]]; then
@@ -93,6 +106,27 @@ if [[ ! -f "$ROUTE_REPORT_FILE" ]]; then
     fi
     exit "$ROUTE_STATUS"
   fi
+fi
+
+if [[ "$PLAN_ONLY" == "1" || "$PLAN_ONLY" == "true" ]]; then
+  SENDER_FACT="$(fact_state "${ZOHO_CLIQ_TRUSTED_SENDER_ID_HASH:-}" "${ZOHO_CLIQ_TRUSTED_SENDER_ID:-}")"
+  MESSAGE_FACT="$(fact_state "${ZOHO_CLIQ_TRUSTED_MESSAGE_ID_HASH:-}" "${ZOHO_CLIQ_TRUSTED_MESSAGE_ID:-}")"
+  DELIVERY_FACT="$(fact_state "${ZOHO_CLIQ_DELIVERY_ID_HASH:-}" "${ZOHO_CLIQ_DELIVERY_ID:-}")"
+  PLAN_STATUS="ready_for_bundle_check"
+  if [[ "$SENDER_FACT" == "missing" || "$MESSAGE_FACT" == "missing" || "$DELIVERY_FACT" == "missing" ]]; then
+    PLAN_STATUS="awaiting_live_delivery_facts"
+  fi
+  printf '{'
+  printf '"schemaVersion":1,'
+  printf '"kind":"openclaw_cliq_trusted_reply_evidence_bundle_plan",'
+  printf '"runId":"%s","checkedAt":"%s","status":"%s",' "$RUN_ID" "$CHECKED_AT" "$PLAN_STATUS"
+  printf '"routeReportReady":true,'
+  printf '"facts":{"trustedSenderId":"%s","trustedMessageId":"%s","deliveryId":"%s"},' "$SENDER_FACT" "$MESSAGE_FACT" "$DELIVERY_FACT"
+  printf '"acceptedFactStates":["hash","raw"],'
+  printf '"requiredEnv":["ZOHO_CLIQ_TRUSTED_SENDER_ID_HASH or ZOHO_CLIQ_TRUSTED_SENDER_ID","ZOHO_CLIQ_TRUSTED_MESSAGE_ID_HASH or ZOHO_CLIQ_TRUSTED_MESSAGE_ID","ZOHO_CLIQ_DELIVERY_ID_HASH or ZOHO_CLIQ_DELIVERY_ID"],'
+  printf '"nextCommand":"ops/scripts/openclaw_cliq_trusted_reply_evidence_bundle.sh"'
+  printf '}\n'
+  exit 0
 fi
 
 TRUSTED_SENDER_ID_HASH=""

@@ -54,7 +54,7 @@ delivers exactly one Cliq reply. The live environment currently binds
 | Local package artifact preflight | `NPM_CONFIG_CACHE=/private/tmp/zoho-cli-npm-cache OPENCLAW_CLIQ_PACK_RUN_ID=20260505T142129Z-rc1 ops/scripts/openclaw_cliq_rc_pack.sh` passed at `2026-05-05T14:22:51Z`; the script reran typecheck/build and then packed from the plugin directory into `.tmp/openclaw-cliq-rc-pack`. Tarball `adwasd-openclaw-zoho-cliq-0.4.0-rc.1.tgz`, size `93879`, unpacked size `466025`, entry count `67`, shasum `87b553ad5bbec1c920a05b342630a57cea58b96b`, integrity `sha512-PVaBZFB0+m2sll7dl+c47iPnb6+KgRcCNkiqvFJzv8qtuHB8Lb153/27rqC1izmmybGP1CtrqMH4ZVrBkvBgBg==`. Summary report path pattern: `tests/auto_pilot/reports/openclaw_cliq_rc_pack_summary_<run-id>.json`. |
 | Public callback auth/reachability | Operator Cloudflare tunnel to local OpenClaw gateway is reachable; missing-secret webhook calls return `401`, authenticated unsupported-handler calls return `200` with `unsupported_handler`, and the Zoho Cliq Bot Mention Handler has reached local OpenClaw. |
 | Live route binding | `openclaw config validate` passes with `cliq/default -> zoho-employee-test`; both `main` and `zoho-employee-test` are configured for `openai-codex/gpt-5.3-codex`. |
-| Trusted reply evidence bundle | `ops/scripts/openclaw_cliq_trusted_reply_evidence_bundle.sh` auto-runs offline route preflight when no route report is supplied, hashes live raw ids when needed, prepares redacted `openclaw_cliq_trusted_reply_evidence` JSON, and runs `ops/scripts/openclaw_cliq_trusted_reply_evidence.sh`; the checker reports `trusted_reply_recorded` only when the route, callback, trusted Mention hash facts, agent/model, one-turn, one-reply, duplicate/dead-letter, and redaction facts all pass. If route preflight fails with blockers such as `agent_binding_mismatch`, the bundle exits non-zero with route JSON only and does not create evidence/check reports. |
+| Trusted reply evidence bundle | `ops/scripts/openclaw_cliq_trusted_reply_evidence_bundle.sh` auto-runs offline route preflight when no route report is supplied, hashes live raw ids when needed, prepares redacted `openclaw_cliq_trusted_reply_evidence` JSON, and runs `ops/scripts/openclaw_cliq_trusted_reply_evidence.sh`; the checker reports `trusted_reply_recorded` only when the route, callback, trusted Mention hash facts, agent/model, one-turn, one-reply, duplicate/dead-letter, and redaction facts all pass. `ZOHO_CLIQ_TRUSTED_REPLY_PLAN_ONLY=1` emits `openclaw_cliq_trusted_reply_evidence_bundle_plan` so agents can verify the route and missing live facts before asking for a fresh Bot Mention. If route preflight fails with blockers such as `agent_binding_mismatch`, the bundle exits non-zero with route JSON only and does not create evidence/check reports. |
 
 ## Remaining deployment gate
 
@@ -81,10 +81,25 @@ Trusted agent reply:
      ops/scripts/openclaw_cliq_live_smoke.sh
    ```
 
-6. Send a controlled trusted mention from Cliq and verify exactly one native
+6. Before sending the mention, run the one-shot bundle in plan-only mode to
+   confirm the route and list the remaining live delivery facts without writing
+   trusted reply evidence:
+
+   ```bash
+   ZOHO_CLIQ_TRUSTED_REPLY_PLAN_ONLY=1 \
+   ZOHO_CLIQ_TRUSTED_REPLY_REPORT_DIR=tests/auto_pilot/reports \
+   ZOHO_CLIQ_EXPECTED_AGENT_ID=zoho-employee-test \
+   ZOHO_CLIQ_EXPECTED_AGENT_MODEL=openai-codex/gpt-5.3-codex \
+     ops/scripts/openclaw_cliq_trusted_reply_evidence_bundle.sh
+   ```
+
+   The JSON should have
+   `kind=openclaw_cliq_trusted_reply_evidence_bundle_plan`. A status of
+   `awaiting_live_delivery_facts` is expected before the real Bot turn.
+7. Send a controlled trusted mention from Cliq and verify exactly one native
    OpenClaw turn routes to `zoho-employee-test`, uses a Codex model, and emits
    exactly one Cliq reply.
-7. Record only redacted evidence and validate it. Prefer the one-shot bundle;
+8. Record only redacted evidence and validate it. Prefer the one-shot bundle;
    it hashes raw ids locally when `ZOHO_CLIQ_TRUSTED_SENDER_ID`,
    `ZOHO_CLIQ_TRUSTED_MESSAGE_ID`, and `ZOHO_CLIQ_DELIVERY_ID` are supplied,
    writes the evidence/check reports, and leaves stdout as the final checker

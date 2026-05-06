@@ -167,6 +167,11 @@ Native diagnostic behavior:
   If the auto-route preflight fails with blockers such as
   `agent_binding_mismatch`, treat the route JSON as the only valid output; the
   bundle must not create trusted reply evidence/check reports.
+  Run it first with `ZOHO_CLIQ_TRUSTED_REPLY_PLAN_ONLY=1` before asking for a
+  fresh trusted Bot Mention; the plan output is
+  `openclaw_cliq_trusted_reply_evidence_bundle_plan` and
+  `awaiting_live_delivery_facts` means the route is ready but sender/message
+  and reply delivery facts still need to be captured.
   Use `ops/scripts/openclaw_cliq_hash_ref.sh` when hashing ids as a separate
   step; do not paste raw ids into evidence files.
 - Do not include webhook secrets, token passwords, webhook signatures, raw

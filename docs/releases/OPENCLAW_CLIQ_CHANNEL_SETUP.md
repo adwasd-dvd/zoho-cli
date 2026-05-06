@@ -247,7 +247,11 @@ bundle runs the offline route preflight itself and writes route/evidence/check
 reports under `ZOHO_CLIQ_TRUSTED_REPLY_REPORT_DIR` or
 `tests/auto_pilot/reports`. If route preflight fails with blockers such as
 `agent_binding_mismatch`, the bundle exits non-zero with route JSON only and
-does not create trusted reply evidence/check reports.
+does not create trusted reply evidence/check reports. Before sending a fresh
+trusted Mention, run the bundle with `ZOHO_CLIQ_TRUSTED_REPLY_PLAN_ONLY=1`; the
+plan output `openclaw_cliq_trusted_reply_evidence_bundle_plan` should report
+`status=awaiting_live_delivery_facts` until the sender/message/reply ids have
+been captured.
 
 ## Setup states
 

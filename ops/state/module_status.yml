@@ -22,10 +22,10 @@ openclaw_cliq_channel:
   status: completed_for_rc
   phase: live_callback_verified_reply_auto_route_bundle_ready
   target_release: v0.4.0
-  current_milestone: cliq-channel-431-trusted-reply-auto-route-mismatch-regression
+  current_milestone: cliq-channel-433-trusted-reply-plan-only-preflight
   blockers:
     - "durable production tunnel/gateway selection remains pending after operator-tunnel callback verification"
-    - "actual controlled trusted Mention-to-agent reply evidence is pending for `cliq/default -> zoho-employee-test`; auto-route bundle/check now requires `trusted_reply_recorded` with sha256 sender/message/reply references, rejects unchanged templates/raw ids/secret markers, and stops on route mismatch before writing trusted reply evidence/check reports"
+    - "actual controlled trusted Mention-to-agent reply evidence is pending for `cliq/default -> zoho-employee-test`; auto-route bundle/check now has a plan-only route checklist, requires `trusted_reply_recorded` with sha256 sender/message/reply references, rejects unchanged templates/raw ids/secret markers, and stops on route mismatch before writing trusted reply evidence/check reports"
 
 crm:
   priority: 4

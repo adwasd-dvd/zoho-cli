@@ -65,6 +65,11 @@ Use this skill as the default operating contract for an OpenClaw agent acting li
   evidence in one pass. If the auto-route preflight fails with blockers such as
   `agent_binding_mismatch`, the bundle exits non-zero with route JSON only and
   must not create trusted reply evidence/check reports.
+- Before asking for a fresh trusted Bot Mention, run the same bundle with
+  `ZOHO_CLIQ_TRUSTED_REPLY_PLAN_ONLY=1`; require
+  `kind=openclaw_cliq_trusted_reply_evidence_bundle_plan` and use
+  `status=awaiting_live_delivery_facts` as the checklist state for missing
+  sender/message/reply delivery facts.
 - Use `ops/scripts/openclaw_cliq_hash_ref.sh` to hash live raw Cliq ids through
   stdin before setting those `*_HASH` variables; the helper prints only the
   `sha256:` reference and does not echo raw input.

@@ -105,7 +105,8 @@ After sync, ensure the AI user follows:
     sender/message/reply delivery facts after the real Bot turn; archive the
     `ZOHO_CLIQ_TRUSTED_REPLY_PLAN_FILE` report or the default plan report under
     the trusted reply report directory; branch on `nextAction` and
-    `readyForFinalBundle`, using `missingFacts` / `readyFacts` for detail
+    `readyForFinalBundle`, using `missingFacts` / `readyFacts` for detail and
+    `reportFiles` / `reportsReady` for artifact handoff
 - native channel RC pack preflight:
   - run `ops/scripts/openclaw_cliq_rc_pack.sh` from the repo root before cutting a local/operator or npm/GitHub RC artifact
   - keep generated tarballs under ignored `.tmp/openclaw-cliq-rc-pack`

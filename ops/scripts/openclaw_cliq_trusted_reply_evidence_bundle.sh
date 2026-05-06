@@ -83,6 +83,13 @@ json_string_array() {
   printf ']'
 }
 
+json_string() {
+  local value="$1"
+  value="${value//\\/\\\\}"
+  value="${value//\"/\\\"}"
+  printf '"%s"' "$value"
+}
+
 if [[ ! -x "$HASH_SCRIPT" ]]; then
   emit_error "hash_ref_script_missing"
   exit 2
@@ -171,6 +178,10 @@ if [[ "$PLAN_ONLY" == "1" || "$PLAN_ONLY" == "true" ]]; then
     NEXT_ACTION="collect_live_delivery_facts"
     READY_FOR_FINAL_BUNDLE="false"
   fi
+  ROUTE_REPORT_NAME="${ROUTE_REPORT_FILE##*/}"
+  PLAN_REPORT_NAME="${PLAN_REPORT_FILE##*/}"
+  EVIDENCE_REPORT_NAME="${EVIDENCE_FILE##*/}"
+  CHECK_REPORT_NAME="${CHECK_REPORT_FILE##*/}"
   PLAN_PAYLOAD="$(
     printf '{'
     printf '"schemaVersion":1,'
@@ -182,6 +193,16 @@ if [[ "$PLAN_ONLY" == "1" || "$PLAN_ONLY" == "true" ]]; then
     printf '"readyFacts":%s,' "$READY_FACTS_JSON"
     printf '"nextAction":"%s",' "$NEXT_ACTION"
     printf '"readyForFinalBundle":%s,' "$READY_FOR_FINAL_BUNDLE"
+    printf '"reportFiles":{"routePreflight":'
+    json_string "$ROUTE_REPORT_NAME"
+    printf ',"plan":'
+    json_string "$PLAN_REPORT_NAME"
+    printf ',"evidence":'
+    json_string "$EVIDENCE_REPORT_NAME"
+    printf ',"check":'
+    json_string "$CHECK_REPORT_NAME"
+    printf '},'
+    printf '"reportsReady":{"routePreflight":true,"plan":true,"evidence":false,"check":false},'
     printf '"acceptedFactStates":["hash","raw"],'
     printf '"requiredEnv":["ZOHO_CLIQ_TRUSTED_SENDER_ID_HASH or ZOHO_CLIQ_TRUSTED_SENDER_ID","ZOHO_CLIQ_TRUSTED_MESSAGE_ID_HASH or ZOHO_CLIQ_TRUSTED_MESSAGE_ID","ZOHO_CLIQ_DELIVERY_ID_HASH or ZOHO_CLIQ_DELIVERY_ID"],'
     printf '"nextCommand":"ops/scripts/openclaw_cliq_trusted_reply_evidence_bundle.sh"'

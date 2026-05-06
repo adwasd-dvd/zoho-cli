@@ -1273,6 +1273,20 @@ def test_openclaw_cliq_trusted_reply_bundle_plan_only_lists_missing_live_facts(
     assert payload["readyFacts"] == []
     assert payload["nextAction"] == "collect_live_delivery_facts"
     assert payload["readyForFinalBundle"] is False
+    assert payload["reportFiles"] == {
+        "routePreflight": "openclaw_cliq_route_preflight_unit-bundle-plan.json",
+        "plan": "openclaw_cliq_trusted_reply_plan_unit-bundle-plan.json",
+        "evidence": "openclaw_cliq_trusted_reply_unit-bundle-plan.json",
+        "check": "openclaw_cliq_trusted_reply_check_unit-bundle-plan.json",
+    }
+    assert payload["reportsReady"] == {
+        "routePreflight": True,
+        "plan": True,
+        "evidence": False,
+        "check": False,
+    }
+    assert str(reports_dir) not in result.stdout
+    assert str(config_path) not in result.stdout
     assert payload["acceptedFactStates"] == ["hash", "raw"]
     assert (
         "ZOHO_CLIQ_DELIVERY_ID_HASH or ZOHO_CLIQ_DELIVERY_ID" in payload["requiredEnv"]
@@ -1352,6 +1366,12 @@ def test_openclaw_cliq_trusted_reply_bundle_plan_only_redacts_ready_raw_facts(
     ]
     assert payload["nextAction"] == "run_final_trusted_reply_bundle"
     assert payload["readyForFinalBundle"] is True
+    assert payload["reportsReady"] == {
+        "routePreflight": True,
+        "plan": True,
+        "evidence": False,
+        "check": False,
+    }
 
     plan_report = (
         reports_dir / "openclaw_cliq_trusted_reply_plan_unit-bundle-plan-ready.json"

@@ -227,6 +227,8 @@ def test_native_cliq_channel_ai_troubleshooting_contract_present() -> None:
         "openclaw_cliq_trusted_reply_plan_<run-id>.json",
         "nextAction",
         "readyForFinalBundle",
+        "reportFiles",
+        "reportsReady",
         "missingFacts",
         "readyFacts",
         "openclaw_cliq_trusted_reply_evidence",

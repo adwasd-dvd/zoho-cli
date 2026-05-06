@@ -271,6 +271,23 @@ rejects secret markers with `facts_file_secret_marker_present`. Its `redaction`
 object must keep raw ids, hash values, local
 paths, and secrets out of the plan.
 
+After the real trusted Mention succeeds, prefer preparing the hash-only facts
+file before running the final bundle:
+
+```bash
+ZOHO_CLIQ_TRUSTED_REPLY_REPORT_DIR=tests/auto_pilot/reports \
+ZOHO_CLIQ_TRUSTED_SENDER_ID="$TRUSTED_SENDER_ID" \
+ZOHO_CLIQ_TRUSTED_MESSAGE_ID="$TRUSTED_MESSAGE_ID" \
+ZOHO_CLIQ_DELIVERY_ID="$DELIVERY_ID" \
+  ops/scripts/openclaw_cliq_trusted_reply_facts_prepare.sh
+```
+
+The prepare script prints `openclaw_cliq_trusted_reply_facts_prepare` with
+`status=facts_file_ready`, writes `openclaw_cliq_trusted_reply_facts` JSON under
+the trusted reply report directory, and keeps raw ids plus local paths out of
+stdout. Set `ZOHO_CLIQ_TRUSTED_REPLY_FACTS_FILE` to that file for the final
+bundle.
+
 ## Setup states
 
 | State | Meaning | Next action |

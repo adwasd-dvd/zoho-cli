@@ -134,6 +134,11 @@ Trusted agent reply:
    Do not include raw `trustedSenderId`, `trustedMessageId`, or `deliveryId`
    fields; the bundle rejects raw facts files with `facts_file_raw_ids_present`
    and secret markers with `facts_file_secret_marker_present`.
+   `ops/scripts/openclaw_cliq_trusted_reply_facts_prepare.sh` can create this
+   hash-only facts file from the three raw live facts; it reports
+   `openclaw_cliq_trusted_reply_facts_prepare` with `status=facts_file_ready`
+   and writes only `sha256:` references to
+   `openclaw_cliq_trusted_reply_facts` JSON.
 
    To use an already-reviewed route report, set `ZOHO_CLIQ_ROUTE_REPORT_FILE`.
    If it is omitted, the bundle runs `ZOHO_CLIQ_ROUTE_BINDING_ONLY=1` internally

@@ -100,7 +100,10 @@ After sync, ensure the AI user follows:
     `trustedMessageIdHash`, and `deliveryIdHash` when passing hash facts from
     one agent/operator step to the final bundle; raw facts fields are rejected
     with `facts_file_raw_ids_present`, and secret markers with
-    `facts_file_secret_marker_present`; if route preflight fails with
+    `facts_file_secret_marker_present`; use
+    `ops/scripts/openclaw_cliq_trusted_reply_facts_prepare.sh` to create that
+    hash-only facts file and require `openclaw_cliq_trusted_reply_facts_prepare`
+    with `facts_file_ready`; if route preflight fails with
     `agent_binding_mismatch`,
     keep only the route JSON and do not claim evidence/check reports; start from
     `docs/releases/OPENCLAW_CLIQ_TRUSTED_REPLY_EVIDENCE_TEMPLATE.json`

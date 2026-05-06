@@ -70,6 +70,11 @@ Use this skill as the default operating contract for an OpenClaw agent acting li
   evidence in one pass. If the auto-route preflight fails with blockers such as
   `agent_binding_mismatch`, the bundle exits non-zero with route JSON only and
   must not create trusted reply evidence/check reports.
+- Use `ops/scripts/openclaw_cliq_trusted_reply_facts_prepare.sh` after the
+  trusted Mention succeeds when raw ids are available; it writes hash-only
+  `openclaw_cliq_trusted_reply_facts` JSON, prints
+  `openclaw_cliq_trusted_reply_facts_prepare` with `facts_file_ready`, and does
+  not echo raw ids, hash values, or local paths to stdout.
 - Before asking for a fresh trusted Bot Mention, run the same bundle with
   `ZOHO_CLIQ_TRUSTED_REPLY_PLAN_ONLY=1`; require
   `kind=openclaw_cliq_trusted_reply_evidence_bundle_plan` and use

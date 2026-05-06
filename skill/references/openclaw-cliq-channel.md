@@ -190,6 +190,10 @@ Native diagnostic behavior:
   `trustedSenderId`, `trustedMessageId`, or `deliveryId` fields with
   `facts_file_raw_ids_present`, and secret markers with
   `facts_file_secret_marker_present`.
+  `ops/scripts/openclaw_cliq_trusted_reply_facts_prepare.sh` creates that
+  hash-only facts file from raw or already-hashed live facts and emits
+  `openclaw_cliq_trusted_reply_facts_prepare` with `facts_file_ready` without
+  echoing raw ids, hash values, or local paths.
 - Do not include webhook secrets, token passwords, webhook signatures, raw
   stderr, or raw Cliq message bodies in reports.
 

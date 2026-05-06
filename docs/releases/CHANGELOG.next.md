@@ -77,6 +77,7 @@
 - Added an explicit plan-only `redaction` contract so trusted reply plan reports declare that raw ids, hash values, local paths, and secrets are not stored.
 - Added a plan-only `collectionGuide` contract so agents know to send exactly one trusted Mention, collect only `trustedSenderId`, `trustedMessageId`, and `deliveryId`, hash raw ids before evidence, and exclude raw webhook/message/reply bodies and secrets.
 - Added hash-only `ZOHO_CLIQ_TRUSTED_REPLY_FACTS_FILE` support to the trusted reply bundle so agents can pass `openclaw_cliq_trusted_reply_facts` JSON with `sha256:` sender/message/reply references; raw facts files are rejected with `facts_file_raw_ids_present`, and secret markers are rejected with `facts_file_secret_marker_present`.
+- Added `ops/scripts/openclaw_cliq_trusted_reply_facts_prepare.sh` to create hash-only `openclaw_cliq_trusted_reply_facts` JSON from raw or already-hashed live facts, emit a redacted `openclaw_cliq_trusted_reply_facts_prepare` summary, and keep raw ids plus local paths out of stdout.
 
 ### Architecture / modularization (2026-05-04T18:19:47Z)
 - Started `cliq-210` post-RC modularization by extracting the `zoho cliq status` and `zoho cliq capabilities` command bodies into `zoho_cli/commands/cliq_readiness.py`, leaving `zoho_cli/cli.py` with runtime dependency injection plus existing Typer registration only. Command names, help text, and JSON output are unchanged.

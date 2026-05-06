@@ -24,6 +24,9 @@ OPENCLAW_CLIQ_TRUSTED_REPLY_EVIDENCE_SCRIPT = (
 OPENCLAW_CLIQ_TRUSTED_REPLY_EVIDENCE_PREPARE_SCRIPT = (
     REPO_ROOT / "ops" / "scripts" / "openclaw_cliq_trusted_reply_evidence_prepare.sh"
 )
+OPENCLAW_CLIQ_TRUSTED_REPLY_FACTS_PREPARE_SCRIPT = (
+    REPO_ROOT / "ops" / "scripts" / "openclaw_cliq_trusted_reply_facts_prepare.sh"
+)
 OPENCLAW_CLIQ_TRUSTED_REPLY_EVIDENCE_BUNDLE_SCRIPT = (
     REPO_ROOT / "ops" / "scripts" / "openclaw_cliq_trusted_reply_evidence_bundle.sh"
 )
@@ -1082,6 +1085,88 @@ def test_openclaw_cliq_trusted_reply_evidence_prepare_rejects_raw_ids(
     assert payload["status"] == "error"
     assert payload["error"] == "trusted_sender_hash_missing"
     assert not evidence_path.exists()
+
+
+def test_openclaw_cliq_trusted_reply_facts_prepare_hashes_raw_ids(
+    tmp_path: Path,
+) -> None:
+    facts_path = tmp_path / "reports" / "trusted-reply-facts.json"
+
+    result = subprocess.run(
+        ["bash", str(OPENCLAW_CLIQ_TRUSTED_REPLY_FACTS_PREPARE_SCRIPT)],
+        cwd=REPO_ROOT,
+        env={
+            **os.environ,
+            "ZOHO_CLIQ_TRUSTED_REPLY_FACTS_FILE": str(facts_path),
+            "ZOHO_CLIQ_TRUSTED_REPLY_RUN_ID": "unit-facts-prepare",
+            "ZOHO_CLIQ_TRUSTED_SENDER_ID": "sender-raw-id",
+            "ZOHO_CLIQ_TRUSTED_MESSAGE_ID": "message-raw-id",
+            "ZOHO_CLIQ_DELIVERY_ID": "delivery-raw-id",
+        },
+        capture_output=True,
+        text=True,
+        check=False,
+    )
+
+    output = f"{result.stdout}\n{result.stderr}"
+    assert result.returncode == 0, output
+    assert "sender-raw-id" not in output
+    assert "message-raw-id" not in output
+    assert "delivery-raw-id" not in output
+    assert str(facts_path) not in output
+
+    payload = json.loads(result.stdout)
+    assert payload["kind"] == "openclaw_cliq_trusted_reply_facts_prepare"
+    assert payload["status"] == "facts_file_ready"
+    assert payload["factsFile"] == "trusted-reply-facts.json"
+    assert payload["facts"] == {
+        "trustedSenderId": "hash",
+        "trustedMessageId": "hash",
+        "deliveryId": "hash",
+    }
+    assert payload["redaction"] == {
+        "rawIdsStored": False,
+        "hashValuesStored": True,
+        "localPathsStored": False,
+        "secretsStored": False,
+    }
+
+    facts = json.loads(facts_path.read_text())
+    assert facts["kind"] == "openclaw_cliq_trusted_reply_facts"
+    assert facts["trustedSenderIdHash"] == _sha256_ref("sender-raw-id")
+    assert facts["trustedMessageIdHash"] == _sha256_ref("message-raw-id")
+    assert facts["deliveryIdHash"] == _sha256_ref("delivery-raw-id")
+    assert "sender-raw-id" not in facts_path.read_text()
+    assert "message-raw-id" not in facts_path.read_text()
+    assert "delivery-raw-id" not in facts_path.read_text()
+
+
+def test_openclaw_cliq_trusted_reply_facts_prepare_reports_missing_fact(
+    tmp_path: Path,
+) -> None:
+    facts_path = tmp_path / "reports" / "trusted-reply-facts.json"
+
+    result = subprocess.run(
+        ["bash", str(OPENCLAW_CLIQ_TRUSTED_REPLY_FACTS_PREPARE_SCRIPT)],
+        cwd=REPO_ROOT,
+        env={
+            **os.environ,
+            "ZOHO_CLIQ_TRUSTED_REPLY_FACTS_FILE": str(facts_path),
+            "ZOHO_CLIQ_TRUSTED_REPLY_RUN_ID": "unit-facts-missing",
+            "ZOHO_CLIQ_TRUSTED_MESSAGE_ID_HASH": "sha256:message",
+            "ZOHO_CLIQ_DELIVERY_ID_HASH": "sha256:reply",
+        },
+        capture_output=True,
+        text=True,
+        check=False,
+    )
+
+    assert result.returncode == 2
+    assert result.stderr == ""
+    payload = json.loads(result.stdout)
+    assert payload["kind"] == "openclaw_cliq_trusted_reply_facts_prepare"
+    assert payload["error"] == "trusted_sender_hash_missing"
+    assert not facts_path.exists()
 
 
 def _sha256_ref(value: str) -> str:

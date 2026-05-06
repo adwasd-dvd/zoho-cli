@@ -1,10 +1,17 @@
-last_run_at: "2026-05-06T04:53:53Z"
+last_run_at: "2026-05-06T05:32:19Z"
 last_result: passing
-current_focus: cliq-channel-438-trusted-reply-plan-redaction-contract
+current_focus: cliq-channel-439-rc-checklist-contract-sync
 suites:
   unit:
     status: passing
     notes:
+      - "cliq-channel-439 RC checklist contract sync completed at 2026-05-06T05:32:19Z"
+      - "synchronized the release checklist and contract test markers with the current state: public callback auth/reachability is verified, and controlled trusted agent reply evidence for `cliq/default -> zoho-employee-test` remains the deployment-dependent gate"
+      - "./.venv/bin/python -m pytest -q tests/test_openclaw_channel_contract.py::test_openclaw_cliq_channel_rc_checklist_has_cut_contract tests/test_lane3_docs.py tests/test_markdown_update.py -> 13 passed in 0.02s"
+      - "./.venv/bin/ruff format --check tests/test_openclaw_channel_contract.py -> 1 file already formatted"
+      - "ruby YAML parse for project/module_status/test_status -> YAML_PARSE_OK"
+      - "git diff --check -> passed"
+      - "default sandbox `make ci` hit localhost bind `PermissionError` for OAuth callback tests plus the stale checklist marker before this sync; escalated full `make ci` passed with ruff format/check clean + pytest `1863 passed in 52.04s`"
       - "cliq-channel-438 trusted reply plan redaction contract completed at 2026-05-06T04:53:53Z"
       - "added explicit plan-only `redaction` booleans for raw ids, hash values, local paths, and secrets; covered hash-ref plan mode so `sha256:` values are not echoed into stdout or persisted plan reports"
       - "./.venv/bin/python -m pytest -q tests/test_auto_pilot_scripts.py -k 'openclaw_cliq_trusted_reply_bundle or openclaw_cliq_hash_ref or openclaw_cliq_trusted_reply' -> 16 passed, 11 deselected in 0.79s"

@@ -20,12 +20,12 @@ cliq:
 openclaw_cliq_channel:
   priority: 3
   status: completed_for_rc
-  phase: live_callback_verified_reply_auto_route_bundle_ready
+  phase: live_callback_verified_reply_evidence_pending
   target_release: v0.4.0
-  current_milestone: cliq-channel-438-trusted-reply-plan-redaction-contract
+  current_milestone: cliq-channel-439-rc-checklist-contract-sync
   blockers:
     - "durable production tunnel/gateway selection remains pending after operator-tunnel callback verification"
-    - "actual controlled trusted Mention-to-agent reply evidence is pending for `cliq/default -> zoho-employee-test`; auto-route bundle/check now has a persisted plan-only route checklist with nextAction/readyForFinalBundle, missing/ready fact arrays, report filename metadata, and explicit redaction booleans, requires `trusted_reply_recorded` with sha256 sender/message/reply references, rejects unchanged templates/raw ids/secret markers, and stops on route mismatch before writing trusted reply evidence/check reports"
+    - "actual controlled trusted Mention-to-agent reply evidence is pending for `cliq/default -> zoho-employee-test`; auto-route bundle/check now has a persisted plan-only route checklist with nextAction/readyForFinalBundle, missing/ready fact arrays, report filename metadata, and explicit redaction booleans, requires `trusted_reply_recorded` with sha256 sender/message/reply references, rejects unchanged templates/raw ids/secret markers, stops on route mismatch before writing trusted reply evidence/check reports, and the RC checklist contract is synced to the public-callback-verified / agent-reply-pending state"
 
 crm:
   priority: 4

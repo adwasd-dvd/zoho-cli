@@ -117,7 +117,7 @@ def test_openclaw_cliq_channel_rc_checklist_has_cut_contract():
     checklist = read("docs/releases/OPENCLAW_CLIQ_CHANNEL_V0_4_RC_CHECKLIST.md")
 
     required = [
-        "RC package ready, deployment callback still external",
+        "RC package ready, public callback verified, agent reply pending",
         "cliq-channel-418",
         "cliq-channel-419",
         "cliq-channel-420",
@@ -125,8 +125,8 @@ def test_openclaw_cliq_channel_rc_checklist_has_cut_contract():
         "cliq-channel-422",
         "ops/scripts/openclaw_cliq_rc_pack.sh",
         "OPENCLAW_CLIQ_BOT_HANDLER_TEMPLATES.md",
-        "live_verification_pending",
-        "Public Bot callback",
+        "Public callback auth/reachability",
+        "Trusted agent reply",
         "ZOHO_CLIQ_PUBLIC_WEBHOOK_URL",
         "0.4.0-rc.1",
         "adwasd-openclaw-zoho-cliq-0.4.0-rc.1.tgz",

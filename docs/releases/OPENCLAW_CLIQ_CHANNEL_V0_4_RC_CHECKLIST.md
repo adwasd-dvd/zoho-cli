@@ -161,8 +161,8 @@ cooldown, and rerun without bursty refresh loops.
 6. Install the published artifact in a Temp-HOME OpenClaw profile and rerun
    `plugins inspect`, `plugins doctor`, `channels status`, and `channels
    capabilities`.
-7. Publish release notes that explicitly list the public Bot callback gate as
-   deployment-dependent when it has not been completed.
+7. Publish release notes that explicitly list trusted agent reply evidence as
+   the remaining deployment-dependent gate until it has been completed.
 
 ## Non-goals
 

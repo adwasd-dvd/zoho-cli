@@ -67,6 +67,7 @@
 - Added `ops/scripts/openclaw_cliq_trusted_reply_evidence_prepare.sh` so the final trusted reply artifact can be generated from route preflight evidence plus `sha256:` trusted sender/message/reply references before it is validated by the checker.
 - Added `ops/scripts/openclaw_cliq_hash_ref.sh` so operators/AI agents can hash live raw Cliq ids from stdin into `sha256:` references without echoing raw ids into stdout, evidence files, or docs.
 - Added `ops/scripts/openclaw_cliq_trusted_reply_evidence_bundle.sh` to run the final trusted reply evidence flow in one pass: hash raw ids when supplied, prepare redacted evidence, and execute the trusted reply checker with final JSON on stdout.
+- Extended the trusted reply evidence bundle to auto-run the offline route preflight and write route/evidence/check reports when no route report is supplied, making the real Bot reply gate a single local command after the operator captures delivery facts.
 
 ### Architecture / modularization (2026-05-04T18:19:47Z)
 - Started `cliq-210` post-RC modularization by extracting the `zoho cliq status` and `zoho cliq capabilities` command bodies into `zoho_cli/commands/cliq_readiness.py`, leaving `zoho_cli/cli.py` with runtime dependency injection plus existing Typer registration only. Command names, help text, and JSON output are unchanged.

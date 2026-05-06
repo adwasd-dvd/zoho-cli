@@ -57,10 +57,12 @@ Use this skill as the default operating contract for an OpenClaw agent acting li
   duplicate/dead-letter counts, `sha256:` sender/message/reply id references,
   and no raw webhook/message/reply bodies or secrets in evidence.
 - Prefer `ops/scripts/openclaw_cliq_trusted_reply_evidence_bundle.sh` after the
-  real trusted reply has occurred: give it `ZOHO_CLIQ_ROUTE_REPORT_FILE`, the
-  expected agent/model, and either raw id variables (`ZOHO_CLIQ_TRUSTED_SENDER_ID`,
+  real trusted reply has occurred: give it the expected agent/model and either
+  raw id variables (`ZOHO_CLIQ_TRUSTED_SENDER_ID`,
   `ZOHO_CLIQ_TRUSTED_MESSAGE_ID`, `ZOHO_CLIQ_DELIVERY_ID`) or the three
-  `*_HASH` variables. It hashes, prepares, and checks evidence in one pass.
+  `*_HASH` variables. It auto-runs route preflight when
+  `ZOHO_CLIQ_ROUTE_REPORT_FILE` is absent, then hashes, prepares, and checks
+  evidence in one pass.
 - Use `ops/scripts/openclaw_cliq_hash_ref.sh` to hash live raw Cliq ids through
   stdin before setting those `*_HASH` variables; the helper prints only the
   `sha256:` reference and does not echo raw input.

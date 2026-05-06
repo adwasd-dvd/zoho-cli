@@ -242,7 +242,10 @@ reply: provide `ZOHO_CLIQ_ROUTE_REPORT_FILE`,
 `ops/scripts/openclaw_cliq_hash_ref.sh` first and pass
 `ZOHO_CLIQ_TRUSTED_SENDER_ID_HASH`, `ZOHO_CLIQ_TRUSTED_MESSAGE_ID_HASH`, and
 `ZOHO_CLIQ_DELIVERY_ID_HASH`. The bundle keeps stdout to the final checker JSON
-and does not echo raw ids.
+and does not echo raw ids. If `ZOHO_CLIQ_ROUTE_REPORT_FILE` is omitted, the
+bundle runs the offline route preflight itself and writes route/evidence/check
+reports under `ZOHO_CLIQ_TRUSTED_REPLY_REPORT_DIR` or
+`tests/auto_pilot/reports`.
 
 ## Setup states
 

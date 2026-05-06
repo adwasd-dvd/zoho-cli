@@ -218,6 +218,7 @@ def test_native_cliq_channel_ai_troubleshooting_contract_present() -> None:
         "ZOHO_CLIQ_EXPECTED_AGENT_MODEL",
         "ZOHO_CLIQ_ROUTE_BINDING_ONLY",
         "ZOHO_CLIQ_ROUTE_REPORT_FILE",
+        "ZOHO_CLIQ_TRUSTED_REPLY_REPORT_DIR",
         "openclaw_cliq_route_preflight",
         "openclaw_cliq_trusted_reply_evidence_prepare.sh",
         "openclaw_cliq_trusted_reply_evidence",

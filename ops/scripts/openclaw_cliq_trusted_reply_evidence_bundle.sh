@@ -3,12 +3,14 @@ set -euo pipefail
 
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)"
 HASH_SCRIPT="${ZOHO_CLIQ_HASH_REF_SCRIPT:-"$ROOT/ops/scripts/openclaw_cliq_hash_ref.sh"}"
+ROUTE_SCRIPT="${ZOHO_CLIQ_ROUTE_PREFLIGHT_SCRIPT:-"$ROOT/ops/scripts/openclaw_cliq_live_smoke.sh"}"
 PREPARE_SCRIPT="${ZOHO_CLIQ_TRUSTED_REPLY_PREPARE_SCRIPT:-"$ROOT/ops/scripts/openclaw_cliq_trusted_reply_evidence_prepare.sh"}"
 CHECK_SCRIPT="${ZOHO_CLIQ_TRUSTED_REPLY_CHECK_SCRIPT:-"$ROOT/ops/scripts/openclaw_cliq_trusted_reply_evidence.sh"}"
 RUN_ID="${ZOHO_CLIQ_TRUSTED_REPLY_RUN_ID:-$(date -u +%Y%m%dT%H%M%SZ)-$$}"
 RUN_ID="$(printf '%s' "$RUN_ID" | tr -c 'A-Za-z0-9_.:-' '_')"
 CHECKED_AT="$(date -u +%Y-%m-%dT%H:%M:%SZ)"
 REPORT_DIR="${ZOHO_CLIQ_TRUSTED_REPLY_REPORT_DIR:-"$ROOT/tests/auto_pilot/reports"}"
+ROUTE_REPORT_FILE="${ZOHO_CLIQ_ROUTE_REPORT_FILE:-"$REPORT_DIR/openclaw_cliq_route_preflight_${RUN_ID}.json"}"
 EVIDENCE_FILE="${ZOHO_CLIQ_TRUSTED_REPLY_EVIDENCE_FILE:-"$REPORT_DIR/openclaw_cliq_trusted_reply_${RUN_ID}.json"}"
 CHECK_REPORT_FILE="${ZOHO_CLIQ_TRUSTED_REPLY_REPORT_FILE:-"$REPORT_DIR/openclaw_cliq_trusted_reply_check_${RUN_ID}.json"}"
 
@@ -48,6 +50,10 @@ if [[ ! -x "$HASH_SCRIPT" ]]; then
   emit_error "hash_ref_script_missing"
   exit 2
 fi
+if [[ ! -x "$ROUTE_SCRIPT" ]]; then
+  emit_error "route_preflight_script_missing"
+  exit 2
+fi
 if [[ ! -x "$PREPARE_SCRIPT" ]]; then
   emit_error "prepare_script_missing"
   exit 2
@@ -56,13 +62,37 @@ if [[ ! -x "$CHECK_SCRIPT" ]]; then
   emit_error "check_script_missing"
   exit 2
 fi
-if [[ -z "${ZOHO_CLIQ_ROUTE_REPORT_FILE:-}" ]]; then
-  emit_error "route_report_file_missing"
-  exit 2
-fi
 if [[ -z "${ZOHO_CLIQ_EXPECTED_AGENT_ID:-}" ]]; then
   emit_error "expected_agent_missing"
   exit 2
+fi
+
+if [[ ! -f "$ROUTE_REPORT_FILE" ]]; then
+  set +e
+  ROUTE_OUTPUT="$(
+    env \
+      ZOHO_CLIQ_ROUTE_BINDING_ONLY=1 \
+      ZOHO_CLIQ_ROUTE_REPORT_FILE="$ROUTE_REPORT_FILE" \
+      ZOHO_CLIQ_SMOKE_RUN_ID="$RUN_ID" \
+      "$ROUTE_SCRIPT"
+  )"
+  ROUTE_STATUS=$?
+  set -e
+  if [[ "$ROUTE_STATUS" -ne 0 ]]; then
+    if [[ -f "$ROUTE_REPORT_FILE" ]]; then
+      cat "$ROUTE_REPORT_FILE"
+    elif [[ -n "$ROUTE_OUTPUT" ]]; then
+      ROUTE_PAYLOAD="$(printf '%s\n' "$ROUTE_OUTPUT" | awk '/^{/ { payload=$0 } END { if (payload != "") print payload }')"
+      if [[ -n "$ROUTE_PAYLOAD" ]]; then
+        printf '%s\n' "$ROUTE_PAYLOAD"
+      else
+        emit_error "route_preflight_failed"
+      fi
+    else
+      emit_error "route_preflight_failed"
+    fi
+    exit "$ROUTE_STATUS"
+  fi
 fi
 
 TRUSTED_SENDER_ID_HASH=""
@@ -90,6 +120,7 @@ PREPARE_OUTPUT="$(
     -u ZOHO_CLIQ_TRUSTED_SENDER_ID \
     -u ZOHO_CLIQ_TRUSTED_MESSAGE_ID \
     -u ZOHO_CLIQ_DELIVERY_ID \
+    ZOHO_CLIQ_ROUTE_REPORT_FILE="$ROUTE_REPORT_FILE" \
     ZOHO_CLIQ_TRUSTED_REPLY_RUN_ID="$RUN_ID" \
     ZOHO_CLIQ_TRUSTED_REPLY_EVIDENCE_FILE="$EVIDENCE_FILE" \
     ZOHO_CLIQ_TRUSTED_SENDER_ID_HASH="$TRUSTED_SENDER_ID_HASH" \

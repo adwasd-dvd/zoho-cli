@@ -182,7 +182,7 @@ Project state lives in `ops/state/*.yml`:
 ### Current release posture
 
 - Current version: `0.2.1`
-- Next active target: complete the trusted Zoho Cliq Bot Mention -> OpenClaw `zoho-employee-test` Codex reply smoke, run `ops/scripts/openclaw_cliq_trusted_reply_evidence_bundle.sh` to hash/prepare/check the redacted artifact, then run the operator-approved CRM fixture live run only after a dedicated payload and cleanup plan exist.
+- Next active target: complete the trusted Zoho Cliq Bot Mention -> OpenClaw `zoho-employee-test` Codex reply smoke, run `ops/scripts/openclaw_cliq_trusted_reply_evidence_bundle.sh` to route-preflight/hash/prepare/check the redacted artifact, then run the operator-approved CRM fixture live run only after a dedicated payload and cleanup plan exist.
 - Release candidate: `false`
 - Broad automated gate: final `make release-gate && make ci` is green for `0.2.1`; [v0.2.1](https://github.com/adwasd-dvd/zoho-cli/releases/tag/v0.2.1) is the current stable release.
 

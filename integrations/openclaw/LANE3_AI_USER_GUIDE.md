@@ -91,9 +91,9 @@ After sync, ensure the AI user follows:
   - record `token_refresh_rate_limited` and repeated endpoint availability failures as `skip_deferred`
   - do not claim public Bot callback success until `ZOHO_CLIQ_PUBLIC_WEBHOOK_URL` reaches the running gateway
   - after a controlled trusted Mention, run
-    `ops/scripts/openclaw_cliq_trusted_reply_evidence_bundle.sh` with the route
-    report, expected agent/model, and either raw ids or `sha256:` references;
-    require
+    `ops/scripts/openclaw_cliq_trusted_reply_evidence_bundle.sh` with expected
+    agent/model and either raw ids or `sha256:` references; the bundle
+    auto-runs route preflight if no route report is provided; require
     `trusted_reply_recorded`; sender/message/reply ids must be `sha256:`
     references only; start from
     `docs/releases/OPENCLAW_CLIQ_TRUSTED_REPLY_EVIDENCE_TEMPLATE.json`

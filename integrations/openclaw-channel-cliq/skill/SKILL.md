@@ -96,8 +96,10 @@ For the final trusted reply gate, set
 `trusted_reply_recorded` before claiming production readiness. Evidence must
 store sender/message/reply ids as `sha256:` references, not raw ids or bodies.
 Use `ops/scripts/openclaw_cliq_trusted_reply_evidence_bundle.sh` with
-`ZOHO_CLIQ_ROUTE_REPORT_FILE`, expected agent/model, and either raw ids or the
-three `sha256:` references to hash, prepare, and check the artifact. Use
+expected agent/model and either raw ids or the three `sha256:` references to
+route-preflight, hash, prepare, and check the artifact. Set
+`ZOHO_CLIQ_ROUTE_REPORT_FILE` only when reusing an already-reviewed route
+report; otherwise the bundle writes one under its report directory. Use
 `ops/scripts/openclaw_cliq_hash_ref.sh` only when hashing live raw ids as a
 separate step; do not paste raw ids into evidence files.
 

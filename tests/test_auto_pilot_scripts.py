@@ -1149,6 +1149,67 @@ def test_openclaw_cliq_trusted_reply_bundle_hashes_raw_ids_and_checks(
     assert "delivery-raw-id" not in evidence_path.read_text()
 
 
+def test_openclaw_cliq_trusted_reply_bundle_auto_runs_route_preflight(
+    tmp_path: Path,
+) -> None:
+    config_path = tmp_path / "openclaw.json"
+    reports_dir = tmp_path / "reports"
+    config_path.write_text(
+        json.dumps(
+            {
+                "bindings": [
+                    {
+                        "agentId": "zoho-employee-test",
+                        "match": {"channel": "cliq", "accountId": "default"},
+                    }
+                ],
+                "agents": {
+                    "list": [
+                        {
+                            "id": "zoho-employee-test",
+                            "model": "openai-codex/gpt-5.3-codex",
+                        }
+                    ]
+                },
+            }
+        )
+    )
+
+    result = subprocess.run(
+        ["bash", str(OPENCLAW_CLIQ_TRUSTED_REPLY_EVIDENCE_BUNDLE_SCRIPT)],
+        cwd=REPO_ROOT,
+        env={
+            **os.environ,
+            "OPENCLAW_CONFIG_PATH": str(config_path),
+            "ZOHO_CLIQ_TRUSTED_REPLY_REPORT_DIR": str(reports_dir),
+            "ZOHO_CLIQ_TRUSTED_REPLY_RUN_ID": "unit-bundle-route",
+            "ZOHO_CLIQ_TRUSTED_SENDER_ID_HASH": "sha256:sender",
+            "ZOHO_CLIQ_TRUSTED_MESSAGE_ID_HASH": "sha256:message",
+            "ZOHO_CLIQ_DELIVERY_ID_HASH": "sha256:reply",
+            "ZOHO_CLIQ_EXPECTED_AGENT_ID": "zoho-employee-test",
+            "ZOHO_CLIQ_EXPECTED_AGENT_MODEL": "openai-codex/gpt-5.3-codex",
+        },
+        capture_output=True,
+        text=True,
+        check=False,
+    )
+
+    output = f"{result.stdout}\n{result.stderr}"
+    assert result.returncode == 0, output
+    assert "openclaw cliq route binding gate" not in output
+    payload = json.loads(result.stdout)
+    assert payload["status"] == "trusted_reply_recorded"
+
+    route_report = reports_dir / "openclaw_cliq_route_preflight_unit-bundle-route.json"
+    evidence_report = reports_dir / "openclaw_cliq_trusted_reply_unit-bundle-route.json"
+    check_report = (
+        reports_dir / "openclaw_cliq_trusted_reply_check_unit-bundle-route.json"
+    )
+    assert json.loads(route_report.read_text())["status"] == "ok"
+    assert json.loads(evidence_report.read_text())["routePreflight"]["status"] == "ok"
+    assert json.loads(check_report.read_text()) == payload
+
+
 def test_openclaw_cliq_trusted_reply_bundle_reports_missing_agent(
     tmp_path: Path,
 ) -> None:

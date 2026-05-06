@@ -1,10 +1,18 @@
-last_run_at: "2026-05-05T23:36:22Z"
+last_run_at: "2026-05-06T00:15:52Z"
 last_result: passing
-current_focus: cliq-channel-429-trusted-reply-evidence-bundle
+current_focus: cliq-channel-430-trusted-reply-auto-route-bundle
 suites:
   unit:
     status: passing
     notes:
+      - "cliq-channel-430 trusted reply auto-route bundle completed at 2026-05-06T00:15:52Z"
+      - "extended `ops/scripts/openclaw_cliq_trusted_reply_evidence_bundle.sh` to auto-run offline route preflight when no route report is supplied, write route/evidence/check reports under `ZOHO_CLIQ_TRUSTED_REPLY_REPORT_DIR`, and keep stdout as final checker JSON"
+      - "./.venv/bin/python -m pytest -q tests/test_auto_pilot_scripts.py -k 'openclaw_cliq_trusted_reply_bundle or openclaw_cliq_hash_ref or openclaw_cliq_trusted_reply' -> 12 passed, 11 deselected in 0.48s"
+      - "./.venv/bin/python -m pytest -q tests/test_auto_pilot_scripts.py -k 'openclaw_cliq' tests/test_lane3_docs.py tests/test_markdown_update.py -> 17 passed, 18 deselected in 1.10s"
+      - "bash -n ops/scripts/openclaw_cliq_trusted_reply_evidence_bundle.sh ops/scripts/openclaw_cliq_live_smoke.sh ops/scripts/openclaw_cliq_hash_ref.sh ops/scripts/openclaw_cliq_trusted_reply_evidence_prepare.sh ops/scripts/openclaw_cliq_trusted_reply_evidence.sh -> passed"
+      - "./.venv/bin/ruff format --check tests/test_auto_pilot_scripts.py tests/test_lane3_docs.py -> 2 files already formatted"
+      - "ruby YAML parse for project/module_status/test_status -> YAML_PARSE_OK"
+      - "git diff --check -> passed"
       - "cliq-channel-429 trusted reply evidence bundle completed at 2026-05-05T23:36:22Z"
       - "added `ops/scripts/openclaw_cliq_trusted_reply_evidence_bundle.sh` to hash raw Cliq ids when provided, prepare redacted trusted reply evidence, run the checker, and keep stdout as final checker JSON without raw ids"
       - "./.venv/bin/python -m pytest -q tests/test_auto_pilot_scripts.py -k 'openclaw_cliq_trusted_reply_bundle or openclaw_cliq_hash_ref or openclaw_cliq_trusted_reply' -> 11 passed, 11 deselected in 0.36s"

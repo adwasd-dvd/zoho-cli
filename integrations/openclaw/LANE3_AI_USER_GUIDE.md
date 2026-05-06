@@ -95,7 +95,8 @@ After sync, ensure the AI user follows:
     agent/model and either raw ids or `sha256:` references; the bundle
     auto-runs route preflight if no route report is provided; require
     `trusted_reply_recorded`; sender/message/reply ids must be `sha256:`
-    references only; start from
+    references only; if route preflight fails with `agent_binding_mismatch`,
+    keep only the route JSON and do not claim evidence/check reports; start from
     `docs/releases/OPENCLAW_CLIQ_TRUSTED_REPLY_EVIDENCE_TEMPLATE.json`
 - native channel RC pack preflight:
   - run `ops/scripts/openclaw_cliq_rc_pack.sh` from the repo root before cutting a local/operator or npm/GitHub RC artifact

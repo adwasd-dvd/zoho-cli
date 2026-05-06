@@ -54,7 +54,7 @@ delivers exactly one Cliq reply. The live environment currently binds
 | Local package artifact preflight | `NPM_CONFIG_CACHE=/private/tmp/zoho-cli-npm-cache OPENCLAW_CLIQ_PACK_RUN_ID=20260505T142129Z-rc1 ops/scripts/openclaw_cliq_rc_pack.sh` passed at `2026-05-05T14:22:51Z`; the script reran typecheck/build and then packed from the plugin directory into `.tmp/openclaw-cliq-rc-pack`. Tarball `adwasd-openclaw-zoho-cliq-0.4.0-rc.1.tgz`, size `93879`, unpacked size `466025`, entry count `67`, shasum `87b553ad5bbec1c920a05b342630a57cea58b96b`, integrity `sha512-PVaBZFB0+m2sll7dl+c47iPnb6+KgRcCNkiqvFJzv8qtuHB8Lb153/27rqC1izmmybGP1CtrqMH4ZVrBkvBgBg==`. Summary report path pattern: `tests/auto_pilot/reports/openclaw_cliq_rc_pack_summary_<run-id>.json`. |
 | Public callback auth/reachability | Operator Cloudflare tunnel to local OpenClaw gateway is reachable; missing-secret webhook calls return `401`, authenticated unsupported-handler calls return `200` with `unsupported_handler`, and the Zoho Cliq Bot Mention Handler has reached local OpenClaw. |
 | Live route binding | `openclaw config validate` passes with `cliq/default -> zoho-employee-test`; both `main` and `zoho-employee-test` are configured for `openai-codex/gpt-5.3-codex`. |
-| Trusted reply evidence bundle | `ops/scripts/openclaw_cliq_trusted_reply_evidence_bundle.sh` auto-runs offline route preflight when no route report is supplied, hashes live raw ids when needed, prepares redacted `openclaw_cliq_trusted_reply_evidence` JSON, and runs `ops/scripts/openclaw_cliq_trusted_reply_evidence.sh`; the checker reports `trusted_reply_recorded` only when the route, callback, trusted Mention hash facts, agent/model, one-turn, one-reply, duplicate/dead-letter, and redaction facts all pass. |
+| Trusted reply evidence bundle | `ops/scripts/openclaw_cliq_trusted_reply_evidence_bundle.sh` auto-runs offline route preflight when no route report is supplied, hashes live raw ids when needed, prepares redacted `openclaw_cliq_trusted_reply_evidence` JSON, and runs `ops/scripts/openclaw_cliq_trusted_reply_evidence.sh`; the checker reports `trusted_reply_recorded` only when the route, callback, trusted Mention hash facts, agent/model, one-turn, one-reply, duplicate/dead-letter, and redaction facts all pass. If route preflight fails with blockers such as `agent_binding_mismatch`, the bundle exits non-zero with route JSON only and does not create evidence/check reports. |
 
 ## Remaining deployment gate
 
@@ -105,7 +105,8 @@ Trusted agent reply:
    To use an already-reviewed route report, set `ZOHO_CLIQ_ROUTE_REPORT_FILE`.
    If it is omitted, the bundle runs `ZOHO_CLIQ_ROUTE_BINDING_ONLY=1` internally
    and writes `openclaw_cliq_route_preflight_<run-id>.json` under the report
-   directory.
+   directory. If this route preflight fails, keep only the route JSON, fix the
+   OpenClaw binding, and rerun before collecting trusted reply evidence.
 
    If raw ids must be transformed separately, hash them first with
    `ops/scripts/openclaw_cliq_hash_ref.sh` and pass the resulting

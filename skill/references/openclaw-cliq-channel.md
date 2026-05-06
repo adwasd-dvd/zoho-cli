@@ -164,6 +164,9 @@ Native diagnostic behavior:
   are available; it auto-runs offline route preflight when
   `ZOHO_CLIQ_ROUTE_REPORT_FILE` is absent, accepts raw ids or the three
   `sha256:` references, prepares the redacted evidence, and runs the checker.
+  If the auto-route preflight fails with blockers such as
+  `agent_binding_mismatch`, treat the route JSON as the only valid output; the
+  bundle must not create trusted reply evidence/check reports.
   Use `ops/scripts/openclaw_cliq_hash_ref.sh` when hashing ids as a separate
   step; do not paste raw ids into evidence files.
 - Do not include webhook secrets, token passwords, webhook signatures, raw

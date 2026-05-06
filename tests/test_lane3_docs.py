@@ -240,6 +240,8 @@ def test_native_cliq_channel_ai_troubleshooting_contract_present() -> None:
         "checkedAt",
         "expected_agent_missing",
         "agent_binding_mismatch",
+        "route JSON only",
+        "does not create trusted reply evidence/check reports",
         "local config path",
     ]:
         assert marker in combined

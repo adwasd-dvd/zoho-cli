@@ -99,7 +99,10 @@ Use `ops/scripts/openclaw_cliq_trusted_reply_evidence_bundle.sh` with
 expected agent/model and either raw ids or the three `sha256:` references to
 route-preflight, hash, prepare, and check the artifact. Set
 `ZOHO_CLIQ_ROUTE_REPORT_FILE` only when reusing an already-reviewed route
-report; otherwise the bundle writes one under its report directory. Use
+report; otherwise the bundle writes one under its report directory. If route
+preflight fails with blockers such as `agent_binding_mismatch`, the bundle
+emits route JSON only and does not create trusted reply evidence/check reports.
+Use
 `ops/scripts/openclaw_cliq_hash_ref.sh` only when hashing live raw ids as a
 separate step; do not paste raw ids into evidence files.
 

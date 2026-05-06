@@ -245,7 +245,9 @@ reply: provide `ZOHO_CLIQ_ROUTE_REPORT_FILE`,
 and does not echo raw ids. If `ZOHO_CLIQ_ROUTE_REPORT_FILE` is omitted, the
 bundle runs the offline route preflight itself and writes route/evidence/check
 reports under `ZOHO_CLIQ_TRUSTED_REPLY_REPORT_DIR` or
-`tests/auto_pilot/reports`.
+`tests/auto_pilot/reports`. If route preflight fails with blockers such as
+`agent_binding_mismatch`, the bundle exits non-zero with route JSON only and
+does not create trusted reply evidence/check reports.
 
 ## Setup states
 

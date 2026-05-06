@@ -62,7 +62,9 @@ Use this skill as the default operating contract for an OpenClaw agent acting li
   `ZOHO_CLIQ_TRUSTED_MESSAGE_ID`, `ZOHO_CLIQ_DELIVERY_ID`) or the three
   `*_HASH` variables. It auto-runs route preflight when
   `ZOHO_CLIQ_ROUTE_REPORT_FILE` is absent, then hashes, prepares, and checks
-  evidence in one pass.
+  evidence in one pass. If the auto-route preflight fails with blockers such as
+  `agent_binding_mismatch`, the bundle exits non-zero with route JSON only and
+  must not create trusted reply evidence/check reports.
 - Use `ops/scripts/openclaw_cliq_hash_ref.sh` to hash live raw Cliq ids through
   stdin before setting those `*_HASH` variables; the helper prints only the
   `sha256:` reference and does not echo raw input.

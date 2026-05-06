@@ -178,7 +178,10 @@ Native diagnostic behavior:
   machine-readable next-action contract; use `reportFiles` and `reportsReady`
   for artifact handoff without embedding local paths. Plan redaction must keep
   `rawIdsStored`, `hashValuesStored`, `localPathsStored`, and `secretsStored`
-  false.
+  false. Plan `collectionGuide` must preserve the operator boundary:
+  `sendExactlyOneTrustedMention`, collect only `trustedSenderId`,
+  `trustedMessageId`, and `deliveryId`, hash raw ids before evidence, and avoid
+  `rawWebhookPayload`, `rawMessageBody`, `rawCliqReplyBody`, and `secrets`.
   Use `ops/scripts/openclaw_cliq_hash_ref.sh` when hashing ids as a separate
   step; do not paste raw ids into evidence files.
 - Do not include webhook secrets, token passwords, webhook signatures, raw

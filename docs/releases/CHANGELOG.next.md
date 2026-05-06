@@ -75,6 +75,7 @@
 - Added `nextAction` and `readyForFinalBundle` to the plan-only trusted reply checklist so agents can branch directly between collecting live delivery facts and running the final trusted reply bundle.
 - Added `reportFiles` and `reportsReady` to the plan-only trusted reply checklist so agents can archive route/plan report filenames without embedding local config or workspace paths.
 - Added an explicit plan-only `redaction` contract so trusted reply plan reports declare that raw ids, hash values, local paths, and secrets are not stored.
+- Added a plan-only `collectionGuide` contract so agents know to send exactly one trusted Mention, collect only `trustedSenderId`, `trustedMessageId`, and `deliveryId`, hash raw ids before evidence, and exclude raw webhook/message/reply bodies and secrets.
 
 ### Architecture / modularization (2026-05-04T18:19:47Z)
 - Started `cliq-210` post-RC modularization by extracting the `zoho cliq status` and `zoho cliq capabilities` command bodies into `zoho_cli/commands/cliq_readiness.py`, leaving `zoho_cli/cli.py` with runtime dependency injection plus existing Typer registration only. Command names, help text, and JSON output are unchanged.

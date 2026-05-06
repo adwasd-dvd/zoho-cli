@@ -255,8 +255,13 @@ been captured. The plan is written to `ZOHO_CLIQ_TRUSTED_REPLY_PLAN_FILE` or
 `openclaw_cliq_trusted_reply_plan_<run-id>.json` under the report directory and
 includes `nextAction`, `readyForFinalBundle`, `missingFacts`, and `readyFacts`
 for machine-readable handoff, plus `reportFiles` and `reportsReady` for
-artifact handoff by filename. Its `redaction` object must keep raw ids, hash
-values, local paths, and secrets out of the plan.
+artifact handoff by filename. Its `collectionGuide` tells agents to enforce
+`sendExactlyOneTrustedMention`, read `requiredLiveFacts`, collect only
+`trustedSenderId`, `trustedMessageId`, and `deliveryId`, hash raw ids before
+evidence, and honor `forbiddenEvidence` by keeping `rawWebhookPayload`,
+`rawMessageBody`, `rawCliqReplyBody`, and `secrets` out of the artifact. Its
+`redaction` object must keep raw ids, hash values, local
+paths, and secrets out of the plan.
 
 ## Setup states
 

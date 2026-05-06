@@ -1291,6 +1291,22 @@ def test_openclaw_cliq_trusted_reply_bundle_plan_only_lists_missing_live_facts(
         "localPathsStored": False,
         "secretsStored": False,
     }
+    assert payload["collectionGuide"] == {
+        "sendExactlyOneTrustedMention": True,
+        "requiredLiveFacts": [
+            "trustedSenderId",
+            "trustedMessageId",
+            "deliveryId",
+        ],
+        "forbiddenEvidence": [
+            "rawWebhookPayload",
+            "rawMessageBody",
+            "rawCliqReplyBody",
+            "secrets",
+        ],
+        "hashRawIdsBeforeEvidence": True,
+        "successStatus": "trusted_reply_recorded",
+    }
     assert str(reports_dir) not in result.stdout
     assert str(config_path) not in result.stdout
     assert payload["acceptedFactStates"] == ["hash", "raw"]

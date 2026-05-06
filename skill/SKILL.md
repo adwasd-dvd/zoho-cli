@@ -75,7 +75,10 @@ Use this skill as the default operating contract for an OpenClaw agent acting li
   branch on `nextAction` / `readyForFinalBundle` and parse `missingFacts` /
   `readyFacts` instead of scraping prose. Use `reportFiles` and `reportsReady`
   to identify archived evidence by filename without relying on local paths, and
-  require `redaction.rawIdsStored=false`, `redaction.hashValuesStored=false`,
+  parse `collectionGuide` to keep the live step to exactly one trusted Mention,
+  only `trustedSenderId` / `trustedMessageId` / `deliveryId`, and no
+  `rawWebhookPayload`, `rawMessageBody`, `rawCliqReplyBody`, or `secrets`.
+  Require `redaction.rawIdsStored=false`, `redaction.hashValuesStored=false`,
   `redaction.localPathsStored=false`, and `redaction.secretsStored=false`.
 - Use `ops/scripts/openclaw_cliq_hash_ref.sh` to hash live raw Cliq ids through
   stdin before setting those `*_HASH` variables; the helper prints only the

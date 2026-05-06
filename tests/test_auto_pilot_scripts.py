@@ -1275,11 +1275,13 @@ def test_openclaw_cliq_trusted_reply_bundle_plan_only_lists_missing_live_facts(
     )
 
     route_report = reports_dir / "openclaw_cliq_route_preflight_unit-bundle-plan.json"
+    plan_report = reports_dir / "openclaw_cliq_trusted_reply_plan_unit-bundle-plan.json"
     evidence_report = reports_dir / "openclaw_cliq_trusted_reply_unit-bundle-plan.json"
     check_report = (
         reports_dir / "openclaw_cliq_trusted_reply_check_unit-bundle-plan.json"
     )
     assert json.loads(route_report.read_text())["status"] == "ok"
+    assert json.loads(plan_report.read_text()) == payload
     assert not evidence_report.exists()
     assert not check_report.exists()
 

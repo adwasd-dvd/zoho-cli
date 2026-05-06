@@ -13,11 +13,21 @@ REPORT_DIR="${ZOHO_CLIQ_TRUSTED_REPLY_REPORT_DIR:-"$ROOT/tests/auto_pilot/report
 ROUTE_REPORT_FILE="${ZOHO_CLIQ_ROUTE_REPORT_FILE:-"$REPORT_DIR/openclaw_cliq_route_preflight_${RUN_ID}.json"}"
 EVIDENCE_FILE="${ZOHO_CLIQ_TRUSTED_REPLY_EVIDENCE_FILE:-"$REPORT_DIR/openclaw_cliq_trusted_reply_${RUN_ID}.json"}"
 CHECK_REPORT_FILE="${ZOHO_CLIQ_TRUSTED_REPLY_REPORT_FILE:-"$REPORT_DIR/openclaw_cliq_trusted_reply_check_${RUN_ID}.json"}"
+PLAN_REPORT_FILE="${ZOHO_CLIQ_TRUSTED_REPLY_PLAN_FILE:-"$REPORT_DIR/openclaw_cliq_trusted_reply_plan_${RUN_ID}.json"}"
 PLAN_ONLY="${ZOHO_CLIQ_TRUSTED_REPLY_PLAN_ONLY:-}"
 
 emit_error() {
   local error="$1"
   printf '{"schemaVersion":1,"kind":"openclaw_cliq_trusted_reply_evidence_bundle","runId":"%s","checkedAt":"%s","status":"error","error":"%s"}\n' "$RUN_ID" "$CHECKED_AT" "$error"
+}
+
+emit_plan() {
+  local payload="$1"
+  printf '%s\n' "$payload"
+  if [[ -n "$PLAN_REPORT_FILE" ]]; then
+    mkdir -p "$(dirname "$PLAN_REPORT_FILE")"
+    printf '%s\n' "$payload" > "$PLAN_REPORT_FILE"
+  fi
 }
 
 hash_raw_ref() {
@@ -116,16 +126,19 @@ if [[ "$PLAN_ONLY" == "1" || "$PLAN_ONLY" == "true" ]]; then
   if [[ "$SENDER_FACT" == "missing" || "$MESSAGE_FACT" == "missing" || "$DELIVERY_FACT" == "missing" ]]; then
     PLAN_STATUS="awaiting_live_delivery_facts"
   fi
-  printf '{'
-  printf '"schemaVersion":1,'
-  printf '"kind":"openclaw_cliq_trusted_reply_evidence_bundle_plan",'
-  printf '"runId":"%s","checkedAt":"%s","status":"%s",' "$RUN_ID" "$CHECKED_AT" "$PLAN_STATUS"
-  printf '"routeReportReady":true,'
-  printf '"facts":{"trustedSenderId":"%s","trustedMessageId":"%s","deliveryId":"%s"},' "$SENDER_FACT" "$MESSAGE_FACT" "$DELIVERY_FACT"
-  printf '"acceptedFactStates":["hash","raw"],'
-  printf '"requiredEnv":["ZOHO_CLIQ_TRUSTED_SENDER_ID_HASH or ZOHO_CLIQ_TRUSTED_SENDER_ID","ZOHO_CLIQ_TRUSTED_MESSAGE_ID_HASH or ZOHO_CLIQ_TRUSTED_MESSAGE_ID","ZOHO_CLIQ_DELIVERY_ID_HASH or ZOHO_CLIQ_DELIVERY_ID"],'
-  printf '"nextCommand":"ops/scripts/openclaw_cliq_trusted_reply_evidence_bundle.sh"'
-  printf '}\n'
+  PLAN_PAYLOAD="$(
+    printf '{'
+    printf '"schemaVersion":1,'
+    printf '"kind":"openclaw_cliq_trusted_reply_evidence_bundle_plan",'
+    printf '"runId":"%s","checkedAt":"%s","status":"%s",' "$RUN_ID" "$CHECKED_AT" "$PLAN_STATUS"
+    printf '"routeReportReady":true,'
+    printf '"facts":{"trustedSenderId":"%s","trustedMessageId":"%s","deliveryId":"%s"},' "$SENDER_FACT" "$MESSAGE_FACT" "$DELIVERY_FACT"
+    printf '"acceptedFactStates":["hash","raw"],'
+    printf '"requiredEnv":["ZOHO_CLIQ_TRUSTED_SENDER_ID_HASH or ZOHO_CLIQ_TRUSTED_SENDER_ID","ZOHO_CLIQ_TRUSTED_MESSAGE_ID_HASH or ZOHO_CLIQ_TRUSTED_MESSAGE_ID","ZOHO_CLIQ_DELIVERY_ID_HASH or ZOHO_CLIQ_DELIVERY_ID"],'
+    printf '"nextCommand":"ops/scripts/openclaw_cliq_trusted_reply_evidence_bundle.sh"'
+    printf '}'
+  )"
+  emit_plan "$PLAN_PAYLOAD"
   exit 0
 fi
 

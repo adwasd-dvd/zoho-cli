@@ -1,10 +1,19 @@
-last_run_at: "2026-05-06T01:59:52Z"
+last_run_at: "2026-05-06T02:35:53Z"
 last_result: passing
-current_focus: cliq-channel-433-trusted-reply-plan-only-preflight
+current_focus: cliq-channel-434-trusted-reply-plan-report-persistence
 suites:
   unit:
     status: passing
     notes:
+      - "cliq-channel-434 trusted reply plan report persistence completed at 2026-05-06T02:35:53Z"
+      - "persisted plan-only bundle output to `ZOHO_CLIQ_TRUSTED_REPLY_PLAN_FILE` or `openclaw_cliq_trusted_reply_plan_<run-id>.json`, and covered that the plan report matches stdout while evidence/check reports remain absent"
+      - "./.venv/bin/python -m pytest -q tests/test_auto_pilot_scripts.py -k 'openclaw_cliq_trusted_reply_bundle or openclaw_cliq_hash_ref or openclaw_cliq_trusted_reply' -> 14 passed, 11 deselected in 0.78s"
+      - "./.venv/bin/python -m pytest -q tests/test_auto_pilot_scripts.py -k 'openclaw_cliq' tests/test_lane3_docs.py tests/test_markdown_update.py -> 19 passed, 18 deselected in 1.31s"
+      - "./.venv/bin/python -m pytest -q tests/test_lane3_docs.py tests/test_markdown_update.py -> 12 passed in 0.03s"
+      - "bash -n ops/scripts/openclaw_cliq_trusted_reply_evidence_bundle.sh ops/scripts/openclaw_cliq_live_smoke.sh ops/scripts/openclaw_cliq_hash_ref.sh ops/scripts/openclaw_cliq_trusted_reply_evidence_prepare.sh ops/scripts/openclaw_cliq_trusted_reply_evidence.sh -> passed"
+      - "./.venv/bin/ruff format --check tests/test_auto_pilot_scripts.py tests/test_lane3_docs.py -> 2 files already formatted"
+      - "ruby YAML parse for project/module_status/test_status -> YAML_PARSE_OK"
+      - "git diff --check -> passed"
       - "cliq-channel-433 trusted reply plan-only bundle preflight completed at 2026-05-06T01:59:52Z"
       - "added `ZOHO_CLIQ_TRUSTED_REPLY_PLAN_ONLY=1` so the bundle can run route preflight and emit `openclaw_cliq_trusted_reply_evidence_bundle_plan` with `awaiting_live_delivery_facts` before live sender/message/reply ids exist, without writing evidence/check reports"
       - "./.venv/bin/python -m pytest -q tests/test_auto_pilot_scripts.py -k 'openclaw_cliq_trusted_reply_bundle or openclaw_cliq_hash_ref or openclaw_cliq_trusted_reply' -> 14 passed, 11 deselected in 0.74s"

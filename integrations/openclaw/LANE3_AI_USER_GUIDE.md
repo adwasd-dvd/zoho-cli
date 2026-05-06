@@ -121,8 +121,11 @@ After sync, ensure the AI user follows:
     `rawWebhookPayload`, `rawMessageBody`, `rawCliqReplyBody`, and `secrets`
     forbidden; use `acceptedFactSources` and
     `preferredFactSource=ZOHO_CLIQ_TRUSTED_REPLY_FACTS_FILE` when a hash facts
-    file is available; require plan `redaction` booleans to keep raw ids, hash
-    values, local paths, and secrets out of the report
+    file is available; follow `factPrepareCommand`,
+    `collectionGuide.factsFileKind`, and
+    `collectionGuide.factsPrepareReadyStatus` for the facts-file handoff;
+    require plan `redaction` booleans to keep raw ids, hash values, local
+    paths, and secrets out of the report
 - native channel RC pack preflight:
   - run `ops/scripts/openclaw_cliq_rc_pack.sh` from the repo root before cutting a local/operator or npm/GitHub RC artifact
   - keep generated tarballs under ignored `.tmp/openclaw-cliq-rc-pack`

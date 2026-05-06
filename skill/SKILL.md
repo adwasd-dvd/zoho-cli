@@ -88,6 +88,9 @@ Use this skill as the default operating contract for an OpenClaw agent acting li
   parse `collectionGuide` to keep the live step to exactly one trusted Mention,
   only `trustedSenderId` / `trustedMessageId` / `deliveryId`, and no
   `rawWebhookPayload`, `rawMessageBody`, `rawCliqReplyBody`, or `secrets`.
+  Use `factPrepareCommand`, `collectionGuide.factsFileKind`, and
+  `collectionGuide.factsPrepareReadyStatus` instead of guessing how to prepare
+  the hash-only facts file.
   Prefer `collectionGuide.preferredFactSource=ZOHO_CLIQ_TRUSTED_REPLY_FACTS_FILE`
   and `acceptedFactSources` containing `hashFactsFile` for handoff between
   fact capture and final evidence checking.

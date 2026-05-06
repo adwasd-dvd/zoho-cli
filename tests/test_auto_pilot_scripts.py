@@ -1454,8 +1454,14 @@ def test_openclaw_cliq_trusted_reply_bundle_plan_only_lists_missing_live_facts(
         ],
         "hashRawIdsBeforeEvidence": True,
         "preferredFactSource": "ZOHO_CLIQ_TRUSTED_REPLY_FACTS_FILE",
+        "factsFileKind": "openclaw_cliq_trusted_reply_facts",
+        "factsPrepareReadyStatus": "facts_file_ready",
         "successStatus": "trusted_reply_recorded",
     }
+    assert (
+        payload["factPrepareCommand"]
+        == "ops/scripts/openclaw_cliq_trusted_reply_facts_prepare.sh"
+    )
     assert payload["acceptedFactSources"] == ["env", "hashFactsFile"]
     assert str(reports_dir) not in result.stdout
     assert str(config_path) not in result.stdout

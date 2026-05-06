@@ -182,6 +182,8 @@ Native diagnostic behavior:
   `sendExactlyOneTrustedMention`, collect only `trustedSenderId`,
   `trustedMessageId`, and `deliveryId`, hash raw ids before evidence, and avoid
   `rawWebhookPayload`, `rawMessageBody`, `rawCliqReplyBody`, and `secrets`.
+  Use plan `factPrepareCommand`, `collectionGuide.factsFileKind`, and
+  `collectionGuide.factsPrepareReadyStatus` to drive the hash-only facts handoff.
   Use `ops/scripts/openclaw_cliq_hash_ref.sh` when hashing ids as a separate
   step; do not paste raw ids into evidence files. For safer handoff, set
   `ZOHO_CLIQ_TRUSTED_REPLY_FACTS_FILE` to a hash-only

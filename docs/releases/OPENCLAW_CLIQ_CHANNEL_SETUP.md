@@ -258,12 +258,14 @@ for machine-readable handoff, plus `reportFiles` and `reportsReady` for
 artifact handoff by filename. Its `collectionGuide` tells agents to enforce
 `sendExactlyOneTrustedMention`, read `requiredLiveFacts`, collect only
 `trustedSenderId`, `trustedMessageId`, and `deliveryId`, hash raw ids before
-evidence, and honor `forbiddenEvidence` by keeping `rawWebhookPayload`,
+evidence, use `factPrepareCommand`, and honor `forbiddenEvidence` by keeping `rawWebhookPayload`,
 `rawMessageBody`, `rawCliqReplyBody`, and `secrets` out of the artifact. Its
 `acceptedFactSources` includes `env` and `hashFactsFile`; prefer
 `ZOHO_CLIQ_TRUSTED_REPLY_FACTS_FILE` for the final run when a hash-only local
-facts JSON is available. The facts file must use
-`kind=openclaw_cliq_trusted_reply_facts` and contain only
+facts JSON is available. The plan also declares
+`collectionGuide.factsFileKind=openclaw_cliq_trusted_reply_facts` and
+`collectionGuide.factsPrepareReadyStatus=facts_file_ready`. The facts file must
+use `kind=openclaw_cliq_trusted_reply_facts` and contain only
 `trustedSenderIdHash`, `trustedMessageIdHash`, and `deliveryIdHash` as
 `sha256:` references; the bundle rejects raw fields such as `trustedSenderId`,
 `trustedMessageId`, or `deliveryId` with `facts_file_raw_ids_present`, and

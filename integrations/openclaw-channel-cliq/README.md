@@ -237,8 +237,11 @@ dispatch, `mark-read`, and `done`; dispatch failures attempt `failed`. The turn
 ledger blocks duplicate completed events, coalesces concurrent
 same-conversation bursts, and dead-letters failed turns after bounded attempts.
 `src/native-dispatch.ts` records session and last-route metadata, then delivers
-agent replies through the Cliq outbound adapter. `src/status.ts` exposes status,
-capability, and routing summaries for OpenClaw/operator diagnostics.
+agent replies through the Cliq outbound adapter. It sets OpenClaw
+`Provider`/`Surface` to the channel id `cliq` for accepted turns and keeps the
+webhook/polling source in supplemental context, so final answers are not
+misclassified as cross-channel route-reply traffic. `src/status.ts` exposes
+status, capability, and routing summaries for OpenClaw/operator diagnostics.
 `src/observability.ts` and `src/privacy.ts` keep support bundles redacted:
 message bodies, raw webhook payloads, token passwords, webhook secrets,
 authorization headers, and raw signatures are excluded. The Lane 3 docs now map

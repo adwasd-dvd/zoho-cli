@@ -1735,6 +1735,8 @@ function createFakeRuntime() {
           SenderId: params.sender.id,
           SenderName: params.sender.name ?? params.sender.displayLabel,
           Timestamp: params.timestamp,
+          Provider: params.provider,
+          Surface: params.surface,
           WasMentioned: params.access?.mentions?.wasMentioned,
           OriginatingChannel: params.channel,
           OriginatingTo: params.reply.originatingTo,
@@ -1832,6 +1834,8 @@ assert.deepEqual(nativeResults[0].messageIds, ["OUT-1"]);
 assert.equal(fake.sent[0].to, "channel:C123");
 assert.equal(fake.sent[0].replyToId, "M1");
 assert.equal(fake.sent[0].threadId, "T9");
+assert.equal(fake.records[0].ctx.Provider, "cliq");
+assert.equal(fake.records[0].ctx.Surface, "cliq");
 assert.equal(fake.records[0].updateLastRoute.channel, "cliq");
 assert.equal(fake.records[0].updateLastRoute.to, "channel:C123");
 assert.equal(fake.records[0].updateLastRoute.threadId, "T9");

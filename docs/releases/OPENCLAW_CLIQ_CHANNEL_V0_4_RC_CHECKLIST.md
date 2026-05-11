@@ -12,11 +12,11 @@ accepted handler families against native webhook processing, and
 SDK contract source of truth:
 `docs/architecture/OPENCLAW_CLIQ_CHANNEL_SDK_CONTRACT.md`.
 
-Updated: `2026-05-11T18:29:53Z`.
+Updated: `2026-05-11T21:48:15Z`.
 
 ## Decision
 
-Status: **RC package ready, public callback verified, agent reply pending**.
+Status: **RC package ready, public callback and trusted reply verified**.
 
 The native channel code, package metadata, fake/runtime tests, local gateway
 webhook checks, Zoho auth/capability/polling smoke, and OpenClaw host
@@ -51,12 +51,15 @@ delivers exactly one Cliq reply. The live environment currently binds
 | Package linked baseline | Temp-HOME `openclaw plugins install ./integrations/openclaw-channel-cliq --link`, `plugins inspect zoho-cliq --json`, and `plugins doctor` passed on global `OpenClaw 2026.5.3-1`. |
 | Latest stable host | Temp-HOME `npx -y openclaw@2026.5.4` linked install/inspect/doctor passed. |
 | Beta early warning | Temp-HOME `npx -y openclaw@2026.5.4-beta.3` linked install/inspect/doctor passed. |
-| Local package artifact preflight | `NPM_CONFIG_CACHE=/private/tmp/zoho-cli-npm-cache OPENCLAW_CLIQ_PACK_RUN_ID=20260505T142129Z-rc1 ops/scripts/openclaw_cliq_rc_pack.sh` passed at `2026-05-05T14:22:51Z`; the script reran typecheck/build and then packed from the plugin directory into `.tmp/openclaw-cliq-rc-pack`. Tarball `adwasd-openclaw-zoho-cliq-0.4.0-rc.1.tgz`, size `93879`, unpacked size `466025`, entry count `67`, shasum `87b553ad5bbec1c920a05b342630a57cea58b96b`, integrity `sha512-PVaBZFB0+m2sll7dl+c47iPnb6+KgRcCNkiqvFJzv8qtuHB8Lb153/27rqC1izmmybGP1CtrqMH4ZVrBkvBgBg==`. Summary report path pattern: `tests/auto_pilot/reports/openclaw_cliq_rc_pack_summary_<run-id>.json`. |
+| Local package artifact preflight | `NPM_CONFIG_CACHE=/private/tmp/zoho-cli-npm-cache OPENCLAW_CLIQ_PACK_RUN_ID=20260511T214240Z-live-reply ops/scripts/openclaw_cliq_rc_pack.sh` passed at `2026-05-11T21:47:10Z`; the script reran typecheck/build and then packed from the plugin directory into `.tmp/openclaw-cliq-rc-pack`. Tarball `adwasd-openclaw-zoho-cliq-0.4.0-rc.1.tgz`, size `95394`, unpacked size `470591`, entry count `67`, shasum `7717aa539f3ccf8d1ee1be560283ea30fa6a87b6`, integrity `sha512-2gp4TAicx7Ax07jBI2HNl9WFlIrVaqMh082mLAN5NVxF3p3BL7AWEgQDJfs+TOzwU2zLiSNdEu79BEFNZGsNEw==`. Summary report path pattern: `tests/auto_pilot/reports/openclaw_cliq_rc_pack_summary_<run-id>.json`. |
 | Public callback auth/reachability | Cloudflare Published application route `https://cliq.hpyio.com/webhooks/cliq` is reachable; `ops/scripts/openclaw_cliq_public_callback_smoke.sh` passed with `status=public_callback_verified`, missing-secret `401`, authenticated unsupported-handler `200`, and no stored webhook bodies, response bodies, or secrets. |
 | Live route binding | `openclaw config validate` passes with `cliq/default -> zoho-employee-test`; both `main` and `zoho-employee-test` are configured for `openai-codex/gpt-5.3-codex`. |
+| Native dispatch identity | Accepted webhook/polling turns set OpenClaw `Provider`/`Surface` to `cliq` so normal final answers deliver through the Cliq outbound adapter; handler source facts stay in supplemental context. |
+| Trusted live Bot reply | A controlled trusted Cliq Bot Mention through `https://cliq.hpyio.com/webhooks/cliq` routed to `zoho-employee-test`, used `openai-codex/gpt-5.3-codex`, delivered exactly one Cliq reply (`deliveryCount=1`), and the redacted bundle/check run `20260511T214135Z-real-mention` reported `trusted_reply_recorded`. |
 | Trusted reply evidence bundle | `ops/scripts/openclaw_cliq_trusted_reply_evidence_bundle.sh` auto-runs offline route preflight when no route report is supplied, hashes live raw ids when needed, prepares redacted `openclaw_cliq_trusted_reply_evidence` JSON, and runs `ops/scripts/openclaw_cliq_trusted_reply_evidence.sh`; the checker reports `trusted_reply_recorded` only when the route, callback, trusted Mention hash facts, agent/model, one-turn, one-reply, duplicate/dead-letter, and redaction facts all pass. `ZOHO_CLIQ_TRUSTED_REPLY_PLAN_ONLY=1` emits `openclaw_cliq_trusted_reply_evidence_bundle_plan` and writes a redacted plan report with `nextAction`, `readyForFinalBundle`, `missingFacts`, `readyFacts`, `reportFiles`, `reportsReady`, `collectionGuide`, `factPrepareCommand`, `acceptedFactSources`, and `redaction` so agents can verify the route, missing live facts, archived filenames, and the exact fact-collection boundary before asking for a fresh Bot Mention. The final bundle can read a hash-only `ZOHO_CLIQ_TRUSTED_REPLY_FACTS_FILE` with `kind=openclaw_cliq_trusted_reply_facts`, or auto-run facts prepare from an id-only `ZOHO_CLIQ_TRUSTED_REPLY_RAW_FACTS_FILE` when no hash facts file is supplied; it rejects raw id fields in hash facts files with `facts_file_raw_ids_present`, body fields in raw facts files with `raw_facts_file_forbidden_body_present`, and secret markers. If route preflight fails with blockers such as `agent_binding_mismatch`, the bundle exits non-zero with route JSON only and does not create evidence/check reports. |
+| Bot API outbound sanity | `zoho cliq post-to-bot oldsix --network happydistrouklimited --text <redacted smoke>` returned `status=ok` for bot `oldsix`; this is supplemental CLI-to-Bot API evidence and does not replace the trusted inbound Mention-to-agent evidence. |
 
-## Remaining deployment gate
+## Trusted Reply Live Evidence
 
 Trusted agent reply:
 
@@ -130,9 +133,11 @@ Trusted agent reply:
    `collectionGuide.rawFactsFileKind` to create the hash-only facts handoff
    before the final bundle.
    Latest operator route state: the public callback is verified at
-   `https://cliq.hpyio.com/webhooks/cliq`; the latest plan-only bundle returned
-   `routeReportReady=true`, `nextAction=collect_live_delivery_facts`, and
-   missing facts `trustedSenderId`, `trustedMessageId`, and `deliveryId`.
+   `https://cliq.hpyio.com/webhooks/cliq`; after rebuilding/restarting with the
+   `Provider`/`Surface=cliq` dispatch identity fix, a fresh controlled Mention
+   routed to `zoho-employee-test`, delivered exactly one Cliq reply
+   (`deliveryCount=1`), and the final bundle run
+   `20260511T214135Z-real-mention` reported `trusted_reply_recorded`.
 7. Send a controlled trusted mention from Cliq and verify exactly one native
    OpenClaw turn routes to `zoho-employee-test`, uses a Codex model, and emits
    exactly one Cliq reply.
@@ -215,7 +220,8 @@ cooldown, and rerun without bursty refresh loops.
    `plugins inspect`, `plugins doctor`, `channels status`, and `channels
    capabilities`.
 7. Publish release notes that explicitly list trusted agent reply evidence as
-   the remaining deployment-dependent gate until it has been completed.
+   completed for the operator Cloudflare route; durable production
+   tunnel/gateway selection remains an operations decision.
 
 ## Non-goals
 

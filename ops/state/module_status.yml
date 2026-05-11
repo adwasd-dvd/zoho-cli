@@ -20,12 +20,10 @@ cliq:
 openclaw_cliq_channel:
   priority: 3
   status: completed_for_rc
-  phase: route_ready_live_delivery_facts_pending
+  phase: trusted_reply_recorded_rc_ready
   target_release: v0.4.0
-  current_milestone: cliq-channel-450-live-public-callback-verified
-  blockers:
-    - "actual controlled trusted Mention-to-agent reply evidence is pending after Cloudflare public callback verification for `https://cliq.hpyio.com/webhooks/cliq`; `ops/scripts/openclaw_cliq_public_callback_smoke.sh` passed with missing-secret `401`, authenticated unsupported-handler `200`, and redacted `public_callback_verified` evidence"
-    - "actual controlled trusted Mention-to-agent reply evidence is pending for `cliq/default -> zoho-employee-test`; the latest plan-only bundle preflight has `routeReportReady=true`, `nextAction=collect_live_delivery_facts`, missing facts `trustedSenderId`, `trustedMessageId`, and `deliveryId`, plus `collectionGuide` boundaries for exactly one trusted Mention and no raw payload/body/secret evidence; plan JSON now includes `factPrepareCommand`, facts prepare can create hash-only `ZOHO_CLIQ_TRUSTED_REPLY_FACTS_FILE` from env ids or an untracked id-only `ZOHO_CLIQ_TRUSTED_REPLY_RAW_FACTS_FILE`, auto-route bundle/check accepts the hash facts file, raw facts file, or env hash facts, requires `trusted_reply_recorded` with sha256 sender/message/reply references, rejects unchanged templates/raw ids/body fields/placeholder ids/secret markers, stops on route mismatch before writing trusted reply evidence/check reports, and the RC checklist contract is synced to the public-callback-verified / agent-reply-pending state"
+  current_milestone: cliq-channel-452-trusted-reply-recorded
+  blockers: []
 
 crm:
   priority: 4

@@ -259,8 +259,8 @@ export async function dispatchCliqEventToNativeOpenClaw(
   const ctxPayload = runtime.turn.buildContext({
     channel: CLIQ_CHANNEL_ID,
     accountId: route.accountId,
-    provider: "Zoho Cliq",
-    surface: options.source ? `cliq:${options.source}` : "cliq",
+    provider: CLIQ_CHANNEL_ID,
+    surface: CLIQ_CHANNEL_ID,
     messageId: options.event.messageId,
     timestamp,
     from: senderLabel,

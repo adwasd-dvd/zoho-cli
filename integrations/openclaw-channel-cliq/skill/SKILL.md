@@ -38,6 +38,9 @@ Use this skill when operating through the native OpenClaw Zoho Cliq channel.
   allows a narrower implicit mention policy.
 - Keep target/session routing on OpenClaw native message surfaces; use
   account/network/chat/thread-aware targets and do not add parallel send tools.
+- Native dispatch should keep OpenClaw `Provider`/`Surface` as `cliq`; carry
+  webhook/polling handler source in supplemental context so final replies stay
+  on the Cliq outbound adapter.
 - Mention-gated command bypass requires an authorized control command, not just
   slash-like text.
 - Keep `dmPolicy=pairing`, `groupPolicy=allowlist`, `requireMention=true`, and
@@ -52,9 +55,11 @@ Use this skill when operating through the native OpenClaw Zoho Cliq channel.
   adapter/setup metadata before changing Zoho CLI command contracts.
 - For v0.4 RC decisions, follow
   `docs/releases/OPENCLAW_CLIQ_CHANNEL_V0_4_RC_CHECKLIST.md` and keep
-  production rollout blocked until public Bot callback reachability and one
-  controlled trusted agent reply are verified with
-  `ops/scripts/openclaw_cliq_trusted_reply_evidence_bundle.sh`.
+  production rollout blocked until the target environment has public Bot
+  callback reachability and one controlled trusted agent reply verified with
+  `ops/scripts/openclaw_cliq_trusted_reply_evidence_bundle.sh`. The current
+  operator Cloudflare route has `trusted_reply_recorded` evidence for the
+  `zoho-employee-test` Codex agent.
 - To verify public Bot callback reachability without binding to a specific
   tunnel provider, set `ZOHO_CLIQ_PUBLIC_WEBHOOK_URL` and run
   `ops/scripts/openclaw_cliq_public_callback_smoke.sh`; require

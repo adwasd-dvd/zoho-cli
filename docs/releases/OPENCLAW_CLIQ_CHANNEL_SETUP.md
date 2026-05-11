@@ -39,10 +39,13 @@ This runbook is for the native OpenClaw `cliq` channel package in
   bodies.
 - Production/bidirectional agent replies now have native dispatch plus redacted
   observability support. The fake/live gate harness is in place; public Bot
-  callback auth/reachability has been verified through an operator tunnel, and
-  final rollout evidence now requires one controlled trusted Mention-to-agent
-  reply validated by `ops/scripts/openclaw_cliq_trusted_reply_evidence.sh` plus
-  a durable tunnel/gateway decision.
+  callback auth/reachability and one controlled trusted Mention-to-agent reply
+  have been verified through the operator Cloudflare route, with durable
+  tunnel/gateway selection remaining as the production operations decision.
+- Accepted webhook and polling turns keep OpenClaw `Provider`/`Surface` set to
+  the native channel id `cliq`; handler source details stay in supplemental
+  context. This keeps normal final answers on the Cliq outbound adapter instead
+  of being treated as cross-channel route-reply traffic.
 
 ## Requirements
 
@@ -409,6 +412,7 @@ Diagnostic blockers that are not setup-state names:
 | --- | --- | --- |
 | `webhook_secret_missing` | No SecretRef/env webhook secret is configured. | Set `webhookSecret` to `ZOHO_CLIQ_WEBHOOK_SECRET`, test a controlled Bot POST, and rotate exposed values. |
 | native dispatch failure / dead-letter | A trusted event reached dispatch but the OpenClaw turn failed or was dead-lettered. | Inspect turn id, dispatch error, and dead-letter metadata before replay; do not retry blindly. |
+| `deliveryCount=0` after a successful assistant answer | The native turn reached the agent but no visible Cliq reply was delivered through the adapter. | Confirm the running plugin build sets `Provider` and `Surface` to `cliq`, rebuild/restart the gateway if needed, then replay one fresh trusted Mention. |
 | `live_verification_pending` | Redacted production diagnostics are ready, but fake plus live verification has not passed yet. | Keep reports redacted and run the verification gate before production rollout. |
 | `token_refresh_rate_limited` | Zoho OAuth refresh is temporarily throttled. | Mark the check `skip_deferred`, wait for cooldown, and avoid bursty probe loops. |
 | repeated `not_supported` / `inactive_appaccount_user` | Zoho-side endpoint availability is blocking a specific live check. | Mark the check `skip_deferred` and continue unrelated local channel work. |

@@ -117,7 +117,7 @@ def test_openclaw_cliq_channel_rc_checklist_has_cut_contract():
     checklist = read("docs/releases/OPENCLAW_CLIQ_CHANNEL_V0_4_RC_CHECKLIST.md")
 
     required = [
-        "RC package ready, public callback verified, agent reply pending",
+        "RC package ready, public callback and trusted reply verified",
         "cliq-channel-418",
         "cliq-channel-419",
         "cliq-channel-420",
@@ -135,7 +135,7 @@ def test_openclaw_cliq_channel_rc_checklist_has_cut_contract():
         "ZOHO_CLIQ_PUBLIC_WEBHOOK_URL",
         "0.4.0-rc.1",
         "adwasd-openclaw-zoho-cliq-0.4.0-rc.1.tgz",
-        "87b553ad5bbec1c920a05b342630a57cea58b96b",
+        "7717aa539f3ccf8d1ee1be560283ea30fa6a87b6",
         "expectedIntegrity",
         "1876 passed in 50.38s",
         "token_refresh_rate_limited",

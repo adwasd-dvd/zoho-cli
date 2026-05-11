@@ -46,6 +46,15 @@ Use this skill as the default operating contract for an OpenClaw agent acting li
   not claim production incident readiness until public Bot callback
   auth/reachability and a controlled trusted agent reply are both verified with
   `ops/scripts/openclaw_cliq_trusted_reply_evidence.sh`.
+- For tunnel/gateway-agnostic public callback verification, set
+  `ZOHO_CLIQ_PUBLIC_WEBHOOK_URL` to the HTTPS `/webhooks/cliq` URL and run
+  `ops/scripts/openclaw_cliq_public_callback_smoke.sh`. Require
+  `kind=openclaw_cliq_public_callback_smoke` and
+  `status=public_callback_verified`; it checks missing-secret `401`,
+  authenticated unsupported-handler `200`, writes
+  `ZOHO_CLIQ_PUBLIC_CALLBACK_REPORT_FILE` when requested, rejects placeholder
+  URLs, reports `public_webhook_url_requires_https` for non-HTTPS public URLs,
+  and stores no webhook bodies, response bodies, or secrets.
 - For native Cliq rollout smoke that must target a specific OpenClaw agent, set
   `ZOHO_CLIQ_EXPECTED_AGENT_ID` and optionally
   `ZOHO_CLIQ_EXPECTED_AGENT_MODEL`; use `ZOHO_CLIQ_ROUTE_BINDING_ONLY=1` for

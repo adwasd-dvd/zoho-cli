@@ -179,19 +179,25 @@ routing diagnostics, `cliq-channel-410` aligns AI-facing troubleshooting, and
 repeatable local RC pack preflight; `cliq-channel-420` adds real Bot Deluge
 handler templates; and `cliq-channel-421` covers those accepted handler families
 in runtime webhook tests; `cliq-channel-422` promotes package metadata to
-`0.4.0-rc.1` and records fresh pack evidence.
+`0.4.0-rc.1` and records fresh pack evidence; `cliq-channel-448` adds
+tunnel-agnostic public callback verification through
+`ops/scripts/openclaw_cliq_public_callback_smoke.sh`.
 Both inbound paths normalize messages into the shared
 inbound event shape, run mention/allowlist/employee policy checks, dedupe by
 account/network/chat/message before optional dispatch, keep status/read failures
 as terminal diagnostics, prevent duplicate/active/dead-lettered turns from
 starting repeated agent work, and report controlled-smoke readiness without
 leaking secrets or message bodies. Public Bot callback verification remains a
-deployment prerequisite when no reachable tunnel or gateway URL is configured.
+deployment prerequisite when no reachable HTTPS tunnel or gateway URL is
+configured; the public callback smoke emits
+`openclaw_cliq_public_callback_smoke` JSON with `public_callback_verified` when
+missing-secret `401` and authenticated unsupported-handler `200` both pass.
 
 Live gate command:
 
 ```bash
 ops/scripts/openclaw_cliq_live_smoke.sh
+ops/scripts/openclaw_cliq_public_callback_smoke.sh
 ops/scripts/openclaw_cliq_rc_pack.sh
 ```
 

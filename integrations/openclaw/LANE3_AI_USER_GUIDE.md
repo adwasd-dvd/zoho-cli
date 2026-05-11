@@ -66,7 +66,7 @@ Current implementation-only delta:
 - `cliq-210` also moved productivity/platform list command bodies (`events`, `reminders`, `meetings`, `databases`) into `zoho_cli/commands/cliq_productivity.py`; AI-user command patterns are unchanged.
 - `cliq-210` also moved platform-extension list command bodies (`widgets`, `map-tickers`, `custom-domains`, `custom-emails`) into `zoho_cli/commands/cliq_platform_extensions.py`; AI-user command patterns are unchanged.
 - `cliq-210` also moved channel/member/chat-control command bodies (`members`, channel lifecycle/member commands, `leave`, `mute`, `unmute`, `pin`, `unpin`, `pinned`) into `zoho_cli/commands/cliq_channel_management.py`; AI-user command patterns are unchanged.
-- v0.4 native OpenClaw Cliq channel now has config/setup/security/session/CLI-adapter/outbound delivery, fixture-backed inbound polling normalization/dedupe, Bot webhook receive/auth/normalize intake at `/webhooks/cliq`, status/read lifecycle handling, turn-ledger loop prevention, native status/capability/routing diagnostics, AI-facing troubleshooting guidance, native dispatch, redacted observability/privacy diagnostics, real Bot Deluge templates in `docs/releases/OPENCLAW_CLIQ_BOT_HANDLER_TEMPLATES.md`, the `ops/scripts/openclaw_cliq_live_smoke.sh` gate, the `ops/scripts/openclaw_cliq_rc_pack.sh` preflight, `ops/scripts/openclaw_cliq_trusted_reply_evidence.sh`, `docs/releases/OPENCLAW_CLIQ_CHANNEL_COMPATIBILITY.md`, and `docs/releases/OPENCLAW_CLIQ_CHANNEL_V0_4_RC_CHECKLIST.md`; public Bot callback verification still requires a reachable tunnel/gateway URL.
+- v0.4 native OpenClaw Cliq channel now has config/setup/security/session/CLI-adapter/outbound delivery, fixture-backed inbound polling normalization/dedupe, Bot webhook receive/auth/normalize intake at `/webhooks/cliq`, status/read lifecycle handling, turn-ledger loop prevention, native status/capability/routing diagnostics, AI-facing troubleshooting guidance, native dispatch, redacted observability/privacy diagnostics, real Bot Deluge templates in `docs/releases/OPENCLAW_CLIQ_BOT_HANDLER_TEMPLATES.md`, the `ops/scripts/openclaw_cliq_live_smoke.sh` gate, tunnel-agnostic public callback verification through `ops/scripts/openclaw_cliq_public_callback_smoke.sh`, the `ops/scripts/openclaw_cliq_rc_pack.sh` preflight, `ops/scripts/openclaw_cliq_trusted_reply_evidence.sh`, `docs/releases/OPENCLAW_CLIQ_CHANNEL_COMPATIBILITY.md`, and `docs/releases/OPENCLAW_CLIQ_CHANNEL_V0_4_RC_CHECKLIST.md`; public Bot callback verification requires a reachable HTTPS tunnel/gateway URL, but it is not Cloudflare-specific.
 - CRM v0.5 SDK adoption has started. Run `zoho crm sdk-status` before SDK work, treat `zohocrmsdk8_0==5.0.0` as optional `zoho-cli[crm-sdk]` readiness, and follow `docs/architecture/CRM_V0_5_SDK_ADOPTION_PLAN.md` before changing CRM command output shapes. `crm-004/005` add the default-disabled `zoho_cli/crm_sdk.py` data-center adapter and explicit `--adapter sdk-v8` read gates; `crm-006` locks `apiVersionPolicy` so HTTP v2 is default and SDK/API v8 is explicit-only; `crm-007` adds `zoho crm write-plan` / `writeSurfacePolicy` with `writesEnabled=false`, dry-run default, exact confirmation, idempotency, JSON payload, and audit requirements; `crm-008` adds `zoho crm upsert` dry-run with `payloadDigest`, `recordDigests`, `requiredConfirmation`, and `live_write_not_enabled` for `--execute`; `crm-009` adds `zoho crm upsert-gate` with `liveWritesEnabled=false`, `decision=defer_live_execution`, scope matching, and blockers including `audit_persistence_not_implemented` plus `controlled_live_fixture_not_recorded`; `crm-010` adds redacted JSONL `auditPersistence` plus `zoho crm write-audit`, `--audit-file`, and `ZOHO_CRM_WRITE_AUDIT`; `crm-011` adds `zoho crm fixture-plan` with `policyId=crm-011-controlled-live-fixture-gate` to inspect dry-run/gate/scope audit evidence without writing CRM data; `crm-012` adds `zoho crm fixture-execute` with `policyId=crm-012-guarded-fixture-execution-harness`, dry-run default, exact approval, cleanup, env, digest, idempotency, and audit gates for one controlled live fixture; `crm-013` adds `ops/scripts/crm_fixture_live_smoke.sh` for repeatable redacted fixture smoke reports; `crm-014` adds `zoho crm fixture-evidence` with `policyId=crm-014-operator-fixture-evidence` and statuses `incomplete`, `ready_for_operator_live_fixture`, and `live_fixture_recorded`; SDK resources must stay under `ZOHO_CRM_SDK_RESOURCE_PATH` or the CLI-managed cache path.
 
 ## Required behavior support after lane3 sync
@@ -89,7 +89,14 @@ After sync, ensure the AI user follows:
 - native channel live smoke gate:
   - run `ops/scripts/openclaw_cliq_live_smoke.sh` from the repo root
   - record `token_refresh_rate_limited` and repeated endpoint availability failures as `skip_deferred`
-  - do not claim public Bot callback success until `ZOHO_CLIQ_PUBLIC_WEBHOOK_URL` reaches the running gateway
+  - do not claim public Bot callback success until `ZOHO_CLIQ_PUBLIC_WEBHOOK_URL` reaches the running gateway and
+    `ops/scripts/openclaw_cliq_public_callback_smoke.sh` reports
+    `kind=openclaw_cliq_public_callback_smoke` with
+    `status=public_callback_verified`; set
+    `ZOHO_CLIQ_PUBLIC_CALLBACK_REPORT_FILE` for the redacted report, require
+    missing-secret `401` plus authenticated unsupported-handler `200`, reject
+    placeholders, treat `public_webhook_url_requires_https` as a public-ingress
+    config blocker, and never store webhook bodies, response bodies, or secrets
   - after a controlled trusted Mention, run
     `ops/scripts/openclaw_cliq_trusted_reply_evidence_bundle.sh` with expected
     agent/model and either raw ids or `sha256:` references; the bundle
@@ -147,7 +154,9 @@ After sync, ensure the AI user follows:
 - native channel RC decisions:
   - read `docs/releases/OPENCLAW_CLIQ_CHANNEL_V0_4_RC_CHECKLIST.md`
   - keep local/operator RC package readiness separate from production rollout readiness
-  - require a reachable public Bot callback URL before claiming production incident readiness
+  - require `openclaw_cliq_public_callback_smoke` /
+    `public_callback_verified` for a reachable public Bot callback URL before
+    claiming production incident readiness
 - native channel lifecycle smoke:
   - accepted webhook/polling events should produce lifecycle metadata and visible status reactions
   - read-ack/status failures are diagnostics and must not dispatch new inbound work
@@ -160,7 +169,7 @@ After sync, ensure the AI user follows:
   - use setup states, readiness blockers, and normalized route/session facts to decide the next operator action
   - do not copy webhook secrets, token passwords, raw stderr, webhook signatures, or message bodies into reports
   - treat `webhook_secret_missing` as a SecretRef/env blocker and use `ZOHO_CLIQ_WEBHOOK_SECRET`
-  - native dispatch is implemented for accepted webhook/polling events; use redacted diagnostic bundles and keep public Bot callback reachability as the remaining production prerequisite when no tunnel/gateway URL is configured
+  - native dispatch is implemented for accepted webhook/polling events; use redacted diagnostic bundles and keep public Bot callback reachability as the remaining production prerequisite when no HTTPS tunnel/gateway URL is configured
   - report repeated Zoho-side `not_supported` or `inactive_appaccount_user` results as `skip_deferred` instead of blocking unrelated channel work
   - prefer explicit routing targets such as `channel:<id>`, `user:<id>`, or `cliq:channel:<id>:thread:<thread_id>`
 - native channel development/operation docs when relevant:

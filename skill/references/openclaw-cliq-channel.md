@@ -120,6 +120,7 @@ openclaw channels capabilities --channel cliq
 openclaw security audit --json
 zoho cliq status --check-auth --network <network>
 ops/scripts/openclaw_cliq_live_smoke.sh
+ops/scripts/openclaw_cliq_public_callback_smoke.sh
 ops/scripts/openclaw_cliq_rc_pack.sh
 ops/scripts/openclaw_cliq_trusted_reply_evidence.sh
 ```
@@ -133,8 +134,17 @@ Native diagnostic behavior:
 - Native agent dispatch is implemented for accepted webhook/polling events.
   Redacted audit events and diagnostic bundles are available; use the smoke
   gate script before production rollout. Public Bot callback auth/reachability
-  can be verified through a controlled operator tunnel; production readiness
+  can be verified through any HTTPS tunnel or gateway with
+  `ops/scripts/openclaw_cliq_public_callback_smoke.sh`; production readiness
   still requires trusted Mention-to-agent reply evidence.
+- For public ingress verification, set `ZOHO_CLIQ_PUBLIC_WEBHOOK_URL` to the
+  HTTPS `/webhooks/cliq` URL and optionally
+  `ZOHO_CLIQ_PUBLIC_CALLBACK_REPORT_FILE`; require
+  `kind=openclaw_cliq_public_callback_smoke` and
+  `status=public_callback_verified`. The smoke checks missing-secret `401` and
+  authenticated unsupported-handler `200`, rejects placeholders, reports
+  `public_webhook_url_requires_https` for non-HTTPS public URLs, and stores no
+  webhook bodies, response bodies, or secrets.
 - For route-specific rollout smoke, set `ZOHO_CLIQ_EXPECTED_AGENT_ID` and
   optionally `ZOHO_CLIQ_EXPECTED_AGENT_MODEL`. Use
   `ZOHO_CLIQ_ROUTE_BINDING_ONLY=1` for offline preflight and
@@ -265,6 +275,9 @@ Human setup checkpoints:
   `zoho cliq chats` plus `zoho cliq context`.
 - Real Zoho Bot handler edits use the Deluge templates and placeholders in
   `docs/releases/OPENCLAW_CLIQ_BOT_HANDLER_TEMPLATES.md`.
+- The public callback smoke is run from the repo root when a tunnel/gateway URL
+  is available; it should write redacted `openclaw_cliq_public_callback_smoke`
+  evidence with `public_callback_verified`.
 - The live smoke gate script is run from the repo root, with
   `token_refresh_rate_limited` recorded as `skip_deferred`. When a specific
   OpenClaw agent must receive Cliq traffic, run the route-only preflight first

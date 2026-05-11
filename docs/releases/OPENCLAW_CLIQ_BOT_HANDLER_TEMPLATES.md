@@ -3,7 +3,7 @@
 This runbook gives operator-copyable Deluge templates for connecting a real
 Zoho Cliq Bot to the native OpenClaw `cliq` channel webhook at `/webhooks/cliq`.
 
-Updated: `2026-05-05T13:52:55Z`.
+Updated: `2026-05-11T18:29:53Z`.
 
 Official references:
 
@@ -182,10 +182,17 @@ one native OpenClaw turn and one Cliq reply.
 1. Start the OpenClaw gateway and make it reachable through a tunnel/gateway.
 2. Set `ZOHO_CLIQ_PUBLIC_WEBHOOK_URL` to the public URL plus `/webhooks/cliq`.
 3. Set `ZOHO_CLIQ_WEBHOOK_SECRET` in the OpenClaw runtime environment.
-4. Paste one handler template into Zoho Cliq and save it.
-5. Run `ops/scripts/openclaw_cliq_live_smoke.sh`.
-6. Send one trusted Message or Mention from Cliq.
-7. Verify one accepted webhook event, one native OpenClaw turn, one Cliq reply,
+4. Run `ops/scripts/openclaw_cliq_public_callback_smoke.sh` to verify the
+   public URL is reachable without depending on a specific tunnel provider. It
+   should report `kind=openclaw_cliq_public_callback_smoke`,
+   `status=public_callback_verified`, missing-secret `401`, authenticated
+   unsupported-handler `200`, and no stored webhook bodies, response bodies, or
+   secrets. Set `ZOHO_CLIQ_PUBLIC_CALLBACK_REPORT_FILE` when automation needs a
+   redacted report file.
+5. Paste one handler template into Zoho Cliq and save it.
+6. Run `ops/scripts/openclaw_cliq_live_smoke.sh`.
+7. Send one trusted Message or Mention from Cliq.
+8. Verify one accepted webhook event, one native OpenClaw turn, one Cliq reply,
    and no duplicate dispatch in the turn ledger.
 
 ## Contract coverage

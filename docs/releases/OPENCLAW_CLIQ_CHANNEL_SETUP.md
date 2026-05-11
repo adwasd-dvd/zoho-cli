@@ -66,6 +66,8 @@ For RC cut decisions, use
 `ops/scripts/openclaw_cliq_rc_pack.sh` before cutting an artifact.
 For real Zoho Bot handler code, use
 `docs/releases/OPENCLAW_CLIQ_BOT_HANDLER_TEMPLATES.md`.
+For tunnel-agnostic public callback verification, use
+`ops/scripts/openclaw_cliq_public_callback_smoke.sh`.
 
 ## Install from the workspace
 
@@ -203,7 +205,28 @@ handling, safe unread polling, and native polling adapter behavior. It reads
 `ZOHO_CLIQ_WEBHOOK_SECRET` from the environment or `launchctl` and never prints
 the secret. Override `ZOHO_CLIQ_NETWORK`, `OPENCLAW_GATEWAY_URL`,
 `ZOHO_CLIQ_WEBHOOK_PATH`, or `ZOHO_CLIQ_PUBLIC_WEBHOOK_URL` when testing a
-non-default network, gateway, path, or public tunnel.
+non-default network, gateway, path, or public tunnel. When
+`ZOHO_CLIQ_PUBLIC_WEBHOOK_URL` is set, the live smoke invokes
+`ops/scripts/openclaw_cliq_public_callback_smoke.sh` to POST through the public
+URL; this is tunnel/gateway agnostic and is not tied to Cloudflare.
+
+For just the public ingress check, set the public HTTPS URL plus the same
+webhook secret used by OpenClaw:
+
+```bash
+ZOHO_CLIQ_PUBLIC_WEBHOOK_URL=https://<your-tunnel-or-gateway>/webhooks/cliq \
+ZOHO_CLIQ_PUBLIC_CALLBACK_REPORT_FILE=tests/auto_pilot/reports/openclaw_cliq_public_callback.json \
+  ops/scripts/openclaw_cliq_public_callback_smoke.sh
+```
+
+The public callback smoke rejects placeholder URLs with
+`public_webhook_url_placeholder`, requires HTTPS unless
+`ZOHO_CLIQ_ALLOW_INSECURE_PUBLIC_WEBHOOK=1` is explicitly set for a local lab,
+checks a missing-secret POST returns `401`, checks an authenticated
+unsupported-handler POST returns `200`, and emits redacted
+`openclaw_cliq_public_callback_smoke` JSON. The success status is
+`public_callback_verified`; the report stores status codes, scheme/host/path,
+and redaction booleans, but not webhook bodies, response bodies, or secrets.
 
 Set `ZOHO_CLIQ_EXPECTED_AGENT_ID` before live rollout smoke when a Cliq account
 must route to a specific OpenClaw agent. The gate reads OpenClaw config,

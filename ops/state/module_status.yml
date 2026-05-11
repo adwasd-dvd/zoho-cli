@@ -22,9 +22,9 @@ openclaw_cliq_channel:
   status: completed_for_rc
   phase: route_ready_live_delivery_facts_pending
   target_release: v0.4.0
-  current_milestone: cliq-channel-447-trusted-reply-raw-placeholder-guard
+  current_milestone: cliq-channel-448-public-callback-smoke
   blockers:
-    - "durable production tunnel/gateway selection remains pending after operator-tunnel callback verification"
+    - "durable production tunnel/gateway selection remains pending after operator-tunnel callback verification; `ops/scripts/openclaw_cliq_public_callback_smoke.sh` now verifies any HTTPS ingress URL with redacted `openclaw_cliq_public_callback_smoke` evidence before Bot traffic"
     - "actual controlled trusted Mention-to-agent reply evidence is pending for `cliq/default -> zoho-employee-test`; the latest plan-only bundle preflight has `routeReportReady=true`, `nextAction=collect_live_delivery_facts`, missing facts `trustedSenderId`, `trustedMessageId`, and `deliveryId`, plus `collectionGuide` boundaries for exactly one trusted Mention and no raw payload/body/secret evidence; plan JSON now includes `factPrepareCommand`, facts prepare can create hash-only `ZOHO_CLIQ_TRUSTED_REPLY_FACTS_FILE` from env ids or an untracked id-only `ZOHO_CLIQ_TRUSTED_REPLY_RAW_FACTS_FILE`, auto-route bundle/check accepts the hash facts file, raw facts file, or env hash facts, requires `trusted_reply_recorded` with sha256 sender/message/reply references, rejects unchanged templates/raw ids/body fields/placeholder ids/secret markers, stops on route mismatch before writing trusted reply evidence/check reports, and the RC checklist contract is synced to the public-callback-verified / agent-reply-pending state"
 
 crm:

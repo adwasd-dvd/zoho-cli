@@ -15,6 +15,9 @@ CRM_FIXTURE_SMOKE_SCRIPT = REPO_ROOT / "ops" / "scripts" / "crm_fixture_live_smo
 OPENCLAW_CLIQ_LIVE_SMOKE_SCRIPT = (
     REPO_ROOT / "ops" / "scripts" / "openclaw_cliq_live_smoke.sh"
 )
+OPENCLAW_CLIQ_PUBLIC_CALLBACK_SMOKE_SCRIPT = (
+    REPO_ROOT / "ops" / "scripts" / "openclaw_cliq_public_callback_smoke.sh"
+)
 OPENCLAW_CLIQ_HASH_REF_SCRIPT = (
     REPO_ROOT / "ops" / "scripts" / "openclaw_cliq_hash_ref.sh"
 )
@@ -596,6 +599,7 @@ def test_openclaw_cliq_live_smoke_route_binding_only_mode(tmp_path: Path) -> Non
     assert "ZOHO_CLIQ_EXPECTED_ACCOUNT_ID" in script
     assert "ZOHO_CLIQ_ROUTE_BINDING_ONLY" in script
     assert "ZOHO_CLIQ_ROUTE_REPORT_FILE" in script
+    assert "ZOHO_CLIQ_PUBLIC_CALLBACK_SCRIPT" in script
     assert "OPENCLAW_CONFIG_PATH" in script
     assert 'match.channel === "cliq"' in script
     assert "agent_binding_mismatch" in script
@@ -698,6 +702,111 @@ def test_openclaw_cliq_live_smoke_route_binding_only_requires_expected_agent() -
     assert payload["accountId"] == "default"
     assert "zoho auth" not in output
     assert "local webhook missing-secret gate" not in output
+
+
+def test_openclaw_cliq_public_callback_smoke_verifies_statuses_without_leaking_secret(
+    tmp_path: Path,
+) -> None:
+    calls_path = tmp_path / "curl_calls.jsonl"
+    report_path = tmp_path / "reports" / "public-callback.json"
+    fake_curl = tmp_path / "fake_curl.py"
+    fake_curl.write_text(
+        """#!/usr/bin/env python3
+import json
+import os
+import sys
+
+args = sys.argv[1:]
+with open(os.environ["FAKE_CURL_CALLS"], "a", encoding="utf-8") as handle:
+    handle.write(json.dumps(args) + "\\n")
+has_secret = any(
+    arg.lower().startswith("x-cliq-webhook-secret:")
+    or (
+        index > 0
+        and args[index - 1] == "-H"
+        and arg.lower().startswith("x-cliq-webhook-secret:")
+    )
+    for index, arg in enumerate(args)
+)
+print("200" if has_secret else "401", end="")
+"""
+    )
+    fake_curl.chmod(fake_curl.stat().st_mode | stat.S_IXUSR)
+
+    result = subprocess.run(
+        ["bash", str(OPENCLAW_CLIQ_PUBLIC_CALLBACK_SMOKE_SCRIPT)],
+        cwd=REPO_ROOT,
+        env={
+            **os.environ,
+            "CURL_BIN": str(fake_curl),
+            "FAKE_CURL_CALLS": str(calls_path),
+            "ZOHO_CLIQ_PUBLIC_WEBHOOK_URL": "https://public.example.test/webhooks/cliq",
+            "ZOHO_CLIQ_WEBHOOK_SECRET": "unit-public-secret",
+            "ZOHO_CLIQ_PUBLIC_CALLBACK_REPORT_FILE": str(report_path),
+            "ZOHO_CLIQ_PUBLIC_CALLBACK_RUN_ID": "unit-public-callback",
+        },
+        capture_output=True,
+        text=True,
+        check=False,
+    )
+
+    output = f"{result.stdout}\n{result.stderr}"
+    assert result.returncode == 0, output
+    assert "unit-public-secret" not in output
+    assert "M-PUBLIC-CALLBACK" not in output
+
+    payload = json.loads(result.stdout)
+    assert payload["schemaVersion"] == 1
+    assert payload["kind"] == "openclaw_cliq_public_callback_smoke"
+    assert payload["runId"] == "unit-public-callback"
+    assert payload["status"] == "public_callback_verified"
+    assert payload["webhook"] == {
+        "scheme": "https",
+        "host": "public.example.test",
+        "path": "/webhooks/cliq",
+    }
+    assert payload["checks"]["missingSecret"] == {
+        "expectedStatus": 401,
+        "actualStatus": "401",
+    }
+    assert payload["checks"]["authenticatedUnsupportedHandler"] == {
+        "expectedStatus": 200,
+        "actualStatus": "200",
+    }
+    assert payload["redaction"] == {
+        "rawWebhookPayloadStored": False,
+        "responseBodyStored": False,
+        "secretsStored": False,
+    }
+    assert json.loads(report_path.read_text()) == payload
+    assert "unit-public-secret" not in report_path.read_text()
+    calls = [json.loads(line) for line in calls_path.read_text().splitlines()]
+    assert len(calls) == 2
+
+
+def test_openclaw_cliq_public_callback_smoke_rejects_placeholder_url() -> None:
+    result = subprocess.run(
+        ["bash", str(OPENCLAW_CLIQ_PUBLIC_CALLBACK_SMOKE_SCRIPT)],
+        cwd=REPO_ROOT,
+        env={
+            **os.environ,
+            "ZOHO_CLIQ_PUBLIC_WEBHOOK_URL": "https://<your-tunnel-or-gateway>/webhooks/cliq",
+            "ZOHO_CLIQ_WEBHOOK_SECRET": "unit-public-secret",
+            "ZOHO_CLIQ_PUBLIC_CALLBACK_RUN_ID": "unit-public-placeholder",
+        },
+        capture_output=True,
+        text=True,
+        check=False,
+    )
+
+    output = f"{result.stdout}\n{result.stderr}"
+    assert result.returncode == 2, output
+    assert "unit-public-secret" not in output
+    payload = json.loads(result.stdout)
+    assert payload["kind"] == "openclaw_cliq_public_callback_smoke"
+    assert payload["runId"] == "unit-public-placeholder"
+    assert payload["status"] == "error"
+    assert payload["error"] == "public_webhook_url_placeholder"
 
 
 def test_openclaw_cliq_hash_ref_hashes_stdin_without_echoing_raw_id() -> None:

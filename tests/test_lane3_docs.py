@@ -58,6 +58,7 @@ def test_lane3_required_paths_exist() -> None:
         / "releases"
         / "OPENCLAW_CLIQ_TRUSTED_REPLY_EVIDENCE_TEMPLATE.json",
         REPO_ROOT / "ops" / "scripts" / "openclaw_cliq_hash_ref.sh",
+        REPO_ROOT / "ops" / "scripts" / "openclaw_cliq_public_callback_smoke.sh",
         REPO_ROOT / "ops" / "scripts" / "openclaw_cliq_rc_pack.sh",
         REPO_ROOT
         / "ops"
@@ -212,6 +213,7 @@ def test_native_cliq_channel_ai_troubleshooting_contract_present() -> None:
         "cliq:channel:<id>:thread:<thread_id>",
         "skip_deferred",
         "ops/scripts/openclaw_cliq_rc_pack.sh",
+        "ops/scripts/openclaw_cliq_public_callback_smoke.sh",
         "OPENCLAW_CLIQ_BOT_HANDLER_TEMPLATES.md",
         "ops/scripts/openclaw_cliq_hash_ref.sh",
         "ops/scripts/openclaw_cliq_trusted_reply_evidence_bundle.sh",
@@ -220,6 +222,10 @@ def test_native_cliq_channel_ai_troubleshooting_contract_present() -> None:
         "ZOHO_CLIQ_EXPECTED_AGENT_MODEL",
         "ZOHO_CLIQ_ROUTE_BINDING_ONLY",
         "ZOHO_CLIQ_ROUTE_REPORT_FILE",
+        "ZOHO_CLIQ_PUBLIC_CALLBACK_REPORT_FILE",
+        "openclaw_cliq_public_callback_smoke",
+        "public_callback_verified",
+        "public_webhook_url_requires_https",
         "ZOHO_CLIQ_TRUSTED_REPLY_REPORT_DIR",
         "ZOHO_CLIQ_TRUSTED_REPLY_PLAN_ONLY",
         "ZOHO_CLIQ_TRUSTED_REPLY_PLAN_FILE",

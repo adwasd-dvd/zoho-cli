@@ -1,10 +1,22 @@
-last_run_at: "2026-05-11T17:54:19Z"
+last_run_at: "2026-05-11T18:42:28Z"
 last_result: passing
-current_focus: cliq-channel-447-trusted-reply-raw-placeholder-guard
+current_focus: cliq-channel-448-public-callback-smoke
 suites:
   unit:
     status: passing
     notes:
+      - "cliq-channel-448 public callback smoke completed at 2026-05-11T18:42:28Z"
+      - "added `ops/scripts/openclaw_cliq_public_callback_smoke.sh`; it verifies any HTTPS `ZOHO_CLIQ_PUBLIC_WEBHOOK_URL` by checking missing-secret `401` plus authenticated unsupported-handler `200`, rejects placeholders/non-HTTPS public URLs, and emits redacted `openclaw_cliq_public_callback_smoke` evidence with `public_callback_verified`"
+      - "wired `ops/scripts/openclaw_cliq_live_smoke.sh` to run the public callback smoke whenever `ZOHO_CLIQ_PUBLIC_WEBHOOK_URL` is set"
+      - "bash -n ops/scripts/openclaw_cliq_public_callback_smoke.sh ops/scripts/openclaw_cliq_live_smoke.sh -> passed"
+      - "./.venv/bin/python -m pytest -q tests/test_auto_pilot_scripts.py -k 'public_callback_smoke or live_smoke_route_binding_only' tests/test_openclaw_channel_contract.py::test_openclaw_cliq_channel_rc_checklist_has_cut_contract tests/test_openclaw_channel_contract.py::test_openclaw_cliq_bot_handler_templates_cover_real_handlers tests/test_lane3_docs.py::test_native_cliq_channel_ai_troubleshooting_contract_present tests/test_lane3_docs.py::test_lane3_required_paths_exist tests/test_markdown_update.py -> 5 passed, 40 deselected in 0.80s"
+      - "./.venv/bin/python -m pytest -q tests/test_auto_pilot_scripts.py -k 'openclaw_cliq' tests/test_lane3_docs.py tests/test_openclaw_channel_contract.py tests/test_markdown_update.py -> 40 passed, 18 deselected in 2.91s"
+      - "./.venv/bin/ruff format --check tests/test_auto_pilot_scripts.py tests/test_lane3_docs.py tests/test_openclaw_channel_contract.py -> 3 files already formatted"
+      - "./.venv/bin/ruff check tests/test_auto_pilot_scripts.py tests/test_lane3_docs.py tests/test_openclaw_channel_contract.py -> All checks passed"
+      - "ruby YAML parse for project/module_status/test_status -> YAML_PARSE_OK"
+      - "git diff --check -> passed"
+      - "./.venv/bin/python -m pytest -q tests/test_openclaw_channel_contract.py::test_openclaw_cliq_channel_rc_checklist_has_cut_contract tests/test_markdown_update.py -> 2 passed in 0.01s"
+      - "make ci -> ruff format/check clean + pytest `1876 passed in 50.38s`"
       - "cliq-channel-447 trusted reply raw placeholder guard completed at 2026-05-11T17:54:19Z"
       - "hardened `ops/scripts/openclaw_cliq_trusted_reply_facts_prepare.sh` so placeholder raw ids such as `<trusted_cliq_user_id>`, `replace-me`, `replace_with`, `placeholder`, or `example.invalid` fail before hashing with stable errors like `trusted_sender_raw_placeholder`"
       - "direct raw facts bundle flow now propagates the placeholder error and does not write hash facts or evidence reports for placeholder source ids"

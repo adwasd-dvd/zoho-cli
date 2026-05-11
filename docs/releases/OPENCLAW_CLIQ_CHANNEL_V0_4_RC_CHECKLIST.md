@@ -12,7 +12,7 @@ accepted handler families against native webhook processing, and
 SDK contract source of truth:
 `docs/architecture/OPENCLAW_CLIQ_CHANNEL_SDK_CONTRACT.md`.
 
-Updated: `2026-05-05T22:10:51Z`.
+Updated: `2026-05-11T18:29:53Z`.
 
 ## Decision
 
@@ -45,14 +45,14 @@ delivers exactly one Cliq reply. The live environment currently binds
 | Gate | Latest result |
 | --- | --- |
 | TypeScript typecheck/build | `npm --prefix integrations/openclaw-channel-cliq run typecheck` and `run build` passed. |
-| Focused channel/docs tests | `tests/test_openclaw_channel_contract.py`, `tests/test_lane3_docs.py`, and `tests/test_markdown_update.py` passed with `16 passed`. |
-| Full CI | `make ci` passed with ruff format/check clean and `1841 passed in 48.64s`. |
+| Focused channel/docs tests | `tests/test_auto_pilot_scripts.py -k openclaw_cliq`, `tests/test_openclaw_channel_contract.py`, `tests/test_lane3_docs.py`, and `tests/test_markdown_update.py` passed with `40 passed, 18 deselected in 2.91s`. |
+| Full CI | `make ci` passed with ruff format/check clean and `1876 passed in 50.38s`. |
 | Local live smoke | `ops/scripts/openclaw_cliq_live_smoke.sh` passed: Zoho auth/capability/polling OK, local webhook missing-secret/authenticated-non-dispatch/authenticated-deny OK, native polling OK with zero events. |
 | Package linked baseline | Temp-HOME `openclaw plugins install ./integrations/openclaw-channel-cliq --link`, `plugins inspect zoho-cliq --json`, and `plugins doctor` passed on global `OpenClaw 2026.5.3-1`. |
 | Latest stable host | Temp-HOME `npx -y openclaw@2026.5.4` linked install/inspect/doctor passed. |
 | Beta early warning | Temp-HOME `npx -y openclaw@2026.5.4-beta.3` linked install/inspect/doctor passed. |
 | Local package artifact preflight | `NPM_CONFIG_CACHE=/private/tmp/zoho-cli-npm-cache OPENCLAW_CLIQ_PACK_RUN_ID=20260505T142129Z-rc1 ops/scripts/openclaw_cliq_rc_pack.sh` passed at `2026-05-05T14:22:51Z`; the script reran typecheck/build and then packed from the plugin directory into `.tmp/openclaw-cliq-rc-pack`. Tarball `adwasd-openclaw-zoho-cliq-0.4.0-rc.1.tgz`, size `93879`, unpacked size `466025`, entry count `67`, shasum `87b553ad5bbec1c920a05b342630a57cea58b96b`, integrity `sha512-PVaBZFB0+m2sll7dl+c47iPnb6+KgRcCNkiqvFJzv8qtuHB8Lb153/27rqC1izmmybGP1CtrqMH4ZVrBkvBgBg==`. Summary report path pattern: `tests/auto_pilot/reports/openclaw_cliq_rc_pack_summary_<run-id>.json`. |
-| Public callback auth/reachability | Operator Cloudflare tunnel to local OpenClaw gateway is reachable; missing-secret webhook calls return `401`, authenticated unsupported-handler calls return `200` with `unsupported_handler`, and the Zoho Cliq Bot Mention Handler has reached local OpenClaw. |
+| Public callback auth/reachability | Operator tunnel to local OpenClaw gateway is reachable; missing-secret webhook calls return `401`, authenticated unsupported-handler calls return `200` with `unsupported_handler`, and the Zoho Cliq Bot Mention Handler has reached local OpenClaw. `ops/scripts/openclaw_cliq_public_callback_smoke.sh` now verifies the same contract for any HTTPS `ZOHO_CLIQ_PUBLIC_WEBHOOK_URL`, emits redacted `openclaw_cliq_public_callback_smoke` JSON with `public_callback_verified`, and is not Cloudflare-specific. |
 | Live route binding | `openclaw config validate` passes with `cliq/default -> zoho-employee-test`; both `main` and `zoho-employee-test` are configured for `openai-codex/gpt-5.3-codex`. |
 | Trusted reply evidence bundle | `ops/scripts/openclaw_cliq_trusted_reply_evidence_bundle.sh` auto-runs offline route preflight when no route report is supplied, hashes live raw ids when needed, prepares redacted `openclaw_cliq_trusted_reply_evidence` JSON, and runs `ops/scripts/openclaw_cliq_trusted_reply_evidence.sh`; the checker reports `trusted_reply_recorded` only when the route, callback, trusted Mention hash facts, agent/model, one-turn, one-reply, duplicate/dead-letter, and redaction facts all pass. `ZOHO_CLIQ_TRUSTED_REPLY_PLAN_ONLY=1` emits `openclaw_cliq_trusted_reply_evidence_bundle_plan` and writes a redacted plan report with `nextAction`, `readyForFinalBundle`, `missingFacts`, `readyFacts`, `reportFiles`, `reportsReady`, `collectionGuide`, `factPrepareCommand`, `acceptedFactSources`, and `redaction` so agents can verify the route, missing live facts, archived filenames, and the exact fact-collection boundary before asking for a fresh Bot Mention. The final bundle can read a hash-only `ZOHO_CLIQ_TRUSTED_REPLY_FACTS_FILE` with `kind=openclaw_cliq_trusted_reply_facts`, or auto-run facts prepare from an id-only `ZOHO_CLIQ_TRUSTED_REPLY_RAW_FACTS_FILE` when no hash facts file is supplied; it rejects raw id fields in hash facts files with `facts_file_raw_ids_present`, body fields in raw facts files with `raw_facts_file_forbidden_body_present`, and secret markers. If route preflight fails with blockers such as `agent_binding_mismatch`, the bundle exits non-zero with route JSON only and does not create evidence/check reports. |
 
@@ -63,6 +63,20 @@ Trusted agent reply:
 1. Keep the operator tunnel or provision a durable gateway URL.
 2. Keep `ZOHO_CLIQ_PUBLIC_WEBHOOK_URL` pointed at that URL plus
    `/webhooks/cliq` when running the live smoke harness.
+   For an ingress-only check before asking Zoho to call the Bot, run:
+
+   ```bash
+   ZOHO_CLIQ_PUBLIC_WEBHOOK_URL=https://<your-tunnel-or-gateway>/webhooks/cliq \
+   ZOHO_CLIQ_PUBLIC_CALLBACK_REPORT_FILE=tests/auto_pilot/reports/openclaw_cliq_public_callback.json \
+     ops/scripts/openclaw_cliq_public_callback_smoke.sh
+   ```
+
+   The report kind is `openclaw_cliq_public_callback_smoke`; success is
+   `public_callback_verified`. The script rejects placeholder URLs with
+   `public_webhook_url_placeholder`, requires HTTPS by default with
+   `public_webhook_url_requires_https`, expects missing-secret `401` and
+   authenticated unsupported-handler `200`, and stores no webhook bodies,
+   response bodies, or secrets.
 3. Keep the Zoho Cliq Bot Message, Mention, Participation, or Context Handler
    posting to the same URL using
    `docs/releases/OPENCLAW_CLIQ_BOT_HANDLER_TEMPLATES.md`.

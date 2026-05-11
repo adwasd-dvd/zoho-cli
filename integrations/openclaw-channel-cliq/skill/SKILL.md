@@ -55,6 +55,11 @@ Use this skill when operating through the native OpenClaw Zoho Cliq channel.
   production rollout blocked until public Bot callback reachability and one
   controlled trusted agent reply are verified with
   `ops/scripts/openclaw_cliq_trusted_reply_evidence_bundle.sh`.
+- To verify public Bot callback reachability without binding to a specific
+  tunnel provider, set `ZOHO_CLIQ_PUBLIC_WEBHOOK_URL` and run
+  `ops/scripts/openclaw_cliq_public_callback_smoke.sh`; require
+  `openclaw_cliq_public_callback_smoke` with `public_callback_verified`, and
+  keep webhook bodies, response bodies, and secrets out of reports.
 - Before cutting a local/operator or npm/GitHub RC artifact, run
   `ops/scripts/openclaw_cliq_rc_pack.sh`; it must not publish or mutate
   package version metadata at pack time. The current RC package metadata is
@@ -69,6 +74,7 @@ openclaw channels capabilities --channel cliq
 zoho cliq status --check-auth --network <network>
 zoho cliq capabilities --network <network>
 ops/scripts/openclaw_cliq_live_smoke.sh
+ops/scripts/openclaw_cliq_public_callback_smoke.sh
 ops/scripts/openclaw_cliq_hash_ref.sh
 ops/scripts/openclaw_cliq_rc_pack.sh
 ops/scripts/openclaw_cliq_trusted_reply_evidence_bundle.sh

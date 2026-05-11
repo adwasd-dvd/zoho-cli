@@ -5,6 +5,7 @@ ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)"
 CHECKED_AT="$(date -u +%Y-%m-%dT%H:%M:%SZ)"
 ZOHO_BIN="${ZOHO_BIN:-"$ROOT/.venv/bin/zoho"}"
 OPENCLAW_BIN="${OPENCLAW_BIN:-openclaw}"
+PUBLIC_CALLBACK_SCRIPT="${ZOHO_CLIQ_PUBLIC_CALLBACK_SCRIPT:-"$ROOT/ops/scripts/openclaw_cliq_public_callback_smoke.sh"}"
 NETWORK="${ZOHO_CLIQ_NETWORK:-happydistrouklimited}"
 GATEWAY_URL="${OPENCLAW_GATEWAY_URL:-http://127.0.0.1:18789}"
 WEBHOOK_PATH="${ZOHO_CLIQ_WEBHOOK_PATH:-/webhooks/cliq}"
@@ -206,8 +207,7 @@ try {
 '
 
 if [[ -n "$PUBLIC_WEBHOOK_URL" ]]; then
-  printf '\n== public webhook reachability ==\n'
-  curl -sS -o /dev/null -w 'http_status=%{http_code} url=%{url_effective}\n' "$PUBLIC_WEBHOOK_URL"
+  run_step "public webhook callback smoke" "$PUBLIC_CALLBACK_SCRIPT"
 else
   printf '\n== public webhook reachability skipped ==\n'
   printf 'reason=ZOHO_CLIQ_PUBLIC_WEBHOOK_URL_missing\n'

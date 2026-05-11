@@ -126,6 +126,7 @@ def test_openclaw_cliq_channel_rc_checklist_has_cut_contract():
         "ops/scripts/openclaw_cliq_rc_pack.sh",
         "OPENCLAW_CLIQ_BOT_HANDLER_TEMPLATES.md",
         "Public callback auth/reachability",
+        "https://cliq.hpyio.com/webhooks/cliq",
         "ops/scripts/openclaw_cliq_public_callback_smoke.sh",
         "public_callback_verified",
         "Published application",

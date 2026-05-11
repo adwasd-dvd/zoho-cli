@@ -200,10 +200,11 @@ Native diagnostic behavior:
   echoing raw ids, hash values, or local paths. When using
   `ZOHO_CLIQ_TRUSTED_REPLY_RAW_FACTS_FILE`, the source file kind is
   `openclaw_cliq_trusted_reply_raw_facts` and it must contain ids only, no raw
-  webhook payloads, message/reply bodies, or secret fields. The final evidence
-  bundle can take that raw facts file directly and auto-run the hash-only facts
-  prepare step when `ZOHO_CLIQ_TRUSTED_REPLY_FACTS_FILE` is unset; stdout stays
-  reserved for the final trusted reply checker JSON.
+  webhook payloads, message/reply bodies, secret fields, or placeholder values
+  like `<trusted_cliq_user_id>` / `replace-me`. The final evidence bundle can
+  take that raw facts file directly and auto-run the hash-only facts prepare
+  step when `ZOHO_CLIQ_TRUSTED_REPLY_FACTS_FILE` is unset; stdout stays reserved
+  for the final trusted reply checker JSON.
 - Do not include webhook secrets, token passwords, webhook signatures, raw
   stderr, or raw Cliq message bodies in reports.
 

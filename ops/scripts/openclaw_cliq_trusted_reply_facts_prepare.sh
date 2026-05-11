@@ -33,6 +33,18 @@ is_sha256_ref() {
   [[ "$1" =~ ^sha256:[A-Za-z0-9._:-]+$ ]]
 }
 
+is_placeholder_raw_value() {
+  local value="$1"
+  local lowered
+  lowered="$(printf '%s' "$value" | tr '[:upper:]' '[:lower:]')"
+  [[ "$value" == *"<"* || "$value" == *">"* ]] \
+    || [[ "$lowered" == *"replace-me"* ]] \
+    || [[ "$lowered" == *"replace_with"* ]] \
+    || [[ "$lowered" == *"replace-with"* ]] \
+    || [[ "$lowered" == *"placeholder"* ]] \
+    || [[ "$lowered" == *"example.invalid"* ]]
+}
+
 first_non_empty() {
   local value
   for value in "$@"; do
@@ -54,6 +66,7 @@ resolve_ref_into() {
   local raw_value="$3"
   local missing_error="$4"
   local invalid_error="$5"
+  local placeholder_error="$6"
   local resolved_ref
   if [[ -n "$hash_value" ]]; then
     if ! is_sha256_ref "$hash_value"; then
@@ -64,6 +77,10 @@ resolve_ref_into() {
     return 0
   fi
   if [[ -n "$raw_value" ]]; then
+    if is_placeholder_raw_value "$raw_value"; then
+      emit_error "$placeholder_error"
+      return 2
+    fi
     if ! resolved_ref="$(hash_raw_ref "$raw_value")"; then
       emit_error "hash_ref_failed"
       return 2
@@ -195,19 +212,22 @@ resolve_ref_into \
   "$(first_non_empty "${ZOHO_CLIQ_TRUSTED_SENDER_ID_HASH:-}" "$RAW_FACTS_TRUSTED_SENDER_ID_HASH")" \
   "$(first_non_empty "${ZOHO_CLIQ_TRUSTED_SENDER_ID:-}" "$RAW_FACTS_TRUSTED_SENDER_ID")" \
   "trusted_sender_hash_missing" \
-  "trusted_sender_hash_invalid" || exit $?
+  "trusted_sender_hash_invalid" \
+  "trusted_sender_raw_placeholder" || exit $?
 resolve_ref_into \
   TRUSTED_MESSAGE_ID_HASH \
   "$(first_non_empty "${ZOHO_CLIQ_TRUSTED_MESSAGE_ID_HASH:-}" "$RAW_FACTS_TRUSTED_MESSAGE_ID_HASH")" \
   "$(first_non_empty "${ZOHO_CLIQ_TRUSTED_MESSAGE_ID:-}" "$RAW_FACTS_TRUSTED_MESSAGE_ID")" \
   "trusted_message_hash_missing" \
-  "trusted_message_hash_invalid" || exit $?
+  "trusted_message_hash_invalid" \
+  "trusted_message_raw_placeholder" || exit $?
 resolve_ref_into \
   DELIVERY_ID_HASH \
   "$(first_non_empty "${ZOHO_CLIQ_DELIVERY_ID_HASH:-}" "$RAW_FACTS_DELIVERY_ID_HASH")" \
   "$(first_non_empty "${ZOHO_CLIQ_DELIVERY_ID:-}" "$RAW_FACTS_DELIVERY_ID")" \
   "delivery_id_hash_missing" \
-  "delivery_id_hash_invalid" || exit $?
+  "delivery_id_hash_invalid" \
+  "delivery_id_raw_placeholder" || exit $?
 
 mkdir -p "$(dirname "$FACTS_FILE")"
 FACTS_PAYLOAD="$(

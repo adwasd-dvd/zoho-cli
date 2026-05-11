@@ -78,7 +78,8 @@ Use this skill as the default operating contract for an OpenClaw agent acting li
   ids from env vars or from an untracked local
   `openclaw_cliq_trusted_reply_raw_facts` JSON file via
   `ZOHO_CLIQ_TRUSTED_REPLY_RAW_FACTS_FILE`; keep that file to ids only, with no
-  raw webhook payload, message/reply body, or secret fields. The final
+  raw webhook payload, message/reply body, secret fields, or placeholder values
+  like `<trusted_cliq_user_id>` / `replace-me`. The final
   `openclaw_cliq_trusted_reply_evidence_bundle.sh` also accepts
   `ZOHO_CLIQ_TRUSTED_REPLY_RAW_FACTS_FILE` directly; when no hash facts file is
   set, it auto-runs facts prepare and leaves stdout as the final checker JSON.

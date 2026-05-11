@@ -147,10 +147,13 @@ Trusted agent reply:
    and writes only `sha256:` references to
    `openclaw_cliq_trusted_reply_facts` JSON. The raw-facts file must contain
    only ids, not raw webhook payloads, message/reply bodies, or secrets; body
-   fields are rejected with `raw_facts_file_forbidden_body_present`. The final
-   bundle can take `ZOHO_CLIQ_TRUSTED_REPLY_RAW_FACTS_FILE` directly and
-   auto-run that prepare step when no `ZOHO_CLIQ_TRUSTED_REPLY_FACTS_FILE` is
-   set, leaving stdout as the final checker JSON.
+   fields are rejected with `raw_facts_file_forbidden_body_present`;
+   placeholder ids such as `<trusted_cliq_user_id>` or `replace-me` are rejected
+   with `trusted_sender_raw_placeholder`, `trusted_message_raw_placeholder`, or
+   `delivery_id_raw_placeholder`. The final bundle can take
+   `ZOHO_CLIQ_TRUSTED_REPLY_RAW_FACTS_FILE` directly and auto-run that prepare
+   step when no `ZOHO_CLIQ_TRUSTED_REPLY_FACTS_FILE` is set, leaving stdout as
+   the final checker JSON.
 
    To use an already-reviewed route report, set `ZOHO_CLIQ_ROUTE_REPORT_FILE`.
    If it is omitted, the bundle runs `ZOHO_CLIQ_ROUTE_BINDING_ONLY=1` internally

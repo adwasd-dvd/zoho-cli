@@ -326,7 +326,10 @@ The raw-facts file is for local handoff only. Do not put raw webhook payloads,
 message text, reply bodies, token values, or webhook secrets into it; the
 prepare script rejects body fields with
 `raw_facts_file_forbidden_body_present` and secret markers with
-`raw_facts_file_secret_marker_present`. The final bundle also accepts
+`raw_facts_file_secret_marker_present`. It also rejects placeholder raw id
+values such as `<trusted_cliq_user_id>` or `replace-me` with stable errors such
+as `trusted_sender_raw_placeholder`, `trusted_message_raw_placeholder`, or
+`delivery_id_raw_placeholder`. The final bundle also accepts
 `ZOHO_CLIQ_TRUSTED_REPLY_RAW_FACTS_FILE` directly; when no
 `ZOHO_CLIQ_TRUSTED_REPLY_FACTS_FILE` is set, it auto-runs facts prepare,
 loads the generated hash-only facts file, and still keeps stdout to the final

@@ -74,7 +74,11 @@ Use this skill as the default operating contract for an OpenClaw agent acting li
   trusted Mention succeeds when raw ids are available; it writes hash-only
   `openclaw_cliq_trusted_reply_facts` JSON, prints
   `openclaw_cliq_trusted_reply_facts_prepare` with `facts_file_ready`, and does
-  not echo raw ids, hash values, or local paths to stdout.
+  not echo raw ids, hash values, or local paths to stdout. It can read the raw
+  ids from env vars or from an untracked local
+  `openclaw_cliq_trusted_reply_raw_facts` JSON file via
+  `ZOHO_CLIQ_TRUSTED_REPLY_RAW_FACTS_FILE`; keep that file to ids only, with no
+  raw webhook payload, message/reply body, or secret fields.
 - Before asking for a fresh trusted Bot Mention, run the same bundle with
   `ZOHO_CLIQ_TRUSTED_REPLY_PLAN_ONLY=1`; require
   `kind=openclaw_cliq_trusted_reply_evidence_bundle_plan` and use
@@ -88,9 +92,10 @@ Use this skill as the default operating contract for an OpenClaw agent acting li
   parse `collectionGuide` to keep the live step to exactly one trusted Mention,
   only `trustedSenderId` / `trustedMessageId` / `deliveryId`, and no
   `rawWebhookPayload`, `rawMessageBody`, `rawCliqReplyBody`, or `secrets`.
-  Use `factPrepareCommand`, `collectionGuide.factsFileKind`, and
-  `collectionGuide.factsPrepareReadyStatus` instead of guessing how to prepare
-  the hash-only facts file.
+  Use `factPrepareCommand`, `collectionGuide.factsFileKind`,
+  `collectionGuide.factsPrepareReadyStatus`,
+  `collectionGuide.rawFactsPrepareEnv`, and `collectionGuide.rawFactsFileKind`
+  instead of guessing how to prepare the hash-only facts file.
   Prefer `collectionGuide.preferredFactSource=ZOHO_CLIQ_TRUSTED_REPLY_FACTS_FILE`
   and `acceptedFactSources` containing `hashFactsFile` for handoff between
   fact capture and final evidence checking.

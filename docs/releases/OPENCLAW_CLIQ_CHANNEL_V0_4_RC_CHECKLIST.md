@@ -106,9 +106,11 @@ Trusted agent reply:
    `sendExactlyOneTrustedMention`, collect only `trustedSenderId`,
    `trustedMessageId`, and `deliveryId`, and keep `rawWebhookPayload`,
    `rawMessageBody`, `rawCliqReplyBody`, and `secrets` out of evidence. Use
-   `factPrepareCommand` plus `collectionGuide.factsFileKind` and
-   `collectionGuide.factsPrepareReadyStatus` to create the hash-only facts
-   handoff before the final bundle.
+   `factPrepareCommand` plus `collectionGuide.factsFileKind`,
+   `collectionGuide.factsPrepareReadyStatus`,
+   `collectionGuide.rawFactsPrepareEnv`, and
+   `collectionGuide.rawFactsFileKind` to create the hash-only facts handoff
+   before the final bundle.
 7. Send a controlled trusted mention from Cliq and verify exactly one native
    OpenClaw turn routes to `zoho-employee-test`, uses a Codex model, and emits
    exactly one Cliq reply.
@@ -138,10 +140,14 @@ Trusted agent reply:
    fields; the bundle rejects raw facts files with `facts_file_raw_ids_present`
    and secret markers with `facts_file_secret_marker_present`.
    `ops/scripts/openclaw_cliq_trusted_reply_facts_prepare.sh` can create this
-   hash-only facts file from the three raw live facts; it reports
+   hash-only facts file from the three raw live facts supplied as env vars or
+   from an untracked local `openclaw_cliq_trusted_reply_raw_facts` JSON file
+   passed via `ZOHO_CLIQ_TRUSTED_REPLY_RAW_FACTS_FILE`; it reports
    `openclaw_cliq_trusted_reply_facts_prepare` with `status=facts_file_ready`
    and writes only `sha256:` references to
-   `openclaw_cliq_trusted_reply_facts` JSON.
+   `openclaw_cliq_trusted_reply_facts` JSON. The raw-facts file must contain
+   only ids, not raw webhook payloads, message/reply bodies, or secrets; body
+   fields are rejected with `raw_facts_file_forbidden_body_present`.
 
    To use an already-reviewed route report, set `ZOHO_CLIQ_ROUTE_REPORT_FILE`.
    If it is omitted, the bundle runs `ZOHO_CLIQ_ROUTE_BINDING_ONLY=1` internally

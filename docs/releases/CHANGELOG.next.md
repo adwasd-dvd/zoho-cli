@@ -79,6 +79,7 @@
 - Added hash-only `ZOHO_CLIQ_TRUSTED_REPLY_FACTS_FILE` support to the trusted reply bundle so agents can pass `openclaw_cliq_trusted_reply_facts` JSON with `sha256:` sender/message/reply references; raw facts files are rejected with `facts_file_raw_ids_present`, and secret markers are rejected with `facts_file_secret_marker_present`.
 - Added `ops/scripts/openclaw_cliq_trusted_reply_facts_prepare.sh` to create hash-only `openclaw_cliq_trusted_reply_facts` JSON from raw or already-hashed live facts, emit a redacted `openclaw_cliq_trusted_reply_facts_prepare` summary, and keep raw ids plus local paths out of stdout.
 - Added `factPrepareCommand`, `collectionGuide.factsFileKind`, and `collectionGuide.factsPrepareReadyStatus` to the plan-only trusted reply bundle output so AI agents can discover the facts-prepare handoff directly from JSON.
+- Added `ZOHO_CLIQ_TRUSTED_REPLY_RAW_FACTS_FILE` support to the facts-prepare script; agents can pass an untracked `openclaw_cliq_trusted_reply_raw_facts` JSON containing only trusted sender/message/reply ids, while the script rejects body fields and secret markers before writing the hash-only facts file.
 
 ### Architecture / modularization (2026-05-04T18:19:47Z)
 - Started `cliq-210` post-RC modularization by extracting the `zoho cliq status` and `zoho cliq capabilities` command bodies into `zoho_cli/commands/cliq_readiness.py`, leaving `zoho_cli/cli.py` with runtime dependency injection plus existing Typer registration only. Command names, help text, and JSON output are unchanged.

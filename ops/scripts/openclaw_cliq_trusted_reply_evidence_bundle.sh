@@ -281,7 +281,7 @@ if [[ "$PLAN_ONLY" == "1" || "$PLAN_ONLY" == "true" ]]; then
     printf '},'
     printf '"reportsReady":{"routePreflight":true,"plan":true,"evidence":false,"check":false},'
     printf '"redaction":{"rawIdsStored":false,"hashValuesStored":false,"localPathsStored":false,"secretsStored":false},'
-    printf '"collectionGuide":{"sendExactlyOneTrustedMention":true,"requiredLiveFacts":["trustedSenderId","trustedMessageId","deliveryId"],"forbiddenEvidence":["rawWebhookPayload","rawMessageBody","rawCliqReplyBody","secrets"],"hashRawIdsBeforeEvidence":true,"preferredFactSource":"ZOHO_CLIQ_TRUSTED_REPLY_FACTS_FILE","factsFileKind":"openclaw_cliq_trusted_reply_facts","factsPrepareReadyStatus":"facts_file_ready","successStatus":"trusted_reply_recorded"},'
+    printf '"collectionGuide":{"sendExactlyOneTrustedMention":true,"requiredLiveFacts":["trustedSenderId","trustedMessageId","deliveryId"],"forbiddenEvidence":["rawWebhookPayload","rawMessageBody","rawCliqReplyBody","secrets"],"hashRawIdsBeforeEvidence":true,"preferredFactSource":"ZOHO_CLIQ_TRUSTED_REPLY_FACTS_FILE","factsFileKind":"openclaw_cliq_trusted_reply_facts","rawFactsPrepareEnv":"ZOHO_CLIQ_TRUSTED_REPLY_RAW_FACTS_FILE","rawFactsFileKind":"openclaw_cliq_trusted_reply_raw_facts","factsPrepareReadyStatus":"facts_file_ready","successStatus":"trusted_reply_recorded"},'
     printf '"factPrepareCommand":"ops/scripts/openclaw_cliq_trusted_reply_facts_prepare.sh",'
     printf '"acceptedFactSources":["env","hashFactsFile"],'
     printf '"acceptedFactStates":["hash","raw"],'

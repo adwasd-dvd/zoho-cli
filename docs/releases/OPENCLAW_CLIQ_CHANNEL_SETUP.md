@@ -258,14 +258,19 @@ for machine-readable handoff, plus `reportFiles` and `reportsReady` for
 artifact handoff by filename. Its `collectionGuide` tells agents to enforce
 `sendExactlyOneTrustedMention`, read `requiredLiveFacts`, collect only
 `trustedSenderId`, `trustedMessageId`, and `deliveryId`, hash raw ids before
-evidence, use `factPrepareCommand`, and honor `forbiddenEvidence` by keeping `rawWebhookPayload`,
-`rawMessageBody`, `rawCliqReplyBody`, and `secrets` out of the artifact. Its
+evidence, use `factPrepareCommand`, and honor `forbiddenEvidence` by keeping
+`rawWebhookPayload`, `rawMessageBody`, `rawCliqReplyBody`, and `secrets` out of
+the artifact. Its
 `acceptedFactSources` includes `env` and `hashFactsFile`; prefer
 `ZOHO_CLIQ_TRUSTED_REPLY_FACTS_FILE` for the final run when a hash-only local
 facts JSON is available. The plan also declares
 `collectionGuide.factsFileKind=openclaw_cliq_trusted_reply_facts` and
-`collectionGuide.factsPrepareReadyStatus=facts_file_ready`. The facts file must
-use `kind=openclaw_cliq_trusted_reply_facts` and contain only
+`collectionGuide.factsPrepareReadyStatus=facts_file_ready`; it also exposes
+`collectionGuide.rawFactsPrepareEnv=ZOHO_CLIQ_TRUSTED_REPLY_RAW_FACTS_FILE` and
+`collectionGuide.rawFactsFileKind=openclaw_cliq_trusted_reply_raw_facts` when an
+agent/operator wants to hand the three raw facts to the prepare script through a
+temporary local JSON file. The final facts file must use
+`kind=openclaw_cliq_trusted_reply_facts` and contain only
 `trustedSenderIdHash`, `trustedMessageIdHash`, and `deliveryIdHash` as
 `sha256:` references; the bundle rejects raw fields such as `trustedSenderId`,
 `trustedMessageId`, or `deliveryId` with `facts_file_raw_ids_present`, and
@@ -274,7 +279,8 @@ object must keep raw ids, hash values, local
 paths, and secrets out of the plan.
 
 After the real trusted Mention succeeds, prefer preparing the hash-only facts
-file before running the final bundle:
+file before running the final bundle. Either provide the three raw facts as env
+vars:
 
 ```bash
 ZOHO_CLIQ_TRUSTED_REPLY_REPORT_DIR=tests/auto_pilot/reports \
@@ -289,6 +295,36 @@ The prepare script prints `openclaw_cliq_trusted_reply_facts_prepare` with
 the trusted reply report directory, and keeps raw ids plus local paths out of
 stdout. Set `ZOHO_CLIQ_TRUSTED_REPLY_FACTS_FILE` to that file for the final
 bundle.
+
+Or store only those three raw ids in an untracked local JSON file:
+
+```json
+{
+  "schemaVersion": 1,
+  "kind": "openclaw_cliq_trusted_reply_raw_facts",
+  "trustedMention": {
+    "trustedSenderId": "<trusted_cliq_user_id>",
+    "messageId": "<trusted_mention_message_id>"
+  },
+  "delivery": {
+    "messageId": "<agent_reply_delivery_id>"
+  }
+}
+```
+
+Then run:
+
+```bash
+ZOHO_CLIQ_TRUSTED_REPLY_RAW_FACTS_FILE=/path/to/trusted-reply-raw-facts.json \
+ZOHO_CLIQ_TRUSTED_REPLY_REPORT_DIR=tests/auto_pilot/reports \
+  ops/scripts/openclaw_cliq_trusted_reply_facts_prepare.sh
+```
+
+The raw-facts file is for local handoff only. Do not put raw webhook payloads,
+message text, reply bodies, token values, or webhook secrets into it; the
+prepare script rejects body fields with
+`raw_facts_file_forbidden_body_present` and secret markers with
+`raw_facts_file_secret_marker_present`.
 
 ## Setup states
 

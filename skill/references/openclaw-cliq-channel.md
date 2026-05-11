@@ -182,8 +182,10 @@ Native diagnostic behavior:
   `sendExactlyOneTrustedMention`, collect only `trustedSenderId`,
   `trustedMessageId`, and `deliveryId`, hash raw ids before evidence, and avoid
   `rawWebhookPayload`, `rawMessageBody`, `rawCliqReplyBody`, and `secrets`.
-  Use plan `factPrepareCommand`, `collectionGuide.factsFileKind`, and
-  `collectionGuide.factsPrepareReadyStatus` to drive the hash-only facts handoff.
+  Use plan `factPrepareCommand`, `collectionGuide.factsFileKind`,
+  `collectionGuide.factsPrepareReadyStatus`,
+  `collectionGuide.rawFactsPrepareEnv`, and `collectionGuide.rawFactsFileKind`
+  to drive the hash-only facts handoff.
   Use `ops/scripts/openclaw_cliq_hash_ref.sh` when hashing ids as a separate
   step; do not paste raw ids into evidence files. For safer handoff, set
   `ZOHO_CLIQ_TRUSTED_REPLY_FACTS_FILE` to a hash-only
@@ -195,7 +197,10 @@ Native diagnostic behavior:
   `ops/scripts/openclaw_cliq_trusted_reply_facts_prepare.sh` creates that
   hash-only facts file from raw or already-hashed live facts and emits
   `openclaw_cliq_trusted_reply_facts_prepare` with `facts_file_ready` without
-  echoing raw ids, hash values, or local paths.
+  echoing raw ids, hash values, or local paths. When using
+  `ZOHO_CLIQ_TRUSTED_REPLY_RAW_FACTS_FILE`, the source file kind is
+  `openclaw_cliq_trusted_reply_raw_facts` and it must contain ids only, no raw
+  webhook payloads, message/reply bodies, or secret fields.
 - Do not include webhook secrets, token passwords, webhook signatures, raw
   stderr, or raw Cliq message bodies in reports.
 

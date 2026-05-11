@@ -103,7 +103,11 @@ After sync, ensure the AI user follows:
     `facts_file_secret_marker_present`; use
     `ops/scripts/openclaw_cliq_trusted_reply_facts_prepare.sh` to create that
     hash-only facts file and require `openclaw_cliq_trusted_reply_facts_prepare`
-    with `facts_file_ready`; if route preflight fails with
+    with `facts_file_ready`; it can also read an untracked local
+    `openclaw_cliq_trusted_reply_raw_facts` JSON file through
+    `ZOHO_CLIQ_TRUSTED_REPLY_RAW_FACTS_FILE`, but that file must contain ids
+    only, not raw webhook payloads, message/reply bodies, or secrets; if route
+    preflight fails with
     `agent_binding_mismatch`,
     keep only the route JSON and do not claim evidence/check reports; start from
     `docs/releases/OPENCLAW_CLIQ_TRUSTED_REPLY_EVIDENCE_TEMPLATE.json`
@@ -122,8 +126,10 @@ After sync, ensure the AI user follows:
     forbidden; use `acceptedFactSources` and
     `preferredFactSource=ZOHO_CLIQ_TRUSTED_REPLY_FACTS_FILE` when a hash facts
     file is available; follow `factPrepareCommand`,
-    `collectionGuide.factsFileKind`, and
-    `collectionGuide.factsPrepareReadyStatus` for the facts-file handoff;
+    `collectionGuide.factsFileKind`,
+    `collectionGuide.factsPrepareReadyStatus`,
+    `collectionGuide.rawFactsPrepareEnv`, and
+    `collectionGuide.rawFactsFileKind` for the facts-file handoff;
     require plan `redaction` booleans to keep raw ids, hash values, local
     paths, and secrets out of the report
 - native channel RC pack preflight:

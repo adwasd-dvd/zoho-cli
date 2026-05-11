@@ -1,10 +1,19 @@
-last_run_at: "2026-05-06T07:05:04Z"
+last_run_at: "2026-05-06T07:43:12Z"
 last_result: passing
-current_focus: cliq-channel-444-trusted-reply-plan-facts-command
+current_focus: cliq-channel-445-trusted-reply-raw-facts-file
 suites:
   unit:
     status: passing
     notes:
+      - "cliq-channel-445 trusted reply raw facts file handoff completed at 2026-05-06T07:43:12Z"
+      - "added `ZOHO_CLIQ_TRUSTED_REPLY_RAW_FACTS_FILE` to `ops/scripts/openclaw_cliq_trusted_reply_facts_prepare.sh`; it reads an untracked `openclaw_cliq_trusted_reply_raw_facts` JSON containing only trusted sender/message/reply ids, hashes those ids into the existing hash-only facts file, and keeps raw ids/local paths out of stdout and generated facts"
+      - "raw facts file safety rejects body fields such as `rawWebhookPayload`, `rawMessageBody`, `rawCliqReplyBody`, `text`, `content`, or `body` with `raw_facts_file_forbidden_body_present`, and still rejects secret markers before writing a facts file"
+      - "./.venv/bin/python -m pytest -q tests/test_auto_pilot_scripts.py -k 'openclaw_cliq_trusted_reply_facts_prepare or openclaw_cliq_trusted_reply_bundle_plan_only_lists_missing_live_facts' tests/test_lane3_docs.py::test_native_cliq_channel_ai_troubleshooting_contract_present tests/test_markdown_update.py -> 5 passed, 32 deselected in 0.43s"
+      - "./.venv/bin/python -m pytest -q tests/test_auto_pilot_scripts.py -k 'openclaw_cliq' tests/test_lane3_docs.py tests/test_markdown_update.py -> 29 passed, 18 deselected in 1.72s"
+      - "bash -n ops/scripts/openclaw_cliq_trusted_reply_facts_prepare.sh ops/scripts/openclaw_cliq_trusted_reply_evidence_bundle.sh -> passed"
+      - "./.venv/bin/ruff format --check tests/test_auto_pilot_scripts.py tests/test_lane3_docs.py -> 2 files already formatted"
+      - "git diff --check -> passed"
+      - "make ci -> ruff format/check clean + pytest `1871 passed in 53.19s`"
       - "cliq-channel-444 trusted reply plan facts command completed at 2026-05-06T07:05:04Z"
       - "added `factPrepareCommand` to `openclaw_cliq_trusted_reply_evidence_bundle_plan`, plus `collectionGuide.factsFileKind=openclaw_cliq_trusted_reply_facts` and `collectionGuide.factsPrepareReadyStatus=facts_file_ready`, so agents can discover the hash-only facts handoff directly from plan JSON"
       - "./.venv/bin/python -m pytest -q tests/test_auto_pilot_scripts.py -k 'openclaw_cliq_trusted_reply_facts_prepare or openclaw_cliq_trusted_reply_bundle' tests/test_lane3_docs.py::test_lane3_required_paths_exist tests/test_lane3_docs.py::test_native_cliq_channel_ai_troubleshooting_contract_present tests/test_markdown_update.py -> 14 passed, 22 deselected in 0.92s"

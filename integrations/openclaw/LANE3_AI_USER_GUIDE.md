@@ -106,7 +106,9 @@ After sync, ensure the AI user follows:
     with `facts_file_ready`; it can also read an untracked local
     `openclaw_cliq_trusted_reply_raw_facts` JSON file through
     `ZOHO_CLIQ_TRUSTED_REPLY_RAW_FACTS_FILE`, but that file must contain ids
-    only, not raw webhook payloads, message/reply bodies, or secrets; if route
+    only, not raw webhook payloads, message/reply bodies, or secrets; the final
+    bundle can take `ZOHO_CLIQ_TRUSTED_REPLY_RAW_FACTS_FILE` directly and
+    auto-run facts prepare when no hash facts file is set; if route
     preflight fails with
     `agent_binding_mismatch`,
     keep only the route JSON and do not claim evidence/check reports; start from
@@ -123,7 +125,7 @@ After sync, ensure the AI user follows:
     `collectionGuide` to limit the live step to exactly one trusted Mention,
     `trustedSenderId`, `trustedMessageId`, and `deliveryId`, with
     `rawWebhookPayload`, `rawMessageBody`, `rawCliqReplyBody`, and `secrets`
-    forbidden; use `acceptedFactSources` and
+    forbidden; use `acceptedFactSources` containing `rawFactsFile` and
     `preferredFactSource=ZOHO_CLIQ_TRUSTED_REPLY_FACTS_FILE` when a hash facts
     file is available; follow `factPrepareCommand`,
     `collectionGuide.factsFileKind`,

@@ -261,9 +261,11 @@ artifact handoff by filename. Its `collectionGuide` tells agents to enforce
 evidence, use `factPrepareCommand`, and honor `forbiddenEvidence` by keeping
 `rawWebhookPayload`, `rawMessageBody`, `rawCliqReplyBody`, and `secrets` out of
 the artifact. Its
-`acceptedFactSources` includes `env` and `hashFactsFile`; prefer
-`ZOHO_CLIQ_TRUSTED_REPLY_FACTS_FILE` for the final run when a hash-only local
-facts JSON is available. The plan also declares
+`acceptedFactSources` includes `env`, `hashFactsFile`, and `rawFactsFile`;
+prefer `ZOHO_CLIQ_TRUSTED_REPLY_FACTS_FILE` for the final run when a hash-only
+local facts JSON is available, or pass
+`ZOHO_CLIQ_TRUSTED_REPLY_RAW_FACTS_FILE` directly to the final bundle when only
+an id-only raw-facts JSON is available. The plan also declares
 `collectionGuide.factsFileKind=openclaw_cliq_trusted_reply_facts` and
 `collectionGuide.factsPrepareReadyStatus=facts_file_ready`; it also exposes
 `collectionGuide.rawFactsPrepareEnv=ZOHO_CLIQ_TRUSTED_REPLY_RAW_FACTS_FILE` and
@@ -312,7 +314,7 @@ Or store only those three raw ids in an untracked local JSON file:
 }
 ```
 
-Then run:
+Then either run the prepare step explicitly:
 
 ```bash
 ZOHO_CLIQ_TRUSTED_REPLY_RAW_FACTS_FILE=/path/to/trusted-reply-raw-facts.json \
@@ -324,7 +326,11 @@ The raw-facts file is for local handoff only. Do not put raw webhook payloads,
 message text, reply bodies, token values, or webhook secrets into it; the
 prepare script rejects body fields with
 `raw_facts_file_forbidden_body_present` and secret markers with
-`raw_facts_file_secret_marker_present`.
+`raw_facts_file_secret_marker_present`. The final bundle also accepts
+`ZOHO_CLIQ_TRUSTED_REPLY_RAW_FACTS_FILE` directly; when no
+`ZOHO_CLIQ_TRUSTED_REPLY_FACTS_FILE` is set, it auto-runs facts prepare,
+loads the generated hash-only facts file, and still keeps stdout to the final
+trusted reply checker JSON.
 
 ## Setup states
 

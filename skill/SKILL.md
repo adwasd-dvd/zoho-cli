@@ -78,7 +78,10 @@ Use this skill as the default operating contract for an OpenClaw agent acting li
   ids from env vars or from an untracked local
   `openclaw_cliq_trusted_reply_raw_facts` JSON file via
   `ZOHO_CLIQ_TRUSTED_REPLY_RAW_FACTS_FILE`; keep that file to ids only, with no
-  raw webhook payload, message/reply body, or secret fields.
+  raw webhook payload, message/reply body, or secret fields. The final
+  `openclaw_cliq_trusted_reply_evidence_bundle.sh` also accepts
+  `ZOHO_CLIQ_TRUSTED_REPLY_RAW_FACTS_FILE` directly; when no hash facts file is
+  set, it auto-runs facts prepare and leaves stdout as the final checker JSON.
 - Before asking for a fresh trusted Bot Mention, run the same bundle with
   `ZOHO_CLIQ_TRUSTED_REPLY_PLAN_ONLY=1`; require
   `kind=openclaw_cliq_trusted_reply_evidence_bundle_plan` and use
@@ -97,8 +100,8 @@ Use this skill as the default operating contract for an OpenClaw agent acting li
   `collectionGuide.rawFactsPrepareEnv`, and `collectionGuide.rawFactsFileKind`
   instead of guessing how to prepare the hash-only facts file.
   Prefer `collectionGuide.preferredFactSource=ZOHO_CLIQ_TRUSTED_REPLY_FACTS_FILE`
-  and `acceptedFactSources` containing `hashFactsFile` for handoff between
-  fact capture and final evidence checking.
+  and `acceptedFactSources` containing both `hashFactsFile` and `rawFactsFile`
+  for handoff between fact capture and final evidence checking.
   Require `redaction.rawIdsStored=false`, `redaction.hashValuesStored=false`,
   `redaction.localPathsStored=false`, and `redaction.secretsStored=false`.
 - Use `ops/scripts/openclaw_cliq_hash_ref.sh` to hash live raw Cliq ids through

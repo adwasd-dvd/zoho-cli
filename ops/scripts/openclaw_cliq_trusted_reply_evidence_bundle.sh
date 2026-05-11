@@ -4,6 +4,7 @@ set -euo pipefail
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)"
 HASH_SCRIPT="${ZOHO_CLIQ_HASH_REF_SCRIPT:-"$ROOT/ops/scripts/openclaw_cliq_hash_ref.sh"}"
 ROUTE_SCRIPT="${ZOHO_CLIQ_ROUTE_PREFLIGHT_SCRIPT:-"$ROOT/ops/scripts/openclaw_cliq_live_smoke.sh"}"
+FACTS_PREPARE_SCRIPT="${ZOHO_CLIQ_TRUSTED_REPLY_FACTS_PREPARE_SCRIPT:-"$ROOT/ops/scripts/openclaw_cliq_trusted_reply_facts_prepare.sh"}"
 PREPARE_SCRIPT="${ZOHO_CLIQ_TRUSTED_REPLY_PREPARE_SCRIPT:-"$ROOT/ops/scripts/openclaw_cliq_trusted_reply_evidence_prepare.sh"}"
 CHECK_SCRIPT="${ZOHO_CLIQ_TRUSTED_REPLY_CHECK_SCRIPT:-"$ROOT/ops/scripts/openclaw_cliq_trusted_reply_evidence.sh"}"
 JQ_BIN="${JQ_BIN:-jq}"
@@ -17,6 +18,7 @@ CHECK_REPORT_FILE="${ZOHO_CLIQ_TRUSTED_REPLY_REPORT_FILE:-"$REPORT_DIR/openclaw_
 PLAN_REPORT_FILE="${ZOHO_CLIQ_TRUSTED_REPLY_PLAN_FILE:-"$REPORT_DIR/openclaw_cliq_trusted_reply_plan_${RUN_ID}.json"}"
 PLAN_ONLY="${ZOHO_CLIQ_TRUSTED_REPLY_PLAN_ONLY:-}"
 FACTS_FILE="${ZOHO_CLIQ_TRUSTED_REPLY_FACTS_FILE:-}"
+RAW_FACTS_FILE="${ZOHO_CLIQ_TRUSTED_REPLY_RAW_FACTS_FILE:-}"
 FACTS_TRUSTED_SENDER_ID_HASH=""
 FACTS_TRUSTED_MESSAGE_ID_HASH=""
 FACTS_DELIVERY_ID_HASH=""
@@ -162,6 +164,34 @@ load_facts_file() {
   fi
 }
 
+prepare_raw_facts_file() {
+  if [[ -z "$RAW_FACTS_FILE" || -n "$FACTS_FILE" ]]; then
+    return 0
+  fi
+  if [[ ! -x "$FACTS_PREPARE_SCRIPT" ]]; then
+    emit_error "facts_prepare_script_missing"
+    exit 2
+  fi
+
+  local generated_facts_file="$REPORT_DIR/openclaw_cliq_trusted_reply_facts_${RUN_ID}.json"
+  set +e
+  FACTS_PREPARE_OUTPUT="$(
+    env \
+      ZOHO_CLIQ_TRUSTED_REPLY_RUN_ID="$RUN_ID" \
+      ZOHO_CLIQ_TRUSTED_REPLY_REPORT_DIR="$REPORT_DIR" \
+      ZOHO_CLIQ_TRUSTED_REPLY_RAW_FACTS_FILE="$RAW_FACTS_FILE" \
+      ZOHO_CLIQ_TRUSTED_REPLY_FACTS_FILE="$generated_facts_file" \
+      "$FACTS_PREPARE_SCRIPT"
+  )"
+  FACTS_PREPARE_STATUS=$?
+  set -e
+  if [[ "$FACTS_PREPARE_STATUS" -ne 0 ]]; then
+    printf '%s\n' "$FACTS_PREPARE_OUTPUT"
+    exit "$FACTS_PREPARE_STATUS"
+  fi
+  FACTS_FILE="$generated_facts_file"
+}
+
 if [[ ! -x "$HASH_SCRIPT" ]]; then
   emit_error "hash_ref_script_missing"
   exit 2
@@ -182,8 +212,6 @@ if [[ -z "${ZOHO_CLIQ_EXPECTED_AGENT_ID:-}" ]]; then
   emit_error "expected_agent_missing"
   exit 2
 fi
-
-load_facts_file
 
 if [[ ! -f "$ROUTE_REPORT_FILE" ]]; then
   set +e
@@ -212,6 +240,9 @@ if [[ ! -f "$ROUTE_REPORT_FILE" ]]; then
     exit "$ROUTE_STATUS"
   fi
 fi
+
+prepare_raw_facts_file
+load_facts_file
 
 if [[ "$PLAN_ONLY" == "1" || "$PLAN_ONLY" == "true" ]]; then
   SENDER_HASH="$(first_non_empty "${ZOHO_CLIQ_TRUSTED_SENDER_ID_HASH:-}" "$FACTS_TRUSTED_SENDER_ID_HASH")"
@@ -283,9 +314,9 @@ if [[ "$PLAN_ONLY" == "1" || "$PLAN_ONLY" == "true" ]]; then
     printf '"redaction":{"rawIdsStored":false,"hashValuesStored":false,"localPathsStored":false,"secretsStored":false},'
     printf '"collectionGuide":{"sendExactlyOneTrustedMention":true,"requiredLiveFacts":["trustedSenderId","trustedMessageId","deliveryId"],"forbiddenEvidence":["rawWebhookPayload","rawMessageBody","rawCliqReplyBody","secrets"],"hashRawIdsBeforeEvidence":true,"preferredFactSource":"ZOHO_CLIQ_TRUSTED_REPLY_FACTS_FILE","factsFileKind":"openclaw_cliq_trusted_reply_facts","rawFactsPrepareEnv":"ZOHO_CLIQ_TRUSTED_REPLY_RAW_FACTS_FILE","rawFactsFileKind":"openclaw_cliq_trusted_reply_raw_facts","factsPrepareReadyStatus":"facts_file_ready","successStatus":"trusted_reply_recorded"},'
     printf '"factPrepareCommand":"ops/scripts/openclaw_cliq_trusted_reply_facts_prepare.sh",'
-    printf '"acceptedFactSources":["env","hashFactsFile"],'
+    printf '"acceptedFactSources":["env","hashFactsFile","rawFactsFile"],'
     printf '"acceptedFactStates":["hash","raw"],'
-    printf '"requiredEnv":["ZOHO_CLIQ_TRUSTED_REPLY_FACTS_FILE or ZOHO_CLIQ_TRUSTED_SENDER_ID_HASH or ZOHO_CLIQ_TRUSTED_SENDER_ID","ZOHO_CLIQ_TRUSTED_REPLY_FACTS_FILE or ZOHO_CLIQ_TRUSTED_MESSAGE_ID_HASH or ZOHO_CLIQ_TRUSTED_MESSAGE_ID","ZOHO_CLIQ_TRUSTED_REPLY_FACTS_FILE or ZOHO_CLIQ_DELIVERY_ID_HASH or ZOHO_CLIQ_DELIVERY_ID"],'
+    printf '"requiredEnv":["ZOHO_CLIQ_TRUSTED_REPLY_RAW_FACTS_FILE or ZOHO_CLIQ_TRUSTED_REPLY_FACTS_FILE or ZOHO_CLIQ_TRUSTED_SENDER_ID_HASH or ZOHO_CLIQ_TRUSTED_SENDER_ID","ZOHO_CLIQ_TRUSTED_REPLY_RAW_FACTS_FILE or ZOHO_CLIQ_TRUSTED_REPLY_FACTS_FILE or ZOHO_CLIQ_TRUSTED_MESSAGE_ID_HASH or ZOHO_CLIQ_TRUSTED_MESSAGE_ID","ZOHO_CLIQ_TRUSTED_REPLY_RAW_FACTS_FILE or ZOHO_CLIQ_TRUSTED_REPLY_FACTS_FILE or ZOHO_CLIQ_DELIVERY_ID_HASH or ZOHO_CLIQ_DELIVERY_ID"],'
     printf '"nextCommand":"ops/scripts/openclaw_cliq_trusted_reply_evidence_bundle.sh"'
     printf '}'
   )"

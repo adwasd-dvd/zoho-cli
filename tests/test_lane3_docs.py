@@ -241,6 +241,7 @@ def test_native_cliq_channel_ai_troubleshooting_contract_present() -> None:
         "factPrepareCommand",
         "acceptedFactSources",
         "hashFactsFile",
+        "rawFactsFile",
         "preferredFactSource",
         "factsFileKind",
         "rawFactsPrepareEnv",

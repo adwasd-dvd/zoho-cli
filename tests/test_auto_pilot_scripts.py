@@ -36,6 +36,9 @@ OPENCLAW_CLIQ_TRUSTED_REPLY_EVIDENCE_BUNDLE_SCRIPT = (
 OPENCLAW_CLIQ_RC_PACK_SCRIPT = (
     REPO_ROOT / "ops" / "scripts" / "openclaw_cliq_rc_pack.sh"
 )
+OPENCLAW_CLIQ_RC_PROMOTION_CHECK_SCRIPT = (
+    REPO_ROOT / "ops" / "scripts" / "openclaw_cliq_rc_promotion_check.sh"
+)
 
 
 def test_export_scope_recheck_runner_propagates_probe_exit_codes(
@@ -387,6 +390,164 @@ raise SystemExit(9)
     pack_calls = [call for call in calls if call["args"][:1] == ["pack"]]
     assert len(pack_calls) == 1
     assert pack_calls[0]["cwd"] == str(package_dir)
+
+
+def test_openclaw_cliq_rc_promotion_check_requires_ready_local_evidence(
+    tmp_path: Path,
+) -> None:
+    package_json = tmp_path / "package.json"
+    package_json.write_text(
+        json.dumps(
+            {
+                "name": "@adwasd/openclaw-zoho-cliq",
+                "version": "0.4.0-rc.1",
+                "openclaw": {
+                    "install": {
+                        "expectedIntegrity": "<filled-at-release>",
+                    }
+                },
+            }
+        )
+    )
+    pack_summary = tmp_path / "pack-summary.json"
+    pack_summary.write_text(
+        json.dumps(
+            {
+                "status": "passed",
+                "pack": {
+                    "name": "@adwasd/openclaw-zoho-cliq",
+                    "version": "0.4.0-rc.1",
+                    "filename": "adwasd-openclaw-zoho-cliq-0.4.0-rc.1.tgz",
+                    "integrity": "sha512-test",
+                    "shasum": "abc123",
+                },
+                "releasePosture": {
+                    "publishPerformed": False,
+                    "versionBumped": False,
+                },
+            }
+        )
+    )
+    trusted_reply = tmp_path / "trusted-reply-check.json"
+    trusted_reply.write_text(
+        json.dumps(
+            {
+                "status": "trusted_reply_recorded",
+                "redaction": {
+                    "rawWebhookPayloadStored": False,
+                    "rawMessageBodyStored": False,
+                    "rawCliqReplyBodyStored": False,
+                    "secretsStored": False,
+                    "secretMarkerPresent": False,
+                },
+            }
+        )
+    )
+    report_file = tmp_path / "promotion-check.json"
+
+    result = subprocess.run(
+        ["bash", str(OPENCLAW_CLIQ_RC_PROMOTION_CHECK_SCRIPT)],
+        cwd=REPO_ROOT,
+        env={
+            **os.environ,
+            "OPENCLAW_CLIQ_PACKAGE_JSON": str(package_json),
+            "OPENCLAW_CLIQ_PACK_SUMMARY_FILE": str(pack_summary),
+            "OPENCLAW_CLIQ_TRUSTED_REPLY_CHECK_FILE": str(trusted_reply),
+            "OPENCLAW_CLIQ_PROMOTION_REPORT_FILE": str(report_file),
+            "OPENCLAW_CLIQ_PROMOTION_RUN_ID": "unit-test",
+        },
+        capture_output=True,
+        text=True,
+        check=False,
+    )
+
+    output = f"{result.stdout}\n{result.stderr}"
+    assert result.returncode == 0, output
+    payload = json.loads(result.stdout)
+    assert payload["status"] == "ready_for_operator_publish"
+    assert payload["blockers"] == []
+    assert payload["package"]["expectedIntegrityState"] == "placeholder"
+    assert payload["pack"]["publishPerformed"] is False
+    assert payload["pack"]["versionBumped"] is False
+    assert payload["releasePosture"] == {
+        "publishPerformed": False,
+        "tagCreated": False,
+        "npmPromotionRequiresOperatorApproval": True,
+        "expectedIntegrityAction": "fill_after_publish",
+    }
+    assert json.loads(report_file.read_text()) == payload
+
+
+def test_openclaw_cliq_rc_promotion_check_blocks_published_integrity_too_early(
+    tmp_path: Path,
+) -> None:
+    package_json = tmp_path / "package.json"
+    package_json.write_text(
+        json.dumps(
+            {
+                "name": "@adwasd/openclaw-zoho-cliq",
+                "version": "0.4.0-rc.1",
+                "openclaw": {
+                    "install": {
+                        "expectedIntegrity": "sha512-already-filled",
+                    }
+                },
+            }
+        )
+    )
+    pack_summary = tmp_path / "pack-summary.json"
+    pack_summary.write_text(
+        json.dumps(
+            {
+                "status": "passed",
+                "pack": {
+                    "name": "@adwasd/openclaw-zoho-cliq",
+                    "version": "0.4.0-rc.1",
+                },
+                "releasePosture": {
+                    "publishPerformed": False,
+                    "versionBumped": False,
+                },
+            }
+        )
+    )
+    trusted_reply = tmp_path / "trusted-reply-check.json"
+    trusted_reply.write_text(
+        json.dumps(
+            {
+                "status": "trusted_reply_recorded",
+                "redaction": {
+                    "rawWebhookPayloadStored": False,
+                    "rawMessageBodyStored": False,
+                    "rawCliqReplyBodyStored": False,
+                    "secretsStored": False,
+                    "secretMarkerPresent": False,
+                },
+            }
+        )
+    )
+
+    result = subprocess.run(
+        ["bash", str(OPENCLAW_CLIQ_RC_PROMOTION_CHECK_SCRIPT)],
+        cwd=REPO_ROOT,
+        env={
+            **os.environ,
+            "OPENCLAW_CLIQ_PACKAGE_JSON": str(package_json),
+            "OPENCLAW_CLIQ_PACK_SUMMARY_FILE": str(pack_summary),
+            "OPENCLAW_CLIQ_TRUSTED_REPLY_CHECK_FILE": str(trusted_reply),
+            "OPENCLAW_CLIQ_PROMOTION_REPORT_FILE": str(tmp_path / "report.json"),
+            "OPENCLAW_CLIQ_PROMOTION_RUN_ID": "unit-test-blocked",
+        },
+        capture_output=True,
+        text=True,
+        check=False,
+    )
+
+    output = f"{result.stdout}\n{result.stderr}"
+    assert result.returncode == 1, output
+    payload = json.loads(result.stdout)
+    assert payload["status"] == "blocked"
+    assert "expected_integrity_not_placeholder" in payload["blockers"]
 
 
 def _write_fake_zoho_for_crm_fixture_smoke(tmp_path: Path) -> tuple[Path, Path]:

@@ -39,6 +39,10 @@ The live smoke harness records Zoho refresh throttling as `rate_limited` /
 gateway/webhook security gates. The RC pack harness runs typecheck/build and
 packs from the package directory, then writes an ignored JSON summary for
 release evidence without publishing or mutating version metadata at pack time.
+`ops/scripts/openclaw_cliq_rc_promotion_check.sh` combines that pack summary
+with trusted reply evidence and package metadata, then reports
+`ready_for_operator_publish` only when `expectedIntegrity` is still the release
+placeholder and no publish/tag/version-bump action has occurred.
 
 ## Contract
 

@@ -20,9 +20,9 @@ cliq:
 openclaw_cliq_channel:
   priority: 3
   status: completed_for_rc
-  phase: trusted_reply_recorded_rc_ready
+  phase: promotion_ready
   target_release: v0.4.0
-  current_milestone: cliq-channel-452-trusted-reply-recorded
+  current_milestone: cliq-channel-453-rc-promotion-check
   blockers: []
 
 crm:

@@ -72,6 +72,12 @@ Use this skill when operating through the native OpenClaw Zoho Cliq channel.
   `ops/scripts/openclaw_cliq_rc_pack.sh`; it must not publish or mutate
   package version metadata at pack time. The current RC package metadata is
   `0.4.0-rc.1`.
+- Before asking an operator to publish/promote, run
+  `ops/scripts/openclaw_cliq_rc_promotion_check.sh`; require
+  `ready_for_operator_publish`, `expectedIntegrityState=placeholder`, no pack
+  publish/version bump, and `trusted_reply_recorded`. Do not fill
+  `openclaw.install.expectedIntegrity` until the operator approves the actual
+  publish source and the published artifact integrity is known.
 
 ## Required local readiness
 
@@ -85,6 +91,7 @@ ops/scripts/openclaw_cliq_live_smoke.sh
 ops/scripts/openclaw_cliq_public_callback_smoke.sh
 ops/scripts/openclaw_cliq_hash_ref.sh
 ops/scripts/openclaw_cliq_rc_pack.sh
+ops/scripts/openclaw_cliq_rc_promotion_check.sh
 ops/scripts/openclaw_cliq_trusted_reply_evidence_bundle.sh
 ops/scripts/openclaw_cliq_trusted_reply_evidence_prepare.sh
 ops/scripts/openclaw_cliq_trusted_reply_evidence.sh

@@ -63,6 +63,10 @@ Trusted agent reply:
 1. Keep the operator tunnel or provision a durable gateway URL.
 2. Keep `ZOHO_CLIQ_PUBLIC_WEBHOOK_URL` pointed at that URL plus
    `/webhooks/cliq` when running the live smoke harness.
+   For Cloudflare Zero Trust Tunnels, add a **Published application** route to
+   the tunnel and forward it to `HTTP` service `127.0.0.1:18789`; do not use
+   Private hostname, Private CIDR, or Workers VPC for the public Zoho Bot
+   callback. A Cloudflare tunnel with zero routes is not ready for Zoho.
    For an ingress-only check before asking Zoho to call the Bot, run:
 
    ```bash

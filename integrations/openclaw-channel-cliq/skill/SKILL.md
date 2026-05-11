@@ -60,6 +60,9 @@ Use this skill when operating through the native OpenClaw Zoho Cliq channel.
   `ops/scripts/openclaw_cliq_public_callback_smoke.sh`; require
   `openclaw_cliq_public_callback_smoke` with `public_callback_verified`, and
   keep webhook bodies, response bodies, and secrets out of reports.
+  For Cloudflare Zero Trust Tunnels, publish the route as a Published
+  application to `HTTP` service `127.0.0.1:18789`; zero routes means ingress is
+  not ready yet.
 - Before cutting a local/operator or npm/GitHub RC artifact, run
   `ops/scripts/openclaw_cliq_rc_pack.sh`; it must not publish or mutate
   package version metadata at pack time. The current RC package metadata is

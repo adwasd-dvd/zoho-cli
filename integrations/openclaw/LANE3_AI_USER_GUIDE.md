@@ -97,6 +97,9 @@ After sync, ensure the AI user follows:
     missing-secret `401` plus authenticated unsupported-handler `200`, reject
     placeholders, treat `public_webhook_url_requires_https` as a public-ingress
     config blocker, and never store webhook bodies, response bodies, or secrets
+  - for Cloudflare Zero Trust Tunnels, choose Published application and forward
+    the public hostname to `HTTP` service `127.0.0.1:18789`; if the tunnel has
+    zero routes, fix Cloudflare routing before changing Zoho or OpenClaw config
   - after a controlled trusted Mention, run
     `ops/scripts/openclaw_cliq_trusted_reply_evidence_bundle.sh` with expected
     agent/model and either raw ids or `sha256:` references; the bundle

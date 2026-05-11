@@ -228,6 +228,26 @@ unsupported-handler POST returns `200`, and emits redacted
 `public_callback_verified`; the report stores status codes, scheme/host/path,
 and redaction booleans, but not webhook bodies, response bodies, or secrets.
 
+### Cloudflare Tunnel fast path
+
+When using Cloudflare Zero Trust Tunnels for the first RC smoke, create a route
+with **Published application**, not Private hostname / Private CIDR / Workers
+VPC. The route should publish a public hostname and forward it to the local
+OpenClaw gateway:
+
+- Public hostname: an operator-owned hostname, for example
+  `cliq-test-bot.<your-domain>`
+- Path: empty
+- Service type: `HTTP`
+- Service URL: `127.0.0.1:18789`
+
+After saving, set
+`ZOHO_CLIQ_PUBLIC_WEBHOOK_URL=https://<published-hostname>/webhooks/cliq` and
+run `ops/scripts/openclaw_cliq_public_callback_smoke.sh`. The tunnel route is
+ready for Zoho Bot handler traffic only after the smoke reports
+`public_callback_verified`. If the Cloudflare route count is zero, add the
+Published application route before debugging Zoho or OpenClaw.
+
 Set `ZOHO_CLIQ_EXPECTED_AGENT_ID` before live rollout smoke when a Cliq account
 must route to a specific OpenClaw agent. The gate reads OpenClaw config,
 verifies `cliq/<account>` binding, and can also enforce

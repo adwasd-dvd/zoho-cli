@@ -145,6 +145,10 @@ Native diagnostic behavior:
   authenticated unsupported-handler `200`, rejects placeholders, reports
   `public_webhook_url_requires_https` for non-HTTPS public URLs, and stores no
   webhook bodies, response bodies, or secrets.
+  If the ingress is Cloudflare Zero Trust Tunnels, configure the route as a
+  Published application to `HTTP` service `127.0.0.1:18789`; do not use Private
+  hostname for the public Zoho Bot callback, and treat zero Cloudflare routes as
+  an ingress setup blocker.
 - For route-specific rollout smoke, set `ZOHO_CLIQ_EXPECTED_AGENT_ID` and
   optionally `ZOHO_CLIQ_EXPECTED_AGENT_MODEL`. Use
   `ZOHO_CLIQ_ROUTE_BINDING_ONLY=1` for offline preflight and
@@ -278,6 +282,8 @@ Human setup checkpoints:
 - The public callback smoke is run from the repo root when a tunnel/gateway URL
   is available; it should write redacted `openclaw_cliq_public_callback_smoke`
   evidence with `public_callback_verified`.
+  For Cloudflare, first confirm a Published application route exists to
+  `127.0.0.1:18789`.
 - The live smoke gate script is run from the repo root, with
   `token_refresh_rate_limited` recorded as `skip_deferred`. When a specific
   OpenClaw agent must receive Cliq traffic, run the route-only preflight first

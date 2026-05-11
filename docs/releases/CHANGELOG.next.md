@@ -83,6 +83,7 @@
 - Extended the trusted reply evidence bundle so `ZOHO_CLIQ_TRUSTED_REPLY_RAW_FACTS_FILE` can be passed directly; when no hash facts file is set, the bundle auto-runs facts prepare, loads the generated hash-only facts, and keeps stdout reserved for the final checker JSON.
 - Hardened trusted reply raw fact preparation so placeholder ids such as `<trusted_cliq_user_id>` or `replace-me` are rejected before hashing or evidence generation.
 - Added `ops/scripts/openclaw_cliq_public_callback_smoke.sh` and wired it into the live smoke gate when `ZOHO_CLIQ_PUBLIC_WEBHOOK_URL` is set; the script verifies any HTTPS tunnel/gateway URL with missing-secret `401` plus authenticated unsupported-handler `200`, rejects placeholder/non-HTTPS public URLs, and emits redacted `openclaw_cliq_public_callback_smoke` evidence with `public_callback_verified` without storing webhook bodies, response bodies, or secrets.
+- Documented the Cloudflare Tunnel fast path for the real Bot callback smoke: use a Zero Trust Tunnel Published application route to `HTTP` service `127.0.0.1:18789`, treat zero routes as an ingress setup blocker, and run the public callback smoke before editing Zoho Bot handlers.
 
 ### Architecture / modularization (2026-05-04T18:19:47Z)
 - Started `cliq-210` post-RC modularization by extracting the `zoho cliq status` and `zoho cliq capabilities` command bodies into `zoho_cli/commands/cliq_readiness.py`, leaving `zoho_cli/cli.py` with runtime dependency injection plus existing Typer registration only. Command names, help text, and JSON output are unchanged.

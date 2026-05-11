@@ -180,6 +180,9 @@ one native OpenClaw turn and one Cliq reply.
 ## Verification
 
 1. Start the OpenClaw gateway and make it reachable through a tunnel/gateway.
+   With Cloudflare Zero Trust Tunnels, use a Published application route whose
+   HTTP service URL is `127.0.0.1:18789`; a tunnel that still shows zero routes
+   will not receive Zoho Bot callbacks.
 2. Set `ZOHO_CLIQ_PUBLIC_WEBHOOK_URL` to the public URL plus `/webhooks/cliq`.
 3. Set `ZOHO_CLIQ_WEBHOOK_SECRET` in the OpenClaw runtime environment.
 4. Run `ops/scripts/openclaw_cliq_public_callback_smoke.sh` to verify the

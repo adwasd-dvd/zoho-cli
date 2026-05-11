@@ -55,6 +55,9 @@ Use this skill as the default operating contract for an OpenClaw agent acting li
   `ZOHO_CLIQ_PUBLIC_CALLBACK_REPORT_FILE` when requested, rejects placeholder
   URLs, reports `public_webhook_url_requires_https` for non-HTTPS public URLs,
   and stores no webhook bodies, response bodies, or secrets.
+  For Cloudflare Zero Trust Tunnels, choose Published application and forward
+  the public hostname to `HTTP` service `127.0.0.1:18789`; a tunnel with zero
+  routes is not ready for Zoho Bot traffic.
 - For native Cliq rollout smoke that must target a specific OpenClaw agent, set
   `ZOHO_CLIQ_EXPECTED_AGENT_ID` and optionally
   `ZOHO_CLIQ_EXPECTED_AGENT_MODEL`; use `ZOHO_CLIQ_ROUTE_BINDING_ONLY=1` for

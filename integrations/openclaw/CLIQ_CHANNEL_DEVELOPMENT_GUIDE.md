@@ -192,6 +192,9 @@ deployment prerequisite when no reachable HTTPS tunnel or gateway URL is
 configured; the public callback smoke emits
 `openclaw_cliq_public_callback_smoke` JSON with `public_callback_verified` when
 missing-secret `401` and authenticated unsupported-handler `200` both pass.
+For the Cloudflare fast path, use a Zero Trust Tunnel Published application
+route to `HTTP` service `127.0.0.1:18789`; a tunnel with zero routes is an
+ingress setup blocker, not a Zoho handler or OpenClaw routing problem.
 
 Live gate command:
 

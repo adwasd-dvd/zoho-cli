@@ -1,10 +1,16 @@
-last_run_at: "2026-05-11T18:42:28Z"
+last_run_at: "2026-05-11T19:34:56Z"
 last_result: passing
-current_focus: cliq-channel-448-public-callback-smoke
+current_focus: cliq-channel-449-cloudflare-fast-path-docs
 suites:
   unit:
     status: passing
     notes:
+      - "cliq-channel-449 Cloudflare fast-path docs completed at 2026-05-11T19:34:56Z"
+      - "documented the real Bot callback Cloudflare route as Published application -> HTTP service `127.0.0.1:18789`, treating zero routes as an ingress setup blocker before Zoho/OpenClaw debugging"
+      - "./.venv/bin/python -m pytest -q tests/test_lane3_docs.py::test_native_cliq_channel_ai_troubleshooting_contract_present tests/test_openclaw_channel_contract.py::test_openclaw_cliq_channel_rc_checklist_has_cut_contract tests/test_openclaw_channel_contract.py::test_openclaw_cliq_bot_handler_templates_cover_real_handlers tests/test_markdown_update.py -> 4 passed in 0.03s"
+      - "./.venv/bin/ruff format --check tests/test_lane3_docs.py tests/test_openclaw_channel_contract.py -> 2 files already formatted"
+      - "ruby YAML parse for project/module_status/test_status -> YAML_PARSE_OK"
+      - "git diff --check -> passed"
       - "cliq-channel-448 public callback smoke completed at 2026-05-11T18:42:28Z"
       - "added `ops/scripts/openclaw_cliq_public_callback_smoke.sh`; it verifies any HTTPS `ZOHO_CLIQ_PUBLIC_WEBHOOK_URL` by checking missing-secret `401` plus authenticated unsupported-handler `200`, rejects placeholders/non-HTTPS public URLs, and emits redacted `openclaw_cliq_public_callback_smoke` evidence with `public_callback_verified`"
       - "wired `ops/scripts/openclaw_cliq_live_smoke.sh` to run the public callback smoke whenever `ZOHO_CLIQ_PUBLIC_WEBHOOK_URL` is set"

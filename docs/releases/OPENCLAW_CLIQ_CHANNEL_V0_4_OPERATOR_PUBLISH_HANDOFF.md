@@ -1,0 +1,107 @@
+# OpenClaw Cliq channel v0.4 operator publish handoff
+
+This handoff starts only after the local no-publish promotion check reports
+`ready_for_operator_publish`.
+
+Current baseline:
+
+- Package: `@adwasd/openclaw-zoho-cliq`
+- Version: `0.4.0-rc.1`
+- Tarball: `adwasd-openclaw-zoho-cliq-0.4.0-rc.1.tgz`
+- Local pack integrity:
+  `sha512-2gp4TAicx7Ax07jBI2HNl9WFlIrVaqMh082mLAN5NVxF3p3BL7AWEgQDJfs+TOzwU2zLiSNdEu79BEFNZGsNEw==`
+- Local pack shasum: `7717aa539f3ccf8d1ee1be560283ea30fa6a87b6`
+- Trusted reply evidence: `trusted_reply_recorded`
+
+## Non-automated approval boundary
+
+Do not let an agent perform these actions without explicit operator approval:
+
+1. `npm publish` or any npm promotion command.
+2. Git tag creation or GitHub release creation.
+3. Filling `openclaw.install.expectedIntegrity`.
+4. Marking a durable production tunnel/gateway decision complete.
+
+The placeholder `openclaw.install.expectedIntegrity=<filled-at-release>` is
+correct before publish. Fill it only after the approved artifact is published
+and the published integrity is known.
+
+## Required preflight
+
+Run these immediately before any publish/tag action:
+
+```bash
+git status --short
+
+OPENCLAW_CLIQ_PROMOTION_RUN_ID="$(date -u +%Y%m%dT%H%M%SZ)-operator" \
+  ops/scripts/openclaw_cliq_rc_promotion_check.sh
+
+NPM_CONFIG_CACHE=/private/tmp/zoho-cli-npm-cache \
+OPENCLAW_CLIQ_PACK_RUN_ID="$(date -u +%Y%m%dT%H%M%SZ)-operator-pack" \
+  ops/scripts/openclaw_cliq_rc_pack.sh
+
+./.venv/bin/python -m pytest -q \
+  tests/test_auto_pilot_scripts.py::test_openclaw_cliq_rc_promotion_check_requires_ready_local_evidence \
+  tests/test_auto_pilot_scripts.py::test_openclaw_cliq_rc_promotion_check_blocks_published_integrity_too_early \
+  tests/test_openclaw_channel_contract.py::test_openclaw_cliq_channel_rc_checklist_has_cut_contract \
+  tests/test_markdown_update.py
+```
+
+Expected local pre-publish posture:
+
+- `status=ready_for_operator_publish`
+- `blockers=[]`
+- `expectedIntegrityState=placeholder`
+- `pack.publishPerformed=false`
+- `pack.versionBumped=false`
+- `trustedReply.status=trusted_reply_recorded`
+- `npmPromotionRequiresOperatorApproval=true`
+
+## Operator publish choices
+
+Choose exactly one path:
+
+1. Local/operator RC only: keep the tarball under `.tmp/openclaw-cliq-rc-pack`,
+   distribute it manually, and do not fill `expectedIntegrity`.
+2. npm RC publish: publish `@adwasd/openclaw-zoho-cliq@0.4.0-rc.1`, capture
+   the registry integrity, then fill `openclaw.install.expectedIntegrity`.
+3. GitHub release artifact: attach the tarball to a release or prerelease,
+   record the artifact digest, and document that install path separately from
+   npm.
+
+Do not mix paths in one release note. If npm and GitHub artifacts are both
+used, record which artifact is canonical for OpenClaw install metadata.
+
+## Post-publish checks
+
+After the approved publish path finishes:
+
+1. Update `openclaw.install.expectedIntegrity` only when using npm as the
+   canonical install source.
+2. Update `docs/releases/CHANGELOG.next.md` with the published artifact source.
+3. Install the published artifact in a Temp-HOME OpenClaw profile.
+4. Run `plugins inspect`, `plugins doctor`, `channels status`, and
+   `channels capabilities`.
+5. Re-run focused OpenClaw Cliq docs/tests and `make ci`.
+6. Commit and push the post-publish metadata/evidence slice.
+
+## Abort conditions
+
+Abort and do not publish if any of these appear:
+
+- `token_refresh_rate_limited` during live checks: wait for cooldown.
+- `expected_integrity_not_placeholder` before publish approval.
+- `pack_publish_performed` or `pack_version_bumped` in local preflight.
+- `trusted_reply_not_recorded`.
+- Any raw webhook payload, raw message body, raw reply body, or secret marker in
+  release evidence.
+
+## Release-note facts
+
+Release notes should say:
+
+- Public callback was verified through the operator Cloudflare route.
+- One trusted Cliq Bot Mention reached `zoho-employee-test`, used
+  `openai-codex/gpt-5.3-codex`, and delivered exactly one Cliq reply.
+- Durable production tunnel/gateway selection remains an operations decision
+  unless the operator explicitly finalizes it during this release.

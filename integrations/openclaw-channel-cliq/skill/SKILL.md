@@ -78,6 +78,11 @@ Use this skill when operating through the native OpenClaw Zoho Cliq channel.
   publish/version bump, and `trusted_reply_recorded`. Do not fill
   `openclaw.install.expectedIntegrity` until the operator approves the actual
   publish source and the published artifact integrity is known.
+- For the operator approval boundary and release action handoff, use
+  `docs/releases/OPENCLAW_CLIQ_CHANNEL_V0_4_OPERATOR_PUBLISH_HANDOFF.md`.
+  It defines the no-agent `npm publish`/tag/GitHub release boundary, the
+  preflight commands, local/operator vs npm vs GitHub artifact choices,
+  post-publish checks, and abort conditions.
 
 ## Required local readiness
 

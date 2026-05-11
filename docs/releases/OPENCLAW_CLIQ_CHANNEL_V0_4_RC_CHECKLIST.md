@@ -8,6 +8,8 @@ for the remaining public callback gate, `cliq-channel-421` verifies those
 accepted handler families against native webhook processing, and
 `cliq-channel-422` promotes the source-controlled package metadata to
 `0.4.0-rc.1`.
+`cliq-channel-453` adds a no-publish promotion preflight, and
+`cliq-channel-454` adds the operator publish handoff.
 
 SDK contract source of truth:
 `docs/architecture/OPENCLAW_CLIQ_CHANNEL_SDK_CONTRACT.md`.
@@ -24,10 +26,10 @@ compatibility checks are green. A reachable public callback has been verified
 with an operator Cloudflare tunnel and a Zoho Cliq Bot handler POSTing to
 `/webhooks/cliq` with `X-Cliq-Webhook-Secret`.
 
-Do not claim production incident readiness until one controlled trusted Bot
-Mention proves `cliq/default` routes to the intended Codex-backed agent and
-delivers exactly one Cliq reply. The live environment currently binds
-`cliq/default` to `zoho-employee-test`.
+One controlled trusted Bot Mention has proven `cliq/default` routes to the
+intended Codex-backed agent and delivers exactly one Cliq reply. Durable
+production tunnel/gateway selection remains an operations decision. The live
+environment currently binds `cliq/default` to `zoho-employee-test`.
 
 ## Included scope
 
@@ -53,6 +55,7 @@ delivers exactly one Cliq reply. The live environment currently binds
 | Beta early warning | Temp-HOME `npx -y openclaw@2026.5.4-beta.3` linked install/inspect/doctor passed. |
 | Local package artifact preflight | `NPM_CONFIG_CACHE=/private/tmp/zoho-cli-npm-cache OPENCLAW_CLIQ_PACK_RUN_ID=20260511T214240Z-live-reply ops/scripts/openclaw_cliq_rc_pack.sh` passed at `2026-05-11T21:47:10Z`; the script reran typecheck/build and then packed from the plugin directory into `.tmp/openclaw-cliq-rc-pack`. Tarball `adwasd-openclaw-zoho-cliq-0.4.0-rc.1.tgz`, size `95394`, unpacked size `470591`, entry count `67`, shasum `7717aa539f3ccf8d1ee1be560283ea30fa6a87b6`, integrity `sha512-2gp4TAicx7Ax07jBI2HNl9WFlIrVaqMh082mLAN5NVxF3p3BL7AWEgQDJfs+TOzwU2zLiSNdEu79BEFNZGsNEw==`. Summary report path pattern: `tests/auto_pilot/reports/openclaw_cliq_rc_pack_summary_<run-id>.json`. |
 | RC promotion preflight | `OPENCLAW_CLIQ_PROMOTION_RUN_ID=20260511T222653Z-operator-ready-v2 ops/scripts/openclaw_cliq_rc_promotion_check.sh` passed locally with `status=ready_for_operator_publish`, no blockers, package version `0.4.0-rc.1`, `expectedIntegrityState=placeholder`, pack `publishPerformed=false`, pack `versionBumped=false`, trusted reply `trusted_reply_recorded`, and `npmPromotionRequiresOperatorApproval=true`. |
+| Operator publish handoff | `docs/releases/OPENCLAW_CLIQ_CHANNEL_V0_4_OPERATOR_PUBLISH_HANDOFF.md` defines the non-automated approval boundary, required preflight commands, publish path choices, post-publish checks, abort conditions, and release-note facts. |
 | Public callback auth/reachability | Cloudflare Published application route `https://cliq.hpyio.com/webhooks/cliq` is reachable; `ops/scripts/openclaw_cliq_public_callback_smoke.sh` passed with `status=public_callback_verified`, missing-secret `401`, authenticated unsupported-handler `200`, and no stored webhook bodies, response bodies, or secrets. |
 | Live route binding | `openclaw config validate` passes with `cliq/default -> zoho-employee-test`; both `main` and `zoho-employee-test` are configured for `openai-codex/gpt-5.3-codex`. |
 | Native dispatch identity | Accepted webhook/polling turns set OpenClaw `Provider`/`Surface` to `cliq` so normal final answers deliver through the Cliq outbound adapter; handler source facts stay in supplemental context. |
@@ -226,6 +229,9 @@ cooldown, and rerun without bursty refresh loops.
 7. Publish release notes that explicitly list trusted agent reply evidence as
    completed for the operator Cloudflare route; durable production
    tunnel/gateway selection remains an operations decision.
+
+For the operator approval boundary, publish choices, and post-publish checks,
+use `docs/releases/OPENCLAW_CLIQ_CHANNEL_V0_4_OPERATOR_PUBLISH_HANDOFF.md`.
 
 ## Non-goals
 

@@ -43,6 +43,11 @@ release evidence without publishing or mutating version metadata at pack time.
 with trusted reply evidence and package metadata, then reports
 `ready_for_operator_publish` only when `expectedIntegrity` is still the release
 placeholder and no publish/tag/version-bump action has occurred.
+`docs/releases/OPENCLAW_CLIQ_CHANNEL_V0_4_OPERATOR_PUBLISH_HANDOFF.md` is the
+operator handoff for the approval boundary, preflight commands, publish path
+choice, post-publish checks, and abort conditions; agents must not run
+`npm publish`, create tags/releases, or fill `openclaw.install.expectedIntegrity`
+without explicit operator approval.
 
 ## Contract
 
@@ -65,9 +70,14 @@ Host compatibility maintenance lives in
 `../../docs/releases/OPENCLAW_CLIQ_CHANNEL_COMPATIBILITY.md`.
 The v0.4 RC decision checklist lives in
 `../../docs/releases/OPENCLAW_CLIQ_CHANNEL_V0_4_RC_CHECKLIST.md`.
+The v0.4 operator publish handoff lives in
+`../../docs/releases/OPENCLAW_CLIQ_CHANNEL_V0_4_OPERATOR_PUBLISH_HANDOFF.md`.
 
 Repeatable local RC package preflight:
 `../../ops/scripts/openclaw_cliq_rc_pack.sh`.
+
+No-publish local RC promotion preflight:
+`../../ops/scripts/openclaw_cliq_rc_promotion_check.sh`.
 
 ## Config example
 

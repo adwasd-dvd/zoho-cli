@@ -123,9 +123,14 @@ def test_openclaw_cliq_channel_rc_checklist_has_cut_contract():
         "cliq-channel-420",
         "cliq-channel-421",
         "cliq-channel-422",
+        "cliq-channel-453",
+        "cliq-channel-454",
         "ops/scripts/openclaw_cliq_rc_pack.sh",
+        "ops/scripts/openclaw_cliq_rc_promotion_check.sh",
         "OPENCLAW_CLIQ_BOT_HANDLER_TEMPLATES.md",
+        "OPENCLAW_CLIQ_CHANNEL_V0_4_OPERATOR_PUBLISH_HANDOFF.md",
         "Public callback auth/reachability",
+        "Operator publish handoff",
         "https://cliq.hpyio.com/webhooks/cliq",
         "ops/scripts/openclaw_cliq_public_callback_smoke.sh",
         "public_callback_verified",
@@ -145,6 +150,35 @@ def test_openclaw_cliq_channel_rc_checklist_has_cut_contract():
 
     for marker in required:
         assert marker in checklist
+
+
+def test_openclaw_cliq_operator_publish_handoff_has_approval_boundary():
+    handoff = read(
+        "docs/releases/OPENCLAW_CLIQ_CHANNEL_V0_4_OPERATOR_PUBLISH_HANDOFF.md"
+    )
+
+    required = [
+        "ready_for_operator_publish",
+        "npm publish",
+        "Git tag creation",
+        "openclaw.install.expectedIntegrity",
+        "<filled-at-release>",
+        "OPENCLAW_CLIQ_PROMOTION_RUN_ID",
+        "ops/scripts/openclaw_cliq_rc_promotion_check.sh",
+        "ops/scripts/openclaw_cliq_rc_pack.sh",
+        "trusted_reply_recorded",
+        "npmPromotionRequiresOperatorApproval=true",
+        "Do not let an agent perform",
+        "Local/operator RC only",
+        "npm RC publish",
+        "GitHub release artifact",
+        "Abort conditions",
+        "token_refresh_rate_limited",
+        "trusted_reply_not_recorded",
+    ]
+
+    for marker in required:
+        assert marker in handoff
 
 
 def test_openclaw_cliq_bot_handler_templates_cover_real_handlers():

@@ -1,10 +1,18 @@
-last_run_at: "2026-05-11T22:32:22Z"
+last_run_at: "2026-05-11T23:46:30Z"
 last_result: passing
-current_focus: cliq-channel-453-rc-promotion-check
+current_focus: cliq-channel-454-operator-publish-handoff
 suites:
   unit:
     status: passing
     notes:
+      - "cliq-channel-454 operator publish handoff completed at 2026-05-11T23:44:42Z"
+      - "added `docs/releases/OPENCLAW_CLIQ_CHANNEL_V0_4_OPERATOR_PUBLISH_HANDOFF.md` with the no-agent boundary for `npm publish`, Git tag/GitHub release creation, `openclaw.install.expectedIntegrity` filling, and durable gateway finalization"
+      - "handoff documents required preflight commands, local/operator RC vs npm RC vs GitHub artifact choices, post-publish checks, abort conditions, and release-note facts while leaving actual publish/tag/npm promotion blocked until explicit operator approval"
+      - "./.venv/bin/python -m pytest -q tests/test_openclaw_channel_contract.py::test_openclaw_cliq_channel_rc_checklist_has_cut_contract tests/test_openclaw_channel_contract.py::test_openclaw_cliq_operator_publish_handoff_has_approval_boundary tests/test_lane3_docs.py::test_native_cliq_channel_ai_troubleshooting_contract_present tests/test_markdown_update.py -> 4 passed in 0.02s"
+      - "OPENCLAW_CLIQ_PROMOTION_RUN_ID=20260511T234630Z-operator-handoff ops/scripts/openclaw_cliq_rc_promotion_check.sh -> `ready_for_operator_publish`, no blockers, `expectedIntegrityState=placeholder`, pack `publishPerformed=false`, pack `versionBumped=false`, trusted reply `trusted_reply_recorded`, `npmPromotionRequiresOperatorApproval=true`"
+      - "./.venv/bin/ruff format --check tests/test_openclaw_channel_contract.py && ./.venv/bin/ruff check tests/test_openclaw_channel_contract.py -> passed"
+      - "ruby YAML parse for project/module_status/test_status -> YAML_PARSE_OK"
+      - "git diff --check -> passed"
       - "cliq-channel-453 no-publish RC promotion check completed at 2026-05-11T22:32:22Z"
       - "added `ops/scripts/openclaw_cliq_rc_promotion_check.sh`; it checks package metadata, latest RC pack summary, trusted reply checker output, `expectedIntegrity` placeholder state, and no publish/version-bump posture before reporting `ready_for_operator_publish`"
       - "OPENCLAW_CLIQ_PROMOTION_RUN_ID=20260511T222653Z-operator-ready-v2 ops/scripts/openclaw_cliq_rc_promotion_check.sh -> `ready_for_operator_publish`, no blockers, `expectedIntegrityState=placeholder`, pack `publishPerformed=false`, pack `versionBumped=false`, trusted reply `trusted_reply_recorded`, `npmPromotionRequiresOperatorApproval=true`"

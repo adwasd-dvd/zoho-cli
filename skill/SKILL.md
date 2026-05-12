@@ -256,7 +256,10 @@ Use this skill as the default operating contract for an OpenClaw agent acting li
   `nextAction` values such as `provide_fixture_payload_file`,
   `run_crm_fixture_live_smoke_dry_run`, and
   `operator_review_payload_cleanup_and_approval`, while keeping
-  `agentMayExecuteLiveFixture=false`.
+  `agentMayExecuteLiveFixture=false`. Prefer `operatorReview.readyFacts` and
+  `operatorReview.missingFacts` for AI handoff decisions; they are category
+  names only and must not contain raw payload values, fixture email, cleanup
+  text, or selector values.
 - Draft before high-impact send/delete actions unless the user explicitly asks for direct execution.
 - Ask for explicit approval before running any install/update command that modifies tools or skill files.
 - File low-risk, sanitized CLI bugs and suggestions directly in `adwasd-dvd/zoho-cli` GitHub issues after duplicate search; ask for approval before including private context or changing GitHub settings/labels/code.

@@ -90,6 +90,30 @@ PAYLOAD="$("$JQ_BIN" -n \
       else []
       end
     ) as $blockers
+  | (
+      [
+        (if ($preflightReport.payload.dedicatedFixtureCandidate // false) then "dedicated_fixture_payload" else empty end),
+        (if (($preflightReport.payload.placeholderEmailCount // null) == 0) then "placeholder_email_absent" else empty end),
+        (if ($preflightReport.cleanup.qualityReady // false) then "cleanup_quality_ready" else empty end),
+        (if (($preflightReport.cleanup.selectorTypes // []) | length) > 0 then "cleanup_selector_types_present" else empty end),
+        (if $preflightStatus == "payload_preflight_ready" then "payload_preflight_ready" else empty end),
+        (if (($readinessStatus == "ready_for_operator_live_fixture") or ($readinessStatus == "live_fixture_recorded")) then "dry_run_readiness_ready" else empty end)
+      ] | unique
+    ) as $readyFacts
+  | (
+      [
+        (if ($blockers | index("payload_file_required")) or ($blockers | index("payload_file_missing")) then "fixture_payload_file" else empty end),
+        (if ($blockers | index("payload_json_invalid")) then "fixture_payload_json" else empty end),
+        (if ($blockers | index("payload_record_count_not_one")) then "single_record_payload" else empty end),
+        (if ($blockers | index("required_fields_missing")) then "required_fields" else empty end),
+        (if ($blockers | index("fixture_payload_placeholder_email")) then "dedicated_fixture_email" else empty end),
+        (if ($blockers | index("cleanup_plan_missing")) then "cleanup_plan" else empty end),
+        (if ($blockers | index("cleanup_plan_too_short")) or ($blockers | index("cleanup_plan_action_missing")) or ($blockers | index("cleanup_plan_target_missing")) then "cleanup_plan_quality" else empty end),
+        (if ($blockers | index("cleanup_plan_selector_missing")) then "cleanup_selector" else empty end),
+        (if ($preflightStatus == "payload_preflight_ready") and $readinessSkipped then "dry_run_smoke_summary" else empty end),
+        (if (($readinessSkipped | not) and ((($readinessStatus == "ready_for_operator_live_fixture") or ($readinessStatus == "live_fixture_recorded")) | not)) then "dry_run_readiness_evidence" else empty end)
+      ] | unique
+    ) as $missingFacts
   | {
       schemaVersion: 1,
       kind: "crm_fixture_operator_packet",
@@ -125,6 +149,19 @@ PAYLOAD="$("$JQ_BIN" -n \
         blockers: ($readinessReport.blockers // []),
         evidenceStatus: ($readinessReport.evidence.status // null),
         nextAction: ($readinessReport.nextAction // null)
+      },
+      operatorReview: {
+        readyFacts: $readyFacts,
+        missingFacts: $missingFacts,
+        cleanupSelectorTypes: ($preflightReport.cleanup.selectorTypes // []),
+        cleanupSelectorTypeCount: (($preflightReport.cleanup.selectorTypes // []) | length),
+        redaction: {
+          rawPayloadStored: false,
+          rawFieldValuesStored: false,
+          rawEmailStored: false,
+          rawCleanupPlanStored: false,
+          rawSelectorValuesStored: false
+        }
       },
       releasePosture: {
         normalUpsertExecuteBlocked: true,

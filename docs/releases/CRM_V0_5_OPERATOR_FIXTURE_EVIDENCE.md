@@ -83,6 +83,14 @@ Packet statuses:
   are supplied
 - `live_fixture_recorded` after the explicitly approved live fixture smoke
 
+The packet also includes `operatorReview.readyFacts` and
+`operatorReview.missingFacts`, with categories such as
+`dedicated_fixture_payload`, `cleanup_quality_ready`,
+`cleanup_selector_types_present`, `dry_run_smoke_summary`, and
+`dry_run_readiness_ready`. These facts are safe for AI agents to inspect because
+they do not include raw payload values, raw fixture email, raw cleanup text, or
+raw selector values.
+
 ```bash
 ZOHO_CRM_FIXTURE_PAYLOAD_FILE=/tmp/lead-fixture.json \
 ZOHO_CRM_FIXTURE_IDEMPOTENCY_KEY=crm-fixture-$(date +%F) \

@@ -70,6 +70,7 @@ Current implementation-only delta:
 - CRM v0.5 SDK adoption has started. Run `zoho crm sdk-status` before SDK work, treat `zohocrmsdk8_0==5.0.0` as optional `zoho-cli[crm-sdk]` readiness, and follow `docs/architecture/CRM_V0_5_SDK_ADOPTION_PLAN.md` before changing CRM command output shapes. `crm-004/005` add the default-disabled `zoho_cli/crm_sdk.py` data-center adapter and explicit `--adapter sdk-v8` read gates; `crm-006` locks `apiVersionPolicy` so HTTP v2 is default and SDK/API v8 is explicit-only; `crm-007` adds `zoho crm write-plan` / `writeSurfacePolicy` with `writesEnabled=false`, dry-run default, exact confirmation, idempotency, JSON payload, and audit requirements; `crm-008` adds `zoho crm upsert` dry-run with `payloadDigest`, `recordDigests`, `requiredConfirmation`, and `live_write_not_enabled` for `--execute`; `crm-009` adds `zoho crm upsert-gate` with `liveWritesEnabled=false`, `decision=defer_live_execution`, scope matching, and blockers including `audit_persistence_not_implemented` plus `controlled_live_fixture_not_recorded`; `crm-010` adds redacted JSONL `auditPersistence` plus `zoho crm write-audit`, `--audit-file`, and `ZOHO_CRM_WRITE_AUDIT`; `crm-011` adds `zoho crm fixture-plan` with `policyId=crm-011-controlled-live-fixture-gate` to inspect dry-run/gate/scope audit evidence without writing CRM data; `crm-012` adds `zoho crm fixture-execute` with `policyId=crm-012-guarded-fixture-execution-harness`, dry-run default, exact approval, cleanup, env, digest, idempotency, and audit gates for one controlled live fixture; `crm-013` adds `ops/scripts/crm_fixture_live_smoke.sh` for repeatable redacted fixture smoke reports; `crm-014` adds `zoho crm fixture-evidence` with `policyId=crm-014-operator-fixture-evidence` and statuses `incomplete`, `ready_for_operator_live_fixture`, and `live_fixture_recorded`; SDK resources must stay under `ZOHO_CRM_SDK_RESOURCE_PATH` or the CLI-managed cache path.
 - `crm-015` adds `ops/scripts/crm_fixture_operator_readiness_bundle.sh` as the no-write operator readiness bundle for an existing dry-run smoke summary.
 - `crm-015` also adds `ops/scripts/crm_fixture_operator_packet.sh` as the preferred autonomous handoff wrapper: it reports missing payload/cleanup, payload preflight readiness, dry-run readiness, or recorded live fixture evidence without granting live CRM write permission.
+- `crm-019` adds `operatorReview.readyFacts` and `operatorReview.missingFacts` to that packet so AI agents can branch on redacted fact categories instead of raw payload, email, cleanup, or selector values.
 
 ## Required behavior support after lane3 sync
 
@@ -275,6 +276,8 @@ After sync, ensure the AI user follows:
     stop-and-fix blockers; accepted cleanup plans must name a selector such as
     fixture email, record id, duplicate field, idempotency key, or payload digest,
     and `cleanup.selectorTypes` reports only redacted selector categories
+  - inspect `operatorReview.readyFacts` and `operatorReview.missingFacts` for
+    redacted handoff categories before asking for another operator action
   - treat `summary_file_missing`, `fixture_evidence_not_ready`,
     `payload_placeholder_count_missing`, and
     `fixture_payload_placeholder_email` as stop-and-fix blockers

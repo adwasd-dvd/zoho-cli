@@ -226,7 +226,11 @@ ops/scripts/crm_fixture_operator_packet.sh
 
 It emits one redacted `crm_fixture_operator_packet` with `status=blocked`,
 `payload_preflight_ready`, `ready_for_operator_live_fixture`, or
-`live_fixture_recorded`, and keeps `agentMayExecuteLiveFixture=false`.
+`live_fixture_recorded`, and keeps `agentMayExecuteLiveFixture=false`. Use
+`operatorReview.readyFacts` and `operatorReview.missingFacts` to decide whether
+the next safe step is providing a payload, improving cleanup, running dry-run
+smoke, or asking for operator live approval; these facts are category names only
+and must not contain raw payload, email, cleanup, or selector values.
 
 ```bash
 ZOHO_CRM_FIXTURE_PAYLOAD_FILE=/tmp/lead-fixture.json \

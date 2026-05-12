@@ -428,6 +428,8 @@ def test_crm_sdk_adoption_contract_present() -> None:
         "cleanup_plan_missing",
         "cleanup_plan_selector_missing",
         "cleanup.selectorTypes",
+        "operatorReview.readyFacts",
+        "operatorReview.missingFacts",
         "run_crm_fixture_live_smoke_dry_run",
         "required_fields_missing",
         "agentMayRunLiveFixture=false",

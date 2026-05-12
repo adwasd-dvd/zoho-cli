@@ -294,8 +294,11 @@ dry-run smoke summary through `ops/scripts/crm_fixture_operator_readiness_bundle
 and emits one redacted packet with `status=blocked`, `payload_preflight_ready`,
 `ready_for_operator_live_fixture`, or `live_fixture_recorded`. The packet keeps
 `normalUpsertExecuteBlocked=true`, `agentMayExecuteLiveFixture=false`, and a
-machine-readable `nextAction` so unattended automation can stop at the correct
-operator handoff boundary without probing Zoho repeatedly.
+machine-readable `nextAction` plus `operatorReview.readyFacts` /
+`operatorReview.missingFacts` so unattended automation can stop at the correct
+operator handoff boundary without probing Zoho repeatedly. Those review facts
+are category names only, and the packet keeps raw payload fields, email values,
+cleanup plans, and selector values out of stdout and persisted reports.
 
 ## Operator payload template
 

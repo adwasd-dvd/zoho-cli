@@ -1,23 +1,23 @@
-id: cliq-channel-477
-title: record post-CRM selector metadata Cliq RC decision evidence
-module: openclaw_cliq_channel
+id: crm-019
+title: add redacted CRM fixture operator review facts
+module: crm
 stage: completed
 status: completed
 owner: coder
-updated_at: '2026-05-12T08:38:16Z'
+updated_at: '2026-05-12T09:04:02Z'
 execution_mode: turbo_20x
 throughput_policy_ref: ops/state/execution_policy.yml
 success_criteria:
-  - RC checklist records post-CRM source drift and decision packet run ids
-  - source drift remains `package_source_unchanged` after commit `ae9424e7`
-  - operator decision packet remains `awaiting_operator_publish_path`
-  - Lane 2/3 docs and Lane 1 state point agents to the current evidence
-  - no publish, tag, npm promotion, GitHub release, expectedIntegrity fill, or CRM write occurs
-next_if_done: Operator still chooses the native Cliq RC artifact path with `ops/scripts/openclaw_cliq_rc_operator_decision_packet.sh`; agents must not publish, tag, create a GitHub release, fill published integrity, or execute live CRM writes without explicit operator approval.
+  - CRM fixture operator packet reports redacted `operatorReview.readyFacts`
+  - CRM fixture operator packet reports redacted `operatorReview.missingFacts`
+  - review facts cover payload, cleanup, selector, dry-run summary, and readiness handoff states
+  - Lane 2 and Lane 3 docs describe the review facts for AI-safe branching
+  - normal `zoho crm upsert --execute` and live fixture execution remain blocked
+next_if_done: CRM fixture Zoho-backed dry-run can start only after an operator provides a copied dedicated payload and a cleanup plan with `cleanup.qualityReady=true`, `cleanup.selectorPresent=true`, and appropriate redacted `cleanup.selectorTypes`; live fixture execution still requires exact approval and live env gates.
 progress:
-  - "2026-05-12T08:38:16Z cliq-channel-477 completed docs/state sync: RC checklist, operator handoff, README, Lane 3 index, contract markers, and Lane 1 state now reference the post-CRM selector metadata source drift and decision packet evidence."
-  - "2026-05-12T08:38:16Z source drift run `20260512T081613Z-crm-selector-metadata-postcommit-source` reported `package_source_unchanged`, `headCommit=ae9424e7d6217bfae6fa75695e03752a1d446eb9`, `repoChangedFileCount=24`, and `packageDrift.packageChangedSinceManifest=false`."
-  - "2026-05-12T08:38:16Z decision packet run `20260512T081613Z-crm-selector-metadata-postcommit-decision` reported `awaiting_operator_publish_path`, `publish_path_not_selected`, `operator_publish_plan_ready`, `artifact_verified`, `install_smoke_passed`, `trusted_reply_recorded`, and `agentMayExecuteSelectedPath=false`."
-  - "2026-05-12T08:38:16Z no publish, tag, npm promotion, GitHub release, expectedIntegrity fill, Zoho call, or CRM write was performed."
-  - "2026-05-12T08:46:08Z focused verification passed: OpenClaw Cliq RC checklist/operator handoff contract, Lane 3 required paths/troubleshooting contract, and markdown update -> 5 passed in 0.02s; ruff format/check, YAML parse, and `git diff --check` passed."
-next_step: Commit and push the evidence-sync slice, then continue to the next safe RC readiness milestone.
+  - "2026-05-12T09:04:02Z crm-019 completed: `ops/scripts/crm_fixture_operator_packet.sh` now emits `operatorReview.readyFacts`, `operatorReview.missingFacts`, `cleanupSelectorTypes`, and redaction booleans without storing raw payload values, fixture email, cleanup text, or selector values."
+  - "2026-05-12T09:04:02Z ready facts include categories such as `dedicated_fixture_payload`, `cleanup_quality_ready`, `cleanup_selector_types_present`, `payload_preflight_ready`, `dry_run_readiness_ready`, and `placeholder_email_absent`; missing facts include categories such as `fixture_payload_file`, `cleanup_plan`, `cleanup_plan_quality`, `cleanup_selector`, and `dry_run_smoke_summary`."
+  - "2026-05-12T09:04:02Z Lane 2/3 docs now tell agents to branch on redacted operator review facts instead of raw fixture values."
+  - "2026-05-12T09:04:02Z no Zoho call, CRM live write, normal `zoho crm upsert --execute`, publish, tag, npm promotion, GitHub release, or expectedIntegrity fill was performed."
+  - "2026-05-12T09:07:33Z focused verification passed: shell syntax for CRM fixture scripts; CRM fixture operator packet/preflight/readiness tests plus Lane 3 CRM contract and markdown update -> 12 passed, 73 deselected in 1.45s; ruff format/check, YAML parse, and `git diff --check` passed."
+next_step: Commit and push the operator review facts slice, then continue to the next safe RC readiness milestone.

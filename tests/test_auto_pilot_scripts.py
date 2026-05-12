@@ -2791,6 +2791,13 @@ def test_crm_fixture_operator_packet_reports_missing_payload(
     assert payload["dryRunReadiness"]["skippedReason"] == "summary_file_not_provided"
     assert payload["releasePosture"]["normalUpsertExecuteBlocked"] is True
     assert payload["releasePosture"]["agentMayExecuteLiveFixture"] is False
+    assert payload["operatorReview"]["readyFacts"] == []
+    assert payload["operatorReview"]["missingFacts"] == [
+        "cleanup_plan",
+        "fixture_payload_file",
+    ]
+    assert payload["operatorReview"]["cleanupSelectorTypes"] == []
+    assert payload["operatorReview"]["redaction"]["rawSelectorValuesStored"] is False
     assert payload["nextAction"] == "provide_fixture_payload_file"
     assert json.loads(packet_file.read_text()) == payload
 
@@ -2840,6 +2847,16 @@ def test_crm_fixture_operator_packet_accepts_payload_preflight(
     assert payload["payloadPreflight"]["payload"]["placeholderEmailCount"] == 0
     assert payload["dryRunReadiness"]["ready"] is False
     assert payload["dryRunReadiness"]["skipped"] is True
+    assert payload["operatorReview"]["readyFacts"] == [
+        "cleanup_quality_ready",
+        "cleanup_selector_types_present",
+        "dedicated_fixture_payload",
+        "payload_preflight_ready",
+        "placeholder_email_absent",
+    ]
+    assert payload["operatorReview"]["missingFacts"] == ["dry_run_smoke_summary"]
+    assert payload["operatorReview"]["cleanupSelectorTypes"] == ["email_keyword"]
+    assert payload["operatorReview"]["cleanupSelectorTypeCount"] == 1
     assert payload["nextAction"] == "run_crm_fixture_live_smoke_dry_run"
 
 
@@ -2885,6 +2902,10 @@ def test_crm_fixture_operator_packet_blocks_vague_cleanup_plan(
         "cleanup_plan_too_short",
     ]
     assert payload["payloadPreflight"]["cleanup"]["qualityReady"] is False
+    assert payload["operatorReview"]["missingFacts"] == [
+        "cleanup_plan_quality",
+        "cleanup_selector",
+    ]
     assert payload["nextAction"] == "improve_cleanup_plan"
 
 
@@ -2962,6 +2983,15 @@ def test_crm_fixture_operator_packet_wraps_dry_run_readiness(
     assert payload["dryRunReadiness"]["evidenceStatus"] == (
         "ready_for_operator_live_fixture"
     )
+    assert payload["operatorReview"]["readyFacts"] == [
+        "cleanup_quality_ready",
+        "cleanup_selector_types_present",
+        "dedicated_fixture_payload",
+        "dry_run_readiness_ready",
+        "payload_preflight_ready",
+        "placeholder_email_absent",
+    ]
+    assert payload["operatorReview"]["missingFacts"] == []
     assert payload["nextAction"] == "operator_review_payload_cleanup_and_approval"
     calls = [json.loads(line) for line in calls_path.read_text().splitlines()]
     assert calls == [["crm", "fixture-evidence", "--summary-file", str(summary_path)]]

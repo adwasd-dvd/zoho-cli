@@ -20,9 +20,9 @@ cliq:
 openclaw_cliq_channel:
   priority: 3
   status: completed_for_rc
-  phase: operator_action_prompt_markdown_ready
+  phase: post_platform218_evidence_ready
   target_release: v0.4.0
-  current_milestone: platform-218-operator-action-prompt-markdown
+  current_milestone: cliq-channel-494-post-platform218-evidence
   blockers: []
 
 crm:

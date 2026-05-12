@@ -1,7 +1,7 @@
 module: Platform
-updated_at: "2026-05-12T21:46:16Z"
+updated_at: "2026-05-12T22:01:16Z"
 status: in_progress
 execution_mode: turbo_20x
 throughput_policy_ref: ops/state/execution_policy.yml
 blockers: []
-next_small_step: "platform-218 adds `--md` / `--markdown` to `ops/scripts/zoho_cli_rc_operator_action_prompt.sh` so recurring agents can print the compact redacted operator handoff directly while JSON remains the default stdout contract; continue safe RC readiness work without publish/tag/release/expectedIntegrity fill or live Zoho writes."
+next_small_step: "cliq-channel-494 records post-platform-218 source-drift, decision-packet, and operator-action-prompt evidence: package source remains unchanged at HEAD `d15a1aeb`, all decision reports are ready, and the same three operator asks remain non-executable for agents."

@@ -87,7 +87,10 @@ CRM SDK planning:
   autonomy evidence showing commit `9fac452e` still keeps package source
   unchanged while exposing the same redacted operator action requests;
   `platform-217` adds the read-only operator-action prompt wrapper for turning
-  those requests into a compact operator handoff)
+  those requests into a compact operator handoff; `cliq-channel-494` records
+  post-platform-218 source-drift/decision/prompt evidence showing commit
+  `d15a1aeb` still keeps package source unchanged while awaiting the same
+  operator inputs)
 - `ops/scripts/zoho_cli_rc_autonomy_packet.sh` (`platform-214`: read-only
   cross-lane RC autonomy packet that combines native Cliq RC decision state with
   CRM fixture next-command state; emits `agent_next_command_ready` only when the

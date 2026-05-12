@@ -10,6 +10,7 @@
 - Added placeholder-only `commandPreview` and `unblocks` hints to autonomy-packet `operatorActionRequests`, so humans can see the next local recheck gate after supplying a publish path or CRM fixture input without logging raw payload paths, cleanup text, or secrets.
 - Added `ops/scripts/zoho_cli_rc_operator_action_prompt.sh`, a read-only wrapper that renders autonomy-packet `operatorActionRequests` into JSON plus a compact Markdown handoff. It reports `operator_action_prompt_ready` and `nextAction=send_operator_action_prompt` while preserving basename-only report files, no raw paths/secrets/payloads/cleanup text, and no agent publish/write permission.
 - Added `--md` / `--markdown` output mode to the operator-action prompt wrapper so heartbeat agents can print the compact human handoff directly while still writing the JSON evidence report and preserving JSON stdout by default.
+- Recorded post-platform-218 no-write source-drift, operator decision, and operator-action-prompt evidence: current HEAD `d15a1aeb` still reports `package_source_unchanged`, `packageDrift.packageChangedSinceManifest=false`, `repoChangedFileCount=39`, all decision-packet `reportsReady=true`, and operator prompts still stop on the same three non-executable requests.
 
 ### Platform hygiene (2026-05-12T15:14:26Z)
 - Extended `make lint` to run Ruff across both `zoho_cli/` and `tests/`, added a small tooling contract test to keep that gate from regressing, and synced the developer/agent maintenance docs with the broader lint target.

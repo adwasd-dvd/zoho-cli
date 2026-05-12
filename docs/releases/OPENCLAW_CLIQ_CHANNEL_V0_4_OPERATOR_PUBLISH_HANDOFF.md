@@ -17,7 +17,7 @@ Current baseline:
 - Handoff manifest:
   `openclaw_cliq_rc_operator_handoff_manifest_20260512T055900Z-ingress-diagnostic-rc-restore-manifest.json`
 - Latest source drift guard:
-  `openclaw_cliq_rc_source_drift_check_20260512T100443Z-crm-readiness-report-metadata-postcommit-source.json`
+  `openclaw_cliq_rc_source_drift_check_20260512T121844Z-crm-live-approval-categories-postcommit-source.json`
 
 ## Non-automated approval boundary
 
@@ -130,10 +130,10 @@ Expected local pre-publish posture:
   `operator_publish_selection_ready`, previews `gh release create ...`, and
   keeps `selectedPublishPathReview.agentMayExecute=false`
 - the post-selected-path docs/state decision packet
-  `20260512T113043Z-operator-paths-postcommit-decision` returns
+  `20260512T121844Z-crm-live-approval-categories-postcommit-decision` returns
   `awaiting_operator_publish_path`, `package_source_unchanged`,
-  `sourceDrift.headCommit=8695726a7ac4e421efd04f7e0e25a4a4df6063e3`,
-  `repoChangedFileCount=27`, and `agentMayExecuteSelectedPath=false`
+  `sourceDrift.headCommit=39642ae7e34286a37d34bdff8413dd47f3a3f1ba`,
+  `repoChangedFileCount=28`, and `agentMayExecuteSelectedPath=false`
 - decision packet reports `awaiting_operator_publish_path` before a path is
   selected, or `operator_publish_selection_ready` after a path is selected,
   while keeping `agentMayExecuteSelectedPath=false`

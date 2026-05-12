@@ -1,23 +1,22 @@
-id: crm-024
-title: add CRM fixture live approval fact categories
-module: crm
+id: cliq-channel-485
+title: record post-CRM live approval fact categories RC source drift evidence
+module: openclaw_cliq_channel
 stage: completed
 status: completed
 owner: coder
-updated_at: '2026-05-12T12:13:06Z'
+updated_at: '2026-05-12T12:27:40Z'
 execution_mode: turbo_20x
 throughput_policy_ref: ops/state/execution_policy.yml
 success_criteria:
-  - CRM fixture operator packets expose `operatorReview.liveApproval.readyFacts` and `missingFacts`
-  - CRM fixture readiness bundles expose the same live approval fact categories
-  - exact approval token, raw idempotency key, raw payload values, raw cleanup text, and raw selector values stay out of reports
-  - live fixture execution remains operator-only with `agentMayExecute=false`
-  - Lane 2, Lane 3, and Lane 1 docs record the new handoff contract
-next_if_done: Continue to the next safe RC readiness milestone without publishing, tagging, or running live CRM writes.
+  - Source drift guard reports `package_source_unchanged` after pushed CRM live approval fact categories
+  - Decision packet still reports `awaiting_operator_publish_path`
+  - Artifact/install/promotion/trusted reply statuses remain ready
+  - Publish/tag/release/version-bump/expectedIntegrity actions remain operator-only
+  - Lane 1, Lane 2, and Lane 3 docs record the refreshed evidence
+next_if_done: Continue to the next safe RC readiness milestone without publishing, tagging, npm promotion, GitHub release creation, expectedIntegrity fill, or live CRM writes.
 progress:
-  - "2026-05-12T12:04:30Z added `operatorReview.liveApproval.readyFacts` and `operatorReview.liveApproval.missingFacts` to `ops/scripts/crm_fixture_operator_packet.sh` and `ops/scripts/crm_fixture_operator_readiness_bundle.sh`."
-  - "2026-05-12T12:04:30Z category names include `summary_file`, `dry_run_readiness`, `fixture_evidence`, `payload_digest`, `idempotency_key`, `required_approval`, and `placeholder_email_count_zero` so agents do not infer approval blockers from booleans."
-  - "2026-05-12T12:05:00Z focused script verification passed: CRM operator packet/readiness bundle approval category tests -> 5 passed in 1.29s."
-  - "2026-05-12T12:05:30Z local no-write packet run `20260512T120343Z-live-approval-facts-detail` returned `payload_preflight_ready`, top-level `missingFacts=[dry_run_smoke_summary]`, `operatorReview.liveApproval.readyFacts=[agent_execution_blocked,command_preview_uses_placeholders]`, and live-approval missing facts for summary/readiness/evidence/digest/idempotency/approval/placeholder without any Zoho call or CRM write."
-  - "2026-05-12T12:13:06Z broader verification passed: shell syntax for CRM fixture scripts; CRM fixture tests plus Lane 3 CRM contract and markdown update -> 15 passed, 70 deselected in 2.54s; ruff format/check, YAML parse, and `git diff --check` passed."
-next_step: Commit and push the CRM live approval fact categories slice, then continue to the next safe RC readiness milestone.
+  - "2026-05-12T12:18:44Z source drift run `20260512T121844Z-crm-live-approval-categories-postcommit-source` returned `package_source_unchanged`, no blockers, `headCommit=39642ae7e34286a37d34bdff8413dd47f3a3f1ba`, `repoChangedFileCount=28`, `packageDrift.packageChangedSinceManifest=false`, and `dirtyFileCount=0`."
+  - "2026-05-12T12:18:44Z decision packet run `20260512T121844Z-crm-live-approval-categories-postcommit-decision` returned `awaiting_operator_publish_path`, `blockers=[publish_path_not_selected]`, `operator_publish_plan_ready`, `artifact_verified`, `install_smoke_passed`, `trusted_reply_recorded`, all `reportsReady=true`, and `agentMayExecuteSelectedPath=false`."
+  - "2026-05-12T12:18:44Z no publish, tag, npm promotion, GitHub release, version bump, expectedIntegrity fill, Zoho call, or CRM write was performed."
+  - "2026-05-12T12:27:40Z verification passed: OpenClaw Cliq RC checklist/operator handoff contract, Lane 3 required paths/troubleshooting contract, and markdown update -> 5 passed in 0.01s; ruff format/check, YAML parse, and `git diff --check` passed."
+next_step: Commit and push the post-CRM live approval fact categories RC evidence slice, then continue to the next safe milestone.

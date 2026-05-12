@@ -67,7 +67,10 @@ CRM SDK planning:
   `github_release_artifact` selected-path readiness with command previews still
   non-executable by agents; `cliq-channel-484` records the post-selected-path
   source-drift/decision evidence showing commit `8695726a` changed only
-  docs/state relative to the handoff manifest package source)
+  docs/state relative to the handoff manifest package source;
+  `cliq-channel-485` records the post-CRM live-approval-fact-categories
+  source-drift/decision evidence showing commit `39642ae7` still keeps
+  `packageChangedSinceManifest=false`)
 - `ops/scripts/openclaw_cliq_bot_no_response_packet.sh`
   (`cliq-channel-472/474`: first responder for Bot no-response reports; runs
   public callback smoke plus live ingress diagnostics, then embeds

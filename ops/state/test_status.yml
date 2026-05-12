@@ -1,10 +1,14 @@
-last_run_at: "2026-05-12T12:13:06Z"
+last_run_at: "2026-05-12T12:27:40Z"
 last_result: passing
-current_focus: crm-024-live-approval-fact-categories
+current_focus: cliq-channel-485-post-crm-approval-facts-decision-ready
 suites:
   unit:
     status: passing
     notes:
+      - "cliq-channel-485 post-CRM live approval fact categories source drift started at 2026-05-12T12:18:44Z: run `20260512T121844Z-crm-live-approval-categories-postcommit-source` returned `package_source_unchanged`, no blockers, `headCommit=39642ae7e34286a37d34bdff8413dd47f3a3f1ba`, `repoChangedFileCount=28`, `packageDrift.packageChangedSinceManifest=false`, and `dirtyFileCount=0`."
+      - "cliq-channel-485 decision packet started at 2026-05-12T12:18:44Z: run `20260512T121844Z-crm-live-approval-categories-postcommit-decision` returned `awaiting_operator_publish_path`, `publish_path_not_selected`, all `reportsReady=true`, `operator_publish_plan_ready`, `artifact_verified`, `install_smoke_passed`, `trusted_reply_recorded`, and `agentMayExecuteSelectedPath=false`."
+      - "cliq-channel-485 performed no publish, tag, npm promotion, GitHub release, version bump, expectedIntegrity fill, Zoho call, or CRM write."
+      - "cliq-channel-485 verification passed at 2026-05-12T12:27:40Z: OpenClaw Cliq RC checklist/operator handoff contract, Lane 3 required paths/troubleshooting contract, and markdown update -> 5 passed in 0.01s; ruff format/check, YAML parse, and `git diff --check` passed."
       - "crm-024 live approval fact categories started at 2026-05-12T12:04:30Z: `operatorReview.liveApproval.readyFacts` and `operatorReview.liveApproval.missingFacts` now expose stable approval categories for CRM fixture operator packets and readiness bundles."
       - "crm-024 approval categories include `summary_file`, `dry_run_readiness`, `fixture_evidence`, `payload_digest`, `idempotency_key`, `required_approval`, and `placeholder_email_count_zero`; raw approval tokens, raw idempotency keys, raw payload values, raw cleanup text, and raw selector values remain unlogged."
       - "crm-024 focused verification passed at 2026-05-12T12:05:00Z: bash syntax for CRM fixture scripts and CRM operator packet/readiness bundle approval category tests -> 5 passed in 1.29s."

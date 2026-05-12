@@ -102,7 +102,9 @@ CRM SDK planning:
   `ready_for_operator_live_fixture`, placeholder email count zero, and keeps
   normal `zoho crm upsert --execute` blocked; `crm-022` adds `reportFiles` and
   `reportsReady` basename metadata for `readinessBundle`, `smokeSummary`, and
-  `fixtureEvidence` handoff)
+  `fixtureEvidence` handoff; `crm-026` adds redacted `operatorReview.nextCommands`
+  and the same `operatorReview.actionBoundary` command-id stop/go buckets as the
+  operator packet)
 - `ops/scripts/crm_fixture_operator_packet.sh` (`crm-015`: autonomous no-write
   packet that combines payload preflight and optional dry-run readiness evidence
   into `blocked`, `payload_preflight_ready`, `ready_for_operator_live_fixture`,
@@ -119,7 +121,8 @@ CRM SDK planning:
   keeping `agentMayExecute=false`; `crm-024` adds live-approval `readyFacts` and
   `missingFacts` categories for AI handoff decisions; `crm-025` adds
   `operatorReview.actionBoundary` command id buckets for agent-executable vs
-  operator-only/Zoho-writing steps)
+  operator-only/Zoho-writing steps; `crm-026` mirrors that boundary on readiness
+  bundles)
 - `docs/releases/CRM_V0_5_FIXTURE_PAYLOAD_TEMPLATE.json` (`crm-015`: safe
   one-record `Leads` template with `.example.invalid` placeholder data; copy and
   edit outside the repo before live fixture mode; smoke reports

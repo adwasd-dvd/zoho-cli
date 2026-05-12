@@ -1,10 +1,15 @@
-last_run_at: "2026-05-12T12:56:13Z"
+last_run_at: "2026-05-12T13:16:46Z"
 last_result: passing
-current_focus: cliq-channel-486-post-crm-action-boundary-decision-ready
+current_focus: crm-026-readiness-action-boundary
 suites:
   unit:
     status: passing
     notes:
+      - "crm-026 readiness action boundary started at 2026-05-12T13:03:44Z: CRM fixture operator readiness bundles now expose redacted `operatorReview.nextCommands` and `operatorReview.actionBoundary` command id buckets."
+      - "crm-026 ready bundles expose `operator_review_live_fixture_approval` as operator-only, Zoho-writing, and explicit-approval; blocked bundles expose only dry-run `fix_readiness_blockers` as agent-executable."
+      - "crm-026 focused verification passed at 2026-05-12T13:15:37Z: shell syntax for CRM fixture scripts; readiness-bundle/operator-packet tests plus Lane 3 CRM contract and markdown update -> 6 passed, 78 deselected in 1.47s; ruff format/check passed."
+      - "crm-026 broader verification passed at 2026-05-12T13:16:46Z: CRM fixture tests plus Lane 3 required paths, CRM contract, and markdown update -> 15 passed, 70 deselected in 2.35s; `git diff --check` passed."
+      - "crm-026 performed no publish, tag, npm promotion, GitHub release, version bump, expectedIntegrity fill, Zoho call, or CRM write."
       - "cliq-channel-486 post-CRM operator action boundary source drift started at 2026-05-12T12:48:44Z: run `20260512T124844Z-crm-action-boundary-postcommit-source` returned `package_source_unchanged`, no blockers, `headCommit=8a67bbb36b551a47ff61b898d85d68a6a92fa42f`, `repoChangedFileCount=28`, `packageDrift.packageChangedSinceManifest=false`, and `dirtyFileCount=0`."
       - "cliq-channel-486 decision packet started at 2026-05-12T12:48:44Z: run `20260512T124844Z-crm-action-boundary-postcommit-decision` returned `awaiting_operator_publish_path`, `publish_path_not_selected`, all `reportsReady=true`, `operator_publish_plan_ready`, `artifact_verified`, `install_smoke_passed`, `trusted_reply_recorded`, and `agentMayExecuteSelectedPath=false`."
       - "cliq-channel-486 performed no publish, tag, npm promotion, GitHub release, version bump, expectedIntegrity fill, Zoho call, or CRM write."

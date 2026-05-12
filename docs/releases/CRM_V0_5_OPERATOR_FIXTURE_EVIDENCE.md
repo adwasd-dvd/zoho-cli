@@ -176,6 +176,10 @@ The readiness bundle enforces that same placeholder check and blocks with
 placeholder email. It also exposes basename-only `reportFiles` and
 `reportsReady` entries for `readinessBundle`, `smokeSummary`, and
 `fixtureEvidence` so agents can hand off evidence without leaking local paths.
+It also mirrors the packet command handoff with redacted
+`operatorReview.nextCommands` and `operatorReview.actionBoundary`: ready bundles
+list the live fixture approval id under operator-only and Zoho-writing buckets,
+while blocked bundles expose a dry-run-only `fix_readiness_blockers` id.
 
 ## Live fixture evidence
 

@@ -395,6 +395,8 @@ def test_crm_sdk_adoption_contract_present() -> None:
         "crm-023",
         "crm-024",
         "crm-025",
+        "crm-026",
+        "fix_readiness_blockers",
         "zoho_cli/crm_sdk.py",
         "--adapter sdk-v8",
         "apiVersionPolicy",

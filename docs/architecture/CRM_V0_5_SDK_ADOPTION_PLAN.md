@@ -272,6 +272,9 @@ adapter proves parity on the read-only surface. The CLI contract remains:
    - use `operatorReview.actionBoundary.agentExecutableCommandIds` as the only
      automation command bucket, and stop on operator-only, Zoho-writing, or
      explicit-approval command id buckets;
+   - apply the same command-id boundary to the no-write readiness bundle:
+     blocked bundles expose only dry-run fixer ids, while ready bundles expose
+     the live fixture approval id as operator-only and Zoho-writing;
    - archive redacted reports and decide whether v0.5 should broaden guarded
      upsert support or stop at fixture evidence.
 

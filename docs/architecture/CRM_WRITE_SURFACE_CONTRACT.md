@@ -323,6 +323,10 @@ from `operatorReview.nextCommands`. Agents should treat
 stop on `operatorOnlyCommandIds`, `zohoWriteCommandIds`, or
 `requiresExplicitOperatorApprovalCommandIds`; the live fixture boundary remains
 `operator_only` whenever a next command would write Zoho data.
+`crm-026` mirrors that command handoff on the operator readiness bundle. A
+ready bundle exposes one operator-only, Zoho-writing live approval command id;
+a blocked bundle exposes only the dry-run `fix_readiness_blockers` id, keeping
+normal `zoho crm upsert --execute` and live fixture execution blocked.
 `reportFiles` and `reportsReady` expose only artifact basenames for the packet,
 payload preflight, optional dry-run readiness bundle, and optional smoke summary
 so agents can archive or pass evidence without logging local paths.

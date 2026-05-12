@@ -3350,6 +3350,31 @@ def test_crm_fixture_operator_readiness_bundle_requires_dry_run_evidence(
             "ZOHO_CRM_ALLOW_LIVE_FIXTURE=1",
         ],
     }
+    next_commands = payload["operatorReview"]["nextCommands"]
+    assert len(next_commands) == 1
+    assert next_commands[0]["id"] == "operator_review_live_fixture_approval"
+    assert next_commands[0]["writesZohoData"] is True
+    assert next_commands[0]["agentMayExecute"] is False
+    assert next_commands[0]["operatorOnly"] is True
+    assert next_commands[0]["requiresExplicitOperatorApproval"] is True
+    assert "<copied-fixture-payload.json>" in next_commands[0]["command"]
+    assert str(tmp_path) not in next_commands[0]["command"]
+    assert payload["operatorReview"]["actionBoundary"] == {
+        "nextCommandCount": 1,
+        "agentExecutableCommandIds": [],
+        "operatorOnlyCommandIds": ["operator_review_live_fixture_approval"],
+        "zohoWriteCommandIds": ["operator_review_live_fixture_approval"],
+        "dryRunOnlyCommandIds": [],
+        "requiresExplicitOperatorApprovalCommandIds": [
+            "operator_review_live_fixture_approval"
+        ],
+        "agentMayExecuteAny": False,
+        "operatorOnlyAny": True,
+        "writesZohoDataAny": True,
+        "requiresExplicitOperatorApprovalAny": True,
+        "normalUpsertExecuteBlocked": True,
+        "liveFixtureExecutionBoundary": "operator_only",
+    }
     assert payload["operatorReview"]["liveApproval"] == {
         "readyFacts": [
             "agent_execution_blocked",
@@ -3456,6 +3481,28 @@ def test_crm_fixture_operator_readiness_bundle_blocks_placeholder_payload(
         "fixtureEvidence": True,
     }
     assert "fixture_payload_placeholder_email" in payload["blockers"]
+    next_commands = payload["operatorReview"]["nextCommands"]
+    assert len(next_commands) == 1
+    assert next_commands[0]["id"] == "fix_readiness_blockers"
+    assert next_commands[0]["writesZohoData"] is False
+    assert next_commands[0]["dryRunOnly"] is True
+    assert next_commands[0]["agentMayExecute"] is True
+    assert next_commands[0]["requiresExplicitOperatorApproval"] is False
+    assert str(tmp_path) not in next_commands[0]["command"]
+    assert payload["operatorReview"]["actionBoundary"] == {
+        "nextCommandCount": 1,
+        "agentExecutableCommandIds": ["fix_readiness_blockers"],
+        "operatorOnlyCommandIds": [],
+        "zohoWriteCommandIds": [],
+        "dryRunOnlyCommandIds": ["fix_readiness_blockers"],
+        "requiresExplicitOperatorApprovalCommandIds": [],
+        "agentMayExecuteAny": True,
+        "operatorOnlyAny": False,
+        "writesZohoDataAny": False,
+        "requiresExplicitOperatorApprovalAny": False,
+        "normalUpsertExecuteBlocked": True,
+        "liveFixtureExecutionBoundary": "not_ready_or_dry_run_only",
+    }
     assert payload["nextAction"] == "fix_blockers"
 
 

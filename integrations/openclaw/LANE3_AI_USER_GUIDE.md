@@ -77,6 +77,7 @@ Current implementation-only delta:
 - `crm-023` adds redacted `operatorReview.liveApproval` to CRM fixture operator packets and readiness bundles; inspect these booleans for summary/evidence readiness, payload digest, idempotency key, required approval presence, placeholder status, and `agentMayExecute=false` before asking the operator for a live fixture approval.
 - `crm-024` adds `operatorReview.liveApproval.readyFacts` and `operatorReview.liveApproval.missingFacts`; prefer those category lists when explaining what approval facts remain missing.
 - `crm-025` adds `operatorReview.actionBoundary`; run only ids in `agentExecutableCommandIds` and stop on `operatorOnlyCommandIds`, `zohoWriteCommandIds`, or `requiresExplicitOperatorApprovalCommandIds`.
+- `crm-026` adds the same redacted `operatorReview.nextCommands` and `operatorReview.actionBoundary` stop/go contract to readiness bundles; blocked bundles expose dry-run fixer ids only, while ready bundles expose the live approval id as operator-only and Zoho-writing.
 
 ## Required behavior support after lane3 sync
 

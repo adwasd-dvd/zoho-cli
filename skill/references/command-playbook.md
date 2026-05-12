@@ -286,7 +286,10 @@ The readiness bundle must report `ready_for_operator_live_fixture`,
 blocks with `fixture_payload_placeholder_email` until the copied fixture payload
 uses a dedicated non-placeholder test email. Use its `reportFiles` and
 `reportsReady` entries to hand off `readinessBundle`, `smokeSummary`, and
-`fixtureEvidence` by basename without exposing local paths.
+`fixtureEvidence` by basename without exposing local paths. It also exposes
+redacted `operatorReview.nextCommands` and `operatorReview.actionBoundary`; run
+only ids in `agentExecutableCommandIds` and stop on operator-only,
+Zoho-writing, or explicit-approval ids.
 
 ## Bridge fallback (explicit)
 

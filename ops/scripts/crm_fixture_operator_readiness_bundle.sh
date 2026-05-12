@@ -101,17 +101,65 @@ PAYLOAD="$("$JQ_BIN" -n \
       (if ($evidenceStatus == "live_fixture_recorded") or (($summaryReport.executeRequested // false) == false) then empty else "unexpected_live_execute_requested" end),
       (if ($evidenceStatus == "live_fixture_recorded") or (($summaryReport.liveResultRecorded // false) == false) then empty else "unexpected_live_result_recorded" end)
     ] as $blockers
+  | (
+      if ($blockers | length) != 0 then "blocked"
+      elif $evidenceStatus == "live_fixture_recorded" then "live_fixture_recorded"
+      else "ready_for_operator_live_fixture"
+      end
+    ) as $status
+  | (
+      if $status == "live_fixture_recorded" then [
+        {
+          id: "review_live_fixture_evidence",
+          command: "ZOHO_CRM_FIXTURE_SUMMARY_FILE=<smoke-summary.json> ops/scripts/crm_fixture_operator_readiness_bundle.sh",
+          purpose: "review the redacted recorded live fixture readiness bundle",
+          writesZohoData: false,
+          dryRunOnly: true,
+          agentMayExecute: true,
+          requiresOperatorInput: true,
+          requiresExplicitOperatorApproval: false,
+          operatorOnly: false
+        }
+      ]
+      elif $status == "ready_for_operator_live_fixture" then [
+        {
+          id: "operator_review_live_fixture_approval",
+          command: "ZOHO_CRM_FIXTURE_EXECUTE=1 ZOHO_CRM_ALLOW_LIVE_FIXTURE=1 ZOHO_CRM_FIXTURE_PAYLOAD_FILE=<copied-fixture-payload.json> ZOHO_CRM_FIXTURE_CLEANUP_PLAN=<cleanup-plan> ops/scripts/crm_fixture_live_smoke.sh",
+          purpose: "operator-only live fixture approval after reviewing the readiness bundle",
+          writesZohoData: true,
+          dryRunOnly: false,
+          agentMayExecute: false,
+          requiresOperatorInput: true,
+          requiresExplicitOperatorApproval: true,
+          operatorOnly: true
+        }
+      ]
+      else [
+        {
+          id: "fix_readiness_blockers",
+          command: "ZOHO_CRM_FIXTURE_SUMMARY_FILE=<smoke-summary.json> ops/scripts/crm_fixture_operator_readiness_bundle.sh",
+          purpose: "fix the readiness blockers and rerun the no-write readiness bundle",
+          writesZohoData: false,
+          dryRunOnly: true,
+          agentMayExecute: true,
+          requiresOperatorInput: true,
+          requiresExplicitOperatorApproval: false,
+          operatorOnly: false
+        }
+      ]
+      end
+    ) as $nextCommands
+  | ($nextCommands | map(select(.agentMayExecute == true) | .id)) as $agentExecutableCommandIds
+  | ($nextCommands | map(select(.operatorOnly == true) | .id)) as $operatorOnlyCommandIds
+  | ($nextCommands | map(select(.writesZohoData == true) | .id)) as $zohoWriteCommandIds
+  | ($nextCommands | map(select(.dryRunOnly == true) | .id)) as $dryRunOnlyCommandIds
+  | ($nextCommands | map(select(.requiresExplicitOperatorApproval == true) | .id)) as $approvalCommandIds
   | {
       schemaVersion: 1,
       kind: "crm_fixture_operator_readiness_bundle",
       runId: $runId,
       checkedAt: $checkedAt,
-      status: (
-        if ($blockers | length) != 0 then "blocked"
-        elif $evidenceStatus == "live_fixture_recorded" then "live_fixture_recorded"
-        else "ready_for_operator_live_fixture"
-        end
-      ),
+      status: $status,
       blockers: $blockers,
       reportFiles: {
         readinessBundle: $bundleFile,
@@ -161,6 +209,21 @@ PAYLOAD="$("$JQ_BIN" -n \
         ]
       },
       operatorReview: {
+        nextCommands: $nextCommands,
+        actionBoundary: {
+          nextCommandCount: ($nextCommands | length),
+          agentExecutableCommandIds: $agentExecutableCommandIds,
+          operatorOnlyCommandIds: $operatorOnlyCommandIds,
+          zohoWriteCommandIds: $zohoWriteCommandIds,
+          dryRunOnlyCommandIds: $dryRunOnlyCommandIds,
+          requiresExplicitOperatorApprovalCommandIds: $approvalCommandIds,
+          agentMayExecuteAny: (($agentExecutableCommandIds | length) > 0),
+          operatorOnlyAny: (($operatorOnlyCommandIds | length) > 0),
+          writesZohoDataAny: (($zohoWriteCommandIds | length) > 0),
+          requiresExplicitOperatorApprovalAny: (($approvalCommandIds | length) > 0),
+          normalUpsertExecuteBlocked: true,
+          liveFixtureExecutionBoundary: (if (($zohoWriteCommandIds | length) > 0) then "operator_only" else "not_ready_or_dry_run_only" end)
+        },
         liveApproval: {
           readyFacts: ([
             (if $summaryExists then "summary_file_ready" else empty end),

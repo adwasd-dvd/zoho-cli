@@ -44,6 +44,11 @@ CRM SDK planning:
   `liveWritesEnabled=false`, scope matching, `decision=defer_live_execution`,
   blockers include `audit_persistence_not_implemented` and
   `controlled_live_fixture_not_recorded`)
+- `ops/scripts/openclaw_cliq_rc_operator_decision_packet.sh`
+  (`cliq-channel-468`: one-command read-only native Cliq RC publish handoff;
+  returns `awaiting_operator_publish_path` until the operator selects
+  `local_operator_rc`, `npm_rc_publish`, or `github_release_artifact`; keeps
+  `agentMayExecuteSelectedPath=false`)
 - `zoho crm write-audit` (`crm-010`: redacted JSONL audit inspection for
   `crm.write.plan` and `crm.write.gate`; use `--audit-file` or
   `ZOHO_CRM_WRITE_AUDIT`; events must report `rawFieldValuesStored=false`)

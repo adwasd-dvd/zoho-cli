@@ -75,6 +75,9 @@ OPENCLAW_CLIQ_PUBLISH_PLAN_RUN_ID="$(date -u +%Y%m%dT%H%M%SZ)-selected-path" \
 OPENCLAW_CLIQ_SELECTION_REVIEW_RUN_ID="$(date -u +%Y%m%dT%H%M%SZ)-selection-review" \
   ops/scripts/openclaw_cliq_rc_operator_selection_review.sh
 
+OPENCLAW_CLIQ_DECISION_PACKET_RUN_ID="$(date -u +%Y%m%dT%H%M%SZ)-decision-packet" \
+  ops/scripts/openclaw_cliq_rc_operator_decision_packet.sh
+
 ./.venv/bin/python -m pytest -q \
   tests/test_auto_pilot_scripts.py::test_openclaw_cliq_rc_promotion_check_requires_ready_local_evidence \
   tests/test_auto_pilot_scripts.py::test_openclaw_cliq_rc_promotion_check_blocks_published_integrity_too_early \
@@ -84,6 +87,7 @@ OPENCLAW_CLIQ_SELECTION_REVIEW_RUN_ID="$(date -u +%Y%m%dT%H%M%SZ)-selection-revi
   tests/test_auto_pilot_scripts.py::test_openclaw_cliq_rc_operator_handoff_manifest_indexes_ready_packet \
   tests/test_auto_pilot_scripts.py::test_openclaw_cliq_rc_source_drift_check_allows_non_package_head_drift \
   tests/test_auto_pilot_scripts.py::test_openclaw_cliq_rc_operator_selection_review_indexes_selected_path \
+  tests/test_auto_pilot_scripts.py::test_openclaw_cliq_rc_operator_decision_packet_awaits_publish_path \
   tests/test_auto_pilot_scripts.py::test_openclaw_cliq_rc_artifact_check_verifies_tarball_contract \
   tests/test_auto_pilot_scripts.py::test_openclaw_cliq_rc_install_smoke_installs_verified_artifact \
   tests/test_openclaw_channel_contract.py::test_openclaw_cliq_channel_rc_checklist_has_cut_contract \
@@ -113,6 +117,9 @@ Expected local pre-publish posture:
 - after the operator chooses a path and reruns the publish plan, selection
   review reports `operator_publish_selection_ready`,
   `requiresExplicitOperatorApproval=true`, and `agentMayExecuteSelectedPath=false`
+- decision packet reports `awaiting_operator_publish_path` before a path is
+  selected, or `operator_publish_selection_ready` after a path is selected,
+  while keeping `agentMayExecuteSelectedPath=false`
 - `npmPromotionRequiresOperatorApproval=true`
 
 The promotion preflight is intentionally strict: `ready_for_operator_publish`
@@ -141,6 +148,11 @@ The selected path review is also read-only. It combines the selected publish
 plan plus source drift guard into one JSON packet, but it never runs the
 selected command. It exists so agents can help validate the operator's chosen
 path without crossing the publish/tag/release boundary.
+The decision packet is the preferred one-command agent handoff. It reruns the
+read-only publish plan, source drift guard, and selected path review, then
+returns either `awaiting_operator_publish_path` or
+`operator_publish_selection_ready` without executing publish/tag/release
+commands.
 
 ## Operator publish choices
 

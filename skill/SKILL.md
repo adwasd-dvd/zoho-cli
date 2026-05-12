@@ -146,7 +146,11 @@ Use this skill as the default operating contract for an OpenClaw agent acting li
   `ops/scripts/openclaw_cliq_rc_operator_selection_review.sh`; require
   `operator_publish_selection_ready` before the operator executes any publish
   command. Treat `publish_path_not_selected` as a normal waiting state and keep
-  `agentMayExecuteSelectedPath=false`.
+  `agentMayExecuteSelectedPath=false`. Prefer the one-command read-only wrapper
+  `ops/scripts/openclaw_cliq_rc_operator_decision_packet.sh` for recurring
+  checks; it returns `awaiting_operator_publish_path` while no path is selected
+  and `operator_publish_selection_ready` after a reviewed path is selected,
+  while preserving `agentMayExecuteSelectedPath=false`.
 - For CRM SDK work, run `zoho crm sdk-status` first. Treat
   `zohocrmsdk8_0==5.0.0` as optional `zoho-cli[crm-sdk]` readiness, keep the
   current HTTP adapter as default, use `zoho_cli/crm_sdk.py` only as the

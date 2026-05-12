@@ -1,20 +1,22 @@
-id: cliq-channel-467
-title: sync native Cliq RC operator publish baseline to latest verified artifact
+id: cliq-channel-468
+title: add native Cliq RC operator decision packet
 module: openclaw_cliq_channel
 stage: completed
 status: completed
 owner: coder
-updated_at: '2026-05-12T04:44:49Z'
+updated_at: '2026-05-12T05:03:42Z'
 execution_mode: turbo_20x
 throughput_policy_ref: ops/state/execution_policy.yml
 success_criteria:
-  - sync the v0.4 RC checklist to the latest direct Bot `chatId` fallback pack/artifact/install/promotion/handoff evidence
-  - sync the operator publish handoff baseline shasum and integrity
-  - rerun the source drift guard after the CRM operator packet commit and require `package_source_unchanged`
+  - add a one-command read-only packet that reruns the publish plan, source drift guard, and selected path review
+  - report `awaiting_operator_publish_path` as a normal waiting state before the operator chooses a path
+  - report `operator_publish_selection_ready` only when a selected path passes source drift and selection review
   - keep npm publish, git tag, GitHub release, version bump, and `openclaw.install.expectedIntegrity` fill behind explicit operator approval
-  - update Lane 1 state and contract tests
+  - update Lane 2/3 docs, Lane 1 state, and contract tests
 next_if_done: Operator chooses the native Cliq RC artifact path, or CRM fixture work resumes with `ops/scripts/crm_fixture_operator_packet.sh` once a dedicated payload and cleanup plan exist.
 progress:
+  - "2026-05-12T05:03:42Z cliq-channel-468 completed: added `ops/scripts/openclaw_cliq_rc_operator_decision_packet.sh`, a read-only wrapper that reruns `openclaw_cliq_rc_publish_plan.sh`, `openclaw_cliq_rc_source_drift_check.sh`, and `openclaw_cliq_rc_operator_selection_review.sh`, then emits `openclaw_cliq_rc_operator_decision_packet` with `status=awaiting_operator_publish_path`, `operator_publish_selection_ready`, or `blocked`; it keeps `agentMayExecutePlan=false`, `agentMayExecuteSelectedPath=false`, and all publish/tag/release/expectedIntegrity actions operator-only."
+  - "2026-05-12T05:03:42Z real local decision packet run: `OPENCLAW_CLIQ_DECISION_PACKET_RUN_ID=20260512T045812Z-decision-packet ops/scripts/openclaw_cliq_rc_operator_decision_packet.sh` returned `awaiting_operator_publish_path`, `blockers=[publish_path_not_selected]`, `nextAction=operator_select_publish_path`, `operator_publish_plan_ready`, `package_source_unchanged`, `artifact_verified`, `install_smoke_passed`, `trusted_reply_recorded`, artifact shasum `f8a7e3ba9cb1c6a4bf6aa9f765acd63b8b3ed680`, and no publish/tag/release/version bump/expectedIntegrity fill."
   - "2026-05-12T04:44:49Z cliq-channel-467 completed: synced `docs/releases/OPENCLAW_CLIQ_CHANNEL_V0_4_RC_CHECKLIST.md`, `docs/releases/OPENCLAW_CLIQ_CHANNEL_V0_4_OPERATOR_PUBLISH_HANDOFF.md`, and the OpenClaw channel contract marker to the latest direct `chatId` fallback no-publish baseline: pack `20260512T040000Z-direct-chatid-fallback`, shasum `f8a7e3ba9cb1c6a4bf6aa9f765acd63b8b3ed680`, integrity `sha512-VohxhazOhy91KLiBes/idAMdR1bgFerkvsa8gqtijl6vIwIDKE6G51eXGr6QPKFQlVgd4uxEtJZ+7ywNzhHU+Q==`, full CI `1901 passed in 53.30s`, and handoff manifest `openclaw_cliq_rc_operator_handoff_manifest_20260512T040000Z-direct-chatid-fallback-manifest.json`."
   - "2026-05-12T04:44:49Z source drift guard rerun: `OPENCLAW_CLIQ_SOURCE_DRIFT_RUN_ID=20260512T044312Z-post-crm-packet-source ops/scripts/openclaw_cliq_rc_source_drift_check.sh` reported `package_source_unchanged`, current `HEAD` `bd56fb3fdb16265c3e668dd830b3930d9622c259`, `repoChangedSinceManifest=true`, `repoChangedFileCount=15`, `packageDrift.packageChangedSinceManifest=false`, and no blockers; no publish/tag/release/version bump/expectedIntegrity fill or CRM write was performed."
   - "2026-05-12T04:24:42Z crm-015 operator fixture packet completed: added `ops/scripts/crm_fixture_operator_packet.sh`, a no-write wrapper that runs local payload preflight and optionally wraps existing dry-run readiness evidence into one redacted `crm_fixture_operator_packet` with `status=blocked`, `payload_preflight_ready`, `ready_for_operator_live_fixture`, or `live_fixture_recorded`; it keeps `normalUpsertExecuteBlocked=true` and `agentMayExecuteLiveFixture=false` while exposing `nextAction` for autonomous handoff."
@@ -30,4 +32,4 @@ progress:
   - "2026-05-05T10:52:22Z crm-008 completed: added `zoho crm upsert` as dry-run-only; accepted `--data-json` or `--data-file`, duplicate-check fields, and idempotency key; normalized single records and full request bodies; returned JSON-safe audit output with `fieldNames`, `recordCount`, `payloadDigest`, `recordDigests`, `requiredConfirmation`, endpoint metadata, and no raw field values; kept `--execute` blocked with `confirm_required` or `live_write_not_enabled`; refreshed Lane 2/3 docs and help snapshot; focused CRM/Lane 3 tests and manual CLI probes passed."
   - "2026-05-05T10:42:55Z crm-007 completed: added `crm_write_surface_policy()` plus `zoho crm write-plan`; exposed `writeSurfacePolicy` through `zoho crm status`, `zoho crm sdk-status`, and `zoho crm write-plan`; locked `writesEnabled=false`, dry-run default, exact confirmation, idempotency-key, JSON-payload, and audit-envelope requirements; chose `upsert` as the first implementation candidate and kept `delete` blocked; added `docs/architecture/CRM_WRITE_SURFACE_CONTRACT.md`; refreshed Lane 2/3 docs and help snapshot; focused CRM/Lane 3 tests plus CLI diagnostic probes passed."
   - "2026-05-05T10:33:29Z crm-006 completed: locked `crm_api_version_policy()` in code and diagnostics; HTTP v2 remains the default CRM adapter/version to preserve current output shapes, SDK/API v8 remains explicit-only through `--adapter sdk-v8`, HTTP v8 base inference is available only for compatibility work, and `zoho crm status` plus `zoho crm sdk-status` expose `apiVersionPolicy`. Focused lint, format, CRM tests, Lane 3 docs tests, markdown update tests, and CLI diagnostic probes passed."
-next_step: Operator chooses the native Cliq RC artifact path from the refreshed publish handoff/publish plan/source-drift/selection-review guard. Resume CRM fixture work with `ops/scripts/crm_fixture_operator_packet.sh` once the operator provides a copied dedicated payload and cleanup plan; live mode still requires exact approval and live fixture gates.
+next_step: Use `ops/scripts/openclaw_cliq_rc_operator_decision_packet.sh` for recurring native Cliq RC publish handoff checks. Operator chooses `local_operator_rc`, `npm_rc_publish`, or `github_release_artifact`; then rerun with `OPENCLAW_CLIQ_OPERATOR_PUBLISH_PATH` set and require `operator_publish_selection_ready`. Resume CRM fixture work with `ops/scripts/crm_fixture_operator_packet.sh` once the operator provides a copied dedicated payload and cleanup plan; live mode still requires exact approval and live fixture gates.

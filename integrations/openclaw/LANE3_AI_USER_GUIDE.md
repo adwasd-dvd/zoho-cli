@@ -191,6 +191,10 @@ After sync, ensure the AI user follows:
 - native channel RC decisions:
   - read `docs/releases/OPENCLAW_CLIQ_CHANNEL_V0_4_RC_CHECKLIST.md`
   - keep local/operator RC package readiness separate from production rollout readiness
+  - prefer `ops/scripts/openclaw_cliq_rc_operator_decision_packet.sh` for the
+    current publish handoff; `awaiting_operator_publish_path` is the normal
+    waiting state, `operator_publish_selection_ready` still requires operator
+    review/execution, and `agentMayExecuteSelectedPath=false` must stay false
   - require `openclaw_cliq_public_callback_smoke` /
     `public_callback_verified` for a reachable public Bot callback URL before
     claiming production incident readiness

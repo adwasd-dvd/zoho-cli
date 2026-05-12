@@ -73,6 +73,7 @@ Current implementation-only delta:
 - `crm-019` adds `operatorReview.readyFacts` and `operatorReview.missingFacts` to that packet so AI agents can branch on redacted fact categories instead of raw payload, email, cleanup, or selector values.
 - `crm-020` adds redacted `operatorReview.nextCommands` command previews with `agentMayExecute`, `dryRunOnly`, `writesZohoData`, and `requiresExplicitOperatorApproval` gates; agents may run local/dry-run entries only and must stop at operator-only live approval entries.
 - `crm-021` adds `reportFiles` and `reportsReady` to the packet so agents can hand off generated packet/preflight/readiness/smoke-summary basenames without logging local paths.
+- `crm-022` adds the same basename-only `reportFiles` and `reportsReady` handoff metadata to `ops/scripts/crm_fixture_operator_readiness_bundle.sh` for `readinessBundle`, `smokeSummary`, and `fixtureEvidence`.
 
 ## Required behavior support after lane3 sync
 

@@ -153,7 +153,9 @@ Before live mode, also inspect the smoke summary JSON directly and require
 `payloadTemplatePlaceholders.emailCount=0`.
 The readiness bundle enforces that same placeholder check and blocks with
 `fixture_payload_placeholder_email` when the copied template still contains a
-placeholder email.
+placeholder email. It also exposes basename-only `reportFiles` and
+`reportsReady` entries for `readinessBundle`, `smokeSummary`, and
+`fixtureEvidence` so agents can hand off evidence without leaking local paths.
 
 ## Live fixture evidence
 

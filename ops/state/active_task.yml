@@ -1,22 +1,22 @@
-id: cliq-channel-479
-title: record post-CRM report-metadata RC decision evidence
-module: openclaw_cliq_channel
+id: crm-022
+title: add CRM fixture readiness report metadata
+module: crm
 stage: completed
 status: completed
 owner: coder
-updated_at: '2026-05-12T09:59:36Z'
+updated_at: '2026-05-12T10:15:46Z'
 execution_mode: turbo_20x
 throughput_policy_ref: ops/state/execution_policy.yml
 success_criteria:
-  - post-CRM report-metadata source drift guard reports `package_source_unchanged`
-  - operator decision packet reports `awaiting_operator_publish_path`
-  - artifact, install smoke, promotion, and trusted reply evidence remain ready in the decision packet
-  - RC checklist, operator handoff, README, Lane 3 index, and state docs record the new evidence
-  - publish, tag, npm promotion, GitHub release, and expectedIntegrity fill remain operator-only
-next_if_done: Operator chooses the native Cliq RC artifact path with `ops/scripts/openclaw_cliq_rc_operator_decision_packet.sh`; CRM fixture dry-run remains gated on a copied dedicated payload and cleanup plan.
+  - readiness bundle reports basename-only `reportFiles` for the bundle, smoke summary, and fixture evidence
+  - readiness bundle reports `reportsReady` booleans for the same artifacts
+  - readiness bundle output does not expose local temp/workspace paths through report metadata
+  - Lane 2, Lane 3, and Lane 1 docs describe the schema addition
+  - normal `zoho crm upsert --execute` and live fixture execution remain blocked
+next_if_done: Refresh native Cliq RC no-publish source-drift and operator-decision evidence against the new CRM docs/state HEAD, then continue to the next safe RC readiness milestone.
 progress:
-  - "2026-05-12T09:53:13Z source drift run `20260512T094343Z-crm-report-metadata-postcommit-source` returned `package_source_unchanged`, `headCommit=a926639e658e462255d7161472d02a9488ca3613`, `repoChangedSinceManifest=true`, `repoChangedFileCount=25`, and `packageDrift.packageChangedSinceManifest=false`."
-  - "2026-05-12T09:53:13Z decision packet `20260512T094343Z-crm-report-metadata-postcommit-decision` returned `awaiting_operator_publish_path`, `publish_path_not_selected`, `operator_publish_plan_ready`, `artifact_verified`, `install_smoke_passed`, `trusted_reply_recorded`, and `agentMayExecuteSelectedPath=false`."
-  - "2026-05-12T09:53:13Z no publish, tag, npm promotion, GitHub release, expectedIntegrity fill, Zoho call, or CRM live write was performed."
-  - "2026-05-12T09:59:36Z focused verification passed: OpenClaw Cliq RC checklist/operator handoff contract, Lane 3 required paths/troubleshooting contract, and markdown update -> 5 passed in 0.02s; ruff format/check, YAML parse, and `git diff --check` passed."
-next_step: Commit and push the post-CRM report-metadata decision evidence slice, then continue to the next safe RC readiness milestone.
+  - "2026-05-12T10:10:11Z extended `ops/scripts/crm_fixture_operator_readiness_bundle.sh` with basename-only `reportFiles` and `reportsReady` for readiness bundle, smoke summary, and fixture evidence report."
+  - "2026-05-12T10:10:11Z focused readiness bundle tests assert report metadata is present and that temp paths are not printed in blocked placeholder-payload output."
+  - "2026-05-12T10:10:11Z Lane 2/3 docs and state were updated; no Zoho call, CRM live write, publish, tag, npm promotion, GitHub release, version bump, or expectedIntegrity fill was performed."
+  - "2026-05-12T10:15:46Z verification passed: shell syntax for CRM fixture scripts; CRM fixture operator packet/preflight/readiness tests plus Lane 3 CRM contract and markdown update -> 12 passed, 73 deselected in 1.54s; ruff format/check, YAML parse, and `git diff --check` passed."
+next_step: Commit and push the readiness report metadata slice, then refresh native Cliq RC no-publish evidence against the new HEAD.

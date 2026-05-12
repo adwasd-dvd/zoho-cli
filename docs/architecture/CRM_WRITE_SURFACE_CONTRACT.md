@@ -261,6 +261,9 @@ no live result was recorded, normal upsert execution remains blocked, and the
 agent still lacks permission to run the live fixture. It reports blockers such
 as `summary_file_missing`, `fixture_evidence_not_ready`,
 `payload_placeholder_count_missing`, and `fixture_payload_placeholder_email`.
+It also emits basename-only `reportFiles` and `reportsReady` metadata for
+`readinessBundle`, `smokeSummary`, and `fixtureEvidence` so agents can pass or
+archive the handoff artifacts without logging local directories.
 
 `ops/scripts/crm_fixture_payload_preflight.sh` checks the copied operator
 payload before the smoke script and before any Zoho call:

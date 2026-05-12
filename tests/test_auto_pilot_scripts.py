@@ -3162,6 +3162,16 @@ def test_crm_fixture_operator_readiness_bundle_requires_dry_run_evidence(
     payload = json.loads(result.stdout)
     assert payload["status"] == "ready_for_operator_live_fixture"
     assert payload["blockers"] == []
+    assert payload["reportFiles"] == {
+        "readinessBundle": "bundle.json",
+        "smokeSummary": summary_path.name,
+        "fixtureEvidence": "crm_fixture_operator_evidence_unit-test.json",
+    }
+    assert payload["reportsReady"] == {
+        "readinessBundle": True,
+        "smokeSummary": True,
+        "fixtureEvidence": True,
+    }
     assert payload["summary"]["file"] == summary_path.name
     assert payload["summary"]["payloadTemplatePlaceholders"] == {"emailCount": 0}
     assert payload["evidence"]["status"] == "ready_for_operator_live_fixture"
@@ -3235,6 +3245,17 @@ def test_crm_fixture_operator_readiness_bundle_blocks_placeholder_payload(
     assert result.returncode == 1, output
     payload = json.loads(result.stdout)
     assert payload["status"] == "blocked"
+    assert str(tmp_path) not in result.stdout
+    assert payload["reportFiles"] == {
+        "readinessBundle": "crm_fixture_operator_readiness_bundle_unit-test-placeholder.json",
+        "smokeSummary": summary_path.name,
+        "fixtureEvidence": "crm_fixture_operator_evidence_unit-test-placeholder.json",
+    }
+    assert payload["reportsReady"] == {
+        "readinessBundle": True,
+        "smokeSummary": True,
+        "fixtureEvidence": True,
+    }
     assert "fixture_payload_placeholder_email" in payload["blockers"]
     assert payload["nextAction"] == "fix_blockers"
 

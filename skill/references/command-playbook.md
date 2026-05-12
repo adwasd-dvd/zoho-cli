@@ -275,7 +275,9 @@ normal `zoho crm upsert --execute` blocked.
 The readiness bundle must report `ready_for_operator_live_fixture`,
 `normalUpsertExecuteBlocked=true`, and `agentMayExecuteLiveFixture=false`; it
 blocks with `fixture_payload_placeholder_email` until the copied fixture payload
-uses a dedicated non-placeholder test email.
+uses a dedicated non-placeholder test email. Use its `reportFiles` and
+`reportsReady` entries to hand off `readinessBundle`, `smokeSummary`, and
+`fixtureEvidence` by basename without exposing local paths.
 
 ## Bridge fallback (explicit)
 

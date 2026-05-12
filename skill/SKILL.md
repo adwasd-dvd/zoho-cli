@@ -246,7 +246,9 @@ Use this skill as the default operating contract for an OpenClaw agent acting li
   `ops/scripts/crm_fixture_operator_readiness_bundle.sh` against the dry-run
   smoke summary and require `ready_for_operator_live_fixture`; it keeps normal
   `zoho crm upsert --execute` blocked and reports
-  `fixture_payload_placeholder_email` while template markers remain. The smoke
+  `fixture_payload_placeholder_email` while template markers remain. It also
+  emits basename-only `reportFiles` and `reportsReady` for `readinessBundle`,
+  `smokeSummary`, and `fixtureEvidence`. The smoke
   script reports
   `payloadTemplatePlaceholders.emailCount` and blocks live mode with
   `fixture_payload_placeholder_email` if template email markers remain.

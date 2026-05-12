@@ -72,6 +72,7 @@ fi
 
 SUMMARY_BASENAME="$(json_basename "$SUMMARY_FILE")"
 EVIDENCE_BASENAME="$(json_basename "$EVIDENCE_FILE")"
+BUNDLE_BASENAME="$(json_basename "$BUNDLE_FILE")"
 
 PAYLOAD="$("$JQ_BIN" -n \
   --arg runId "$RUN_ID" \
@@ -79,6 +80,7 @@ PAYLOAD="$("$JQ_BIN" -n \
   --argjson summaryExists "$SUMMARY_EXISTS" \
   --argjson evidenceExists "$EVIDENCE_EXISTS" \
   --argjson evidenceCommandExit "$EVIDENCE_COMMAND_EXIT" \
+  --argjson bundleFile "$BUNDLE_BASENAME" \
   --argjson summaryFile "$SUMMARY_BASENAME" \
   --argjson evidenceFile "$EVIDENCE_BASENAME" \
   --slurpfile summary "$SUMMARY_SLURP" \
@@ -111,6 +113,16 @@ PAYLOAD="$("$JQ_BIN" -n \
         end
       ),
       blockers: $blockers,
+      reportFiles: {
+        readinessBundle: $bundleFile,
+        smokeSummary: (if $summaryExists then $summaryFile else null end),
+        fixtureEvidence: (if $evidenceExists then $evidenceFile else null end)
+      },
+      reportsReady: {
+        readinessBundle: true,
+        smokeSummary: $summaryExists,
+        fixtureEvidence: $evidenceExists
+      },
       summary: {
         ready: $summaryExists,
         file: $summaryFile,

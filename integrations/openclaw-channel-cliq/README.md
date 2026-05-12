@@ -52,6 +52,10 @@ without explicit operator approval.
 without publishing: it checks the pack summary, shasum, package metadata,
 manifest/channel identity, required runtime/docs/skill entries, and no
 publish/tag/version-bump posture before reporting `artifact_verified`.
+`ops/scripts/openclaw_cliq_rc_install_smoke.sh` verifies that artifact in a
+Temp-HOME OpenClaw profile by running local `plugins install`, `plugins inspect
+zoho-cliq --json`, and `plugins doctor` before reporting
+`install_smoke_passed`.
 
 ## Contract
 
@@ -82,6 +86,9 @@ Repeatable local RC package preflight:
 
 No-publish local RC artifact check:
 `../../ops/scripts/openclaw_cliq_rc_artifact_check.sh`.
+
+No-publish Temp-HOME OpenClaw install smoke:
+`../../ops/scripts/openclaw_cliq_rc_install_smoke.sh`.
 
 No-publish local RC promotion preflight:
 `../../ops/scripts/openclaw_cliq_rc_promotion_check.sh`.

@@ -183,7 +183,9 @@ in runtime webhook tests; `cliq-channel-422` promotes package metadata to
 tunnel-agnostic public callback verification through
 `ops/scripts/openclaw_cliq_public_callback_smoke.sh`; `cliq-channel-455` adds
 no-publish local tarball verification through
-`ops/scripts/openclaw_cliq_rc_artifact_check.sh`.
+`ops/scripts/openclaw_cliq_rc_artifact_check.sh`; `cliq-channel-456` adds
+Temp-HOME OpenClaw install smoke through
+`ops/scripts/openclaw_cliq_rc_install_smoke.sh`.
 Both inbound paths normalize messages into the shared
 inbound event shape, run mention/allowlist/employee policy checks, dedupe by
 account/network/chat/message before optional dispatch, keep status/read failures
@@ -205,6 +207,7 @@ ops/scripts/openclaw_cliq_live_smoke.sh
 ops/scripts/openclaw_cliq_public_callback_smoke.sh
 ops/scripts/openclaw_cliq_rc_pack.sh
 ops/scripts/openclaw_cliq_rc_artifact_check.sh
+ops/scripts/openclaw_cliq_rc_install_smoke.sh
 ```
 
 Treat `token_refresh_rate_limited` as `skip_deferred`; do not repeatedly refresh

@@ -80,6 +80,11 @@ verifies the local RC tarball without publishing by checking the pack summary,
 tarball shasum, package/channel/manifest identity, required runtime/docs/skill
 entries, and no publish/tag/version-bump posture before reporting
 `artifact_verified`.
+`cliq-channel-456` is complete:
+`ops/scripts/openclaw_cliq_rc_install_smoke.sh` verifies the checked artifact in
+a Temp-HOME OpenClaw profile with local `plugins install`, `plugins inspect
+zoho-cliq --json`, and `plugins doctor` before reporting
+`install_smoke_passed`.
 
 The v0.4 plugin targets OpenClaw `>=2026.5.3-1`. The upgraded global
 `OpenClaw 2026.5.3-1` host is suitable for native plugin checks; use
@@ -128,6 +133,7 @@ ops/scripts/openclaw_cliq_live_smoke.sh
 ops/scripts/openclaw_cliq_public_callback_smoke.sh
 ops/scripts/openclaw_cliq_rc_pack.sh
 ops/scripts/openclaw_cliq_rc_artifact_check.sh
+ops/scripts/openclaw_cliq_rc_install_smoke.sh
 ops/scripts/openclaw_cliq_trusted_reply_evidence.sh
 ```
 

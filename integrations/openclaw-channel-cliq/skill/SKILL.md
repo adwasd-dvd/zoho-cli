@@ -77,6 +77,11 @@ Use this skill when operating through the native OpenClaw Zoho Cliq channel.
   `artifact_verified`, matching tarball shasum, package/channel/manifest
   identity, required `dist/`, `README.md`, and `skill/SKILL.md` entries, and
   no publish/tag/version-bump posture.
+- Before operator publish handoff, run
+  `ops/scripts/openclaw_cliq_rc_install_smoke.sh`; require
+  `install_smoke_passed` after Temp-HOME `plugins install`,
+  `plugins inspect zoho-cliq --json`, and `plugins doctor` against the local RC
+  tarball.
 - Before asking an operator to publish/promote, run
   `ops/scripts/openclaw_cliq_rc_promotion_check.sh`; require
   `ready_for_operator_publish`, `expectedIntegrityState=placeholder`, no pack
@@ -101,6 +106,7 @@ ops/scripts/openclaw_cliq_live_smoke.sh
 ops/scripts/openclaw_cliq_public_callback_smoke.sh
 ops/scripts/openclaw_cliq_hash_ref.sh
 ops/scripts/openclaw_cliq_rc_artifact_check.sh
+ops/scripts/openclaw_cliq_rc_install_smoke.sh
 ops/scripts/openclaw_cliq_rc_pack.sh
 ops/scripts/openclaw_cliq_rc_promotion_check.sh
 ops/scripts/openclaw_cliq_trusted_reply_evidence_bundle.sh

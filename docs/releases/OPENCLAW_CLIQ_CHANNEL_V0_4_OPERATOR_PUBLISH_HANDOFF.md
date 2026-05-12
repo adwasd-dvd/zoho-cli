@@ -13,6 +13,7 @@ Current baseline:
 - Local pack shasum: `7717aa539f3ccf8d1ee1be560283ea30fa6a87b6`
 - Trusted reply evidence: `trusted_reply_recorded`
 - Local artifact check: `artifact_verified`
+- Local OpenClaw install smoke: `install_smoke_passed`
 
 ## Non-automated approval boundary
 
@@ -44,10 +45,14 @@ OPENCLAW_CLIQ_PACK_RUN_ID="$(date -u +%Y%m%dT%H%M%SZ)-operator-pack" \
 OPENCLAW_CLIQ_ARTIFACT_RUN_ID="$(date -u +%Y%m%dT%H%M%SZ)-operator-artifact" \
   ops/scripts/openclaw_cliq_rc_artifact_check.sh
 
+OPENCLAW_CLIQ_INSTALL_RUN_ID="$(date -u +%Y%m%dT%H%M%SZ)-operator-install" \
+  ops/scripts/openclaw_cliq_rc_install_smoke.sh
+
 ./.venv/bin/python -m pytest -q \
   tests/test_auto_pilot_scripts.py::test_openclaw_cliq_rc_promotion_check_requires_ready_local_evidence \
   tests/test_auto_pilot_scripts.py::test_openclaw_cliq_rc_promotion_check_blocks_published_integrity_too_early \
   tests/test_auto_pilot_scripts.py::test_openclaw_cliq_rc_artifact_check_verifies_tarball_contract \
+  tests/test_auto_pilot_scripts.py::test_openclaw_cliq_rc_install_smoke_installs_verified_artifact \
   tests/test_openclaw_channel_contract.py::test_openclaw_cliq_channel_rc_checklist_has_cut_contract \
   tests/test_markdown_update.py
 ```
@@ -60,6 +65,7 @@ Expected local pre-publish posture:
 - `pack.publishPerformed=false`
 - `pack.versionBumped=false`
 - `artifact.status=artifact_verified`
+- `install.status=install_smoke_passed`
 - `trustedReply.status=trusted_reply_recorded`
 - `npmPromotionRequiresOperatorApproval=true`
 
@@ -100,6 +106,9 @@ Abort and do not publish if any of these appear:
 - `pack_publish_performed` or `pack_version_bumped` in local preflight.
 - `tarball_shasum_mismatch`, `artifact_version_mismatch`, or
   `required_entry_missing_*` in the local artifact check.
+- `artifact_not_verified`, `plugin_install_failed`, `plugin_inspect_failed`,
+  `plugin_id_missing`, `channel_id_missing`, or `plugin_doctor_failed` in the
+  local install smoke.
 - `trusted_reply_not_recorded`.
 - Any raw webhook payload, raw message body, raw reply body, or secret marker in
   release evidence.

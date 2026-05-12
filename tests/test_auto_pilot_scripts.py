@@ -44,6 +44,9 @@ OPENCLAW_CLIQ_RC_PROMOTION_CHECK_SCRIPT = (
 OPENCLAW_CLIQ_RC_ARTIFACT_CHECK_SCRIPT = (
     REPO_ROOT / "ops" / "scripts" / "openclaw_cliq_rc_artifact_check.sh"
 )
+OPENCLAW_CLIQ_RC_INSTALL_SMOKE_SCRIPT = (
+    REPO_ROOT / "ops" / "scripts" / "openclaw_cliq_rc_install_smoke.sh"
+)
 
 
 def test_export_scope_recheck_runner_propagates_probe_exit_codes(
@@ -712,6 +715,180 @@ def test_openclaw_cliq_rc_artifact_check_blocks_missing_required_entry(
         "required_entry_missing_package_dist_src_native_dispatch_js"
         in payload["blockers"]
     )
+
+
+def _write_fake_openclaw_for_install_smoke(tmp_path: Path) -> tuple[Path, Path]:
+    calls_path = tmp_path / "openclaw_calls.jsonl"
+    fake_openclaw = tmp_path / "fake_openclaw.py"
+    fake_openclaw.write_text(
+        """#!/usr/bin/env python3
+import json
+import os
+import sys
+
+args = sys.argv[1:]
+with open(os.environ["FAKE_OPENCLAW_CALLS"], "a", encoding="utf-8") as fh:
+    fh.write(json.dumps({"args": args, "home": os.environ.get("HOME")}) + "\\n")
+
+if args == ["--version"]:
+    print("OpenClaw 2026.5.3-1")
+    raise SystemExit(0)
+if args[:2] == ["plugins", "install"]:
+    if not args[2].endswith(".tgz"):
+        print("expected tgz install source", file=sys.stderr)
+        raise SystemExit(3)
+    print("installed")
+    raise SystemExit(0)
+if args == ["plugins", "inspect", "zoho-cliq", "--json"]:
+    print(json.dumps({
+        "id": "zoho-cliq",
+        "status": "loaded",
+        "channelIds": ["cliq"],
+        "diagnostics": []
+    }))
+    raise SystemExit(0)
+if args == ["plugins", "doctor"]:
+    print("No plugin issues detected.")
+    raise SystemExit(0)
+
+print(json.dumps({"status": "error", "error": "unexpected_args", "args": args}))
+raise SystemExit(9)
+"""
+    )
+    fake_openclaw.chmod(fake_openclaw.stat().st_mode | stat.S_IXUSR)
+    return fake_openclaw, calls_path
+
+
+def test_openclaw_cliq_rc_install_smoke_installs_verified_artifact(
+    tmp_path: Path,
+) -> None:
+    tarball_path = tmp_path / "adwasd-openclaw-zoho-cliq-0.4.0-rc.1.tgz"
+    tarball_path.write_bytes(b"fake tarball")
+    shasum = hashlib.sha1(tarball_path.read_bytes()).hexdigest()
+    pack_summary = tmp_path / "pack-summary.json"
+    pack_summary.write_text(
+        json.dumps(
+            {
+                "status": "passed",
+                "pack": {
+                    "filename": tarball_path.name,
+                    "tarballPath": str(tarball_path),
+                    "shasum": shasum,
+                    "integrity": "sha512-test",
+                },
+                "releasePosture": {
+                    "publishPerformed": False,
+                    "versionBumped": False,
+                },
+            }
+        )
+    )
+    artifact_report = tmp_path / "artifact.json"
+    artifact_report.write_text(
+        json.dumps(
+            {
+                "status": "artifact_verified",
+                "artifact": {
+                    "shasumMatchesPackSummary": True,
+                },
+            }
+        )
+    )
+    fake_openclaw, calls_path = _write_fake_openclaw_for_install_smoke(tmp_path)
+    report_file = tmp_path / "install-smoke.json"
+
+    result = subprocess.run(
+        ["bash", str(OPENCLAW_CLIQ_RC_INSTALL_SMOKE_SCRIPT)],
+        cwd=REPO_ROOT,
+        env={
+            **os.environ,
+            "OPENCLAW_BIN": str(fake_openclaw),
+            "FAKE_OPENCLAW_CALLS": str(calls_path),
+            "OPENCLAW_CLIQ_PACK_SUMMARY_FILE": str(pack_summary),
+            "OPENCLAW_CLIQ_ARTIFACT_REPORT_FILE": str(artifact_report),
+            "OPENCLAW_CLIQ_INSTALL_REPORT_DIR": str(tmp_path),
+            "OPENCLAW_CLIQ_INSTALL_REPORT_FILE": str(report_file),
+            "OPENCLAW_CLIQ_INSTALL_HOME": str(tmp_path / "home"),
+            "OPENCLAW_CLIQ_INSTALL_RUN_ID": "unit-install",
+        },
+        capture_output=True,
+        text=True,
+        check=False,
+    )
+
+    output = f"{result.stdout}\n{result.stderr}"
+    assert result.returncode == 0, output
+    payload = json.loads(result.stdout)
+    assert payload["status"] == "install_smoke_passed"
+    assert payload["blockers"] == []
+    assert payload["source"]["type"] == "artifact"
+    assert payload["artifact"]["status"] == "artifact_verified"
+    assert payload["artifact"]["shasumMatchesPackSummary"] is True
+    assert [command["name"] for command in payload["commands"]] == [
+        "version",
+        "install",
+        "inspect",
+        "doctor",
+    ]
+    assert all(command["status"] == "passed" for command in payload["commands"])
+    assert payload["releasePosture"] == {
+        "publishPerformed": False,
+        "tagCreated": False,
+        "versionBumped": False,
+        "expectedIntegrityAction": "fill_after_publish",
+        "localInstallSmokeOnly": True,
+    }
+    calls = [json.loads(line) for line in calls_path.read_text().splitlines()]
+    assert calls[1]["args"] == ["plugins", "install", str(tarball_path)]
+
+
+def test_openclaw_cliq_rc_install_smoke_requires_verified_artifact(
+    tmp_path: Path,
+) -> None:
+    tarball_path = tmp_path / "adwasd-openclaw-zoho-cliq-0.4.0-rc.1.tgz"
+    tarball_path.write_bytes(b"fake tarball")
+    pack_summary = tmp_path / "pack-summary.json"
+    pack_summary.write_text(
+        json.dumps(
+            {
+                "status": "passed",
+                "pack": {
+                    "filename": tarball_path.name,
+                    "tarballPath": str(tarball_path),
+                },
+            }
+        )
+    )
+    artifact_report = tmp_path / "artifact.json"
+    artifact_report.write_text(json.dumps({"status": "blocked"}))
+    fake_openclaw, calls_path = _write_fake_openclaw_for_install_smoke(tmp_path)
+
+    result = subprocess.run(
+        ["bash", str(OPENCLAW_CLIQ_RC_INSTALL_SMOKE_SCRIPT)],
+        cwd=REPO_ROOT,
+        env={
+            **os.environ,
+            "OPENCLAW_BIN": str(fake_openclaw),
+            "FAKE_OPENCLAW_CALLS": str(calls_path),
+            "OPENCLAW_CLIQ_PACK_SUMMARY_FILE": str(pack_summary),
+            "OPENCLAW_CLIQ_ARTIFACT_REPORT_FILE": str(artifact_report),
+            "OPENCLAW_CLIQ_INSTALL_REPORT_DIR": str(tmp_path),
+            "OPENCLAW_CLIQ_INSTALL_REPORT_FILE": str(tmp_path / "report.json"),
+            "OPENCLAW_CLIQ_INSTALL_HOME": str(tmp_path / "home"),
+            "OPENCLAW_CLIQ_INSTALL_RUN_ID": "unit-install-blocked",
+        },
+        capture_output=True,
+        text=True,
+        check=False,
+    )
+
+    output = f"{result.stdout}\n{result.stderr}"
+    assert result.returncode == 1, output
+    payload = json.loads(result.stdout)
+    assert payload["status"] == "blocked"
+    assert "artifact_not_verified" in payload["blockers"]
+    assert payload["commands"] == []
+    assert not calls_path.exists()
 
 
 def _write_fake_zoho_for_crm_fixture_smoke(tmp_path: Path) -> tuple[Path, Path]:

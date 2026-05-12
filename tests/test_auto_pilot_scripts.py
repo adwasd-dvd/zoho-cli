@@ -20,6 +20,9 @@ CRM_FIXTURE_PAYLOAD_PREFLIGHT_SCRIPT = (
 CRM_FIXTURE_READINESS_BUNDLE_SCRIPT = (
     REPO_ROOT / "ops" / "scripts" / "crm_fixture_operator_readiness_bundle.sh"
 )
+CRM_FIXTURE_OPERATOR_PACKET_SCRIPT = (
+    REPO_ROOT / "ops" / "scripts" / "crm_fixture_operator_packet.sh"
+)
 OPENCLAW_CLIQ_LIVE_SMOKE_SCRIPT = (
     REPO_ROOT / "ops" / "scripts" / "openclaw_cliq_live_smoke.sh"
 )
@@ -2387,6 +2390,172 @@ def test_crm_fixture_payload_preflight_requires_cleanup_plan(
         "rawCleanupPlanStored": False,
     }
     assert payload["nextAction"] == "provide_cleanup_plan"
+
+
+def test_crm_fixture_operator_packet_reports_missing_payload(
+    tmp_path: Path,
+) -> None:
+    reports_dir = tmp_path / "reports"
+    packet_file = reports_dir / "packet.json"
+
+    result = subprocess.run(
+        ["bash", str(CRM_FIXTURE_OPERATOR_PACKET_SCRIPT)],
+        cwd=REPO_ROOT,
+        env={
+            **os.environ,
+            "ZOHO_CRM_FIXTURE_PACKET_REPORT_DIR": str(reports_dir),
+            "ZOHO_CRM_FIXTURE_PACKET_FILE": str(packet_file),
+            "ZOHO_CRM_FIXTURE_PACKET_RUN_ID": "unit-missing-payload",
+        },
+        capture_output=True,
+        text=True,
+        check=False,
+    )
+
+    output = f"{result.stdout}\n{result.stderr}"
+    assert result.returncode == 1, output
+    assert str(tmp_path) not in result.stdout
+    payload = json.loads(result.stdout)
+    assert payload["status"] == "blocked"
+    assert payload["blockers"] == ["cleanup_plan_missing", "payload_file_required"]
+    assert payload["payloadPreflight"]["status"] == "blocked"
+    assert payload["payloadPreflight"]["blockers"] == [
+        "payload_file_required",
+        "cleanup_plan_missing",
+    ]
+    assert payload["dryRunReadiness"]["skipped"] is True
+    assert payload["dryRunReadiness"]["skippedReason"] == "summary_file_not_provided"
+    assert payload["releasePosture"]["normalUpsertExecuteBlocked"] is True
+    assert payload["releasePosture"]["agentMayExecuteLiveFixture"] is False
+    assert payload["nextAction"] == "provide_fixture_payload_file"
+    assert json.loads(packet_file.read_text()) == payload
+
+
+def test_crm_fixture_operator_packet_accepts_payload_preflight(
+    tmp_path: Path,
+) -> None:
+    raw_email = "fixture-ready@operator.test"
+    raw_cleanup = "delete fixture after validation"
+    payload_file = tmp_path / "fixture-ready.json"
+    payload_file.write_text(
+        json.dumps(
+            {
+                "Last_Name": "ZohoCliFixtureReady",
+                "Company": "Zoho CLI Fixture",
+                "Email": raw_email,
+            }
+        ),
+        encoding="utf-8",
+    )
+    reports_dir = tmp_path / "reports"
+
+    result = subprocess.run(
+        ["bash", str(CRM_FIXTURE_OPERATOR_PACKET_SCRIPT)],
+        cwd=REPO_ROOT,
+        env={
+            **os.environ,
+            "ZOHO_CRM_FIXTURE_PAYLOAD_FILE": str(payload_file),
+            "ZOHO_CRM_FIXTURE_CLEANUP_PLAN": raw_cleanup,
+            "ZOHO_CRM_FIXTURE_PACKET_REPORT_DIR": str(reports_dir),
+            "ZOHO_CRM_FIXTURE_PACKET_RUN_ID": "unit-ready-payload",
+        },
+        capture_output=True,
+        text=True,
+        check=False,
+    )
+
+    output = f"{result.stdout}\n{result.stderr}"
+    assert result.returncode == 0, output
+    assert raw_email not in result.stdout
+    assert raw_cleanup not in result.stdout
+    payload = json.loads(result.stdout)
+    assert payload["status"] == "payload_preflight_ready"
+    assert payload["blockers"] == []
+    assert payload["payloadPreflight"]["ready"] is True
+    assert payload["payloadPreflight"]["payload"]["dedicatedFixtureCandidate"] is True
+    assert payload["payloadPreflight"]["payload"]["placeholderEmailCount"] == 0
+    assert payload["dryRunReadiness"]["ready"] is False
+    assert payload["dryRunReadiness"]["skipped"] is True
+    assert payload["nextAction"] == "run_crm_fixture_live_smoke_dry_run"
+
+
+def test_crm_fixture_operator_packet_wraps_dry_run_readiness(
+    tmp_path: Path,
+) -> None:
+    evidence = {
+        "policyId": "crm-014-operator-fixture-evidence",
+        "status": "ready_for_operator_live_fixture",
+        "decision": "await_operator_live_fixture",
+        "blockingReasons": ["live_fixture_not_recorded"],
+        "operatorReadiness": {"readyForLiveFixture": True},
+        "redaction": {"ok": True},
+    }
+    fake_zoho, calls_path = _write_fake_zoho_for_crm_fixture_readiness(
+        tmp_path,
+        evidence,
+    )
+    payload_file = tmp_path / "fixture-ready.json"
+    payload_file.write_text(
+        json.dumps(
+            {
+                "Last_Name": "ZohoCliFixtureReady",
+                "Company": "Zoho CLI Fixture",
+                "Email": "fixture-ready@operator.test",
+            }
+        ),
+        encoding="utf-8",
+    )
+    summary_path = tmp_path / "crm_fixture_live_smoke_summary.json"
+    summary_path.write_text(
+        json.dumps(
+            {
+                "summaryVersion": 1,
+                "runId": "fixture-run",
+                "module": "Leads",
+                "duplicateField": "Email",
+                "idempotencyKey": "fixture-test",
+                "payloadDigest": "sha256:abc123",
+                "requiredApproval": "crm:fixture:upsert:Leads:abc123:fixture-test",
+                "payloadTemplatePlaceholders": {"emailCount": 0},
+                "executeRequested": False,
+                "liveResultRecorded": False,
+            }
+        ),
+        encoding="utf-8",
+    )
+
+    result = subprocess.run(
+        ["bash", str(CRM_FIXTURE_OPERATOR_PACKET_SCRIPT)],
+        cwd=REPO_ROOT,
+        env={
+            **os.environ,
+            "ZOHO_BIN": str(fake_zoho),
+            "FAKE_ZOHO_READINESS_CALLS": str(calls_path),
+            "FAKE_CRM_FIXTURE_EVIDENCE_JSON": str(tmp_path / "evidence.json"),
+            "ZOHO_CRM_FIXTURE_PAYLOAD_FILE": str(payload_file),
+            "ZOHO_CRM_FIXTURE_CLEANUP_PLAN": "delete fixture after validation",
+            "ZOHO_CRM_FIXTURE_SUMMARY_FILE": str(summary_path),
+            "ZOHO_CRM_FIXTURE_PACKET_REPORT_DIR": str(tmp_path / "reports"),
+            "ZOHO_CRM_FIXTURE_PACKET_RUN_ID": "unit-ready-evidence",
+        },
+        capture_output=True,
+        text=True,
+        check=False,
+    )
+
+    output = f"{result.stdout}\n{result.stderr}"
+    assert result.returncode == 0, output
+    payload = json.loads(result.stdout)
+    assert payload["status"] == "ready_for_operator_live_fixture"
+    assert payload["payloadPreflight"]["ready"] is True
+    assert payload["dryRunReadiness"]["ready"] is True
+    assert payload["dryRunReadiness"]["status"] == "ready_for_operator_live_fixture"
+    assert payload["dryRunReadiness"]["evidenceStatus"] == (
+        "ready_for_operator_live_fixture"
+    )
+    assert payload["nextAction"] == "operator_review_payload_cleanup_and_approval"
+    calls = [json.loads(line) for line in calls_path.read_text().splitlines()]
+    assert calls == [["crm", "fixture-evidence", "--summary-file", str(summary_path)]]
 
 
 def _write_fake_zoho_for_crm_fixture_readiness(

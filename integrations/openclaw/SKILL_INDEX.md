@@ -64,6 +64,10 @@ CRM SDK planning:
   operator readiness bundle for an existing dry-run smoke summary; requires
   `ready_for_operator_live_fixture`, placeholder email count zero, and keeps
   normal `zoho crm upsert --execute` blocked)
+- `ops/scripts/crm_fixture_operator_packet.sh` (`crm-015`: autonomous no-write
+  packet that combines payload preflight and optional dry-run readiness evidence
+  into `blocked`, `payload_preflight_ready`, `ready_for_operator_live_fixture`,
+  or `live_fixture_recorded`)
 - `docs/releases/CRM_V0_5_FIXTURE_PAYLOAD_TEMPLATE.json` (`crm-015`: safe
   one-record `Leads` template with `.example.invalid` placeholder data; copy and
   edit outside the repo before live fixture mode; smoke reports

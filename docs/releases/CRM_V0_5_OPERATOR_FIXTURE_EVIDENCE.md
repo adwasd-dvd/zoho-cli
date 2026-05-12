@@ -52,6 +52,26 @@ If it reports `fixture_payload_placeholder_email`, `required_fields_missing`, or
 `cleanup_plan_missing`, fix the copied payload or cleanup plan before running the
 smoke script. The preflight stores only redacted metadata and does not call Zoho.
 
+For automated handoff, use the operator packet wrapper. It runs the local
+preflight and, when a dry-run smoke summary is supplied, wraps the existing
+readiness bundle into one redacted status:
+
+```bash
+ZOHO_CRM_FIXTURE_PAYLOAD_FILE=/tmp/lead-fixture.json \
+ZOHO_CRM_FIXTURE_CLEANUP_PLAN="remove or update the dedicated fixture record after validation" \
+ops/scripts/crm_fixture_operator_packet.sh
+```
+
+Packet statuses:
+
+- `blocked` with `nextAction=provide_fixture_payload_file`,
+  `provide_cleanup_plan`, or `fix_blockers`
+- `payload_preflight_ready` with
+  `nextAction=run_crm_fixture_live_smoke_dry_run`
+- `ready_for_operator_live_fixture` after a dry-run summary and evidence bundle
+  are supplied
+- `live_fixture_recorded` after the explicitly approved live fixture smoke
+
 ```bash
 ZOHO_CRM_FIXTURE_PAYLOAD_FILE=/tmp/lead-fixture.json \
 ZOHO_CRM_FIXTURE_IDEMPOTENCY_KEY=crm-fixture-$(date +%F) \
@@ -71,6 +91,15 @@ Or produce the operator readiness bundle from the same dry-run summary:
 ```bash
 ZOHO_CRM_FIXTURE_SUMMARY_FILE=tests/auto_pilot/reports/crm_fixture_live_smoke_summary_<run>.json \
 ops/scripts/crm_fixture_operator_readiness_bundle.sh
+```
+
+Or rerun the packet with the summary attached:
+
+```bash
+ZOHO_CRM_FIXTURE_PAYLOAD_FILE=/tmp/lead-fixture.json \
+ZOHO_CRM_FIXTURE_CLEANUP_PLAN="remove or update the dedicated fixture record after validation" \
+ZOHO_CRM_FIXTURE_SUMMARY_FILE=tests/auto_pilot/reports/crm_fixture_live_smoke_summary_<run>.json \
+ops/scripts/crm_fixture_operator_packet.sh
 ```
 
 Expected dry-run status before any live write:

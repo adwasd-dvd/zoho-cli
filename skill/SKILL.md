@@ -208,6 +208,13 @@ Use this skill as the default operating contract for an OpenClaw agent acting li
   script reports
   `payloadTemplatePlaceholders.emailCount` and blocks live mode with
   `fixture_payload_placeholder_email` if template email markers remain.
+  For autonomous CRM fixture handoff checks, prefer
+  `ops/scripts/crm_fixture_operator_packet.sh`: it combines the local payload
+  preflight and optional dry-run readiness bundle into one redacted packet with
+  `nextAction` values such as `provide_fixture_payload_file`,
+  `run_crm_fixture_live_smoke_dry_run`, and
+  `operator_review_payload_cleanup_and_approval`, while keeping
+  `agentMayExecuteLiveFixture=false`.
 - Draft before high-impact send/delete actions unless the user explicitly asks for direct execution.
 - Ask for explicit approval before running any install/update command that modifies tools or skill files.
 - File low-risk, sanitized CLI bugs and suggestions directly in `adwasd-dvd/zoho-cli` GitHub issues after duplicate search; ask for approval before including private context or changing GitHub settings/labels/code.

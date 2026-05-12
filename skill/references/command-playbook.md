@@ -212,6 +212,18 @@ preflight blocks with `fixture_payload_placeholder_email`,
 `required_fields_missing`, or `cleanup_plan_missing` and stores no raw email or
 cleanup plan.
 
+For automation, prefer the combined packet:
+
+```bash
+ZOHO_CRM_FIXTURE_PAYLOAD_FILE=/tmp/lead-fixture.json \
+ZOHO_CRM_FIXTURE_CLEANUP_PLAN="remove or update the dedicated fixture record after validation" \
+ops/scripts/crm_fixture_operator_packet.sh
+```
+
+It emits one redacted `crm_fixture_operator_packet` with `status=blocked`,
+`payload_preflight_ready`, `ready_for_operator_live_fixture`, or
+`live_fixture_recorded`, and keeps `agentMayExecuteLiveFixture=false`.
+
 ```bash
 ZOHO_CRM_FIXTURE_PAYLOAD_FILE=/tmp/lead-fixture.json \
 ZOHO_CRM_FIXTURE_CLEANUP_PLAN="remove or update the dedicated fixture record after validation" \

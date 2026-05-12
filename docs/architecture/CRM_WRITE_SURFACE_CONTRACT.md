@@ -280,6 +280,15 @@ only when the payload is a dedicated fixture candidate. It does not grant any
 live-write permission; `releasePosture.agentMayRunLiveFixture=false` remains
 true until the operator provides the exact live fixture gates.
 
+`ops/scripts/crm_fixture_operator_packet.sh` is the agent-friendly wrapper for
+the same gate. It runs the local payload preflight, optionally wraps an existing
+dry-run smoke summary through `ops/scripts/crm_fixture_operator_readiness_bundle.sh`,
+and emits one redacted packet with `status=blocked`, `payload_preflight_ready`,
+`ready_for_operator_live_fixture`, or `live_fixture_recorded`. The packet keeps
+`normalUpsertExecuteBlocked=true`, `agentMayExecuteLiveFixture=false`, and a
+machine-readable `nextAction` so unattended automation can stop at the correct
+operator handoff boundary without probing Zoho repeatedly.
+
 ## Operator payload template
 
 `docs/releases/CRM_V0_5_FIXTURE_PAYLOAD_TEMPLATE.json` is the copy-only starting

@@ -1,20 +1,22 @@
-id: crm-033
-title: add CRM fixture cleanup plan template
-module: crm
+id: cliq-channel-495
+title: record post-crm033 cleanup-template RC evidence
+module: openclaw_cliq_channel
 stage: completed
 status: completed
 owner: coder
-updated_at: '2026-05-12T22:22:41Z'
+updated_at: '2026-05-12T22:31:16Z'
 execution_mode: turbo_20x
 throughput_policy_ref: ops/state/execution_policy.yml
 success_criteria:
-  - "Add a safe copy/edit CRM fixture cleanup-plan template with action, target, selector, and agent/operator boundary guidance"
-  - "Expose that template in RC autonomy `operatorActionRequests` and operator-action prompt Markdown/JSON output"
-  - "Sync Lane 1/2/3 docs and regression tests with the new cleanup-plan handoff"
+  - "Record post-crm-033 source-drift evidence showing the native Cliq package source remains unchanged"
+  - "Record post-crm-033 decision-packet evidence showing the RC still awaits an operator publish path with all reports ready"
+  - "Record post-crm-033 autonomy and operator-action-prompt evidence showing the cleanup-plan request points at the new template and remains non-executable for agents"
+  - "Sync Lane 1/2/3 docs and regression tests with the refreshed evidence"
   - "Do not publish, tag, npm-promote, create GitHub releases, fill expectedIntegrity, call Zoho, or write CRM data"
 next_if_done: Continue to the next safe RC readiness milestone without publishing, tagging, npm promotion, GitHub release creation, expectedIntegrity fill, or live CRM writes.
 progress:
-  - "2026-05-12T22:22:41Z added `docs/releases/CRM_V0_5_FIXTURE_CLEANUP_PLAN_TEMPLATE.md` as a copy/edit-only cleanup plan starter that keeps live CRM writes operator-only."
-  - "2026-05-12T22:22:41Z updated `ops/scripts/zoho_cli_rc_autonomy_packet.sh` so `provide_crm_fixture_cleanup_plan` includes the cleanup template path, and verified `ops/scripts/zoho_cli_rc_operator_action_prompt.sh --md` prints the cleanup template without raw local paths, payload values, cleanup text, or secrets."
-  - "2026-05-12T22:22:41Z focused validation passed: shell syntax plus autonomy/operator-action/Lane 3/markdown tests -> 7 passed in 0.14s; `make lint`, Ruff format, YAML parse, and `git diff --check` passed."
-next_step: Commit and push the crm-033 cleanup-plan-template slice, then continue with the next safe RC milestone.
+  - "2026-05-12T22:31:16Z source drift run `20260512T223116Z-crm033-postcommit-source` returned `package_source_unchanged`, `headCommit=3584cd40a6a99642fdd3297e36383707b7a01663`, `repoChangedFileCount=40`, and `packageDrift.packageChangedSinceManifest=false`."
+  - "2026-05-12T22:31:16Z decision packet `20260512T223116Z-crm033-postcommit-decision` returned `awaiting_operator_publish_path`, `publish_path_not_selected`, all `reportsReady=true`, and `safety.agentMayExecuteSelectedPath=false`."
+  - "2026-05-12T22:31:16Z autonomy packet `20260512T223116Z-crm033-postcommit-autonomy` and operator prompt `20260512T223116Z-crm033-postcommit-prompt` returned the same three operator request ids; `provide_crm_fixture_cleanup_plan.template=docs/releases/CRM_V0_5_FIXTURE_CLEANUP_PLAN_TEMPLATE.md`; all action requests remain non-executable for agents."
+  - "2026-05-12T22:31:16Z final verification passed: OpenClaw RC checklist, Lane 3 required paths, and markdown update -> 3 passed in 0.01s; `make lint`, Ruff format, YAML parse, and `git diff --check` passed."
+next_step: Commit and push the cliq-channel-495 post-crm033 evidence slice, then continue to the next safe milestone.

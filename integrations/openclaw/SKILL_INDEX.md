@@ -90,7 +90,10 @@ CRM SDK planning:
   those requests into a compact operator handoff; `cliq-channel-494` records
   post-platform-218 source-drift/decision/prompt evidence showing commit
   `d15a1aeb` still keeps package source unchanged while awaiting the same
-  operator inputs)
+  operator inputs; `cliq-channel-495` records post-`crm-033` source-drift/
+  decision/autonomy/prompt evidence showing commit `3584cd40` still keeps
+  package source unchanged while the cleanup-plan operator request points at
+  `docs/releases/CRM_V0_5_FIXTURE_CLEANUP_PLAN_TEMPLATE.md`)
 - `ops/scripts/zoho_cli_rc_autonomy_packet.sh` (`platform-214`: read-only
   cross-lane RC autonomy packet that combines native Cliq RC decision state with
   CRM fixture next-command state; emits `agent_next_command_ready` only when the

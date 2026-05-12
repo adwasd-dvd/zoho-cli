@@ -1,7 +1,7 @@
 module: Platform
-updated_at: "2026-05-12T22:22:41Z"
+updated_at: "2026-05-12T22:31:16Z"
 status: in_progress
 execution_mode: turbo_20x
 throughput_policy_ref: ops/state/execution_policy.yml
 blockers: []
-next_small_step: "crm-033 links the CRM cleanup-plan operator ask to `docs/releases/CRM_V0_5_FIXTURE_CLEANUP_PLAN_TEMPLATE.md`; after commit, rerun the RC autonomy/operator-action prompt packet and continue only on agent-safe local/dry-run commands."
+next_small_step: "cliq-channel-495 records post-crm033 source-drift, decision-packet, autonomy-packet, and operator-prompt evidence: package source remains unchanged at HEAD `3584cd40`, all decision reports are ready, cleanup-plan operator requests point at the new template, and publish/write boundaries remain operator-only."

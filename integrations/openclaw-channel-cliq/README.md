@@ -64,6 +64,16 @@ while listing local/operator, npm RC, and GitHub artifact paths.
 bundle, release-notes draft, publish plan, artifact facts, report filenames,
 source commit, and false agent permission flags before reporting
 `operator_handoff_manifest_ready`.
+`ops/scripts/openclaw_cliq_rc_source_drift_check.sh` keeps the handoff manifest
+current after later repo commits by reporting `package_source_unchanged` only
+when `integrations/openclaw-channel-cliq/` did not drift.
+`ops/scripts/openclaw_cliq_rc_operator_selection_review.sh` validates a selected
+operator path without running it, and
+`ops/scripts/openclaw_cliq_rc_operator_decision_packet.sh` is the preferred
+one-command handoff: it returns `awaiting_operator_publish_path` until the
+operator chooses `local_operator_rc`, `npm_rc_publish`, or
+`github_release_artifact`, then `operator_publish_selection_ready` after a
+reviewed selection, while keeping `agentMayExecuteSelectedPath=false`.
 `docs/releases/OPENCLAW_CLIQ_CHANNEL_V0_4_OPERATOR_PUBLISH_HANDOFF.md` is the
 operator handoff for the approval boundary, preflight commands, publish path
 choice, post-publish checks, and abort conditions; agents must not run
@@ -125,6 +135,15 @@ Read-only operator publish plan:
 
 Read-only operator handoff manifest:
 `../../ops/scripts/openclaw_cliq_rc_operator_handoff_manifest.sh`.
+
+Read-only source drift guard:
+`../../ops/scripts/openclaw_cliq_rc_source_drift_check.sh`.
+
+Read-only selected path review:
+`../../ops/scripts/openclaw_cliq_rc_operator_selection_review.sh`.
+
+Read-only operator decision packet:
+`../../ops/scripts/openclaw_cliq_rc_operator_decision_packet.sh`.
 
 ## Config example
 

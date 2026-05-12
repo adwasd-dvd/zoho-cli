@@ -1,20 +1,20 @@
-id: cliq-channel-468
-title: add native Cliq RC operator decision packet
+id: cliq-channel-469
+title: sync native Cliq package docs for operator decision packet
 module: openclaw_cliq_channel
 stage: completed
 status: completed
 owner: coder
-updated_at: '2026-05-12T05:03:42Z'
+updated_at: '2026-05-12T05:13:12Z'
 execution_mode: turbo_20x
 throughput_policy_ref: ops/state/execution_policy.yml
 success_criteria:
-  - add a one-command read-only packet that reruns the publish plan, source drift guard, and selected path review
-  - report `awaiting_operator_publish_path` as a normal waiting state before the operator chooses a path
-  - report `operator_publish_selection_ready` only when a selected path passes source drift and selection review
-  - keep npm publish, git tag, GitHub release, version bump, and `openclaw.install.expectedIntegrity` fill behind explicit operator approval
-  - update Lane 2/3 docs, Lane 1 state, and contract tests
+  - update package-local `integrations/openclaw-channel-cliq/README.md` and `skill/SKILL.md` so tarball-internal docs know the decision packet, source drift guard, and selected path review
+  - require package docs to mention `awaiting_operator_publish_path`, `operator_publish_selection_ready`, and `agentMayExecuteSelectedPath=false`
+  - keep publish/tag/release/integrity-fill actions operator-only
+  - update Lane 1 state and contract tests
 next_if_done: Operator chooses the native Cliq RC artifact path, or CRM fixture work resumes with `ops/scripts/crm_fixture_operator_packet.sh` once a dedicated payload and cleanup plan exist.
 progress:
+  - "2026-05-12T05:13:12Z cliq-channel-469 completed: synced `integrations/openclaw-channel-cliq/README.md` and `integrations/openclaw-channel-cliq/skill/SKILL.md` with the source drift guard, selected path review, and preferred `ops/scripts/openclaw_cliq_rc_operator_decision_packet.sh` handoff; package-local docs now describe `awaiting_operator_publish_path`, `operator_publish_selection_ready`, operator path choices, and `agentMayExecuteSelectedPath=false`."
   - "2026-05-12T05:03:42Z cliq-channel-468 completed: added `ops/scripts/openclaw_cliq_rc_operator_decision_packet.sh`, a read-only wrapper that reruns `openclaw_cliq_rc_publish_plan.sh`, `openclaw_cliq_rc_source_drift_check.sh`, and `openclaw_cliq_rc_operator_selection_review.sh`, then emits `openclaw_cliq_rc_operator_decision_packet` with `status=awaiting_operator_publish_path`, `operator_publish_selection_ready`, or `blocked`; it keeps `agentMayExecutePlan=false`, `agentMayExecuteSelectedPath=false`, and all publish/tag/release/expectedIntegrity actions operator-only."
   - "2026-05-12T05:03:42Z real local decision packet run: `OPENCLAW_CLIQ_DECISION_PACKET_RUN_ID=20260512T045812Z-decision-packet ops/scripts/openclaw_cliq_rc_operator_decision_packet.sh` returned `awaiting_operator_publish_path`, `blockers=[publish_path_not_selected]`, `nextAction=operator_select_publish_path`, `operator_publish_plan_ready`, `package_source_unchanged`, `artifact_verified`, `install_smoke_passed`, `trusted_reply_recorded`, artifact shasum `f8a7e3ba9cb1c6a4bf6aa9f765acd63b8b3ed680`, and no publish/tag/release/version bump/expectedIntegrity fill."
   - "2026-05-12T04:44:49Z cliq-channel-467 completed: synced `docs/releases/OPENCLAW_CLIQ_CHANNEL_V0_4_RC_CHECKLIST.md`, `docs/releases/OPENCLAW_CLIQ_CHANNEL_V0_4_OPERATOR_PUBLISH_HANDOFF.md`, and the OpenClaw channel contract marker to the latest direct `chatId` fallback no-publish baseline: pack `20260512T040000Z-direct-chatid-fallback`, shasum `f8a7e3ba9cb1c6a4bf6aa9f765acd63b8b3ed680`, integrity `sha512-VohxhazOhy91KLiBes/idAMdR1bgFerkvsa8gqtijl6vIwIDKE6G51eXGr6QPKFQlVgd4uxEtJZ+7ywNzhHU+Q==`, full CI `1901 passed in 53.30s`, and handoff manifest `openclaw_cliq_rc_operator_handoff_manifest_20260512T040000Z-direct-chatid-fallback-manifest.json`."

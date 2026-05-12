@@ -1,10 +1,14 @@
-last_run_at: "2026-05-12T05:03:42Z"
+last_run_at: "2026-05-12T05:13:12Z"
 last_result: passing
-current_focus: cliq-channel-468-operator-decision-packet
+current_focus: cliq-channel-469-package-docs-decision-packet
 suites:
   unit:
     status: passing
     notes:
+      - "cliq-channel-469 package docs decision-packet sync completed at 2026-05-12T05:13:12Z"
+      - "updated `integrations/openclaw-channel-cliq/README.md` and `integrations/openclaw-channel-cliq/skill/SKILL.md` so package-local docs mention the source drift guard, selected path review, preferred `ops/scripts/openclaw_cliq_rc_operator_decision_packet.sh`, `awaiting_operator_publish_path`, `operator_publish_selection_ready`, operator path choices, and `agentMayExecuteSelectedPath=false`"
+      - "./.venv/bin/python -m pytest -q tests/test_openclaw_channel_contract.py::test_openclaw_cliq_package_docs_include_decision_packet tests/test_lane3_docs.py::test_lane3_required_paths_exist tests/test_lane3_docs.py::test_native_cliq_channel_ai_troubleshooting_contract_present tests/test_markdown_update.py -> 4 passed in 0.02s"
+      - "./.venv/bin/ruff format --check tests/test_openclaw_channel_contract.py -> 1 file already formatted; ./.venv/bin/ruff check tests/test_openclaw_channel_contract.py tests/test_lane3_docs.py -> All checks passed; YAML parse for project/module_status/test_status/active_task -> YAML_PARSE_OK; git diff --check -> passed"
       - "cliq-channel-468 operator decision packet completed at 2026-05-12T05:03:42Z"
       - "added `ops/scripts/openclaw_cliq_rc_operator_decision_packet.sh`; it reruns the read-only publish plan, source drift guard, and operator selection review, then emits `awaiting_operator_publish_path`, `operator_publish_selection_ready`, or `blocked` while keeping `agentMayExecutePlan=false`, `agentMayExecuteSelectedPath=false`, and publish/tag/release/expectedIntegrity fill operator-only"
       - "OPENCLAW_CLIQ_DECISION_PACKET_RUN_ID=20260512T045812Z-decision-packet ops/scripts/openclaw_cliq_rc_operator_decision_packet.sh -> `awaiting_operator_publish_path`, `blockers=[publish_path_not_selected]`, `nextAction=operator_select_publish_path`, `operator_publish_plan_ready`, `package_source_unchanged`, `artifact_verified`, `install_smoke_passed`, `trusted_reply_recorded`, artifact shasum `f8a7e3ba9cb1c6a4bf6aa9f765acd63b8b3ed680`, and no publish/tag/release/version bump/expectedIntegrity fill"

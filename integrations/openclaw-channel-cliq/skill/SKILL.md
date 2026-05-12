@@ -110,6 +110,16 @@ Use this skill when operating through the native OpenClaw Zoho Cliq channel.
   `operator_handoff_manifest_ready`, no blockers, `operator_publish_plan_ready`,
   `trusted_reply_recorded`, and false agent publish/tag/release/integrity
   permissions before asking the operator to choose a publish path.
+- If later commits land before publish, run
+  `ops/scripts/openclaw_cliq_rc_source_drift_check.sh`; require
+  `package_source_unchanged`, and rebuild the RC artifact if package files are
+  dirty or changed since the handoff manifest.
+- For recurring publish-path handoff checks, prefer
+  `ops/scripts/openclaw_cliq_rc_operator_decision_packet.sh`. It returns
+  `awaiting_operator_publish_path` until the operator chooses
+  `local_operator_rc`, `npm_rc_publish`, or `github_release_artifact`; after a
+  chosen path, require `operator_publish_selection_ready` and keep
+  `agentMayExecuteSelectedPath=false`.
 - For the operator approval boundary and release action handoff, use
   `docs/releases/OPENCLAW_CLIQ_CHANNEL_V0_4_OPERATOR_PUBLISH_HANDOFF.md`.
   It defines the no-agent `npm publish`/tag/GitHub release boundary, the
@@ -135,6 +145,9 @@ ops/scripts/openclaw_cliq_rc_operator_publish_bundle.sh
 ops/scripts/openclaw_cliq_rc_release_notes_draft.sh
 ops/scripts/openclaw_cliq_rc_publish_plan.sh
 ops/scripts/openclaw_cliq_rc_operator_handoff_manifest.sh
+ops/scripts/openclaw_cliq_rc_source_drift_check.sh
+ops/scripts/openclaw_cliq_rc_operator_selection_review.sh
+ops/scripts/openclaw_cliq_rc_operator_decision_packet.sh
 ops/scripts/openclaw_cliq_trusted_reply_evidence_bundle.sh
 ops/scripts/openclaw_cliq_trusted_reply_evidence_prepare.sh
 ops/scripts/openclaw_cliq_trusted_reply_evidence.sh

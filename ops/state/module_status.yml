@@ -20,9 +20,9 @@ cliq:
 openclaw_cliq_channel:
   priority: 3
   status: completed_for_rc
-  phase: operator_decision_packet_ready
+  phase: operator_decision_packet_package_docs_synced
   target_release: v0.4.0
-  current_milestone: cliq-channel-468-operator-decision-packet
+  current_milestone: cliq-channel-469-package-docs-decision-packet
   blockers: []
 
 crm:

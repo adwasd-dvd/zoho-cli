@@ -258,6 +258,27 @@ def test_openclaw_cliq_operator_publish_handoff_has_approval_boundary():
         assert marker in handoff
 
 
+def test_openclaw_cliq_package_docs_include_decision_packet():
+    docs = "\n".join(
+        [
+            read("integrations/openclaw-channel-cliq/README.md"),
+            read("integrations/openclaw-channel-cliq/skill/SKILL.md"),
+        ]
+    )
+
+    for marker in [
+        "ops/scripts/openclaw_cliq_rc_operator_decision_packet.sh",
+        "awaiting_operator_publish_path",
+        "operator_publish_selection_ready",
+        "agentMayExecuteSelectedPath=false",
+        "local_operator_rc",
+        "npm_rc_publish",
+        "github_release_artifact",
+        "package_source_unchanged",
+    ]:
+        assert marker in docs
+
+
 def test_openclaw_cliq_bot_handler_templates_cover_real_handlers():
     templates = read("docs/releases/OPENCLAW_CLIQ_BOT_HANDLER_TEMPLATES.md")
 

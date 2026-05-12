@@ -251,6 +251,19 @@ approval token.
 Use `reportFiles` and `reportsReady` to hand off the packet, preflight,
 readiness bundle, and smoke-summary basenames without exposing local paths.
 
+For a compact AI go/stop summary, run:
+
+```bash
+ops/scripts/crm_fixture_agent_next_command.sh
+```
+
+It runs or reads the operator packet and emits
+`crm_fixture_agent_next_command`. Treat `status=agent_next_command_ready` as the
+only direct execution state. `status=operator_input_required` means the command
+preview is safe but still needs an operator-provided payload, cleanup plan, or
+summary value; `status=stop_before_operator_live_fixture` means the next step is
+operator-only, Zoho-writing, or explicit-approval-gated.
+
 ```bash
 ZOHO_CRM_FIXTURE_PAYLOAD_FILE=/tmp/lead-fixture.json \
 ZOHO_CRM_FIXTURE_CLEANUP_PLAN="remove or update the dedicated fixture record after validation" \

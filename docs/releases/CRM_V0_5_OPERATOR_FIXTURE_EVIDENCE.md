@@ -193,6 +193,13 @@ boundary on readiness bundles: blocked bundles may embed the fixer command,
 while ready-for-live bundles keep it `null` because the next step writes Zoho
 data and requires an operator.
 
+`ops/scripts/crm_fixture_agent_next_command.sh` is the compact AI wrapper for
+that stop/go contract. It emits `crm_fixture_agent_next_command` with
+`status=operator_input_required`, `agent_next_command_ready`, or
+`stop_before_operator_live_fixture`, plus the packet basename and safety flags.
+Agents should execute only the `agent_next_command_ready` state; the other
+states are handoff boundaries.
+
 ## Live fixture evidence
 
 Only run live mode when the operator has reviewed the payload, cleanup plan,

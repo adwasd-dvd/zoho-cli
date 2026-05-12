@@ -338,6 +338,12 @@ Zoho-writing, lists `stopCommandIds`, and keeps
 placeholder-only command preview matching `nextAgentExecutableCommandId`, and it
 stays `null` when the next step is operator-only, Zoho-writing, or approval
 gated.
+`ops/scripts/crm_fixture_agent_next_command.sh` is the compact agent wrapper for
+that contract. It runs or reads the operator packet, emits
+`crm_fixture_agent_next_command`, and classifies the next state as
+`operator_input_required`, `agent_next_command_ready`, or
+`stop_before_operator_live_fixture` while keeping normal
+`zoho crm upsert --execute` and live fixture execution blocked for agents.
 `reportFiles` and `reportsReady` expose only artifact basenames for the packet,
 payload preflight, optional dry-run readiness bundle, and optional smoke summary
 so agents can archive or pass evidence without logging local paths.

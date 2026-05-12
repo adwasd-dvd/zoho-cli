@@ -323,6 +323,10 @@ After sync, ensure the AI user follows:
     `operatorReview.agentAutomation.nextAgentCommand` as the command preview
     when present; otherwise stop and explain
     `operatorReview.agentAutomation.stopReason`
+  - prefer `ops/scripts/crm_fixture_agent_next_command.sh` when you only need a
+    compact go/stop answer; execute only on `agent_next_command_ready`, collect
+    operator input on `operator_input_required`, and stop on
+    `stop_before_operator_live_fixture`
   - treat `summary_file_missing`, `fixture_evidence_not_ready`,
     `payload_placeholder_count_missing`, and
     `fixture_payload_placeholder_email` as stop-and-fix blockers

@@ -1,22 +1,24 @@
-id: cliq-channel-490
-title: record post-platform lint-gate RC decision evidence
-module: cliq
+id: crm-030
+title: add CRM fixture agent next-command wrapper
+module: crm
 stage: completed
 status: completed
 owner: coder
-updated_at: '2026-05-12T15:35:26Z'
+updated_at: '2026-05-12T16:22:26Z'
 execution_mode: turbo_20x
 throughput_policy_ref: ops/state/execution_policy.yml
 success_criteria:
-  - "Read-only decision packet after platform-213 reports `awaiting_operator_publish_path`"
-  - "Source drift still reports `package_source_unchanged` with no package dirty files"
-  - "Docs/state/Lane 3 references point agents to the current decision packet posture"
+  - "`ops/scripts/crm_fixture_agent_next_command.sh` emits a compact no-write next-step summary from the CRM fixture operator packet"
+  - "The summary distinguishes `operator_input_required`, `agent_next_command_ready`, and `stop_before_operator_live_fixture`"
+  - "Lane 2/3 docs and state describe the wrapper and live-write stop boundary"
   - "No publish, tag, npm promotion, GitHub release, expectedIntegrity fill, Zoho call, or CRM write is performed"
 next_if_done: Continue to the next safe RC readiness milestone without publishing, tagging, npm promotion, GitHub release creation, expectedIntegrity fill, or live CRM writes.
 progress:
-  - "2026-05-12T15:27:05Z decision packet run `20260512T152614Z-platform213-postcommit-decision` returned `awaiting_operator_publish_path`, blocker `publish_path_not_selected`, `operator_publish_plan_ready`, `package_source_unchanged`, `artifact_verified`, `install_smoke_passed`, `trusted_reply_recorded`, and all `reportsReady=true`."
-  - "2026-05-12T15:27:05Z source drift in the decision packet recorded `headCommit=ae45c69fe26d89401f119c94591ef617d922f55f`, `repoChangedFileCount=35`, `packageDrift.packageChangedSinceManifest=false`, and `packageDirtyFileCount=0`."
-  - "2026-05-12T15:32:28Z synced README, operator publish handoff, changelog, Lane 3 reference, and Lane 1 state with the post-platform-213 decision posture."
-  - "2026-05-12T15:32:28Z no publish, tag, npm promotion, GitHub release, expectedIntegrity fill, Zoho call, or CRM write was performed."
-  - "2026-05-12T15:35:26Z verification passed: OpenClaw channel contract, operator handoff contract, Lane 3 required/troubleshooting docs, and markdown update -> 5 passed in 0.01s; YAML parse and `git diff --check` passed."
-next_step: Commit and push the post-platform-213 decision evidence slice, then continue to the next safe milestone.
+  - "2026-05-12T16:17:08Z added `ops/scripts/crm_fixture_agent_next_command.sh`; it runs or reads `crm_fixture_operator_packet` evidence and emits a compact `crm_fixture_agent_next_command` JSON summary without executing the preview command."
+  - "2026-05-12T16:17:08Z added coverage for missing-payload/operator-input and operator-only live-write stop boundaries."
+  - "2026-05-12T16:17:08Z synced README, changelog, CRM write contract, fixture evidence docs, Lane 3 skill docs, and Lane 1 state for the new wrapper."
+  - "2026-05-12T16:17:08Z no publish, tag, npm promotion, GitHub release, expectedIntegrity fill, Zoho call, or CRM write was performed."
+  - "2026-05-12T16:18:53Z verification passed: shell syntax for CRM fixture scripts; focused CRM fixture/Lane 3/markdown tests -> 14 passed, 73 deselected in 1.82s; Ruff format/check passed."
+  - "2026-05-12T16:18:53Z local no-write wrapper run `20260512T160545Z-crm030-missing-input` returned `status=operator_input_required`, `packet.status=blocked`, `nextAgentCommand.id=provide_fixture_payload_file`, and no Zoho-writing/approval flags."
+  - "2026-05-12T16:22:26Z final verification passed: focused wrapper/Lane 3/markdown tests -> 5 passed in 0.17s; `make lint`, `ruff format --check zoho_cli tests`, YAML parse, and `git diff --check` passed."
+next_step: Commit and push the wrapper slice, then continue to the next safe milestone.

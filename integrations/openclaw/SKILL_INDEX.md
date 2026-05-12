@@ -134,6 +134,10 @@ CRM SDK planning:
   `nextAgentExecutableCommandId`, `agentMayExecuteNextCommand`,
   `stopCommandIds`, and `stopReason`; `crm-029` adds embedded
   `nextAgentCommand` previews for runnable dry-run/local steps)
+- `ops/scripts/crm_fixture_agent_next_command.sh` (`crm-030`: compact no-write
+  wrapper that classifies the next CRM fixture step as
+  `operator_input_required`, `agent_next_command_ready`, or
+  `stop_before_operator_live_fixture`)
 - `docs/releases/CRM_V0_5_FIXTURE_PAYLOAD_TEMPLATE.json` (`crm-015`: safe
   one-record `Leads` template with `.example.invalid` placeholder data; copy and
   edit outside the repo before live fixture mode; smoke reports

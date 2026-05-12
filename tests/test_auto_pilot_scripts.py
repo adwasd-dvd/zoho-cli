@@ -23,6 +23,9 @@ CRM_FIXTURE_READINESS_BUNDLE_SCRIPT = (
 CRM_FIXTURE_OPERATOR_PACKET_SCRIPT = (
     REPO_ROOT / "ops" / "scripts" / "crm_fixture_operator_packet.sh"
 )
+CRM_FIXTURE_AGENT_NEXT_COMMAND_SCRIPT = (
+    REPO_ROOT / "ops" / "scripts" / "crm_fixture_agent_next_command.sh"
+)
 OPENCLAW_CLIQ_LIVE_SMOKE_SCRIPT = (
     REPO_ROOT / "ops" / "scripts" / "openclaw_cliq_live_smoke.sh"
 )
@@ -2906,6 +2909,151 @@ def test_crm_fixture_operator_packet_reports_missing_payload(
     assert payload["operatorReview"]["redaction"]["rawIdempotencyKeyStored"] is False
     assert payload["nextAction"] == "provide_fixture_payload_file"
     assert json.loads(packet_file.read_text()) == payload
+
+
+def test_crm_fixture_agent_next_command_summarizes_operator_input(
+    tmp_path: Path,
+) -> None:
+    reports_dir = tmp_path / "reports"
+    agent_file = reports_dir / "agent-next.json"
+
+    result = subprocess.run(
+        ["bash", str(CRM_FIXTURE_AGENT_NEXT_COMMAND_SCRIPT)],
+        cwd=REPO_ROOT,
+        env={
+            **os.environ,
+            "ZOHO_CRM_FIXTURE_AGENT_NEXT_REPORT_DIR": str(reports_dir),
+            "ZOHO_CRM_FIXTURE_AGENT_NEXT_FILE": str(agent_file),
+            "ZOHO_CRM_FIXTURE_AGENT_NEXT_RUN_ID": "unit-agent-next-missing",
+        },
+        capture_output=True,
+        text=True,
+        check=False,
+    )
+
+    output = f"{result.stdout}\n{result.stderr}"
+    assert result.returncode == 0, output
+    assert str(tmp_path) not in result.stdout
+    payload = json.loads(result.stdout)
+    assert payload["kind"] == "crm_fixture_agent_next_command"
+    assert payload["status"] == "operator_input_required"
+    assert payload["packet"]["commandExit"] == 1
+    assert payload["packet"]["status"] == "blocked"
+    assert payload["packet"]["blockers"] == [
+        "cleanup_plan_missing",
+        "payload_file_required",
+    ]
+    assert payload["operatorReview"]["nextAgentExecutableCommandId"] == (
+        "provide_fixture_payload_file"
+    )
+    assert payload["operatorReview"]["nextAgentCommand"]["id"] == (
+        "provide_fixture_payload_file"
+    )
+    assert payload["operatorReview"]["operatorInputRequiredForNextAgentCommand"] is True
+    assert payload["operatorReview"]["agentMayExecuteNextCommand"] is False
+    assert payload["operatorReview"]["agentMayExecuteAfterOperatorInput"] is True
+    assert payload["safety"]["writesZohoDataAny"] is False
+    assert payload["safety"]["requiresExplicitOperatorApprovalAny"] is False
+    assert payload["safety"]["normalUpsertExecuteBlocked"] is True
+    assert payload["safety"]["redaction"]["localPathsStored"] is False
+    assert payload["nextAction"] == "collect_operator_input_for_next_agent_command"
+    assert payload["reportFiles"] == {
+        "agentNextCommand": "agent-next.json",
+        "operatorPacket": "crm_fixture_operator_packet_unit-agent-next-missing.json",
+    }
+    assert json.loads(agent_file.read_text()) == payload
+
+
+def test_crm_fixture_agent_next_command_stops_before_operator_write(
+    tmp_path: Path,
+) -> None:
+    packet_file = tmp_path / "operator-packet.json"
+    packet_file.write_text(
+        json.dumps(
+            {
+                "kind": "crm_fixture_operator_packet",
+                "status": "ready_for_operator_live_fixture",
+                "blockers": [],
+                "nextAction": "operator_review_payload_cleanup_and_approval",
+                "reportFiles": {
+                    "packet": "operator-packet.json",
+                    "payloadPreflight": "preflight.json",
+                    "dryRunReadiness": "readiness.json",
+                    "smokeSummary": "summary.json",
+                },
+                "reportsReady": {
+                    "packet": True,
+                    "payloadPreflight": True,
+                    "dryRunReadiness": True,
+                    "smokeSummary": True,
+                },
+                "operatorReview": {
+                    "readyFacts": ["payload_preflight_ready"],
+                    "missingFacts": [],
+                    "actionBoundary": {
+                        "agentExecutableCommandIds": [],
+                        "operatorOnlyCommandIds": [
+                            "operator_review_live_fixture_approval"
+                        ],
+                        "zohoWriteCommandIds": [
+                            "operator_review_live_fixture_approval"
+                        ],
+                        "dryRunOnlyCommandIds": [],
+                        "requiresExplicitOperatorApprovalCommandIds": [
+                            "operator_review_live_fixture_approval"
+                        ],
+                        "writesZohoDataAny": True,
+                        "requiresExplicitOperatorApprovalAny": True,
+                        "operatorOnlyAny": True,
+                    },
+                    "agentAutomation": {
+                        "nextAgentExecutableCommandId": None,
+                        "nextAgentCommand": None,
+                        "agentMayExecuteNextCommand": False,
+                        "stopCommandIds": ["operator_review_live_fixture_approval"],
+                        "stopReason": ("operator_only_zoho_write_or_approval_required"),
+                    },
+                },
+            }
+        ),
+        encoding="utf-8",
+    )
+
+    result = subprocess.run(
+        ["bash", str(CRM_FIXTURE_AGENT_NEXT_COMMAND_SCRIPT)],
+        cwd=REPO_ROOT,
+        env={
+            **os.environ,
+            "ZOHO_CRM_FIXTURE_PACKET_SOURCE_FILE": str(packet_file),
+            "ZOHO_CRM_FIXTURE_AGENT_NEXT_REPORT_DIR": str(tmp_path / "reports"),
+            "ZOHO_CRM_FIXTURE_AGENT_NEXT_RUN_ID": "unit-agent-next-stop",
+        },
+        capture_output=True,
+        text=True,
+        check=False,
+    )
+
+    output = f"{result.stdout}\n{result.stderr}"
+    assert result.returncode == 0, output
+    assert str(tmp_path) not in result.stdout
+    payload = json.loads(result.stdout)
+    assert payload["status"] == "stop_before_operator_live_fixture"
+    assert payload["packet"]["ranPacket"] is False
+    assert payload["packet"]["commandExit"] == 0
+    assert payload["operatorReview"]["nextAgentCommand"] is None
+    assert payload["operatorReview"]["agentMayExecuteNextCommand"] is False
+    assert payload["operatorReview"]["agentMayExecuteAfterOperatorInput"] is False
+    assert payload["operatorReview"]["stopCommandIds"] == [
+        "operator_review_live_fixture_approval"
+    ]
+    assert payload["operatorReview"]["stopReason"] == (
+        "operator_only_zoho_write_or_approval_required"
+    )
+    assert payload["safety"]["writesZohoDataAny"] is True
+    assert payload["safety"]["requiresExplicitOperatorApprovalAny"] is True
+    assert payload["safety"]["operatorOnlyAny"] is True
+    assert payload["nextAction"] == "stop_for_operator_live_fixture_approval"
+    assert payload["reportFiles"]["operatorPacket"] == "operator-packet.json"
 
 
 def test_crm_fixture_operator_packet_accepts_payload_preflight(

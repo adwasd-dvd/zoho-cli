@@ -36,6 +36,7 @@
 - Added `crm-026` readiness-bundle action boundaries: CRM fixture operator readiness bundles now expose redacted `operatorReview.nextCommands` plus `operatorReview.actionBoundary` with the same stop/go command id buckets as the operator packet.
 - Added `crm-028` agent automation summaries: CRM fixture operator packets and readiness bundles now expose `operatorReview.agentAutomation` with `nextAgentExecutableCommandId`, `agentMayExecuteNextCommand`, `stopCommandIds`, and `stopReason` so AI agents can branch without inferring from command-preview arrays.
 - Added `crm-029` agent next-command previews: `operatorReview.agentAutomation.nextAgentCommand` now embeds the redacted placeholder-only command preview for the next agent-executable dry-run/local step and stays `null` at operator-only, Zoho-writing, or approval-gated boundaries.
+- Added `crm-030` agent next-command wrapper: `ops/scripts/crm_fixture_agent_next_command.sh` runs or reads the no-write CRM fixture operator packet and emits a compact `crm_fixture_agent_next_command` summary with `operator_input_required`, `agent_next_command_ready`, or `stop_before_operator_live_fixture` states.
 
 ### Final release (2026-05-04T21:15:20Z)
 - Promoted `0.2.1rc1` to final `0.2.1` after the RC gate stayed green; no additional CLI behavior change was introduced for the final promotion.

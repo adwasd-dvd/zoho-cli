@@ -1,10 +1,14 @@
-last_run_at: "2026-05-12T12:42:49Z"
+last_run_at: "2026-05-12T12:56:13Z"
 last_result: passing
-current_focus: crm-025-operator-action-boundary
+current_focus: cliq-channel-486-post-crm-action-boundary-decision-ready
 suites:
   unit:
     status: passing
     notes:
+      - "cliq-channel-486 post-CRM operator action boundary source drift started at 2026-05-12T12:48:44Z: run `20260512T124844Z-crm-action-boundary-postcommit-source` returned `package_source_unchanged`, no blockers, `headCommit=8a67bbb36b551a47ff61b898d85d68a6a92fa42f`, `repoChangedFileCount=28`, `packageDrift.packageChangedSinceManifest=false`, and `dirtyFileCount=0`."
+      - "cliq-channel-486 decision packet started at 2026-05-12T12:48:44Z: run `20260512T124844Z-crm-action-boundary-postcommit-decision` returned `awaiting_operator_publish_path`, `publish_path_not_selected`, all `reportsReady=true`, `operator_publish_plan_ready`, `artifact_verified`, `install_smoke_passed`, `trusted_reply_recorded`, and `agentMayExecuteSelectedPath=false`."
+      - "cliq-channel-486 performed no publish, tag, npm promotion, GitHub release, version bump, expectedIntegrity fill, Zoho call, or CRM write."
+      - "cliq-channel-486 verification passed at 2026-05-12T12:56:13Z: OpenClaw Cliq RC checklist/operator handoff contract, Lane 3 required paths/troubleshooting contract, and markdown update -> 5 passed in 0.02s; ruff format/check, YAML parse, and `git diff --check` passed."
       - "crm-025 operator action boundary started at 2026-05-12T12:34:30Z: CRM fixture operator packets now expose `operatorReview.actionBoundary` derived from redacted `operatorReview.nextCommands`."
       - "crm-025 action boundary buckets include `agentExecutableCommandIds`, `operatorOnlyCommandIds`, `zohoWriteCommandIds`, `dryRunOnlyCommandIds`, and `requiresExplicitOperatorApprovalCommandIds`; agents may automate only the agent-executable bucket."
       - "crm-025 focused verification passed at 2026-05-12T12:36:00Z: shell syntax for CRM fixture scripts; CRM fixture operator packet/readiness bundle tests plus Lane 3 CRM contract and markdown update -> 6 passed, 78 deselected in 1.34s; ruff format/check passed."

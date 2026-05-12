@@ -70,7 +70,9 @@ CRM SDK planning:
   docs/state relative to the handoff manifest package source;
   `cliq-channel-485` records the post-CRM live-approval-fact-categories
   source-drift/decision evidence showing commit `39642ae7` still keeps
-  `packageChangedSinceManifest=false`)
+  `packageChangedSinceManifest=false`; `cliq-channel-486` records the
+  post-CRM operator-action-boundary source-drift/decision evidence showing
+  commit `8a67bbb3` still keeps `packageChangedSinceManifest=false`)
 - `ops/scripts/openclaw_cliq_bot_no_response_packet.sh`
   (`cliq-channel-472/474`: first responder for Bot no-response reports; runs
   public callback smoke plus live ingress diagnostics, then embeds

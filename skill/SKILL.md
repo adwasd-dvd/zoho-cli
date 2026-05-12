@@ -58,6 +58,18 @@ Use this skill as the default operating contract for an OpenClaw agent acting li
   For Cloudflare Zero Trust Tunnels, choose Published application and forward
   the public hostname to `HTTP` service `127.0.0.1:18789`; a tunnel with zero
   routes is not ready for Zoho Bot traffic.
+- When a user says they sent a real Cliq Bot message but saw no answer, run
+  `ops/scripts/openclaw_cliq_live_ingress_diagnostic.sh` before assuming OAuth
+  is broken. Set `ZOHO_CLIQ_INGRESS_LOOKBACK_SECONDS` to the expected send
+  window and optionally set `ZOHO_CLIQ_EXPECTED_AGENT_ID` /
+  `ZOHO_CLIQ_EXPECTED_AGENT_MODEL`. `no_recent_webhook_ingress` means the Zoho
+  Bot handler did not POST to the gateway during that window;
+  `latest_webhook_not_dispatched` means payload or policy blocked dispatch;
+  `dispatch_reply_not_delivered` means OpenClaw ran the turn but did not record
+  a Cliq reply; `live_ingress_active` means the latest observed handler event
+  dispatched and delivered at least one reply. The diagnostic reads redacted
+  OpenClaw audit logs only and must not print raw webhook payloads, message
+  bodies, reply bodies, or secrets.
 - For native Cliq rollout smoke that must target a specific OpenClaw agent, set
   `ZOHO_CLIQ_EXPECTED_AGENT_ID` and optionally
   `ZOHO_CLIQ_EXPECTED_AGENT_MODEL`; use `ZOHO_CLIQ_ROUTE_BINDING_ONLY=1` for

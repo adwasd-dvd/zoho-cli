@@ -245,6 +245,26 @@ unsupported-handler POST returns `200`, and emits redacted
 `public_callback_verified`; the report stores status codes, scheme/host/path,
 and redaction booleans, but not webhook bodies, response bodies, or secrets.
 
+If a user sends a real Bot message but no response appears, first run the
+read-only live ingress diagnostic against the expected send window:
+
+```bash
+ZOHO_CLIQ_INGRESS_LOOKBACK_SECONDS=900 \
+ZOHO_CLIQ_EXPECTED_AGENT_ID=zoho-employee-test \
+ZOHO_CLIQ_EXPECTED_AGENT_MODEL=openai-codex/gpt-5.3-codex \
+  ops/scripts/openclaw_cliq_live_ingress_diagnostic.sh
+```
+
+`no_recent_webhook_ingress` means the Zoho Bot handler did not POST to the
+gateway during the window, so check the saved Message/Mention Handler URL,
+secret header, and handler type before chasing OAuth. `latest_webhook_not_dispatched`
+means the gateway saw the handler but payload or policy blocked dispatch.
+`dispatch_reply_not_delivered` means OpenClaw accepted the turn but no Cliq
+reply delivery was recorded. `live_ingress_active` means the latest observed
+handler event dispatched and delivered at least one reply. The diagnostic reads
+redacted OpenClaw audit logs only and does not store raw webhook payloads,
+message bodies, reply bodies, or secrets.
+
 ### Cloudflare Tunnel fast path
 
 When using Cloudflare Zero Trust Tunnels for the first RC smoke, create a route

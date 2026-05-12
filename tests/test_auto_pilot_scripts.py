@@ -29,6 +29,9 @@ OPENCLAW_CLIQ_LIVE_SMOKE_SCRIPT = (
 OPENCLAW_CLIQ_PUBLIC_CALLBACK_SMOKE_SCRIPT = (
     REPO_ROOT / "ops" / "scripts" / "openclaw_cliq_public_callback_smoke.sh"
 )
+OPENCLAW_CLIQ_LIVE_INGRESS_DIAGNOSTIC_SCRIPT = (
+    REPO_ROOT / "ops" / "scripts" / "openclaw_cliq_live_ingress_diagnostic.sh"
+)
 OPENCLAW_CLIQ_HASH_REF_SCRIPT = (
     REPO_ROOT / "ops" / "scripts" / "openclaw_cliq_hash_ref.sh"
 )
@@ -3184,6 +3187,129 @@ def test_openclaw_cliq_public_callback_smoke_rejects_placeholder_url() -> None:
     assert payload["runId"] == "unit-public-placeholder"
     assert payload["status"] == "error"
     assert payload["error"] == "public_webhook_url_placeholder"
+
+
+def test_openclaw_cliq_live_ingress_diagnostic_reports_no_recent_webhook(
+    tmp_path: Path,
+) -> None:
+    log_path = tmp_path / "openclaw.log"
+    log_path.write_text(
+        '[zoho-cliq-audit] {"kind":"webhook_ingress","outcome":"dispatched",'
+        '"correlationId":"old","handlerKind":"mention",'
+        '"createdAt":"2026-05-12T04:00:00Z"}\n'
+    )
+    report_path = tmp_path / "reports" / "ingress.json"
+
+    result = subprocess.run(
+        ["bash", str(OPENCLAW_CLIQ_LIVE_INGRESS_DIAGNOSTIC_SCRIPT)],
+        cwd=REPO_ROOT,
+        env={
+            **os.environ,
+            "OPENCLAW_LOG_FILE": str(log_path),
+            "ZOHO_CLIQ_INGRESS_NOW_ISO": "2026-05-12T05:00:00Z",
+            "ZOHO_CLIQ_INGRESS_LOOKBACK_SECONDS": "900",
+            "ZOHO_CLIQ_INGRESS_RUN_ID": "unit-no-ingress",
+            "ZOHO_CLIQ_INGRESS_REPORT_FILE": str(report_path),
+        },
+        capture_output=True,
+        text=True,
+        check=False,
+    )
+
+    output = f"{result.stdout}\n{result.stderr}"
+    assert result.returncode == 1, output
+    payload = json.loads(result.stdout)
+    assert payload["kind"] == "openclaw_cliq_live_ingress_diagnostic"
+    assert payload["runId"] == "unit-no-ingress"
+    assert payload["status"] == "blocked"
+    assert payload["error"] == "no_recent_webhook_ingress"
+    assert payload["blockers"] == ["no_recent_webhook_ingress"]
+    assert payload["nextAction"] == "send_or_fix_zoho_bot_handler"
+    assert payload["counts"]["webhookIngress"] == 0
+    assert payload["redaction"]["rawMessageBodyStored"] is False
+    assert json.loads(report_path.read_text()) == payload
+
+
+def test_openclaw_cliq_live_ingress_diagnostic_reports_active_delivery(
+    tmp_path: Path,
+) -> None:
+    log_path = tmp_path / "openclaw.log"
+    log_path.write_text(
+        "\n".join(
+            [
+                (
+                    '[zoho-cliq-audit] {"kind":"native_dispatch",'
+                    '"outcome":"dispatched","correlationId":"c-live",'
+                    '"accountId":"default","network":"happydistrouklimited",'
+                    '"handlerKind":"mention","createdAt":"2026-05-12T05:00:20Z",'
+                    '"event":{"chatType":"direct","mentioned":true,"textLength":29},'
+                    '"nativeDispatch":{"agentId":"zoho-employee-test",'
+                    '"agentModel":"openai-codex/gpt-5.3-codex",'
+                    '"deliveryCount":1,"messageIds":["cliq-redacted"]}}'
+                ),
+                (
+                    '{"message":"[zoho-cliq-audit] {\\"kind\\":\\"webhook_ingress\\",'
+                    '\\"outcome\\":\\"dispatched\\",\\"correlationId\\":\\"c-live\\",'
+                    '\\"accountId\\":\\"default\\",\\"network\\":\\"happydistrouklimited\\",'
+                    '\\"handlerKind\\":\\"mention\\",'
+                    '\\"createdAt\\":\\"2026-05-12T05:00:30Z\\",'
+                    '\\"event\\":{\\"chatType\\":\\"direct\\",'
+                    '\\"mentioned\\":true,\\"textLength\\":29}}"}'
+                ),
+                (
+                    '[zoho-cliq-audit] {"kind":"native_dispatch",'
+                    '"outcome":"dispatched","correlationId":"c-live",'
+                    '"accountId":"default","network":"happydistrouklimited",'
+                    '"handlerKind":"mention","createdAt":"2026-05-12T05:00:40Z",'
+                    '"event":{"chatType":"direct","mentioned":true,"textLength":29},'
+                    '"nativeDispatch":{"agentId":"zoho-employee-test",'
+                    '"agentModel":"openai-codex/gpt-5.3-codex",'
+                    '"deliveryCount":1,"messageIds":["cliq-redacted"]}}'
+                ),
+            ]
+        )
+        + "\n"
+    )
+
+    result = subprocess.run(
+        ["bash", str(OPENCLAW_CLIQ_LIVE_INGRESS_DIAGNOSTIC_SCRIPT)],
+        cwd=REPO_ROOT,
+        env={
+            **os.environ,
+            "OPENCLAW_LOG_FILE": str(log_path),
+            "ZOHO_CLIQ_INGRESS_NOW_ISO": "2026-05-12T05:01:00Z",
+            "ZOHO_CLIQ_INGRESS_LOOKBACK_SECONDS": "900",
+            "ZOHO_CLIQ_INGRESS_RUN_ID": "unit-active-ingress",
+            "ZOHO_CLIQ_EXPECTED_AGENT_ID": "zoho-employee-test",
+            "ZOHO_CLIQ_EXPECTED_AGENT_MODEL": "openai-codex/gpt-5.3-codex",
+        },
+        capture_output=True,
+        text=True,
+        check=False,
+    )
+
+    output = f"{result.stdout}\n{result.stderr}"
+    assert result.returncode == 0, output
+    payload = json.loads(result.stdout)
+    assert payload["status"] == "live_ingress_active"
+    assert payload["blockers"] == []
+    assert payload["nextAction"] == "collect_trusted_reply_facts_if_needed"
+    assert payload["counts"]["webhookIngress"] == 1
+    assert payload["counts"]["nativeDispatch"] == 2
+    assert payload["latestWebhook"]["handlerKind"] == "mention"
+    assert payload["latestWebhook"]["textLength"] == 29
+    assert payload["latestNativeDispatch"]["agentId"] == "zoho-employee-test"
+    assert payload["latestNativeDispatch"]["agentModel"] == "openai-codex/gpt-5.3-codex"
+    assert payload["latestNativeDispatch"]["deliveryCount"] == 1
+    assert payload["latestNativeDispatch"]["messageIdCount"] == 1
+    assert payload["redaction"] == {
+        "rawWebhookPayloadStored": False,
+        "rawMessageBodyStored": False,
+        "rawCliqReplyBodyStored": False,
+        "secretsStored": False,
+    }
+    assert "hello from user" not in output
+    assert "unit-secret" not in output
 
 
 def test_openclaw_cliq_hash_ref_hashes_stdin_without_echoing_raw_id() -> None:

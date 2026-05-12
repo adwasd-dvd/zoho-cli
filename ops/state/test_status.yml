@@ -1,10 +1,21 @@
-last_run_at: "2026-05-12T03:20:42Z"
+last_run_at: "2026-05-12T04:02:13Z"
 last_result: passing
-current_focus: cliq-channel-465-operator-selection-review
+current_focus: cliq-channel-466-direct-bot-reply-fallback
 suites:
   unit:
     status: passing
     notes:
+      - "cliq-channel-466 direct Bot reply fallback completed at 2026-05-12T04:02:13Z"
+      - "fixed native dispatch delivery for direct Bot events with synthetic `webhook-*` or template-generated `zoho-message-*` ids: agent answers now fall back to direct sends through the real `chatId` instead of trying to reply against non-replyable ids; real direct message ids still reply through that same `chatId`"
+      - "npm --prefix integrations/openclaw-channel-cliq run build -> passed"
+      - "./.venv/bin/python -m pytest -q tests/test_openclaw_channel_skeleton.py::test_openclaw_cliq_channel_native_agent_dispatch_runtime tests/test_openclaw_channel_contract.py::test_openclaw_cliq_bot_handler_templates_cover_real_handlers tests/test_markdown_update.py -> 3 passed in 0.88s"
+      - "./.venv/bin/python -m pytest -q tests/test_openclaw_channel_skeleton.py tests/test_openclaw_channel_contract.py tests/test_markdown_update.py -> 27 passed in 10.44s"
+      - "ruby YAML parse for project/module_status/test_status -> YAML_PARSE_OK"
+      - "git diff --check -> passed"
+      - "make ci -> 1901 passed in 53.30s"
+      - "gateway restart loaded rebuilt package; controlled local direct webhook smoke for the real Bot direct chat completed with `deliveryCount=1` and message id `cliq-*`; `zoho cliq context` verification was deferred because Zoho OAuth refresh returned `token_refresh_rate_limited`"
+      - "OPENCLAW_CLIQ_PACK_RUN_ID=20260512T040000Z-direct-chatid-fallback ops/scripts/openclaw_cliq_rc_pack.sh -> passed; tarball `adwasd-openclaw-zoho-cliq-0.4.0-rc.1.tgz`, shasum `f8a7e3ba9cb1c6a4bf6aa9f765acd63b8b3ed680`, integrity `sha512-VohxhazOhy91KLiBes/idAMdR1bgFerkvsa8gqtijl6vIwIDKE6G51eXGr6QPKFQlVgd4uxEtJZ+7ywNzhHU+Q==`"
+      - "artifact check -> `artifact_verified`; Temp-HOME install smoke -> `install_smoke_passed`; promotion preflight -> `ready_for_operator_publish`; operator bundle -> `operator_publish_bundle_ready`; release notes draft, publish plan, and handoff manifest refreshed with agent publish/tag/release/integrity-fill still false"
       - "cliq-channel-465 operator selection review completed at 2026-05-12T03:20:42Z"
       - "added `ops/scripts/openclaw_cliq_rc_operator_selection_review.sh`; it reads a selected `operator_publish_plan_ready` report plus `package_source_unchanged` drift report, emits `operator_publish_selection_ready` only when a publish path is selected and package source is still current, and keeps `agentMayExecuteSelectedPath=false` with publish/tag/release/integrity-fill still operator-only"
       - "OPENCLAW_CLIQ_SELECTION_REVIEW_RUN_ID=20260512T031411Z-no-selected-path ops/scripts/openclaw_cliq_rc_operator_selection_review.sh -> expected blocked state with `publish_path_not_selected`, `nextAction=operator_select_publish_path`, `packageChangedSinceManifest=false`, and `agentMayExecuteSelectedPath=false`; no publish/tag/release/version bump/integrity fill performed"

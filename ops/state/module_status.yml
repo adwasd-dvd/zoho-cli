@@ -20,9 +20,9 @@ cliq:
 openclaw_cliq_channel:
   priority: 3
   status: completed_for_rc
-  phase: post_hardening_operator_selection_review_ready
+  phase: post_hardening_direct_bot_reply_fallback_ready
   target_release: v0.4.0
-  current_milestone: cliq-channel-465-operator-selection-review
+  current_milestone: cliq-channel-466-direct-bot-reply-fallback
   blockers: []
 
 crm:

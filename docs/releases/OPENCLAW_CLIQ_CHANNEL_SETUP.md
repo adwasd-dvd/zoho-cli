@@ -46,6 +46,11 @@ This runbook is for the native OpenClaw `cliq` channel package in
   the native channel id `cliq`; handler source details stay in supplemental
   context. This keeps normal final answers on the Cliq outbound adapter instead
   of being treated as cross-channel route-reply traffic.
+- Direct Bot replies are robust to handler-generated ids: synthetic
+  `webhook-*` and `zoho-message-*` message ids are treated as non-replyable, so
+  the assistant answer is sent to the provided direct `chatId`. When the handler
+  exposes a real Zoho message id plus `chatId`, native dispatch replies through
+  that real chat/message pair.
 
 ## Requirements
 
@@ -422,6 +427,7 @@ Diagnostic blockers that are not setup-state names:
 | `webhook_secret_missing` | No SecretRef/env webhook secret is configured. | Set `webhookSecret` to `ZOHO_CLIQ_WEBHOOK_SECRET`, test a controlled Bot POST, and rotate exposed values. |
 | native dispatch failure / dead-letter | A trusted event reached dispatch but the OpenClaw turn failed or was dead-lettered. | Inspect turn id, dispatch error, and dead-letter metadata before replay; do not retry blindly. |
 | `deliveryCount=0` after a successful assistant answer | The native turn reached the agent but no visible Cliq reply was delivered through the adapter. | Confirm the running plugin build sets `Provider` and `Surface` to `cliq`, rebuild/restart the gateway if needed, then replay one fresh trusted Mention. |
+| Agent session has an answer but the direct Bot chat shows no reply | The handler likely supplied no real Cliq message id, so an old build may have tried to reply against a synthetic `webhook-*` or `zoho-message-*` id, or sent to a user id that is not sendable in Bot direct context. | Rebuild/restart with the direct Bot fallback fix, then replay one fresh trusted direct Message/Mention and confirm the outbound route is a direct `chatId` send unless a real message id is available. |
 | `live_verification_pending` | Redacted production diagnostics are ready, but fake plus live verification has not passed yet. | Keep reports redacted and run the verification gate before production rollout. |
 | `token_refresh_rate_limited` | Zoho OAuth refresh is temporarily throttled. | Mark the check `skip_deferred`, wait for cooldown, and avoid bursty probe loops. |
 | repeated `not_supported` / `inactive_appaccount_user` | Zoho-side endpoint availability is blocking a specific live check. | Mark the check `skip_deferred` and continue unrelated local channel work. |

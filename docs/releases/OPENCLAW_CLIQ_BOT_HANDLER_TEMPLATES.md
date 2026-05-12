@@ -3,7 +3,7 @@
 This runbook gives operator-copyable Deluge templates for connecting a real
 Zoho Cliq Bot to the native OpenClaw `cliq` channel webhook at `/webhooks/cliq`.
 
-Updated: `2026-05-12T02:10:41Z`.
+Updated: `2026-05-12T03:58:30Z`.
 
 Official references:
 
@@ -81,6 +81,11 @@ If the audit log shows `handlerKind:"message"` with
 `reason:"invalid_payload"`, the handler is reaching OpenClaw but the posted
 shape did not include a usable message text plus sender/chat identity. Re-paste
 the wrapped `msg` template above before debugging the tunnel or secret.
+The generated `zoho-message-*` id is only a dedupe anchor. Native dispatch treats
+it as non-replyable and sends the agent answer to the provided direct `chatId`
+instead of trying to reply to a non-existent Cliq message id. If your handler
+can expose Zoho's real message id, use that value and the channel will reply
+against the real chat/message pair.
 The webhook parser also tolerates Deluge Map-string bodies such as
 `{handler=message, message=..., user={...}}` when Zoho does not emit strict
 JSON.

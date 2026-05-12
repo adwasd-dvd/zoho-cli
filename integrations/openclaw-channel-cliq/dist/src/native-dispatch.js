@@ -42,6 +42,26 @@ function targetForEvent(params) {
         return `chat:${params.event.nativePeerId}`;
     return `channel:${params.event.nativePeerId}`;
 }
+function normalizeReplyableCliqMessageId(value) {
+    const normalized = String(value ?? "").trim();
+    if (!normalized)
+        return undefined;
+    const lower = normalized.toLowerCase();
+    return lower.startsWith("webhook-") || lower.startsWith("zoho-message-")
+        ? undefined
+        : normalized;
+}
+function resolveCliqDeliveryRoute(params) {
+    const replyToId = normalizeReplyableCliqMessageId(params.payloadReplyToId) ??
+        normalizeReplyableCliqMessageId(params.event.messageId);
+    if (params.facts.routeKind === "direct" && params.event.chatId) {
+        return { to: `chat:${params.event.chatId}`, replyToId: replyToId ?? null };
+    }
+    if (!replyToId) {
+        return { to: params.facts.target, replyToId: null };
+    }
+    return { to: params.facts.target, replyToId };
+}
 function resolveCliqNativeRouteFacts(params) {
     const routeKind = routeKindForEvent(params.event);
     const targetChatType = targetChatTypeForRoute(routeKind);
@@ -275,14 +295,19 @@ export async function dispatchCliqEventToNativeOpenClaw(options) {
                                     mediaUrls: [],
                                 }
                                 : payload;
+                            const deliveryRoute = resolveCliqDeliveryRoute({
+                                event: options.event,
+                                facts,
+                                payloadReplyToId: outboundPayload.replyToId,
+                            });
                             const sent = await sendTextMediaPayload({
                                 channel: CLIQ_CHANNEL_ID,
                                 ctx: {
                                     cfg,
                                     accountId: route.accountId,
-                                    to: facts.target,
+                                    to: deliveryRoute.to,
                                     text: outboundPayload.text ?? "",
-                                    replyToId: outboundPayload.replyToId ?? options.event.messageId,
+                                    replyToId: deliveryRoute.replyToId,
                                     threadId: options.event.threadId ?? null,
                                     payload: outboundPayload,
                                 },
@@ -294,7 +319,7 @@ export async function dispatchCliqEventToNativeOpenClaw(options) {
                                 deliveryStats.messageIds.push(messageId);
                             return {
                                 messageIds: messageId ? [messageId] : [],
-                                replyToId: outboundPayload.replyToId ?? options.event.messageId,
+                                replyToId: deliveryRoute.replyToId ?? undefined,
                                 threadId: options.event.threadId,
                                 visibleReplySent: Boolean(messageId || outboundPayload.text),
                             };

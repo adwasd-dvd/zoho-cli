@@ -280,6 +280,10 @@ template from `docs/releases/OPENCLAW_CLIQ_BOT_HANDLER_TEMPLATES.md`; Zoho can
 pass `message` as text, so the handler should post an explicit message map with
 `text`, `messageId`, `senderId`, `chatId`, and `chatType`. Welcome, Incoming
 Webhook, Call, and Menu handlers are ignored until a later slice assigns
-explicit OpenClaw workflows. After saving a handler, verify redacted audit logs
-show `nativeDispatch.agentId` matching the intended OpenClaw route binding and
-exactly one outbound Cliq reply for the trusted smoke message.
+explicit OpenClaw workflows. If the direct handler uses a generated
+`zoho-message-*` id or OpenClaw synthesizes a `webhook-*` id, native dispatch
+must deliver the assistant answer as a direct send to the real `chatId` rather
+than a Cliq reply; real direct message ids should reply via the real `chatId`.
+After saving a handler, verify redacted audit logs show `nativeDispatch.agentId` matching the
+intended OpenClaw route binding and exactly one visible outbound Cliq delivery
+for the trusted smoke message.

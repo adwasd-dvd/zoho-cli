@@ -1858,6 +1858,114 @@ assert.equal(fake.records[0].updateLastRoute.channel, "cliq");
 assert.equal(fake.records[0].updateLastRoute.to, "channel:C123");
 assert.equal(fake.records[0].updateLastRoute.threadId, "T9");
 
+const directSynthetic = await processCliqWebhookPayload({
+  cfg,
+  account,
+  payload: {
+    handler: "mention",
+    message: { text: "direct fallback" },
+    user: { id: "U2", name: "Alice" },
+    chat: { id: "CT_DIRECT", chatType: "direct" },
+  },
+  dedupe: webhookDedupe,
+  turnLedger: webhookLedger,
+  lifecycle: false,
+  mentionMatchers: [/@bot\\b/i],
+  onEvent: async (event, context) => {
+    nativeResults.push(await dispatchCliqEventToNativeOpenClaw({
+      cfg,
+      runtime: fake.runtime,
+      account: context.account,
+      event,
+      source: "webhook",
+      handlerKind: context.handlerKind,
+      security: context.security,
+    }));
+  },
+});
+assert.equal(directSynthetic.accepted, true);
+assert.equal(directSynthetic.dispatched, true);
+assert.equal(nativeResults.length, 2);
+assert.equal(nativeResults[1].target, "user:U2");
+assert.match(nativeResults[1].replyToId, /^webhook-/);
+assert.equal(fake.sent[1].to, "chat:CT_DIRECT");
+assert.equal(fake.sent[1].replyToId ?? undefined, undefined);
+assert.equal(fake.sent[1].threadId ?? undefined, undefined);
+
+const directTemplateSynthetic = await processCliqWebhookPayload({
+  cfg,
+  account,
+  payload: {
+    handler: "message",
+    message: {
+      id: "zoho-message-20260512033826000",
+      text: "direct template fallback",
+      senderId: "U2",
+      chatId: "CT_TEMPLATE",
+      chatType: "direct",
+    },
+    user: { id: "U2", name: "Alice" },
+    chat: { id: "CT_TEMPLATE", chatType: "direct" },
+  },
+  dedupe: webhookDedupe,
+  turnLedger: webhookLedger,
+  lifecycle: false,
+  mentionMatchers: [/@bot\\b/i],
+  onEvent: async (event, context) => {
+    nativeResults.push(await dispatchCliqEventToNativeOpenClaw({
+      cfg,
+      runtime: fake.runtime,
+      account: context.account,
+      event,
+      source: "webhook",
+      handlerKind: context.handlerKind,
+      security: context.security,
+    }));
+  },
+});
+assert.equal(directTemplateSynthetic.accepted, true);
+assert.equal(directTemplateSynthetic.dispatched, true);
+assert.equal(nativeResults.length, 3);
+assert.equal(nativeResults[2].target, "user:U2");
+assert.equal(nativeResults[2].replyToId, "zoho-message-20260512033826000");
+assert.equal(fake.sent[2].to, "chat:CT_TEMPLATE");
+assert.equal(fake.sent[2].replyToId ?? undefined, undefined);
+assert.equal(fake.sent[2].threadId ?? undefined, undefined);
+
+const directReal = await processCliqWebhookPayload({
+  cfg,
+  account,
+  payload: {
+    handler: "mention",
+    message: { id: "MREAL", text: "direct reply" },
+    user: { id: "U2", name: "Alice" },
+    chat: { id: "CT_REAL", chatType: "direct" },
+  },
+  dedupe: webhookDedupe,
+  turnLedger: webhookLedger,
+  lifecycle: false,
+  mentionMatchers: [/@bot\\b/i],
+  onEvent: async (event, context) => {
+    nativeResults.push(await dispatchCliqEventToNativeOpenClaw({
+      cfg,
+      runtime: fake.runtime,
+      account: context.account,
+      event,
+      source: "webhook",
+      handlerKind: context.handlerKind,
+      security: context.security,
+    }));
+  },
+});
+assert.equal(directReal.accepted, true);
+assert.equal(directReal.dispatched, true);
+assert.equal(nativeResults.length, 4);
+assert.equal(nativeResults[3].target, "user:U2");
+assert.equal(nativeResults[3].replyToId, "MREAL");
+assert.equal(fake.sent[3].to, "chat:CT_REAL");
+assert.equal(fake.sent[3].replyToId, "MREAL");
+assert.equal(fake.sent[3].threadId ?? undefined, undefined);
+
 const duplicate = await processCliqWebhookPayload({
   cfg,
   account,
@@ -1872,7 +1980,7 @@ const duplicate = await processCliqWebhookPayload({
 });
 assert.equal(duplicate.accepted, false);
 assert.equal(duplicate.reason, "duplicate");
-assert.equal(fake.sent.length, 1);
+assert.equal(fake.sent.length, 4);
 
 const denied = await processCliqWebhookPayload({
   cfg,
@@ -1889,7 +1997,7 @@ const denied = await processCliqWebhookPayload({
 });
 assert.equal(denied.accepted, false);
 assert.equal(denied.reason, "security_denied");
-assert.equal(fake.sent.length, 1);
+assert.equal(fake.sent.length, 4);
 
 fake.setFailDispatch(true);
 const failed = await processCliqWebhookPayload({
@@ -1921,7 +2029,7 @@ assert.equal(failed.accepted, true);
 assert.equal(failed.dispatched, false);
 assert.equal(failed.turn.state, "dead_letter");
 assert.match(failed.dispatchError, /native dispatch failed/);
-assert.equal(fake.sent.length, 1);
+assert.equal(fake.sent.length, 4);
 
 fake.setFailDispatch(false);
 const pollDedupe = new CliqInboundDedupeStore(100);
@@ -1965,7 +2073,7 @@ const secondPoll = await pollCliqInboundOnce({
 });
 assert.equal(secondPoll.events.length, 0);
 assert.equal(secondPoll.dispatchedCount, 0);
-assert.equal(fake.sent.length, 2);
+assert.equal(fake.sent.length, 5);
 """
     script = script.replace("__FAKE_ZOHO__", json.dumps(str(fake_zoho)))
     subprocess.run(

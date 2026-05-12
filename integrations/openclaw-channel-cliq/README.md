@@ -30,7 +30,10 @@ intake at `/webhooks/cliq`, shared status/read lifecycle handling, a native
 turn ledger for duplicate/active/dead-letter loop prevention, and status/
 capability/routing diagnostic summaries plus AI-facing troubleshooting guidance
 for operator surfaces. Accepted webhook and polling events now enter OpenClaw's
-native channel turn runtime and route replies through the Cliq outbound adapter.
+native channel turn runtime and route replies through the Cliq outbound adapter;
+direct Bot events with synthetic `webhook-*` / `zoho-message-*` ids fall back to
+ordinary direct sends through the real Cliq chat id, while direct events with
+real message ids reply through that same chat id.
 Redacted audit events, correlation ids, diagnostic bundles, rate-limit
 diagnostics, privacy retention rules, dead-letter replay guidance, and the npm
 integrity release placeholder are now part of the channel diagnostics surface.
@@ -193,6 +196,10 @@ Use `../../docs/releases/OPENCLAW_CLIQ_BOT_HANDLER_TEMPLATES.md` for
 copy-ready Message, Mention, Participation, and Context Handler Deluge code.
 Direct Bot DMs should use the Message Handler template that wraps Zoho's
 text-like `message` value into an explicit message map before posting.
+If the handler cannot expose a real Zoho message id, use the template's
+`zoho-message-*` dedupe id; native dispatch will not attempt a reply against
+that synthetic id and will deliver the agent answer as a direct send to the
+provided `chatId`.
 
 ```deluge
 response = Map();

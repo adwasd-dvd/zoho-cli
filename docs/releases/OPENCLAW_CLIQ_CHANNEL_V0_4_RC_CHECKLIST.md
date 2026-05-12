@@ -27,12 +27,14 @@ artifact, `cliq-channel-468` adds a read-only operator decision packet,
 `cliq-channel-469` syncs package-local docs with that packet, and
 `cliq-channel-470` refreshes the no-publish RC artifact and operator handoff
 after the package docs sync. `cliq-channel-471` adds a read-only live ingress
-diagnostic for Bot handler no-response triage.
+diagnostic for Bot handler no-response triage, and `cliq-channel-472` adds the
+combined no-response packet that turns public callback plus ingress evidence
+into one next action.
 
 SDK contract source of truth:
 `docs/architecture/OPENCLAW_CLIQ_CHANNEL_SDK_CONTRACT.md`.
 
-Updated: `2026-05-12T05:56:37Z`.
+Updated: `2026-05-12T06:03:42Z`.
 
 ## Decision
 
@@ -58,7 +60,7 @@ environment currently binds `cliq/default` to `zoho-employee-test`.
 - Host floor: OpenClaw `>=2026.5.3-1`
 - Package version: `0.4.0-rc.1`
 - Implemented slices:
-  `cliq-channel-401/402/416/403/414/404/405/406/407/408/413/409/410/417/415/411/412/418/419/420/421/422/453/454/455/456/457/458/459/460/461/462/463/464/465/466/467/468/469/470/471`
+  `cliq-channel-401/402/416/403/414/404/405/406/407/408/413/409/410/417/415/411/412/418/419/420/421/422/453/454/455/456/457/458/459/460/461/462/463/464/465/466/467/468/469/470/471/472`
 
 ## Evidence
 
@@ -85,6 +87,7 @@ environment currently binds `cliq/default` to `zoho-employee-test`.
 | Operator publish handoff | `docs/releases/OPENCLAW_CLIQ_CHANNEL_V0_4_OPERATOR_PUBLISH_HANDOFF.md` defines the non-automated approval boundary, required preflight commands, publish path choices, post-publish checks, abort conditions, and release-note facts. |
 | Public callback auth/reachability | Cloudflare Published application route `https://cliq.hpyio.com/webhooks/cliq` is reachable; `ops/scripts/openclaw_cliq_public_callback_smoke.sh` passed with `status=public_callback_verified`, missing-secret `401`, authenticated unsupported-handler `200`, and no stored webhook bodies, response bodies, or secrets. |
 | Live ingress diagnostic | `ops/scripts/openclaw_cliq_live_ingress_diagnostic.sh` reads only redacted OpenClaw `zoho-cliq-audit` log records and reports `no_recent_webhook_ingress`, `latest_webhook_not_dispatched`, `dispatch_reply_not_delivered`, or `live_ingress_active` for the selected send window. `20260512T054312Z-live-window` reported `no_recent_webhook_ingress` for the recent send window, while `20260512T054312Z-known-good` reported `live_ingress_active` for the earlier trusted reply window. The diagnostic keeps raw webhook payloads, message bodies, reply bodies, and secrets out of stdout/report JSON so agents can distinguish a Zoho Bot handler trigger/save issue from an OpenClaw dispatch or Cliq delivery issue. |
+| Bot no-response packet | `ops/scripts/openclaw_cliq_bot_no_response_packet.sh` is the preferred first responder for “I sent the Bot a message but got no answer.” It runs public callback smoke when `ZOHO_CLIQ_PUBLIC_WEBHOOK_URL` is set, then runs live ingress diagnostics and emits one redacted `openclaw_cliq_bot_no_response_packet` with `nextAction` values such as `fix_public_callback`, `fix_zoho_bot_handler_trigger`, `fix_webhook_payload_or_policy`, `check_cliq_reply_delivery`, `fix_openclaw_route_binding`, or `collect_trusted_reply_facts_if_needed`. Real run `20260512T060342Z-no-response-packet-v2` verified public callback auth/reachability, ignored two self-generated callback smoke audit records, reported `no_recent_webhook_ingress`, and returned `nextAction=fix_zoho_bot_handler_trigger`. It stores no raw webhook payloads, message bodies, reply bodies, callback response bodies, or secrets. |
 | Live route binding | `openclaw config validate` passes with `cliq/default -> zoho-employee-test`; both `main` and `zoho-employee-test` are configured for `openai-codex/gpt-5.3-codex`. |
 | Native dispatch identity | Accepted webhook/polling turns set OpenClaw `Provider`/`Surface` to `cliq` so normal final answers deliver through the Cliq outbound adapter; handler source facts stay in supplemental context. |
 | Trusted live Bot reply | A controlled trusted Cliq Bot Mention through `https://cliq.hpyio.com/webhooks/cliq` routed to `zoho-employee-test`, used `openai-codex/gpt-5.3-codex`, delivered exactly one Cliq reply (`deliveryCount=1`), and the redacted bundle/check run `20260511T214135Z-real-mention` reported `trusted_reply_recorded`. |

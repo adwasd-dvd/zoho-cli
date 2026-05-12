@@ -59,11 +59,16 @@ Use this skill as the default operating contract for an OpenClaw agent acting li
   the public hostname to `HTTP` service `127.0.0.1:18789`; a tunnel with zero
   routes is not ready for Zoho Bot traffic.
 - When a user says they sent a real Cliq Bot message but saw no answer, run
-  `ops/scripts/openclaw_cliq_live_ingress_diagnostic.sh` before assuming OAuth
-  is broken. Set `ZOHO_CLIQ_INGRESS_LOOKBACK_SECONDS` to the expected send
-  window and optionally set `ZOHO_CLIQ_EXPECTED_AGENT_ID` /
-  `ZOHO_CLIQ_EXPECTED_AGENT_MODEL`. `no_recent_webhook_ingress` means the Zoho
-  Bot handler did not POST to the gateway during that window;
+  `ops/scripts/openclaw_cliq_bot_no_response_packet.sh` first; it combines the
+  optional public callback smoke with the live ingress diagnostic and returns a
+  single `nextAction`. Set `ZOHO_CLIQ_INGRESS_LOOKBACK_SECONDS` to the expected
+  send window and optionally set `ZOHO_CLIQ_EXPECTED_AGENT_ID` /
+  `ZOHO_CLIQ_EXPECTED_AGENT_MODEL`. Use
+  `ops/scripts/openclaw_cliq_live_ingress_diagnostic.sh` directly when you only
+  need the log-window classifier. The packet ignores its own public callback
+  smoke records when classifying the latest real Bot message window.
+  `no_recent_webhook_ingress` means the Zoho Bot handler did not POST to the
+  gateway during that window;
   `latest_webhook_not_dispatched` means payload or policy blocked dispatch;
   `dispatch_reply_not_delivered` means OpenClaw ran the turn but did not record
   a Cliq reply; `live_ingress_active` means the latest observed handler event

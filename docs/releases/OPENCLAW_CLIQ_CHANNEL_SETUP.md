@@ -246,24 +246,36 @@ unsupported-handler POST returns `200`, and emits redacted
 and redaction booleans, but not webhook bodies, response bodies, or secrets.
 
 If a user sends a real Bot message but no response appears, first run the
-read-only live ingress diagnostic against the expected send window:
+read-only no-response packet against the expected send window:
 
 ```bash
+ZOHO_CLIQ_PUBLIC_WEBHOOK_URL=https://cliq.hpyio.com/webhooks/cliq \
 ZOHO_CLIQ_INGRESS_LOOKBACK_SECONDS=900 \
 ZOHO_CLIQ_EXPECTED_AGENT_ID=zoho-employee-test \
 ZOHO_CLIQ_EXPECTED_AGENT_MODEL=openai-codex/gpt-5.3-codex \
+  ops/scripts/openclaw_cliq_bot_no_response_packet.sh
+```
+
+If you only need the log-window classifier, run the diagnostic directly:
+
+```bash
+ZOHO_CLIQ_INGRESS_LOOKBACK_SECONDS=900 \
   ops/scripts/openclaw_cliq_live_ingress_diagnostic.sh
 ```
 
+The packet runs the public callback smoke when `ZOHO_CLIQ_PUBLIC_WEBHOOK_URL`
+is set, then runs the live ingress diagnostic and returns one `nextAction`.
+Self-generated public callback smoke records are ignored by the ingress
+diagnostic so they do not mask the latest real Bot message window.
 `no_recent_webhook_ingress` means the Zoho Bot handler did not POST to the
 gateway during the window, so check the saved Message/Mention Handler URL,
 secret header, and handler type before chasing OAuth. `latest_webhook_not_dispatched`
 means the gateway saw the handler but payload or policy blocked dispatch.
 `dispatch_reply_not_delivered` means OpenClaw accepted the turn but no Cliq
 reply delivery was recorded. `live_ingress_active` means the latest observed
-handler event dispatched and delivered at least one reply. The diagnostic reads
-redacted OpenClaw audit logs only and does not store raw webhook payloads,
-message bodies, reply bodies, or secrets.
+handler event dispatched and delivered at least one reply. The packet and
+diagnostic do not store raw webhook payloads, message bodies, reply bodies,
+callback response bodies, or secrets.
 
 ### Cloudflare Tunnel fast path
 

@@ -154,14 +154,21 @@ const summarize = (record) => {
   };
 };
 
+const isDiagnosticSmokeRecord = (record) =>
+  record?.kind === "webhook_ingress" &&
+  record?.handlerKind === "welcome" &&
+  record?.reason === "unsupported_handler";
+
 const rawLines = fs.readFileSync(logFile, "utf8").split(/\r?\n/);
-const records = rawLines
+const windowRecords = rawLines
   .map(extractAuditMessage)
   .filter(Boolean)
   .map((record) => ({ record, createdMs: Date.parse(record.createdAt || "") }))
   .filter((entry) => Number.isFinite(entry.createdMs) && entry.createdMs >= sinceMs)
   .sort((a, b) => a.createdMs - b.createdMs)
   .map((entry) => entry.record);
+const records = windowRecords.filter((record) => !isDiagnosticSmokeRecord(record));
+const ignoredDiagnosticSmokeRecords = windowRecords.length - records.length;
 
 const webhookRecords = records.filter((record) => record.kind === "webhook_ingress");
 const nativeDispatchRecords = records.filter(
@@ -183,6 +190,7 @@ const common = {
   },
   counts: {
     auditRecords: records.length,
+    ignoredDiagnosticSmokeRecords,
     webhookIngress: webhookRecords.length,
     nativeDispatch: nativeDispatchRecords.length,
   },

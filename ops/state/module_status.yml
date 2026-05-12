@@ -20,9 +20,9 @@ cliq:
 openclaw_cliq_channel:
   priority: 3
   status: completed_for_rc
-  phase: live_ingress_diagnostic_rc_artifact_restored
+  phase: bot_no_response_packet_ready
   target_release: v0.4.0
-  current_milestone: cliq-channel-471-live-ingress-diagnostic
+  current_milestone: cliq-channel-472-bot-no-response-packet
   blockers: []
 
 crm:

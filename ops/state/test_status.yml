@@ -1,10 +1,15 @@
-last_run_at: "2026-05-12T05:56:37Z"
+last_run_at: "2026-05-12T06:09:19Z"
 last_result: passing
-current_focus: cliq-channel-471-live-ingress-diagnostic
+current_focus: cliq-channel-472-bot-no-response-packet
 suites:
   unit:
     status: passing
     notes:
+      - "cliq-channel-472 Bot no-response packet completed at 2026-05-12T06:09:19Z"
+      - "added `ops/scripts/openclaw_cliq_bot_no_response_packet.sh`; it runs public callback smoke when `ZOHO_CLIQ_PUBLIC_WEBHOOK_URL` is set, runs live ingress diagnostics, emits one redacted `openclaw_cliq_bot_no_response_packet`, and returns nextAction values such as `fix_public_callback`, `fix_zoho_bot_handler_trigger`, `fix_webhook_payload_or_policy`, `check_cliq_reply_delivery`, `fix_openclaw_route_binding`, or `collect_trusted_reply_facts_if_needed`"
+      - "updated `ops/scripts/openclaw_cliq_live_ingress_diagnostic.sh` to ignore self-generated `handlerKind=welcome` / `reason=unsupported_handler` public callback smoke audit records; the unit no-recent-webhook fixture now verifies `ignoredDiagnosticSmokeRecords=1`"
+      - "ZOHO_CLIQ_BOT_PACKET_RUN_ID=20260512T060342Z-no-response-packet-v2 ZOHO_CLIQ_PUBLIC_WEBHOOK_URL=https://cliq.hpyio.com/webhooks/cliq ZOHO_CLIQ_INGRESS_LOOKBACK_SECONDS=1800 ZOHO_CLIQ_EXPECTED_AGENT_ID=zoho-employee-test ZOHO_CLIQ_EXPECTED_AGENT_MODEL=openai-codex/gpt-5.3-codex ops/scripts/openclaw_cliq_bot_no_response_packet.sh -> expected blocked state with public callback `public_callback_verified`, ingress `no_recent_webhook_ingress`, `ignoredDiagnosticSmokeRecords=2`, and `nextAction=fix_zoho_bot_handler_trigger`"
+      - "bash -n ops/scripts/openclaw_cliq_bot_no_response_packet.sh ops/scripts/openclaw_cliq_live_ingress_diagnostic.sh ops/scripts/openclaw_cliq_public_callback_smoke.sh -> passed; focused packet/diagnostic/contract markdown tests -> 9 passed in 0.75s; ./.venv/bin/ruff format --check tests/test_auto_pilot_scripts.py tests/test_openclaw_channel_contract.py tests/test_lane3_docs.py -> 3 files already formatted after reformat; ./.venv/bin/ruff check tests/test_auto_pilot_scripts.py tests/test_openclaw_channel_contract.py tests/test_lane3_docs.py -> All checks passed; YAML parse for project/module_status/test_status/active_task -> YAML_PARSE_OK; git diff --check -> passed"
       - "cliq-channel-471 live ingress diagnostic completed at 2026-05-12T05:56:37Z"
       - "added `ops/scripts/openclaw_cliq_live_ingress_diagnostic.sh`; it reads redacted OpenClaw `zoho-cliq-audit` logs, classifies recent Bot no-response windows as `no_recent_webhook_ingress`, `latest_webhook_not_dispatched`, `dispatch_reply_not_delivered`, or `live_ingress_active`, supports expected agent/model checks, and keeps raw webhook payloads, message bodies, reply bodies, and secrets out of stdout/report JSON"
       - "ZOHO_CLIQ_INGRESS_RUN_ID=20260512T054312Z-live-window ZOHO_CLIQ_INGRESS_LOOKBACK_SECONDS=1800 ZOHO_CLIQ_EXPECTED_AGENT_ID=zoho-employee-test ZOHO_CLIQ_EXPECTED_AGENT_MODEL=openai-codex/gpt-5.3-codex ops/scripts/openclaw_cliq_live_ingress_diagnostic.sh -> expected blocked state `no_recent_webhook_ingress`; known-good run `20260512T054312Z-known-good` over the earlier trusted reply window -> `live_ingress_active`, `deliveryCount=1`"

@@ -334,6 +334,10 @@ when a dry-run/local step may be automated, sets
 `agentMayExecuteNextCommand=false` when the next step is operator-only or
 Zoho-writing, lists `stopCommandIds`, and keeps
 `liveFixtureExecutionBlockedForAgent=true`.
+`crm-029` adds `nextAgentCommand` inside that summary. It is the redacted
+placeholder-only command preview matching `nextAgentExecutableCommandId`, and it
+stays `null` when the next step is operator-only, Zoho-writing, or approval
+gated.
 `reportFiles` and `reportsReady` expose only artifact basenames for the packet,
 payload preflight, optional dry-run readiness bundle, and optional smoke summary
 so agents can archive or pass evidence without logging local paths.

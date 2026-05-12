@@ -440,6 +440,7 @@ def test_crm_sdk_adoption_contract_present() -> None:
         "operatorReview.actionBoundary",
         "operatorReview.agentAutomation",
         "nextAgentExecutableCommandId",
+        "nextAgentCommand",
         "agentMayExecuteNextCommand",
         "stopCommandIds",
         "liveFixtureExecutionBlockedForAgent",

@@ -108,10 +108,12 @@ before any id listed under `operatorOnlyCommandIds`, `zohoWriteCommandIds`, or
 for a human operator only.
 
 `operatorReview.agentAutomation` is the shortcut summary for AI agents. It
-reports `nextAgentExecutableCommandId`, `agentMayExecuteNextCommand`,
-`stopCommandIds`, and `stopReason`; agents may execute only when
-`agentMayExecuteNextCommand=true`, and must stop when `stopCommandIds` contains
-an operator-only, Zoho-writing, or explicit-approval command id.
+reports `nextAgentExecutableCommandId`, `nextAgentCommand`,
+`agentMayExecuteNextCommand`, `stopCommandIds`, and `stopReason`; agents may
+execute only when `agentMayExecuteNextCommand=true`, and should use the embedded
+redacted `nextAgentCommand` instead of reconstructing a command from ids. It
+must stay `null` when `stopCommandIds` contains an operator-only, Zoho-writing,
+or explicit-approval command id.
 
 `operatorReview.liveApproval` is the compact approval checklist for AI agents.
 It reports booleans such as `summaryFileReady`, `dryRunReadinessReady`,
@@ -186,6 +188,10 @@ It also mirrors the packet command handoff with redacted
 `operatorReview.nextCommands` and `operatorReview.actionBoundary`: ready bundles
 list the live fixture approval id under operator-only and Zoho-writing buckets,
 while blocked bundles expose a dry-run-only `fix_readiness_blockers` id.
+`operatorReview.agentAutomation.nextAgentCommand` follows the same stop/go
+boundary on readiness bundles: blocked bundles may embed the fixer command,
+while ready-for-live bundles keep it `null` because the next step writes Zoho
+data and requires an operator.
 
 ## Live fixture evidence
 

@@ -2862,6 +2862,7 @@ def test_crm_fixture_operator_packet_reports_missing_payload(
             "on any operator-only, Zoho-writing, or explicit-approval id"
         ),
         "nextAgentExecutableCommandId": "provide_fixture_payload_file",
+        "nextAgentCommand": next_commands[0],
         "agentMayExecuteNextCommand": True,
         "agentExecutableCommandIds": ["provide_fixture_payload_file"],
         "dryRunOnlyCommandIds": ["provide_fixture_payload_file"],
@@ -3006,6 +3007,7 @@ def test_crm_fixture_operator_packet_accepts_payload_preflight(
             "on any operator-only, Zoho-writing, or explicit-approval id"
         ),
         "nextAgentExecutableCommandId": "run_crm_fixture_live_smoke_dry_run",
+        "nextAgentCommand": next_commands[0],
         "agentMayExecuteNextCommand": True,
         "agentExecutableCommandIds": ["run_crm_fixture_live_smoke_dry_run"],
         "dryRunOnlyCommandIds": ["run_crm_fixture_live_smoke_dry_run"],
@@ -3107,6 +3109,10 @@ def test_crm_fixture_operator_packet_blocks_vague_cleanup_plan(
     }
     assert (
         payload["operatorReview"]["agentAutomation"]["nextAgentExecutableCommandId"]
+        == "improve_cleanup_plan"
+    )
+    assert (
+        payload["operatorReview"]["agentAutomation"]["nextAgentCommand"]["id"]
         == "improve_cleanup_plan"
     )
     assert (
@@ -3278,6 +3284,7 @@ def test_crm_fixture_operator_packet_wraps_dry_run_readiness(
             "on any operator-only, Zoho-writing, or explicit-approval id"
         ),
         "nextAgentExecutableCommandId": None,
+        "nextAgentCommand": None,
         "agentMayExecuteNextCommand": False,
         "agentExecutableCommandIds": [],
         "dryRunOnlyCommandIds": [],
@@ -3432,6 +3439,14 @@ def test_crm_fixture_operator_readiness_bundle_requires_dry_run_evidence(
         "normalUpsertExecuteBlocked": True,
         "liveFixtureExecutionBoundary": "operator_only",
     }
+    assert payload["operatorReview"]["agentAutomation"]["nextAgentCommand"] is None
+    assert (
+        payload["operatorReview"]["agentAutomation"]["agentMayExecuteNextCommand"]
+        is False
+    )
+    assert payload["operatorReview"]["agentAutomation"]["stopCommandIds"] == [
+        "operator_review_live_fixture_approval"
+    ]
     assert payload["operatorReview"]["liveApproval"] == {
         "readyFacts": [
             "agent_execution_blocked",
@@ -3562,6 +3577,10 @@ def test_crm_fixture_operator_readiness_bundle_blocks_placeholder_payload(
     }
     assert (
         payload["operatorReview"]["agentAutomation"]["nextAgentExecutableCommandId"]
+        == "fix_readiness_blockers"
+    )
+    assert (
+        payload["operatorReview"]["agentAutomation"]["nextAgentCommand"]["id"]
         == "fix_readiness_blockers"
     )
     assert (

@@ -1,21 +1,21 @@
-id: crm-028
-title: add CRM fixture agent automation boundary
+id: crm-029
+title: add CRM fixture agent next-command preview
 module: crm
 stage: completed
 status: completed
 owner: coder
-updated_at: '2026-05-12T14:13:11Z'
+updated_at: '2026-05-12T14:34:47Z'
 execution_mode: turbo_20x
 throughput_policy_ref: ops/state/execution_policy.yml
 success_criteria:
-  - "CRM fixture operator packets expose `operatorReview.agentAutomation`"
-  - "CRM fixture readiness bundles expose the same agent automation summary"
-  - "Agent automation summary names the next dry-run/local command id and stop ids without raw payload, cleanup, approval, or idempotency values"
+  - "CRM fixture operator packets expose `operatorReview.agentAutomation.nextAgentCommand` when the next step is agent-executable"
+  - "CRM fixture readiness bundles expose the same next-command preview for blocked dry-run fixer steps"
+  - "Agent automation summary embeds only redacted placeholder commands and keeps `nextAgentCommand=null` at operator-only, Zoho-writing, or approval-gated boundaries"
   - "Normal `zoho crm upsert --execute` and live fixture execution remain blocked for agents"
 next_if_done: Continue to the next safe RC readiness milestone without publishing, tagging, npm promotion, GitHub release creation, expectedIntegrity fill, or live CRM writes.
 progress:
-  - "2026-05-12T14:13:11Z added `operatorReview.agentAutomation` with `nextAgentExecutableCommandId`, `agentMayExecuteNextCommand`, `stopCommandIds`, and `stopReason` to CRM fixture operator packets and readiness bundles."
-  - "2026-05-12T14:13:11Z focused verification passed for CRM packet/readiness agent automation, Lane 3 CRM contract, markdown update, shell syntax, and ruff format/check."
-  - "2026-05-12T14:17:34Z broader verification passed: CRM fixture tests plus Lane 3 required paths, CRM contract, and markdown update -> 15 passed, 70 deselected in 2.37s; ruff format/check, YAML parse, and `git diff --check` passed."
-  - "2026-05-12T14:13:11Z no publish, tag, npm promotion, GitHub release, version bump, expectedIntegrity fill, Zoho call, or CRM write was performed."
-next_step: Run broader CRM fixture verification, commit and push the CRM agent automation boundary slice, then continue to the next safe milestone.
+  - "2026-05-12T14:27:08Z added `operatorReview.agentAutomation.nextAgentCommand` to CRM fixture operator packets and readiness bundles; the field mirrors the selected dry-run/local command preview only when `agentMayExecuteNextCommand=true`."
+  - "2026-05-12T14:27:08Z kept `nextAgentCommand=null` for operator-only live fixture approval boundaries, so agents do not execute Zoho-writing or explicit-approval commands."
+  - "2026-05-12T14:34:47Z focused and broader verification passed: CRM fixture packet/readiness tests plus Lane 3 required paths, CRM contract, and markdown update -> 15 passed, 70 deselected in 2.43s; shell syntax, touched-scope ruff format/check, Ruby YAML parse, `git diff --check`, and local no-write packet field check passed."
+  - "2026-05-12T14:34:47Z no publish, tag, npm promotion, GitHub release, version bump, expectedIntegrity fill, Zoho call, or CRM write was performed."
+next_step: Commit and push the CRM next-command preview slice, then continue to the next safe milestone.

@@ -131,7 +131,8 @@ CRM SDK planning:
   operator-only/Zoho-writing steps; `crm-026` mirrors that boundary on readiness
   bundles; `crm-028` adds `operatorReview.agentAutomation` with
   `nextAgentExecutableCommandId`, `agentMayExecuteNextCommand`,
-  `stopCommandIds`, and `stopReason`)
+  `stopCommandIds`, and `stopReason`; `crm-029` adds embedded
+  `nextAgentCommand` previews for runnable dry-run/local steps)
 - `docs/releases/CRM_V0_5_FIXTURE_PAYLOAD_TEMPLATE.json` (`crm-015`: safe
   one-record `Leads` template with `.example.invalid` placeholder data; copy and
   edit outside the repo before live fixture mode; smoke reports

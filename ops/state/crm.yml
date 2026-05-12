@@ -1,11 +1,11 @@
 module: CRM
-updated_at: "2026-05-12T14:13:11Z"
+updated_at: "2026-05-12T14:34:47Z"
 status: in_progress
-phase: v0_5_agent_automation_boundary
+phase: v0_5_agent_next_command_preview
 blockers:
   - "operator-provided dedicated CRM fixture payload and cleanup approval required before Zoho-backed dry-run smoke and live fixture execution"
-current_milestone: crm-028-agent-automation-boundary
+current_milestone: crm-029-agent-next-command-preview
 last_completed:
-  id: crm-028
-  summary: "Added `operatorReview.agentAutomation` to CRM fixture operator packets and readiness bundles so agents can read `nextAgentExecutableCommandId`, `agentMayExecuteNextCommand`, `stopCommandIds`, and `stopReason` without inferring from command-preview arrays."
-next_small_step: run `ops/scripts/crm_fixture_operator_packet.sh` against an operator-edited dedicated fixture payload and cleanup plan; execute only when `operatorReview.agentAutomation.agentMayExecuteNextCommand=true`, and stop on any `stopCommandIds`
+  id: crm-029
+  summary: "Added `operatorReview.agentAutomation.nextAgentCommand` to CRM fixture operator packets and readiness bundles so agents can read the next redacted placeholder-only dry-run/local command preview without joining ids back to `nextCommands`."
+next_small_step: run `ops/scripts/crm_fixture_operator_packet.sh` against an operator-edited dedicated fixture payload and cleanup plan; execute `operatorReview.agentAutomation.nextAgentCommand` only when `agentMayExecuteNextCommand=true`, and stop on any `stopCommandIds`

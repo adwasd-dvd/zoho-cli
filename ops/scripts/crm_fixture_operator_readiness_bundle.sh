@@ -154,6 +154,12 @@ PAYLOAD="$("$JQ_BIN" -n \
   | ($nextCommands | map(select(.writesZohoData == true) | .id)) as $zohoWriteCommandIds
   | ($nextCommands | map(select(.dryRunOnly == true) | .id)) as $dryRunOnlyCommandIds
   | ($nextCommands | map(select(.requiresExplicitOperatorApproval == true) | .id)) as $approvalCommandIds
+  | (
+      (($agentExecutableCommandIds | length) > 0)
+      and (($zohoWriteCommandIds | length) == 0)
+      and (($approvalCommandIds | length) == 0)
+    ) as $agentMayExecuteNextCommand
+  | ($nextCommands | map(select(.id == ($agentExecutableCommandIds[0] // ""))) | .[0] // null) as $nextAgentCommand
   | {
       schemaVersion: 1,
       kind: "crm_fixture_operator_readiness_bundle",
@@ -228,11 +234,8 @@ PAYLOAD="$("$JQ_BIN" -n \
           policyId: "crm-fixture-agent-command-boundary-v1",
           guidance: "execute only dry-run/local command ids listed in nextAgentExecutableCommandId or agentExecutableCommandIds; stop on any operator-only, Zoho-writing, or explicit-approval id",
           nextAgentExecutableCommandId: ($agentExecutableCommandIds[0] // null),
-          agentMayExecuteNextCommand: (
-            (($agentExecutableCommandIds | length) > 0)
-            and (($zohoWriteCommandIds | length) == 0)
-            and (($approvalCommandIds | length) == 0)
-          ),
+          nextAgentCommand: (if $agentMayExecuteNextCommand then $nextAgentCommand else null end),
+          agentMayExecuteNextCommand: $agentMayExecuteNextCommand,
           agentExecutableCommandIds: $agentExecutableCommandIds,
           dryRunOnlyCommandIds: $dryRunOnlyCommandIds,
           stopCommandIds: (($operatorOnlyCommandIds + $zohoWriteCommandIds + $approvalCommandIds) | unique),

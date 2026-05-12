@@ -267,7 +267,10 @@ Use this skill as the default operating contract for an OpenClaw agent acting li
   operator-only boundary, and never substitute raw values into logs. Prefer
   `operatorReview.actionBoundary.agentExecutableCommandIds` for automation;
   stop on `operatorOnlyCommandIds`, `zohoWriteCommandIds`, or
-  `requiresExplicitOperatorApprovalCommandIds`. Inspect
+  `requiresExplicitOperatorApprovalCommandIds`. Prefer
+  `operatorReview.agentAutomation.nextAgentCommand` when
+  `agentMayExecuteNextCommand=true`; it is already redacted and placeholder
+  based, and it stays `null` at operator-only write boundaries. Inspect
   `operatorReview.liveApproval` before asking for live approval; require the
   summary/evidence, payload digest, idempotency key, required approval, and
   placeholder checks to be true while `agentMayExecute=false`. Prefer

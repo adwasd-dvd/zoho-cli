@@ -79,6 +79,7 @@ Current implementation-only delta:
 - `crm-025` adds `operatorReview.actionBoundary`; run only ids in `agentExecutableCommandIds` and stop on `operatorOnlyCommandIds`, `zohoWriteCommandIds`, or `requiresExplicitOperatorApprovalCommandIds`.
 - `crm-026` adds the same redacted `operatorReview.nextCommands` and `operatorReview.actionBoundary` stop/go contract to readiness bundles; blocked bundles expose dry-run fixer ids only, while ready bundles expose the live approval id as operator-only and Zoho-writing.
 - `crm-028` adds `operatorReview.agentAutomation` to packets and readiness bundles; prefer `nextAgentExecutableCommandId` plus `agentMayExecuteNextCommand` for autonomous branching, and stop on any `stopCommandIds`.
+- `crm-029` adds `operatorReview.agentAutomation.nextAgentCommand`, a redacted placeholder-only command preview for the next agent-executable dry-run/local step; use it when present and treat `null` as a stop boundary.
 
 ## Required behavior support after lane3 sync
 
@@ -318,7 +319,9 @@ After sync, ensure the AI user follows:
     `operatorOnlyCommandIds`, `zohoWriteCommandIds`, or
     `requiresExplicitOperatorApprovalCommandIds` requires a human operator
   - prefer `operatorReview.agentAutomation.nextAgentExecutableCommandId` when
-    `agentMayExecuteNextCommand=true`; otherwise stop and explain
+    `agentMayExecuteNextCommand=true`, and use
+    `operatorReview.agentAutomation.nextAgentCommand` as the command preview
+    when present; otherwise stop and explain
     `operatorReview.agentAutomation.stopReason`
   - treat `summary_file_missing`, `fixture_evidence_not_ready`,
     `payload_placeholder_count_missing`, and

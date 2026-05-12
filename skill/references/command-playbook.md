@@ -238,6 +238,10 @@ entries marked `agentMayExecute=false`.
 Prefer `operatorReview.actionBoundary.agentExecutableCommandIds` as the
 runnable command bucket. Treat `operatorOnlyCommandIds`, `zohoWriteCommandIds`,
 and `requiresExplicitOperatorApprovalCommandIds` as stop-and-handoff lists.
+Prefer `operatorReview.agentAutomation.nextAgentCommand` when
+`agentMayExecuteNextCommand=true`; it already matches the next runnable
+dry-run/local id and uses placeholders. Treat `nextAgentCommand=null` as a stop
+boundary and explain `stopReason` instead of reconstructing a command.
 Use `operatorReview.liveApproval` before asking for live approval: it reports
 only booleans for summary/evidence readiness, payload digest, idempotency key,
 required approval presence, placeholder state, and the operator-only execution
@@ -289,7 +293,8 @@ uses a dedicated non-placeholder test email. Use its `reportFiles` and
 `fixtureEvidence` by basename without exposing local paths. It also exposes
 redacted `operatorReview.nextCommands` and `operatorReview.actionBoundary`; run
 only ids in `agentExecutableCommandIds` and stop on operator-only,
-Zoho-writing, or explicit-approval ids.
+Zoho-writing, or explicit-approval ids. Its
+`operatorReview.agentAutomation.nextAgentCommand` mirrors that boundary.
 
 ## Bridge fallback (explicit)
 

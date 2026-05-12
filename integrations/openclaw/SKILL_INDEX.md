@@ -54,7 +54,8 @@ CRM SDK planning:
   `agentMayExecuteSelectedPath=false`; after repo-only docs/state commits,
   `sourceDrift.repoChangedSinceManifest=true` is acceptable only when
   `sourceDrift.packageChangedSinceManifest=false` and
-  `package_source_unchanged` is still reported)
+  `package_source_unchanged` is still reported; `cliq-channel-477` records the
+  post-CRM selector metadata check at `ae9424e7`)
 - `ops/scripts/openclaw_cliq_bot_no_response_packet.sh`
   (`cliq-channel-472/474`: first responder for Bot no-response reports; runs
   public callback smoke plus live ingress diagnostics, then embeds

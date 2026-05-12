@@ -1,10 +1,12 @@
-last_run_at: "2026-05-12T08:27:51Z"
+last_run_at: "2026-05-12T08:46:08Z"
 last_result: passing
-current_focus: crm-018-cleanup-selector-type-metadata
+current_focus: cliq-channel-477-post-crm-selector-metadata-decision-evidence
 suites:
   unit:
     status: passing
     notes:
+      - "cliq-channel-477 post-CRM selector metadata decision evidence completed at 2026-05-12T08:38:16Z: RC checklist/operator handoff/README/Lane 3 index/state now record source drift run `20260512T081613Z-crm-selector-metadata-postcommit-source` and decision packet `20260512T081613Z-crm-selector-metadata-postcommit-decision`, where pushed CRM docs/state commit `ae9424e7` moved HEAD but package drift stayed false."
+      - "cliq-channel-477 verification passed at 2026-05-12T08:46:08Z: OpenClaw Cliq RC checklist/operator handoff contract, Lane 3 required paths/troubleshooting contract, and markdown update -> 5 passed in 0.02s; ruff format/check, YAML parse, and `git diff --check` passed."
       - "crm-018 cleanup selector type metadata completed at 2026-05-12T08:22:13Z: CRM fixture payload preflight now reports redacted `cleanup.selectorTypes` and `cleanup.selectorTypeCount` while keeping raw cleanup plans, raw selector values, fixture email, and field values unlogged."
       - "crm-018 fixed the empty-selector blocked path under `set -u`, so cleanup-plan-missing, vague-cleanup, and selector-missing blockers still emit JSON with `cleanup.selectorTypes=[]` instead of exiting before output."
       - "Focused crm-018 verification passed at 2026-05-12T08:22:13Z: CRM fixture selector-type tests, Lane 3 CRM contract, and markdown update -> 8 passed in 0.39s."

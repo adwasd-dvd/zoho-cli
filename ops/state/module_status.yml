@@ -20,9 +20,9 @@ cliq:
 openclaw_cliq_channel:
   priority: 3
   status: completed_for_rc
-  phase: post_doc_sync_decision_packet_indexed
+  phase: post_crm_selector_metadata_decision_indexed
   target_release: v0.4.0
-  current_milestone: cliq-channel-476-post-doc-sync-decision-evidence
+  current_milestone: cliq-channel-477-post-crm-selector-metadata-decision-evidence
   blockers: []
 
 crm:

@@ -15,9 +15,9 @@ Current baseline:
 - Local artifact check: `artifact_verified`
 - Local OpenClaw install smoke: `install_smoke_passed`
 - Handoff manifest:
-  `openclaw_cliq_rc_operator_handoff_manifest_20260512T052812Z-package-doc-sync-manifest.json`
+  `openclaw_cliq_rc_operator_handoff_manifest_20260512T055900Z-ingress-diagnostic-rc-restore-manifest.json`
 - Latest source drift guard:
-  `openclaw_cliq_rc_source_drift_check_20260512T052812Z-package-doc-sync-source.json`
+  `openclaw_cliq_rc_source_drift_check_20260512T081613Z-crm-selector-metadata-postcommit-source.json`
 
 ## Non-automated approval boundary
 

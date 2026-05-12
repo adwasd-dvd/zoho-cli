@@ -234,6 +234,10 @@ After sync, ensure the AI user follows:
     read-only; require `operator_publish_selection_ready` plus
     `selectedPublishPathReview.agentMayExecute=false` before handing the choice
     back to the operator
+  - `OPENCLAW_CLIQ_OPERATOR_PUBLISH_PATH=npm_rc_publish` and
+    `OPENCLAW_CLIQ_OPERATOR_PUBLISH_PATH=github_release_artifact` are also
+    read-only rehearsals; command previews are for operator review only and
+    must keep `agentMayExecuteSelectedPath=false`
   - require `openclaw_cliq_public_callback_smoke` /
     `public_callback_verified` for a reachable public Bot callback URL before
     claiming production incident readiness

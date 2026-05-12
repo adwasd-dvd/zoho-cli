@@ -121,6 +121,14 @@ Expected local pre-publish posture:
   `20260512T104813Z-local-operator-rc-selection` reports
   `operator_publish_selection_ready` with no command preview and still keeps
   `selectedPublishPathReview.agentMayExecute=false`
+- the read-only `npm_rc_publish` rehearsal
+  `20260512T110613Z-npm-rc-selection` reports
+  `operator_publish_selection_ready`, previews `npm publish ... --tag rc`, and
+  keeps `selectedPublishPathReview.agentMayExecute=false`
+- the read-only `github_release_artifact` rehearsal
+  `20260512T110613Z-github-release-selection` reports
+  `operator_publish_selection_ready`, previews `gh release create ...`, and
+  keeps `selectedPublishPathReview.agentMayExecute=false`
 - decision packet reports `awaiting_operator_publish_path` before a path is
   selected, or `operator_publish_selection_ready` after a path is selected,
   while keeping `agentMayExecuteSelectedPath=false`

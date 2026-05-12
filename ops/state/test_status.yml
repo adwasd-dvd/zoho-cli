@@ -1,10 +1,14 @@
-last_run_at: "2026-05-12T10:54:43Z"
+last_run_at: "2026-05-12T11:14:45Z"
 last_result: passing
-current_focus: cliq-channel-482-local-operator-rc-selection-ready
+current_focus: cliq-channel-483-operator-publish-paths-selection-ready
 suites:
   unit:
     status: passing
     notes:
+      - "cliq-channel-483 npm/GitHub RC selected-path evidence started at 2026-05-12T11:06:43Z: decision packet run `20260512T110613Z-npm-rc-selection` returned `operator_publish_selection_ready`, no blockers, `selectedPublishPath=npm_rc_publish`, command preview `npm publish ... --tag rc --access public`, `fillsExpectedIntegrityAfterPublish=true`, all `reportsReady=true`, and `agentMayExecuteSelectedPath=false`."
+      - "cliq-channel-483 GitHub artifact selected-path evidence started at 2026-05-12T11:07:08Z: decision packet run `20260512T110613Z-github-release-selection` returned `operator_publish_selection_ready`, no blockers, `selectedPublishPath=github_release_artifact`, command preview `gh release create <operator-approved-rc-tag> ... --prerelease --notes-file <release-notes-draft-path>`, all `reportsReady=true`, and `agentMayExecuteSelectedPath=false`."
+      - "cliq-channel-483 selected path reviews kept `selectedPublishPathReview.agentMayExecute=false`, `requiresExplicitOperatorApproval=true`, and no publish/tag/npm promotion/GitHub release/integrity fill or CRM write was performed."
+      - "cliq-channel-483 verification passed at 2026-05-12T11:14:45Z: OpenClaw Cliq RC checklist/operator handoff contract, Lane 3 required paths/troubleshooting contract, and markdown update -> 5 passed in 0.02s; ruff format/check, YAML parse, and `git diff --check` passed."
       - "cliq-channel-482 local/operator RC selected-path evidence started at 2026-05-12T10:49:17Z: decision packet run `20260512T104813Z-local-operator-rc-selection` returned `operator_publish_selection_ready`, no blockers, `selectedPublishPath=local_operator_rc`, all `reportsReady=true`, and `agentMayExecuteSelectedPath=false`."
       - "cliq-channel-482 selected path review kept `selectedPublishPathReview.operatorOnly=true`, `requiresExplicitOperatorApproval=true`, and `agentMayExecute=false`; no publish/tag/release/integrity fill or CRM write was performed."
       - "cliq-channel-482 verification passed at 2026-05-12T10:54:43Z: OpenClaw Cliq RC checklist/operator handoff contract, Lane 3 required paths/troubleshooting contract, and markdown update -> 5 passed in 0.02s; ruff format/check, YAML parse, and `git diff --check` passed."

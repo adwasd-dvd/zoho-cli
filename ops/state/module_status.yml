@@ -20,9 +20,9 @@ cliq:
 openclaw_cliq_channel:
   priority: 3
   status: completed_for_rc
-  phase: local_operator_rc_selection_ready_indexed
+  phase: operator_publish_paths_selection_ready_indexed
   target_release: v0.4.0
-  current_milestone: cliq-channel-482-local-operator-rc-selection-ready
+  current_milestone: cliq-channel-483-operator-publish-paths-selection-ready
   blockers: []
 
 crm:

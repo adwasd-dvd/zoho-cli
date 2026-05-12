@@ -1,22 +1,24 @@
-id: cliq-channel-482
-title: record local operator RC selected-path evidence
+id: cliq-channel-483
+title: record npm and GitHub operator RC selected-path evidence
 module: openclaw_cliq_channel
 stage: completed
 status: completed
 owner: coder
-updated_at: '2026-05-12T10:54:43Z'
+updated_at: '2026-05-12T11:14:45Z'
 execution_mode: turbo_20x
 throughput_policy_ref: ops/state/execution_policy.yml
 success_criteria:
-  - read-only decision packet reports `operator_publish_selection_ready` for `local_operator_rc`
-  - selected path review keeps `operatorOnly=true` and `requiresExplicitOperatorApproval=true`
+  - read-only decision packets report `operator_publish_selection_ready` for `npm_rc_publish` and `github_release_artifact`
+  - selected path reviews expose command previews while keeping `requiresExplicitOperatorApproval=true`
   - selected path review keeps `agentMayExecute=false` and `agentMayExecuteSelectedPath=false`
-  - Lane 2, Lane 3, and Lane 1 docs record the selected-path evidence
-  - publish, tag, npm promotion, GitHub release, and expectedIntegrity fill remain operator-only
+  - Lane 2, Lane 3, and Lane 1 docs record npm RC and GitHub artifact selected-path evidence
+  - publish, tag, npm promotion, GitHub release creation, and expectedIntegrity fill remain operator-only
 next_if_done: Continue to the next safe RC readiness milestone without publishing or tagging; CRM fixture dry-run remains gated on a copied dedicated payload and cleanup plan.
 progress:
-  - "2026-05-12T10:49:17Z ran `OPENCLAW_CLIQ_OPERATOR_PUBLISH_PATH=local_operator_rc OPENCLAW_CLIQ_DECISION_PACKET_RUN_ID=20260512T104813Z-local-operator-rc-selection ops/scripts/openclaw_cliq_rc_operator_decision_packet.sh`."
-  - "2026-05-12T10:49:17Z decision packet returned `operator_publish_selection_ready`, no blockers, `selectedPublishPath=local_operator_rc`, `selectedPublishPathReview.operatorOnly=true`, `requiresExplicitOperatorApproval=true`, `agentMayExecute=false`, all `reportsReady=true`, and `agentMayExecuteSelectedPath=false`."
-  - "2026-05-12T10:49:17Z no publish, tag, npm promotion, GitHub release, expectedIntegrity fill, Zoho call, or CRM live write was performed."
-  - "2026-05-12T10:54:43Z verification passed: OpenClaw Cliq RC checklist/operator handoff contract, Lane 3 required paths/troubleshooting contract, and markdown update -> 5 passed in 0.02s; ruff format/check, YAML parse, and `git diff --check` passed."
-next_step: Commit and push the local/operator RC selected-path evidence slice, then continue to the next safe RC readiness milestone.
+  - "2026-05-12T11:06:43Z ran `OPENCLAW_CLIQ_OPERATOR_PUBLISH_PATH=npm_rc_publish OPENCLAW_CLIQ_DECISION_PACKET_RUN_ID=20260512T110613Z-npm-rc-selection ops/scripts/openclaw_cliq_rc_operator_decision_packet.sh`."
+  - "2026-05-12T11:06:43Z npm RC decision packet returned `operator_publish_selection_ready`, no blockers, `selectedPublishPath=npm_rc_publish`, command preview `npm publish ... --tag rc --access public`, `fillsExpectedIntegrityAfterPublish=true`, `requiresExplicitOperatorApproval=true`, all `reportsReady=true`, and `agentMayExecuteSelectedPath=false`."
+  - "2026-05-12T11:07:08Z ran `OPENCLAW_CLIQ_OPERATOR_PUBLISH_PATH=github_release_artifact OPENCLAW_CLIQ_DECISION_PACKET_RUN_ID=20260512T110613Z-github-release-selection ops/scripts/openclaw_cliq_rc_operator_decision_packet.sh`."
+  - "2026-05-12T11:07:08Z GitHub artifact decision packet returned `operator_publish_selection_ready`, no blockers, `selectedPublishPath=github_release_artifact`, command preview `gh release create <operator-approved-rc-tag> ... --prerelease --notes-file <release-notes-draft-path>`, `requiresExplicitOperatorApproval=true`, all `reportsReady=true`, and `agentMayExecuteSelectedPath=false`."
+  - "2026-05-12T11:07:08Z no publish, tag, npm promotion, GitHub release, expectedIntegrity fill, Zoho call, or CRM live write was performed."
+  - "2026-05-12T11:14:45Z verification passed: OpenClaw Cliq RC checklist/operator handoff contract, Lane 3 required paths/troubleshooting contract, and markdown update -> 5 passed in 0.02s; ruff format/check, YAML parse, and `git diff --check` passed."
+next_step: Commit and push the npm/GitHub selected-path evidence slice, then continue to the next safe RC readiness milestone.

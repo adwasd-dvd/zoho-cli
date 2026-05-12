@@ -156,8 +156,10 @@ HOME="$PWD/.tmp/openclaw-home-2026.5.3-1" \
 Use a Bot Message, Mention, Participation, or Context Handler for inbound
 OpenClaw channel messages. Mention Handler is the best first live smoke because
 Zoho provides `message`, `mentions`, `user`, and `chat` objects to the Deluge
-script. Full Deluge templates for all four accepted handlers live in
-`docs/releases/OPENCLAW_CLIQ_BOT_HANDLER_TEMPLATES.md`.
+script. For direct Bot DMs, use the Message Handler template that wraps Zoho's
+text-like `message` value into an explicit `msg` map with `text`, `messageId`,
+`senderId`, `chatId`, and `chatType`. Full Deluge templates for all four
+accepted handlers live in `docs/releases/OPENCLAW_CLIQ_BOT_HANDLER_TEMPLATES.md`.
 
 ```deluge
 response = Map();
@@ -181,8 +183,15 @@ return response;
 
 `parameters:payload.toString()` is also accepted by the current plugin parser,
 but `body:payload.toString()` is the clearer Deluge shape for a JSON request.
-Rotate any webhook secret that appeared in screenshots, chat, logs, or docs
-before using a real Bot.
+The webhook parser also tolerates Deluge Map-string bodies such as
+`{handler=message, message=..., user={...}}` when Zoho does not emit strict
+JSON. Rotate any webhook secret that appeared in screenshots, chat, logs, or
+docs before using a real Bot.
+
+If the OpenClaw audit log shows `handlerKind:"message"` with
+`reason:"invalid_payload"`, the public route and secret are already working; the
+next fix is to re-paste the wrapped Message Handler template so OpenClaw can
+read both text and sender/chat identity.
 
 For RC, Welcome, Incoming Webhook, Call, and Menu handlers are ignored with a
 200 `unsupported_handler` response so Zoho does not retry unrelated bot events.

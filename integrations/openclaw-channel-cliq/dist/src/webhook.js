@@ -93,6 +93,167 @@ function parseUrlEncodedBody(value) {
     }
     return record;
 }
+function splitDelugeEntries(value) {
+    const entries = [];
+    let depth = 0;
+    let quote;
+    let start = 0;
+    let escaped = false;
+    for (let index = 0; index < value.length; index += 1) {
+        const char = value[index];
+        if (!char)
+            continue;
+        if (quote) {
+            if (escaped) {
+                escaped = false;
+                continue;
+            }
+            if (char === "\\") {
+                escaped = true;
+                continue;
+            }
+            if (char === quote)
+                quote = undefined;
+            continue;
+        }
+        if (char === '"' || char === "'") {
+            quote = char;
+            continue;
+        }
+        if (char === "{" || char === "[") {
+            depth += 1;
+            continue;
+        }
+        if (char === "}" || char === "]") {
+            depth = Math.max(0, depth - 1);
+            continue;
+        }
+        if (char === "," && depth === 0) {
+            entries.push(value.slice(start, index).trim());
+            start = index + 1;
+        }
+    }
+    entries.push(value.slice(start).trim());
+    return entries.filter(Boolean);
+}
+function findDelugeEntrySeparator(value) {
+    let depth = 0;
+    let quote;
+    let escaped = false;
+    for (let index = 0; index < value.length; index += 1) {
+        const char = value[index];
+        if (!char)
+            continue;
+        if (quote) {
+            if (escaped) {
+                escaped = false;
+                continue;
+            }
+            if (char === "\\") {
+                escaped = true;
+                continue;
+            }
+            if (char === quote)
+                quote = undefined;
+            continue;
+        }
+        if (char === '"' || char === "'") {
+            quote = char;
+            continue;
+        }
+        if (char === "{" || char === "[") {
+            depth += 1;
+            continue;
+        }
+        if (char === "}" || char === "]") {
+            depth = Math.max(0, depth - 1);
+            continue;
+        }
+        if (depth === 0 && (char === "=" || char === ":"))
+            return index;
+    }
+    return -1;
+}
+function stripDelugeQuotes(value) {
+    const trimmed = value.trim();
+    if (trimmed.length < 2)
+        return trimmed;
+    const first = trimmed[0];
+    const last = trimmed[trimmed.length - 1];
+    if ((first === '"' || first === "'") && first === last) {
+        return trimmed
+            .slice(1, -1)
+            .replace(/\\(["'\\])/g, "$1")
+            .trim();
+    }
+    return trimmed;
+}
+function parseDelugeListString(value) {
+    const trimmed = value.trim();
+    if (!trimmed.startsWith("[") || !trimmed.endsWith("]"))
+        return undefined;
+    const inner = trimmed.slice(1, -1).trim();
+    if (!inner)
+        return [];
+    return splitDelugeEntries(inner).map(parseDelugeScalar);
+}
+function parseDelugeScalar(value) {
+    const trimmed = value.trim();
+    if (!trimmed)
+        return "";
+    if (trimmed.startsWith("{") ||
+        trimmed.startsWith("[") ||
+        trimmed.startsWith('"')) {
+        try {
+            return JSON.parse(trimmed);
+        }
+        catch {
+            // Deluge Map#toString output is often JSON-like but not strict JSON.
+        }
+    }
+    const parsedMap = parseDelugeMapString(trimmed);
+    if (parsedMap)
+        return parsedMap;
+    const parsedList = parseDelugeListString(trimmed);
+    if (parsedList)
+        return parsedList;
+    const unquoted = stripDelugeQuotes(trimmed);
+    if (/^null$/i.test(unquoted))
+        return null;
+    if (/^true$/i.test(unquoted))
+        return true;
+    if (/^false$/i.test(unquoted))
+        return false;
+    return unquoted;
+}
+function parseDelugeMapString(value) {
+    const trimmed = value.trim();
+    if (!trimmed.startsWith("{") || !trimmed.endsWith("}"))
+        return undefined;
+    const inner = trimmed.slice(1, -1).trim();
+    if (!inner)
+        return {};
+    if (findDelugeEntrySeparator(inner) < 0)
+        return undefined;
+    const record = {};
+    let lastKey;
+    for (const entry of splitDelugeEntries(inner)) {
+        const separator = findDelugeEntrySeparator(entry);
+        if (separator < 0) {
+            if (lastKey && typeof record[lastKey] === "string") {
+                record[lastKey] = `${record[lastKey]}, ${entry.trim()}`;
+                continue;
+            }
+            return undefined;
+        }
+        const key = stripDelugeQuotes(entry.slice(0, separator));
+        if (!key)
+            return undefined;
+        record[key] = parseDelugeScalar(entry.slice(separator + 1));
+        lastKey = key;
+    }
+    return record;
+}
 export function parseCliqWebhookPayload(body, contentType) {
     if (Buffer.isBuffer(body)) {
         return parseCliqWebhookPayload(body.toString("utf8"), contentType);
@@ -112,6 +273,9 @@ export function parseCliqWebhookPayload(body, contentType) {
         : undefined;
     if (parsedJson !== undefined)
         return parsedJson;
+    const parsedDelugeMap = parseDelugeMapString(trimmed);
+    if (parsedDelugeMap)
+        return parsedDelugeMap;
     const parsedForm = parseUrlEncodedBody(trimmed);
     if (parsedForm)
         return parsedForm;

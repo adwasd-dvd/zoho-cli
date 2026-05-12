@@ -191,6 +191,8 @@ same allowlist, mention, and employee policy gates.
 
 Use `../../docs/releases/OPENCLAW_CLIQ_BOT_HANDLER_TEMPLATES.md` for
 copy-ready Message, Mention, Participation, and Context Handler Deluge code.
+Direct Bot DMs should use the Message Handler template that wraps Zoho's
+text-like `message` value into an explicit message map before posting.
 
 ```deluge
 response = Map();
@@ -213,8 +215,11 @@ return response;
 ```
 
 `parameters:payload.toString()` is tolerated for Deluge compatibility, but
-`body:payload.toString()` keeps the HTTP JSON intent clearer. Rotate any
-secret that was pasted into screenshots or chat before using a real Bot.
+`body:payload.toString()` keeps the HTTP JSON intent clearer. The webhook parser
+also accepts Deluge Map-string bodies such as
+`{handler=message, message=..., user={...}}` when Zoho does not emit strict
+JSON. Rotate any secret that was pasted into screenshots or chat before using a
+real Bot.
 
 The RC intake accepts Message, Mention, Participation, and Context handlers.
 Welcome, Incoming Webhook, Call, and Menu handlers are intentionally ignored

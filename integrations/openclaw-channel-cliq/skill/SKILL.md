@@ -275,8 +275,11 @@ classified error kind, and redacted stderr summary.
 Use Zoho Cliq Bot Message, Mention, Participation, or Context handlers for live
 inbound smoke. POST JSON to `webhookPath` with `X-Cliq-Webhook-Secret`; keep the
 secret in `ZOHO_CLIQ_WEBHOOK_SECRET` and rotate any value that was exposed in
-chat or screenshots. Welcome, Incoming Webhook, Call, and Menu handlers are
-ignored until a later slice assigns explicit OpenClaw workflows. After saving a
-handler, verify redacted audit logs show `nativeDispatch.agentId` matching the
-intended OpenClaw route binding and exactly one outbound Cliq reply for the
-trusted smoke message.
+chat or screenshots. For direct Bot DMs, use the wrapped Message Handler
+template from `docs/releases/OPENCLAW_CLIQ_BOT_HANDLER_TEMPLATES.md`; Zoho can
+pass `message` as text, so the handler should post an explicit message map with
+`text`, `messageId`, `senderId`, `chatId`, and `chatType`. Welcome, Incoming
+Webhook, Call, and Menu handlers are ignored until a later slice assigns
+explicit OpenClaw workflows. After saving a handler, verify redacted audit logs
+show `nativeDispatch.agentId` matching the intended OpenClaw route binding and
+exactly one outbound Cliq reply for the trusted smoke message.

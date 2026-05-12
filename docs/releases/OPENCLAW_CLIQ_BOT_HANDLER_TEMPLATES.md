@@ -3,7 +3,7 @@
 This runbook gives operator-copyable Deluge templates for connecting a real
 Zoho Cliq Bot to the native OpenClaw `cliq` channel webhook at `/webhooks/cliq`.
 
-Updated: `2026-05-11T18:29:53Z`.
+Updated: `2026-05-12T02:10:41Z`.
 
 Official references:
 
@@ -32,15 +32,29 @@ native OpenClaw agent turns yet.
 
 Use this for direct Bot DMs and Bot message subscriptions. Zoho passes
 `message`, `attachments`, `mentions`, `links`, `user`, `chat`, and `location` to
-the handler.
+the handler. In the direct Bot Message Handler, Zoho often exposes `message` as
+the text value itself, so wrap it into an explicit message map before posting to
+OpenClaw.
 
 ```deluge
 response = Map();
 webhook_url = "https://<your-tunnel-or-gateway>/webhooks/cliq";
 
+sender_id = ifnull(user.get("id"),ifnull(user.get("zuid"),ifnull(user.get("email"),"")));
+chat_id = ifnull(chat.get("id"),ifnull(chat.get("chat_id"),ifnull(chat.get("chatId"),sender_id)));
+chat_type = ifnull(chat.get("type"),"direct");
+
+msg = Map();
+msg.put("text",message.toString());
+msg.put("messageId","zoho-message-" + zoho.currenttime.toString("yyyyMMddHHmmssSSS"));
+msg.put("senderId",sender_id);
+msg.put("userId",sender_id);
+msg.put("chatId",chat_id);
+msg.put("chatType",chat_type);
+
 payload = Map();
 payload.put("handler","message");
-payload.put("message",message);
+payload.put("message",msg);
 payload.put("attachments",attachments);
 payload.put("mentions",mentions);
 payload.put("links",links);
@@ -62,6 +76,14 @@ return response;
 For a one-message smoke test, temporarily add
 `response.put("text","received");` before `return response;`. Remove that line
 for normal operation so OpenClaw owns the visible reply.
+
+If the audit log shows `handlerKind:"message"` with
+`reason:"invalid_payload"`, the handler is reaching OpenClaw but the posted
+shape did not include a usable message text plus sender/chat identity. Re-paste
+the wrapped `msg` template above before debugging the tunnel or secret.
+The webhook parser also tolerates Deluge Map-string bodies such as
+`{handler=message, message=..., user={...}}` when Zoho does not emit strict
+JSON.
 
 ## Mention Handler
 

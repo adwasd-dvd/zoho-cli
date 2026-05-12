@@ -1533,6 +1533,24 @@ assert.equal(direct.accepted, true);
 assert.equal(direct.event.chatType, "direct");
 assert.equal(direct.event.peerId, "user:U2");
 
+const delugeMessagePayload = parseCliqWebhookPayload(
+  "{handler=message, message=direct from Deluge, user={id=U2, name=Alice}, chat={id=DM-DELUGE, type=direct}}",
+  "application/json",
+);
+const delugeDirect = await processCliqWebhookPayload({
+  cfg,
+  account,
+  payload: delugeMessagePayload,
+  dedupe,
+  turnLedger,
+});
+assert.equal(delugeDirect.accepted, true);
+assert.equal(delugeDirect.event.chatType, "direct");
+assert.equal(delugeDirect.event.peerId, "user:U2");
+assert.equal(delugeDirect.event.chatId, "DM-DELUGE");
+assert.equal(delugeDirect.event.text, "direct from Deluge");
+assert.match(delugeDirect.event.messageId, /^webhook-/);
+
 const participation = await processCliqWebhookPayload({
   cfg,
   account,

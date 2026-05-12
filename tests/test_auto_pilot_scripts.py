@@ -68,6 +68,9 @@ OPENCLAW_CLIQ_RC_HANDOFF_MANIFEST_SCRIPT = (
 OPENCLAW_CLIQ_RC_SOURCE_DRIFT_CHECK_SCRIPT = (
     REPO_ROOT / "ops" / "scripts" / "openclaw_cliq_rc_source_drift_check.sh"
 )
+OPENCLAW_CLIQ_RC_SELECTION_REVIEW_SCRIPT = (
+    REPO_ROOT / "ops" / "scripts" / "openclaw_cliq_rc_operator_selection_review.sh"
+)
 
 
 def test_export_scope_recheck_runner_propagates_probe_exit_codes(
@@ -1572,6 +1575,188 @@ def test_openclaw_cliq_rc_source_drift_check_blocks_package_drift(
         "integrations/openclaw-channel-cliq/src/runtime.ts"
     ]
     assert payload["nextAction"] == "repack_current_head_before_operator_publish"
+
+
+def _write_openclaw_cliq_publish_plan_for_selection_review(
+    tmp_path: Path,
+    *,
+    selected_path: str | None,
+) -> Path:
+    publish_plan = tmp_path / "publish-plan.json"
+    publish_plan.write_text(
+        json.dumps(
+            {
+                "status": "operator_publish_plan_ready",
+                "selectedPublishPath": selected_path,
+                "package": {
+                    "name": "@adwasd/openclaw-zoho-cliq",
+                    "version": "0.4.0-rc.1",
+                    "expectedIntegrityState": "placeholder",
+                },
+                "artifact": {
+                    "filename": "adwasd-openclaw-zoho-cliq-0.4.0-rc.1.tgz",
+                    "shasum": "abc123",
+                    "integrity": "sha512-test",
+                    "pathHint": ".tmp/openclaw-cliq-rc-pack/test.tgz",
+                },
+                "evidence": {
+                    "operatorBundle": {"file": "operator-bundle.json"},
+                    "releaseNotesDraft": {"file": "release-notes.md"},
+                },
+                "publishPaths": [
+                    {
+                        "id": "local_operator_rc",
+                        "operatorOnly": True,
+                        "fillsExpectedIntegrity": False,
+                    },
+                    {
+                        "id": "npm_rc_publish",
+                        "operatorOnly": True,
+                        "fillsExpectedIntegrityAfterPublish": True,
+                        "commandPreview": [
+                            "npm",
+                            "publish",
+                            ".tmp/openclaw-cliq-rc-pack/test.tgz",
+                            "--tag",
+                            "rc",
+                            "--access",
+                            "public",
+                        ],
+                    },
+                ],
+                "blockedAgentActions": [
+                    "npm_publish",
+                    "git_tag",
+                    "github_release_create",
+                    "expectedIntegrity_fill",
+                ],
+                "releasePosture": {
+                    "agentMayPublish": False,
+                    "agentMayTag": False,
+                    "agentMayCreateGithubRelease": False,
+                    "agentMayFillExpectedIntegrity": False,
+                    "agentMayExecutePlan": False,
+                },
+            }
+        ),
+        encoding="utf-8",
+    )
+    return publish_plan
+
+
+def _write_openclaw_cliq_source_drift_for_selection_review(tmp_path: Path) -> Path:
+    source_drift = tmp_path / "source-drift.json"
+    source_drift.write_text(
+        json.dumps(
+            {
+                "status": "package_source_unchanged",
+                "source": {
+                    "sourceCommit": "SRC",
+                    "headCommit": "HEAD",
+                    "packagePathFilter": "integrations/openclaw-channel-cliq",
+                    "repoChangedSinceManifest": True,
+                },
+                "packageDrift": {
+                    "packageChangedSinceManifest": False,
+                    "dirtyFileCount": 0,
+                },
+            }
+        ),
+        encoding="utf-8",
+    )
+    return source_drift
+
+
+def test_openclaw_cliq_rc_operator_selection_review_indexes_selected_path(
+    tmp_path: Path,
+) -> None:
+    publish_plan = _write_openclaw_cliq_publish_plan_for_selection_review(
+        tmp_path,
+        selected_path="npm_rc_publish",
+    )
+    source_drift = _write_openclaw_cliq_source_drift_for_selection_review(tmp_path)
+    review_file = tmp_path / "selection-review.json"
+
+    result = subprocess.run(
+        ["bash", str(OPENCLAW_CLIQ_RC_SELECTION_REVIEW_SCRIPT)],
+        cwd=REPO_ROOT,
+        env={
+            **os.environ,
+            "OPENCLAW_CLIQ_PUBLISH_PLAN_FILE": str(publish_plan),
+            "OPENCLAW_CLIQ_SOURCE_DRIFT_REPORT_FILE": str(source_drift),
+            "OPENCLAW_CLIQ_SELECTION_REVIEW_FILE": str(review_file),
+            "OPENCLAW_CLIQ_SELECTION_REVIEW_RUN_ID": "unit-selection-ready",
+        },
+        capture_output=True,
+        text=True,
+        check=False,
+    )
+
+    output = f"{result.stdout}\n{result.stderr}"
+    assert result.returncode == 0, output
+    assert str(tmp_path) not in result.stdout
+    payload = json.loads(result.stdout)
+    assert payload["status"] == "operator_publish_selection_ready"
+    assert payload["blockers"] == []
+    assert payload["selectedPublishPath"] == "npm_rc_publish"
+    assert payload["selectedPublishPathReview"] == {
+        "id": "npm_rc_publish",
+        "operatorOnly": True,
+        "fillsExpectedIntegrity": False,
+        "fillsExpectedIntegrityAfterPublish": True,
+        "commandPreview": [
+            "npm",
+            "publish",
+            ".tmp/openclaw-cliq-rc-pack/test.tgz",
+            "--tag",
+            "rc",
+            "--access",
+            "public",
+        ],
+        "agentMayExecute": False,
+        "requiresExplicitOperatorApproval": True,
+    }
+    assert payload["evidenceFiles"]["publishPlan"] == publish_plan.name
+    assert payload["evidenceFiles"]["sourceDrift"] == source_drift.name
+    assert payload["sourceDrift"]["packageChangedSinceManifest"] is False
+    assert "npm_publish" in payload["safety"]["blockedAgentActions"]
+    assert payload["safety"]["agentMayExecuteSelectedPath"] is False
+    assert payload["nextAction"] == "operator_review_selected_publish_path"
+    assert json.loads(review_file.read_text()) == payload
+
+
+def test_openclaw_cliq_rc_operator_selection_review_requires_selected_path(
+    tmp_path: Path,
+) -> None:
+    publish_plan = _write_openclaw_cliq_publish_plan_for_selection_review(
+        tmp_path,
+        selected_path=None,
+    )
+    source_drift = _write_openclaw_cliq_source_drift_for_selection_review(tmp_path)
+
+    result = subprocess.run(
+        ["bash", str(OPENCLAW_CLIQ_RC_SELECTION_REVIEW_SCRIPT)],
+        cwd=REPO_ROOT,
+        env={
+            **os.environ,
+            "OPENCLAW_CLIQ_PUBLISH_PLAN_FILE": str(publish_plan),
+            "OPENCLAW_CLIQ_SOURCE_DRIFT_REPORT_FILE": str(source_drift),
+            "OPENCLAW_CLIQ_SELECTION_REVIEW_FILE": str(tmp_path / "review.json"),
+            "OPENCLAW_CLIQ_SELECTION_REVIEW_RUN_ID": "unit-selection-missing",
+        },
+        capture_output=True,
+        text=True,
+        check=False,
+    )
+
+    output = f"{result.stdout}\n{result.stderr}"
+    assert result.returncode == 1, output
+    payload = json.loads(result.stdout)
+    assert payload["status"] == "blocked"
+    assert payload["blockers"] == ["publish_path_not_selected"]
+    assert payload["selectedPublishPath"] is None
+    assert payload["selectedPublishPathReview"] is None
+    assert payload["nextAction"] == "operator_select_publish_path"
 
 
 def _write_openclaw_cliq_test_tarball(

@@ -140,6 +140,13 @@ Use this skill as the default operating contract for an OpenClaw agent acting li
   `package_untracked_files` as a signal to rebuild the RC artifact before
   operator publish. The check is read-only and does not publish, tag, or fill
   `openclaw.install.expectedIntegrity`.
+  If the operator selects a publish path, rerun
+  `ops/scripts/openclaw_cliq_rc_publish_plan.sh` with
+  `OPENCLAW_CLIQ_OPERATOR_PUBLISH_PATH` set, then run
+  `ops/scripts/openclaw_cliq_rc_operator_selection_review.sh`; require
+  `operator_publish_selection_ready` before the operator executes any publish
+  command. Treat `publish_path_not_selected` as a normal waiting state and keep
+  `agentMayExecuteSelectedPath=false`.
 - For CRM SDK work, run `zoho crm sdk-status` first. Treat
   `zohocrmsdk8_0==5.0.0` as optional `zoho-cli[crm-sdk]` readiness, keep the
   current HTTP adapter as default, use `zoho_cli/crm_sdk.py` only as the

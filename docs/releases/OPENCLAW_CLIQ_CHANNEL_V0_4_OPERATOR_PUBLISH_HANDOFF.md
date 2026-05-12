@@ -63,6 +63,14 @@ OPENCLAW_CLIQ_HANDOFF_MANIFEST_RUN_ID="$(date -u +%Y%m%dT%H%M%SZ)-operator-manif
 OPENCLAW_CLIQ_SOURCE_DRIFT_RUN_ID="$(date -u +%Y%m%dT%H%M%SZ)-source-drift" \
   ops/scripts/openclaw_cliq_rc_source_drift_check.sh
 
+# Optional after the operator chooses one publish path:
+OPENCLAW_CLIQ_OPERATOR_PUBLISH_PATH=<local_operator_rc|npm_rc_publish|github_release_artifact> \
+OPENCLAW_CLIQ_PUBLISH_PLAN_RUN_ID="$(date -u +%Y%m%dT%H%M%SZ)-selected-path" \
+  ops/scripts/openclaw_cliq_rc_publish_plan.sh
+
+OPENCLAW_CLIQ_SELECTION_REVIEW_RUN_ID="$(date -u +%Y%m%dT%H%M%SZ)-selection-review" \
+  ops/scripts/openclaw_cliq_rc_operator_selection_review.sh
+
 ./.venv/bin/python -m pytest -q \
   tests/test_auto_pilot_scripts.py::test_openclaw_cliq_rc_promotion_check_requires_ready_local_evidence \
   tests/test_auto_pilot_scripts.py::test_openclaw_cliq_rc_promotion_check_blocks_published_integrity_too_early \
@@ -71,6 +79,7 @@ OPENCLAW_CLIQ_SOURCE_DRIFT_RUN_ID="$(date -u +%Y%m%dT%H%M%SZ)-source-drift" \
   tests/test_auto_pilot_scripts.py::test_openclaw_cliq_rc_publish_plan_uses_ready_bundle_and_draft \
   tests/test_auto_pilot_scripts.py::test_openclaw_cliq_rc_operator_handoff_manifest_indexes_ready_packet \
   tests/test_auto_pilot_scripts.py::test_openclaw_cliq_rc_source_drift_check_allows_non_package_head_drift \
+  tests/test_auto_pilot_scripts.py::test_openclaw_cliq_rc_operator_selection_review_indexes_selected_path \
   tests/test_auto_pilot_scripts.py::test_openclaw_cliq_rc_artifact_check_verifies_tarball_contract \
   tests/test_auto_pilot_scripts.py::test_openclaw_cliq_rc_install_smoke_installs_verified_artifact \
   tests/test_openclaw_channel_contract.py::test_openclaw_cliq_channel_rc_checklist_has_cut_contract \
@@ -95,6 +104,11 @@ Expected local pre-publish posture:
 - source drift check reports `package_source_unchanged`; it may report
   `repoChangedSinceManifest=true` after CRM/docs/state commits, but must keep
   `packageDrift.packageChangedSinceManifest=false`
+- before the operator chooses a path, selection review blocks with
+  `publish_path_not_selected` and `nextAction=operator_select_publish_path`
+- after the operator chooses a path and reruns the publish plan, selection
+  review reports `operator_publish_selection_ready`,
+  `requiresExplicitOperatorApproval=true`, and `agentMayExecuteSelectedPath=false`
 - `npmPromotionRequiresOperatorApproval=true`
 
 The promotion preflight is intentionally strict: `ready_for_operator_publish`
@@ -119,6 +133,10 @@ compares the handoff manifest source commit to current `HEAD` and blocks with
 `integrations/openclaw-channel-cliq/` changed after the manifest. If only
 CRM/docs/state files changed, it reports `package_source_unchanged` so the
 operator knows the RC tarball is still current for package code.
+The selected path review is also read-only. It combines the selected publish
+plan plus source drift guard into one JSON packet, but it never runs the
+selected command. It exists so agents can help validate the operator's chosen
+path without crossing the publish/tag/release boundary.
 
 ## Operator publish choices
 

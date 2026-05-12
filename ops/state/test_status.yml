@@ -1,10 +1,14 @@
-last_run_at: "2026-05-12T06:22:45Z"
+last_run_at: "2026-05-12T06:39:48Z"
 last_result: passing
-current_focus: crm-016-cleanup-plan-quality-gate
+current_focus: cliq-channel-473-bot-handler-trigger-packet
 suites:
   unit:
     status: passing
     notes:
+      - "cliq-channel-473 Bot handler trigger packet completed at 2026-05-12T06:39:48Z"
+      - "added `ops/scripts/openclaw_cliq_handler_trigger_packet.sh`; it validates the public `/webhooks/cliq` URL, selected `ZOHO_CLIQ_HANDLER_TARGETS`, accepted handler save targets, Deluge `invokeurl` body/header shape, and rerun commands while keeping raw webhook payloads, message bodies, reply bodies, callback response bodies, and secret values out of JSON output"
+      - "ZOHO_CLIQ_HANDLER_PACKET_RUN_ID=20260512T063342Z-handler-trigger-live ZOHO_CLIQ_PUBLIC_WEBHOOK_URL=https://cliq.hpyio.com/webhooks/cliq ZOHO_CLIQ_HANDLER_TARGETS=mention,message ZOHO_CLIQ_EXPECTED_BOT_NAME=oldsix ops/scripts/openclaw_cliq_handler_trigger_packet.sh -> `handler_trigger_packet_ready`, selected Mention/Message handler save targets, `nextAction=paste_or_recheck_zoho_bot_handlers`, and no stored secret value"
+      - "bash -n ops/scripts/openclaw_cliq_handler_trigger_packet.sh ops/scripts/openclaw_cliq_bot_no_response_packet.sh ops/scripts/openclaw_cliq_live_ingress_diagnostic.sh ops/scripts/openclaw_cliq_public_callback_smoke.sh -> passed; focused handler packet/RC checklist/markdown/Lane 3 tests -> 6 passed in 0.23s; ruff format/check passed after formatting `tests/test_auto_pilot_scripts.py`; YAML parse for project/module_status/test_status/active_task -> YAML_PARSE_OK; git diff --check -> passed"
       - "crm-016 cleanup plan quality gate completed at 2026-05-12T06:22:45Z"
       - "hardened `ops/scripts/crm_fixture_payload_preflight.sh` so vague cleanup plans block locally with `cleanup_plan_too_short`, `cleanup_plan_action_missing`, and `cleanup_plan_target_missing`; output stores only redacted cleanup metadata (`lengthBucket`, `actionPresent`, `targetPresent`, `qualityReady`, `rawCleanupPlanStored=false`)"
       - "updated `ops/scripts/crm_fixture_operator_packet.sh` so cleanup quality blockers return `nextAction=improve_cleanup_plan` before any Zoho-backed smoke"

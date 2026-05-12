@@ -319,6 +319,14 @@ Human setup checkpoints:
   `zoho cliq chats` plus `zoho cliq context`.
 - Real Zoho Bot handler edits use the Deluge templates and placeholders in
   `docs/releases/OPENCLAW_CLIQ_BOT_HANDLER_TEMPLATES.md`.
+- If public callback smoke is verified but the no-response packet reports
+  `no_recent_webhook_ingress`, run
+  `ops/scripts/openclaw_cliq_handler_trigger_packet.sh` with
+  `ZOHO_CLIQ_PUBLIC_WEBHOOK_URL` and `ZOHO_CLIQ_HANDLER_TARGETS` before editing
+  Zoho again. Require `handler_trigger_packet_ready`; use the packet's
+  `handlers.saveTargets`, `delugeContract`, and `operatorChecklist` to verify
+  the selected Message/Mention/Participation/Context handlers without storing
+  secrets or raw message bodies.
 - Direct Bot DMs use the wrapped Message Handler template because Zoho may pass
   `message` as text; if logs show `handlerKind:"message"` plus
   `reason:"invalid_payload"`, fix the handler payload shape before debugging the

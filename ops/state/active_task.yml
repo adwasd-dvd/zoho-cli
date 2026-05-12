@@ -1,19 +1,22 @@
-id: crm-016
-title: harden CRM fixture cleanup plan quality gate
-module: crm
+id: cliq-channel-473
+title: add Bot handler trigger packet
+module: openclaw_cliq_channel
 stage: completed
 status: completed
 owner: coder
-updated_at: '2026-05-12T06:22:45Z'
+updated_at: '2026-05-12T06:39:48Z'
 execution_mode: turbo_20x
 throughput_policy_ref: ops/state/execution_policy.yml
 success_criteria:
-  - block vague CRM fixture cleanup plans before any Zoho-backed dry-run smoke
-  - report cleanup quality as redacted metadata only
-  - propagate cleanup quality blockers through the autonomous operator packet
-  - keep normal `zoho crm upsert --execute` and live fixture execution blocked
-next_if_done: Operator provides a dedicated CRM fixture payload and cleanup plan, then agents run `ops/scripts/crm_fixture_operator_packet.sh` and continue only if the packet reports `payload_preflight_ready` or `ready_for_operator_live_fixture`.
+  - turn Bot `no_recent_webhook_ingress` into a redacted handler paste/check packet
+  - validate public `/webhooks/cliq` URL shape and selected handler targets
+  - document Deluge `invokeurl` body/header contract without storing secrets
+  - keep native Cliq RC publish/tag/npm promotion behind operator approval
+next_if_done: If a fresh Bot message still has no reply, run `ops/scripts/openclaw_cliq_bot_no_response_packet.sh`; when it returns `fix_zoho_bot_handler_trigger`, run `ops/scripts/openclaw_cliq_handler_trigger_packet.sh` and use its checklist before editing Zoho handlers.
 progress:
+  - "2026-05-12T06:39:48Z cliq-channel-473 completed: added `ops/scripts/openclaw_cliq_handler_trigger_packet.sh`, a read-only packet that validates `ZOHO_CLIQ_PUBLIC_WEBHOOK_URL`, selected `ZOHO_CLIQ_HANDLER_TARGETS`, Deluge `invokeurl` body/header shape, handler save targets, and rerun commands while storing no webhook secret value, raw webhook payload, message body, reply body, or callback response body."
+  - "2026-05-12T06:42:53Z real handler trigger packet run: `ZOHO_CLIQ_HANDLER_PACKET_RUN_ID=20260512T063342Z-handler-trigger-live ZOHO_CLIQ_PUBLIC_WEBHOOK_URL=https://cliq.hpyio.com/webhooks/cliq ZOHO_CLIQ_HANDLER_TARGETS=mention,message ZOHO_CLIQ_EXPECTED_BOT_NAME=oldsix ops/scripts/openclaw_cliq_handler_trigger_packet.sh` returned `handler_trigger_packet_ready`, selected Mention and Message handlers, verified `/webhooks/cliq` URL shape, reported `secretPresentInCurrentEnv=true`, and kept `secretValueStored=false`."
+  - "2026-05-12T06:42:53Z handler trigger packet verification passed: shell syntax, focused handler packet tests, RC checklist contract marker, markdown update, Lane 3 required paths/troubleshooting contract, ruff format/check, YAML parse, and `git diff --check` all passed."
   - "2026-05-12T06:22:45Z crm-016 completed: `ops/scripts/crm_fixture_payload_preflight.sh` now blocks vague cleanup plans with `cleanup_plan_too_short`, `cleanup_plan_action_missing`, and `cleanup_plan_target_missing`, while reporting only redacted metadata: `lengthBucket`, `actionPresent`, `targetPresent`, `qualityReady`, and `rawCleanupPlanStored=false`."
   - "2026-05-12T06:22:45Z `ops/scripts/crm_fixture_operator_packet.sh` now maps cleanup quality blockers to `nextAction=improve_cleanup_plan`, so autonomous runs stop before any Zoho-backed dry-run smoke when the cleanup plan is not specific enough."
   - "2026-05-12T06:22:31Z local vague cleanup probe with a dedicated single-record Leads payload and cleanup plan `later` blocked with `cleanup_plan_too_short`, `cleanup_plan_action_missing`, `cleanup_plan_target_missing`, `cleanup.qualityReady=false`, and `nextAction=improve_cleanup_plan`; no Zoho call or CRM write was attempted."

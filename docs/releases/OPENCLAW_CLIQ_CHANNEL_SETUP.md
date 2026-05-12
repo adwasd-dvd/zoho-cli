@@ -277,6 +277,25 @@ handler event dispatched and delivered at least one reply. The packet and
 diagnostic do not store raw webhook payloads, message bodies, reply bodies,
 callback response bodies, or secrets.
 
+When `nextAction=fix_zoho_bot_handler_trigger`, generate the copy/check packet
+before changing Zoho:
+
+```bash
+ZOHO_CLIQ_PUBLIC_WEBHOOK_URL=https://cliq.hpyio.com/webhooks/cliq \
+ZOHO_CLIQ_HANDLER_TARGETS=mention,message \
+ZOHO_CLIQ_EXPECTED_BOT_NAME=oldsix \
+  ops/scripts/openclaw_cliq_handler_trigger_packet.sh
+```
+
+The packet validates that the public URL is HTTPS and ends in `/webhooks/cliq`,
+checks that selected handler targets are one of Message, Mention,
+Participation, or Context, points to the matching sections in
+`docs/releases/OPENCLAW_CLIQ_BOT_HANDLER_TEMPLATES.md`, and repeats the Deluge
+contract: use `body:payload.toString()`, `Content-Type: application/json`, and
+`X-Cliq-Webhook-Secret` from `ZOHO_CLIQ_WEBHOOK_SECRET`. It reports whether a
+secret is available in the current environment, but it never stores the secret
+value, webhook payload, message body, response body, or reply body.
+
 ### Cloudflare Tunnel fast path
 
 When using Cloudflare Zero Trust Tunnels for the first RC smoke, create a route

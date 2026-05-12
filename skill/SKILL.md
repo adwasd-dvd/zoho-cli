@@ -75,6 +75,17 @@ Use this skill as the default operating contract for an OpenClaw agent acting li
   dispatched and delivered at least one reply. The diagnostic reads redacted
   OpenClaw audit logs only and must not print raw webhook payloads, message
   bodies, reply bodies, or secrets.
+- When the no-response packet returns `nextAction=fix_zoho_bot_handler_trigger`,
+  run `ops/scripts/openclaw_cliq_handler_trigger_packet.sh` with
+  `ZOHO_CLIQ_PUBLIC_WEBHOOK_URL` and optional `ZOHO_CLIQ_HANDLER_TARGETS`
+  before asking the operator to edit Zoho. Require
+  `kind=openclaw_cliq_handler_trigger_packet` and
+  `status=handler_trigger_packet_ready`; then use `handlers.saveTargets`,
+  `operatorChecklist`, and `delugeContract` to re-check Message/Mention
+  handlers. Treat `public_webhook_path_mismatch`,
+  `handler_targets_invalid`, and related blockers as setup errors. The packet
+  may report whether `ZOHO_CLIQ_WEBHOOK_SECRET` is present, but must keep
+  `redaction.secretsStored=false` and `delugeContract.secretValueStored=false`.
 - For native Cliq rollout smoke that must target a specific OpenClaw agent, set
   `ZOHO_CLIQ_EXPECTED_AGENT_ID` and optionally
   `ZOHO_CLIQ_EXPECTED_AGENT_MODEL`; use `ZOHO_CLIQ_ROUTE_BINDING_ONLY=1` for

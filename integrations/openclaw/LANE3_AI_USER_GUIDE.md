@@ -163,6 +163,16 @@ After sync, ensure the AI user follows:
     latest observed turn dispatched and delivered at least one reply. The
     packet and diagnostic keep raw webhook payloads, message bodies, reply
     bodies, callback response bodies, and secrets out of output/report JSON.
+  - when `openclaw_cliq_bot_no_response_packet` returns
+    `nextAction=fix_zoho_bot_handler_trigger`, run
+    `ops/scripts/openclaw_cliq_handler_trigger_packet.sh` with
+    `ZOHO_CLIQ_PUBLIC_WEBHOOK_URL` and optional
+    `ZOHO_CLIQ_HANDLER_TARGETS`; require
+    `status=handler_trigger_packet_ready` before using its
+    `handlers.saveTargets`, `delugeContract`, and `operatorChecklist` to guide
+    Zoho Message/Mention/Participation/Context handler edits. The packet must
+    keep `redaction.secretsStored=false` and
+    `delugeContract.secretValueStored=false`.
 - native channel RC pack preflight:
   - run `ops/scripts/openclaw_cliq_rc_pack.sh` from the repo root before cutting a local/operator or npm/GitHub RC artifact
   - keep generated tarballs under ignored `.tmp/openclaw-cliq-rc-pack`

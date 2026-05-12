@@ -225,6 +225,15 @@ one native OpenClaw turn and one Cliq reply.
 8. Verify one accepted webhook event, one native OpenClaw turn, one Cliq reply,
    and no duplicate dispatch in the turn ledger.
 
+If public callback smoke passes but the no-response packet reports
+`no_recent_webhook_ingress`, run
+`ops/scripts/openclaw_cliq_handler_trigger_packet.sh` with
+`ZOHO_CLIQ_PUBLIC_WEBHOOK_URL` and `ZOHO_CLIQ_HANDLER_TARGETS` before editing
+Zoho again. The packet gives a redacted, machine-readable checklist for the
+exact handler sections to paste, the expected `/webhooks/cliq` URL, the Deluge
+`invokeurl` `body:payload.toString()` contract, and the follow-up no-response
+packet command without storing webhook secrets or message bodies.
+
 ## Contract coverage
 
 `cliq-channel-421` adds runtime contract coverage for the four accepted handler

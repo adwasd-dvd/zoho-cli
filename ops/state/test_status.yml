@@ -1,10 +1,15 @@
-last_run_at: "2026-05-12T07:43:29Z"
+last_run_at: "2026-05-12T08:12:39Z"
 last_result: passing
-current_focus: cliq-channel-476-post-doc-sync-decision-evidence
+current_focus: crm-017-cleanup-selector-quality-gate
 suites:
   unit:
     status: passing
     notes:
+      - "crm-017 cleanup selector quality gate completed at 2026-05-12T08:01:55Z: CRM fixture payload preflight now reports `cleanup.selectorPresent` and blocks cleanup plans without a selector using `cleanup_plan_selector_missing` before any Zoho-backed smoke."
+      - "`ops/scripts/crm_fixture_operator_packet.sh` maps `cleanup_plan_selector_missing` to `nextAction=improve_cleanup_plan`, keeping `normalUpsertExecuteBlocked=true` and `agentMayExecuteLiveFixture=false`."
+      - "Focused crm-017 verification passed: selector preflight/operator packet tests plus Lane 3 CRM contract and markdown update -> 9 passed in 0.69s."
+      - "Broader crm-017 verification passed at 2026-05-12T08:08:39Z: bash -n for CRM fixture scripts; CRM fixture preflight/operator/readiness tests plus Lane 3 CRM contract and markdown update -> 11 passed, 73 deselected in 1.31s; ruff format/check passed."
+      - "Wider crm-017 verification passed at 2026-05-12T08:12:39Z: `tests/test_auto_pilot_scripts.py -k crm_fixture`, `tests/test_lane3_docs.py`, and `tests/test_markdown_update.py` -> 15 passed, 78 deselected in 2.23s; git diff --check passed."
       - "cliq-channel-476 post-doc-sync RC evidence started at 2026-05-12T07:38:24Z: RC checklist/README/Lane 3 contract now records postcommit source drift run `20260512T071842Z-rc-doc-sync-postcommit-source` and decision packet `20260512T071842Z-rc-doc-sync-postcommit-decision`, where repo docs/state moved HEAD to `49f2692d` but package drift stayed false."
       - "cliq-channel-476 verification passed at 2026-05-12T07:43:29Z: RC checklist contract, markdown update, Lane 3 required paths/troubleshooting contract -> 4 passed in 0.02s; ruff format/check, YAML parse, and git diff --check passed."
       - "cliq-channel-475 docs hygiene started at 2026-05-12T07:24:31Z: README, v0.4 RC checklist, Lane 3 skill index, and RC checklist contract markers now reflect cliq-channel-473/474 embedded handler-trigger diagnostics for Bot no-response triage."

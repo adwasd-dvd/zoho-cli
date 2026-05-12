@@ -426,6 +426,7 @@ def test_crm_sdk_adoption_contract_present() -> None:
         "payload_preflight_ready",
         "crm_fixture_operator_packet",
         "cleanup_plan_missing",
+        "cleanup_plan_selector_missing",
         "run_crm_fixture_live_smoke_dry_run",
         "required_fields_missing",
         "agentMayRunLiveFixture=false",

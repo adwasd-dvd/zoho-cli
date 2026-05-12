@@ -2459,7 +2459,7 @@ def test_crm_fixture_payload_preflight_blocks_template_payload(
         env={
             **os.environ,
             "ZOHO_CRM_FIXTURE_PAYLOAD_FILE": str(payload_file),
-            "ZOHO_CRM_FIXTURE_CLEANUP_PLAN": "delete the fixture record after validation",
+            "ZOHO_CRM_FIXTURE_CLEANUP_PLAN": "delete the fixture record by fixture email after validation",
             "ZOHO_CRM_FIXTURE_PREFLIGHT_REPORT_DIR": str(reports_dir),
             "ZOHO_CRM_FIXTURE_PREFLIGHT_RUN_ID": "unit-template",
         },
@@ -2485,6 +2485,7 @@ def test_crm_fixture_payload_preflight_blocks_template_payload(
         "lengthBucket": "sufficient",
         "actionPresent": True,
         "targetPresent": True,
+        "selectorPresent": True,
         "qualityReady": True,
         "rawCleanupPlanStored": False,
     }
@@ -2546,6 +2547,7 @@ def test_crm_fixture_payload_preflight_accepts_dedicated_payload(
     assert payload["cleanup"]["present"] is True
     assert payload["cleanup"]["qualityReady"] is True
     assert payload["cleanup"]["lengthBucket"] == "sufficient"
+    assert payload["cleanup"]["selectorPresent"] is True
     assert payload["releasePosture"]["normalUpsertExecuteBlocked"] is True
     assert payload["releasePosture"]["agentMayRunLiveFixture"] is False
     assert payload["nextAction"] == "run_crm_fixture_live_smoke_dry_run"
@@ -2591,6 +2593,7 @@ def test_crm_fixture_payload_preflight_requires_cleanup_plan(
         "lengthBucket": "missing",
         "actionPresent": False,
         "targetPresent": False,
+        "selectorPresent": False,
         "qualityReady": False,
         "rawCleanupPlanStored": False,
     }
@@ -2636,6 +2639,7 @@ def test_crm_fixture_payload_preflight_blocks_vague_cleanup_plan(
         "cleanup_plan_too_short",
         "cleanup_plan_action_missing",
         "cleanup_plan_target_missing",
+        "cleanup_plan_selector_missing",
     ]
     assert payload["cleanup"] == {
         "required": True,
@@ -2643,9 +2647,54 @@ def test_crm_fixture_payload_preflight_blocks_vague_cleanup_plan(
         "lengthBucket": "too_short",
         "actionPresent": False,
         "targetPresent": False,
+        "selectorPresent": False,
         "qualityReady": False,
         "rawCleanupPlanStored": False,
     }
+    assert payload["nextAction"] == "improve_cleanup_plan"
+
+
+def test_crm_fixture_payload_preflight_requires_cleanup_selector(
+    tmp_path: Path,
+) -> None:
+    payload_file = tmp_path / "fixture-ready.json"
+    payload_file.write_text(
+        json.dumps(
+            {
+                "Last_Name": "ZohoCliFixtureReady",
+                "Company": "Zoho CLI Fixture",
+                "Email": "fixture-ready@operator.test",
+            }
+        ),
+        encoding="utf-8",
+    )
+    raw_cleanup = "delete the test lead after validation in the CRM sandbox"
+
+    result = subprocess.run(
+        ["bash", str(CRM_FIXTURE_PAYLOAD_PREFLIGHT_SCRIPT)],
+        cwd=REPO_ROOT,
+        env={
+            **os.environ,
+            "ZOHO_CRM_FIXTURE_PAYLOAD_FILE": str(payload_file),
+            "ZOHO_CRM_FIXTURE_CLEANUP_PLAN": raw_cleanup,
+            "ZOHO_CRM_FIXTURE_PREFLIGHT_REPORT_DIR": str(tmp_path / "reports"),
+            "ZOHO_CRM_FIXTURE_PREFLIGHT_RUN_ID": "unit-cleanup-selector-missing",
+        },
+        capture_output=True,
+        text=True,
+        check=False,
+    )
+
+    output = f"{result.stdout}\n{result.stderr}"
+    assert result.returncode == 1, output
+    assert raw_cleanup not in output
+    payload = json.loads(result.stdout)
+    assert payload["status"] == "blocked"
+    assert payload["blockers"] == ["cleanup_plan_selector_missing"]
+    assert payload["cleanup"]["actionPresent"] is True
+    assert payload["cleanup"]["targetPresent"] is True
+    assert payload["cleanup"]["selectorPresent"] is False
+    assert payload["cleanup"]["qualityReady"] is False
     assert payload["nextAction"] == "improve_cleanup_plan"
 
 
@@ -2692,7 +2741,7 @@ def test_crm_fixture_operator_packet_accepts_payload_preflight(
     tmp_path: Path,
 ) -> None:
     raw_email = "fixture-ready@operator.test"
-    raw_cleanup = "delete fixture after validation"
+    raw_cleanup = "delete fixture by fixture email after validation"
     payload_file = tmp_path / "fixture-ready.json"
     payload_file.write_text(
         json.dumps(
@@ -2773,6 +2822,7 @@ def test_crm_fixture_operator_packet_blocks_vague_cleanup_plan(
     assert payload["status"] == "blocked"
     assert payload["blockers"] == [
         "cleanup_plan_action_missing",
+        "cleanup_plan_selector_missing",
         "cleanup_plan_target_missing",
         "cleanup_plan_too_short",
     ]
@@ -2834,7 +2884,7 @@ def test_crm_fixture_operator_packet_wraps_dry_run_readiness(
             "FAKE_ZOHO_READINESS_CALLS": str(calls_path),
             "FAKE_CRM_FIXTURE_EVIDENCE_JSON": str(tmp_path / "evidence.json"),
             "ZOHO_CRM_FIXTURE_PAYLOAD_FILE": str(payload_file),
-            "ZOHO_CRM_FIXTURE_CLEANUP_PLAN": "delete fixture after validation",
+            "ZOHO_CRM_FIXTURE_CLEANUP_PLAN": "delete fixture by fixture email after validation",
             "ZOHO_CRM_FIXTURE_SUMMARY_FILE": str(summary_path),
             "ZOHO_CRM_FIXTURE_PACKET_REPORT_DIR": str(tmp_path / "reports"),
             "ZOHO_CRM_FIXTURE_PACKET_RUN_ID": "unit-ready-evidence",

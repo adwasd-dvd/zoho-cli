@@ -202,21 +202,23 @@ Preflight the copied payload locally before any Zoho-backed smoke:
 
 ```bash
 ZOHO_CRM_FIXTURE_PAYLOAD_FILE=/tmp/lead-fixture.json \
-ZOHO_CRM_FIXTURE_CLEANUP_PLAN="remove or update the dedicated fixture record after validation" \
+ZOHO_CRM_FIXTURE_CLEANUP_PLAN="remove the dedicated fixture record by fixture email after validation" \
 ops/scripts/crm_fixture_payload_preflight.sh
 ```
 
 Require `status=payload_preflight_ready`, `payload.placeholderEmailCount=0`,
-`cleanup.present=true`, and `nextAction=run_crm_fixture_live_smoke_dry_run`. The
-preflight blocks with `fixture_payload_placeholder_email`,
-`required_fields_missing`, or `cleanup_plan_missing` and stores no raw email or
-cleanup plan.
+`cleanup.present=true`, `cleanup.selectorPresent=true`, and
+`nextAction=run_crm_fixture_live_smoke_dry_run`. The preflight blocks with
+`fixture_payload_placeholder_email`, `required_fields_missing`,
+`cleanup_plan_missing`, `cleanup_plan_too_short`,
+`cleanup_plan_action_missing`, `cleanup_plan_target_missing`, or
+`cleanup_plan_selector_missing` and stores no raw email or cleanup plan.
 
 For automation, prefer the combined packet:
 
 ```bash
 ZOHO_CRM_FIXTURE_PAYLOAD_FILE=/tmp/lead-fixture.json \
-ZOHO_CRM_FIXTURE_CLEANUP_PLAN="remove or update the dedicated fixture record after validation" \
+ZOHO_CRM_FIXTURE_CLEANUP_PLAN="remove the dedicated fixture record by fixture email after validation" \
 ops/scripts/crm_fixture_operator_packet.sh
 ```
 

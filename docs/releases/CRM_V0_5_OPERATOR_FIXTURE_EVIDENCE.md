@@ -45,6 +45,7 @@ Expected preflight status:
 - `payload.placeholderEmailCount=0`
 - `cleanup.present=true`
 - `cleanup.qualityReady=true`
+- `cleanup.selectorPresent=true`
 - `releasePosture.normalUpsertExecuteBlocked=true`
 - `releasePosture.agentMayRunLiveFixture=false`
 - `nextAction=run_crm_fixture_live_smoke_dry_run`
@@ -52,10 +53,12 @@ Expected preflight status:
 If it reports `fixture_payload_placeholder_email`, `required_fields_missing`, or
 `cleanup_plan_missing`, fix the copied payload or cleanup plan before running the
 smoke script. If it reports `cleanup_plan_too_short`,
-`cleanup_plan_action_missing`, or `cleanup_plan_target_missing`, provide a
-specific cleanup plan that says what action will be taken and what fixture
-record/lead/email it applies to. The preflight stores only redacted metadata and
-does not call Zoho.
+`cleanup_plan_action_missing`, `cleanup_plan_target_missing`, or
+`cleanup_plan_selector_missing`, provide a specific cleanup plan that says what
+action will be taken, what fixture record/lead it applies to, and the selector
+used to find it, such as fixture email, record id, duplicate field, idempotency
+key, or payload digest. The preflight stores only redacted metadata and does not
+call Zoho.
 
 For automated handoff, use the operator packet wrapper. It runs the local
 preflight and, when a dry-run smoke summary is supplied, wraps the existing

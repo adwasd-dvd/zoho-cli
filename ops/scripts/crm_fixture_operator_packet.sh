@@ -139,7 +139,7 @@ PAYLOAD="$("$JQ_BIN" -n \
         elif $status == "payload_preflight_ready" then "run_crm_fixture_live_smoke_dry_run"
         elif ($blockers | index("payload_file_required")) or ($blockers | index("payload_file_missing")) then "provide_fixture_payload_file"
         elif ($blockers | index("cleanup_plan_missing")) then "provide_cleanup_plan"
-        elif ($blockers | index("cleanup_plan_too_short")) or ($blockers | index("cleanup_plan_action_missing")) or ($blockers | index("cleanup_plan_target_missing")) then "improve_cleanup_plan"
+        elif ($blockers | index("cleanup_plan_too_short")) or ($blockers | index("cleanup_plan_action_missing")) or ($blockers | index("cleanup_plan_target_missing")) or ($blockers | index("cleanup_plan_selector_missing")) then "improve_cleanup_plan"
         else "fix_blockers"
         end
       )

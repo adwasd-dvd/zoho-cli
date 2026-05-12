@@ -1,23 +1,25 @@
-id: cliq-channel-476
-title: record post-doc-sync RC source drift decision evidence
-module: openclaw_cliq_channel
+id: crm-017
+title: require selectors in CRM fixture cleanup plans
+module: crm
 stage: completed
 status: completed
 owner: coder
-updated_at: '2026-05-12T07:43:29Z'
+updated_at: '2026-05-12T08:12:39Z'
 execution_mode: turbo_20x
 throughput_policy_ref: ops/state/execution_policy.yml
 success_criteria:
-  - RC checklist records the post-doc-sync source drift run after commit `49f2692d`
-  - operator decision packet evidence shows `package_source_unchanged` despite repo docs/state changes after the handoff manifest
-  - README and Lane 3 guidance explain that repo-only drift is acceptable only when package drift is false
-  - contract tests lock the post-doc-sync drift markers
-  - keep publish/tag/npm promotion, published integrity fill, and live CRM writes blocked
-next_if_done: Operator publish selection remains gated by `ops/scripts/openclaw_cliq_rc_operator_decision_packet.sh`; after any later docs-only commit, rerun source drift/decision packets and require `package_source_unchanged` before operator publish.
+  - local CRM fixture preflight blocks cleanup plans without a selector
+  - operator packet maps selector quality blockers to `nextAction=improve_cleanup_plan`
+  - cleanup metadata remains redacted and stores no raw cleanup plan, email, or field values
+  - Lane 2 and Lane 3 docs describe `cleanup_plan_selector_missing`
+  - normal `zoho crm upsert --execute` and live fixture execution remain blocked
+next_if_done: CRM fixture Zoho-backed dry-run can start only after an operator provides a copied dedicated payload and a cleanup plan with `cleanup.qualityReady=true` and `cleanup.selectorPresent=true`; live fixture execution still requires exact approval and live env gates.
 progress:
-  - "2026-05-12T07:38:24Z cliq-channel-476 started after pushed docs/state commit `49f2692d`; postcommit source drift run `20260512T071842Z-rc-doc-sync-postcommit-source` reported `package_source_unchanged`, `headMatchesManifestSource=false`, `repoChangedSinceManifest=true`, `repoChangedFileCount=22`, and `packageDrift.packageChangedSinceManifest=false`."
-  - "2026-05-12T07:38:24Z postcommit decision packet `20260512T071842Z-rc-doc-sync-postcommit-decision` reported `awaiting_operator_publish_path`, `publish_path_not_selected`, `operator_publish_plan_ready`, `artifact_verified`, `install_smoke_passed`, `trusted_reply_recorded`, and `agentMayExecuteSelectedPath=false`."
-  - "2026-05-12T07:38:24Z RC checklist now records the docs/state-only HEAD drift as safe for the package; README and Lane 3 index point agents at the same package-drift distinction before operator publish."
-  - "2026-05-12T07:38:24Z no publish, tag, npm promotion, expectedIntegrity fill, GitHub release, or live CRM write was performed."
-  - "2026-05-12T07:43:29Z focused verification passed: RC checklist contract, markdown update, Lane 3 required paths/troubleshooting contract -> 4 passed in 0.02s; ruff format/check passed; YAML parse returned YAML_PARSE_OK; git diff --check passed."
-next_step: Commit and push the post-doc-sync RC evidence slice, then rerun read-only RC source drift and operator decision packets.
+  - "2026-05-12T08:01:55Z crm-017 completed: `ops/scripts/crm_fixture_payload_preflight.sh` now reports `cleanup.selectorPresent` and blocks cleanup plans without a selector using `cleanup_plan_selector_missing` before any Zoho-backed smoke."
+  - "2026-05-12T08:01:55Z accepted cleanup selectors are detected from redacted local text only: fixture email/e-mail, record id, Zoho id, CRM id, lead id, external id, duplicate field, idempotency key, payload digest, or an email-address shape; raw cleanup text and raw email remain unlogged."
+  - "2026-05-12T08:01:55Z `ops/scripts/crm_fixture_operator_packet.sh` now maps `cleanup_plan_selector_missing` to `nextAction=improve_cleanup_plan`, while keeping `normalUpsertExecuteBlocked=true` and `agentMayExecuteLiveFixture=false`."
+  - "2026-05-12T08:01:55Z focused verification passed: CRM fixture preflight/operator packet selector tests, Lane 3 CRM contract, and markdown update -> 9 passed in 0.69s."
+  - "2026-05-12T08:01:55Z no Zoho call, CRM live write, normal `zoho crm upsert --execute`, publish, tag, npm promotion, GitHub release, or expectedIntegrity fill was performed."
+  - "2026-05-12T08:08:39Z broader verification passed: shell syntax for CRM fixture scripts; CRM fixture preflight/operator/readiness tests plus Lane 3 CRM contract and markdown update -> 11 passed, 73 deselected in 1.31s; ruff format/check passed."
+  - "2026-05-12T08:12:39Z wider CRM fixture/Lane 3 verification passed: `tests/test_auto_pilot_scripts.py -k crm_fixture`, `tests/test_lane3_docs.py`, and `tests/test_markdown_update.py` -> 15 passed, 78 deselected in 2.23s; git diff --check passed."
+next_step: Run YAML parse, then commit and push the selector gate slice.

@@ -237,8 +237,10 @@ Use this skill as the default operating contract for an OpenClaw agent acting li
   `nextAction=run_crm_fixture_live_smoke_dry_run`.
   The preflight is local-only, stores no raw email or cleanup plan, and keeps
   `agentMayRunLiveFixture=false`; treat `cleanup_plan_too_short`,
-  `cleanup_plan_action_missing`, and `cleanup_plan_target_missing` as blockers
-  that require a more specific cleanup plan before any Zoho-backed smoke. Then run
+  `cleanup_plan_action_missing`, `cleanup_plan_target_missing`, and
+  `cleanup_plan_selector_missing` as blockers that require a more specific
+  cleanup plan with a selector such as fixture email, record id, duplicate field,
+  idempotency key, or payload digest before any Zoho-backed smoke. Then run
   `ops/scripts/crm_fixture_operator_readiness_bundle.sh` against the dry-run
   smoke summary and require `ready_for_operator_live_fixture`; it keeps normal
   `zoho crm upsert --execute` blocked and reports

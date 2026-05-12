@@ -267,7 +267,7 @@ payload before the smoke script and before any Zoho call:
 
 ```bash
 ZOHO_CRM_FIXTURE_PAYLOAD_FILE=/tmp/lead-fixture.json \
-ZOHO_CRM_FIXTURE_CLEANUP_PLAN="remove or update the dedicated fixture record after validation" \
+ZOHO_CRM_FIXTURE_CLEANUP_PLAN="remove the dedicated fixture record by fixture email after validation" \
 ops/scripts/crm_fixture_payload_preflight.sh
 ```
 
@@ -276,7 +276,9 @@ requires exactly one JSON record with `Last_Name`, `Company`, and `Email`,
 blocks template emails with `fixture_payload_placeholder_email`, blocks missing
 cleanup plans with `cleanup_plan_missing`, blocks vague cleanup plans with
 `cleanup_plan_too_short`, `cleanup_plan_action_missing`, or
-`cleanup_plan_target_missing`, and reports
+`cleanup_plan_target_missing`, blocks cleanup plans that do not name a
+selector such as email, record id, duplicate field, idempotency key, or payload
+digest with `cleanup_plan_selector_missing`, and reports
 `status=payload_preflight_ready` with `nextAction=run_crm_fixture_live_smoke_dry_run`
 only when the payload is a dedicated fixture candidate and
 `cleanup.qualityReady=true`. It does not grant any live-write permission;

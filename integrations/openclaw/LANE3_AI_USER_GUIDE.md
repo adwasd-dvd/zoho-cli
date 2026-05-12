@@ -271,7 +271,9 @@ After sync, ensure the AI user follows:
   - run `ops/scripts/crm_fixture_payload_preflight.sh` before any Zoho-backed
     smoke; require `cleanup.qualityReady=true`, and treat
     `cleanup_plan_too_short`, `cleanup_plan_action_missing`, and
-    `cleanup_plan_target_missing` as stop-and-fix blockers
+    `cleanup_plan_target_missing`, and `cleanup_plan_selector_missing` as
+    stop-and-fix blockers; accepted cleanup plans must name a selector such as
+    fixture email, record id, duplicate field, idempotency key, or payload digest
   - treat `summary_file_missing`, `fixture_evidence_not_ready`,
     `payload_placeholder_count_missing`, and
     `fixture_payload_placeholder_email` as stop-and-fix blockers

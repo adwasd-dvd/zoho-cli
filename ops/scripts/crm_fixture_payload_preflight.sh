@@ -102,6 +102,7 @@ CLEANUP_PLAN_LENGTH="${#CLEANUP_PLAN}"
 CLEANUP_PLAN_LOWER="$(printf '%s' "$CLEANUP_PLAN" | tr '[:upper:]' '[:lower:]')"
 CLEANUP_ACTION_PRESENT=false
 CLEANUP_TARGET_PRESENT=false
+CLEANUP_SELECTOR_PRESENT=false
 if [[ -n "$CLEANUP_PLAN_LOWER" ]]; then
   case "$CLEANUP_PLAN_LOWER" in
     *delete*|*remove*|*archive*|*cleanup*|*"clean up"*|*update*)
@@ -113,6 +114,19 @@ if [[ -n "$CLEANUP_PLAN_LOWER" ]]; then
       CLEANUP_TARGET_PRESENT=true
       ;;
   esac
+  if [[ "$CLEANUP_PLAN_LOWER" == *"@"* \
+    || "$CLEANUP_PLAN_LOWER" == *"email"* \
+    || "$CLEANUP_PLAN_LOWER" == *"e-mail"* \
+    || "$CLEANUP_PLAN_LOWER" == *"duplicate"* \
+    || "$CLEANUP_PLAN_LOWER" == *"idempotency"* \
+    || "$CLEANUP_PLAN_LOWER" == *"payload digest"* \
+    || "$CLEANUP_PLAN_LOWER" == *"record id"* \
+    || "$CLEANUP_PLAN_LOWER" == *"zoho id"* \
+    || "$CLEANUP_PLAN_LOWER" == *"crm id"* \
+    || "$CLEANUP_PLAN_LOWER" == *"external id"* \
+    || "$CLEANUP_PLAN_LOWER" == *"lead id"* ]]; then
+    CLEANUP_SELECTOR_PRESENT=true
+  fi
 fi
 
 PAYLOAD="$("$JQ_BIN" -n \
@@ -129,6 +143,7 @@ PAYLOAD="$("$JQ_BIN" -n \
   --argjson cleanupPlanLength "$CLEANUP_PLAN_LENGTH" \
   --argjson cleanupActionPresent "$CLEANUP_ACTION_PRESENT" \
   --argjson cleanupTargetPresent "$CLEANUP_TARGET_PRESENT" \
+  --argjson cleanupSelectorPresent "$CLEANUP_SELECTOR_PRESENT" \
   --argjson requireCleanup "$REQUIRE_CLEANUP" \
   '
   ($payloadSummary.recordCount // null) as $recordCount
@@ -145,7 +160,8 @@ PAYLOAD="$("$JQ_BIN" -n \
       (if $requireCleanup and ($cleanupPlanPresent | not) then "cleanup_plan_missing" else empty end),
       (if $cleanupPlanPresent and $cleanupPlanLength < 20 then "cleanup_plan_too_short" else empty end),
       (if $cleanupPlanPresent and ($cleanupActionPresent | not) then "cleanup_plan_action_missing" else empty end),
-      (if $cleanupPlanPresent and ($cleanupTargetPresent | not) then "cleanup_plan_target_missing" else empty end)
+      (if $cleanupPlanPresent and ($cleanupTargetPresent | not) then "cleanup_plan_target_missing" else empty end),
+      (if $cleanupPlanPresent and ($cleanupSelectorPresent | not) then "cleanup_plan_selector_missing" else empty end)
     ] as $blockers
   | {
       schemaVersion: 1,
@@ -187,11 +203,13 @@ PAYLOAD="$("$JQ_BIN" -n \
         ),
         actionPresent: $cleanupActionPresent,
         targetPresent: $cleanupTargetPresent,
+        selectorPresent: $cleanupSelectorPresent,
         qualityReady: (
           $cleanupPlanPresent
           and ($cleanupPlanLength >= 20)
           and $cleanupActionPresent
           and $cleanupTargetPresent
+          and $cleanupSelectorPresent
         ),
         rawCleanupPlanStored: false
       },
@@ -211,7 +229,7 @@ PAYLOAD="$("$JQ_BIN" -n \
         if ($blockers | index("payload_file_required")) or ($blockers | index("payload_file_missing")) then "provide_fixture_payload_file"
         elif ($blockers | index("payload_json_invalid")) then "fix_fixture_payload_json"
         elif ($blockers | index("cleanup_plan_missing")) then "provide_cleanup_plan"
-        elif ($blockers | index("cleanup_plan_too_short")) or ($blockers | index("cleanup_plan_action_missing")) or ($blockers | index("cleanup_plan_target_missing")) then "improve_cleanup_plan"
+        elif ($blockers | index("cleanup_plan_too_short")) or ($blockers | index("cleanup_plan_action_missing")) or ($blockers | index("cleanup_plan_target_missing")) or ($blockers | index("cleanup_plan_selector_missing")) then "improve_cleanup_plan"
         elif ($blockers | length) != 0 then "fix_fixture_payload"
         else "run_crm_fixture_live_smoke_dry_run"
         end

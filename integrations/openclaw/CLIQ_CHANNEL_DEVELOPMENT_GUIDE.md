@@ -181,7 +181,9 @@ handler templates; and `cliq-channel-421` covers those accepted handler families
 in runtime webhook tests; `cliq-channel-422` promotes package metadata to
 `0.4.0-rc.1` and records fresh pack evidence; `cliq-channel-448` adds
 tunnel-agnostic public callback verification through
-`ops/scripts/openclaw_cliq_public_callback_smoke.sh`.
+`ops/scripts/openclaw_cliq_public_callback_smoke.sh`; `cliq-channel-455` adds
+no-publish local tarball verification through
+`ops/scripts/openclaw_cliq_rc_artifact_check.sh`.
 Both inbound paths normalize messages into the shared
 inbound event shape, run mention/allowlist/employee policy checks, dedupe by
 account/network/chat/message before optional dispatch, keep status/read failures
@@ -202,6 +204,7 @@ Live gate command:
 ops/scripts/openclaw_cliq_live_smoke.sh
 ops/scripts/openclaw_cliq_public_callback_smoke.sh
 ops/scripts/openclaw_cliq_rc_pack.sh
+ops/scripts/openclaw_cliq_rc_artifact_check.sh
 ```
 
 Treat `token_refresh_rate_limited` as `skip_deferred`; do not repeatedly refresh

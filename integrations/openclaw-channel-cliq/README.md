@@ -48,6 +48,10 @@ operator handoff for the approval boundary, preflight commands, publish path
 choice, post-publish checks, and abort conditions; agents must not run
 `npm publish`, create tags/releases, or fill `openclaw.install.expectedIntegrity`
 without explicit operator approval.
+`ops/scripts/openclaw_cliq_rc_artifact_check.sh` verifies the packed tarball
+without publishing: it checks the pack summary, shasum, package metadata,
+manifest/channel identity, required runtime/docs/skill entries, and no
+publish/tag/version-bump posture before reporting `artifact_verified`.
 
 ## Contract
 
@@ -75,6 +79,9 @@ The v0.4 operator publish handoff lives in
 
 Repeatable local RC package preflight:
 `../../ops/scripts/openclaw_cliq_rc_pack.sh`.
+
+No-publish local RC artifact check:
+`../../ops/scripts/openclaw_cliq_rc_artifact_check.sh`.
 
 No-publish local RC promotion preflight:
 `../../ops/scripts/openclaw_cliq_rc_promotion_check.sh`.

@@ -72,6 +72,11 @@ Use this skill when operating through the native OpenClaw Zoho Cliq channel.
   `ops/scripts/openclaw_cliq_rc_pack.sh`; it must not publish or mutate
   package version metadata at pack time. The current RC package metadata is
   `0.4.0-rc.1`.
+- After packing and before asking for promotion, run
+  `ops/scripts/openclaw_cliq_rc_artifact_check.sh`; require
+  `artifact_verified`, matching tarball shasum, package/channel/manifest
+  identity, required `dist/`, `README.md`, and `skill/SKILL.md` entries, and
+  no publish/tag/version-bump posture.
 - Before asking an operator to publish/promote, run
   `ops/scripts/openclaw_cliq_rc_promotion_check.sh`; require
   `ready_for_operator_publish`, `expectedIntegrityState=placeholder`, no pack
@@ -95,6 +100,7 @@ zoho cliq capabilities --network <network>
 ops/scripts/openclaw_cliq_live_smoke.sh
 ops/scripts/openclaw_cliq_public_callback_smoke.sh
 ops/scripts/openclaw_cliq_hash_ref.sh
+ops/scripts/openclaw_cliq_rc_artifact_check.sh
 ops/scripts/openclaw_cliq_rc_pack.sh
 ops/scripts/openclaw_cliq_rc_promotion_check.sh
 ops/scripts/openclaw_cliq_trusted_reply_evidence_bundle.sh

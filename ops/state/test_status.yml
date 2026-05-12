@@ -1,10 +1,20 @@
-last_run_at: "2026-05-11T23:46:30Z"
+last_run_at: "2026-05-12T00:09:33Z"
 last_result: passing
-current_focus: cliq-channel-454-operator-publish-handoff
+current_focus: cliq-channel-455-rc-artifact-check
 suites:
   unit:
     status: passing
     notes:
+      - "cliq-channel-455 local RC artifact check completed at 2026-05-12T00:09:33Z"
+      - "added `ops/scripts/openclaw_cliq_rc_artifact_check.sh`; it verifies the latest pack summary, tarball shasum, package metadata, manifest/channel identity, required `dist/`, `README.md`, and `skill/SKILL.md` entries, and no publish/tag/version-bump posture before reporting `artifact_verified`"
+      - "OPENCLAW_CLIQ_ARTIFACT_RUN_ID=20260512T000324Z-local-artifact ops/scripts/openclaw_cliq_rc_artifact_check.sh -> `artifact_verified`, no blockers, tarball shasum `7717aa539f3ccf8d1ee1be560283ea30fa6a87b6`, package `0.4.0-rc.1`, channel `cliq`, manifest `zoho-cliq`, required entries present, no publish/tag/version bump"
+      - "./.venv/bin/python -m pytest -q tests/test_auto_pilot_scripts.py::test_openclaw_cliq_rc_artifact_check_verifies_tarball_contract tests/test_auto_pilot_scripts.py::test_openclaw_cliq_rc_artifact_check_blocks_missing_required_entry tests/test_openclaw_channel_contract.py::test_openclaw_cliq_channel_rc_checklist_has_cut_contract tests/test_openclaw_channel_contract.py::test_openclaw_cliq_operator_publish_handoff_has_approval_boundary tests/test_lane3_docs.py::test_lane3_required_paths_exist tests/test_lane3_docs.py::test_native_cliq_channel_ai_troubleshooting_contract_present tests/test_markdown_update.py -> 7 passed in 0.26s"
+      - "bash -n ops/scripts/openclaw_cliq_rc_artifact_check.sh -> passed"
+      - "./.venv/bin/ruff format --check tests/test_auto_pilot_scripts.py tests/test_lane3_docs.py tests/test_openclaw_channel_contract.py -> 3 files already formatted"
+      - "./.venv/bin/ruff check tests/test_auto_pilot_scripts.py tests/test_lane3_docs.py tests/test_openclaw_channel_contract.py -> All checks passed"
+      - "ruby YAML parse for project/module_status/test_status -> YAML_PARSE_OK"
+      - "git diff --check -> passed"
+      - "make ci in the workspace sandbox reached 1877 passed but failed 4 localhost OAuth callback tests with `PermissionError(1, 'Operation not permitted')`; escalation for an unrestricted rerun was not approved, so this slice is verified with focused tests plus the real local artifact check"
       - "cliq-channel-454 operator publish handoff completed at 2026-05-11T23:44:42Z"
       - "added `docs/releases/OPENCLAW_CLIQ_CHANNEL_V0_4_OPERATOR_PUBLISH_HANDOFF.md` with the no-agent boundary for `npm publish`, Git tag/GitHub release creation, `openclaw.install.expectedIntegrity` filling, and durable gateway finalization"
       - "handoff documents required preflight commands, local/operator RC vs npm RC vs GitHub artifact choices, post-publish checks, abort conditions, and release-note facts while leaving actual publish/tag/npm promotion blocked until explicit operator approval"

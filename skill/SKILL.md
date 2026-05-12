@@ -128,7 +128,9 @@ Use this skill as the default operating contract for an OpenClaw agent acting li
   still requires controlled trusted agent reply evidence after public callback
   auth/reachability. Run
   `ops/scripts/openclaw_cliq_rc_pack.sh` before cutting a local/operator or
-  npm/GitHub RC artifact.
+  npm/GitHub RC artifact, then run
+  `ops/scripts/openclaw_cliq_rc_artifact_check.sh` and require
+  `artifact_verified` before asking the operator to choose a publish path.
 - For CRM SDK work, run `zoho crm sdk-status` first. Treat
   `zohocrmsdk8_0==5.0.0` as optional `zoho-cli[crm-sdk]` readiness, keep the
   current HTTP adapter as default, use `zoho_cli/crm_sdk.py` only as the

@@ -2,9 +2,11 @@ from __future__ import annotations
 
 import os
 import hashlib
+import io
 import json
 import stat
 import subprocess
+import tarfile
 from pathlib import Path
 
 REPO_ROOT = Path(__file__).resolve().parent.parent
@@ -38,6 +40,9 @@ OPENCLAW_CLIQ_RC_PACK_SCRIPT = (
 )
 OPENCLAW_CLIQ_RC_PROMOTION_CHECK_SCRIPT = (
     REPO_ROOT / "ops" / "scripts" / "openclaw_cliq_rc_promotion_check.sh"
+)
+OPENCLAW_CLIQ_RC_ARTIFACT_CHECK_SCRIPT = (
+    REPO_ROOT / "ops" / "scripts" / "openclaw_cliq_rc_artifact_check.sh"
 )
 
 
@@ -548,6 +553,165 @@ def test_openclaw_cliq_rc_promotion_check_blocks_published_integrity_too_early(
     payload = json.loads(result.stdout)
     assert payload["status"] == "blocked"
     assert "expected_integrity_not_placeholder" in payload["blockers"]
+
+
+def _write_openclaw_cliq_test_tarball(
+    tarball_path: Path,
+    *,
+    omit_entries: set[str] | None = None,
+) -> None:
+    omit_entries = omit_entries or set()
+    package_json = {
+        "name": "@adwasd/openclaw-zoho-cliq",
+        "version": "0.4.0-rc.1",
+        "openclaw": {
+            "extensions": ["./dist/index.js"],
+            "setupEntry": "./dist/setup-entry.js",
+            "channel": {"id": "cliq"},
+            "install": {"expectedIntegrity": "<filled-at-release>"},
+        },
+    }
+    manifest_json = {
+        "id": "zoho-cliq",
+        "channels": ["cliq"],
+    }
+    entries = {
+        "package/package.json": json.dumps(package_json).encode(),
+        "package/openclaw.plugin.json": json.dumps(manifest_json).encode(),
+        "package/README.md": b"# test package\n",
+        "package/skill/SKILL.md": b"# test skill\n",
+        "package/dist/index.js": b"export {};\n",
+        "package/dist/setup-entry.js": b"export {};\n",
+        "package/dist/src/channel.js": b"export {};\n",
+        "package/dist/src/native-dispatch.js": b"export {};\n",
+        "package/dist/src/webhook.js": b"export {};\n",
+        "package/dist/src/zoho-cli.js": b"export {};\n",
+    }
+
+    with tarfile.open(tarball_path, "w:gz") as tar:
+        for name, data in entries.items():
+            if name in omit_entries:
+                continue
+            info = tarfile.TarInfo(name)
+            info.size = len(data)
+            info.mtime = 0
+            tar.addfile(info, fileobj=io.BytesIO(data))
+
+
+def test_openclaw_cliq_rc_artifact_check_verifies_tarball_contract(
+    tmp_path: Path,
+) -> None:
+    tarball_path = tmp_path / "adwasd-openclaw-zoho-cliq-0.4.0-rc.1.tgz"
+    _write_openclaw_cliq_test_tarball(tarball_path)
+    shasum = hashlib.sha1(tarball_path.read_bytes()).hexdigest()
+    pack_summary = tmp_path / "pack-summary.json"
+    pack_summary.write_text(
+        json.dumps(
+            {
+                "status": "passed",
+                "pack": {
+                    "name": "@adwasd/openclaw-zoho-cliq",
+                    "version": "0.4.0-rc.1",
+                    "filename": tarball_path.name,
+                    "tarballPath": str(tarball_path),
+                    "shasum": shasum,
+                    "integrity": "sha512-test",
+                },
+                "releasePosture": {
+                    "publishPerformed": False,
+                    "versionBumped": False,
+                },
+            }
+        )
+    )
+    report_file = tmp_path / "artifact-check.json"
+
+    result = subprocess.run(
+        ["bash", str(OPENCLAW_CLIQ_RC_ARTIFACT_CHECK_SCRIPT)],
+        cwd=REPO_ROOT,
+        env={
+            **os.environ,
+            "OPENCLAW_CLIQ_PACK_SUMMARY_FILE": str(pack_summary),
+            "OPENCLAW_CLIQ_ARTIFACT_REPORT_DIR": str(tmp_path),
+            "OPENCLAW_CLIQ_ARTIFACT_REPORT_FILE": str(report_file),
+            "OPENCLAW_CLIQ_ARTIFACT_RUN_ID": "unit-artifact",
+        },
+        capture_output=True,
+        text=True,
+        check=False,
+    )
+
+    output = f"{result.stdout}\n{result.stderr}"
+    assert result.returncode == 0, output
+    payload = json.loads(result.stdout)
+    assert payload["status"] == "artifact_verified"
+    assert payload["blockers"] == []
+    assert payload["artifact"]["shasumMatchesPackSummary"] is True
+    assert payload["package"]["expectedIntegrityState"] == "placeholder"
+    assert payload["manifest"]["id"] == "zoho-cliq"
+    assert payload["releasePosture"] == {
+        "publishPerformed": False,
+        "tagCreated": False,
+        "versionBumped": False,
+        "expectedIntegrityAction": "fill_after_publish",
+        "installVerifiedWithoutPublish": True,
+    }
+    assert json.loads(report_file.read_text()) == payload
+
+
+def test_openclaw_cliq_rc_artifact_check_blocks_missing_required_entry(
+    tmp_path: Path,
+) -> None:
+    tarball_path = tmp_path / "adwasd-openclaw-zoho-cliq-0.4.0-rc.1.tgz"
+    _write_openclaw_cliq_test_tarball(
+        tarball_path,
+        omit_entries={"package/dist/src/native-dispatch.js"},
+    )
+    shasum = hashlib.sha1(tarball_path.read_bytes()).hexdigest()
+    pack_summary = tmp_path / "pack-summary.json"
+    pack_summary.write_text(
+        json.dumps(
+            {
+                "status": "passed",
+                "pack": {
+                    "name": "@adwasd/openclaw-zoho-cliq",
+                    "version": "0.4.0-rc.1",
+                    "filename": tarball_path.name,
+                    "tarballPath": str(tarball_path),
+                    "shasum": shasum,
+                    "integrity": "sha512-test",
+                },
+                "releasePosture": {
+                    "publishPerformed": False,
+                    "versionBumped": False,
+                },
+            }
+        )
+    )
+
+    result = subprocess.run(
+        ["bash", str(OPENCLAW_CLIQ_RC_ARTIFACT_CHECK_SCRIPT)],
+        cwd=REPO_ROOT,
+        env={
+            **os.environ,
+            "OPENCLAW_CLIQ_PACK_SUMMARY_FILE": str(pack_summary),
+            "OPENCLAW_CLIQ_ARTIFACT_REPORT_DIR": str(tmp_path),
+            "OPENCLAW_CLIQ_ARTIFACT_REPORT_FILE": str(tmp_path / "report.json"),
+            "OPENCLAW_CLIQ_ARTIFACT_RUN_ID": "unit-artifact-blocked",
+        },
+        capture_output=True,
+        text=True,
+        check=False,
+    )
+
+    output = f"{result.stdout}\n{result.stderr}"
+    assert result.returncode == 1, output
+    payload = json.loads(result.stdout)
+    assert payload["status"] == "blocked"
+    assert (
+        "required_entry_missing_package_dist_src_native_dispatch_js"
+        in payload["blockers"]
+    )
 
 
 def _write_fake_zoho_for_crm_fixture_smoke(tmp_path: Path) -> tuple[Path, Path]:

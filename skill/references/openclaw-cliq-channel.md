@@ -75,6 +75,11 @@ publish. Trusted reply evidence checking is available through
 `ops/scripts/openclaw_cliq_trusted_reply_evidence.sh`; it validates redacted
 `openclaw_cliq_trusted_reply_evidence` JSON before production readiness can be
 claimed.
+`cliq-channel-455` is complete: `ops/scripts/openclaw_cliq_rc_artifact_check.sh`
+verifies the local RC tarball without publishing by checking the pack summary,
+tarball shasum, package/channel/manifest identity, required runtime/docs/skill
+entries, and no publish/tag/version-bump posture before reporting
+`artifact_verified`.
 
 The v0.4 plugin targets OpenClaw `>=2026.5.3-1`. The upgraded global
 `OpenClaw 2026.5.3-1` host is suitable for native plugin checks; use
@@ -122,6 +127,7 @@ zoho cliq status --check-auth --network <network>
 ops/scripts/openclaw_cliq_live_smoke.sh
 ops/scripts/openclaw_cliq_public_callback_smoke.sh
 ops/scripts/openclaw_cliq_rc_pack.sh
+ops/scripts/openclaw_cliq_rc_artifact_check.sh
 ops/scripts/openclaw_cliq_trusted_reply_evidence.sh
 ```
 

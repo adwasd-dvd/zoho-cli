@@ -89,6 +89,7 @@
 - Confirmed supplemental Cliq Bot API outbound sanity by sending one redacted smoke message with `zoho cliq post-to-bot oldsix --network happydistrouklimited`, which returned `status=ok` for bot `oldsix`.
 - Added `ops/scripts/openclaw_cliq_rc_promotion_check.sh`, a local no-publish promotion preflight that checks package metadata, the latest RC pack summary, trusted reply evidence, `expectedIntegrity` placeholder state, and publish/version-bump posture before reporting `ready_for_operator_publish`.
 - Added `docs/releases/OPENCLAW_CLIQ_CHANNEL_V0_4_OPERATOR_PUBLISH_HANDOFF.md` as the non-automated RC publish handoff: it keeps `npm publish`, Git tag/release creation, and `openclaw.install.expectedIntegrity` filling behind explicit operator approval, lists required preflight commands, and defines local/operator, npm RC, and GitHub artifact publish paths.
+- Added `ops/scripts/openclaw_cliq_rc_artifact_check.sh`, a no-publish RC tarball verifier that checks the latest pack summary, tarball shasum, package metadata, manifest/channel identity, required `dist/` runtime entries, README/skill payload, and no publish/tag/version-bump posture before reporting `artifact_verified`.
 
 ### Architecture / modularization (2026-05-04T18:19:47Z)
 - Started `cliq-210` post-RC modularization by extracting the `zoho cliq status` and `zoho cliq capabilities` command bodies into `zoho_cli/commands/cliq_readiness.py`, leaving `zoho_cli/cli.py` with runtime dependency injection plus existing Typer registration only. Command names, help text, and JSON output are unchanged.

@@ -12,6 +12,7 @@ Current baseline:
   `sha512-2gp4TAicx7Ax07jBI2HNl9WFlIrVaqMh082mLAN5NVxF3p3BL7AWEgQDJfs+TOzwU2zLiSNdEu79BEFNZGsNEw==`
 - Local pack shasum: `7717aa539f3ccf8d1ee1be560283ea30fa6a87b6`
 - Trusted reply evidence: `trusted_reply_recorded`
+- Local artifact check: `artifact_verified`
 
 ## Non-automated approval boundary
 
@@ -40,9 +41,13 @@ NPM_CONFIG_CACHE=/private/tmp/zoho-cli-npm-cache \
 OPENCLAW_CLIQ_PACK_RUN_ID="$(date -u +%Y%m%dT%H%M%SZ)-operator-pack" \
   ops/scripts/openclaw_cliq_rc_pack.sh
 
+OPENCLAW_CLIQ_ARTIFACT_RUN_ID="$(date -u +%Y%m%dT%H%M%SZ)-operator-artifact" \
+  ops/scripts/openclaw_cliq_rc_artifact_check.sh
+
 ./.venv/bin/python -m pytest -q \
   tests/test_auto_pilot_scripts.py::test_openclaw_cliq_rc_promotion_check_requires_ready_local_evidence \
   tests/test_auto_pilot_scripts.py::test_openclaw_cliq_rc_promotion_check_blocks_published_integrity_too_early \
+  tests/test_auto_pilot_scripts.py::test_openclaw_cliq_rc_artifact_check_verifies_tarball_contract \
   tests/test_openclaw_channel_contract.py::test_openclaw_cliq_channel_rc_checklist_has_cut_contract \
   tests/test_markdown_update.py
 ```
@@ -54,6 +59,7 @@ Expected local pre-publish posture:
 - `expectedIntegrityState=placeholder`
 - `pack.publishPerformed=false`
 - `pack.versionBumped=false`
+- `artifact.status=artifact_verified`
 - `trustedReply.status=trusted_reply_recorded`
 - `npmPromotionRequiresOperatorApproval=true`
 
@@ -92,6 +98,8 @@ Abort and do not publish if any of these appear:
 - `token_refresh_rate_limited` during live checks: wait for cooldown.
 - `expected_integrity_not_placeholder` before publish approval.
 - `pack_publish_performed` or `pack_version_bumped` in local preflight.
+- `tarball_shasum_mismatch`, `artifact_version_mismatch`, or
+  `required_entry_missing_*` in the local artifact check.
 - `trusted_reply_not_recorded`.
 - Any raw webhook payload, raw message body, raw reply body, or secret marker in
   release evidence.

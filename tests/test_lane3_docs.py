@@ -59,6 +59,7 @@ def test_lane3_required_paths_exist() -> None:
         / "OPENCLAW_CLIQ_TRUSTED_REPLY_EVIDENCE_TEMPLATE.json",
         REPO_ROOT / "ops" / "scripts" / "openclaw_cliq_hash_ref.sh",
         REPO_ROOT / "ops" / "scripts" / "openclaw_cliq_public_callback_smoke.sh",
+        REPO_ROOT / "ops" / "scripts" / "openclaw_cliq_rc_artifact_check.sh",
         REPO_ROOT / "ops" / "scripts" / "openclaw_cliq_rc_pack.sh",
         REPO_ROOT
         / "ops"
@@ -213,6 +214,10 @@ def test_native_cliq_channel_ai_troubleshooting_contract_present() -> None:
         "cliq:channel:<id>:thread:<thread_id>",
         "skip_deferred",
         "ops/scripts/openclaw_cliq_rc_pack.sh",
+        "ops/scripts/openclaw_cliq_rc_artifact_check.sh",
+        "artifact_verified",
+        "tarball_shasum_mismatch",
+        "required_entry_missing_*",
         "ops/scripts/openclaw_cliq_public_callback_smoke.sh",
         "OPENCLAW_CLIQ_BOT_HANDLER_TEMPLATES.md",
         "ops/scripts/openclaw_cliq_hash_ref.sh",

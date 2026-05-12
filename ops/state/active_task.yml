@@ -1,22 +1,21 @@
-id: cliq-channel-488
-title: record post-CRM state-sync RC source drift evidence
-module: openclaw_cliq_channel
+id: crm-028
+title: add CRM fixture agent automation boundary
+module: crm
 stage: completed
 status: completed
 owner: coder
-updated_at: '2026-05-12T13:53:54Z'
+updated_at: '2026-05-12T14:13:11Z'
 execution_mode: turbo_20x
 throughput_policy_ref: ops/state/execution_policy.yml
 success_criteria:
-  - "Source drift guard reports `package_source_unchanged` after pushed CRM Lane 1 state-sync slice"
-  - "Decision packet still reports `awaiting_operator_publish_path`"
-  - "Artifact/install/promotion/trusted reply statuses remain ready"
-  - "Publish/tag/release/version-bump/expectedIntegrity actions remain operator-only"
-  - "Lane 1, Lane 2, and Lane 3 docs record the refreshed evidence"
+  - "CRM fixture operator packets expose `operatorReview.agentAutomation`"
+  - "CRM fixture readiness bundles expose the same agent automation summary"
+  - "Agent automation summary names the next dry-run/local command id and stop ids without raw payload, cleanup, approval, or idempotency values"
+  - "Normal `zoho crm upsert --execute` and live fixture execution remain blocked for agents"
 next_if_done: Continue to the next safe RC readiness milestone without publishing, tagging, npm promotion, GitHub release creation, expectedIntegrity fill, or live CRM writes.
 progress:
-  - "2026-05-12T13:52:34Z source drift run `20260512T135144Z-crm-state-sync-postcommit-source` returned `package_source_unchanged`, no blockers, `headCommit=0319d9b8ebabf532f0b76230991a1feae2ee78a1`, `repoChangedFileCount=29`, `packageDrift.packageChangedSinceManifest=false`, and `dirtyFileCount=0`."
-  - "2026-05-12T13:52:34Z decision packet run `20260512T135144Z-crm-state-sync-postcommit-decision` returned `awaiting_operator_publish_path`, `blockers=[publish_path_not_selected]`, `operator_publish_plan_ready`, `artifact_verified`, `install_smoke_passed`, `trusted_reply_recorded`, all `reportsReady=true`, and `agentMayExecuteSelectedPath=false`."
-  - "2026-05-12T14:02:06Z verification passed: OpenClaw Cliq RC checklist/operator handoff contract, Lane 3 required paths/troubleshooting contract, and markdown update -> 5 passed in 0.02s; ruff format/check, YAML parse, and `git diff --check` passed."
-  - "2026-05-12T13:52:34Z no publish, tag, npm promotion, GitHub release, version bump, expectedIntegrity fill, Zoho call, or CRM write was performed."
-next_step: Verify docs/state updates, commit and push the post-CRM state-sync RC evidence slice, then continue to the next safe milestone.
+  - "2026-05-12T14:13:11Z added `operatorReview.agentAutomation` with `nextAgentExecutableCommandId`, `agentMayExecuteNextCommand`, `stopCommandIds`, and `stopReason` to CRM fixture operator packets and readiness bundles."
+  - "2026-05-12T14:13:11Z focused verification passed for CRM packet/readiness agent automation, Lane 3 CRM contract, markdown update, shell syntax, and ruff format/check."
+  - "2026-05-12T14:17:34Z broader verification passed: CRM fixture tests plus Lane 3 required paths, CRM contract, and markdown update -> 15 passed, 70 deselected in 2.37s; ruff format/check, YAML parse, and `git diff --check` passed."
+  - "2026-05-12T14:13:11Z no publish, tag, npm promotion, GitHub release, version bump, expectedIntegrity fill, Zoho call, or CRM write was performed."
+next_step: Run broader CRM fixture verification, commit and push the CRM agent automation boundary slice, then continue to the next safe milestone.

@@ -2854,6 +2854,22 @@ def test_crm_fixture_operator_packet_reports_missing_payload(
         "normalUpsertExecuteBlocked": True,
         "liveFixtureExecutionBoundary": "not_ready_or_dry_run_only",
     }
+    assert payload["operatorReview"]["agentAutomation"] == {
+        "policyId": "crm-fixture-agent-command-boundary-v1",
+        "guidance": (
+            "execute only dry-run/local command ids listed in "
+            "nextAgentExecutableCommandId or agentExecutableCommandIds; stop "
+            "on any operator-only, Zoho-writing, or explicit-approval id"
+        ),
+        "nextAgentExecutableCommandId": "provide_fixture_payload_file",
+        "agentMayExecuteNextCommand": True,
+        "agentExecutableCommandIds": ["provide_fixture_payload_file"],
+        "dryRunOnlyCommandIds": ["provide_fixture_payload_file"],
+        "stopCommandIds": [],
+        "stopReason": None,
+        "normalUpsertExecuteBlocked": True,
+        "liveFixtureExecutionBlockedForAgent": True,
+    }
     assert payload["operatorReview"]["cleanupSelectorTypes"] == []
     assert payload["operatorReview"]["liveApproval"] == {
         "readyFacts": [
@@ -2982,6 +2998,22 @@ def test_crm_fixture_operator_packet_accepts_payload_preflight(
         "normalUpsertExecuteBlocked": True,
         "liveFixtureExecutionBoundary": "not_ready_or_dry_run_only",
     }
+    assert payload["operatorReview"]["agentAutomation"] == {
+        "policyId": "crm-fixture-agent-command-boundary-v1",
+        "guidance": (
+            "execute only dry-run/local command ids listed in "
+            "nextAgentExecutableCommandId or agentExecutableCommandIds; stop "
+            "on any operator-only, Zoho-writing, or explicit-approval id"
+        ),
+        "nextAgentExecutableCommandId": "run_crm_fixture_live_smoke_dry_run",
+        "agentMayExecuteNextCommand": True,
+        "agentExecutableCommandIds": ["run_crm_fixture_live_smoke_dry_run"],
+        "dryRunOnlyCommandIds": ["run_crm_fixture_live_smoke_dry_run"],
+        "stopCommandIds": [],
+        "stopReason": None,
+        "normalUpsertExecuteBlocked": True,
+        "liveFixtureExecutionBlockedForAgent": True,
+    }
     assert payload["operatorReview"]["cleanupSelectorTypes"] == ["email_keyword"]
     assert payload["operatorReview"]["cleanupSelectorTypeCount"] == 1
     assert payload["operatorReview"]["liveApproval"]["summaryFileReady"] is False
@@ -3073,6 +3105,15 @@ def test_crm_fixture_operator_packet_blocks_vague_cleanup_plan(
         "normalUpsertExecuteBlocked": True,
         "liveFixtureExecutionBoundary": "not_ready_or_dry_run_only",
     }
+    assert (
+        payload["operatorReview"]["agentAutomation"]["nextAgentExecutableCommandId"]
+        == "improve_cleanup_plan"
+    )
+    assert (
+        payload["operatorReview"]["agentAutomation"]["agentMayExecuteNextCommand"]
+        is True
+    )
+    assert payload["operatorReview"]["agentAutomation"]["stopCommandIds"] == []
     assert payload["nextAction"] == "improve_cleanup_plan"
 
 
@@ -3228,6 +3269,22 @@ def test_crm_fixture_operator_packet_wraps_dry_run_readiness(
         "requiresExplicitOperatorApprovalAny": True,
         "normalUpsertExecuteBlocked": True,
         "liveFixtureExecutionBoundary": "operator_only",
+    }
+    assert payload["operatorReview"]["agentAutomation"] == {
+        "policyId": "crm-fixture-agent-command-boundary-v1",
+        "guidance": (
+            "execute only dry-run/local command ids listed in "
+            "nextAgentExecutableCommandId or agentExecutableCommandIds; stop "
+            "on any operator-only, Zoho-writing, or explicit-approval id"
+        ),
+        "nextAgentExecutableCommandId": None,
+        "agentMayExecuteNextCommand": False,
+        "agentExecutableCommandIds": [],
+        "dryRunOnlyCommandIds": [],
+        "stopCommandIds": ["operator_review_live_fixture_approval"],
+        "stopReason": "operator_only_zoho_write_or_approval_required",
+        "normalUpsertExecuteBlocked": True,
+        "liveFixtureExecutionBlockedForAgent": True,
     }
     assert payload["nextAction"] == "operator_review_payload_cleanup_and_approval"
     calls = [json.loads(line) for line in calls_path.read_text().splitlines()]
@@ -3503,6 +3560,15 @@ def test_crm_fixture_operator_readiness_bundle_blocks_placeholder_payload(
         "normalUpsertExecuteBlocked": True,
         "liveFixtureExecutionBoundary": "not_ready_or_dry_run_only",
     }
+    assert (
+        payload["operatorReview"]["agentAutomation"]["nextAgentExecutableCommandId"]
+        == "fix_readiness_blockers"
+    )
+    assert (
+        payload["operatorReview"]["agentAutomation"]["agentMayExecuteNextCommand"]
+        is True
+    )
+    assert payload["operatorReview"]["agentAutomation"]["stopCommandIds"] == []
     assert payload["nextAction"] == "fix_blockers"
 
 

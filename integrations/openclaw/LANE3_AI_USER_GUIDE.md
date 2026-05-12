@@ -78,6 +78,7 @@ Current implementation-only delta:
 - `crm-024` adds `operatorReview.liveApproval.readyFacts` and `operatorReview.liveApproval.missingFacts`; prefer those category lists when explaining what approval facts remain missing.
 - `crm-025` adds `operatorReview.actionBoundary`; run only ids in `agentExecutableCommandIds` and stop on `operatorOnlyCommandIds`, `zohoWriteCommandIds`, or `requiresExplicitOperatorApprovalCommandIds`.
 - `crm-026` adds the same redacted `operatorReview.nextCommands` and `operatorReview.actionBoundary` stop/go contract to readiness bundles; blocked bundles expose dry-run fixer ids only, while ready bundles expose the live approval id as operator-only and Zoho-writing.
+- `crm-028` adds `operatorReview.agentAutomation` to packets and readiness bundles; prefer `nextAgentExecutableCommandId` plus `agentMayExecuteNextCommand` for autonomous branching, and stop on any `stopCommandIds`.
 
 ## Required behavior support after lane3 sync
 
@@ -316,6 +317,9 @@ After sync, ensure the AI user follows:
     `agentExecutableCommandIds` may be automated, and any id in
     `operatorOnlyCommandIds`, `zohoWriteCommandIds`, or
     `requiresExplicitOperatorApprovalCommandIds` requires a human operator
+  - prefer `operatorReview.agentAutomation.nextAgentExecutableCommandId` when
+    `agentMayExecuteNextCommand=true`; otherwise stop and explain
+    `operatorReview.agentAutomation.stopReason`
   - treat `summary_file_missing`, `fixture_evidence_not_ready`,
     `payload_placeholder_count_missing`, and
     `fixture_payload_placeholder_email` as stop-and-fix blockers

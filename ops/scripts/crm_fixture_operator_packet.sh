@@ -305,6 +305,27 @@ PAYLOAD="$("$JQ_BIN" -n \
           normalUpsertExecuteBlocked: true,
           liveFixtureExecutionBoundary: (if (($zohoWriteCommandIds | length) > 0) then "operator_only" else "not_ready_or_dry_run_only" end)
         },
+        agentAutomation: {
+          policyId: "crm-fixture-agent-command-boundary-v1",
+          guidance: "execute only dry-run/local command ids listed in nextAgentExecutableCommandId or agentExecutableCommandIds; stop on any operator-only, Zoho-writing, or explicit-approval id",
+          nextAgentExecutableCommandId: ($agentExecutableCommandIds[0] // null),
+          agentMayExecuteNextCommand: (
+            (($agentExecutableCommandIds | length) > 0)
+            and (($zohoWriteCommandIds | length) == 0)
+            and (($approvalCommandIds | length) == 0)
+          ),
+          agentExecutableCommandIds: $agentExecutableCommandIds,
+          dryRunOnlyCommandIds: $dryRunOnlyCommandIds,
+          stopCommandIds: (($operatorOnlyCommandIds + $zohoWriteCommandIds + $approvalCommandIds) | unique),
+          stopReason: (
+            if (($operatorOnlyCommandIds + $zohoWriteCommandIds + $approvalCommandIds) | unique | length) > 0 then "operator_only_zoho_write_or_approval_required"
+            elif ($agentExecutableCommandIds | length) == 0 then "no_agent_executable_command"
+            else null
+            end
+          ),
+          normalUpsertExecuteBlocked: true,
+          liveFixtureExecutionBlockedForAgent: true
+        },
         cleanupSelectorTypes: ($preflightReport.cleanup.selectorTypes // []),
         cleanupSelectorTypeCount: (($preflightReport.cleanup.selectorTypes // []) | length),
         liveApproval: {

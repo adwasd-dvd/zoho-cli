@@ -311,7 +311,8 @@ for the operator-only boundary. It reports whether the smoke summary, fixture
 evidence, payload digest, idempotency key, exact approval token, and placeholder
 email check are present while keeping `agentMayExecute=false`; it stores no raw
 approval token, raw idempotency key, payload values, cleanup text, or selector
-values.
+values; the redaction booleans include `rawRequiredApprovalStored=false` and
+`rawIdempotencyKeyStored=false`.
 `crm-024` adds `operatorReview.liveApproval.readyFacts` and
 `operatorReview.liveApproval.missingFacts` so an agent can branch on category
 names such as `summary_file`, `dry_run_readiness`, `fixture_evidence`,
@@ -327,6 +328,12 @@ stop on `operatorOnlyCommandIds`, `zohoWriteCommandIds`, or
 ready bundle exposes one operator-only, Zoho-writing live approval command id;
 a blocked bundle exposes only the dry-run `fix_readiness_blockers` id, keeping
 normal `zoho crm upsert --execute` and live fixture execution blocked.
+`crm-028` adds `operatorReview.agentAutomation`, a compact AI execution summary
+for both packets and readiness bundles. It names `nextAgentExecutableCommandId`
+when a dry-run/local step may be automated, sets
+`agentMayExecuteNextCommand=false` when the next step is operator-only or
+Zoho-writing, lists `stopCommandIds`, and keeps
+`liveFixtureExecutionBlockedForAgent=true`.
 `reportFiles` and `reportsReady` expose only artifact basenames for the packet,
 payload preflight, optional dry-run readiness bundle, and optional smoke summary
 so agents can archive or pass evidence without logging local paths.

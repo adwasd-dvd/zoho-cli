@@ -28,8 +28,8 @@ openclaw_cliq_channel:
 crm:
   priority: 4
   status: in_progress
-  phase: v0_5_readiness_action_boundary
+  phase: v0_5_agent_automation_boundary
   target_release: v0.5.0
-  current_milestone: crm-026-readiness-action-boundary
+  current_milestone: crm-028-agent-automation-boundary
   blockers:
     - "operator-provided dedicated CRM fixture payload and cleanup approval required before Zoho-backed dry-run smoke and live fixture execution"

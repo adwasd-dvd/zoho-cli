@@ -107,6 +107,12 @@ before any id listed under `operatorOnlyCommandIds`, `zohoWriteCommandIds`, or
 `liveFixtureExecutionBoundary=operator_only`, the next Zoho-writing command is
 for a human operator only.
 
+`operatorReview.agentAutomation` is the shortcut summary for AI agents. It
+reports `nextAgentExecutableCommandId`, `agentMayExecuteNextCommand`,
+`stopCommandIds`, and `stopReason`; agents may execute only when
+`agentMayExecuteNextCommand=true`, and must stop when `stopCommandIds` contains
+an operator-only, Zoho-writing, or explicit-approval command id.
+
 `operatorReview.liveApproval` is the compact approval checklist for AI agents.
 It reports booleans such as `summaryFileReady`, `dryRunReadinessReady`,
 `fixtureEvidenceReady`, `payloadDigestPresent`, `idempotencyKeyPresent`,

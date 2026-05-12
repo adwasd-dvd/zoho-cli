@@ -1,10 +1,14 @@
-last_run_at: "2026-05-12T14:02:06Z"
+last_run_at: "2026-05-12T14:17:34Z"
 last_result: passing
-current_focus: cliq-channel-488-post-crm-state-sync-decision-ready
+current_focus: crm-028-agent-automation-boundary
 suites:
   unit:
     status: passing
     notes:
+      - "crm-028 agent automation boundary started at 2026-05-12T14:13:11Z: CRM fixture operator packets and readiness bundles now expose `operatorReview.agentAutomation` with `nextAgentExecutableCommandId`, `agentMayExecuteNextCommand`, `stopCommandIds`, and `stopReason`."
+      - "crm-028 focused verification passed at 2026-05-12T14:13:11Z: shell syntax for CRM fixture scripts; CRM packet/readiness agent automation tests plus Lane 3 CRM contract and markdown update -> 7 passed in 1.08s; ruff format/check passed."
+      - "crm-028 broader verification passed at 2026-05-12T14:17:34Z: CRM fixture tests plus Lane 3 required paths, CRM contract, and markdown update -> 15 passed, 70 deselected in 2.37s; ruff format/check, YAML parse, and `git diff --check` passed."
+      - "crm-028 performed no publish, tag, npm promotion, GitHub release, version bump, expectedIntegrity fill, Zoho call, or CRM write."
       - "cliq-channel-488 post-CRM state sync source drift started at 2026-05-12T13:52:34Z: run `20260512T135144Z-crm-state-sync-postcommit-source` returned `package_source_unchanged`, no blockers, `headCommit=0319d9b8ebabf532f0b76230991a1feae2ee78a1`, `repoChangedFileCount=29`, `packageDrift.packageChangedSinceManifest=false`, and `dirtyFileCount=0`."
       - "cliq-channel-488 decision packet started at 2026-05-12T13:52:34Z: run `20260512T135144Z-crm-state-sync-postcommit-decision` returned `awaiting_operator_publish_path`, `publish_path_not_selected`, all `reportsReady=true`, `operator_publish_plan_ready`, `artifact_verified`, `install_smoke_passed`, `trusted_reply_recorded`, and `agentMayExecuteSelectedPath=false`."
       - "cliq-channel-488 verification passed at 2026-05-12T14:02:06Z: OpenClaw Cliq RC checklist/operator handoff contract, Lane 3 required paths/troubleshooting contract, and markdown update -> 5 passed in 0.02s; ruff format/check, YAML parse, and `git diff --check` passed."

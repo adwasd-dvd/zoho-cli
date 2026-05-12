@@ -9,11 +9,15 @@ Current baseline:
 - Version: `0.4.0-rc.1`
 - Tarball: `adwasd-openclaw-zoho-cliq-0.4.0-rc.1.tgz`
 - Local pack integrity:
-  `sha512-2gp4TAicx7Ax07jBI2HNl9WFlIrVaqMh082mLAN5NVxF3p3BL7AWEgQDJfs+TOzwU2zLiSNdEu79BEFNZGsNEw==`
-- Local pack shasum: `7717aa539f3ccf8d1ee1be560283ea30fa6a87b6`
+  `sha512-VohxhazOhy91KLiBes/idAMdR1bgFerkvsa8gqtijl6vIwIDKE6G51eXGr6QPKFQlVgd4uxEtJZ+7ywNzhHU+Q==`
+- Local pack shasum: `f8a7e3ba9cb1c6a4bf6aa9f765acd63b8b3ed680`
 - Trusted reply evidence: `trusted_reply_recorded`
 - Local artifact check: `artifact_verified`
 - Local OpenClaw install smoke: `install_smoke_passed`
+- Handoff manifest:
+  `openclaw_cliq_rc_operator_handoff_manifest_20260512T040000Z-direct-chatid-fallback-manifest.json`
+- Latest source drift guard:
+  `openclaw_cliq_rc_source_drift_check_20260512T044312Z-post-crm-packet-source.json`
 
 ## Non-automated approval boundary
 

@@ -1,10 +1,16 @@
-last_run_at: "2026-05-12T04:24:42Z"
+last_run_at: "2026-05-12T04:44:49Z"
 last_result: passing
-current_focus: crm-015-operator-fixture-packet
+current_focus: cliq-channel-467-operator-publish-baseline-sync
 suites:
   unit:
     status: passing
     notes:
+      - "cliq-channel-467 operator publish baseline sync completed at 2026-05-12T04:44:49Z"
+      - "synced `docs/releases/OPENCLAW_CLIQ_CHANNEL_V0_4_RC_CHECKLIST.md`, `docs/releases/OPENCLAW_CLIQ_CHANNEL_V0_4_OPERATOR_PUBLISH_HANDOFF.md`, and `tests/test_openclaw_channel_contract.py` to the latest no-publish direct `chatId` fallback baseline"
+      - "latest local RC artifact baseline: `OPENCLAW_CLIQ_PACK_RUN_ID=20260512T040000Z-direct-chatid-fallback`, tarball `adwasd-openclaw-zoho-cliq-0.4.0-rc.1.tgz`, shasum `f8a7e3ba9cb1c6a4bf6aa9f765acd63b8b3ed680`, integrity `sha512-VohxhazOhy91KLiBes/idAMdR1bgFerkvsa8gqtijl6vIwIDKE6G51eXGr6QPKFQlVgd4uxEtJZ+7ywNzhHU+Q==`, full CI `1901 passed in 53.30s`, and handoff manifest `openclaw_cliq_rc_operator_handoff_manifest_20260512T040000Z-direct-chatid-fallback-manifest.json`"
+      - "OPENCLAW_CLIQ_SOURCE_DRIFT_RUN_ID=20260512T044312Z-post-crm-packet-source ops/scripts/openclaw_cliq_rc_source_drift_check.sh -> `package_source_unchanged`, current `HEAD` `bd56fb3fdb16265c3e668dd830b3930d9622c259`, `repoChangedSinceManifest=true`, `repoChangedFileCount=15`, `packageDrift.packageChangedSinceManifest=false`, no blockers, and no publish/tag/release/version bump/expectedIntegrity fill"
+      - "./.venv/bin/python -m pytest -q tests/test_openclaw_channel_contract.py::test_openclaw_cliq_channel_rc_checklist_has_cut_contract tests/test_openclaw_channel_contract.py::test_openclaw_cliq_operator_publish_handoff_has_approval_boundary tests/test_markdown_update.py -> 3 passed in 0.01s"
+      - "./.venv/bin/ruff format --check tests/test_openclaw_channel_contract.py -> 1 file already formatted; YAML parse for project/module_status/test_status/active_task -> YAML_PARSE_OK; git diff --check -> passed"
       - "crm-015 operator fixture packet completed at 2026-05-12T04:24:42Z"
       - "added `ops/scripts/crm_fixture_operator_packet.sh`; it combines local payload preflight and optional existing dry-run readiness bundle output into one redacted packet with statuses `blocked`, `payload_preflight_ready`, `ready_for_operator_live_fixture`, or `live_fixture_recorded`, while keeping `normalUpsertExecuteBlocked=true` and `agentMayExecuteLiveFixture=false`"
       - "bash -n ops/scripts/crm_fixture_operator_packet.sh ops/scripts/crm_fixture_payload_preflight.sh ops/scripts/crm_fixture_operator_readiness_bundle.sh -> passed"

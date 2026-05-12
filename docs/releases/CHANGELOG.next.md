@@ -119,6 +119,7 @@
 - Synced README, the v0.4 RC checklist, Lane 3 index, and contract markers with the embedded handler-trigger no-response flow.
 - Recorded the post-doc-sync source drift and decision packet evidence: repo docs/state commits moved HEAD after the handoff manifest, but `package_source_unchanged` and `packageDrift.packageChangedSinceManifest=false` keep the verified RC package current while publish path selection remains operator-only.
 - Recorded the post-CRM selector metadata source drift and decision packet evidence: pushed CRM docs/state commits moved HEAD to `ae9424e7`, but `package_source_unchanged` and `packageDrift.packageChangedSinceManifest=false` keep the verified Cliq RC package current while publish path selection remains operator-only.
+- Recorded the post-CRM command-preview source drift and decision packet evidence: pushed CRM docs/state commit `df683f7e` moved HEAD after the handoff manifest, but `package_source_unchanged` and `packageDrift.packageChangedSinceManifest=false` keep the verified Cliq RC package current while publish path selection remains operator-only.
 
 ### Architecture / modularization (2026-05-04T18:19:47Z)
 - Started `cliq-210` post-RC modularization by extracting the `zoho cliq status` and `zoho cliq capabilities` command bodies into `zoho_cli/commands/cliq_readiness.py`, leaving `zoho_cli/cli.py` with runtime dependency injection plus existing Typer registration only. Command names, help text, and JSON output are unchanged.

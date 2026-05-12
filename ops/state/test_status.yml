@@ -1,10 +1,13 @@
-last_run_at: "2026-05-12T09:29:58Z"
+last_run_at: "2026-05-12T09:40:37Z"
 last_result: passing
-current_focus: crm-020-operator-command-previews
+current_focus: cliq-channel-478-post-crm-command-preview-decision-evidence
 suites:
   unit:
     status: passing
     notes:
+      - "cliq-channel-478 post-CRM command-preview decision evidence started at 2026-05-12T09:32:44Z: source drift run `20260512T091513Z-crm-command-previews-postcommit-source` returned `package_source_unchanged`, `headCommit=df683f7e0bba4650cdff23bc7692cbfcc2545e51`, `repoChangedFileCount=25`, and `packageDrift.packageChangedSinceManifest=false`."
+      - "cliq-channel-478 decision packet `20260512T091513Z-crm-command-previews-postcommit-decision` returned `awaiting_operator_publish_path`, `publish_path_not_selected`, `operator_publish_plan_ready`, `artifact_verified`, `install_smoke_passed`, `trusted_reply_recorded`, and `agentMayExecuteSelectedPath=false`."
+      - "cliq-channel-478 verification passed at 2026-05-12T09:40:37Z: OpenClaw Cliq RC checklist/operator handoff contract, Lane 3 required paths/troubleshooting contract, and markdown update -> 5 passed in 0.02s; ruff format/check, YAML parse, and `git diff --check` passed."
       - "crm-020 operator command previews completed at 2026-05-12T09:23:49Z: CRM fixture operator packets now expose redacted `operatorReview.nextCommands` entries with placeholder-only commands and explicit `agentMayExecute`, `dryRunOnly`, `writesZohoData`, `operatorOnly`, and `requiresExplicitOperatorApproval` gates."
       - "crm-020 tests assert dry-run command previews do not include raw fixture email, cleanup text, or temp payload paths; live fixture approval remains `agentMayExecute=false` and `writesZohoData=true`."
       - "Focused crm-020 verification passed at 2026-05-12T09:29:58Z: shell syntax for CRM fixture scripts; CRM fixture operator packet/preflight/readiness tests plus Lane 3 CRM contract and markdown update -> 12 passed, 73 deselected in 1.64s; ruff format/check, YAML parse, and `git diff --check` passed."

@@ -1,26 +1,22 @@
-id: crm-020
-title: add redacted CRM fixture operator command previews
-module: crm
+id: cliq-channel-478
+title: record post-CRM command-preview RC decision evidence
+module: openclaw_cliq_channel
 stage: completed
 status: completed
 owner: coder
-updated_at: '2026-05-12T09:29:58Z'
+updated_at: '2026-05-12T09:40:37Z'
 execution_mode: turbo_20x
 throughput_policy_ref: ops/state/execution_policy.yml
 success_criteria:
-  - CRM fixture operator packet reports redacted `operatorReview.nextCommands`
-  - command previews use placeholders instead of raw payload paths, fixture emails, cleanup text, or selector values
-  - local and dry-run commands are explicitly marked `agentMayExecute=true` and `writesZohoData=false`
-  - live fixture approval preview is explicitly marked `agentMayExecute=false`, `writesZohoData=true`, and `requiresExplicitOperatorApproval=true`
-  - Lane 2 and Lane 3 docs describe the command-preview gates
-  - normal `zoho crm upsert --execute` and live fixture execution remain blocked
-next_if_done: CRM fixture Zoho-backed dry-run can start only after an operator provides a copied dedicated payload and a cleanup plan with `cleanup.qualityReady=true`, `cleanup.selectorPresent=true`, and appropriate redacted `cleanup.selectorTypes`; live fixture execution still requires exact approval and live env gates.
+  - post-CRM command-preview source drift guard reports `package_source_unchanged`
+  - operator decision packet reports `awaiting_operator_publish_path`
+  - artifact, install smoke, promotion, and trusted reply evidence remain ready in the decision packet
+  - RC checklist, operator handoff, README, Lane 3 index, and state docs record the new evidence
+  - publish, tag, npm promotion, GitHub release, and expectedIntegrity fill remain operator-only
+next_if_done: Operator chooses the native Cliq RC artifact path with `ops/scripts/openclaw_cliq_rc_operator_decision_packet.sh`; CRM fixture dry-run remains gated on a copied dedicated payload and cleanup plan.
 progress:
-  - "2026-05-12T09:23:49Z crm-020 completed: `ops/scripts/crm_fixture_operator_packet.sh` now emits `operatorReview.nextCommands` with placeholder-only command previews and explicit `agentMayExecute`, `dryRunOnly`, `writesZohoData`, `operatorOnly`, and `requiresExplicitOperatorApproval` gates."
-  - "2026-05-12T09:23:49Z local/dry-run next commands point to `ops/scripts/crm_fixture_operator_packet.sh` or `ops/scripts/crm_fixture_live_smoke.sh` with placeholder payload and cleanup values; live fixture approval is previewed as operator-only with `agentMayExecute=false` and `writesZohoData=true`."
-  - "2026-05-12T09:23:49Z tests assert command previews do not include raw fixture email, cleanup text, or temporary payload paths."
-  - "2026-05-12T09:29:58Z corrected the operator-only live command preview to match `ops/scripts/crm_fixture_live_smoke.sh`: exact fixture approval is generated from the dry-run plan inside the script, while the visible live preview carries only the two live env gates plus placeholder payload and cleanup values."
-  - "2026-05-12T09:23:49Z no Zoho call, CRM live write, normal `zoho crm upsert --execute`, publish, tag, npm promotion, GitHub release, or expectedIntegrity fill was performed."
-  - "2026-05-12T09:29:58Z focused verification passed: shell syntax for CRM fixture scripts; CRM fixture operator packet/preflight/readiness tests plus Lane 3 CRM contract and markdown update -> 12 passed, 73 deselected in 1.64s."
-  - "2026-05-12T09:29:58Z final local checks passed: ruff format --check, ruff check, YAML parse, and `git diff --check`."
-next_step: Commit and push the operator command-preview slice, then continue to the next safe RC readiness milestone.
+  - "2026-05-12T09:32:44Z source drift run `20260512T091513Z-crm-command-previews-postcommit-source` returned `package_source_unchanged`, `headCommit=df683f7e0bba4650cdff23bc7692cbfcc2545e51`, `repoChangedSinceManifest=true`, `repoChangedFileCount=25`, and `packageDrift.packageChangedSinceManifest=false`."
+  - "2026-05-12T09:32:44Z decision packet `20260512T091513Z-crm-command-previews-postcommit-decision` returned `awaiting_operator_publish_path`, `publish_path_not_selected`, `operator_publish_plan_ready`, `artifact_verified`, `install_smoke_passed`, `trusted_reply_recorded`, and `agentMayExecuteSelectedPath=false`."
+  - "2026-05-12T09:32:44Z no publish, tag, npm promotion, GitHub release, expectedIntegrity fill, Zoho call, or CRM live write was performed."
+  - "2026-05-12T09:40:37Z focused verification passed: OpenClaw Cliq RC checklist/operator handoff contract, Lane 3 required paths/troubleshooting contract, and markdown update -> 5 passed in 0.02s; ruff format/check, YAML parse, and `git diff --check` passed."
+next_step: Commit and push the post-CRM command-preview decision evidence slice, then continue to the next safe RC readiness milestone.

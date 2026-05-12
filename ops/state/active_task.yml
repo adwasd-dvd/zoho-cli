@@ -1,20 +1,20 @@
-id: platform-216
-title: add autonomy operator request recheck hints
+id: platform-217
+title: add autonomy operator action prompt wrapper
 module: platform
 stage: completed
 status: completed
 owner: coder
-updated_at: '2026-05-12T21:14:00Z'
+updated_at: '2026-05-12T21:28:45Z'
 execution_mode: turbo_20x
 throughput_policy_ref: ops/state/execution_policy.yml
 success_criteria:
-  - "Extend autonomy-packet `operatorActionRequests` with placeholder-only `commandPreview` and `unblocks` hints"
-  - "Keep all request hints redacted and non-executable for agents at publish/write boundaries"
-  - "Sync Lane 1/2/3 docs and regression tests with the new request-hint contract"
+  - "Add a read-only wrapper that renders autonomy-packet `operatorActionRequests` into JSON plus Markdown for operator handoff"
+  - "Keep raw secrets, payload values, cleanup text, local paths, publish/tag/release/integrity actions, normal CRM upsert execution, and live Zoho writes out of agent execution"
+  - "Sync Lane 1/2/3 docs and regression tests with the new operator-action prompt contract"
   - "Do not publish, tag, npm-promote, create GitHub releases, fill expectedIntegrity, call Zoho, or write CRM data"
 next_if_done: Continue to the next safe RC readiness milestone without publishing, tagging, npm promotion, GitHub release creation, expectedIntegrity fill, or live CRM writes.
 progress:
-  - "2026-05-12T21:08:46Z autonomy run `20260512T210846Z-operator-request-hints-dev` returned `operator_input_required` with placeholder-only `commandPreview` and `unblocks` on publish-path, cleanup-plan, and payload-file requests."
-  - "2026-05-12T21:08:46Z focused autonomy/Lane 3/RC markdown tests passed with 6 tests; shell syntax and `git diff --check` passed."
-  - "2026-05-12T21:14:00Z final verification passed: focused autonomy/Lane 3/RC markdown tests -> 6 passed in 0.14s; `make lint`, Ruff format, YAML parse, and `git diff --check` passed."
-next_step: Commit and push the platform-216 autonomy request-hint slice, then continue to the next safe milestone.
+  - "2026-05-12T21:28:45Z autonomy check `20260512T212845Z-next-check` returned `operator_input_required` with action requests for Cliq publish path selection, CRM fixture cleanup plan, and CRM fixture payload file."
+  - "2026-05-12T21:28:45Z operator action prompt run `20260512T212845Z-operator-action-prompt-dev` returned `operator_action_prompt_ready`, `nextAction=send_operator_action_prompt`, basename-only report files, and `actionRequestsAgentExecutableAny=false`."
+  - "2026-05-12T21:28:45Z final verification passed: focused operator-action/autonomy/Lane 3/RC markdown tests -> 6 passed in 0.35s; shell syntax, `make lint`, Ruff format, YAML parse, and `git diff --check` passed."
+next_step: Commit and push the platform-217 operator-action prompt wrapper slice, then continue to the next safe milestone.

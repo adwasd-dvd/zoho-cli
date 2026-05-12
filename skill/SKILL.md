@@ -194,7 +194,12 @@ Use this skill as the default operating contract for an OpenClaw agent acting li
   `unblocks` hints for the next recheck, and include stable ids such as
   `select_openclaw_cliq_publish_path`,
   `provide_crm_fixture_cleanup_plan`, and
-  `provide_crm_fixture_payload_file`.
+  `provide_crm_fixture_payload_file`. To produce the human-facing handoff,
+  prefer `ops/scripts/zoho_cli_rc_operator_action_prompt.sh`; it returns
+  `operator_action_prompt_ready`, `nextAction=send_operator_action_prompt`,
+  and `messageMarkdown` while keeping report files basename-only and publish,
+  tag, GitHub release, expectedIntegrity fill, normal CRM upsert execution, and
+  live Zoho writes disabled for agents.
 - For CRM SDK work, run `zoho crm sdk-status` first. Treat
   `zohocrmsdk8_0==5.0.0` as optional `zoho-cli[crm-sdk]` readiness, keep the
   current HTTP adapter as default, use `zoho_cli/crm_sdk.py` only as the

@@ -275,6 +275,21 @@ these entries are guidance only, include placeholder-only `commandPreview` /
 `unblocks` hints for the next local recheck, and always keep
 `agentMayExecute=false`.
 
+To render the exact human handoff from those requests, run:
+
+```bash
+ops/scripts/zoho_cli_rc_operator_action_prompt.sh
+```
+
+It runs or reads the autonomy packet and emits
+`zoho_cli_rc_operator_action_prompt`. Treat
+`status=operator_action_prompt_ready` and
+`nextAction=send_operator_action_prompt` as a notify/handoff state, not an
+execution grant. The `messageMarkdown` field is intentionally compact and
+redacted: report files are basenames, command previews use placeholders, and
+publish/tag/GitHub release/expectedIntegrity fill plus live Zoho writes remain
+disabled for agents.
+
 For a compact AI go/stop summary, run:
 
 ```bash

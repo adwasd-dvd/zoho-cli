@@ -1,7 +1,7 @@
 module: Platform
-updated_at: "2026-05-12T21:08:46Z"
+updated_at: "2026-05-12T21:28:45Z"
 status: in_progress
 execution_mode: turbo_20x
 throughput_policy_ref: ops/state/execution_policy.yml
 blockers: []
-next_small_step: "platform-216 extends autonomy-packet `operatorActionRequests` with placeholder-only `commandPreview` and `unblocks` hints so operators can see the next local recheck gate without exposing raw payload paths, cleanup text, or secrets; continue safe RC readiness work without publish/tag/release/expectedIntegrity fill or live Zoho writes."
+next_small_step: "platform-217 adds `ops/scripts/zoho_cli_rc_operator_action_prompt.sh`, a read-only wrapper that renders autonomy-packet `operatorActionRequests` into JSON plus Markdown handoff while keeping raw paths, payload values, cleanup text, secrets, publish/tag/release/expectedIntegrity fill, normal CRM upsert execution, and live Zoho writes disabled for agents; continue safe RC readiness work."

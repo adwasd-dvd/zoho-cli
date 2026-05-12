@@ -85,7 +85,9 @@ CRM SDK planning:
   `packageChangedSinceManifest=false` while awaiting operator input;
   `cliq-channel-493` records the post-platform-215 source-drift/decision/
   autonomy evidence showing commit `9fac452e` still keeps package source
-  unchanged while exposing the same redacted operator action requests)
+  unchanged while exposing the same redacted operator action requests;
+  `platform-217` adds the read-only operator-action prompt wrapper for turning
+  those requests into a compact operator handoff)
 - `ops/scripts/zoho_cli_rc_autonomy_packet.sh` (`platform-214`: read-only
   cross-lane RC autonomy packet that combines native Cliq RC decision state with
   CRM fixture next-command state; emits `agent_next_command_ready` only when the
@@ -95,6 +97,13 @@ CRM SDK planning:
   disabled for agents; exposes redacted `operatorActionRequests` with stable
   ids plus placeholder-only `commandPreview` / `unblocks` hints for
   publish-path selection, fixture cleanup plan, and fixture payload file inputs)
+- `ops/scripts/zoho_cli_rc_operator_action_prompt.sh` (`platform-217`:
+  read-only operator-action prompt wrapper that runs or reads the autonomy
+  packet, emits `operator_action_prompt_ready` plus
+  `nextAction=send_operator_action_prompt` when human inputs are missing, and
+  renders a compact Markdown handoff while keeping report files basename-only
+  and all raw secrets, payload values, cleanup text, local paths, publish/tag/
+  release/integrity actions, and live Zoho writes out of agent execution)
 - `ops/scripts/openclaw_cliq_bot_no_response_packet.sh`
   (`cliq-channel-472/474`: first responder for Bot no-response reports; runs
   public callback smoke plus live ingress diagnostics, then embeds

@@ -1,10 +1,12 @@
-last_run_at: "2026-05-12T21:14:00Z"
+last_run_at: "2026-05-12T21:28:45Z"
 last_result: passing
-current_focus: platform-216-autonomy-request-hints
+current_focus: platform-217-operator-action-prompt
 suites:
   unit:
     status: passing
     notes:
+      - "platform-217 operator action prompt run `20260512T212845Z-operator-action-prompt-dev` returned `operator_action_prompt_ready`, `nextAction=send_operator_action_prompt`, request ids `[select_openclaw_cliq_publish_path, provide_crm_fixture_cleanup_plan, provide_crm_fixture_payload_file]`, basename-only report files, and `actionRequestsAgentExecutableAny=false`."
+      - "platform-217 final verification passed at 2026-05-12T21:28:45Z: operator-action/autonomy/Lane 3/RC markdown tests -> 6 passed in 0.35s; shell syntax, `make lint`, Ruff format, YAML parse, and `git diff --check` passed."
       - "platform-216 autonomy run `20260512T210846Z-operator-request-hints-dev` returned `operator_input_required` with placeholder-only `commandPreview` and `unblocks` hints on the publish-path, cleanup-plan, and payload-file operator action requests."
       - "platform-216 final verification passed at 2026-05-12T21:14:00Z: autonomy/Lane 3/RC markdown tests -> 6 passed in 0.14s; shell syntax, `make lint`, Ruff format, YAML parse, and `git diff --check` passed."
       - "cliq-channel-493 post-platform-215 evidence started at 2026-05-12T20:53:45Z: source drift run `20260512T205345Z-platform215-postcommit-source` returned `package_source_unchanged`, no blockers, `headCommit=9fac452e0fd25e6a58f3054369dec01f83cb0950`, `repoChangedFileCount=38`, `packageDrift.packageChangedSinceManifest=false`, and `dirtyFileCount=0`."

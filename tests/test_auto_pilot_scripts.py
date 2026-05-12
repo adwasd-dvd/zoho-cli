@@ -92,6 +92,9 @@ OPENCLAW_CLIQ_RC_DECISION_PACKET_SCRIPT = (
 ZOHO_CLI_RC_AUTONOMY_PACKET_SCRIPT = (
     REPO_ROOT / "ops" / "scripts" / "zoho_cli_rc_autonomy_packet.sh"
 )
+ZOHO_CLI_RC_OPERATOR_ACTION_PROMPT_SCRIPT = (
+    REPO_ROOT / "ops" / "scripts" / "zoho_cli_rc_operator_action_prompt.sh"
+)
 
 
 def test_export_scope_recheck_runner_propagates_probe_exit_codes(
@@ -2348,6 +2351,186 @@ def test_zoho_cli_rc_autonomy_packet_stops_for_selected_publish_path(
             },
         }
     ]
+
+
+def _write_operator_action_prompt_autonomy_packet(
+    tmp_path: Path,
+    *,
+    with_requests: bool = True,
+    status: str = "operator_input_required",
+) -> Path:
+    requests = []
+    if with_requests:
+        requests = [
+            {
+                "id": "select_openclaw_cliq_publish_path",
+                "lane": "openclawCliq",
+                "required": True,
+                "inputKind": "choice",
+                "allowedValues": [
+                    "local_operator_rc",
+                    "npm_rc_publish",
+                    "github_release_artifact",
+                ],
+                "commandPreview": (
+                    "OPENCLAW_CLIQ_OPERATOR_PUBLISH_PATH=<choice> "
+                    "ops/scripts/openclaw_cliq_rc_operator_decision_packet.sh"
+                ),
+                "unblocks": "openclaw_cliq_operator_publish_selection_review",
+                "agentMayExecute": False,
+                "requiresExplicitOperatorApproval": True,
+                "redaction": {
+                    "rawSecretsStored": False,
+                    "rawLocalPathsStored": False,
+                },
+            },
+            {
+                "id": "provide_crm_fixture_cleanup_plan",
+                "lane": "crmFixture",
+                "required": True,
+                "inputKind": "text",
+                "guidance": (
+                    "Provide a cleanup plan with an action, target, and selector "
+                    "category."
+                ),
+                "commandPreview": (
+                    "ZOHO_CRM_FIXTURE_PAYLOAD_FILE=<copied-payload-file> "
+                    "ZOHO_CRM_FIXTURE_CLEANUP_PLAN=<cleanup-plan> "
+                    "ops/scripts/crm_fixture_agent_next_command.sh"
+                ),
+                "unblocks": "crm_fixture_agent_next_command_recheck",
+                "agentMayExecute": False,
+                "requiresExplicitOperatorApproval": False,
+                "redaction": {
+                    "rawCleanupPlanStored": False,
+                    "rawSelectorValuesStored": False,
+                },
+            },
+            {
+                "id": "provide_crm_fixture_payload_file",
+                "lane": "crmFixture",
+                "required": True,
+                "inputKind": "file",
+                "template": "docs/releases/CRM_V0_5_FIXTURE_PAYLOAD_TEMPLATE.json",
+                "guidance": "Copy the template outside the repo.",
+                "commandPreview": (
+                    "ZOHO_CRM_FIXTURE_PAYLOAD_FILE=<copied-payload-file> "
+                    "ZOHO_CRM_FIXTURE_CLEANUP_PLAN=<cleanup-plan> "
+                    "ops/scripts/crm_fixture_agent_next_command.sh"
+                ),
+                "unblocks": "crm_fixture_agent_next_command_recheck",
+                "agentMayExecute": False,
+                "requiresExplicitOperatorApproval": False,
+                "redaction": {
+                    "rawPayloadStored": False,
+                    "rawEmailStored": False,
+                    "rawLocalPathsStored": False,
+                },
+            },
+        ]
+
+    packet = tmp_path / "autonomy-source.json"
+    packet.write_text(
+        json.dumps(
+            {
+                "kind": "zoho_cli_rc_autonomy_packet",
+                "status": status,
+                "nextAction": "collect_operator_input_or_select_publish_path",
+                "operatorActionRequests": requests,
+                "safety": {
+                    "noPublishOrTagOrReleasePerformed": True,
+                    "noZohoLiveWritePerformed": True,
+                    "normalCrmUpsertExecuteBlocked": True,
+                    "agentMayPublish": False,
+                    "agentMayRunCrmNextCommand": False,
+                },
+            }
+        ),
+        encoding="utf-8",
+    )
+    return packet
+
+
+def test_zoho_cli_rc_operator_action_prompt_summarizes_requests(
+    tmp_path: Path,
+) -> None:
+    autonomy_packet = _write_operator_action_prompt_autonomy_packet(tmp_path)
+    prompt_file = tmp_path / "operator-actions.json"
+
+    result = subprocess.run(
+        ["bash", str(ZOHO_CLI_RC_OPERATOR_ACTION_PROMPT_SCRIPT)],
+        cwd=REPO_ROOT,
+        env={
+            **os.environ,
+            "ZOHO_CLI_RC_OPERATOR_ACTION_RUN_ID": "unit-operator-actions",
+            "ZOHO_CLI_RC_OPERATOR_ACTION_REPORT_DIR": str(tmp_path),
+            "ZOHO_CLI_RC_OPERATOR_ACTION_FILE": str(prompt_file),
+            "ZOHO_CLI_RC_OPERATOR_ACTION_AUTONOMY_SOURCE_FILE": str(autonomy_packet),
+        },
+        capture_output=True,
+        text=True,
+        check=False,
+    )
+
+    output = f"{result.stdout}\n{result.stderr}"
+    assert result.returncode == 0, output
+    assert str(tmp_path) not in result.stdout
+    payload = json.loads(result.stdout)
+    assert payload["status"] == "operator_action_prompt_ready"
+    assert payload["nextAction"] == "send_operator_action_prompt"
+    assert payload["requestCount"] == 3
+    assert payload["requiredRequestCount"] == 3
+    assert payload["requestIds"] == [
+        "select_openclaw_cliq_publish_path",
+        "provide_crm_fixture_cleanup_plan",
+        "provide_crm_fixture_payload_file",
+    ]
+    assert payload["safety"]["agentMayExecutePromptRequests"] is False
+    assert payload["safety"]["actionRequestsAgentExecutableAny"] is False
+    assert payload["safety"]["redaction"]["rawPayloadStored"] is False
+    assert "select_openclaw_cliq_publish_path" in payload["messageMarkdown"]
+    assert "`local_operator_rc`" in payload["messageMarkdown"]
+    assert "<copied-payload-file>" in payload["messageMarkdown"]
+    assert "crm_fixture_agent_next_command_recheck" in payload["messageMarkdown"]
+    assert str(tmp_path) not in payload["messageMarkdown"]
+    assert payload["reportFiles"] == {
+        "operatorActionPrompt": "operator-actions.json",
+        "autonomyPacket": autonomy_packet.name,
+    }
+    assert json.loads(prompt_file.read_text()) == payload
+
+
+def test_zoho_cli_rc_operator_action_prompt_handles_no_requests(
+    tmp_path: Path,
+) -> None:
+    autonomy_packet = _write_operator_action_prompt_autonomy_packet(
+        tmp_path,
+        with_requests=False,
+        status="no_agent_command",
+    )
+
+    result = subprocess.run(
+        ["bash", str(ZOHO_CLI_RC_OPERATOR_ACTION_PROMPT_SCRIPT)],
+        cwd=REPO_ROOT,
+        env={
+            **os.environ,
+            "ZOHO_CLI_RC_OPERATOR_ACTION_RUN_ID": "unit-no-actions",
+            "ZOHO_CLI_RC_OPERATOR_ACTION_REPORT_DIR": str(tmp_path),
+            "ZOHO_CLI_RC_OPERATOR_ACTION_FILE": str(tmp_path / "prompt.json"),
+            "ZOHO_CLI_RC_OPERATOR_ACTION_AUTONOMY_SOURCE_FILE": str(autonomy_packet),
+        },
+        capture_output=True,
+        text=True,
+        check=False,
+    )
+
+    output = f"{result.stdout}\n{result.stderr}"
+    assert result.returncode == 0, output
+    payload = json.loads(result.stdout)
+    assert payload["status"] == "no_operator_action"
+    assert payload["nextAction"] == "inspect_rc_autonomy_packet"
+    assert payload["requestCount"] == 0
+    assert payload["messageMarkdown"] is None
 
 
 def _write_openclaw_cliq_test_tarball(

@@ -253,6 +253,12 @@ After sync, ensure the AI user follows:
     `select_openclaw_cliq_publish_path`,
     `provide_crm_fixture_cleanup_plan`, and
     `provide_crm_fixture_payload_file`
+  - when you need to hand those asks back to a human, prefer
+    `ops/scripts/zoho_cli_rc_operator_action_prompt.sh`; it runs or reads the
+    autonomy packet, returns `operator_action_prompt_ready` with
+    `nextAction=send_operator_action_prompt`, and emits `messageMarkdown`
+    without raw payload paths, cleanup text, secrets, publish/write execution,
+    or local report paths
   - `OPENCLAW_CLIQ_OPERATOR_PUBLISH_PATH=local_operator_rc` may be rehearsed
     read-only; require `operator_publish_selection_ready` plus
     `selectedPublishPathReview.agentMayExecute=false` before handing the choice

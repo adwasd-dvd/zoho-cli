@@ -1,10 +1,15 @@
-last_run_at: "2026-05-12T06:39:48Z"
+last_run_at: "2026-05-12T06:52:05Z"
 last_result: passing
-current_focus: cliq-channel-473-bot-handler-trigger-packet
+current_focus: cliq-channel-474-bot-no-response-handler-trigger-embedded
 suites:
   unit:
     status: passing
     notes:
+      - "cliq-channel-474 Bot no-response handler trigger integration completed at 2026-05-12T06:52:05Z"
+      - "`ops/scripts/openclaw_cliq_bot_no_response_packet.sh` now embeds a redacted `handlerTrigger` object and evidence filename when `no_recent_webhook_ingress` is the blocker and public callback verification is not failing"
+      - "public callback failures still return `nextAction=fix_public_callback` before handler edits; active ingress windows keep handler trigger `not_checked` with `reason=not_no_recent_webhook_ingress`"
+      - "ZOHO_CLIQ_BOT_PACKET_RUN_ID=20260512T064842Z-embedded-handler-trigger-live ZOHO_CLIQ_PUBLIC_WEBHOOK_URL=https://cliq.hpyio.com/webhooks/cliq ZOHO_CLIQ_HANDLER_TARGETS=mention,message ZOHO_CLIQ_EXPECTED_BOT_NAME=oldsix ZOHO_CLIQ_INGRESS_LOOKBACK_SECONDS=3600 ZOHO_CLIQ_EXPECTED_AGENT_ID=zoho-employee-test ZOHO_CLIQ_EXPECTED_AGENT_MODEL=openai-codex/gpt-5.3-codex ops/scripts/openclaw_cliq_bot_no_response_packet.sh -> blocked as expected with public callback `public_callback_verified`, ingress `no_recent_webhook_ingress`, embedded `handlerTrigger.status=handler_trigger_packet_ready`, and `nextAction=fix_zoho_bot_handler_trigger`"
+      - "bash -n ops/scripts/openclaw_cliq_bot_no_response_packet.sh ops/scripts/openclaw_cliq_handler_trigger_packet.sh ops/scripts/openclaw_cliq_live_ingress_diagnostic.sh ops/scripts/openclaw_cliq_public_callback_smoke.sh -> passed; focused no-response handler-trigger/handler packet/RC checklist/markdown/Lane 3 tests -> 10 passed in 1.00s; ruff format/check passed after formatting `tests/test_auto_pilot_scripts.py`; YAML parse for project/module_status/test_status/active_task -> YAML_PARSE_OK; git diff --check -> passed"
       - "cliq-channel-473 Bot handler trigger packet completed at 2026-05-12T06:39:48Z"
       - "added `ops/scripts/openclaw_cliq_handler_trigger_packet.sh`; it validates the public `/webhooks/cliq` URL, selected `ZOHO_CLIQ_HANDLER_TARGETS`, accepted handler save targets, Deluge `invokeurl` body/header shape, and rerun commands while keeping raw webhook payloads, message bodies, reply bodies, callback response bodies, and secret values out of JSON output"
       - "ZOHO_CLIQ_HANDLER_PACKET_RUN_ID=20260512T063342Z-handler-trigger-live ZOHO_CLIQ_PUBLIC_WEBHOOK_URL=https://cliq.hpyio.com/webhooks/cliq ZOHO_CLIQ_HANDLER_TARGETS=mention,message ZOHO_CLIQ_EXPECTED_BOT_NAME=oldsix ops/scripts/openclaw_cliq_handler_trigger_packet.sh -> `handler_trigger_packet_ready`, selected Mention/Message handler save targets, `nextAction=paste_or_recheck_zoho_bot_handlers`, and no stored secret value"

@@ -10,6 +10,7 @@ REPORT_DIR="${ZOHO_CLIQ_BOT_PACKET_REPORT_DIR:-"$ROOT/tests/auto_pilot/reports"}
 PACKET_FILE="${ZOHO_CLIQ_BOT_PACKET_FILE:-"$REPORT_DIR/openclaw_cliq_bot_no_response_packet_$RUN_ID.json"}"
 PUBLIC_CALLBACK_SCRIPT="${ZOHO_CLIQ_PUBLIC_CALLBACK_SCRIPT:-"$ROOT/ops/scripts/openclaw_cliq_public_callback_smoke.sh"}"
 INGRESS_SCRIPT="${ZOHO_CLIQ_INGRESS_DIAGNOSTIC_SCRIPT:-"$ROOT/ops/scripts/openclaw_cliq_live_ingress_diagnostic.sh"}"
+HANDLER_TRIGGER_SCRIPT="${ZOHO_CLIQ_HANDLER_TRIGGER_SCRIPT:-"$ROOT/ops/scripts/openclaw_cliq_handler_trigger_packet.sh"}"
 REQUIRE_PUBLIC_CALLBACK="${ZOHO_CLIQ_BOT_PACKET_REQUIRE_PUBLIC_CALLBACK:-0}"
 
 emit_error() {
@@ -30,6 +31,9 @@ PUBLIC_CALLBACK_STDERR="$REPORT_DIR/openclaw_cliq_bot_no_response_packet_${RUN_I
 INGRESS_FILE="$REPORT_DIR/openclaw_cliq_bot_no_response_packet_${RUN_ID}_ingress.json"
 INGRESS_STDOUT="$REPORT_DIR/openclaw_cliq_bot_no_response_packet_${RUN_ID}_ingress.stdout"
 INGRESS_STDERR="$REPORT_DIR/openclaw_cliq_bot_no_response_packet_${RUN_ID}_ingress.stderr"
+HANDLER_TRIGGER_FILE="$REPORT_DIR/openclaw_cliq_bot_no_response_packet_${RUN_ID}_handler_trigger.json"
+HANDLER_TRIGGER_STDOUT="$REPORT_DIR/openclaw_cliq_bot_no_response_packet_${RUN_ID}_handler_trigger.stdout"
+HANDLER_TRIGGER_STDERR="$REPORT_DIR/openclaw_cliq_bot_no_response_packet_${RUN_ID}_handler_trigger.stderr"
 
 PUBLIC_CALLBACK_EXIT="null"
 PUBLIC_CALLBACK_CHECKED=false
@@ -80,8 +84,60 @@ if [[ ! -f "$INGRESS_FILE" ]]; then
   cp "$INGRESS_STDOUT" "$INGRESS_FILE"
 fi
 
+HANDLER_TRIGGER_EXIT="null"
+HANDLER_TRIGGER_CHECKED=false
+HANDLER_TRIGGER_REASON="not_no_recent_webhook_ingress"
+PUBLIC_CALLBACK_STATUS="$("$JQ_BIN" -r '.status // ""' "$PUBLIC_CALLBACK_FILE")"
+INGRESS_HAS_NO_RECENT=false
+if "$JQ_BIN" -e '((.blockers // [(.error // "")]) | index("no_recent_webhook_ingress")) != null' "$INGRESS_FILE" >/dev/null 2>&1; then
+  INGRESS_HAS_NO_RECENT=true
+fi
+
+if [[ "$INGRESS_HAS_NO_RECENT" == "true" ]]; then
+  if [[ "$PUBLIC_CALLBACK_CHECKED" == "true" && "$PUBLIC_CALLBACK_STATUS" != "public_callback_verified" ]]; then
+    HANDLER_TRIGGER_REASON="public_callback_unverified"
+  else
+    HANDLER_TRIGGER_CHECKED=true
+    HANDLER_TRIGGER_EXIT=0
+    set +e
+    ZOHO_CLIQ_HANDLER_PACKET_RUN_ID="${RUN_ID}-handler-trigger" \
+    ZOHO_CLIQ_HANDLER_PACKET_FILE="$HANDLER_TRIGGER_FILE" \
+      "$HANDLER_TRIGGER_SCRIPT" >"$HANDLER_TRIGGER_STDOUT" 2>"$HANDLER_TRIGGER_STDERR"
+    HANDLER_TRIGGER_EXIT=$?
+    set -e
+  fi
+fi
+
+if [[ "$HANDLER_TRIGGER_CHECKED" != "true" ]]; then
+  "$JQ_BIN" -n \
+    --arg runId "${RUN_ID}-handler-trigger" \
+    --arg checkedAt "$CHECKED_AT" \
+    --arg reason "$HANDLER_TRIGGER_REASON" \
+    '{
+      schemaVersion: 1,
+      kind: "openclaw_cliq_handler_trigger_packet",
+      runId: $runId,
+      checkedAt: $checkedAt,
+      status: "not_checked",
+      reason: $reason,
+      redaction: {
+        rawWebhookPayloadStored: false,
+        rawMessageBodyStored: false,
+        rawCliqReplyBodyStored: false,
+        responseBodyStored: false,
+        secretsStored: false,
+        secretValueStored: false
+      }
+    }' >"$HANDLER_TRIGGER_FILE"
+  : >"$HANDLER_TRIGGER_STDOUT"
+  : >"$HANDLER_TRIGGER_STDERR"
+elif [[ ! -f "$HANDLER_TRIGGER_FILE" ]]; then
+  cp "$HANDLER_TRIGGER_STDOUT" "$HANDLER_TRIGGER_FILE"
+fi
+
 PUBLIC_CALLBACK_BASENAME="$(basename "$PUBLIC_CALLBACK_FILE")"
 INGRESS_BASENAME="$(basename "$INGRESS_FILE")"
+HANDLER_TRIGGER_BASENAME="$(basename "$HANDLER_TRIGGER_FILE")"
 
 PAYLOAD="$("$JQ_BIN" -n \
   --arg runId "$RUN_ID" \
@@ -89,13 +145,18 @@ PAYLOAD="$("$JQ_BIN" -n \
   --argjson publicCallbackChecked "$PUBLIC_CALLBACK_CHECKED" \
   --argjson publicCallbackExit "$PUBLIC_CALLBACK_EXIT" \
   --argjson ingressExit "$INGRESS_EXIT" \
+  --argjson handlerTriggerChecked "$HANDLER_TRIGGER_CHECKED" \
+  --argjson handlerTriggerExit "$HANDLER_TRIGGER_EXIT" \
   --arg publicCallbackFile "$PUBLIC_CALLBACK_BASENAME" \
   --arg ingressFile "$INGRESS_BASENAME" \
+  --arg handlerTriggerFile "$HANDLER_TRIGGER_BASENAME" \
   --slurpfile publicCallback "$PUBLIC_CALLBACK_FILE" \
   --slurpfile ingress "$INGRESS_FILE" \
+  --slurpfile handlerTrigger "$HANDLER_TRIGGER_FILE" \
   '
   $publicCallback[0] as $public
   | $ingress[0] as $ingressReport
+  | $handlerTrigger[0] as $handlerPacket
   | [
       (if $publicCallbackChecked and (($public.status // "") != "public_callback_verified") then "public_callback_unverified" else empty end),
       (if ($ingressReport.status // "") == "live_ingress_active" then empty
@@ -111,11 +172,13 @@ PAYLOAD="$("$JQ_BIN" -n \
       blockers: $blockers,
       commandExits: {
         publicCallback: $publicCallbackExit,
-        ingressDiagnostic: $ingressExit
+        ingressDiagnostic: $ingressExit,
+        handlerTrigger: $handlerTriggerExit
       },
       evidenceFiles: {
         publicCallback: $publicCallbackFile,
-        ingressDiagnostic: $ingressFile
+        ingressDiagnostic: $ingressFile,
+        handlerTrigger: $handlerTriggerFile
       },
       publicCallback: {
         checked: $publicCallbackChecked,
@@ -136,6 +199,19 @@ PAYLOAD="$("$JQ_BIN" -n \
         latestWebhook: ($ingressReport.latestWebhook // null),
         latestNativeDispatch: ($ingressReport.latestNativeDispatch // null),
         redaction: ($ingressReport.redaction // null)
+      },
+      handlerTrigger: {
+        checked: $handlerTriggerChecked,
+        status: ($handlerPacket.status // null),
+        reason: ($handlerPacket.reason // null),
+        blockers: ($handlerPacket.blockers // []),
+        nextAction: ($handlerPacket.nextAction // null),
+        expectedBot: ($handlerPacket.expectedBot // null),
+        publicWebhook: ($handlerPacket.publicWebhook // null),
+        handlers: ($handlerPacket.handlers // null),
+        delugeContract: ($handlerPacket.delugeContract // null),
+        operatorChecklist: ($handlerPacket.operatorChecklist // null),
+        redaction: ($handlerPacket.redaction // null)
       },
       redaction: {
         rawWebhookPayloadStored: false,

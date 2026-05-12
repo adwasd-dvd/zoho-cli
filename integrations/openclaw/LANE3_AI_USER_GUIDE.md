@@ -164,10 +164,12 @@ After sync, ensure the AI user follows:
     packet and diagnostic keep raw webhook payloads, message bodies, reply
     bodies, callback response bodies, and secrets out of output/report JSON.
   - when `openclaw_cliq_bot_no_response_packet` returns
-    `nextAction=fix_zoho_bot_handler_trigger`, run
-    `ops/scripts/openclaw_cliq_handler_trigger_packet.sh` with
-    `ZOHO_CLIQ_PUBLIC_WEBHOOK_URL` and optional
-    `ZOHO_CLIQ_HANDLER_TARGETS`; require
+    `nextAction=fix_zoho_bot_handler_trigger`, inspect its embedded
+    `handlerTrigger` object first. When public callback is not the blocker, the
+    wrapper auto-runs `ops/scripts/openclaw_cliq_handler_trigger_packet.sh` and
+    stores the redacted handler trigger evidence filename. You may also run the
+    handler trigger script directly with `ZOHO_CLIQ_PUBLIC_WEBHOOK_URL` and
+    optional `ZOHO_CLIQ_HANDLER_TARGETS`; require
     `status=handler_trigger_packet_ready` before using its
     `handlers.saveTargets`, `delugeContract`, and `operatorChecklist` to guide
     Zoho Message/Mention/Participation/Context handler edits. The packet must

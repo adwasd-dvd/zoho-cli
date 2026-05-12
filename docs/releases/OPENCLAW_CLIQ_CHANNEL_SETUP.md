@@ -265,8 +265,11 @@ ZOHO_CLIQ_INGRESS_LOOKBACK_SECONDS=900 \
 
 The packet runs the public callback smoke when `ZOHO_CLIQ_PUBLIC_WEBHOOK_URL`
 is set, then runs the live ingress diagnostic and returns one `nextAction`.
-Self-generated public callback smoke records are ignored by the ingress
-diagnostic so they do not mask the latest real Bot message window.
+When the ingress diagnostic reports `no_recent_webhook_ingress` and public
+callback setup is not the blocker, the wrapper also embeds a redacted
+`handlerTrigger` subpacket plus evidence filename. Self-generated public
+callback smoke records are ignored by the ingress diagnostic so they do not
+mask the latest real Bot message window.
 `no_recent_webhook_ingress` means the Zoho Bot handler did not POST to the
 gateway during the window, so check the saved Message/Mention Handler URL,
 secret header, and handler type before chasing OAuth. `latest_webhook_not_dispatched`
@@ -277,8 +280,9 @@ handler event dispatched and delivered at least one reply. The packet and
 diagnostic do not store raw webhook payloads, message bodies, reply bodies,
 callback response bodies, or secrets.
 
-When `nextAction=fix_zoho_bot_handler_trigger`, generate the copy/check packet
-before changing Zoho:
+When `nextAction=fix_zoho_bot_handler_trigger`, first inspect
+`handlerTrigger` in the no-response packet. You can also generate the same
+copy/check packet directly before changing Zoho:
 
 ```bash
 ZOHO_CLIQ_PUBLIC_WEBHOOK_URL=https://cliq.hpyio.com/webhooks/cliq \

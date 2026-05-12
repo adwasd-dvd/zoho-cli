@@ -1,19 +1,23 @@
-id: cliq-channel-473
-title: add Bot handler trigger packet
+id: cliq-channel-474
+title: embed handler trigger packet in Bot no-response packet
 module: openclaw_cliq_channel
 stage: completed
 status: completed
 owner: coder
-updated_at: '2026-05-12T06:39:48Z'
+updated_at: '2026-05-12T06:52:05Z'
 execution_mode: turbo_20x
 throughput_policy_ref: ops/state/execution_policy.yml
 success_criteria:
-  - turn Bot `no_recent_webhook_ingress` into a redacted handler paste/check packet
-  - validate public `/webhooks/cliq` URL shape and selected handler targets
-  - document Deluge `invokeurl` body/header contract without storing secrets
+  - auto-run handler trigger packet when Bot no-response reports `no_recent_webhook_ingress`
+  - embed handler trigger status and evidence filename in the no-response JSON
+  - keep public callback failures prioritized before handler edits
   - keep native Cliq RC publish/tag/npm promotion behind operator approval
-next_if_done: If a fresh Bot message still has no reply, run `ops/scripts/openclaw_cliq_bot_no_response_packet.sh`; when it returns `fix_zoho_bot_handler_trigger`, run `ops/scripts/openclaw_cliq_handler_trigger_packet.sh` and use its checklist before editing Zoho handlers.
+next_if_done: If a fresh Bot message still has no reply, run `ops/scripts/openclaw_cliq_bot_no_response_packet.sh`; when it returns `fix_zoho_bot_handler_trigger`, inspect the embedded `handlerTrigger` object before editing Zoho handlers.
 progress:
+  - "2026-05-12T06:52:05Z cliq-channel-474 completed: `ops/scripts/openclaw_cliq_bot_no_response_packet.sh` now auto-runs `ops/scripts/openclaw_cliq_handler_trigger_packet.sh` when ingress reports `no_recent_webhook_ingress` and public callback setup is not the blocker, then embeds a redacted `handlerTrigger` object plus evidence filename in the no-response packet."
+  - "2026-05-12T06:52:05Z no-response integration keeps public callback failures first: if public callback verification fails, handler trigger is `not_checked`; if ingress is active, handler trigger is `not_checked` with `reason=not_no_recent_webhook_ingress`."
+  - "2026-05-12T06:54:01Z real embedded packet run: `ZOHO_CLIQ_BOT_PACKET_RUN_ID=20260512T064842Z-embedded-handler-trigger-live ZOHO_CLIQ_PUBLIC_WEBHOOK_URL=https://cliq.hpyio.com/webhooks/cliq ZOHO_CLIQ_HANDLER_TARGETS=mention,message ZOHO_CLIQ_EXPECTED_BOT_NAME=oldsix ZOHO_CLIQ_INGRESS_LOOKBACK_SECONDS=3600 ZOHO_CLIQ_EXPECTED_AGENT_ID=zoho-employee-test ZOHO_CLIQ_EXPECTED_AGENT_MODEL=openai-codex/gpt-5.3-codex ops/scripts/openclaw_cliq_bot_no_response_packet.sh` reported `public_callback_verified`, `no_recent_webhook_ingress`, embedded `handlerTrigger.status=handler_trigger_packet_ready`, selected Mention/Message handlers, and `nextAction=fix_zoho_bot_handler_trigger`."
+  - "2026-05-12T06:54:01Z focused integration verification passed: shell syntax plus no-response handler-trigger integration tests, handler trigger packet tests, RC checklist contract marker, markdown update, Lane 3 required paths/troubleshooting contract -> 10 passed in 1.00s; ruff format/check, YAML parse, and `git diff --check` passed."
   - "2026-05-12T06:39:48Z cliq-channel-473 completed: added `ops/scripts/openclaw_cliq_handler_trigger_packet.sh`, a read-only packet that validates `ZOHO_CLIQ_PUBLIC_WEBHOOK_URL`, selected `ZOHO_CLIQ_HANDLER_TARGETS`, Deluge `invokeurl` body/header shape, handler save targets, and rerun commands while storing no webhook secret value, raw webhook payload, message body, reply body, or callback response body."
   - "2026-05-12T06:42:53Z real handler trigger packet run: `ZOHO_CLIQ_HANDLER_PACKET_RUN_ID=20260512T063342Z-handler-trigger-live ZOHO_CLIQ_PUBLIC_WEBHOOK_URL=https://cliq.hpyio.com/webhooks/cliq ZOHO_CLIQ_HANDLER_TARGETS=mention,message ZOHO_CLIQ_EXPECTED_BOT_NAME=oldsix ops/scripts/openclaw_cliq_handler_trigger_packet.sh` returned `handler_trigger_packet_ready`, selected Mention and Message handlers, verified `/webhooks/cliq` URL shape, reported `secretPresentInCurrentEnv=true`, and kept `secretValueStored=false`."
   - "2026-05-12T06:42:53Z handler trigger packet verification passed: shell syntax, focused handler packet tests, RC checklist contract marker, markdown update, Lane 3 required paths/troubleshooting contract, ruff format/check, YAML parse, and `git diff --check` all passed."

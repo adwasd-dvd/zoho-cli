@@ -76,7 +76,10 @@ Use this skill as the default operating contract for an OpenClaw agent acting li
   OpenClaw audit logs only and must not print raw webhook payloads, message
   bodies, reply bodies, or secrets.
 - When the no-response packet returns `nextAction=fix_zoho_bot_handler_trigger`,
-  run `ops/scripts/openclaw_cliq_handler_trigger_packet.sh` with
+  inspect its embedded `handlerTrigger` object first. When public callback is
+  not the blocker, the wrapper auto-runs
+  `ops/scripts/openclaw_cliq_handler_trigger_packet.sh` and stores the redacted
+  handler trigger evidence filename. You may also run that script directly with
   `ZOHO_CLIQ_PUBLIC_WEBHOOK_URL` and optional `ZOHO_CLIQ_HANDLER_TARGETS`
   before asking the operator to edit Zoho. Require
   `kind=openclaw_cliq_handler_trigger_packet` and

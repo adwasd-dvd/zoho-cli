@@ -3465,9 +3465,83 @@ def test_openclaw_cliq_bot_no_response_packet_reports_handler_not_posting(
     assert payload["publicCallback"]["checked"] is False
     assert payload["publicCallback"]["status"] == "not_checked"
     assert payload["ingress"]["error"] == "no_recent_webhook_ingress"
+    assert payload["handlerTrigger"]["checked"] is True
+    assert payload["handlerTrigger"]["status"] == "blocked"
+    assert payload["handlerTrigger"]["nextAction"] == "set_public_webhook_url"
     assert payload["redaction"]["secretsStored"] is False
     assert (report_dir / payload["evidenceFiles"]["ingressDiagnostic"]).exists()
     assert (report_dir / payload["evidenceFiles"]["publicCallback"]).exists()
+    assert (report_dir / payload["evidenceFiles"]["handlerTrigger"]).exists()
+
+
+def test_openclaw_cliq_bot_no_response_packet_embeds_handler_trigger_packet(
+    tmp_path: Path,
+) -> None:
+    log_path = tmp_path / "openclaw.log"
+    log_path.write_text(
+        '[zoho-cliq-audit] {"kind":"webhook_ingress","outcome":"dispatched",'
+        '"correlationId":"old","handlerKind":"mention",'
+        '"createdAt":"2026-05-12T04:00:00Z"}\n'
+    )
+    callback_script = tmp_path / "public_callback.sh"
+    callback_script.write_text(
+        "#!/usr/bin/env bash\n"
+        "printf '%s\\n' "
+        '\'{"schemaVersion":1,"kind":"openclaw_cliq_public_callback_smoke",'
+        '"status":"public_callback_verified",'
+        '"webhook":{"scheme":"https","host":"cliq.example.test","path":"/webhooks/cliq"},'
+        '"checks":{"missingSecret":{"expectedStatus":401,"actualStatus":"401"},'
+        '"authenticatedUnsupportedHandler":{"expectedStatus":200,"actualStatus":"200"}},'
+        '"redaction":{"rawWebhookPayloadStored":false,'
+        '"responseBodyStored":false,"secretsStored":false}}\' '
+        '> "$ZOHO_CLIQ_PUBLIC_CALLBACK_REPORT_FILE"\n'
+        'cat "$ZOHO_CLIQ_PUBLIC_CALLBACK_REPORT_FILE"\n'
+    )
+    callback_script.chmod(0o755)
+    report_dir = tmp_path / "reports"
+
+    result = subprocess.run(
+        ["bash", str(OPENCLAW_CLIQ_BOT_NO_RESPONSE_PACKET_SCRIPT)],
+        cwd=REPO_ROOT,
+        env={
+            **os.environ,
+            "OPENCLAW_LOG_FILE": str(log_path),
+            "ZOHO_CLIQ_INGRESS_NOW_ISO": "2026-05-12T05:00:00Z",
+            "ZOHO_CLIQ_INGRESS_LOOKBACK_SECONDS": "900",
+            "ZOHO_CLIQ_PUBLIC_WEBHOOK_URL": "https://cliq.example.test/webhooks/cliq",
+            "ZOHO_CLIQ_PUBLIC_CALLBACK_SCRIPT": str(callback_script),
+            "ZOHO_CLIQ_HANDLER_TARGETS": "mention,message",
+            "ZOHO_CLIQ_EXPECTED_BOT_NAME": "oldsix",
+            "ZOHO_CLIQ_BOT_PACKET_RUN_ID": "unit-no-response-handler-trigger",
+            "ZOHO_CLIQ_BOT_PACKET_REPORT_DIR": str(report_dir),
+        },
+        capture_output=True,
+        text=True,
+        check=False,
+    )
+
+    output = f"{result.stdout}\n{result.stderr}"
+    assert result.returncode == 1, output
+    payload = json.loads(result.stdout)
+    assert payload["status"] == "blocked"
+    assert payload["blockers"] == ["no_recent_webhook_ingress"]
+    assert payload["nextAction"] == "fix_zoho_bot_handler_trigger"
+    assert payload["commandExits"]["handlerTrigger"] == 0
+    assert payload["evidenceFiles"]["handlerTrigger"].endswith("_handler_trigger.json")
+    assert payload["handlerTrigger"]["checked"] is True
+    assert payload["handlerTrigger"]["status"] == "handler_trigger_packet_ready"
+    assert (
+        payload["handlerTrigger"]["nextAction"] == "paste_or_recheck_zoho_bot_handlers"
+    )
+    assert payload["handlerTrigger"]["expectedBot"]["name"] == "oldsix"
+    assert payload["handlerTrigger"]["handlers"]["selected"] == ["mention", "message"]
+    assert (
+        payload["handlerTrigger"]["publicWebhook"]["url"]
+        == "https://cliq.example.test/webhooks/cliq"
+    )
+    assert payload["handlerTrigger"]["delugeContract"]["secretValueStored"] is False
+    assert payload["handlerTrigger"]["redaction"]["secretsStored"] is False
+    assert (report_dir / payload["evidenceFiles"]["handlerTrigger"]).exists()
 
 
 def test_openclaw_cliq_bot_no_response_packet_reports_active_ingress(
@@ -3524,6 +3598,8 @@ def test_openclaw_cliq_bot_no_response_packet_reports_active_ingress(
     assert payload["ingress"]["status"] == "live_ingress_active"
     assert payload["ingress"]["latestNativeDispatch"]["deliveryCount"] == 1
     assert payload["publicCallback"]["status"] == "not_checked"
+    assert payload["handlerTrigger"]["checked"] is False
+    assert payload["handlerTrigger"]["reason"] == "not_no_recent_webhook_ingress"
 
 
 def test_openclaw_cliq_bot_no_response_packet_prioritizes_callback_failure(
@@ -3579,8 +3655,11 @@ def test_openclaw_cliq_bot_no_response_packet_prioritizes_callback_failure(
     assert payload["blockers"] == ["public_callback_unverified"]
     assert payload["nextAction"] == "fix_public_callback"
     assert payload["commandExits"]["publicCallback"] == 1
+    assert payload["commandExits"]["handlerTrigger"] is None
     assert payload["publicCallback"]["error"] == "authenticated_status_mismatch"
     assert payload["ingress"]["status"] == "live_ingress_active"
+    assert payload["handlerTrigger"]["checked"] is False
+    assert payload["handlerTrigger"]["reason"] == "not_no_recent_webhook_ingress"
 
 
 def test_openclaw_cliq_handler_trigger_packet_is_ready_without_leaking_secret(

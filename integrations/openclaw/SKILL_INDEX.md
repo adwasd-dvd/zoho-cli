@@ -80,6 +80,13 @@ CRM SDK planning:
   still keeps `packageChangedSinceManifest=false`; `cliq-channel-489` records
   the post-CRM next-command-preview source-drift/decision evidence showing
   commit `3f1773c7` still keeps `packageChangedSinceManifest=false`)
+- `ops/scripts/zoho_cli_rc_autonomy_packet.sh` (`platform-214`: read-only
+  cross-lane RC autonomy packet that combines native Cliq RC decision state with
+  CRM fixture next-command state; emits `agent_next_command_ready` only when the
+  CRM command is already allowlisted and dry-run/local, otherwise reports
+  operator-input or operator-only stop states while keeping publish/tag/release,
+  expectedIntegrity fill, normal CRM upsert execution, and live Zoho writes
+  disabled for agents)
 - `ops/scripts/openclaw_cliq_bot_no_response_packet.sh`
   (`cliq-channel-472/474`: first responder for Bot no-response reports; runs
   public callback smoke plus live ingress diagnostics, then embeds

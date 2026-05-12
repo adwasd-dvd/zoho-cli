@@ -85,11 +85,17 @@ run ids: `20260512T135144Z-crm-state-sync-postcommit-source` and
 `cliq-channel-489` records post-CRM next-command-preview source-drift and
 decision-packet evidence after the pushed CRM agent command-preview slice; the
 package source remains unchanged and the packet still awaits an operator path.
+`platform-214` adds `ops/scripts/zoho_cli_rc_autonomy_packet.sh`, a read-only
+cross-lane packet for recurring agents that merges native Cliq RC publish
+handoff state with CRM fixture next-command state. It can surface an allowlisted
+CRM dry-run/local command as `agent_next_command_ready`, but publish/tag/release
+execution, `openclaw.install.expectedIntegrity` filling, and live Zoho writes
+remain disabled for agents.
 
 SDK contract source of truth:
 `docs/architecture/OPENCLAW_CLIQ_CHANNEL_SDK_CONTRACT.md`.
 
-Updated: `2026-05-12T14:40:36Z`.
+Updated: `2026-05-12T17:22:45Z`.
 
 ## Decision
 
@@ -115,7 +121,8 @@ environment currently binds `cliq/default` to `zoho-employee-test`.
 - Host floor: OpenClaw `>=2026.5.3-1`
 - Package version: `0.4.0-rc.1`
 - Implemented slices:
-  `cliq-channel-401/402/416/403/414/404/405/406/407/408/413/409/410/417/415/411/412/418/419/420/421/422/453/454/455/456/457/458/459/460/461/462/463/464/465/466/467/468/469/470/471/472/473/474/475/476/477/478/479/480/481/482/483/484/485/486/487/488`
+  `cliq-channel-401/402/416/403/414/404/405/406/407/408/413/409/410/417/415/411/412/418/419/420/421/422/453/454/455/456/457/458/459/460/461/462/463/464/465/466/467/468/469/470/471/472/473/474/475/476/477/478/479/480/481/482/483/484/485/486/487/488/489/490/491`
+- Cross-lane RC automation guard: `platform-214`
 
 ## Evidence
 
@@ -343,6 +350,12 @@ ask the operator to choose `local_operator_rc`, `npm_rc_publish`, or
 `github_release_artifact`. If it reports `operator_publish_selection_ready`,
 the operator still must review and explicitly execute the selected command; the
 packet keeps `agentMayExecuteSelectedPath=false`.
+If `ops/scripts/zoho_cli_rc_autonomy_packet.sh` reports
+`agent_next_command_ready`, the only runnable command is the redacted
+`recommendedAgentCommand` and only when `safety.crmNextCommandAllowedForAgent`
+is true. Treat `operator_input_required`, `operator_publish_path_required`,
+`stop_before_operator_publish`, and `stop_before_operator_live_fixture` as
+operator handoff states.
 
 ## RC cut steps
 
@@ -357,8 +370,9 @@ packet keeps `agentMayExecuteSelectedPath=false`.
    `ops/scripts/openclaw_cliq_rc_operator_handoff_manifest.sh`,
    `ops/scripts/openclaw_cliq_rc_source_drift_check.sh`,
    `ops/scripts/openclaw_cliq_rc_operator_selection_review.sh`,
-   `ops/scripts/openclaw_cliq_rc_operator_decision_packet.sh`, focused
-   channel/docs tests, and `make ci`.
+   `ops/scripts/openclaw_cliq_rc_operator_decision_packet.sh`,
+   `ops/scripts/zoho_cli_rc_autonomy_packet.sh`, focused channel/docs tests,
+   and `make ci`.
 3. Re-run `docs/releases/OPENCLAW_CLIQ_CHANNEL_COMPATIBILITY.md` latest/beta
    checks if OpenClaw published a newer stable or beta after this checklist.
 4. Package metadata is already set to `0.4.0-rc.1` for the source-controlled

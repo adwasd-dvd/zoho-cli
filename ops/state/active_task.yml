@@ -1,21 +1,21 @@
-id: crm-032
-title: enforce CRM fixture agent command allowlist
-module: crm
+id: platform-214
+title: add cross-lane RC autonomy packet
+module: platform
 stage: completed
 status: completed
 owner: coder
-updated_at: '2026-05-12T17:10:55Z'
+updated_at: '2026-05-12T17:34:19Z'
 execution_mode: turbo_20x
 throughput_policy_ref: ops/state/execution_policy.yml
 success_criteria:
-  - "`ops/scripts/crm_fixture_agent_next_command.sh` reports `agent_command_not_allowlisted` for unknown agent commands"
-  - "`agent_next_command_ready` requires a matching local/dry-run command id and script path allowlist entry"
-  - "Lane 2/3 docs and state describe `agentExecutableCommandAllowlist` and `safety.nextCommandAllowedForAgent`"
-  - "No publish, tag, npm promotion, GitHub release, expectedIntegrity fill, Zoho call, or CRM write is performed"
+  - "`ops/scripts/zoho_cli_rc_autonomy_packet.sh` combines native Cliq RC decision state and CRM fixture next-command state without publishing, tagging, releasing, filling expectedIntegrity, or writing Zoho data"
+  - "The packet surfaces `agent_next_command_ready` only when the CRM next command is already allowlisted and dry-run/local"
+  - "Operator-only states such as publish path selection, selected publish execution, missing fixture input, and live fixture approval remain explicit stop/handoff states"
+  - "Lane 2/3 docs and state describe the cross-lane autonomy packet"
 next_if_done: Continue to the next safe RC readiness milestone without publishing, tagging, npm promotion, GitHub release creation, expectedIntegrity fill, or live CRM writes.
 progress:
-  - "2026-05-12T17:04:23Z added built-in local/dry-run command allowlist enforcement to `crm_fixture_agent_next_command`; unknown ids or script paths now produce `status=agent_command_not_allowlisted` and `nextAction=fix_agent_command_allowlist_or_packet`."
-  - "2026-05-12T17:04:23Z added focused coverage for the allowlisted ready branch, operator-input branch, operator-only stop branch, and unallowlisted command branch -> 4 passed in 0.44s."
-  - "2026-05-12T17:04:23Z synced README, changelog, CRM write contract, operator evidence docs, Lane 3 guide/index, and skill playbook for the allowlist fields."
-  - "2026-05-12T17:10:55Z final verification passed: focused wrapper/Lane 3/markdown tests -> 7 passed in 0.22s; `bash -n`, `make lint`, `ruff format --check zoho_cli tests`, YAML parse, and `git diff --check` passed."
-next_step: Commit and push the allowlist slice, then continue to the next safe milestone.
+  - "2026-05-12T17:22:45Z added `ops/scripts/zoho_cli_rc_autonomy_packet.sh`, a read-only JSON packet that runs or reads `openclaw_cliq_rc_operator_decision_packet` and `crm_fixture_agent_next_command` evidence."
+  - "2026-05-12T17:22:45Z added regression coverage for operator-input, safe CRM agent-command, and selected-publish-path stop states."
+  - "2026-05-12T17:22:45Z synced README, changelog, RC checklist, Lane 3 guide/index, skill, and command playbook for the new autonomy packet."
+  - "2026-05-12T17:34:19Z final verification passed: shell syntax, focused autonomy/Lane 3/RC markdown tests -> 6 passed, `make lint`, Ruff format, YAML parse, and `git diff --check` passed. Live autonomy packet run `20260512T172245Z-platform214-autonomy-v2` returned `operator_input_required` with no agent-executable command."
+next_step: Commit and push the autonomy packet slice, then continue to the next safe milestone.

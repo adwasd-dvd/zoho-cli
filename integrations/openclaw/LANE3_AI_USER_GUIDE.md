@@ -236,6 +236,16 @@ After sync, ensure the AI user follows:
   - parse decision-packet `reportFiles` and `reportsReady` to hand off publish
     plan, source drift, selection review, operator bundle, release notes draft,
     and handoff manifest evidence by basename without logging local paths
+  - for recurring autonomous sweeps that must consider both native Cliq RC
+    publish state and CRM fixture state, run
+    `ops/scripts/zoho_cli_rc_autonomy_packet.sh`; execute only when it returns
+    `status=agent_next_command_ready` and
+    `safety.crmNextCommandAllowedForAgent=true`, use
+    `recommendedAgentCommand`, and treat `operator_input_required`,
+    `operator_publish_path_required`, `stop_before_operator_publish`, and
+    `stop_before_operator_live_fixture` as handoff states. A true
+    `safety.crmNextCommandAllowlistedDryRunLocal` only confirms the CRM command
+    shape is recognized; it does not override a non-ready top-level status
   - `OPENCLAW_CLIQ_OPERATOR_PUBLISH_PATH=local_operator_rc` may be rehearsed
     read-only; require `operator_publish_selection_ready` plus
     `selectedPublishPathReview.agentMayExecute=false` before handing the choice

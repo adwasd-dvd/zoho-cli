@@ -72,6 +72,7 @@ def test_lane3_required_paths_exist() -> None:
         REPO_ROOT / "ops" / "scripts" / "openclaw_cliq_rc_source_drift_check.sh",
         REPO_ROOT / "ops" / "scripts" / "openclaw_cliq_rc_operator_selection_review.sh",
         REPO_ROOT / "ops" / "scripts" / "openclaw_cliq_rc_operator_decision_packet.sh",
+        REPO_ROOT / "ops" / "scripts" / "zoho_cli_rc_autonomy_packet.sh",
         REPO_ROOT / "ops" / "scripts" / "openclaw_cliq_rc_pack.sh",
         REPO_ROOT
         / "ops"

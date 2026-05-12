@@ -251,6 +251,25 @@ approval token.
 Use `reportFiles` and `reportsReady` to hand off the packet, preflight,
 readiness bundle, and smoke-summary basenames without exposing local paths.
 
+For a recurring RC heartbeat or autonomous sweep across both native Cliq RC
+publish readiness and CRM fixture readiness, run:
+
+```bash
+ops/scripts/zoho_cli_rc_autonomy_packet.sh
+```
+
+It emits `zoho_cli_rc_autonomy_packet`. Execute a command only when
+`status=agent_next_command_ready` and
+`safety.crmNextCommandAllowedForAgent=true`; use `recommendedAgentCommand` as
+the redacted command preview. `safety.crmNextCommandAllowlistedDryRunLocal`
+only means the underlying CRM command id/path is recognized; it is not enough
+to execute while the top-level status is still an operator-input state. Treat
+`operator_input_required`,
+`operator_publish_path_required`, `stop_before_operator_publish`, and
+`stop_before_operator_live_fixture` as handoff boundaries. The packet is
+read-only and keeps publish/tag/GitHub release/expectedIntegrity fill plus live
+Zoho writes disabled for agents.
+
 For a compact AI go/stop summary, run:
 
 ```bash

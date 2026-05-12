@@ -181,7 +181,14 @@ Use this skill as the default operating contract for an OpenClaw agent acting li
   `ops/scripts/openclaw_cliq_rc_operator_decision_packet.sh` for recurring
   checks; it returns `awaiting_operator_publish_path` while no path is selected
   and `operator_publish_selection_ready` after a reviewed path is selected,
-  while preserving `agentMayExecuteSelectedPath=false`.
+  while preserving `agentMayExecuteSelectedPath=false`. For recurring
+  autonomous RC runs that need both native Cliq publish state and CRM fixture
+  next-command state, prefer `ops/scripts/zoho_cli_rc_autonomy_packet.sh`; it
+  emits `zoho_cli_rc_autonomy_packet` with `status=agent_next_command_ready`,
+  `operator_input_required`, `operator_publish_path_required`,
+  `stop_before_operator_publish`, or `stop_before_operator_live_fixture` while
+  keeping publish/tag/release/expectedIntegrity fill and live Zoho writes
+  disabled for agents.
 - For CRM SDK work, run `zoho crm sdk-status` first. Treat
   `zohocrmsdk8_0==5.0.0` as optional `zoho-cli[crm-sdk]` readiness, keep the
   current HTTP adapter as default, use `zoho_cli/crm_sdk.py` only as the

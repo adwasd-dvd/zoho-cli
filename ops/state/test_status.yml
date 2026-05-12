@@ -1,10 +1,11 @@
-last_run_at: "2026-05-12T17:10:55Z"
+last_run_at: "2026-05-12T17:34:19Z"
 last_result: passing
-current_focus: crm-032-agent-command-allowlist
+current_focus: platform-214-rc-autonomy-packet
 suites:
   unit:
     status: passing
     notes:
+      - "platform-214 final verification passed at 2026-05-12T17:34:19Z: shell syntax for `ops/scripts/zoho_cli_rc_autonomy_packet.sh`; focused autonomy/Lane 3/RC markdown tests -> 6 passed in 0.35s; live no-write autonomy packet run returned `operator_input_required`; `make lint`, `ruff format --check zoho_cli tests`, YAML parse, and `git diff --check` passed."
       - "crm-032 final verification passed at 2026-05-12T17:10:55Z: focused wrapper/Lane 3/markdown tests -> 7 passed in 0.22s; `bash -n ops/scripts/crm_fixture_agent_next_command.sh`, `make lint`, `ruff format --check zoho_cli tests`, YAML parse, and `git diff --check` passed."
       - "crm-032 performed no publish, tag, npm promotion, GitHub release, version bump, expectedIntegrity fill, Zoho call, or CRM write; normal `zoho crm upsert --execute` and live fixture execution remain blocked for agents."
       - "cliq-channel-491 post-CRM agent-ready-wrapper source drift started at 2026-05-12T16:40:28Z: run `20260512T163945Z-crm031-postcommit-source` returned `package_source_unchanged`, no blockers, `headCommit=3020f7ef167fd9f8977fb916b259e3972e3d11de`, `repoChangedFileCount=36`, `packageDrift.packageChangedSinceManifest=false`, and `packageDirtyFileCount=0`."

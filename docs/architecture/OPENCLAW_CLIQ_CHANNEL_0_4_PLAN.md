@@ -354,6 +354,7 @@ zoho cliq watch-act --watch-file - --action reply-latest --text <text>
 zoho cliq reply <message_id> --chat-id <chat_id> --text <text>
 zoho cliq send --user-id <user_id> --text <text>
 zoho cliq send --channel-id <channel_id> --text <text>
+zoho cliq send --chat-id <chat_id> --text <text>
 zoho cliq mark-read <message_id> --chat-id <chat_id>
 zoho cliq status-react <message_id> --status <status> --chat-id <chat_id>
 ```

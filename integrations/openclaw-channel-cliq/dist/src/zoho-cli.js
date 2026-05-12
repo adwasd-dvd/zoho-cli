@@ -217,8 +217,11 @@ function normalizeCliqTargetRef(targetRaw) {
 export function buildCliqSendArgs(params) {
     const target = normalizeCliqTargetRef(params.to);
     const args = ["send", "--text", params.text, ...networkArgs(params.account)];
-    if (target.kind === "channel" || target.kind === "chat") {
+    if (target.kind === "channel") {
         return [...args, "--channel-id", target.id];
+    }
+    if (target.kind === "chat") {
+        return [...args, "--chat-id", target.id];
     }
     return [...args, "--user-id", target.id];
 }

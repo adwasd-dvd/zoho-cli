@@ -34,6 +34,9 @@ native channel turn runtime and route replies through the Cliq outbound adapter;
 direct Bot events with synthetic `webhook-*` / `zoho-message-*` ids fall back to
 ordinary direct sends through the real Cliq chat id, while direct events with
 real message ids reply through that same chat id.
+The adapter requires `zoho cliq send --chat-id` for synthetic Bot direct events
+that have no replyable Zoho message id, so answers stay visible in the Bot chat
+instead of being delivered as a separate user DM.
 Redacted audit events, correlation ids, diagnostic bundles, rate-limit
 diagnostics, privacy retention rules, dead-letter replay guidance, and the npm
 integrity release placeholder are now part of the channel diagnostics surface.

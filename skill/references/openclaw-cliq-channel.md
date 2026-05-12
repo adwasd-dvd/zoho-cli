@@ -427,6 +427,7 @@ Fallback commands:
 zoho cliq chats --network <network> --unread-only --exclude-reacted-by-self
 zoho cliq context --network <network> --chat-id <chat_id> --limit 20
 zoho cliq send --network <network> --channel-id <channel_id> --text "..."
+zoho cliq send --network <network> --chat-id <chat_id> --text "..."
 zoho cliq reply <message_id> --network <network> --chat-id <chat_id> --text "..."
 zoho cliq thread-reply <thread_id> --network <network> --chat-id <chat_id> --text "..."
 ```

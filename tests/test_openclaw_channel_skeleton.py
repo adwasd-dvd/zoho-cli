@@ -802,7 +802,7 @@ assert.deepEqual(
 );
 assert.deepEqual(
   buildCliqSendArgs({{ account, to: "chat:CT1", text: "hello" }}),
-  ["send", "--text", "hello", "--network", "happy", "--channel-id", "CT1"],
+  ["send", "--text", "hello", "--network", "happy", "--chat-id", "CT1"],
 );
 assert.deepEqual(
   buildCliqReplyArgs({{ account, to: "channel:C123", text: "hello", replyToId: "M10" }}),

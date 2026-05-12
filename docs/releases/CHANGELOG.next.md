@@ -5,6 +5,11 @@
 ### RC automation (2026-05-12T17:22:45Z)
 - Added `ops/scripts/zoho_cli_rc_autonomy_packet.sh`, a read-only cross-lane packet for recurring agents that combines native OpenClaw Cliq RC publish state with CRM fixture next-command state. It surfaces `agent_next_command_ready` only for an already allowlisted CRM dry-run/local command and otherwise reports operator-input or operator-only stop states while keeping publish, tag, GitHub release, expectedIntegrity fill, normal CRM upsert execution, and live Zoho writes disabled for agents.
 - Recorded the post-platform-214 autonomy-packet source drift, operator decision, and autonomy-packet evidence: pushed cross-lane wrapper commit `a03de9e5` moved HEAD after the handoff manifest, but `package_source_unchanged`, `packageDrift.packageChangedSinceManifest=false`, `repoChangedFileCount=38`, and all decision-packet `reportsReady=true` keep the verified Cliq RC package current; the autonomy packet returns `operator_input_required` with no agent-executable command.
+- Added `zoho cliq send --chat-id` and updated the native OpenClaw Cliq channel
+  to use it for synthetic Bot direct events with no replyable Zoho message id,
+  keeping Bot answers in the original Cliq Bot chat instead of falling back to a
+  separate user DM or chat-id-as-channel-id send path.
+
 - Extended the RC autonomy packet with redacted `operatorActionRequests` so recurring agents can ask for exactly the missing operator publish path, CRM fixture cleanup plan, and CRM fixture payload file without reading raw payloads, cleanup text, local paths, secrets, or lower-level report internals.
 - Recorded post-platform-215 source-drift, operator decision, and autonomy-packet evidence: pushed operator-action-request commit `9fac452e` still reports `package_source_unchanged`, all decision-packet `reportsReady=true`, and autonomy `operator_input_required` with the same three redacted operator request ids, while no publish/tag/release/expectedIntegrity fill or live Zoho write was performed.
 - Added placeholder-only `commandPreview` and `unblocks` hints to autonomy-packet `operatorActionRequests`, so humans can see the next local recheck gate after supplying a publish path or CRM fixture input without logging raw payload paths, cleanup text, or secrets.

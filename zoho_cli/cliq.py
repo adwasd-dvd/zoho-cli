@@ -5624,14 +5624,15 @@ class ZohoCliqClient:
         text: str,
         *,
         channel_id: Optional[str] = None,
+        chat_id: Optional[str] = None,
         user_id: Optional[str] = None,
         attachment: dict[str, Any] | None = None,
         card: dict[str, Any] | None = None,
         strict_media: bool = False,
     ) -> dict:
-        """Send a message to either a channel or a user."""
-        if bool(channel_id) == bool(user_id):
-            raise ValueError("Provide exactly one of channel_id or user_id")
+        """Send a message to a channel, chat, or user."""
+        if sum(bool(value) for value in (channel_id, chat_id, user_id)) != 1:
+            raise ValueError("Provide exactly one of channel_id, chat_id, or user_id")
 
         msg_text = text.strip()
         if not msg_text and not attachment and not card:
@@ -5687,6 +5688,8 @@ class ZohoCliqClient:
 
             seen: set[str] = set()
             paths = [p for p in candidates if not (p in seen or seen.add(p))]
+        elif chat_id:
+            paths = [f"/chats/{chat_id}/message"]
         else:
             paths = []
             for target_user in self._candidate_user_targets(user_id or ""):
@@ -5716,12 +5719,13 @@ class ZohoCliqClient:
         *,
         text: str = "",
         channel_id: Optional[str] = None,
+        chat_id: Optional[str] = None,
         user_id: Optional[str] = None,
         media_kind: str = "file",
     ) -> dict:
-        """Send a local file via multipart form-data to a channel or user."""
-        if bool(channel_id) == bool(user_id):
-            raise ValueError("Provide exactly one of channel_id or user_id")
+        """Send a local file via multipart form-data to a channel, chat, or user."""
+        if sum(bool(value) for value in (channel_id, chat_id, user_id)) != 1:
+            raise ValueError("Provide exactly one of channel_id, chat_id, or user_id")
 
         path_obj = Path(file_path).expanduser()
         if not path_obj.exists() or not path_obj.is_file():
@@ -5770,6 +5774,16 @@ class ZohoCliqClient:
                 for p in (expanded_candidates + file_share_candidates)
                 if not (p in seen or seen.add(p))
             ]
+        elif chat_id:
+            base_message_paths = [f"/chats/{chat_id}/message"]
+            expanded_candidates = []
+            file_share_candidates = []
+            for candidate in base_message_paths:
+                expanded_candidates.append(candidate)
+                expanded_candidates.append(f"{candidate}s")
+                file_share_candidates.append(f"{candidate[: -len('/message')]}/files")
+
+            destination_paths = expanded_candidates + file_share_candidates
         else:
             destination_paths = []
             for target_user in self._candidate_user_targets(user_id or ""):

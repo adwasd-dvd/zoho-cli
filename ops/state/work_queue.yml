@@ -791,6 +791,16 @@
   - crm-033
   agent_action: keep this queue as the first local planning artifact after the autonomy packet
   completion_signal: next tasks clearly distinguish agent-safe local work, blocked operator input, and operator-only publish/write boundaries
+- id: cliq-channel-501
+  title: fix Bot direct chat reply routing for native Cliq channel
+  module: openclaw_cliq_channel
+  stage: blocked
+  priority: high
+  depends_on:
+  - platform-219
+  blocker: "operator must send one fresh direct message to `oldsix老六` after the local `--chat-id` route fix and gateway restart"
+  agent_action: rerun `ops/scripts/openclaw_cliq_bot_no_response_packet.sh` with a short lookback after the fresh message and confirm visible same-chat delivery
+  completion_signal: real `oldsix` Bot direct replies are visible in the original Bot chat after synthetic Bot direct events route through `--chat-id`
 - id: cliq-channel-496
   title: collect operator native Cliq RC publish-path selection
   module: openclaw_cliq_channel

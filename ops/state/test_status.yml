@@ -1,10 +1,13 @@
-last_run_at: "2026-05-12T22:57:49Z"
+last_run_at: "2026-05-12T23:11:03Z"
 last_result: passing
-current_focus: platform-219-normalize-rc-work-queue
+current_focus: cliq-channel-501-bot-direct-chat-send-routing
 suites:
   unit:
     status: passing
     notes:
+      - "cliq-channel-501 focused validation passed at 2026-05-12T23:11:03Z: `ruff format zoho_cli/cliq.py`; `ruff format --check zoho_cli tests`; `ruff check zoho_cli tests`; TypeScript package build for `integrations/openclaw-channel-cliq`; focused chat-id/channel/native adapter tests -> 6 passed in 0.93s."
+      - "cliq-channel-501 live diagnosis found callback ingress and native dispatch active for the reported Bot direct message, with one OpenClaw delivery recorded; the code fix adds `zoho cliq send --chat-id` and maps native `chat:<id>` sends to `--chat-id` so synthetic Bot direct replies stay in the original Bot chat."
+      - "cliq-channel-501 local runtime checks passed at 2026-05-12T23:15:53Z: `npm run openclaw:install`, gateway restart on port 18789, `openclaw config validate`, `openclaw channels status --channel cliq --deep`, public callback smoke -> `public_callback_verified`, historical no-response packet -> `ingress_active`, direct `zoho cliq send --chat-id` route test -> `204 ok`; short post-fix no-response packet returned `no_recent_webhook_ingress` pending a fresh operator message."
       - "platform-219 work-queue normalization validation passed at 2026-05-12T22:57:49Z: YAML parse for work_queue/active_task/module_status/project passed; custom queue contract check returned `WORK_QUEUE_CONTRACT_OK`; `git diff --check`, `make lint`, `ruff format --check zoho_cli tests`, and focused Lane 3/markdown tests -> 2 passed in 0.01s."
       - "platform-219 queue now records completed platform-214..218, crm-016..033, and cliq-channel-495 context plus next tasks cliq-channel-496..500, crm-034..038, and platform-220; publish/tag/npm/GitHub release/integrity-fill and CRM live-write boundaries remain blocked/operator-only."
       - "cliq-channel-495 source drift run `20260512T223116Z-crm033-postcommit-source` returned `package_source_unchanged`, `headCommit=3584cd40a6a99642fdd3297e36383707b7a01663`, `repoChangedFileCount=40`, `packageDrift.packageChangedSinceManifest=false`, and no package dirty files."

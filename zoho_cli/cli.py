@@ -10912,6 +10912,9 @@ def cliq_send(
     channel_id: Optional[str] = typer.Option(
         None, "--channel-id", help="Destination channel id."
     ),
+    chat_id: Optional[str] = typer.Option(
+        None, "--chat-id", help="Destination chat id."
+    ),
     user_id: Optional[str] = typer.Option(
         None, "--user-id", help="Destination user id."
     ),
@@ -10954,10 +10957,11 @@ def cliq_send(
         None, "--network", help="Cliq network slug (e.g. happydistrouklimited)."
     ),
 ) -> None:
-    """Send a Cliq message to a channel or user (text + rich-link media)."""
-    if bool(channel_id) == bool(user_id):
+    """Send a Cliq message to a channel, chat, or user (text + rich-link media)."""
+    if sum(bool(value) for value in (channel_id, chat_id, user_id)) != 1:
         utils.error_exit(
-            "invalid_destination", "Provide exactly one of channel_id or user_id"
+            "invalid_destination",
+            "Provide exactly one of channel_id, chat_id, or user_id",
         )
 
     media_inputs = [
@@ -11042,6 +11046,7 @@ def cliq_send(
             str(local_media_path),
             text=text_payload,
             channel_id=channel_id,
+            chat_id=chat_id,
             user_id=user_id,
             media_kind="voice"
             if selected_media_kind == "audio"
@@ -11051,6 +11056,7 @@ def cliq_send(
         resp = client.send_message(
             text_payload,
             channel_id=channel_id,
+            chat_id=chat_id,
             user_id=user_id,
             attachment=attachment,
             card=card,

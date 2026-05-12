@@ -1,21 +1,23 @@
-id: platform-219
-title: normalize RC work queue for autonomous continuation
-module: platform
-stage: completed
-status: completed
+id: cliq-channel-501
+title: fix Bot direct chat reply routing for native Cliq channel
+module: openclaw_cliq_channel
+stage: blocked
+status: blocked
 owner: coder
-updated_at: '2026-05-12T22:57:49Z'
+updated_at: '2026-05-12T23:11:03Z'
 execution_mode: turbo_20x
 throughput_policy_ref: ops/state/execution_policy.yml
 success_criteria:
-  - "Bring `ops/state/work_queue.yml` forward from the old cliq-channel-422 tail to the current platform-214..218, crm-016..033, and cliq-channel-495 RC baseline"
-  - "Split future work into agent-safe local/read-only tasks, blocked operator-input tasks, and operator-only publish/write boundaries"
-  - "Record exact next commands for recurring agents: autonomy packet first, operator-action prompt for human asks, CRM next-command wrapper for CRM fixture work"
-  - "Keep publish, tag, npm promotion, GitHub release creation, expectedIntegrity filling, Zoho calls, and live CRM writes blocked unless the operator explicitly approves the required boundary"
-next_if_done: Use `ops/state/work_queue.yml` plus `ops/scripts/zoho_cli_rc_autonomy_packet.sh` as the next recurring-agent planning entry, then continue with only agent-safe pending tasks or redacted operator asks.
+  - "Explain why a real `oldsix` Bot direct message from another account reached OpenClaw but did not visibly reply in the original Cliq Bot chat"
+  - "Add a first-class `zoho cliq send --chat-id` destination for text and local media sends"
+  - "Update the native OpenClaw Cliq channel adapter so synthetic Bot direct events route `chat:<id>` through `--chat-id` instead of channel-id fallback"
+  - "Synchronize Lane 2/3 docs, Lane 1 state, tests, and generated plugin dist output"
+  - "Reinstall/restart the local OpenClaw Cliq plugin and recheck the public Bot callback path before asking for a fresh live Bot message"
+next_if_done: Reinstall the local OpenClaw Cliq plugin, restart the gateway, run callback/status checks, then ask the operator to send one fresh `oldsix` Bot direct message to verify the visible reply.
 progress:
-  - "2026-05-12T22:46:16Z started platform-219 by appending a current autonomous RC continuation queue to `ops/state/work_queue.yml`."
-  - "The queue now names completed control-plane milestones platform-214..218, CRM fixture readiness milestones crm-016..033, the current cliq-channel-495 RC evidence baseline, and the next blocked/pending tasks cliq-channel-496..500, crm-034..038, and platform-220."
-  - "2026-05-12T22:46:16Z expanded the CRM fixture history to include crm-017..026, so the current queue has no gap between cleanup quality gating and later agent-command readiness wrappers."
-  - "2026-05-12T22:57:49Z validation passed: YAML parse for work_queue/active_task/module_status/project, custom work-queue contract check, `git diff --check`, `make lint`, `ruff format --check zoho_cli tests`, and focused Lane 3/markdown tests."
-next_step: Commit and push the platform-219 work-queue synchronization slice, then continue with `ops/state/work_queue.yml` plus the autonomy packet as the recurring-agent planning entry.
+  - "2026-05-12T23:11:03Z diagnosed the live no-response report: recent Bot webhook ingress was active, native dispatch completed, and OpenClaw recorded one delivery, but synthetic Bot direct replies were sent via `chat:<id>` mapped to `zoho cliq send --channel-id` because the CLI lacked a `--chat-id` send destination."
+  - "Added `chat_id` support to `ZohoCliqClient.send_message` and `send_local_file_message`, exposed `zoho cliq send --chat-id`, and updated OpenClaw channel send args so `chat:<id>` maps to `--chat-id`."
+  - "Focused validation passed for chat-id text sends, chat-id local voice sends, existing channel sends, native adapter send args, Ruff format/check, and TypeScript build."
+  - "2026-05-12T23:15:53Z linked the local plugin into OpenClaw, restarted the gateway on port 18789, verified `https://cliq.hpyio.com/webhooks/cliq` public callback auth/reachability, and confirmed `zoho cliq send --chat-id` returned `204 ok` against the recorded Bot direct chat route."
+  - "A fresh 5-minute no-response packet after the fix returned `no_recent_webhook_ingress`, so final visible-reply confirmation is waiting on one new operator-sent Bot direct message."
+next_step: Ask the operator to send one fresh short direct message to `oldsix老六`, then rerun the no-response packet with a short lookback and confirm the reply is visible in the same Bot chat.

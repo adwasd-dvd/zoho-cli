@@ -2191,6 +2191,20 @@ def test_cliq_client_send_to_channel_accepts_204_empty_body(
 
 
 @respx.mock
+def test_cliq_client_send_to_chat_uses_chats_endpoint(
+    client: cliq.ZohoCliqClient,
+) -> None:
+    route = respx.post("https://cliq.zoho.com/api/v2/chats/CT_1/message").mock(
+        return_value=httpx.Response(200, json={"data": {"status": "ok"}})
+    )
+
+    result = client.send_message("hello", chat_id="CT_1")
+
+    assert route.called
+    assert result["data"]["status"] == "ok"
+
+
+@respx.mock
 def test_cliq_client_send_to_channel_id_resolves_channel_lookup(
     client: cliq.ZohoCliqClient,
 ) -> None:

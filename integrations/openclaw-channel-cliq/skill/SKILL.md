@@ -10,6 +10,9 @@ Use this skill when operating through the native OpenClaw Zoho Cliq channel.
 - Native outbound delivery maps OpenClaw text sends to `zoho cliq send`,
   message replies to `zoho cliq reply`, and thread replies to
   `zoho cliq thread-reply`.
+- For Bot direct messages without a replyable Zoho message id, use
+  `zoho cliq send --chat-id <chat_id>` so the answer appears in the original
+  Bot chat rather than as a separate user DM.
 - Native inbound polling uses `zoho cliq chats --unread-only
   --exclude-reacted-by-self` plus `zoho cliq context`; normalize events before
   dispatch, skip self-authored messages, and dedupe by account/network/chat/message.

@@ -38763,6 +38763,24 @@ def test_cliq_send_channel_accepts_204_empty_body(
 
 
 @respx.mock
+def test_cliq_send_chat_id(mock_config: Path, mock_token_refresh: Any) -> None:
+    route = respx.post("https://cliq.zoho.com/api/v2/chats/CT_1/message").mock(
+        return_value=httpx.Response(200, json={"data": {"message_id": "M_CHAT"}})
+    )
+
+    result = runner.invoke(
+        app,
+        ["cliq", "send", "--chat-id", "CT_1", "--text", "hello"],
+        env=_cfg_env(mock_config),
+    )
+
+    assert result.exit_code == 0, result.output
+    assert route.called
+    payload = json.loads(result.output)
+    assert payload["status"] == "ok"
+
+
+@respx.mock
 def test_cliq_send_channel_with_image_url(
     mock_config: Path, mock_token_refresh: Any
 ) -> None:
@@ -38876,6 +38894,41 @@ def test_cliq_send_channel_with_local_voice_file(
     assert payload["media"]["localPath"] == str(sample)
     assert payload["result"]["upload"]["path"] == "/chats/C1/message"
     assert payload["result"]["upload"]["field"] == "voice"
+
+
+@respx.mock
+def test_cliq_send_chat_id_with_local_voice_file(
+    tmp_path: Path,
+    mock_config: Path,
+    mock_token_refresh: Any,
+) -> None:
+    sample = tmp_path / "voice.m4a"
+    sample.write_bytes(b"voice-bytes")
+
+    route = respx.post("https://cliq.zoho.com/api/v2/chats/CT_1/message").mock(
+        return_value=httpx.Response(200, json={"data": {"message_id": "M_CHAT"}})
+    )
+
+    result = runner.invoke(
+        app,
+        [
+            "cliq",
+            "send",
+            "--chat-id",
+            "CT_1",
+            "--voice-url",
+            str(sample),
+            "--text",
+            "voice",
+        ],
+        env=_cfg_env(mock_config),
+    )
+
+    assert result.exit_code == 0, result.output
+    assert route.called
+    payload = json.loads(result.output)
+    assert payload["status"] == "ok"
+    assert payload["result"]["upload"]["path"] == "/chats/CT_1/message"
 
 
 @respx.mock

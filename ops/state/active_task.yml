@@ -1,21 +1,22 @@
-id: platform-213
-title: extend make lint gate to tests
-module: platform
+id: cliq-channel-490
+title: record post-platform lint-gate RC decision evidence
+module: cliq
 stage: completed
 status: completed
 owner: coder
-updated_at: '2026-05-12T15:17:46Z'
+updated_at: '2026-05-12T15:35:26Z'
 execution_mode: turbo_20x
 throughput_policy_ref: ops/state/execution_policy.yml
 success_criteria:
-  - "`make lint` runs Ruff across both `zoho_cli/` and `tests/`"
-  - "A tooling contract test prevents the lint target from regressing to source-only coverage"
-  - "Developer and AI-agent maintenance docs mention the broader lint gate"
-  - "No CLI behavior, publish action, Zoho call, or CRM write is changed"
+  - "Read-only decision packet after platform-213 reports `awaiting_operator_publish_path`"
+  - "Source drift still reports `package_source_unchanged` with no package dirty files"
+  - "Docs/state/Lane 3 references point agents to the current decision packet posture"
+  - "No publish, tag, npm promotion, GitHub release, expectedIntegrity fill, Zoho call, or CRM write is performed"
 next_if_done: Continue to the next safe RC readiness milestone without publishing, tagging, npm promotion, GitHub release creation, expectedIntegrity fill, or live CRM writes.
 progress:
-  - "2026-05-12T15:14:26Z updated `make lint` to check `zoho_cli/ tests/`, added tooling contract coverage, and synced README plus Lane 3 maintenance checklist."
-  - "2026-05-12T15:14:26Z no CLI behavior change, publish, tag, npm promotion, GitHub release, expectedIntegrity fill, Zoho call, or CRM write was performed."
-  - "2026-05-12T15:16:32Z verification passed: `make lint`, `ruff format --check zoho_cli tests`, and focused tooling/docs tests -> 3 passed in 0.01s."
-  - "2026-05-12T15:17:46Z YAML parse and `git diff --check` passed."
-next_step: Commit and push the lint-gate slice, then continue to the next safe milestone.
+  - "2026-05-12T15:27:05Z decision packet run `20260512T152614Z-platform213-postcommit-decision` returned `awaiting_operator_publish_path`, blocker `publish_path_not_selected`, `operator_publish_plan_ready`, `package_source_unchanged`, `artifact_verified`, `install_smoke_passed`, `trusted_reply_recorded`, and all `reportsReady=true`."
+  - "2026-05-12T15:27:05Z source drift in the decision packet recorded `headCommit=ae45c69fe26d89401f119c94591ef617d922f55f`, `repoChangedFileCount=35`, `packageDrift.packageChangedSinceManifest=false`, and `packageDirtyFileCount=0`."
+  - "2026-05-12T15:32:28Z synced README, operator publish handoff, changelog, Lane 3 reference, and Lane 1 state with the post-platform-213 decision posture."
+  - "2026-05-12T15:32:28Z no publish, tag, npm promotion, GitHub release, expectedIntegrity fill, Zoho call, or CRM write was performed."
+  - "2026-05-12T15:35:26Z verification passed: OpenClaw channel contract, operator handoff contract, Lane 3 required/troubleshooting docs, and markdown update -> 5 passed in 0.01s; YAML parse and `git diff --check` passed."
+next_step: Commit and push the post-platform-213 decision evidence slice, then continue to the next safe milestone.

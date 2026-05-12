@@ -1,10 +1,13 @@
-last_run_at: "2026-05-12T15:17:46Z"
+last_run_at: "2026-05-12T15:35:26Z"
 last_result: passing
-current_focus: platform-213-make-lint-tests-gate
+current_focus: cliq-channel-490-post-platform-lint-gate-decision-evidence
 suites:
   unit:
     status: passing
     notes:
+      - "cliq-channel-490 post-platform-213 lint-gate decision evidence started at 2026-05-12T15:27:05Z: decision packet `20260512T152614Z-platform213-postcommit-decision` returned `awaiting_operator_publish_path`, blocker `publish_path_not_selected`, `operator_publish_plan_ready`, `package_source_unchanged`, `artifact_verified`, `install_smoke_passed`, `trusted_reply_recorded`, all `reportsReady=true`, and `agentMayExecuteSelectedPath=false`."
+      - "cliq-channel-490 source drift reports `headCommit=ae45c69fe26d89401f119c94591ef617d922f55f`, `repoChangedFileCount=35`, `packageDrift.packageChangedSinceManifest=false`, and `packageDirtyFileCount=0`; no publish, tag, npm promotion, GitHub release, expectedIntegrity fill, Zoho call, or CRM write was performed."
+      - "cliq-channel-490 verification passed at 2026-05-12T15:35:26Z: OpenClaw channel contract, operator handoff contract, Lane 3 required/troubleshooting docs, and markdown update -> 5 passed in 0.01s; YAML parse and `git diff --check` passed."
       - "platform-213 lint-gate verification passed at 2026-05-12T15:16:32Z: `make lint` now runs `ruff check zoho_cli/ tests/`; `ruff format --check zoho_cli tests` passed; tooling/docs focus tests (`tests/test_dev_tooling_contract.py`, markdown update, Lane 3 required paths) -> 3 passed in 0.01s."
       - "platform-213 final hygiene checks passed at 2026-05-12T15:17:46Z: YAML parse and `git diff --check` passed."
       - "platform-213 performed no CLI behavior change, publish, tag, npm promotion, GitHub release, version bump, expectedIntegrity fill, Zoho call, or CRM write."

@@ -162,6 +162,7 @@ ops/scripts/openclaw_cliq_public_callback_smoke.sh
 ops/scripts/openclaw_cliq_rc_pack.sh
 ops/scripts/openclaw_cliq_rc_artifact_check.sh
 ops/scripts/openclaw_cliq_rc_install_smoke.sh
+ops/scripts/openclaw_cliq_rc_operator_decision_packet.sh
 ops/scripts/openclaw_cliq_trusted_reply_evidence.sh
 ```
 

@@ -64,6 +64,7 @@ def test_lane3_required_paths_exist() -> None:
         REPO_ROOT / "ops" / "scripts" / "openclaw_cliq_rc_install_smoke.sh",
         REPO_ROOT / "ops" / "scripts" / "openclaw_cliq_rc_operator_publish_bundle.sh",
         REPO_ROOT / "ops" / "scripts" / "openclaw_cliq_rc_release_notes_draft.sh",
+        REPO_ROOT / "ops" / "scripts" / "openclaw_cliq_rc_publish_plan.sh",
         REPO_ROOT / "ops" / "scripts" / "openclaw_cliq_rc_pack.sh",
         REPO_ROOT
         / "ops"
@@ -245,6 +246,10 @@ def test_native_cliq_channel_ai_troubleshooting_contract_present() -> None:
         "agent_publish_permission_unexpected",
         "agent_tag_permission_unexpected",
         "agent_integrity_fill_permission_unexpected",
+        "ops/scripts/openclaw_cliq_rc_publish_plan.sh",
+        "operator_publish_plan_ready",
+        "agentMayExecutePlan=false",
+        "release_notes_draft_unsafe",
         "ops/scripts/openclaw_cliq_public_callback_smoke.sh",
         "OPENCLAW_CLIQ_BOT_HANDLER_TEMPLATES.md",
         "ops/scripts/openclaw_cliq_hash_ref.sh",

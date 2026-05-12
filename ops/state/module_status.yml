@@ -20,9 +20,9 @@ cliq:
 openclaw_cliq_channel:
   priority: 3
   status: completed_for_rc
-  phase: release_notes_draft_ready
+  phase: publish_plan_ready
   target_release: v0.4.0
-  current_milestone: cliq-channel-459-release-notes-draft
+  current_milestone: cliq-channel-460-operator-publish-plan
   blockers: []
 
 crm:

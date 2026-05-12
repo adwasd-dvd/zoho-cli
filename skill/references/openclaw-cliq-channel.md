@@ -101,6 +101,12 @@ Markdown draft from the operator bundle. It fails if the bundle is missing/not
 ready or if any agent publish/tag/`expectedIntegrity` fill permission is true,
 and the draft explicitly says no npm publish, git tag, GitHub release, version
 bump, or integrity fill was performed.
+`cliq-channel-460` is complete:
+`ops/scripts/openclaw_cliq_rc_publish_plan.sh` generates a read-only operator
+publish plan from the ready bundle plus safe release-notes draft. It reports
+`operator_publish_plan_ready`, keeps `agentMayExecutePlan=false`, lists
+local/operator, npm RC, and GitHub artifact choices, and treats
+`release_notes_draft_unsafe` as a stop-before-publish error.
 
 The v0.4 plugin targets OpenClaw `>=2026.5.3-1`. The upgraded global
 `OpenClaw 2026.5.3-1` host is suitable for native plugin checks; use

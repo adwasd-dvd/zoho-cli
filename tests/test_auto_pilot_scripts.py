@@ -56,6 +56,9 @@ OPENCLAW_CLIQ_RC_OPERATOR_PUBLISH_BUNDLE_SCRIPT = (
 OPENCLAW_CLIQ_RC_RELEASE_NOTES_DRAFT_SCRIPT = (
     REPO_ROOT / "ops" / "scripts" / "openclaw_cliq_rc_release_notes_draft.sh"
 )
+OPENCLAW_CLIQ_RC_PUBLISH_PLAN_SCRIPT = (
+    REPO_ROOT / "ops" / "scripts" / "openclaw_cliq_rc_publish_plan.sh"
+)
 
 
 def test_export_scope_recheck_runner_propagates_probe_exit_codes(
@@ -1078,6 +1081,159 @@ def test_openclaw_cliq_rc_release_notes_draft_requires_ready_operator_bundle(
     assert payload["kind"] == "openclaw_cliq_rc_release_notes_draft"
     assert payload["status"] == "error"
     assert payload["error"] == "operator_bundle_not_ready"
+
+
+def test_openclaw_cliq_rc_publish_plan_uses_ready_bundle_and_draft(
+    tmp_path: Path,
+) -> None:
+    bundle = tmp_path / "operator-bundle.json"
+    bundle.write_text(
+        json.dumps(
+            {
+                "status": "operator_publish_bundle_ready",
+                "package": {
+                    "name": "@adwasd/openclaw-zoho-cliq",
+                    "version": "0.4.0-rc.1",
+                    "expectedIntegrityState": "placeholder",
+                },
+                "artifact": {
+                    "filename": "adwasd-openclaw-zoho-cliq-0.4.0-rc.1.tgz",
+                    "shasum": "abc123",
+                    "integrity": "sha512-test",
+                },
+                "reports": {
+                    "artifact": {
+                        "file": "artifact.json",
+                        "status": "artifact_verified",
+                    },
+                    "installSmoke": {
+                        "file": "install.json",
+                        "status": "install_smoke_passed",
+                    },
+                    "promotion": {
+                        "file": "promotion.json",
+                        "status": "ready_for_operator_publish",
+                    },
+                    "trustedReply": {
+                        "file": "trusted.json",
+                        "status": "trusted_reply_recorded",
+                    },
+                },
+                "releasePosture": {
+                    "agentMayPublish": False,
+                    "agentMayTag": False,
+                    "agentMayFillExpectedIntegrity": False,
+                },
+            }
+        )
+    )
+    release_notes = tmp_path / "release-notes.md"
+    release_notes.write_text(
+        "\n".join(
+            [
+                "# Draft",
+                "No npm publish, git tag, GitHub release, version bump, or",
+                "`openclaw.install.expectedIntegrity` fill has been performed.",
+                "`agentMayPublish=false`",
+                "`agentMayTag=false`",
+                "`agentMayFillExpectedIntegrity=false`",
+            ]
+        )
+    )
+    plan_file = tmp_path / "publish-plan.json"
+
+    result = subprocess.run(
+        ["bash", str(OPENCLAW_CLIQ_RC_PUBLISH_PLAN_SCRIPT)],
+        cwd=REPO_ROOT,
+        env={
+            **os.environ,
+            "OPENCLAW_CLIQ_OPERATOR_BUNDLE_REPORT_FILE": str(bundle),
+            "OPENCLAW_CLIQ_RELEASE_NOTES_DRAFT_FILE": str(release_notes),
+            "OPENCLAW_CLIQ_PUBLISH_PLAN_FILE": str(plan_file),
+            "OPENCLAW_CLIQ_PUBLISH_PLAN_RUN_ID": "unit-test",
+        },
+        capture_output=True,
+        text=True,
+        check=False,
+    )
+
+    output = f"{result.stdout}\n{result.stderr}"
+    assert result.returncode == 0, output
+    assert str(tmp_path) not in result.stdout
+    payload = json.loads(result.stdout)
+    assert payload["status"] == "operator_publish_plan_ready"
+    assert payload["nextAction"] == "operator_select_publish_path"
+    assert payload["selectedPublishPath"] is None
+    assert payload["artifact"]["pathHint"].endswith(
+        "adwasd-openclaw-zoho-cliq-0.4.0-rc.1.tgz"
+    )
+    assert payload["evidence"]["operatorBundle"]["file"] == bundle.name
+    assert payload["evidence"]["releaseNotesDraft"]["file"] == release_notes.name
+    assert {path["id"] for path in payload["publishPaths"]} == {
+        "local_operator_rc",
+        "npm_rc_publish",
+        "github_release_artifact",
+    }
+    assert "npm_publish" in payload["blockedAgentActions"]
+    assert "expectedIntegrity_fill" in payload["blockedAgentActions"]
+    assert payload["releasePosture"] == {
+        "publishPerformed": False,
+        "tagCreated": False,
+        "githubReleaseCreated": False,
+        "npmPromotionRequiresOperatorApproval": True,
+        "agentMayPublish": False,
+        "agentMayTag": False,
+        "agentMayCreateGithubRelease": False,
+        "agentMayFillExpectedIntegrity": False,
+        "agentMayExecutePlan": False,
+        "expectedIntegrityAction": "operator_fills_after_approved_publish_only",
+    }
+    assert json.loads(plan_file.read_text()) == payload
+
+
+def test_openclaw_cliq_rc_publish_plan_requires_safe_release_notes(
+    tmp_path: Path,
+) -> None:
+    bundle = tmp_path / "operator-bundle.json"
+    bundle.write_text(
+        json.dumps(
+            {
+                "status": "operator_publish_bundle_ready",
+                "package": {
+                    "expectedIntegrityState": "placeholder",
+                },
+                "releasePosture": {
+                    "agentMayPublish": False,
+                    "agentMayTag": False,
+                    "agentMayFillExpectedIntegrity": False,
+                },
+            }
+        )
+    )
+    release_notes = tmp_path / "unsafe-release-notes.md"
+    release_notes.write_text("# Draft\nReady to publish.\n")
+
+    result = subprocess.run(
+        ["bash", str(OPENCLAW_CLIQ_RC_PUBLISH_PLAN_SCRIPT)],
+        cwd=REPO_ROOT,
+        env={
+            **os.environ,
+            "OPENCLAW_CLIQ_OPERATOR_BUNDLE_REPORT_FILE": str(bundle),
+            "OPENCLAW_CLIQ_RELEASE_NOTES_DRAFT_FILE": str(release_notes),
+            "OPENCLAW_CLIQ_PUBLISH_PLAN_FILE": str(tmp_path / "publish-plan.json"),
+            "OPENCLAW_CLIQ_PUBLISH_PLAN_RUN_ID": "unit-test-unsafe",
+        },
+        capture_output=True,
+        text=True,
+        check=False,
+    )
+
+    output = f"{result.stdout}\n{result.stderr}"
+    assert result.returncode == 1, output
+    payload = json.loads(result.stdout)
+    assert payload["kind"] == "openclaw_cliq_rc_publish_plan"
+    assert payload["status"] == "error"
+    assert payload["error"] == "release_notes_draft_unsafe"
 
 
 def _write_openclaw_cliq_test_tarball(

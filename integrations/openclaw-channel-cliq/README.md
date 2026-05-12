@@ -53,6 +53,10 @@ explicit `agentMayPublish=false`, `agentMayTag=false`, and
 `ops/scripts/openclaw_cliq_rc_release_notes_draft.sh` generates a read-only
 Markdown release-notes draft from that bundle and refuses to run if the bundle
 is not ready or any agent publish/tag/integrity-fill permission is true.
+`ops/scripts/openclaw_cliq_rc_publish_plan.sh` then creates a read-only
+operator publish plan from the ready bundle plus safe release-notes draft,
+reports `operator_publish_plan_ready`, and keeps `agentMayExecutePlan=false`
+while listing local/operator, npm RC, and GitHub artifact paths.
 `docs/releases/OPENCLAW_CLIQ_CHANNEL_V0_4_OPERATOR_PUBLISH_HANDOFF.md` is the
 operator handoff for the approval boundary, preflight commands, publish path
 choice, post-publish checks, and abort conditions; agents must not run
@@ -108,6 +112,9 @@ No-publish operator review bundle:
 
 Read-only release-notes draft:
 `../../ops/scripts/openclaw_cliq_rc_release_notes_draft.sh`.
+
+Read-only operator publish plan:
+`../../ops/scripts/openclaw_cliq_rc_publish_plan.sh`.
 
 ## Config example
 

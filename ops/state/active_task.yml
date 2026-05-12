@@ -1,21 +1,22 @@
-id: cliq-channel-481
-title: add Cliq RC decision packet report metadata
+id: cliq-channel-482
+title: record local operator RC selected-path evidence
 module: openclaw_cliq_channel
 stage: completed
 status: completed
 owner: coder
-updated_at: '2026-05-12T10:39:21Z'
+updated_at: '2026-05-12T10:54:43Z'
 execution_mode: turbo_20x
 throughput_policy_ref: ops/state/execution_policy.yml
 success_criteria:
-  - operator decision packet emits basename-only `reportFiles`
-  - operator decision packet emits `reportsReady` booleans for generated and referenced evidence
-  - selected-path and awaiting-path decision states keep `agentMayExecuteSelectedPath=false`
-  - Lane 2, Lane 3, and Lane 1 docs describe the report metadata
+  - read-only decision packet reports `operator_publish_selection_ready` for `local_operator_rc`
+  - selected path review keeps `operatorOnly=true` and `requiresExplicitOperatorApproval=true`
+  - selected path review keeps `agentMayExecute=false` and `agentMayExecuteSelectedPath=false`
+  - Lane 2, Lane 3, and Lane 1 docs record the selected-path evidence
   - publish, tag, npm promotion, GitHub release, and expectedIntegrity fill remain operator-only
 next_if_done: Continue to the next safe RC readiness milestone without publishing or tagging; CRM fixture dry-run remains gated on a copied dedicated payload and cleanup plan.
 progress:
-  - "2026-05-12T10:33:34Z extended `ops/scripts/openclaw_cliq_rc_operator_decision_packet.sh` with basename-only `reportFiles` and `reportsReady` for publish plan, source drift, selection review, operator bundle, release notes draft, and handoff manifest."
-  - "2026-05-12T10:33:34Z focused script tests passed for awaiting publish path, selected publish path, and package drift decision states; no publish, tag, npm promotion, GitHub release, expectedIntegrity fill, Zoho call, or CRM live write was performed."
-  - "2026-05-12T10:39:21Z verification passed: shell syntax for decision packet/publish plan/source drift/selection review scripts; decision packet script states plus RC checklist/operator handoff contract, Lane 3 required paths/troubleshooting contract, and markdown update -> 8 passed in 1.76s; ruff format/check, YAML parse, and `git diff --check` passed."
-next_step: Commit and push the decision packet report metadata slice, then continue to the next safe RC readiness milestone.
+  - "2026-05-12T10:49:17Z ran `OPENCLAW_CLIQ_OPERATOR_PUBLISH_PATH=local_operator_rc OPENCLAW_CLIQ_DECISION_PACKET_RUN_ID=20260512T104813Z-local-operator-rc-selection ops/scripts/openclaw_cliq_rc_operator_decision_packet.sh`."
+  - "2026-05-12T10:49:17Z decision packet returned `operator_publish_selection_ready`, no blockers, `selectedPublishPath=local_operator_rc`, `selectedPublishPathReview.operatorOnly=true`, `requiresExplicitOperatorApproval=true`, `agentMayExecute=false`, all `reportsReady=true`, and `agentMayExecuteSelectedPath=false`."
+  - "2026-05-12T10:49:17Z no publish, tag, npm promotion, GitHub release, expectedIntegrity fill, Zoho call, or CRM live write was performed."
+  - "2026-05-12T10:54:43Z verification passed: OpenClaw Cliq RC checklist/operator handoff contract, Lane 3 required paths/troubleshooting contract, and markdown update -> 5 passed in 0.02s; ruff format/check, YAML parse, and `git diff --check` passed."
+next_step: Commit and push the local/operator RC selected-path evidence slice, then continue to the next safe RC readiness milestone.

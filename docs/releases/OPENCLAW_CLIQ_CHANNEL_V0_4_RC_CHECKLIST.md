@@ -52,11 +52,14 @@ package source still remains unchanged.
 to the final operator decision packet so AI operators can hand off publish-plan,
 source-drift, selection-review, bundle, notes, and manifest reports without
 logging local paths.
+`cliq-channel-482` records a read-only `local_operator_rc` selected-path
+decision packet that reports `operator_publish_selection_ready` while still
+keeping agent execution disabled.
 
 SDK contract source of truth:
 `docs/architecture/OPENCLAW_CLIQ_CHANNEL_SDK_CONTRACT.md`.
 
-Updated: `2026-05-12T10:33:34Z`.
+Updated: `2026-05-12T10:49:17Z`.
 
 ## Decision
 
@@ -82,7 +85,7 @@ environment currently binds `cliq/default` to `zoho-employee-test`.
 - Host floor: OpenClaw `>=2026.5.3-1`
 - Package version: `0.4.0-rc.1`
 - Implemented slices:
-  `cliq-channel-401/402/416/403/414/404/405/406/407/408/413/409/410/417/415/411/412/418/419/420/421/422/453/454/455/456/457/458/459/460/461/462/463/464/465/466/467/468/469/470/471/472/473/474/475/476/477/478/479/480/481`
+  `cliq-channel-401/402/416/403/414/404/405/406/407/408/413/409/410/417/415/411/412/418/419/420/421/422/453/454/455/456/457/458/459/460/461/462/463/464/465/466/467/468/469/470/471/472/473/474/475/476/477/478/479/480/481/482`
 
 ## Evidence
 
@@ -106,6 +109,7 @@ environment currently binds `cliq/default` to `zoho-employee-test`.
 | Source drift check | `OPENCLAW_CLIQ_SOURCE_DRIFT_RUN_ID=20260512T100443Z-crm-readiness-report-metadata-postcommit-source ops/scripts/openclaw_cliq_rc_source_drift_check.sh` passed after the CRM readiness-report-metadata commit with `status=package_source_unchanged`, no blockers, `headCommit=0789a7348f7ebebb97c07f7f61e6ac2a3c1cedce`, `headMatchesManifestSource=false`, `repoChangedSinceManifest=true`, `repoChangedFileCount=26`, `packageDrift.packageChangedSinceManifest=false`, and no dirty package files. Any package file drift still blocks with `package_source_drift_detected` before operator publish. |
 | Operator selection review | `OPENCLAW_CLIQ_SELECTION_REVIEW_RUN_ID=20260512T031411Z-no-selected-path ops/scripts/openclaw_cliq_rc_operator_selection_review.sh` stopped safely with `status=blocked`, `blockers=["publish_path_not_selected"]`, `nextAction=operator_select_publish_path`, and `agentMayExecuteSelectedPath=false`. After the operator selects a path and reruns the publish plan, the same script must report `operator_publish_selection_ready` before an operator executes any publish command. |
 | Operator decision packet | `OPENCLAW_CLIQ_DECISION_PACKET_RUN_ID=20260512T100443Z-crm-readiness-report-metadata-postcommit-decision ops/scripts/openclaw_cliq_rc_operator_decision_packet.sh` passed locally after the CRM readiness-report-metadata commit with `status=awaiting_operator_publish_path`, `blockers=["publish_path_not_selected"]`, `nextAction=operator_select_publish_path`, `operator_publish_plan_ready`, `package_source_unchanged`, `artifact_verified`, `install_smoke_passed`, `trusted_reply_recorded`, shasum `9fca0282ff0c6bfeec6d6158d1bb6fab3f63bcc5`, `sourceDrift.headCommit=0789a7348f7ebebb97c07f7f61e6ac2a3c1cedce`, and `agentMayExecuteSelectedPath=false`. It reruns the read-only publish plan, source drift guard, and selection review in one wrapper; when `OPENCLAW_CLIQ_OPERATOR_PUBLISH_PATH` is supplied, it must report `operator_publish_selection_ready` before any operator command is executed. The packet also emits basename-only `reportFiles` and `reportsReady` for the publish plan, source drift, selection review, operator bundle, release notes draft, and handoff manifest. |
+| Local/operator RC selected path review | `OPENCLAW_CLIQ_OPERATOR_PUBLISH_PATH=local_operator_rc OPENCLAW_CLIQ_DECISION_PACKET_RUN_ID=20260512T104813Z-local-operator-rc-selection ops/scripts/openclaw_cliq_rc_operator_decision_packet.sh` passed locally with `status=operator_publish_selection_ready`, no blockers, `selectedPublishPath=local_operator_rc`, `selectedPublishPathReview.operatorOnly=true`, `selectedPublishPathReview.requiresExplicitOperatorApproval=true`, `selectedPublishPathReview.agentMayExecute=false`, `package_source_unchanged`, `artifact_verified`, `install_smoke_passed`, `trusted_reply_recorded`, all `reportsReady=true`, and `agentMayExecuteSelectedPath=false`. No publish, tag, release, version bump, or expectedIntegrity fill was performed. |
 | Operator publish handoff | `docs/releases/OPENCLAW_CLIQ_CHANNEL_V0_4_OPERATOR_PUBLISH_HANDOFF.md` defines the non-automated approval boundary, required preflight commands, publish path choices, post-publish checks, abort conditions, and release-note facts. |
 | Public callback auth/reachability | Cloudflare Published application route `https://cliq.hpyio.com/webhooks/cliq` is reachable; `ops/scripts/openclaw_cliq_public_callback_smoke.sh` passed with `status=public_callback_verified`, missing-secret `401`, authenticated unsupported-handler `200`, and no stored webhook bodies, response bodies, or secrets. |
 | Live ingress diagnostic | `ops/scripts/openclaw_cliq_live_ingress_diagnostic.sh` reads only redacted OpenClaw `zoho-cliq-audit` log records and reports `no_recent_webhook_ingress`, `latest_webhook_not_dispatched`, `dispatch_reply_not_delivered`, or `live_ingress_active` for the selected send window. `20260512T054312Z-live-window` reported `no_recent_webhook_ingress` for the recent send window, while `20260512T054312Z-known-good` reported `live_ingress_active` for the earlier trusted reply window. The diagnostic keeps raw webhook payloads, message bodies, reply bodies, and secrets out of stdout/report JSON so agents can distinguish a Zoho Bot handler trigger/save issue from an OpenClaw dispatch or Cliq delivery issue. |

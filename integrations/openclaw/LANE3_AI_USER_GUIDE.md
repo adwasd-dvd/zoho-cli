@@ -230,6 +230,10 @@ After sync, ensure the AI user follows:
   - parse decision-packet `reportFiles` and `reportsReady` to hand off publish
     plan, source drift, selection review, operator bundle, release notes draft,
     and handoff manifest evidence by basename without logging local paths
+  - `OPENCLAW_CLIQ_OPERATOR_PUBLISH_PATH=local_operator_rc` may be rehearsed
+    read-only; require `operator_publish_selection_ready` plus
+    `selectedPublishPathReview.agentMayExecute=false` before handing the choice
+    back to the operator
   - require `openclaw_cliq_public_callback_smoke` /
     `public_callback_verified` for a reachable public Bot callback URL before
     claiming production incident readiness

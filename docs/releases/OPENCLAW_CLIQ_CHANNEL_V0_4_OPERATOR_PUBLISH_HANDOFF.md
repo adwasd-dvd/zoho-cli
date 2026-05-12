@@ -117,6 +117,10 @@ Expected local pre-publish posture:
 - after the operator chooses a path and reruns the publish plan, selection
   review reports `operator_publish_selection_ready`,
   `requiresExplicitOperatorApproval=true`, and `agentMayExecuteSelectedPath=false`
+- the read-only `local_operator_rc` rehearsal
+  `20260512T104813Z-local-operator-rc-selection` reports
+  `operator_publish_selection_ready` with no command preview and still keeps
+  `selectedPublishPathReview.agentMayExecute=false`
 - decision packet reports `awaiting_operator_publish_path` before a path is
   selected, or `operator_publish_selection_ready` after a path is selected,
   while keeping `agentMayExecuteSelectedPath=false`

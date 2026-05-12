@@ -60,7 +60,9 @@ CRM SDK planning:
   records the post-CRM report-metadata check at `a926639e`; `cliq-channel-480`
   records the post-CRM readiness-report-metadata check at `0789a734`;
   `cliq-channel-481` adds decision-packet `reportFiles` and `reportsReady`
-  evidence handoff metadata)
+  evidence handoff metadata; `cliq-channel-482` records read-only
+  `local_operator_rc` selected-path readiness with
+  `operator_publish_selection_ready` and agent execution still disabled)
 - `ops/scripts/openclaw_cliq_bot_no_response_packet.sh`
   (`cliq-channel-472/474`: first responder for Bot no-response reports; runs
   public callback smoke plus live ingress diagnostics, then embeds

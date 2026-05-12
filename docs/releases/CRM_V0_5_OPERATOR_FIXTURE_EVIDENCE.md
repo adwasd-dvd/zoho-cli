@@ -29,6 +29,29 @@ The smoke script records `payloadTemplatePlaceholders.emailCount` in its summary
 and refuses live mode with `fixture_payload_placeholder_email` while the payload
 email still contains `example.invalid` or `replace-me`.
 
+Run the local payload preflight before any Zoho-backed dry-run smoke:
+
+```bash
+ZOHO_CRM_FIXTURE_PAYLOAD_FILE=/tmp/lead-fixture.json \
+ZOHO_CRM_FIXTURE_CLEANUP_PLAN="remove or update the dedicated fixture record after validation" \
+ops/scripts/crm_fixture_payload_preflight.sh
+```
+
+Expected preflight status:
+
+- `status=payload_preflight_ready`
+- `payload.recordCount=1`
+- `payload.missingRequiredFields=[]`
+- `payload.placeholderEmailCount=0`
+- `cleanup.present=true`
+- `releasePosture.normalUpsertExecuteBlocked=true`
+- `releasePosture.agentMayRunLiveFixture=false`
+- `nextAction=run_crm_fixture_live_smoke_dry_run`
+
+If it reports `fixture_payload_placeholder_email`, `required_fields_missing`, or
+`cleanup_plan_missing`, fix the copied payload or cleanup plan before running the
+smoke script. The preflight stores only redacted metadata and does not call Zoho.
+
 ```bash
 ZOHO_CRM_FIXTURE_PAYLOAD_FILE=/tmp/lead-fixture.json \
 ZOHO_CRM_FIXTURE_IDEMPOTENCY_KEY=crm-fixture-$(date +%F) \

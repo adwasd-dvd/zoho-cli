@@ -261,6 +261,8 @@ adapter proves parity on the read-only surface. The CLI contract remains:
 12. `crm-015` operator fixture readiness and live evidence:
    - use the smoke script against a real dedicated CRM fixture payload when the
      operator provides one;
+   - run the local payload preflight first so placeholder emails, missing Leads
+     fields, and missing cleanup plans are caught before any Zoho-backed smoke;
    - run the no-write readiness bundle before live mode;
    - archive redacted reports and decide whether v0.5 should broaden guarded
      upsert support or stop at fixture evidence.

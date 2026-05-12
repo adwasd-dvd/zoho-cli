@@ -105,3 +105,8 @@ the dry-run smoke summary before live mode. It requires
 `zoho crm upsert --execute` blocked, and reports
 `fixture_payload_placeholder_email` while the copied payload still contains
 template markers.
+Run `ops/scripts/crm_fixture_payload_preflight.sh` before that smoke path when a
+copied payload is available; require `payload_preflight_ready`,
+`cleanup.present=true`, and `agentMayRunLiveFixture=false`. It catches
+placeholder emails, missing `Leads` fields, and missing cleanup plans without
+calling Zoho or storing raw email/cleanup text.

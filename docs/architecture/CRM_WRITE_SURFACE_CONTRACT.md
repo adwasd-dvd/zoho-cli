@@ -262,6 +262,24 @@ agent still lacks permission to run the live fixture. It reports blockers such
 as `summary_file_missing`, `fixture_evidence_not_ready`,
 `payload_placeholder_count_missing`, and `fixture_payload_placeholder_email`.
 
+`ops/scripts/crm_fixture_payload_preflight.sh` checks the copied operator
+payload before the smoke script and before any Zoho call:
+
+```bash
+ZOHO_CRM_FIXTURE_PAYLOAD_FILE=/tmp/lead-fixture.json \
+ZOHO_CRM_FIXTURE_CLEANUP_PLAN="remove or update the dedicated fixture record after validation" \
+ops/scripts/crm_fixture_payload_preflight.sh
+```
+
+The preflight is local-only and redacted. For the current `Leads` fixture path it
+requires exactly one JSON record with `Last_Name`, `Company`, and `Email`,
+blocks template emails with `fixture_payload_placeholder_email`, blocks missing
+cleanup plans with `cleanup_plan_missing`, and reports
+`status=payload_preflight_ready` with `nextAction=run_crm_fixture_live_smoke_dry_run`
+only when the payload is a dedicated fixture candidate. It does not grant any
+live-write permission; `releasePosture.agentMayRunLiveFixture=false` remains
+true until the operator provides the exact live fixture gates.
+
 ## Operator payload template
 
 `docs/releases/CRM_V0_5_FIXTURE_PAYLOAD_TEMPLATE.json` is the copy-only starting

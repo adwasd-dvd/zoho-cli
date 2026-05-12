@@ -1,10 +1,20 @@
-last_run_at: "2026-05-12T02:29:32Z"
+last_run_at: "2026-05-12T02:51:24Z"
 last_result: passing
-current_focus: cliq-channel-463-message-handler-rc-evidence-refresh
+current_focus: crm-015-fixture-payload-preflight
 suites:
   unit:
     status: passing
     notes:
+      - "crm-015 fixture payload preflight completed at 2026-05-12T02:51:24Z"
+      - "added `ops/scripts/crm_fixture_payload_preflight.sh`; it validates a copied one-record `Leads` fixture payload plus cleanup plan locally before any Zoho-backed smoke, blocks placeholder emails, missing required fields, missing cleanup plans, unsupported modules, and non-single-record payloads, and emits redacted `payload_preflight_ready` or blocker JSON"
+      - "ZOHO_CRM_FIXTURE_PAYLOAD_FILE=docs/releases/CRM_V0_5_FIXTURE_PAYLOAD_TEMPLATE.json ZOHO_CRM_FIXTURE_CLEANUP_PLAN='remove fixture record after validation' ZOHO_CRM_FIXTURE_PREFLIGHT_RUN_ID=20260512T024849Z-template-block ops/scripts/crm_fixture_payload_preflight.sh -> expected blocked state with `fixture_payload_placeholder_email`; no Zoho call or CRM write attempted"
+      - "bash -n ops/scripts/crm_fixture_payload_preflight.sh ops/scripts/crm_fixture_live_smoke.sh ops/scripts/crm_fixture_operator_readiness_bundle.sh -> passed"
+      - "./.venv/bin/python -m pytest -q tests/test_auto_pilot_scripts.py -k 'crm_fixture' -> 8 passed, 52 deselected in 1.71s"
+      - "./.venv/bin/python -m pytest -q tests/test_auto_pilot_scripts.py::test_crm_fixture_payload_preflight_blocks_template_payload tests/test_auto_pilot_scripts.py::test_crm_fixture_payload_preflight_accepts_dedicated_payload tests/test_auto_pilot_scripts.py::test_crm_fixture_payload_preflight_requires_cleanup_plan tests/test_auto_pilot_scripts.py::test_crm_fixture_operator_readiness_bundle_requires_dry_run_evidence tests/test_auto_pilot_scripts.py::test_crm_fixture_operator_readiness_bundle_blocks_placeholder_payload tests/test_crm_sdk.py tests/test_lane3_docs.py::test_lane3_required_paths_exist tests/test_lane3_docs.py::test_crm_sdk_adoption_contract_present tests/test_lane3_docs.py::test_crm_fixture_payload_template_is_safe_single_record tests/test_markdown_update.py -> 21 passed in 0.69s"
+      - "./.venv/bin/ruff format --check tests/test_auto_pilot_scripts.py tests/test_lane3_docs.py -> 2 files already formatted"
+      - "./.venv/bin/ruff check tests/test_auto_pilot_scripts.py tests/test_lane3_docs.py -> All checks passed"
+      - "ruby YAML parse for project/module_status/test_status/active_task -> YAML_PARSE_OK"
+      - "git diff --check -> passed"
       - "cliq-channel-463 post-hardening RC evidence refresh completed at 2026-05-12T02:29:32Z"
       - "reran the safe no-publish chain after the direct Message Handler parser/template fix: RC pack, artifact check, Temp-HOME install smoke, promotion preflight, operator bundle, release-notes draft, publish plan, and handoff manifest all passed"
       - "OPENCLAW_CLIQ_PACK_RUN_ID=20260512T022801Z-message-handler-rc ops/scripts/openclaw_cliq_rc_pack.sh -> passed; tarball `adwasd-openclaw-zoho-cliq-0.4.0-rc.1.tgz`, shasum `72e5628acf639d48d7e2e3cfbf4a15e7deed0b48`, integrity `sha512-SzZtBYwud4xa+bEiZyjB/UbiiQc9xJDWx0oalmdXPw5s9aeKsR9Hg8VKK5V4lbWM6dGMN2Ig39LC13UH3Kw52w==`"

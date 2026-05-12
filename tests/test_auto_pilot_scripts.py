@@ -14,6 +14,9 @@ EXPORT_RECHECK_SCRIPT = (
     REPO_ROOT / "tests" / "auto_pilot" / "run_cliq_export_scope_recheck.sh"
 )
 CRM_FIXTURE_SMOKE_SCRIPT = REPO_ROOT / "ops" / "scripts" / "crm_fixture_live_smoke.sh"
+CRM_FIXTURE_PAYLOAD_PREFLIGHT_SCRIPT = (
+    REPO_ROOT / "ops" / "scripts" / "crm_fixture_payload_preflight.sh"
+)
 CRM_FIXTURE_READINESS_BUNDLE_SCRIPT = (
     REPO_ROOT / "ops" / "scripts" / "crm_fixture_operator_readiness_bundle.sh"
 )
@@ -1907,6 +1910,157 @@ def test_crm_fixture_live_smoke_blocks_placeholder_email_for_execute(
     assert "fixture_payload_placeholder_email" in output
     calls = [json.loads(line) for line in calls_path.read_text().splitlines()]
     assert not any("--execute" in call for call in calls)
+
+
+def test_crm_fixture_payload_preflight_blocks_template_payload(
+    tmp_path: Path,
+) -> None:
+    raw_email = "zoho-cli-fixture+replace-me@example.invalid"
+    payload_file = tmp_path / "fixture-template.json"
+    payload_file.write_text(
+        json.dumps(
+            {
+                "Last_Name": "ZohoCliFixtureReplaceMe",
+                "Company": "Zoho CLI Fixture",
+                "Email": raw_email,
+            }
+        ),
+        encoding="utf-8",
+    )
+    reports_dir = tmp_path / "reports"
+
+    result = subprocess.run(
+        ["bash", str(CRM_FIXTURE_PAYLOAD_PREFLIGHT_SCRIPT)],
+        cwd=REPO_ROOT,
+        env={
+            **os.environ,
+            "ZOHO_CRM_FIXTURE_PAYLOAD_FILE": str(payload_file),
+            "ZOHO_CRM_FIXTURE_CLEANUP_PLAN": "delete the fixture record after validation",
+            "ZOHO_CRM_FIXTURE_PREFLIGHT_REPORT_DIR": str(reports_dir),
+            "ZOHO_CRM_FIXTURE_PREFLIGHT_RUN_ID": "unit-template",
+        },
+        capture_output=True,
+        text=True,
+        check=False,
+    )
+
+    output = f"{result.stdout}\n{result.stderr}"
+    assert result.returncode == 1, output
+    assert raw_email not in output
+    payload = json.loads(result.stdout)
+    assert payload["status"] == "blocked"
+    assert payload["blockers"] == ["fixture_payload_placeholder_email"]
+    assert payload["payload"]["file"] == payload_file.name
+    assert payload["payload"]["recordCount"] == 1
+    assert payload["payload"]["missingRequiredFields"] == []
+    assert payload["payload"]["placeholderEmailCount"] == 1
+    assert payload["payload"]["dedicatedFixtureCandidate"] is False
+    assert payload["cleanup"] == {
+        "required": True,
+        "present": True,
+        "rawCleanupPlanStored": False,
+    }
+    assert payload["redactionContract"]["rawEmailStored"] is False
+    assert payload["nextAction"] == "fix_fixture_payload"
+    assert (
+        json.loads(
+            (
+                reports_dir / "crm_fixture_payload_preflight_unit-template.json"
+            ).read_text()
+        )
+        == payload
+    )
+
+
+def test_crm_fixture_payload_preflight_accepts_dedicated_payload(
+    tmp_path: Path,
+) -> None:
+    raw_email = "fixture-ready@operator.test"
+    raw_cleanup = "delete record with this dedicated fixture email after validation"
+    payload_file = tmp_path / "fixture-ready.json"
+    payload_file.write_text(
+        json.dumps(
+            {
+                "Last_Name": "ZohoCliFixtureReady",
+                "Company": "Zoho CLI Fixture",
+                "Email": raw_email,
+            }
+        ),
+        encoding="utf-8",
+    )
+
+    result = subprocess.run(
+        ["bash", str(CRM_FIXTURE_PAYLOAD_PREFLIGHT_SCRIPT)],
+        cwd=REPO_ROOT,
+        env={
+            **os.environ,
+            "ZOHO_CRM_FIXTURE_PAYLOAD_FILE": str(payload_file),
+            "ZOHO_CRM_FIXTURE_CLEANUP_PLAN": raw_cleanup,
+            "ZOHO_CRM_FIXTURE_PREFLIGHT_REPORT_DIR": str(tmp_path / "reports"),
+            "ZOHO_CRM_FIXTURE_PREFLIGHT_RUN_ID": "unit-ready",
+        },
+        capture_output=True,
+        text=True,
+        check=False,
+    )
+
+    output = f"{result.stdout}\n{result.stderr}"
+    assert result.returncode == 0, output
+    assert raw_email not in output
+    assert raw_cleanup not in output
+    payload = json.loads(result.stdout)
+    assert payload["status"] == "payload_preflight_ready"
+    assert payload["blockers"] == []
+    assert payload["payload"]["dedicatedFixtureCandidate"] is True
+    assert payload["payload"]["requiredFields"] == ["Last_Name", "Company", "Email"]
+    assert payload["payload"]["missingRequiredFields"] == []
+    assert payload["payload"]["placeholderEmailCount"] == 0
+    assert payload["cleanup"]["present"] is True
+    assert payload["releasePosture"]["normalUpsertExecuteBlocked"] is True
+    assert payload["releasePosture"]["agentMayRunLiveFixture"] is False
+    assert payload["nextAction"] == "run_crm_fixture_live_smoke_dry_run"
+
+
+def test_crm_fixture_payload_preflight_requires_cleanup_plan(
+    tmp_path: Path,
+) -> None:
+    payload_file = tmp_path / "fixture-ready.json"
+    payload_file.write_text(
+        json.dumps(
+            {
+                "Last_Name": "ZohoCliFixtureReady",
+                "Company": "Zoho CLI Fixture",
+                "Email": "fixture-ready@operator.test",
+            }
+        ),
+        encoding="utf-8",
+    )
+
+    result = subprocess.run(
+        ["bash", str(CRM_FIXTURE_PAYLOAD_PREFLIGHT_SCRIPT)],
+        cwd=REPO_ROOT,
+        env={
+            **os.environ,
+            "ZOHO_CRM_FIXTURE_PAYLOAD_FILE": str(payload_file),
+            "ZOHO_CRM_FIXTURE_PREFLIGHT_REPORT_DIR": str(tmp_path / "reports"),
+            "ZOHO_CRM_FIXTURE_PREFLIGHT_RUN_ID": "unit-cleanup-missing",
+        },
+        capture_output=True,
+        text=True,
+        check=False,
+    )
+
+    output = f"{result.stdout}\n{result.stderr}"
+    assert result.returncode == 1, output
+    payload = json.loads(result.stdout)
+    assert payload["status"] == "blocked"
+    assert payload["blockers"] == ["cleanup_plan_missing"]
+    assert payload["cleanup"] == {
+        "required": True,
+        "present": False,
+        "rawCleanupPlanStored": False,
+    }
+    assert payload["nextAction"] == "provide_cleanup_plan"
 
 
 def _write_fake_zoho_for_crm_fixture_readiness(

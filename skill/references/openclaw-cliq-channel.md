@@ -85,6 +85,10 @@ entries, and no publish/tag/version-bump posture before reporting
 a Temp-HOME OpenClaw profile with local `plugins install`, `plugins inspect
 zoho-cliq --json`, and `plugins doctor` before reporting
 `install_smoke_passed`.
+The local promotion preflight now requires pack evidence, `artifact_verified`,
+`install_smoke_passed`, `trusted_reply_recorded`, placeholder
+`expectedIntegrity`, and no publish/tag/version-bump posture before reporting
+`ready_for_operator_publish`.
 
 The v0.4 plugin targets OpenClaw `>=2026.5.3-1`. The upgraded global
 `OpenClaw 2026.5.3-1` host is suitable for native plugin checks; use

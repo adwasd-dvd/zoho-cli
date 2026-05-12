@@ -58,7 +58,7 @@ environment currently binds `cliq/default` to `zoho-employee-test`.
 | Local package artifact preflight | `NPM_CONFIG_CACHE=/private/tmp/zoho-cli-npm-cache OPENCLAW_CLIQ_PACK_RUN_ID=20260511T214240Z-live-reply ops/scripts/openclaw_cliq_rc_pack.sh` passed at `2026-05-11T21:47:10Z`; the script reran typecheck/build and then packed from the plugin directory into `.tmp/openclaw-cliq-rc-pack`. Tarball `adwasd-openclaw-zoho-cliq-0.4.0-rc.1.tgz`, size `95394`, unpacked size `470591`, entry count `67`, shasum `7717aa539f3ccf8d1ee1be560283ea30fa6a87b6`, integrity `sha512-2gp4TAicx7Ax07jBI2HNl9WFlIrVaqMh082mLAN5NVxF3p3BL7AWEgQDJfs+TOzwU2zLiSNdEu79BEFNZGsNEw==`. Summary report path pattern: `tests/auto_pilot/reports/openclaw_cliq_rc_pack_summary_<run-id>.json`. |
 | Local RC artifact check | `OPENCLAW_CLIQ_ARTIFACT_RUN_ID=20260512T000324Z-local-artifact ops/scripts/openclaw_cliq_rc_artifact_check.sh` passed locally with `status=artifact_verified`, no blockers, tarball shasum matching the pack summary, package `0.4.0-rc.1`, channel id `cliq`, manifest id `zoho-cliq`, required `dist/`, `README.md`, and `skill/SKILL.md` entries present, and release posture still no publish/tag/version bump. |
 | Local OpenClaw install smoke | `OPENCLAW_CLIQ_INSTALL_RUN_ID=20260512T003737Z-local-install ops/scripts/openclaw_cliq_rc_install_smoke.sh` passed locally with `status=install_smoke_passed`, no blockers, source tarball `adwasd-openclaw-zoho-cliq-0.4.0-rc.1.tgz`, artifact report `artifact_verified`, Temp-HOME OpenClaw install, `plugins inspect zoho-cliq --json`, and `plugins doctor` all passed. |
-| RC promotion preflight | `OPENCLAW_CLIQ_PROMOTION_RUN_ID=20260511T222653Z-operator-ready-v2 ops/scripts/openclaw_cliq_rc_promotion_check.sh` passed locally with `status=ready_for_operator_publish`, no blockers, package version `0.4.0-rc.1`, `expectedIntegrityState=placeholder`, pack `publishPerformed=false`, pack `versionBumped=false`, trusted reply `trusted_reply_recorded`, and `npmPromotionRequiresOperatorApproval=true`. |
+| RC promotion preflight | `OPENCLAW_CLIQ_PROMOTION_RUN_ID=20260512T004841Z-strict-preflight ops/scripts/openclaw_cliq_rc_promotion_check.sh` passed locally with `status=ready_for_operator_publish`, no blockers, package version `0.4.0-rc.1`, `expectedIntegrityState=placeholder`, pack `publishPerformed=false`, pack `versionBumped=false`, artifact `artifact_verified`, install smoke `install_smoke_passed`, trusted reply `trusted_reply_recorded`, and `npmPromotionRequiresOperatorApproval=true`. |
 | Operator publish handoff | `docs/releases/OPENCLAW_CLIQ_CHANNEL_V0_4_OPERATOR_PUBLISH_HANDOFF.md` defines the non-automated approval boundary, required preflight commands, publish path choices, post-publish checks, abort conditions, and release-note facts. |
 | Public callback auth/reachability | Cloudflare Published application route `https://cliq.hpyio.com/webhooks/cliq` is reachable; `ops/scripts/openclaw_cliq_public_callback_smoke.sh` passed with `status=public_callback_verified`, missing-secret `401`, authenticated unsupported-handler `200`, and no stored webhook bodies, response bodies, or secrets. |
 | Live route binding | `openclaw config validate` passes with `cliq/default -> zoho-employee-test`; both `main` and `zoho-employee-test` are configured for `openai-codex/gpt-5.3-codex`. |
@@ -220,6 +220,10 @@ If `ops/scripts/openclaw_cliq_rc_install_smoke.sh` reports
 `artifact_not_verified`, `plugin_install_failed`, `plugin_inspect_failed`,
 `plugin_id_missing`, `channel_id_missing`, or `plugin_doctor_failed`, fix the
 package installability before asking for operator publish approval.
+If `ops/scripts/openclaw_cliq_rc_promotion_check.sh` reports
+`artifact_report_missing`, `artifact_not_verified`, `install_smoke_missing`, or
+`install_smoke_not_passed`, rerun or fix the local artifact/install gates before
+asking for operator publish approval.
 
 ## RC cut steps
 

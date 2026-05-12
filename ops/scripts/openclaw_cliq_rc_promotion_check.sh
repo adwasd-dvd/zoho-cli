@@ -13,6 +13,8 @@ EXPECTED_PACKAGE_NAME="${OPENCLAW_CLIQ_EXPECTED_PACKAGE_NAME:-@adwasd/openclaw-z
 EXPECTED_VERSION="${OPENCLAW_CLIQ_EXPECTED_VERSION:-0.4.0-rc.1}"
 EXPECTED_INTEGRITY_PLACEHOLDER="${OPENCLAW_CLIQ_EXPECTED_INTEGRITY_PLACEHOLDER:-<filled-at-release>}"
 PACK_SUMMARY_FILE="${OPENCLAW_CLIQ_PACK_SUMMARY_FILE:-}"
+ARTIFACT_REPORT_FILE="${OPENCLAW_CLIQ_ARTIFACT_REPORT_FILE:-}"
+INSTALL_SMOKE_FILE="${OPENCLAW_CLIQ_INSTALL_SMOKE_FILE:-}"
 TRUSTED_REPLY_CHECK_FILE="${OPENCLAW_CLIQ_TRUSTED_REPLY_CHECK_FILE:-}"
 
 emit_error() {
@@ -39,17 +41,35 @@ mkdir -p "$REPORT_DIR"
 if [[ -z "$PACK_SUMMARY_FILE" ]]; then
   PACK_SUMMARY_FILE="$(latest_report "openclaw_cliq_rc_pack_summary_*.json")"
 fi
+if [[ -z "$ARTIFACT_REPORT_FILE" ]]; then
+  ARTIFACT_REPORT_FILE="$(latest_report "openclaw_cliq_rc_artifact_check_*.json")"
+fi
+if [[ -z "$INSTALL_SMOKE_FILE" ]]; then
+  INSTALL_SMOKE_FILE="$(latest_report "openclaw_cliq_rc_install_smoke_*.json")"
+fi
 if [[ -z "$TRUSTED_REPLY_CHECK_FILE" ]]; then
   TRUSTED_REPLY_CHECK_FILE="$(latest_report "openclaw_cliq_trusted_reply_check_*.json")"
 fi
 
 PACK_SUMMARY_EXISTS=false
+ARTIFACT_EXISTS=false
+INSTALL_SMOKE_EXISTS=false
 TRUSTED_REPLY_EXISTS=false
 PACK_SUMMARY_SLURP_FILE="/dev/null"
+ARTIFACT_SLURP_FILE="/dev/null"
+INSTALL_SMOKE_SLURP_FILE="/dev/null"
 TRUSTED_REPLY_SLURP_FILE="/dev/null"
 if [[ -n "$PACK_SUMMARY_FILE" && -f "$PACK_SUMMARY_FILE" ]]; then
   PACK_SUMMARY_EXISTS=true
   PACK_SUMMARY_SLURP_FILE="$PACK_SUMMARY_FILE"
+fi
+if [[ -n "$ARTIFACT_REPORT_FILE" && -f "$ARTIFACT_REPORT_FILE" ]]; then
+  ARTIFACT_EXISTS=true
+  ARTIFACT_SLURP_FILE="$ARTIFACT_REPORT_FILE"
+fi
+if [[ -n "$INSTALL_SMOKE_FILE" && -f "$INSTALL_SMOKE_FILE" ]]; then
+  INSTALL_SMOKE_EXISTS=true
+  INSTALL_SMOKE_SLURP_FILE="$INSTALL_SMOKE_FILE"
 fi
 if [[ -n "$TRUSTED_REPLY_CHECK_FILE" && -f "$TRUSTED_REPLY_CHECK_FILE" ]]; then
   TRUSTED_REPLY_EXISTS=true
@@ -63,13 +83,19 @@ PAYLOAD="$("$JQ_BIN" -n \
   --arg expectedVersion "$EXPECTED_VERSION" \
   --arg expectedIntegrityPlaceholder "$EXPECTED_INTEGRITY_PLACEHOLDER" \
   --argjson packSummaryExists "$PACK_SUMMARY_EXISTS" \
+  --argjson artifactExists "$ARTIFACT_EXISTS" \
+  --argjson installSmokeExists "$INSTALL_SMOKE_EXISTS" \
   --argjson trustedReplyExists "$TRUSTED_REPLY_EXISTS" \
   --slurpfile package "$PACKAGE_JSON" \
   --slurpfile pack "$PACK_SUMMARY_SLURP_FILE" \
+  --slurpfile artifact "$ARTIFACT_SLURP_FILE" \
+  --slurpfile install "$INSTALL_SMOKE_SLURP_FILE" \
   --slurpfile trusted "$TRUSTED_REPLY_SLURP_FILE" \
   '
   ($package[0]) as $pkg
   | (if $packSummaryExists then $pack[0] else {} end) as $packReport
+  | (if $artifactExists then $artifact[0] else {} end) as $artifactReport
+  | (if $installSmokeExists then $install[0] else {} end) as $installReport
   | (if $trustedReplyExists then $trusted[0] else {} end) as $trustedReport
   | ($pkg.openclaw.install.expectedIntegrity // "") as $expectedIntegrity
   | [
@@ -82,6 +108,17 @@ PAYLOAD="$("$JQ_BIN" -n \
       (if ($packReport.pack.version // "") == $expectedVersion then empty else "pack_version_mismatch" end),
       (if ($packReport.releasePosture.publishPerformed // false) == false then empty else "pack_publish_performed" end),
       (if ($packReport.releasePosture.versionBumped // false) == false then empty else "pack_version_bumped" end),
+      (if $artifactExists then empty else "artifact_report_missing" end),
+      (if ($artifactReport.status // "") == "artifact_verified" then empty else "artifact_not_verified" end),
+      (if ($artifactReport.artifact.shasumMatchesPackSummary // false) == true then empty else "artifact_shasum_not_verified" end),
+      (if ($artifactReport.package.name // "") == $expectedPackageName then empty else "artifact_package_name_mismatch" end),
+      (if ($artifactReport.package.version // "") == $expectedVersion then empty else "artifact_version_mismatch" end),
+      (if ($artifactReport.package.expectedIntegrityState // "") == "placeholder" then empty else "artifact_expected_integrity_not_placeholder" end),
+      (if $installSmokeExists then empty else "install_smoke_missing" end),
+      (if ($installReport.status // "") == "install_smoke_passed" then empty else "install_smoke_not_passed" end),
+      (if ($installReport.artifact.status // "") == "artifact_verified" then empty else "install_artifact_not_verified" end),
+      (if ($installReport.releasePosture.publishPerformed // false) == false then empty else "install_publish_performed" end),
+      (if ($installReport.releasePosture.versionBumped // false) == false then empty else "install_version_bumped" end),
       (if $trustedReplyExists then empty else "trusted_reply_check_missing" end),
       (if ($trustedReport.status // "") == "trusted_reply_recorded" then empty else "trusted_reply_not_recorded" end),
       (if ($trustedReport.redaction.rawWebhookPayloadStored // false) == false then empty else "raw_webhook_payload_stored" end),
@@ -119,6 +156,26 @@ PAYLOAD="$("$JQ_BIN" -n \
           then $packReport.releasePosture.versionBumped
           else null
           end
+        )
+      },
+      artifact: {
+        reportReady: $artifactExists,
+        status: ($artifactReport.status // null),
+        filename: ($artifactReport.artifact.filename // null),
+        shasum: ($artifactReport.artifact.shasum // null),
+        shasumMatchesPackSummary: (
+          if $artifactExists and (($artifactReport.artifact // {}) | has("shasumMatchesPackSummary"))
+          then $artifactReport.artifact.shasumMatchesPackSummary
+          else null
+          end
+        )
+      },
+      installSmoke: {
+        reportReady: $installSmokeExists,
+        status: ($installReport.status // null),
+        source: ($installReport.source // null),
+        commandStatuses: (
+          if $installSmokeExists then [($installReport.commands // [])[] | {name, status, exitCode}] else [] end
         )
       },
       trustedReply: {

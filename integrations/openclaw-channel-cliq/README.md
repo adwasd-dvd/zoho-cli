@@ -40,9 +40,10 @@ gateway/webhook security gates. The RC pack harness runs typecheck/build and
 packs from the package directory, then writes an ignored JSON summary for
 release evidence without publishing or mutating version metadata at pack time.
 `ops/scripts/openclaw_cliq_rc_promotion_check.sh` combines that pack summary
-with trusted reply evidence and package metadata, then reports
-`ready_for_operator_publish` only when `expectedIntegrity` is still the release
-placeholder and no publish/tag/version-bump action has occurred.
+with artifact verification, Temp-HOME install smoke, trusted reply evidence,
+and package metadata, then reports `ready_for_operator_publish` only when
+`expectedIntegrity` is still the release placeholder and no
+publish/tag/version-bump action has occurred.
 `docs/releases/OPENCLAW_CLIQ_CHANNEL_V0_4_OPERATOR_PUBLISH_HANDOFF.md` is the
 operator handoff for the approval boundary, preflight commands, publish path
 choice, post-publish checks, and abort conditions; agents must not run

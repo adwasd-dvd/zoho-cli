@@ -1,10 +1,19 @@
-last_run_at: "2026-05-12T00:41:10Z"
+last_run_at: "2026-05-12T00:54:35Z"
 last_result: passing
-current_focus: cliq-channel-456-rc-install-smoke
+current_focus: cliq-channel-457-strict-promotion-preflight
 suites:
   unit:
     status: passing
     notes:
+      - "cliq-channel-457 strict RC promotion preflight completed at 2026-05-12T00:50:49Z"
+      - "tightened `ops/scripts/openclaw_cliq_rc_promotion_check.sh` so `ready_for_operator_publish` requires pack evidence, `artifact_verified`, `install_smoke_passed`, `trusted_reply_recorded`, placeholder `expectedIntegrity`, and no publish/tag/version-bump posture"
+      - "OPENCLAW_CLIQ_PROMOTION_RUN_ID=20260512T004841Z-strict-preflight ops/scripts/openclaw_cliq_rc_promotion_check.sh -> `ready_for_operator_publish`, no blockers, artifact `artifact_verified`, install smoke `install_smoke_passed`, trusted reply `trusted_reply_recorded`, `npmPromotionRequiresOperatorApproval=true`"
+      - "./.venv/bin/python -m pytest -q tests/test_auto_pilot_scripts.py::test_openclaw_cliq_rc_promotion_check_requires_ready_local_evidence tests/test_auto_pilot_scripts.py::test_openclaw_cliq_rc_promotion_check_blocks_published_integrity_too_early tests/test_auto_pilot_scripts.py::test_openclaw_cliq_rc_promotion_check_requires_install_smoke -> 3 passed in 0.18s"
+      - "./.venv/bin/python -m pytest -q tests/test_auto_pilot_scripts.py::test_openclaw_cliq_rc_promotion_check_requires_ready_local_evidence tests/test_auto_pilot_scripts.py::test_openclaw_cliq_rc_promotion_check_blocks_published_integrity_too_early tests/test_auto_pilot_scripts.py::test_openclaw_cliq_rc_promotion_check_requires_install_smoke tests/test_openclaw_channel_contract.py::test_openclaw_cliq_channel_rc_checklist_has_cut_contract tests/test_openclaw_channel_contract.py::test_openclaw_cliq_operator_publish_handoff_has_approval_boundary tests/test_lane3_docs.py::test_native_cliq_channel_ai_troubleshooting_contract_present tests/test_markdown_update.py -> 7 passed in 0.08s"
+      - "./.venv/bin/ruff format --check tests/test_auto_pilot_scripts.py tests/test_lane3_docs.py tests/test_openclaw_channel_contract.py -> 3 files already formatted"
+      - "./.venv/bin/ruff check tests/test_auto_pilot_scripts.py tests/test_lane3_docs.py tests/test_openclaw_channel_contract.py -> All checks passed"
+      - "ruby YAML parse for project/module_status/test_status -> YAML_PARSE_OK"
+      - "git diff --check -> passed"
       - "cliq-channel-456 local RC install smoke completed at 2026-05-12T00:41:10Z"
       - "added `ops/scripts/openclaw_cliq_rc_install_smoke.sh`; it requires `artifact_verified`, installs the RC tarball into a Temp-HOME OpenClaw profile, runs `plugins inspect zoho-cliq --json` and `plugins doctor`, and reports `install_smoke_passed` without publish/tag/version bump/integrity fill"
       - "OPENCLAW_CLIQ_INSTALL_RUN_ID=20260512T003737Z-local-install-verify ops/scripts/openclaw_cliq_rc_install_smoke.sh -> `install_smoke_passed`, no blockers, source tarball `adwasd-openclaw-zoho-cliq-0.4.0-rc.1.tgz`, artifact `artifact_verified`, Temp-HOME install/inspect/doctor passed"

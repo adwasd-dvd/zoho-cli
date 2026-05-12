@@ -84,8 +84,9 @@ Use this skill when operating through the native OpenClaw Zoho Cliq channel.
   tarball.
 - Before asking an operator to publish/promote, run
   `ops/scripts/openclaw_cliq_rc_promotion_check.sh`; require
-  `ready_for_operator_publish`, `expectedIntegrityState=placeholder`, no pack
-  publish/version bump, and `trusted_reply_recorded`. Do not fill
+  `ready_for_operator_publish`, `expectedIntegrityState=placeholder`,
+  `artifact_verified`, `install_smoke_passed`, no pack/install publish/version
+  bump, and `trusted_reply_recorded`. Do not fill
   `openclaw.install.expectedIntegrity` until the operator approves the actual
   publish source and the published artifact integrity is known.
 - For the operator approval boundary and release action handoff, use

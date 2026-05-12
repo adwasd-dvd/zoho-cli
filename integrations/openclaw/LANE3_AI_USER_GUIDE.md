@@ -160,6 +160,11 @@ After sync, ensure the AI user follows:
   - require `install_smoke_passed` from a Temp-HOME local `plugins install`, `plugins inspect zoho-cliq --json`, and `plugins doctor`
   - treat `artifact_not_verified`, `plugin_install_failed`, `plugin_inspect_failed`, `plugin_id_missing`, `channel_id_missing`, or `plugin_doctor_failed` as stop-and-fix blockers
   - do not treat the install smoke as an npm publish, tag, version bump, or published integrity fill
+- native channel RC promotion preflight:
+  - run `ops/scripts/openclaw_cliq_rc_promotion_check.sh` only after pack, artifact check, install smoke, and trusted reply evidence exist
+  - require `ready_for_operator_publish`, `artifact_verified`, `install_smoke_passed`, `trusted_reply_recorded`, and `expectedIntegrityState=placeholder`
+  - treat `artifact_report_missing`, `artifact_not_verified`, `install_smoke_missing`, and `install_smoke_not_passed` as stop-and-fix blockers
+  - do not treat the promotion preflight as operator approval to publish, tag, npm-promote, or fill published artifact integrity
 - native channel compatibility maintenance:
   - read `docs/releases/OPENCLAW_CLIQ_CHANNEL_COMPATIBILITY.md` before changing host/plugin API floors
   - keep `>=2026.5.3-1` as the v0.4 floor unless a newer OpenClaw SDK is genuinely required

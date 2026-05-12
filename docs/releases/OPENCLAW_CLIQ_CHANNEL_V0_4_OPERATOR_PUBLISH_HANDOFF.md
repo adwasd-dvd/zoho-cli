@@ -69,6 +69,11 @@ Expected local pre-publish posture:
 - `trustedReply.status=trusted_reply_recorded`
 - `npmPromotionRequiresOperatorApproval=true`
 
+The promotion preflight is intentionally strict: `ready_for_operator_publish`
+requires the pack summary, artifact check, install smoke, trusted reply evidence,
+placeholder `expectedIntegrity`, and no publish/tag/version-bump posture to all
+be present at the same time.
+
 ## Operator publish choices
 
 Choose exactly one path:
@@ -104,6 +109,12 @@ Abort and do not publish if any of these appear:
 - `token_refresh_rate_limited` during live checks: wait for cooldown.
 - `expected_integrity_not_placeholder` before publish approval.
 - `pack_publish_performed` or `pack_version_bumped` in local preflight.
+- `artifact_report_missing`, `artifact_not_verified`,
+  `artifact_shasum_not_verified`, or `artifact_expected_integrity_not_placeholder`
+  in local preflight.
+- `install_smoke_missing`, `install_smoke_not_passed`,
+  `install_artifact_not_verified`, `install_publish_performed`, or
+  `install_version_bumped` in local preflight.
 - `tarball_shasum_mismatch`, `artifact_version_mismatch`, or
   `required_entry_missing_*` in the local artifact check.
 - `artifact_not_verified`, `plugin_install_failed`, `plugin_inspect_failed`,

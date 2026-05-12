@@ -1,10 +1,18 @@
-last_run_at: "2026-05-12T01:48:31Z"
+last_run_at: "2026-05-12T01:54:58Z"
 last_result: passing
-current_focus: cliq-channel-460-operator-publish-plan
+current_focus: cliq-channel-461-operator-handoff-manifest
 suites:
   unit:
     status: passing
     notes:
+      - "cliq-channel-461 operator handoff manifest completed at 2026-05-12T01:54:58Z"
+      - "added `ops/scripts/openclaw_cliq_rc_operator_handoff_manifest.sh`; it reads the ready operator bundle, safe release-notes draft, and publish plan, checks internal consistency, indexes report filenames and artifact facts, and keeps publish/tag/release/integrity-fill actions blocked for agents"
+      - "OPENCLAW_CLIQ_HANDOFF_MANIFEST_RUN_ID=20260512T015141Z-operator-manifest ops/scripts/openclaw_cliq_rc_operator_handoff_manifest.sh -> `operator_handoff_manifest_ready`, no blockers, `operator_publish_plan_ready`, `trusted_reply_recorded`, and `agentMayExecutePlan=false`; no publish/tag/release/version bump/integrity fill performed"
+      - "bash -n ops/scripts/openclaw_cliq_rc_operator_handoff_manifest.sh -> passed"
+      - "./.venv/bin/python -m pytest -q tests/test_auto_pilot_scripts.py::test_openclaw_cliq_rc_operator_handoff_manifest_indexes_ready_packet tests/test_auto_pilot_scripts.py::test_openclaw_cliq_rc_operator_handoff_manifest_blocks_unsafe_plan -> 2 passed in 0.27s"
+      - "./.venv/bin/python -m pytest -q tests/test_auto_pilot_scripts.py::test_openclaw_cliq_rc_operator_handoff_manifest_indexes_ready_packet tests/test_auto_pilot_scripts.py::test_openclaw_cliq_rc_operator_handoff_manifest_blocks_unsafe_plan tests/test_auto_pilot_scripts.py::test_openclaw_cliq_rc_publish_plan_uses_ready_bundle_and_draft tests/test_auto_pilot_scripts.py::test_openclaw_cliq_rc_release_notes_draft_uses_ready_operator_bundle tests/test_auto_pilot_scripts.py::test_openclaw_cliq_rc_operator_publish_bundle_collects_ready_evidence tests/test_openclaw_channel_contract.py::test_openclaw_cliq_channel_rc_checklist_has_cut_contract tests/test_openclaw_channel_contract.py::test_openclaw_cliq_operator_publish_handoff_has_approval_boundary tests/test_lane3_docs.py::test_lane3_required_paths_exist tests/test_lane3_docs.py::test_native_cliq_channel_ai_troubleshooting_contract_present tests/test_markdown_update.py -> 10 passed in 0.34s"
+      - "./.venv/bin/ruff format --check tests/test_auto_pilot_scripts.py tests/test_lane3_docs.py tests/test_openclaw_channel_contract.py -> 3 files already formatted"
+      - "./.venv/bin/ruff check tests/test_auto_pilot_scripts.py tests/test_lane3_docs.py tests/test_openclaw_channel_contract.py -> All checks passed"
       - "cliq-channel-460 operator publish plan completed at 2026-05-12T01:48:31Z"
       - "added `ops/scripts/openclaw_cliq_rc_publish_plan.sh`; it reads the ready operator bundle plus safe release-notes draft, emits `operator_publish_plan_ready`, lists local/operator, npm RC, and GitHub artifact paths, and keeps `agentMayExecutePlan=false` with publish/tag/release/integrity fill operator-only"
       - "OPENCLAW_CLIQ_PUBLISH_PLAN_RUN_ID=20260512T013541Z-operator-plan ops/scripts/openclaw_cliq_rc_publish_plan.sh -> `operator_publish_plan_ready` for `@adwasd/openclaw-zoho-cliq@0.4.0-rc.1`; no publish/tag/release/version bump/integrity fill performed"

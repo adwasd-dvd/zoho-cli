@@ -57,12 +57,16 @@ OPENCLAW_CLIQ_RELEASE_NOTES_RUN_ID="$(date -u +%Y%m%dT%H%M%SZ)-operator-draft" \
 OPENCLAW_CLIQ_PUBLISH_PLAN_RUN_ID="$(date -u +%Y%m%dT%H%M%SZ)-operator-plan" \
   ops/scripts/openclaw_cliq_rc_publish_plan.sh
 
+OPENCLAW_CLIQ_HANDOFF_MANIFEST_RUN_ID="$(date -u +%Y%m%dT%H%M%SZ)-operator-manifest" \
+  ops/scripts/openclaw_cliq_rc_operator_handoff_manifest.sh
+
 ./.venv/bin/python -m pytest -q \
   tests/test_auto_pilot_scripts.py::test_openclaw_cliq_rc_promotion_check_requires_ready_local_evidence \
   tests/test_auto_pilot_scripts.py::test_openclaw_cliq_rc_promotion_check_blocks_published_integrity_too_early \
   tests/test_auto_pilot_scripts.py::test_openclaw_cliq_rc_operator_publish_bundle_collects_ready_evidence \
   tests/test_auto_pilot_scripts.py::test_openclaw_cliq_rc_release_notes_draft_uses_ready_operator_bundle \
   tests/test_auto_pilot_scripts.py::test_openclaw_cliq_rc_publish_plan_uses_ready_bundle_and_draft \
+  tests/test_auto_pilot_scripts.py::test_openclaw_cliq_rc_operator_handoff_manifest_indexes_ready_packet \
   tests/test_auto_pilot_scripts.py::test_openclaw_cliq_rc_artifact_check_verifies_tarball_contract \
   tests/test_auto_pilot_scripts.py::test_openclaw_cliq_rc_install_smoke_installs_verified_artifact \
   tests/test_openclaw_channel_contract.py::test_openclaw_cliq_channel_rc_checklist_has_cut_contract \
@@ -83,6 +87,7 @@ Expected local pre-publish posture:
 - release notes draft says no publish/tag/release/integrity fill was performed
 - publish plan reports `operator_publish_plan_ready` and
   `agentMayExecutePlan=false`
+- handoff manifest reports `operator_handoff_manifest_ready`
 - `npmPromotionRequiresOperatorApproval=true`
 
 The promotion preflight is intentionally strict: `ready_for_operator_publish`
@@ -97,6 +102,10 @@ bundle and is not a publish action.
 The publish plan is read-only too; it can preview local/operator, npm RC, and
 GitHub artifact paths, but it must keep publish/tag/release/integrity-fill
 actions operator-only.
+The handoff manifest is the final read-only packet index. It must tie the
+operator bundle, release-notes draft, publish plan, artifact facts, report
+filenames, source commit, and false agent permission flags together before an
+operator chooses a publish path.
 
 ## Operator publish choices
 
@@ -149,6 +158,9 @@ Abort and do not publish if any of these appear:
 - `release_notes_draft_unsafe`, `expected_integrity_not_placeholder`, or
   `operator_publish_plan_ready` absent in the publish-plan step.
 - `agentMayExecutePlan=false` absent from the publish plan.
+- `publish_plan_permission_unexpected`, `operator_bundle_file_mismatch`,
+  `release_notes_draft_file_mismatch`, `artifact_shasum_mismatch`, or
+  `operator_handoff_manifest_ready` absent in the handoff manifest.
 - `tarball_shasum_mismatch`, `artifact_version_mismatch`, or
   `required_entry_missing_*` in the local artifact check.
 - `artifact_not_verified`, `plugin_install_failed`, `plugin_inspect_failed`,

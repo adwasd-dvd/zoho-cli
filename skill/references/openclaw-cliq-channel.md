@@ -107,6 +107,12 @@ publish plan from the ready bundle plus safe release-notes draft. It reports
 `operator_publish_plan_ready`, keeps `agentMayExecutePlan=false`, lists
 local/operator, npm RC, and GitHub artifact choices, and treats
 `release_notes_draft_unsafe` as a stop-before-publish error.
+`cliq-channel-461` is complete:
+`ops/scripts/openclaw_cliq_rc_operator_handoff_manifest.sh` indexes the ready
+operator bundle, safe release-notes draft, publish plan, artifact facts, report
+filenames, source commit, and false agent permission flags. It reports
+`operator_handoff_manifest_ready` only when the handoff packet is internally
+consistent.
 
 The v0.4 plugin targets OpenClaw `>=2026.5.3-1`. The upgraded global
 `OpenClaw 2026.5.3-1` host is suitable for native plugin checks; use

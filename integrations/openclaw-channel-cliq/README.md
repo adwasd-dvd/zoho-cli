@@ -57,6 +57,10 @@ is not ready or any agent publish/tag/integrity-fill permission is true.
 operator publish plan from the ready bundle plus safe release-notes draft,
 reports `operator_publish_plan_ready`, and keeps `agentMayExecutePlan=false`
 while listing local/operator, npm RC, and GitHub artifact paths.
+`ops/scripts/openclaw_cliq_rc_operator_handoff_manifest.sh` indexes the ready
+bundle, release-notes draft, publish plan, artifact facts, report filenames,
+source commit, and false agent permission flags before reporting
+`operator_handoff_manifest_ready`.
 `docs/releases/OPENCLAW_CLIQ_CHANNEL_V0_4_OPERATOR_PUBLISH_HANDOFF.md` is the
 operator handoff for the approval boundary, preflight commands, publish path
 choice, post-publish checks, and abort conditions; agents must not run
@@ -115,6 +119,9 @@ Read-only release-notes draft:
 
 Read-only operator publish plan:
 `../../ops/scripts/openclaw_cliq_rc_publish_plan.sh`.
+
+Read-only operator handoff manifest:
+`../../ops/scripts/openclaw_cliq_rc_operator_handoff_manifest.sh`.
 
 ## Config example
 

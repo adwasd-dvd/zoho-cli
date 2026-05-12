@@ -59,6 +59,9 @@ OPENCLAW_CLIQ_RC_RELEASE_NOTES_DRAFT_SCRIPT = (
 OPENCLAW_CLIQ_RC_PUBLISH_PLAN_SCRIPT = (
     REPO_ROOT / "ops" / "scripts" / "openclaw_cliq_rc_publish_plan.sh"
 )
+OPENCLAW_CLIQ_RC_HANDOFF_MANIFEST_SCRIPT = (
+    REPO_ROOT / "ops" / "scripts" / "openclaw_cliq_rc_operator_handoff_manifest.sh"
+)
 
 
 def test_export_scope_recheck_runner_propagates_probe_exit_codes(
@@ -1234,6 +1237,197 @@ def test_openclaw_cliq_rc_publish_plan_requires_safe_release_notes(
     assert payload["kind"] == "openclaw_cliq_rc_publish_plan"
     assert payload["status"] == "error"
     assert payload["error"] == "release_notes_draft_unsafe"
+
+
+def test_openclaw_cliq_rc_operator_handoff_manifest_indexes_ready_packet(
+    tmp_path: Path,
+) -> None:
+    bundle = tmp_path / "operator-bundle.json"
+    bundle.write_text(
+        json.dumps(
+            {
+                "status": "operator_publish_bundle_ready",
+                "package": {
+                    "name": "@adwasd/openclaw-zoho-cliq",
+                    "version": "0.4.0-rc.1",
+                    "expectedIntegrityState": "placeholder",
+                },
+                "artifact": {
+                    "filename": "adwasd-openclaw-zoho-cliq-0.4.0-rc.1.tgz",
+                    "shasum": "abc123",
+                    "integrity": "sha512-test",
+                },
+                "reports": {
+                    "packSummary": {"file": "pack.json", "status": "passed"},
+                    "artifact": {
+                        "file": "artifact.json",
+                        "status": "artifact_verified",
+                    },
+                    "installSmoke": {
+                        "file": "install.json",
+                        "status": "install_smoke_passed",
+                    },
+                    "promotion": {
+                        "file": "promotion.json",
+                        "status": "ready_for_operator_publish",
+                    },
+                    "trustedReply": {
+                        "file": "trusted.json",
+                        "status": "trusted_reply_recorded",
+                    },
+                },
+            }
+        )
+    )
+    release_notes = tmp_path / "release-notes.md"
+    release_notes.write_text(
+        "\n".join(
+            [
+                "# Draft",
+                "No npm publish, git tag, GitHub release, version bump, or",
+                "`openclaw.install.expectedIntegrity` fill has been performed.",
+                "`agentMayPublish=false`",
+                "`agentMayTag=false`",
+                "`agentMayFillExpectedIntegrity=false`",
+            ]
+        )
+    )
+    publish_plan = tmp_path / "publish-plan.json"
+    publish_plan.write_text(
+        json.dumps(
+            {
+                "status": "operator_publish_plan_ready",
+                "package": {
+                    "name": "@adwasd/openclaw-zoho-cliq",
+                    "version": "0.4.0-rc.1",
+                },
+                "artifact": {
+                    "shasum": "abc123",
+                    "integrity": "sha512-test",
+                },
+                "evidence": {
+                    "operatorBundle": {"file": bundle.name},
+                    "releaseNotesDraft": {"file": release_notes.name},
+                },
+                "blockedAgentActions": [
+                    "npm_publish",
+                    "git_tag",
+                    "github_release_create",
+                    "expectedIntegrity_fill",
+                ],
+                "releasePosture": {
+                    "agentMayPublish": False,
+                    "agentMayTag": False,
+                    "agentMayCreateGithubRelease": False,
+                    "agentMayFillExpectedIntegrity": False,
+                    "agentMayExecutePlan": False,
+                },
+            }
+        )
+    )
+    manifest_file = tmp_path / "handoff-manifest.json"
+
+    result = subprocess.run(
+        ["bash", str(OPENCLAW_CLIQ_RC_HANDOFF_MANIFEST_SCRIPT)],
+        cwd=REPO_ROOT,
+        env={
+            **os.environ,
+            "OPENCLAW_CLIQ_OPERATOR_BUNDLE_REPORT_FILE": str(bundle),
+            "OPENCLAW_CLIQ_RELEASE_NOTES_DRAFT_FILE": str(release_notes),
+            "OPENCLAW_CLIQ_PUBLISH_PLAN_FILE": str(publish_plan),
+            "OPENCLAW_CLIQ_HANDOFF_MANIFEST_FILE": str(manifest_file),
+            "OPENCLAW_CLIQ_HANDOFF_MANIFEST_RUN_ID": "unit-test",
+        },
+        capture_output=True,
+        text=True,
+        check=False,
+    )
+
+    output = f"{result.stdout}\n{result.stderr}"
+    assert result.returncode == 0, output
+    assert str(tmp_path) not in result.stdout
+    payload = json.loads(result.stdout)
+    assert payload["status"] == "operator_handoff_manifest_ready"
+    assert payload["blockers"] == []
+    assert payload["nextAction"] == "operator_review_handoff_manifest"
+    assert payload["evidenceFiles"]["operatorBundle"] == bundle.name
+    assert payload["evidenceFiles"]["releaseNotesDraft"] == release_notes.name
+    assert payload["evidenceFiles"]["publishPlan"] == publish_plan.name
+    assert payload["verifiedStatuses"] == {
+        "operatorBundle": "operator_publish_bundle_ready",
+        "publishPlan": "operator_publish_plan_ready",
+        "promotion": "ready_for_operator_publish",
+        "artifact": "artifact_verified",
+        "installSmoke": "install_smoke_passed",
+        "trustedReply": "trusted_reply_recorded",
+    }
+    assert "npm_publish" in payload["safety"]["blockedAgentActions"]
+    assert payload["safety"]["agentMayExecutePlan"] is False
+    assert payload["releasePosture"] == {
+        "publishPerformed": False,
+        "tagCreated": False,
+        "githubReleaseCreated": False,
+        "versionBumped": False,
+        "expectedIntegrityFilled": False,
+        "npmPromotionRequiresOperatorApproval": True,
+    }
+    assert json.loads(manifest_file.read_text()) == payload
+
+
+def test_openclaw_cliq_rc_operator_handoff_manifest_blocks_unsafe_plan(
+    tmp_path: Path,
+) -> None:
+    bundle = tmp_path / "operator-bundle.json"
+    bundle.write_text(json.dumps({"status": "operator_publish_bundle_ready"}))
+    release_notes = tmp_path / "release-notes.md"
+    release_notes.write_text(
+        "\n".join(
+            [
+                "No npm publish, git tag, GitHub release",
+                "`agentMayPublish=false`",
+                "`agentMayTag=false`",
+                "`agentMayFillExpectedIntegrity=false`",
+            ]
+        )
+    )
+    publish_plan = tmp_path / "publish-plan.json"
+    publish_plan.write_text(
+        json.dumps(
+            {
+                "status": "operator_publish_plan_ready",
+                "releasePosture": {
+                    "agentMayPublish": False,
+                    "agentMayTag": False,
+                    "agentMayCreateGithubRelease": False,
+                    "agentMayFillExpectedIntegrity": False,
+                    "agentMayExecutePlan": True,
+                },
+            }
+        )
+    )
+
+    result = subprocess.run(
+        ["bash", str(OPENCLAW_CLIQ_RC_HANDOFF_MANIFEST_SCRIPT)],
+        cwd=REPO_ROOT,
+        env={
+            **os.environ,
+            "OPENCLAW_CLIQ_OPERATOR_BUNDLE_REPORT_FILE": str(bundle),
+            "OPENCLAW_CLIQ_RELEASE_NOTES_DRAFT_FILE": str(release_notes),
+            "OPENCLAW_CLIQ_PUBLISH_PLAN_FILE": str(publish_plan),
+            "OPENCLAW_CLIQ_HANDOFF_MANIFEST_FILE": str(tmp_path / "manifest.json"),
+            "OPENCLAW_CLIQ_HANDOFF_MANIFEST_RUN_ID": "unit-test-unsafe",
+        },
+        capture_output=True,
+        text=True,
+        check=False,
+    )
+
+    output = f"{result.stdout}\n{result.stderr}"
+    assert result.returncode == 1, output
+    payload = json.loads(result.stdout)
+    assert payload["kind"] == "openclaw_cliq_rc_operator_handoff_manifest"
+    assert payload["status"] == "error"
+    assert payload["error"] == "publish_plan_permission_unexpected"
 
 
 def _write_openclaw_cliq_test_tarball(

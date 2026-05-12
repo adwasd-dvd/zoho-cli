@@ -105,6 +105,11 @@ Use this skill when operating through the native OpenClaw Zoho Cliq channel.
   `operator_publish_plan_ready`, `agentMayExecutePlan=false`, and
   operator-only local/operator, npm RC, or GitHub artifact choices. Treat
   `release_notes_draft_unsafe` as a stop-before-publish signal.
+- For the final packet index, run
+  `ops/scripts/openclaw_cliq_rc_operator_handoff_manifest.sh`; require
+  `operator_handoff_manifest_ready`, no blockers, `operator_publish_plan_ready`,
+  `trusted_reply_recorded`, and false agent publish/tag/release/integrity
+  permissions before asking the operator to choose a publish path.
 - For the operator approval boundary and release action handoff, use
   `docs/releases/OPENCLAW_CLIQ_CHANNEL_V0_4_OPERATOR_PUBLISH_HANDOFF.md`.
   It defines the no-agent `npm publish`/tag/GitHub release boundary, the
@@ -129,6 +134,7 @@ ops/scripts/openclaw_cliq_rc_promotion_check.sh
 ops/scripts/openclaw_cliq_rc_operator_publish_bundle.sh
 ops/scripts/openclaw_cliq_rc_release_notes_draft.sh
 ops/scripts/openclaw_cliq_rc_publish_plan.sh
+ops/scripts/openclaw_cliq_rc_operator_handoff_manifest.sh
 ops/scripts/openclaw_cliq_trusted_reply_evidence_bundle.sh
 ops/scripts/openclaw_cliq_trusted_reply_evidence_prepare.sh
 ops/scripts/openclaw_cliq_trusted_reply_evidence.sh

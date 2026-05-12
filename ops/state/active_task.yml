@@ -1,20 +1,21 @@
-id: platform-215
-title: add autonomy packet operator action requests
-module: platform
+id: cliq-channel-493
+title: record post-platform-215 autonomy operator-request RC evidence
+module: openclaw_cliq_channel
 stage: completed
 status: completed
 owner: coder
-updated_at: '2026-05-12T20:48:20Z'
+updated_at: '2026-05-12T20:59:29Z'
 execution_mode: turbo_20x
 throughput_policy_ref: ops/state/execution_policy.yml
 success_criteria:
-  - "Extend `ops/scripts/zoho_cli_rc_autonomy_packet.sh` with redacted `operatorActionRequests` for missing Cliq publish-path and CRM fixture inputs"
-  - "Keep all generated operator asks non-executable for agents at publish/write boundaries"
-  - "Sync Lane 1/2/3 docs and regression tests with the new autonomy-packet contract"
+  - "Run source-drift and operator-decision packets after the pushed platform-215 commit and confirm package source remains unchanged"
+  - "Run the RC autonomy packet after platform-215 and confirm operatorActionRequests remain redacted and non-executable"
+  - "Sync Lane 1/2/3 docs with the post-platform-215 evidence"
   - "Do not publish, tag, npm-promote, create GitHub releases, fill expectedIntegrity, call Zoho, or write CRM data"
 next_if_done: Continue to the next safe RC readiness milestone without publishing, tagging, npm promotion, GitHub release creation, expectedIntegrity fill, or live CRM writes.
 progress:
-  - "2026-05-12T20:43:45Z `ZOHO_CLI_RC_AUTONOMY_RUN_ID=20260512T203845Z-operator-requests-dev ops/scripts/zoho_cli_rc_autonomy_packet.sh` returned `operator_input_required` with `operatorActionRequests=[select_openclaw_cliq_publish_path, provide_crm_fixture_cleanup_plan, provide_crm_fixture_payload_file]`."
-  - "2026-05-12T20:43:45Z each operator action request is redacted and marks publish/write boundaries as `agentMayExecute=false`; no raw payload values, cleanup text, local paths, secrets, or Zoho webhook bodies are stored."
-  - "2026-05-12T20:48:20Z final verification passed: shell syntax; focused autonomy/Lane 3/RC markdown tests -> 6 passed in 0.15s; `make lint`, Ruff format, YAML parse, and `git diff --check` passed."
-next_step: Commit and push the platform-215 autonomy operator-action request slice, then continue to the next safe milestone.
+  - "2026-05-12T20:53:45Z source drift run `20260512T205345Z-platform215-postcommit-source` returned `package_source_unchanged`, no blockers, `headCommit=9fac452e0fd25e6a58f3054369dec01f83cb0950`, `repoChangedFileCount=38`, and `packageDrift.packageChangedSinceManifest=false`."
+  - "2026-05-12T20:53:45Z decision packet run `20260512T205345Z-platform215-postcommit-decision` returned `awaiting_operator_publish_path`, blocker `publish_path_not_selected`, all `reportsReady=true`, and `agentMayExecuteSelectedPath=false`."
+  - "2026-05-12T20:53:45Z autonomy run `20260512T205345Z-platform215-postcommit-autonomy` returned `operator_input_required` with `operatorActionRequests=[select_openclaw_cliq_publish_path, provide_crm_fixture_cleanup_plan, provide_crm_fixture_payload_file]`, `agentMayRunCrmNextCommand=false`, and `crmNextCommandAllowedForAgent=false`."
+  - "2026-05-12T20:59:29Z final verification passed: OpenClaw RC checklist/Lane 3/markdown tests -> 3 passed in 0.01s; `make lint`, Ruff format, YAML parse, and `git diff --check` passed."
+next_step: Commit and push the post-platform-215 evidence slice, then continue to the next safe milestone.

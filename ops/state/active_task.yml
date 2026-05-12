@@ -1,21 +1,20 @@
-id: cliq-channel-489
-title: record post-CRM next-command-preview RC decision evidence
-module: openclaw_cliq_channel
+id: platform-212
+title: clear stale full-ruff test import debt
+module: platform
 stage: completed
 status: completed
 owner: coder
-updated_at: '2026-05-12T14:49:37Z'
+updated_at: '2026-05-12T14:59:37Z'
 execution_mode: turbo_20x
 throughput_policy_ref: ops/state/execution_policy.yml
 success_criteria:
-  - "OpenClaw Cliq source-drift evidence is rerun after pushed CRM `crm-029`"
-  - "Decision packet still reports `awaiting_operator_publish_path` with all reports ready"
-  - "Package source remains unchanged relative to the handoff manifest"
-  - "Publish/tag/npm/GitHub release/expectedIntegrity fill and live CRM writes remain blocked for agents"
+  - "Full `ruff check zoho_cli tests` passes without stale test import failures"
+  - "Touched parser/config/utils test files still pass"
+  - "No CLI behavior, publish action, Zoho call, or CRM write is changed"
 next_if_done: Continue to the next safe RC readiness milestone without publishing, tagging, npm promotion, GitHub release creation, expectedIntegrity fill, or live CRM writes.
 progress:
-  - "2026-05-12T14:40:36Z source drift run `20260512T143844Z-crm-next-command-preview-postcommit-source` returned `package_source_unchanged`, no blockers, `headCommit=3f1773c7d5deb7e1dae68db84445017d0efd0449`, `repoChangedFileCount=29`, `packageDrift.packageChangedSinceManifest=false`, and `dirtyFileCount=0`."
-  - "2026-05-12T14:40:36Z decision packet `20260512T143844Z-crm-next-command-preview-postcommit-decision` returned `awaiting_operator_publish_path`, `publish_path_not_selected`, all `reportsReady=true`, `operator_publish_plan_ready`, `artifact_verified`, `install_smoke_passed`, `trusted_reply_recorded`, and `agentMayExecuteSelectedPath=false`."
-  - "2026-05-12T14:40:36Z no publish, tag, npm promotion, GitHub release, version bump, expectedIntegrity fill, Zoho call, or CRM write was performed."
-  - "2026-05-12T14:49:37Z focused OpenClaw Cliq docs/contract verification passed: channel contract, Lane 3 required paths/troubleshooting contract, and markdown update -> 11 passed in 0.01s; touched-scope ruff check, Ruby YAML parse, and `git diff --check` passed."
-next_step: Commit and push the post-CRM next-command-preview evidence sync, then continue to the next safe milestone.
+  - "2026-05-12T14:57:26Z removed unused imports from `tests/test_config.py`, `tests/test_parse.py`, and `tests/test_utils.py`."
+  - "2026-05-12T14:57:26Z full `ruff check zoho_cli tests` passed, `ruff format --check zoho_cli tests` passed, and `tests/test_config.py tests/test_parse.py tests/test_utils.py` passed with 43 tests."
+  - "2026-05-12T14:57:26Z no CLI behavior change, publish, tag, npm promotion, GitHub release, expectedIntegrity fill, Zoho call, or CRM write was performed."
+  - "2026-05-12T14:59:37Z final verification passed: markdown update plus touched tests -> 44 passed in 0.03s; Ruby YAML parse and `git diff --check` passed."
+next_step: Commit and push the full-ruff hygiene slice, then continue to the next safe milestone.

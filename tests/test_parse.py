@@ -3,7 +3,7 @@
 import tempfile
 from pathlib import Path
 import pytest
-from zoho_cli.parse import parse_attachment, HAS_PANDAS, HAS_PDFPLUMBER
+from zoho_cli.parse import parse_attachment, HAS_PANDAS
 
 
 class TestParseAttachment:

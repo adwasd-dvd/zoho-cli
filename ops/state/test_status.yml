@@ -1,10 +1,13 @@
-last_run_at: "2026-05-12T14:49:37Z"
+last_run_at: "2026-05-12T14:59:37Z"
 last_result: passing
-current_focus: cliq-channel-489-post-crm-next-command-preview-decision-ready
+current_focus: platform-212-full-ruff-test-import-hygiene
 suites:
   unit:
     status: passing
     notes:
+      - "platform-212 full-ruff hygiene passed at 2026-05-12T14:57:26Z: removed stale unused imports from parser/config/utils tests; full `ruff check zoho_cli tests`, `ruff format --check zoho_cli tests`, and touched test files -> 43 passed in 0.05s."
+      - "platform-212 final verification passed at 2026-05-12T14:59:37Z: markdown update plus touched tests -> 44 passed in 0.03s; Ruby YAML parse and `git diff --check` passed."
+      - "platform-212 performed no CLI behavior change, publish, tag, npm promotion, GitHub release, version bump, expectedIntegrity fill, Zoho call, or CRM write."
       - "cliq-channel-489 post-CRM next-command-preview source drift started at 2026-05-12T14:40:36Z: run `20260512T143844Z-crm-next-command-preview-postcommit-source` returned `package_source_unchanged`, no blockers, `headCommit=3f1773c7d5deb7e1dae68db84445017d0efd0449`, `repoChangedFileCount=29`, `packageDrift.packageChangedSinceManifest=false`, and `dirtyFileCount=0`."
       - "cliq-channel-489 decision packet started at 2026-05-12T14:40:36Z: run `20260512T143844Z-crm-next-command-preview-postcommit-decision` returned `awaiting_operator_publish_path`, `publish_path_not_selected`, all `reportsReady=true`, `operator_publish_plan_ready`, `artifact_verified`, `install_smoke_passed`, `trusted_reply_recorded`, and `agentMayExecuteSelectedPath=false`."
       - "cliq-channel-489 verification passed at 2026-05-12T14:49:37Z: OpenClaw Cliq channel contract, Lane 3 required paths/troubleshooting contract, and markdown update -> 11 passed in 0.01s; touched-scope ruff check, Ruby YAML parse, and `git diff --check` passed."

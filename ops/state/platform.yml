@@ -1,7 +1,7 @@
 module: Platform
-updated_at: "2026-05-12T17:22:45Z"
+updated_at: "2026-05-12T20:48:20Z"
 status: in_progress
 execution_mode: turbo_20x
 throughput_policy_ref: ops/state/execution_policy.yml
 blockers: []
-next_small_step: "platform-214 added `ops/scripts/zoho_cli_rc_autonomy_packet.sh` so recurring agents can read one JSON packet for native Cliq RC publish state plus CRM fixture next-command state; continue safe RC readiness work without publish/tag/release/expectedIntegrity fill or live Zoho writes."
+next_small_step: "platform-215 extends `ops/scripts/zoho_cli_rc_autonomy_packet.sh` with redacted `operatorActionRequests` so recurring agents can ask for the missing publish path, CRM cleanup plan, and CRM fixture payload file without inferring from lower-level reports; continue safe RC readiness work without publish/tag/release/expectedIntegrity fill or live Zoho writes."

@@ -245,7 +245,12 @@ After sync, ensure the AI user follows:
     `operator_publish_path_required`, `stop_before_operator_publish`, and
     `stop_before_operator_live_fixture` as handoff states. A true
     `safety.crmNextCommandAllowlistedDryRunLocal` only confirms the CRM command
-    shape is recognized; it does not override a non-ready top-level status
+    shape is recognized; it does not override a non-ready top-level status.
+    Use `operatorActionRequests` to generate the exact human ask without
+    exposing raw values; expected ids include
+    `select_openclaw_cliq_publish_path`,
+    `provide_crm_fixture_cleanup_plan`, and
+    `provide_crm_fixture_payload_file`
   - `OPENCLAW_CLIQ_OPERATOR_PUBLISH_PATH=local_operator_rc` may be rehearsed
     read-only; require `operator_publish_selection_ready` plus
     `selectedPublishPathReview.agentMayExecute=false` before handing the choice

@@ -268,7 +268,10 @@ to execute while the top-level status is still an operator-input state. Treat
 `operator_publish_path_required`, `stop_before_operator_publish`, and
 `stop_before_operator_live_fixture` as handoff boundaries. The packet is
 read-only and keeps publish/tag/GitHub release/expectedIntegrity fill plus live
-Zoho writes disabled for agents.
+Zoho writes disabled for agents. Read `operatorActionRequests` for the exact
+human-facing asks, such as `select_openclaw_cliq_publish_path`,
+`provide_crm_fixture_cleanup_plan`, and `provide_crm_fixture_payload_file`;
+these entries are guidance only and always keep `agentMayExecute=false`.
 
 For a compact AI go/stop summary, run:
 

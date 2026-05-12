@@ -94,12 +94,16 @@ remain disabled for agents.
 `cliq-channel-492` records post-platform-214 autonomy-packet source-drift,
 operator-decision, and autonomy-packet evidence after the pushed cross-lane
 wrapper slice; the package source remains unchanged and the packet still awaits
-operator input.
+operator input. The archived no-write autonomy run is
+`20260512T174215Z-post-platform214-autonomy`.
+`platform-215` extends the autonomy packet with redacted
+`operatorActionRequests`, so recurring agents can ask for exactly the missing
+operator choices and fixture inputs without inferring from lower-level reports.
 
 SDK contract source of truth:
 `docs/architecture/OPENCLAW_CLIQ_CHANNEL_SDK_CONTRACT.md`.
 
-Updated: `2026-05-12T17:43:09Z`.
+Updated: `2026-05-12T20:38:45Z`.
 
 ## Decision
 
@@ -150,7 +154,7 @@ environment currently binds `cliq/default` to `zoho-employee-test`.
 | Source drift check | `OPENCLAW_CLIQ_SOURCE_DRIFT_RUN_ID=20260512T174215Z-platform214-postcommit-source ops/scripts/openclaw_cliq_rc_source_drift_check.sh` passed after the platform-214 autonomy-packet commit with `status=package_source_unchanged`, no blockers, `headCommit=a03de9e507f8c0dd8369f5fa19395e0f500b63c1`, `repoChangedSinceManifest=true`, `repoChangedFileCount=38`, `packageDrift.packageChangedSinceManifest=false`, and no dirty package files. Any package file drift still blocks with `package_source_drift_detected` before operator publish. |
 | Operator selection review | `OPENCLAW_CLIQ_SELECTION_REVIEW_RUN_ID=20260512T031411Z-no-selected-path ops/scripts/openclaw_cliq_rc_operator_selection_review.sh` stopped safely with `status=blocked`, `blockers=["publish_path_not_selected"]`, `nextAction=operator_select_publish_path`, and `agentMayExecuteSelectedPath=false`. After the operator selects a path and reruns the publish plan, the same script must report `operator_publish_selection_ready` before an operator executes any publish command. |
 | Operator decision packet | `OPENCLAW_CLIQ_DECISION_PACKET_RUN_ID=20260512T174215Z-platform214-postcommit-decision ops/scripts/openclaw_cliq_rc_operator_decision_packet.sh` passed locally after the platform-214 autonomy-packet commit with `status=awaiting_operator_publish_path`, `blockers=["publish_path_not_selected"]`, `nextAction=operator_select_publish_path`, `operator_publish_plan_ready`, `package_source_unchanged`, `artifact_verified`, `install_smoke_passed`, `trusted_reply_recorded`, shasum `9fca0282ff0c6bfeec6d6158d1bb6fab3f63bcc5`, `sourceDrift.headCommit=a03de9e507f8c0dd8369f5fa19395e0f500b63c1`, `sourceDrift.packageChangedSinceManifest=false`, all `reportsReady=true`, and `agentMayExecuteSelectedPath=false`. It reruns the read-only publish plan, source drift guard, and selection review in one wrapper; when `OPENCLAW_CLIQ_OPERATOR_PUBLISH_PATH` is supplied, it must report `operator_publish_selection_ready` before any operator command is executed. The packet also emits basename-only `reportFiles` and `reportsReady` for the publish plan, source drift, selection review, operator bundle, release notes draft, and handoff manifest. |
-| RC autonomy packet | `ZOHO_CLI_RC_AUTONOMY_RUN_ID=20260512T174215Z-post-platform214-autonomy ops/scripts/zoho_cli_rc_autonomy_packet.sh` passed locally with `status=operator_input_required`, `nextAction=collect_operator_input_or_select_publish_path`, `operatorInputsNeeded.openclawCliqPublishPath=true`, `crmFixtureFacts=[cleanup_plan, fixture_payload_file]`, `agentMayRunCrmNextCommand=false`, `crmNextCommandAllowedForAgent=false`, and no publish/tag/release/expectedIntegrity fill or Zoho write permission. |
+| RC autonomy packet | `ZOHO_CLI_RC_AUTONOMY_RUN_ID=20260512T203845Z-operator-requests-dev ops/scripts/zoho_cli_rc_autonomy_packet.sh` passed locally with `status=operator_input_required`, `nextAction=collect_operator_input_or_select_publish_path`, `operatorInputsNeeded.openclawCliqPublishPath=true`, `crmFixtureFacts=[cleanup_plan, fixture_payload_file]`, `operatorActionRequests=[select_openclaw_cliq_publish_path, provide_crm_fixture_cleanup_plan, provide_crm_fixture_payload_file]`, `agentMayRunCrmNextCommand=false`, `crmNextCommandAllowedForAgent=false`, and no publish/tag/release/expectedIntegrity fill or Zoho write permission. |
 | Local/operator RC selected path review | `OPENCLAW_CLIQ_OPERATOR_PUBLISH_PATH=local_operator_rc OPENCLAW_CLIQ_DECISION_PACKET_RUN_ID=20260512T104813Z-local-operator-rc-selection ops/scripts/openclaw_cliq_rc_operator_decision_packet.sh` passed locally with `status=operator_publish_selection_ready`, no blockers, `selectedPublishPath=local_operator_rc`, `selectedPublishPathReview.operatorOnly=true`, `selectedPublishPathReview.requiresExplicitOperatorApproval=true`, `selectedPublishPathReview.agentMayExecute=false`, `package_source_unchanged`, `artifact_verified`, `install_smoke_passed`, `trusted_reply_recorded`, all `reportsReady=true`, and `agentMayExecuteSelectedPath=false`. No publish, tag, release, version bump, or expectedIntegrity fill was performed. |
 | npm RC selected path review | `OPENCLAW_CLIQ_OPERATOR_PUBLISH_PATH=npm_rc_publish OPENCLAW_CLIQ_DECISION_PACKET_RUN_ID=20260512T110613Z-npm-rc-selection ops/scripts/openclaw_cliq_rc_operator_decision_packet.sh` passed locally with `status=operator_publish_selection_ready`, no blockers, `selectedPublishPath=npm_rc_publish`, command preview `npm publish .tmp/openclaw-cliq-rc-pack/adwasd-openclaw-zoho-cliq-0.4.0-rc.1.tgz --tag rc --access public`, `fillsExpectedIntegrityAfterPublish=true`, `selectedPublishPathReview.agentMayExecute=false`, `requiresExplicitOperatorApproval=true`, all `reportsReady=true`, and `agentMayExecuteSelectedPath=false`. No npm publish or promotion was performed. |
 | GitHub artifact selected path review | `OPENCLAW_CLIQ_OPERATOR_PUBLISH_PATH=github_release_artifact OPENCLAW_CLIQ_DECISION_PACKET_RUN_ID=20260512T110613Z-github-release-selection ops/scripts/openclaw_cliq_rc_operator_decision_packet.sh` passed locally with `status=operator_publish_selection_ready`, no blockers, `selectedPublishPath=github_release_artifact`, command preview `gh release create <operator-approved-rc-tag> ... --prerelease --notes-file <release-notes-draft-path>`, `selectedPublishPathReview.agentMayExecute=false`, `requiresExplicitOperatorApproval=true`, all `reportsReady=true`, and `agentMayExecuteSelectedPath=false`. No git tag or GitHub release was created. |
@@ -360,7 +364,9 @@ If `ops/scripts/zoho_cli_rc_autonomy_packet.sh` reports
 `recommendedAgentCommand` and only when `safety.crmNextCommandAllowedForAgent`
 is true. Treat `operator_input_required`, `operator_publish_path_required`,
 `stop_before_operator_publish`, and `stop_before_operator_live_fixture` as
-operator handoff states.
+operator handoff states. Use `operatorActionRequests` for exact human asks; the
+current waiting ids are `select_openclaw_cliq_publish_path`,
+`provide_crm_fixture_cleanup_plan`, and `provide_crm_fixture_payload_file`.
 
 ## RC cut steps
 

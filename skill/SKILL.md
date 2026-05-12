@@ -188,7 +188,12 @@ Use this skill as the default operating contract for an OpenClaw agent acting li
   `operator_input_required`, `operator_publish_path_required`,
   `stop_before_operator_publish`, or `stop_before_operator_live_fixture` while
   keeping publish/tag/release/expectedIntegrity fill and live Zoho writes
-  disabled for agents.
+  disabled for agents. Use `operatorActionRequests` to explain exactly which
+  operator choices or fixture inputs are needed; entries are redacted,
+  non-executable by agents, and include stable ids such as
+  `select_openclaw_cliq_publish_path`,
+  `provide_crm_fixture_cleanup_plan`, and
+  `provide_crm_fixture_payload_file`.
 - For CRM SDK work, run `zoho crm sdk-status` first. Treat
   `zohocrmsdk8_0==5.0.0` as optional `zoho-cli[crm-sdk]` readiness, keep the
   current HTTP adapter as default, use `zoho_cli/crm_sdk.py` only as the

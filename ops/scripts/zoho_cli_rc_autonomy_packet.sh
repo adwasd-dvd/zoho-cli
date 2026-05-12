@@ -155,6 +155,94 @@ PAYLOAD="$("$JQ_BIN" -n \
           end
         )
       },
+      operatorActionRequests: (
+        [
+          (
+            if $cliqStatus == "awaiting_operator_publish_path" then {
+              id: "select_openclaw_cliq_publish_path",
+              lane: "openclawCliq",
+              required: true,
+              inputKind: "choice",
+              allowedValues: [
+                "local_operator_rc",
+                "npm_rc_publish",
+                "github_release_artifact"
+              ],
+              commandPreview: "OPENCLAW_CLIQ_OPERATOR_PUBLISH_PATH=<choice> ops/scripts/openclaw_cliq_rc_operator_decision_packet.sh",
+              agentMayExecute: false,
+              requiresExplicitOperatorApproval: true,
+              redaction: {
+                rawSecretsStored: false,
+                rawLocalPathsStored: false
+              }
+            } else empty end
+          ),
+          (
+            if $cliqStatus == "operator_publish_selection_ready" then {
+              id: "review_execute_selected_openclaw_cliq_publish_path",
+              lane: "openclawCliq",
+              required: true,
+              inputKind: "operator_review",
+              selectedPublishPath: ($cliq.selectedPublishPath // null),
+              agentMayExecute: false,
+              requiresExplicitOperatorApproval: true,
+              redaction: {
+                rawSecretsStored: false,
+                rawLocalPathsStored: false
+              }
+            } else empty end
+          )
+        ]
+        + (
+          if $crmStatus == "operator_input_required" then
+            [
+              ($crm.operatorReview.missingFacts // [])[]
+              | if . == "fixture_payload_file" then {
+                  id: "provide_crm_fixture_payload_file",
+                  lane: "crmFixture",
+                  required: true,
+                  inputKind: "file",
+                  template: "docs/releases/CRM_V0_5_FIXTURE_PAYLOAD_TEMPLATE.json",
+                  guidance: "Copy the template outside the repo and replace placeholder values with a dedicated test fixture before any live gate.",
+                  agentMayExecute: false,
+                  requiresExplicitOperatorApproval: false,
+                  redaction: {
+                    rawPayloadStored: false,
+                    rawEmailStored: false,
+                    rawLocalPathsStored: false
+                  }
+                }
+                elif . == "cleanup_plan" then {
+                  id: "provide_crm_fixture_cleanup_plan",
+                  lane: "crmFixture",
+                  required: true,
+                  inputKind: "text",
+                  guidance: "Provide a cleanup plan with an action, target, and selector category such as fixture email, record id, duplicate field, idempotency key, or payload digest.",
+                  agentMayExecute: false,
+                  requiresExplicitOperatorApproval: false,
+                  redaction: {
+                    rawCleanupPlanStored: false,
+                    rawSelectorValuesStored: false
+                  }
+                }
+                else {
+                  id: ("provide_crm_fixture_" + .),
+                  lane: "crmFixture",
+                  required: true,
+                  inputKind: "operator_input",
+                  fact: .,
+                  agentMayExecute: false,
+                  requiresExplicitOperatorApproval: false,
+                  redaction: {
+                    rawValuesStored: false
+                  }
+                }
+                end
+            ]
+          else []
+          end
+        )
+      ),
       safety: {
         noPublishOrTagOrReleasePerformed: true,
         noZohoLiveWritePerformed: true,

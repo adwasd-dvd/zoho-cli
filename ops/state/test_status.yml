@@ -1,10 +1,13 @@
-last_run_at: "2026-05-12T17:52:18Z"
+last_run_at: "2026-05-12T20:48:20Z"
 last_result: passing
-current_focus: cliq-channel-492-post-platform214-autonomy-evidence
+current_focus: platform-215-autonomy-operator-action-requests
 suites:
   unit:
     status: passing
     notes:
+      - "platform-215 no-write autonomy packet run `20260512T203845Z-operator-requests-dev` returned `operator_input_required` with `operatorActionRequests=[select_openclaw_cliq_publish_path, provide_crm_fixture_cleanup_plan, provide_crm_fixture_payload_file]`, `agentMayRunCrmNextCommand=false`, and `crmNextCommandAllowedForAgent=false`."
+      - "platform-215 keeps publish/write action requests non-executable for agents and redacts raw payload values, cleanup text, local paths, secrets, Zoho calls, and live CRM writes."
+      - "platform-215 final verification passed at 2026-05-12T20:48:20Z: shell syntax; focused autonomy/Lane 3/RC markdown tests -> 6 passed in 0.15s; `make lint`, Ruff format, YAML parse, and `git diff --check` passed."
       - "cliq-channel-492 post-platform-214 no-write evidence started at 2026-05-12T17:43:09Z: autonomy run `20260512T174215Z-post-platform214-autonomy` returned `operator_input_required`, `openclawCliqPublishPath=true`, `crmFixtureFacts=[cleanup_plan, fixture_payload_file]`, `agentMayRunCrmNextCommand=false`, and `crmNextCommandAllowedForAgent=false`."
       - "cliq-channel-492 source drift run `20260512T174215Z-platform214-postcommit-source` returned `package_source_unchanged`, no blockers, `headCommit=a03de9e507f8c0dd8369f5fa19395e0f500b63c1`, `repoChangedFileCount=38`, `packageDrift.packageChangedSinceManifest=false`, and `dirtyFileCount=0`."
       - "cliq-channel-492 decision packet run `20260512T174215Z-platform214-postcommit-decision` returned `awaiting_operator_publish_path`, blocker `publish_path_not_selected`, all `reportsReady=true`, `operator_publish_plan_ready`, `package_source_unchanged`, `artifact_verified`, `install_smoke_passed`, `trusted_reply_recorded`, and `agentMayExecuteSelectedPath=false`."

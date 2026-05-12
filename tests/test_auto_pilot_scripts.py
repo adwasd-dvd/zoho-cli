@@ -2108,7 +2108,7 @@ def _write_zoho_cli_rc_autonomy_crm_packet(
                 "operatorReview": {
                     "readyFacts": [],
                     "missingFacts": (
-                        ["fixture_payload_file"]
+                        ["cleanup_plan", "fixture_payload_file"]
                         if status == "operator_input_required"
                         else []
                     ),
@@ -2170,8 +2170,46 @@ def test_zoho_cli_rc_autonomy_packet_collects_operator_input(
     assert payload["nextAction"] == "collect_operator_input_or_select_publish_path"
     assert payload["operatorInputsNeeded"] == {
         "openclawCliqPublishPath": True,
-        "crmFixtureFacts": ["fixture_payload_file"],
+        "crmFixtureFacts": ["cleanup_plan", "fixture_payload_file"],
     }
+    action_requests = {
+        request["id"]: request for request in payload["operatorActionRequests"]
+    }
+    assert set(action_requests) == {
+        "select_openclaw_cliq_publish_path",
+        "provide_crm_fixture_cleanup_plan",
+        "provide_crm_fixture_payload_file",
+    }
+    assert action_requests["select_openclaw_cliq_publish_path"]["allowedValues"] == [
+        "local_operator_rc",
+        "npm_rc_publish",
+        "github_release_artifact",
+    ]
+    assert (
+        action_requests["select_openclaw_cliq_publish_path"]["commandPreview"]
+        == "OPENCLAW_CLIQ_OPERATOR_PUBLISH_PATH=<choice> "
+        "ops/scripts/openclaw_cliq_rc_operator_decision_packet.sh"
+    )
+    assert (
+        action_requests["select_openclaw_cliq_publish_path"]["agentMayExecute"] is False
+    )
+    assert (
+        action_requests["provide_crm_fixture_payload_file"]["template"]
+        == "docs/releases/CRM_V0_5_FIXTURE_PAYLOAD_TEMPLATE.json"
+    )
+    assert (
+        action_requests["provide_crm_fixture_payload_file"]["redaction"][
+            "rawPayloadStored"
+        ]
+        is False
+    )
+    assert action_requests["provide_crm_fixture_cleanup_plan"]["inputKind"] == "text"
+    assert (
+        action_requests["provide_crm_fixture_cleanup_plan"]["redaction"][
+            "rawCleanupPlanStored"
+        ]
+        is False
+    )
     assert payload["recommendedAgentCommand"] is None
     assert payload["safety"]["agentMayRunCrmNextCommand"] is False
     assert payload["safety"]["crmNextCommandAllowedForAgent"] is False
@@ -2226,6 +2264,9 @@ def test_zoho_cli_rc_autonomy_packet_surfaces_safe_crm_agent_command(
     assert payload["safety"]["crmNextCommandAllowedForAgent"] is True
     assert payload["safety"]["crmNextCommandAllowlistedDryRunLocal"] is True
     assert payload["operatorInputsNeeded"]["openclawCliqPublishPath"] is True
+    assert [request["id"] for request in payload["operatorActionRequests"]] == [
+        "select_openclaw_cliq_publish_path"
+    ]
 
 
 def test_zoho_cli_rc_autonomy_packet_stops_for_selected_publish_path(
@@ -2267,6 +2308,21 @@ def test_zoho_cli_rc_autonomy_packet_stops_for_selected_publish_path(
     assert payload["recommendedAgentCommand"] is None
     assert payload["safety"]["agentMayPublish"] is False
     assert payload["safety"]["agentMayRunCrmNextCommand"] is False
+    assert payload["operatorActionRequests"] == [
+        {
+            "id": "review_execute_selected_openclaw_cliq_publish_path",
+            "lane": "openclawCliq",
+            "required": True,
+            "inputKind": "operator_review",
+            "selectedPublishPath": "local_operator_rc",
+            "agentMayExecute": False,
+            "requiresExplicitOperatorApproval": True,
+            "redaction": {
+                "rawSecretsStored": False,
+                "rawLocalPathsStored": False,
+            },
+        }
+    ]
 
 
 def _write_openclaw_cliq_test_tarball(

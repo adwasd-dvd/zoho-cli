@@ -35,9 +35,6 @@ Run these immediately before any publish/tag action:
 ```bash
 git status --short
 
-OPENCLAW_CLIQ_PROMOTION_RUN_ID="$(date -u +%Y%m%dT%H%M%SZ)-operator" \
-  ops/scripts/openclaw_cliq_rc_promotion_check.sh
-
 NPM_CONFIG_CACHE=/private/tmp/zoho-cli-npm-cache \
 OPENCLAW_CLIQ_PACK_RUN_ID="$(date -u +%Y%m%dT%H%M%SZ)-operator-pack" \
   ops/scripts/openclaw_cliq_rc_pack.sh
@@ -48,9 +45,16 @@ OPENCLAW_CLIQ_ARTIFACT_RUN_ID="$(date -u +%Y%m%dT%H%M%SZ)-operator-artifact" \
 OPENCLAW_CLIQ_INSTALL_RUN_ID="$(date -u +%Y%m%dT%H%M%SZ)-operator-install" \
   ops/scripts/openclaw_cliq_rc_install_smoke.sh
 
+OPENCLAW_CLIQ_PROMOTION_RUN_ID="$(date -u +%Y%m%dT%H%M%SZ)-operator" \
+  ops/scripts/openclaw_cliq_rc_promotion_check.sh
+
+OPENCLAW_CLIQ_OPERATOR_BUNDLE_RUN_ID="$(date -u +%Y%m%dT%H%M%SZ)-operator-bundle" \
+  ops/scripts/openclaw_cliq_rc_operator_publish_bundle.sh
+
 ./.venv/bin/python -m pytest -q \
   tests/test_auto_pilot_scripts.py::test_openclaw_cliq_rc_promotion_check_requires_ready_local_evidence \
   tests/test_auto_pilot_scripts.py::test_openclaw_cliq_rc_promotion_check_blocks_published_integrity_too_early \
+  tests/test_auto_pilot_scripts.py::test_openclaw_cliq_rc_operator_publish_bundle_collects_ready_evidence \
   tests/test_auto_pilot_scripts.py::test_openclaw_cliq_rc_artifact_check_verifies_tarball_contract \
   tests/test_auto_pilot_scripts.py::test_openclaw_cliq_rc_install_smoke_installs_verified_artifact \
   tests/test_openclaw_channel_contract.py::test_openclaw_cliq_channel_rc_checklist_has_cut_contract \
@@ -67,12 +71,16 @@ Expected local pre-publish posture:
 - `artifact.status=artifact_verified`
 - `install.status=install_smoke_passed`
 - `trustedReply.status=trusted_reply_recorded`
+- `operatorBundle.status=operator_publish_bundle_ready`
 - `npmPromotionRequiresOperatorApproval=true`
 
 The promotion preflight is intentionally strict: `ready_for_operator_publish`
 requires the pack summary, artifact check, install smoke, trusted reply evidence,
 placeholder `expectedIntegrity`, and no publish/tag/version-bump posture to all
 be present at the same time.
+The operator bundle is the read-only review packet for that posture; it must
+keep `agentMayPublish=false`, `agentMayTag=false`, and
+`agentMayFillExpectedIntegrity=false`.
 
 ## Operator publish choices
 
@@ -115,6 +123,10 @@ Abort and do not publish if any of these appear:
 - `install_smoke_missing`, `install_smoke_not_passed`,
   `install_artifact_not_verified`, `install_publish_performed`, or
   `install_version_bumped` in local preflight.
+- `promotion_report_missing`, `promotion_not_ready`,
+  `operator_publish_bundle_ready` absent, or any `agentMayPublish=true`,
+  `agentMayTag=true`, or `agentMayFillExpectedIntegrity=true` in the operator
+  bundle.
 - `tarball_shasum_mismatch`, `artifact_version_mismatch`, or
   `required_entry_missing_*` in the local artifact check.
 - `artifact_not_verified`, `plugin_install_failed`, `plugin_inspect_failed`,

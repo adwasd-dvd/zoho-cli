@@ -44,6 +44,12 @@ with artifact verification, Temp-HOME install smoke, trusted reply evidence,
 and package metadata, then reports `ready_for_operator_publish` only when
 `expectedIntegrity` is still the release placeholder and no
 publish/tag/version-bump action has occurred.
+`ops/scripts/openclaw_cliq_rc_operator_publish_bundle.sh` then gathers the
+latest pack, artifact, install smoke, promotion, and trusted reply reports into
+one operator review JSON with artifact shasum/integrity, release posture, and
+explicit `agentMayPublish=false`, `agentMayTag=false`, and
+`agentMayFillExpectedIntegrity=false` flags before reporting
+`operator_publish_bundle_ready`.
 `docs/releases/OPENCLAW_CLIQ_CHANNEL_V0_4_OPERATOR_PUBLISH_HANDOFF.md` is the
 operator handoff for the approval boundary, preflight commands, publish path
 choice, post-publish checks, and abort conditions; agents must not run
@@ -93,6 +99,9 @@ No-publish Temp-HOME OpenClaw install smoke:
 
 No-publish local RC promotion preflight:
 `../../ops/scripts/openclaw_cliq_rc_promotion_check.sh`.
+
+No-publish operator review bundle:
+`../../ops/scripts/openclaw_cliq_rc_operator_publish_bundle.sh`.
 
 ## Config example
 

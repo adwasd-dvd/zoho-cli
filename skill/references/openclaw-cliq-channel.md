@@ -89,6 +89,12 @@ The local promotion preflight now requires pack evidence, `artifact_verified`,
 `install_smoke_passed`, `trusted_reply_recorded`, placeholder
 `expectedIntegrity`, and no publish/tag/version-bump posture before reporting
 `ready_for_operator_publish`.
+`cliq-channel-458` is complete:
+`ops/scripts/openclaw_cliq_rc_operator_publish_bundle.sh` gathers the latest
+pack, artifact, install smoke, promotion, and trusted reply reports into one
+redacted operator review JSON. It reports `operator_publish_bundle_ready` only
+when the strict promotion gate is ready and agent publish/tag/
+`expectedIntegrity` fill permissions remain false.
 
 The v0.4 plugin targets OpenClaw `>=2026.5.3-1`. The upgraded global
 `OpenClaw 2026.5.3-1` host is suitable for native plugin checks; use

@@ -1,10 +1,20 @@
-last_run_at: "2026-05-12T00:54:35Z"
+last_run_at: "2026-05-12T01:04:09Z"
 last_result: passing
-current_focus: cliq-channel-457-strict-promotion-preflight
+current_focus: cliq-channel-458-operator-publish-bundle
 suites:
   unit:
     status: passing
     notes:
+      - "cliq-channel-458 operator publish bundle completed at 2026-05-12T01:02:16Z"
+      - "added `ops/scripts/openclaw_cliq_rc_operator_publish_bundle.sh`; it gathers pack, artifact, install smoke, promotion, and trusted reply reports into one redacted operator review JSON and reports `operator_publish_bundle_ready` without publishing, tagging, version bumping, or filling published artifact integrity"
+      - "OPENCLAW_CLIQ_OPERATOR_BUNDLE_RUN_ID=20260512T005935Z-operator-bundle ops/scripts/openclaw_cliq_rc_operator_publish_bundle.sh -> `operator_publish_bundle_ready`, no blockers, artifact shasum `7717aa539f3ccf8d1ee1be560283ea30fa6a87b6`, integrity `sha512-2gp4TAicx7Ax07jBI2HNl9WFlIrVaqMh082mLAN5NVxF3p3BL7AWEgQDJfs+TOzwU2zLiSNdEu79BEFNZGsNEw==`, pack/artifact/install/promotion/trusted reports ready, `nextAction=operator_select_publish_path`, `agentMayPublish=false`, `agentMayTag=false`, `agentMayFillExpectedIntegrity=false`"
+      - "bash -n ops/scripts/openclaw_cliq_rc_operator_publish_bundle.sh -> passed"
+      - "./.venv/bin/python -m pytest -q tests/test_auto_pilot_scripts.py::test_openclaw_cliq_rc_operator_publish_bundle_collects_ready_evidence tests/test_auto_pilot_scripts.py::test_openclaw_cliq_rc_operator_publish_bundle_requires_ready_promotion -> 2 passed in 0.20s"
+      - "./.venv/bin/python -m pytest -q tests/test_auto_pilot_scripts.py::test_openclaw_cliq_rc_operator_publish_bundle_collects_ready_evidence tests/test_auto_pilot_scripts.py::test_openclaw_cliq_rc_operator_publish_bundle_requires_ready_promotion tests/test_openclaw_channel_contract.py::test_openclaw_cliq_channel_rc_checklist_has_cut_contract tests/test_openclaw_channel_contract.py::test_openclaw_cliq_operator_publish_handoff_has_approval_boundary tests/test_lane3_docs.py::test_lane3_required_paths_exist tests/test_lane3_docs.py::test_native_cliq_channel_ai_troubleshooting_contract_present tests/test_markdown_update.py -> 7 passed in 0.13s"
+      - "./.venv/bin/ruff format --check tests/test_auto_pilot_scripts.py tests/test_lane3_docs.py tests/test_openclaw_channel_contract.py -> 3 files already formatted"
+      - "./.venv/bin/ruff check tests/test_auto_pilot_scripts.py tests/test_lane3_docs.py tests/test_openclaw_channel_contract.py -> All checks passed"
+      - "ruby YAML parse for project/module_status/test_status -> YAML_PARSE_OK"
+      - "git diff --check -> passed"
       - "cliq-channel-457 strict RC promotion preflight completed at 2026-05-12T00:50:49Z"
       - "tightened `ops/scripts/openclaw_cliq_rc_promotion_check.sh` so `ready_for_operator_publish` requires pack evidence, `artifact_verified`, `install_smoke_passed`, `trusted_reply_recorded`, placeholder `expectedIntegrity`, and no publish/tag/version-bump posture"
       - "OPENCLAW_CLIQ_PROMOTION_RUN_ID=20260512T004841Z-strict-preflight ops/scripts/openclaw_cliq_rc_promotion_check.sh -> `ready_for_operator_publish`, no blockers, artifact `artifact_verified`, install smoke `install_smoke_passed`, trusted reply `trusted_reply_recorded`, `npmPromotionRequiresOperatorApproval=true`"

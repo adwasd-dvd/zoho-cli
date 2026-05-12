@@ -47,6 +47,9 @@ OPENCLAW_CLIQ_RC_ARTIFACT_CHECK_SCRIPT = (
 OPENCLAW_CLIQ_RC_INSTALL_SMOKE_SCRIPT = (
     REPO_ROOT / "ops" / "scripts" / "openclaw_cliq_rc_install_smoke.sh"
 )
+OPENCLAW_CLIQ_RC_OPERATOR_PUBLISH_BUNDLE_SCRIPT = (
+    REPO_ROOT / "ops" / "scripts" / "openclaw_cliq_rc_operator_publish_bundle.sh"
+)
 
 
 def test_export_scope_recheck_runner_propagates_probe_exit_codes(
@@ -718,6 +721,233 @@ def test_openclaw_cliq_rc_promotion_check_requires_install_smoke(
     assert payload["status"] == "blocked"
     assert "install_smoke_missing" in payload["blockers"]
     assert "install_smoke_not_passed" in payload["blockers"]
+
+
+def test_openclaw_cliq_rc_operator_publish_bundle_collects_ready_evidence(
+    tmp_path: Path,
+) -> None:
+    pack_summary = tmp_path / "pack-summary.json"
+    pack_summary.write_text(
+        json.dumps(
+            {
+                "status": "passed",
+                "pack": {
+                    "name": "@adwasd/openclaw-zoho-cliq",
+                    "version": "0.4.0-rc.1",
+                    "filename": "adwasd-openclaw-zoho-cliq-0.4.0-rc.1.tgz",
+                    "integrity": "sha512-test",
+                    "shasum": "abc123",
+                    "tarballPath": str(tmp_path / "private" / "artifact.tgz"),
+                },
+                "releasePosture": {
+                    "publishPerformed": False,
+                    "versionBumped": False,
+                },
+            }
+        )
+    )
+    artifact_report = tmp_path / "artifact-check.json"
+    artifact_report.write_text(
+        json.dumps(
+            {
+                "status": "artifact_verified",
+                "artifact": {
+                    "filename": "adwasd-openclaw-zoho-cliq-0.4.0-rc.1.tgz",
+                    "shasum": "abc123",
+                    "shasumMatchesPackSummary": True,
+                },
+                "package": {
+                    "name": "@adwasd/openclaw-zoho-cliq",
+                    "version": "0.4.0-rc.1",
+                    "expectedIntegrityState": "placeholder",
+                },
+            }
+        )
+    )
+    install_smoke = tmp_path / "install-smoke.json"
+    install_smoke.write_text(
+        json.dumps(
+            {
+                "status": "install_smoke_passed",
+                "artifact": {"status": "artifact_verified"},
+                "commands": [
+                    {"name": "install", "status": "passed", "exitCode": 0},
+                    {"name": "inspect", "status": "passed", "exitCode": 0},
+                    {"name": "doctor", "status": "passed", "exitCode": 0},
+                ],
+                "releasePosture": {
+                    "publishPerformed": False,
+                    "versionBumped": False,
+                },
+            }
+        )
+    )
+    promotion = tmp_path / "promotion-check.json"
+    promotion.write_text(
+        json.dumps(
+            {
+                "status": "ready_for_operator_publish",
+                "blockers": [],
+                "package": {
+                    "name": "@adwasd/openclaw-zoho-cliq",
+                    "version": "0.4.0-rc.1",
+                    "expectedIntegrityState": "placeholder",
+                },
+                "releasePosture": {
+                    "publishPerformed": False,
+                    "tagCreated": False,
+                    "npmPromotionRequiresOperatorApproval": True,
+                },
+            }
+        )
+    )
+    trusted_reply = tmp_path / "trusted-reply-check.json"
+    trusted_reply.write_text(
+        json.dumps(
+            {
+                "status": "trusted_reply_recorded",
+                "redaction": {
+                    "rawWebhookPayloadStored": False,
+                    "rawMessageBodyStored": False,
+                    "rawCliqReplyBodyStored": False,
+                    "secretsStored": False,
+                    "secretMarkerPresent": False,
+                },
+            }
+        )
+    )
+    report_file = tmp_path / "operator-bundle.json"
+
+    result = subprocess.run(
+        ["bash", str(OPENCLAW_CLIQ_RC_OPERATOR_PUBLISH_BUNDLE_SCRIPT)],
+        cwd=REPO_ROOT,
+        env={
+            **os.environ,
+            "OPENCLAW_CLIQ_PACK_SUMMARY_FILE": str(pack_summary),
+            "OPENCLAW_CLIQ_ARTIFACT_REPORT_FILE": str(artifact_report),
+            "OPENCLAW_CLIQ_INSTALL_SMOKE_FILE": str(install_smoke),
+            "OPENCLAW_CLIQ_PROMOTION_REPORT_FILE": str(promotion),
+            "OPENCLAW_CLIQ_TRUSTED_REPLY_CHECK_FILE": str(trusted_reply),
+            "OPENCLAW_CLIQ_OPERATOR_BUNDLE_REPORT_FILE": str(report_file),
+            "OPENCLAW_CLIQ_OPERATOR_BUNDLE_RUN_ID": "unit-test",
+        },
+        capture_output=True,
+        text=True,
+        check=False,
+    )
+
+    output = f"{result.stdout}\n{result.stderr}"
+    assert result.returncode == 0, output
+    assert str(tmp_path) not in result.stdout
+    payload = json.loads(result.stdout)
+    assert payload["status"] == "operator_publish_bundle_ready"
+    assert payload["blockers"] == []
+    assert payload["artifact"]["filename"] == "adwasd-openclaw-zoho-cliq-0.4.0-rc.1.tgz"
+    assert payload["artifact"]["shasum"] == "abc123"
+    assert payload["reports"]["promotion"]["file"] == promotion.name
+    assert payload["reports"]["installSmoke"]["status"] == "install_smoke_passed"
+    assert payload["releasePosture"] == {
+        "publishPerformed": False,
+        "tagCreated": False,
+        "npmPromotionRequiresOperatorApproval": True,
+        "agentMayPublish": False,
+        "agentMayTag": False,
+        "agentMayFillExpectedIntegrity": False,
+        "expectedIntegrityAction": "operator_fills_after_approved_publish_only",
+    }
+    assert payload["nextAction"] == "operator_select_publish_path"
+    assert json.loads(report_file.read_text()) == payload
+
+
+def test_openclaw_cliq_rc_operator_publish_bundle_requires_ready_promotion(
+    tmp_path: Path,
+) -> None:
+    pack_summary = tmp_path / "pack-summary.json"
+    pack_summary.write_text(
+        json.dumps(
+            {
+                "status": "passed",
+                "pack": {
+                    "name": "@adwasd/openclaw-zoho-cliq",
+                    "version": "0.4.0-rc.1",
+                },
+                "releasePosture": {
+                    "publishPerformed": False,
+                    "versionBumped": False,
+                },
+            }
+        )
+    )
+    artifact_report = tmp_path / "artifact-check.json"
+    artifact_report.write_text(
+        json.dumps(
+            {
+                "status": "artifact_verified",
+                "artifact": {"shasumMatchesPackSummary": True},
+                "package": {
+                    "name": "@adwasd/openclaw-zoho-cliq",
+                    "version": "0.4.0-rc.1",
+                    "expectedIntegrityState": "placeholder",
+                },
+            }
+        )
+    )
+    install_smoke = tmp_path / "install-smoke.json"
+    install_smoke.write_text(
+        json.dumps(
+            {
+                "status": "install_smoke_passed",
+                "artifact": {"status": "artifact_verified"},
+                "releasePosture": {
+                    "publishPerformed": False,
+                    "versionBumped": False,
+                },
+            }
+        )
+    )
+    trusted_reply = tmp_path / "trusted-reply-check.json"
+    trusted_reply.write_text(
+        json.dumps(
+            {
+                "status": "trusted_reply_recorded",
+                "redaction": {
+                    "rawWebhookPayloadStored": False,
+                    "rawMessageBodyStored": False,
+                    "rawCliqReplyBodyStored": False,
+                    "secretsStored": False,
+                    "secretMarkerPresent": False,
+                },
+            }
+        )
+    )
+
+    result = subprocess.run(
+        ["bash", str(OPENCLAW_CLIQ_RC_OPERATOR_PUBLISH_BUNDLE_SCRIPT)],
+        cwd=REPO_ROOT,
+        env={
+            **os.environ,
+            "OPENCLAW_CLIQ_PACK_SUMMARY_FILE": str(pack_summary),
+            "OPENCLAW_CLIQ_ARTIFACT_REPORT_FILE": str(artifact_report),
+            "OPENCLAW_CLIQ_INSTALL_SMOKE_FILE": str(install_smoke),
+            "OPENCLAW_CLIQ_PROMOTION_REPORT_FILE": str(tmp_path / "missing.json"),
+            "OPENCLAW_CLIQ_TRUSTED_REPLY_CHECK_FILE": str(trusted_reply),
+            "OPENCLAW_CLIQ_OPERATOR_BUNDLE_REPORT_FILE": str(
+                tmp_path / "operator-bundle.json"
+            ),
+            "OPENCLAW_CLIQ_OPERATOR_BUNDLE_RUN_ID": "unit-test-missing-promotion",
+        },
+        capture_output=True,
+        text=True,
+        check=False,
+    )
+
+    output = f"{result.stdout}\n{result.stderr}"
+    assert result.returncode == 1, output
+    payload = json.loads(result.stdout)
+    assert payload["status"] == "blocked"
+    assert "promotion_report_missing" in payload["blockers"]
+    assert "promotion_not_ready" in payload["blockers"]
+    assert payload["nextAction"] == "fix_blockers"
 
 
 def _write_openclaw_cliq_test_tarball(

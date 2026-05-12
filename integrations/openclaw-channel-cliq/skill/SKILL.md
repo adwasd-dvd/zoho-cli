@@ -89,6 +89,11 @@ Use this skill when operating through the native OpenClaw Zoho Cliq channel.
   bump, and `trusted_reply_recorded`. Do not fill
   `openclaw.install.expectedIntegrity` until the operator approves the actual
   publish source and the published artifact integrity is known.
+- For the final operator review packet, run
+  `ops/scripts/openclaw_cliq_rc_operator_publish_bundle.sh`; require
+  `operator_publish_bundle_ready`. It gathers pack, artifact, install smoke,
+  promotion, and trusted reply report filenames plus artifact shasum/integrity
+  while keeping agent publish/tag/integrity-fill permissions false.
 - For the operator approval boundary and release action handoff, use
   `docs/releases/OPENCLAW_CLIQ_CHANNEL_V0_4_OPERATOR_PUBLISH_HANDOFF.md`.
   It defines the no-agent `npm publish`/tag/GitHub release boundary, the
@@ -110,6 +115,7 @@ ops/scripts/openclaw_cliq_rc_artifact_check.sh
 ops/scripts/openclaw_cliq_rc_install_smoke.sh
 ops/scripts/openclaw_cliq_rc_pack.sh
 ops/scripts/openclaw_cliq_rc_promotion_check.sh
+ops/scripts/openclaw_cliq_rc_operator_publish_bundle.sh
 ops/scripts/openclaw_cliq_trusted_reply_evidence_bundle.sh
 ops/scripts/openclaw_cliq_trusted_reply_evidence_prepare.sh
 ops/scripts/openclaw_cliq_trusted_reply_evidence.sh

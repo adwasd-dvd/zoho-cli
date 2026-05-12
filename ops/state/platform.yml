@@ -1,7 +1,7 @@
 module: Platform
-updated_at: "2026-05-12T22:01:16Z"
+updated_at: "2026-05-12T22:22:41Z"
 status: in_progress
 execution_mode: turbo_20x
 throughput_policy_ref: ops/state/execution_policy.yml
 blockers: []
-next_small_step: "cliq-channel-494 records post-platform-218 source-drift, decision-packet, and operator-action-prompt evidence: package source remains unchanged at HEAD `d15a1aeb`, all decision reports are ready, and the same three operator asks remain non-executable for agents."
+next_small_step: "crm-033 links the CRM cleanup-plan operator ask to `docs/releases/CRM_V0_5_FIXTURE_CLEANUP_PLAN_TEMPLATE.md`; after commit, rerun the RC autonomy/operator-action prompt packet and continue only on agent-safe local/dry-run commands."

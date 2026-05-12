@@ -1,10 +1,12 @@
-last_run_at: "2026-05-12T22:01:16Z"
+last_run_at: "2026-05-12T22:22:41Z"
 last_result: passing
-current_focus: cliq-channel-494-post-platform218-evidence
+current_focus: crm-033-cleanup-plan-template
 suites:
   unit:
     status: passing
     notes:
+      - "crm-033 cleanup-plan template validation passed at 2026-05-12T22:22:41Z: shell syntax plus autonomy/operator-action/Lane 3/markdown tests -> 7 passed in 0.14s; `make lint`, Ruff format, YAML parse, and `git diff --check` passed."
+      - "crm-033 local operator prompt run `20260512T221616Z-cleanup-template-dev` printed `provide_crm_fixture_cleanup_plan` with `start from docs/releases/CRM_V0_5_FIXTURE_CLEANUP_PLAN_TEMPLATE.md` and no raw local paths, payload values, cleanup text, or secrets."
       - "cliq-channel-494 source drift run `20260512T220116Z-platform218-postcommit-source` returned `package_source_unchanged`, `headCommit=d15a1aebb8c4d2c28f0b7d6a799aa690dc41be87`, `repoChangedFileCount=39`, `packageDrift.packageChangedSinceManifest=false`, and `dirtyFileCount=0`."
       - "cliq-channel-494 decision packet `20260512T220116Z-platform218-postcommit-decision` returned `awaiting_operator_publish_path`, blocker `publish_path_not_selected`, all `reportsReady=true`, `operator_publish_plan_ready`, `package_source_unchanged`, `artifact_verified`, `install_smoke_passed`, `trusted_reply_recorded`, and `agentMayExecuteSelectedPath=false`."
       - "cliq-channel-494 operator prompt `20260512T220116Z-platform218-postcommit-prompt` returned `operator_action_prompt_ready`, request ids `[select_openclaw_cliq_publish_path, provide_crm_fixture_cleanup_plan, provide_crm_fixture_payload_file]`, and `actionRequestsAgentExecutableAny=false`."

@@ -1,11 +1,11 @@
 module: CRM
-updated_at: "2026-05-12T17:10:55Z"
+updated_at: "2026-05-12T22:22:41Z"
 status: in_progress
-phase: v0_5_agent_command_allowlist
+phase: v0_5_cleanup_plan_template
 blockers:
   - "operator-provided dedicated CRM fixture payload and cleanup approval required before Zoho-backed dry-run smoke and live fixture execution"
-current_milestone: crm-032-agent-command-allowlist
+current_milestone: crm-033-cleanup-plan-template
 last_completed:
-  id: crm-032
-  summary: "Enforced a built-in local/dry-run command allowlist in `crm_fixture_agent_next_command`; unknown command ids or script paths report `agent_command_not_allowlisted` instead of becoming agent-ready."
-next_small_step: run `ops/scripts/crm_fixture_agent_next_command.sh` against an operator-edited dedicated fixture payload and cleanup plan; execute only on `status=agent_next_command_ready` with `safety.nextCommandAllowedForAgent=true`, collect operator input on `operator_input_required`, fix packet/allowlist mismatches on `agent_command_not_allowlisted`, and stop on `stop_before_operator_live_fixture`
+  id: crm-033
+  summary: "Added `docs/releases/CRM_V0_5_FIXTURE_CLEANUP_PLAN_TEMPLATE.md` and linked the cleanup-plan operator request from the RC autonomy/operator-action prompts so operators have a safe copy/edit starter without granting agents live write permission."
+next_small_step: run `ops/scripts/zoho_cli_rc_autonomy_packet.sh` first; when it requests CRM inputs, use `ops/scripts/zoho_cli_rc_operator_action_prompt.sh --md` to ask for the operator-selected Cliq publish path plus copied CRM fixture payload and copied cleanup plan, then run `ops/scripts/crm_fixture_agent_next_command.sh` only if it reports `status=agent_next_command_ready` and `safety.nextCommandAllowedForAgent=true`

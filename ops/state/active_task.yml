@@ -1,22 +1,20 @@
-id: cliq-channel-494
-title: record post-platform218 RC evidence
-module: openclaw_cliq_channel
+id: crm-033
+title: add CRM fixture cleanup plan template
+module: crm
 stage: completed
 status: completed
 owner: coder
-updated_at: '2026-05-12T22:01:16Z'
+updated_at: '2026-05-12T22:22:41Z'
 execution_mode: turbo_20x
 throughput_policy_ref: ops/state/execution_policy.yml
 success_criteria:
-  - "Record post-platform-218 source-drift evidence showing package source unchanged"
-  - "Record post-platform-218 decision packet evidence showing the RC still awaits an operator publish path with all reports ready"
-  - "Record post-platform-218 operator-action-prompt evidence showing the same three non-executable operator asks"
-  - "Sync Lane 1/2/3 docs and regression tests with the refreshed evidence"
+  - "Add a safe copy/edit CRM fixture cleanup-plan template with action, target, selector, and agent/operator boundary guidance"
+  - "Expose that template in RC autonomy `operatorActionRequests` and operator-action prompt Markdown/JSON output"
+  - "Sync Lane 1/2/3 docs and regression tests with the new cleanup-plan handoff"
   - "Do not publish, tag, npm-promote, create GitHub releases, fill expectedIntegrity, call Zoho, or write CRM data"
 next_if_done: Continue to the next safe RC readiness milestone without publishing, tagging, npm promotion, GitHub release creation, expectedIntegrity fill, or live CRM writes.
 progress:
-  - "2026-05-12T22:01:16Z source drift run `20260512T220116Z-platform218-postcommit-source` returned `package_source_unchanged`, `headCommit=d15a1aebb8c4d2c28f0b7d6a799aa690dc41be87`, `repoChangedFileCount=39`, and `packageDrift.packageChangedSinceManifest=false`."
-  - "2026-05-12T22:01:16Z decision packet `20260512T220116Z-platform218-postcommit-decision` returned `awaiting_operator_publish_path`, `publish_path_not_selected`, all `reportsReady=true`, and `agentMayExecuteSelectedPath=false`."
-  - "2026-05-12T22:01:16Z operator action prompt `20260512T220116Z-platform218-postcommit-prompt` returned `operator_action_prompt_ready`, the same three request ids, and `actionRequestsAgentExecutableAny=false`."
-  - "2026-05-12T22:01:16Z final verification passed: OpenClaw RC checklist, Lane 3 required paths, and markdown update -> 3 passed in 0.01s; `make lint`, Ruff format, YAML parse, and `git diff --check` passed."
-next_step: Commit and push the cliq-channel-494 post-platform-218 evidence slice, then continue to the next safe milestone.
+  - "2026-05-12T22:22:41Z added `docs/releases/CRM_V0_5_FIXTURE_CLEANUP_PLAN_TEMPLATE.md` as a copy/edit-only cleanup plan starter that keeps live CRM writes operator-only."
+  - "2026-05-12T22:22:41Z updated `ops/scripts/zoho_cli_rc_autonomy_packet.sh` so `provide_crm_fixture_cleanup_plan` includes the cleanup template path, and verified `ops/scripts/zoho_cli_rc_operator_action_prompt.sh --md` prints the cleanup template without raw local paths, payload values, cleanup text, or secrets."
+  - "2026-05-12T22:22:41Z focused validation passed: shell syntax plus autonomy/operator-action/Lane 3/markdown tests -> 7 passed in 0.14s; `make lint`, Ruff format, YAML parse, and `git diff --check` passed."
+next_step: Commit and push the crm-033 cleanup-plan-template slice, then continue with the next safe RC milestone.

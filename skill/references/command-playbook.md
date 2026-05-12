@@ -190,12 +190,14 @@ For operator/live smoke evidence, prefer the repeatable script:
 ```bash
 cp docs/releases/CRM_V0_5_FIXTURE_PAYLOAD_TEMPLATE.json /tmp/lead-fixture.json
 $EDITOR /tmp/lead-fixture.json
+cp docs/releases/CRM_V0_5_FIXTURE_CLEANUP_PLAN_TEMPLATE.md /tmp/lead-cleanup-plan.md
+$EDITOR /tmp/lead-cleanup-plan.md
 ```
 
-The template is safe for dry-run planning only. Before live mode, replace the
-`.example.invalid` email with a dedicated operator-owned test address and keep
-the payload to one `Leads` record with a cleanup plan. The smoke summary reports
-`payloadTemplatePlaceholders.emailCount`, and live mode fails with
+The templates are safe for dry-run planning only. Before live mode, replace the
+`.example.invalid` email with a dedicated operator-owned test address, keep the
+payload to one `Leads` record, and write a selector-specific cleanup plan. The
+smoke summary reports `payloadTemplatePlaceholders.emailCount`, and live mode fails with
 `fixture_payload_placeholder_email` if template email markers remain.
 
 Preflight the copied payload locally before any Zoho-backed smoke:

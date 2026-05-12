@@ -13,6 +13,8 @@ Start from the repo template, but do not use it unchanged for live mode:
 ```bash
 cp docs/releases/CRM_V0_5_FIXTURE_PAYLOAD_TEMPLATE.json /tmp/lead-fixture.json
 $EDITOR /tmp/lead-fixture.json
+cp docs/releases/CRM_V0_5_FIXTURE_CLEANUP_PLAN_TEMPLATE.md /tmp/lead-cleanup-plan.md
+$EDITOR /tmp/lead-cleanup-plan.md
 ```
 
 Payload checklist:
@@ -24,6 +26,15 @@ Payload checklist:
 - Use fake, searchable values that are not customer, employee, or private data.
 - Make the cleanup plan specific enough to remove or update the resulting test
   record by the returned CRM id or dedicated test email.
+
+Cleanup checklist:
+
+- Copy/edit `CRM_V0_5_FIXTURE_CLEANUP_PLAN_TEMPLATE.md` outside the repo.
+- Include an explicit cleanup action and target the dedicated `Leads` fixture.
+- Include a selector category such as fixture email, record id, duplicate field,
+  idempotency key, or payload digest.
+- Keep raw selector values, fixture email addresses, secrets, and production
+  identifiers out of committed files and reports.
 
 The smoke script records `payloadTemplatePlaceholders.emailCount` in its summary
 and refuses live mode with `fixture_payload_placeholder_email` while the payload

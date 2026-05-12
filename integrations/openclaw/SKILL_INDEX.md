@@ -173,6 +173,10 @@ CRM SDK planning:
   edit outside the repo before live fixture mode; smoke reports
   `payloadTemplatePlaceholders.emailCount` and blocks
   `fixture_payload_placeholder_email` for live placeholder emails)
+- `docs/releases/CRM_V0_5_FIXTURE_CLEANUP_PLAN_TEMPLATE.md` (`crm-033`: safe
+  copy/edit cleanup-plan starter with action, target, selector category, and
+  agent/operator boundary guidance; copy and edit outside the repo before any
+  live fixture mode)
 - `docs/architecture/CRM_WRITE_SURFACE_CONTRACT.md`
 
 GitHub intake:

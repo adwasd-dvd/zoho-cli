@@ -2237,6 +2237,10 @@ def test_zoho_cli_rc_autonomy_packet_collects_operator_input(
         ]
         is False
     )
+    assert (
+        action_requests["provide_crm_fixture_cleanup_plan"]["template"]
+        == "docs/releases/CRM_V0_5_FIXTURE_CLEANUP_PLAN_TEMPLATE.md"
+    )
     assert payload["recommendedAgentCommand"] is None
     assert payload["safety"]["agentMayRunCrmNextCommand"] is False
     assert payload["safety"]["crmNextCommandAllowedForAgent"] is False
@@ -2389,6 +2393,7 @@ def _write_operator_action_prompt_autonomy_packet(
                 "lane": "crmFixture",
                 "required": True,
                 "inputKind": "text",
+                "template": "docs/releases/CRM_V0_5_FIXTURE_CLEANUP_PLAN_TEMPLATE.md",
                 "guidance": (
                     "Provide a cleanup plan with an action, target, and selector "
                     "category."
@@ -2490,6 +2495,7 @@ def test_zoho_cli_rc_operator_action_prompt_summarizes_requests(
     assert payload["safety"]["redaction"]["rawPayloadStored"] is False
     assert "select_openclaw_cliq_publish_path" in payload["messageMarkdown"]
     assert "`local_operator_rc`" in payload["messageMarkdown"]
+    assert "CRM_V0_5_FIXTURE_CLEANUP_PLAN_TEMPLATE.md" in payload["messageMarkdown"]
     assert "<copied-payload-file>" in payload["messageMarkdown"]
     assert "crm_fixture_agent_next_command_recheck" in payload["messageMarkdown"]
     assert str(tmp_path) not in payload["messageMarkdown"]
@@ -2559,6 +2565,7 @@ def test_zoho_cli_rc_operator_action_prompt_can_emit_markdown(
     assert result.stdout.startswith("### zoho-cli RC operator actions\n")
     assert "select_openclaw_cliq_publish_path" in result.stdout
     assert "`local_operator_rc`" in result.stdout
+    assert "CRM_V0_5_FIXTURE_CLEANUP_PLAN_TEMPLATE.md" in result.stdout
     assert "<copied-payload-file>" in result.stdout
     assert str(tmp_path) not in result.stdout
     payload = json.loads(prompt_file.read_text())

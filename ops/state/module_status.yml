@@ -28,8 +28,8 @@ openclaw_cliq_channel:
 crm:
   priority: 4
   status: in_progress
-  phase: v0_5_agent_command_allowlist
+  phase: v0_5_cleanup_plan_template
   target_release: v0.5.0
-  current_milestone: crm-032-agent-command-allowlist
+  current_milestone: crm-033-cleanup-plan-template
   blockers:
     - "operator-provided dedicated CRM fixture payload and cleanup approval required before Zoho-backed dry-run smoke and live fixture execution"

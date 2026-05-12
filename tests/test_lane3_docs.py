@@ -49,6 +49,7 @@ def test_lane3_required_paths_exist() -> None:
         REPO_ROOT / "docs" / "architecture" / "CRM_V0_5_SDK_ADOPTION_PLAN.md",
         REPO_ROOT / "docs" / "releases" / "CRM_V0_5_OPERATOR_FIXTURE_EVIDENCE.md",
         REPO_ROOT / "docs" / "releases" / "CRM_V0_5_FIXTURE_PAYLOAD_TEMPLATE.json",
+        REPO_ROOT / "docs" / "releases" / "CRM_V0_5_FIXTURE_CLEANUP_PLAN_TEMPLATE.md",
         REPO_ROOT / "ops" / "scripts" / "crm_fixture_payload_preflight.sh",
         REPO_ROOT / "ops" / "scripts" / "crm_fixture_operator_readiness_bundle.sh",
         REPO_ROOT / "ops" / "scripts" / "crm_fixture_operator_packet.sh",
@@ -371,6 +372,7 @@ def test_crm_sdk_adoption_contract_present() -> None:
         REPO_ROOT / "docs" / "architecture" / "CRM_WRITE_SURFACE_CONTRACT.md",
         REPO_ROOT / "docs" / "releases" / "CRM_V0_5_OPERATOR_FIXTURE_EVIDENCE.md",
         REPO_ROOT / "docs" / "releases" / "CRM_V0_5_FIXTURE_PAYLOAD_TEMPLATE.json",
+        REPO_ROOT / "docs" / "releases" / "CRM_V0_5_FIXTURE_CLEANUP_PLAN_TEMPLATE.md",
     ]
     combined = "\n".join(path.read_text(encoding="utf-8") for path in docs)
 
@@ -491,6 +493,7 @@ def test_crm_sdk_adoption_contract_present() -> None:
         "crm.write.fixture_attempt",
         "crm.write.fixture_result",
         "CRM_V0_5_FIXTURE_PAYLOAD_TEMPLATE.json",
+        "CRM_V0_5_FIXTURE_CLEANUP_PLAN_TEMPLATE.md",
         ".example.invalid",
         "dedicated operator-owned test",
         "copy/edit",
@@ -530,6 +533,20 @@ def test_crm_fixture_payload_template_is_safe_single_record() -> None:
     assert "dedicated operator-owned test address" in payload["Description"]
     assert "--execute" not in text
     assert "ZOHO_CRM_ALLOW_LIVE_FIXTURE" not in text
+
+
+def test_crm_fixture_cleanup_plan_template_is_safe_placeholder() -> None:
+    template_path = (
+        REPO_ROOT / "docs" / "releases" / "CRM_V0_5_FIXTURE_CLEANUP_PLAN_TEMPLATE.md"
+    )
+    text = template_path.read_text(encoding="utf-8")
+
+    assert "<fixture-idempotency-key>" in text
+    assert "<operator-provided-selector-value>" in text
+    assert "Selector category" in text
+    assert "Agents may use the finished cleanup plan only for local preflight" in text
+    assert "not an approval to run live CRM writes" in text
+    assert "OAuth tokens" in text
 
 
 def test_openclaw_cliq_trusted_reply_template_is_safe_placeholder() -> None:

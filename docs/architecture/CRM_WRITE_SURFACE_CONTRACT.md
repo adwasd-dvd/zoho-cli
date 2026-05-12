@@ -353,17 +353,23 @@ otherwise it reports `agent_command_not_allowlisted` with
 payload preflight, optional dry-run readiness bundle, and optional smoke summary
 so agents can archive or pass evidence without logging local paths.
 
-## Operator payload template
+## Operator payload and cleanup templates
 
 `docs/releases/CRM_V0_5_FIXTURE_PAYLOAD_TEMPLATE.json` is the copy-only starting
 point for the `crm-015` operator fixture payload. It intentionally uses an
 `.example.invalid` email and `replace-me` marker so it is safe for dry-run
 planning but not a live payload.
 
-Before live mode, the operator must copy it outside the repo, keep it to one
-`Leads` record, replace `Email` with a dedicated test address, and provide a
-cleanup plan that can remove or update the resulting fixture record. The live
-fixture path still requires the smoke script, exact approval token,
+`docs/releases/CRM_V0_5_FIXTURE_CLEANUP_PLAN_TEMPLATE.md` is the matching
+copy-only cleanup-plan starter. It prompts the operator for an explicit action,
+the dedicated `Leads` fixture target, and a selector category such as fixture
+email, record id, duplicate field, idempotency key, or payload digest. Agents
+may use the completed text only for local preflight and dry-run readiness checks.
+
+Before live mode, the operator must copy both templates outside the repo, keep
+the payload to one `Leads` record, replace `Email` with a dedicated test address,
+and provide a cleanup plan that can remove or update only the resulting fixture
+record. The live fixture path still requires the smoke script, exact approval token,
 `ZOHO_CRM_FIXTURE_EXECUTE=1`, and `ZOHO_CRM_ALLOW_LIVE_FIXTURE=1`.
 
 The smoke script summarizes unresolved template emails as

@@ -306,8 +306,11 @@ After sync, ensure the AI user follows:
     it skips live execution unless `ZOHO_CRM_FIXTURE_EXECUTE=1` and
     `ZOHO_CRM_ALLOW_LIVE_FIXTURE=1` are both set
   - use `docs/releases/CRM_V0_5_FIXTURE_PAYLOAD_TEMPLATE.json` only as a
-    copy/edit starting point; replace the `.example.invalid` email with a
-    dedicated operator-owned CRM test address before live mode
+    copy/edit starting point; use
+    `docs/releases/CRM_V0_5_FIXTURE_CLEANUP_PLAN_TEMPLATE.md` only as the
+    matching cleanup-plan starter; replace all placeholders with a dedicated
+    operator-owned CRM test address plus selector-specific cleanup text before
+    live mode
   - verify `payloadTemplatePlaceholders.emailCount=0`; live smoke blocks with
     `fixture_payload_placeholder_email` if template email markers remain
   - run `zoho crm fixture-evidence --summary-file <summary.json>` after smoke

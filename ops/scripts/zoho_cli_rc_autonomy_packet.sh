@@ -221,6 +221,7 @@ PAYLOAD="$("$JQ_BIN" -n \
                   lane: "crmFixture",
                   required: true,
                   inputKind: "text",
+                  template: "docs/releases/CRM_V0_5_FIXTURE_CLEANUP_PLAN_TEMPLATE.md",
                   guidance: "Provide a cleanup plan with an action, target, and selector category such as fixture email, record id, duplicate field, idempotency key, or payload digest.",
                   commandPreview: "ZOHO_CRM_FIXTURE_PAYLOAD_FILE=<copied-payload-file> ZOHO_CRM_FIXTURE_CLEANUP_PLAN=<cleanup-plan> ops/scripts/crm_fixture_agent_next_command.sh",
                   unblocks: "crm_fixture_agent_next_command_recheck",

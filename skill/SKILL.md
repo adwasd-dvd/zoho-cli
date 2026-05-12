@@ -247,10 +247,12 @@ Use this skill as the default operating contract for an OpenClaw agent acting li
   `live_fixture_recorded` for completed evidence.
   In `crm-015`, use
   `docs/releases/CRM_V0_5_FIXTURE_PAYLOAD_TEMPLATE.json` only as a copy/edit
-  starting point for the operator's `/tmp/lead-fixture.json`; it contains
-  `.example.invalid` placeholder data and must be replaced with a dedicated
-  operator-owned test email plus cleanup plan before any live fixture gates are
-  considered. Run `ops/scripts/crm_fixture_payload_preflight.sh` first; require
+  starting point for the operator's copied fixture payload, and use
+  `docs/releases/CRM_V0_5_FIXTURE_CLEANUP_PLAN_TEMPLATE.md` only as a copy/edit
+  starting point for the cleanup plan; both contain placeholders and must be
+  replaced with a dedicated operator-owned test email plus selector-specific
+  cleanup text before any live fixture gates are considered. Run
+  `ops/scripts/crm_fixture_payload_preflight.sh` first; require
   `status=payload_preflight_ready`, `payload.placeholderEmailCount=0`,
   `cleanup.present=true`, `cleanup.qualityReady=true`, and
   `nextAction=run_crm_fixture_live_smoke_dry_run`.

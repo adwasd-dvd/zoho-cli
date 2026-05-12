@@ -1,3 +1,11 @@
+platform:
+  priority: 0
+  status: completed
+  phase: rc_work_queue_normalized
+  target_release: cross-lane-rc
+  current_milestone: platform-219-normalize-rc-work-queue
+  blockers: []
+
 mail:
   priority: 1
   status: completed
@@ -20,16 +28,16 @@ cliq:
 openclaw_cliq_channel:
   priority: 3
   status: completed_for_rc
-  phase: post_crm033_cleanup_template_evidence_ready
+  phase: awaiting_operator_publish_path_with_work_queue
   target_release: v0.4.0
-  current_milestone: cliq-channel-495-post-crm033-cleanup-template-evidence
+  current_milestone: cliq-channel-496-operator-publish-path-selection
   blockers: []
 
 crm:
   priority: 4
   status: in_progress
-  phase: v0_5_cleanup_plan_template
+  phase: v0_5_operator_fixture_inputs_required
   target_release: v0.5.0
-  current_milestone: crm-033-cleanup-plan-template
+  current_milestone: crm-034-fixture-payload-and-cleanup-plan-inputs
   blockers:
     - "operator-provided dedicated CRM fixture payload and cleanup approval required before Zoho-backed dry-run smoke and live fixture execution"

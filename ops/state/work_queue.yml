@@ -559,3 +559,344 @@
   priority: high
   depends_on:
   - cliq-channel-421
+
+# Current autonomous RC continuation queue (2026-05-12).
+# Use this section as the handoff map for recurring agents after the historical
+# v0.4 native Cliq channel build queue above.
+- id: platform-214
+  title: add read-only cross-lane RC autonomy packet
+  module: platform
+  stage: completed
+  priority: high
+  depends_on:
+  - crm-032
+  - cliq-channel-491
+  agent_action: start every recurring RC pass with `ops/scripts/zoho_cli_rc_autonomy_packet.sh`
+  completion_signal: autonomy packet reports Cliq publish-path needs, CRM fixture facts, and agent safety booleans without writes
+- id: platform-215
+  title: expose redacted operator action requests from RC autonomy packet
+  module: platform
+  stage: completed
+  priority: high
+  depends_on:
+  - platform-214
+  agent_action: read `operatorActionRequests` for exact human asks when autonomy returns `operator_input_required`
+  completion_signal: request ids are stable and contain no raw payload values, cleanup text, local paths, or secrets
+- id: platform-216
+  title: add placeholder-only command previews and unblock hints
+  module: platform
+  stage: completed
+  priority: medium
+  depends_on:
+  - platform-215
+  agent_action: show operators the next recheck gate without exposing sensitive values
+  completion_signal: autonomy output includes placeholder-only `commandPreview` and `unblocks`
+- id: platform-217
+  title: add RC operator action prompt wrapper
+  module: platform
+  stage: completed
+  priority: high
+  depends_on:
+  - platform-216
+  agent_action: run `ops/scripts/zoho_cli_rc_operator_action_prompt.sh` for JSON automation handoff
+  completion_signal: wrapper returns `operator_action_prompt_ready` and no agent-executable publish/write requests
+- id: platform-218
+  title: add Markdown mode for RC operator action prompt
+  module: platform
+  stage: completed
+  priority: high
+  depends_on:
+  - platform-217
+  agent_action: run `ops/scripts/zoho_cli_rc_operator_action_prompt.sh --md` for compact human-facing asks
+  completion_signal: Markdown output lists the three missing operator inputs without raw secrets or local paths
+- id: crm-016
+  title: harden CRM fixture cleanup-plan quality gate
+  module: crm
+  stage: completed
+  priority: high
+  depends_on:
+  - crm-015
+  agent_action: keep vague cleanup plans blocked before any Zoho-backed smoke
+  completion_signal: cleanup quality emits redacted action/target readiness metadata only
+- id: crm-017
+  title: require CRM fixture cleanup selectors
+  module: crm
+  stage: completed
+  priority: high
+  depends_on:
+  - crm-016
+  agent_action: reject cleanup plans that do not name a concrete selector for fixture cleanup
+  completion_signal: fixture preflight blocks before Zoho calls when cleanup selectors are missing
+- id: crm-018
+  title: expose CRM fixture selector metadata
+  module: crm
+  stage: completed
+  priority: high
+  depends_on:
+  - crm-017
+  agent_action: surface redacted selector readiness for operator review
+  completion_signal: operator packets expose selector metadata without raw fixture values
+- id: crm-019
+  title: expose CRM fixture operator review facts
+  module: crm
+  stage: completed
+  priority: high
+  depends_on:
+  - crm-018
+  agent_action: use operator-review facts to decide whether the next step is local, blocked, or operator-only
+  completion_signal: packets include redacted facts for payload, cleanup, approval, and write boundaries
+- id: crm-020
+  title: add CRM fixture operator command previews
+  module: crm
+  stage: completed
+  priority: medium
+  depends_on:
+  - crm-019
+  agent_action: show only preview commands that preserve the local/dry-run boundary
+  completion_signal: operator packets preview next commands without granting live write permission
+- id: crm-021
+  title: add CRM fixture operator report metadata
+  module: crm
+  stage: completed
+  priority: medium
+  depends_on:
+  - crm-020
+  agent_action: rely on basename-only report metadata when handing off fixture state
+  completion_signal: operator packets list report basenames without raw local paths
+- id: crm-022
+  title: add CRM fixture readiness report metadata
+  module: crm
+  stage: completed
+  priority: medium
+  depends_on:
+  - crm-021
+  agent_action: use readiness report metadata for cross-lane evidence without exposing raw report paths
+  completion_signal: readiness bundles include report metadata suitable for automation
+- id: crm-023
+  title: expose CRM fixture live approval facts
+  module: crm
+  stage: completed
+  priority: high
+  depends_on:
+  - crm-022
+  agent_action: stop before live fixture execution unless explicit approval facts are present
+  completion_signal: live approval facts are redacted and machine-readable
+- id: crm-024
+  title: classify CRM fixture live approval fact categories
+  module: crm
+  stage: completed
+  priority: high
+  depends_on:
+  - crm-023
+  agent_action: distinguish payload, cleanup, approval, and environment gate categories before live fixture work
+  completion_signal: missing live-approval categories produce clear operator input requirements
+- id: crm-025
+  title: add CRM fixture operator action boundary
+  module: crm
+  stage: completed
+  priority: high
+  depends_on:
+  - crm-024
+  agent_action: stop at operator-only command ids and keep normal CRM upsert execution blocked
+  completion_signal: operator packets expose action boundary buckets for agent-safe and operator-only work
+- id: crm-026
+  title: add CRM fixture readiness action boundary
+  module: crm
+  stage: completed
+  priority: high
+  depends_on:
+  - crm-025
+  agent_action: read readiness-bundle action boundaries before any CRM fixture next command
+  completion_signal: readiness bundles keep live fixture approval and execution outside agent automation
+- id: crm-027
+  title: resync CRM module state to fixture readiness track
+  module: crm
+  stage: completed
+  priority: medium
+  depends_on:
+  - crm-026
+  agent_action: use CRM fixture operator packet/readiness bundle instead of stale crm-015 state
+  completion_signal: module state points at the latest fixture readiness boundary
+- id: crm-028
+  title: expose CRM fixture agent automation boundary summary
+  module: crm
+  stage: completed
+  priority: high
+  depends_on:
+  - crm-027
+  agent_action: inspect `operatorReview.agentAutomation` before considering any next command
+  completion_signal: readiness bundles expose next executable command ids and stop reasons
+- id: crm-029
+  title: expose CRM fixture nextAgentCommand previews
+  module: crm
+  stage: completed
+  priority: high
+  depends_on:
+  - crm-028
+  agent_action: run only selected local/dry-run commands when `nextAgentCommand` is present and allowed
+  completion_signal: operator-only write boundaries keep `nextAgentCommand=null`
+- id: crm-030
+  title: add CRM fixture agent next-command wrapper
+  module: crm
+  stage: completed
+  priority: high
+  depends_on:
+  - crm-029
+  agent_action: use `ops/scripts/crm_fixture_agent_next_command.sh` as the only agent entrypoint for CRM fixture next steps
+  completion_signal: wrapper emits `operator_input_required`, `agent_next_command_ready`, or `stop_before_operator_live_fixture`
+- id: crm-031
+  title: cover CRM fixture agent-ready wrapper branch
+  module: crm
+  stage: completed
+  priority: high
+  depends_on:
+  - crm-030
+  agent_action: trust wrapper tests before executing any local/dry-run next command
+  completion_signal: regression coverage keeps normal upsert and live fixture execution blocked for agents
+- id: crm-032
+  title: enforce CRM fixture agent command allowlist
+  module: crm
+  stage: completed
+  priority: high
+  depends_on:
+  - crm-031
+  agent_action: execute no CRM next command unless wrapper reports the command id and script path are allowlisted
+  completion_signal: unknown commands return `agent_command_not_allowlisted`
+- id: crm-033
+  title: add CRM v0.5 fixture cleanup-plan template
+  module: crm
+  stage: completed
+  priority: high
+  depends_on:
+  - crm-032
+  agent_action: point operators at `docs/releases/CRM_V0_5_FIXTURE_CLEANUP_PLAN_TEMPLATE.md`
+  completion_signal: autonomy and operator prompts link the cleanup-plan template while preserving no-write boundaries
+- id: cliq-channel-495
+  title: record post-crm033 cleanup-template RC evidence
+  module: openclaw_cliq_channel
+  stage: completed
+  priority: high
+  depends_on:
+  - crm-033
+  - platform-218
+  agent_action: use latest source-drift, decision, autonomy, and operator-prompt evidence as the current RC baseline
+  completion_signal: evidence reports `package_source_unchanged`, `awaiting_operator_publish_path`, and no agent-executable publish/write request
+- id: platform-219
+  title: normalize RC work queue for autonomous continuation
+  module: platform
+  stage: completed
+  priority: high
+  depends_on:
+  - cliq-channel-495
+  - crm-033
+  agent_action: keep this queue as the first local planning artifact after the autonomy packet
+  completion_signal: next tasks clearly distinguish agent-safe local work, blocked operator input, and operator-only publish/write boundaries
+- id: cliq-channel-496
+  title: collect operator native Cliq RC publish-path selection
+  module: openclaw_cliq_channel
+  stage: blocked
+  priority: high
+  depends_on:
+  - platform-219
+  blocker: "operator must choose one publish path: `local_operator_rc`, `npm_rc_publish`, or `github_release_artifact`"
+  agent_action: run `ops/scripts/zoho_cli_rc_operator_action_prompt.sh --md` and report the redacted ask
+  operator_action: set or provide the selected publish path; do not let agents publish, tag, npm-promote, create releases, or fill published-artifact integrity
+  unblock_signal: autonomy packet no longer reports `select_openclaw_cliq_publish_path`
+- id: cliq-channel-497
+  title: execute selected native Cliq RC publish path
+  module: openclaw_cliq_channel
+  stage: operator_only
+  priority: high
+  depends_on:
+  - cliq-channel-496
+  blocker: explicit operator approval and artifact source are required
+  agent_action: prepare/read operator handoff only; never run publish/tag/npm/GitHub release/integrity-fill commands
+  operator_action: perform the selected release action and provide resulting artifact facts
+  unblock_signal: operator-provided post-publish artifact facts are available for read-only evidence recording
+- id: cliq-channel-498
+  title: record post-selection or post-publish native Cliq RC evidence
+  module: openclaw_cliq_channel
+  stage: pending
+  priority: high
+  depends_on:
+  - cliq-channel-497
+  agent_action: run read-only source-drift, decision, and operator-prompt packets after operator action
+  completion_signal: Lane 1/2/3 docs state whether the RC is still awaiting publish, published locally, npm-promoted, or GitHub-artifact ready
+- id: cliq-channel-499
+  title: refresh no-publish native Cliq RC release notes and artifact checklist hygiene
+  module: openclaw_cliq_channel
+  stage: pending
+  priority: medium
+  depends_on:
+  - platform-219
+  agent_action: update docs/checklists only if safe read-only evidence changed; do not publish or mutate artifact integrity fields
+  completion_signal: RC checklist and operator handoff match the latest no-publish baseline
+- id: cliq-channel-500
+  title: rerun native Cliq package verification only when source drift requires it
+  module: openclaw_cliq_channel
+  stage: pending
+  priority: medium
+  depends_on:
+  - cliq-channel-499
+  agent_action: use source-drift guard first; run pack/artifact/install smoke only when package source changed or operator asks
+  completion_signal: no-publish verification is fresh and docs record whether package source changed
+- id: crm-034
+  title: collect CRM fixture payload and cleanup-plan operator inputs
+  module: crm
+  stage: blocked
+  priority: high
+  depends_on:
+  - platform-219
+  - crm-033
+  blocker: operator must provide a dedicated fixture payload file and copied cleanup plan using the release templates
+  agent_action: run `ops/scripts/zoho_cli_rc_operator_action_prompt.sh --md` or `ops/scripts/crm_fixture_agent_next_command.sh`; stop if it returns `operator_input_required`
+  operator_action: provide a non-template payload file and a concrete cleanup plan; keep secrets and local raw paths out of committed docs
+  unblock_signal: CRM fixture wrapper reports `agent_next_command_ready` with an allowlisted local/dry-run command
+- id: crm-035
+  title: run allowlisted CRM fixture local or dry-run next command
+  module: crm
+  stage: blocked
+  priority: high
+  depends_on:
+  - crm-034
+  blocker: "`ops/scripts/crm_fixture_agent_next_command.sh` must report `agent_next_command_ready` and `safety.nextCommandAllowedForAgent=true`"
+  agent_action: execute only the wrapper-approved local/dry-run command; never run normal `zoho crm upsert --execute`
+  completion_signal: readiness bundle advances without Zoho write side effects
+- id: crm-036
+  title: run live CRM fixture smoke with exact operator approval
+  module: crm
+  stage: operator_only
+  priority: high
+  depends_on:
+  - crm-035
+  blocker: dedicated payload, cleanup plan, exact approval, and required live env gates must all be present
+  agent_action: stop at `stop_before_operator_live_fixture`; do not execute live CRM writes
+  operator_action: run the live fixture smoke and cleanup under the documented plan
+  unblock_signal: operator supplies live fixture result and cleanup evidence
+- id: crm-037
+  title: record live CRM fixture evidence and decide CRM v0.5 CLI scope
+  module: crm
+  stage: pending
+  priority: high
+  depends_on:
+  - crm-036
+  agent_action: record read-only evidence after operator live run and update CRM roadmap without widening write permissions
+  completion_signal: CRM v0.5 readiness state names the next safe CLI feature slice or blocker
+- id: crm-038
+  title: improve local-only CRM fixture examples and validation handoff
+  module: crm
+  stage: pending
+  priority: medium
+  depends_on:
+  - crm-033
+  agent_action: add or refine sanitized examples/tests that make operator payload and cleanup requirements easier to satisfy
+  completion_signal: operators can prepare fixture inputs with fewer clarification loops, still without committed real data
+- id: platform-220
+  title: keep RC heartbeat and work-queue state synchronized
+  module: platform
+  stage: pending
+  priority: medium
+  depends_on:
+  - platform-219
+  agent_action: update the recurring automation prompt when queue state, blockers, or next safe milestones change materially
+  completion_signal: heartbeat instructions point at `ops/state/work_queue.yml`, autonomy packet, and operator prompt instead of stale free-text status

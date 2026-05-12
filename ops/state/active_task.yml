@@ -1,22 +1,21 @@
-id: cliq-channel-495
-title: record post-crm033 cleanup-template RC evidence
-module: openclaw_cliq_channel
+id: platform-219
+title: normalize RC work queue for autonomous continuation
+module: platform
 stage: completed
 status: completed
 owner: coder
-updated_at: '2026-05-12T22:31:16Z'
+updated_at: '2026-05-12T22:57:49Z'
 execution_mode: turbo_20x
 throughput_policy_ref: ops/state/execution_policy.yml
 success_criteria:
-  - "Record post-crm-033 source-drift evidence showing the native Cliq package source remains unchanged"
-  - "Record post-crm-033 decision-packet evidence showing the RC still awaits an operator publish path with all reports ready"
-  - "Record post-crm-033 autonomy and operator-action-prompt evidence showing the cleanup-plan request points at the new template and remains non-executable for agents"
-  - "Sync Lane 1/2/3 docs and regression tests with the refreshed evidence"
-  - "Do not publish, tag, npm-promote, create GitHub releases, fill expectedIntegrity, call Zoho, or write CRM data"
-next_if_done: Continue to the next safe RC readiness milestone without publishing, tagging, npm promotion, GitHub release creation, expectedIntegrity fill, or live CRM writes.
+  - "Bring `ops/state/work_queue.yml` forward from the old cliq-channel-422 tail to the current platform-214..218, crm-016..033, and cliq-channel-495 RC baseline"
+  - "Split future work into agent-safe local/read-only tasks, blocked operator-input tasks, and operator-only publish/write boundaries"
+  - "Record exact next commands for recurring agents: autonomy packet first, operator-action prompt for human asks, CRM next-command wrapper for CRM fixture work"
+  - "Keep publish, tag, npm promotion, GitHub release creation, expectedIntegrity filling, Zoho calls, and live CRM writes blocked unless the operator explicitly approves the required boundary"
+next_if_done: Use `ops/state/work_queue.yml` plus `ops/scripts/zoho_cli_rc_autonomy_packet.sh` as the next recurring-agent planning entry, then continue with only agent-safe pending tasks or redacted operator asks.
 progress:
-  - "2026-05-12T22:31:16Z source drift run `20260512T223116Z-crm033-postcommit-source` returned `package_source_unchanged`, `headCommit=3584cd40a6a99642fdd3297e36383707b7a01663`, `repoChangedFileCount=40`, and `packageDrift.packageChangedSinceManifest=false`."
-  - "2026-05-12T22:31:16Z decision packet `20260512T223116Z-crm033-postcommit-decision` returned `awaiting_operator_publish_path`, `publish_path_not_selected`, all `reportsReady=true`, and `safety.agentMayExecuteSelectedPath=false`."
-  - "2026-05-12T22:31:16Z autonomy packet `20260512T223116Z-crm033-postcommit-autonomy` and operator prompt `20260512T223116Z-crm033-postcommit-prompt` returned the same three operator request ids; `provide_crm_fixture_cleanup_plan.template=docs/releases/CRM_V0_5_FIXTURE_CLEANUP_PLAN_TEMPLATE.md`; all action requests remain non-executable for agents."
-  - "2026-05-12T22:31:16Z final verification passed: OpenClaw RC checklist, Lane 3 required paths, and markdown update -> 3 passed in 0.01s; `make lint`, Ruff format, YAML parse, and `git diff --check` passed."
-next_step: Commit and push the cliq-channel-495 post-crm033 evidence slice, then continue to the next safe milestone.
+  - "2026-05-12T22:46:16Z started platform-219 by appending a current autonomous RC continuation queue to `ops/state/work_queue.yml`."
+  - "The queue now names completed control-plane milestones platform-214..218, CRM fixture readiness milestones crm-016..033, the current cliq-channel-495 RC evidence baseline, and the next blocked/pending tasks cliq-channel-496..500, crm-034..038, and platform-220."
+  - "2026-05-12T22:46:16Z expanded the CRM fixture history to include crm-017..026, so the current queue has no gap between cleanup quality gating and later agent-command readiness wrappers."
+  - "2026-05-12T22:57:49Z validation passed: YAML parse for work_queue/active_task/module_status/project, custom work-queue contract check, `git diff --check`, `make lint`, `ruff format --check zoho_cli tests`, and focused Lane 3/markdown tests."
+next_step: Commit and push the platform-219 work-queue synchronization slice, then continue with `ops/state/work_queue.yml` plus the autonomy packet as the recurring-agent planning entry.

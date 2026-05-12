@@ -274,11 +274,14 @@ ops/scripts/crm_fixture_payload_preflight.sh
 The preflight is local-only and redacted. For the current `Leads` fixture path it
 requires exactly one JSON record with `Last_Name`, `Company`, and `Email`,
 blocks template emails with `fixture_payload_placeholder_email`, blocks missing
-cleanup plans with `cleanup_plan_missing`, and reports
+cleanup plans with `cleanup_plan_missing`, blocks vague cleanup plans with
+`cleanup_plan_too_short`, `cleanup_plan_action_missing`, or
+`cleanup_plan_target_missing`, and reports
 `status=payload_preflight_ready` with `nextAction=run_crm_fixture_live_smoke_dry_run`
-only when the payload is a dedicated fixture candidate. It does not grant any
-live-write permission; `releasePosture.agentMayRunLiveFixture=false` remains
-true until the operator provides the exact live fixture gates.
+only when the payload is a dedicated fixture candidate and
+`cleanup.qualityReady=true`. It does not grant any live-write permission;
+`releasePosture.agentMayRunLiveFixture=false` remains true until the operator
+provides the exact live fixture gates.
 
 `ops/scripts/crm_fixture_operator_packet.sh` is the agent-friendly wrapper for
 the same gate. It runs the local payload preflight, optionally wraps an existing

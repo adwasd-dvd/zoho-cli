@@ -1,10 +1,16 @@
-last_run_at: "2026-05-12T06:09:19Z"
+last_run_at: "2026-05-12T06:22:45Z"
 last_result: passing
-current_focus: cliq-channel-472-bot-no-response-packet
+current_focus: crm-016-cleanup-plan-quality-gate
 suites:
   unit:
     status: passing
     notes:
+      - "crm-016 cleanup plan quality gate completed at 2026-05-12T06:22:45Z"
+      - "hardened `ops/scripts/crm_fixture_payload_preflight.sh` so vague cleanup plans block locally with `cleanup_plan_too_short`, `cleanup_plan_action_missing`, and `cleanup_plan_target_missing`; output stores only redacted cleanup metadata (`lengthBucket`, `actionPresent`, `targetPresent`, `qualityReady`, `rawCleanupPlanStored=false`)"
+      - "updated `ops/scripts/crm_fixture_operator_packet.sh` so cleanup quality blockers return `nextAction=improve_cleanup_plan` before any Zoho-backed smoke"
+      - "ZOHO_CRM_FIXTURE_PREFLIGHT_RUN_ID=20260512T061842Z-cleanup-vague with a dedicated single-record Leads payload and cleanup plan `later` -> blocked with cleanup quality blockers and `nextAction=improve_cleanup_plan`; no Zoho call or CRM write attempted"
+      - "ZOHO_CRM_FIXTURE_PREFLIGHT_RUN_ID=20260512T061842Z-cleanup-ready with a dedicated single-record Leads payload and a specific delete-by-fixture-email cleanup plan -> `payload_preflight_ready`, `cleanup.qualityReady=true`, and `nextAction=run_crm_fixture_live_smoke_dry_run`; live execution remains blocked"
+      - "bash -n ops/scripts/crm_fixture_payload_preflight.sh ops/scripts/crm_fixture_operator_packet.sh ops/scripts/crm_fixture_operator_readiness_bundle.sh ops/scripts/crm_fixture_live_smoke.sh -> passed; focused cleanup/operator/Lane 3/markdown tests -> 10 passed in 0.77s; ./.venv/bin/ruff format --check tests/test_auto_pilot_scripts.py tests/test_lane3_docs.py -> 2 files already formatted; ./.venv/bin/ruff check tests/test_auto_pilot_scripts.py tests/test_lane3_docs.py -> All checks passed; YAML parse for project/module_status/test_status/active_task -> YAML_PARSE_OK; git diff --check -> passed"
       - "cliq-channel-472 Bot no-response packet completed at 2026-05-12T06:09:19Z"
       - "added `ops/scripts/openclaw_cliq_bot_no_response_packet.sh`; it runs public callback smoke when `ZOHO_CLIQ_PUBLIC_WEBHOOK_URL` is set, runs live ingress diagnostics, emits one redacted `openclaw_cliq_bot_no_response_packet`, and returns nextAction values such as `fix_public_callback`, `fix_zoho_bot_handler_trigger`, `fix_webhook_payload_or_policy`, `check_cliq_reply_delivery`, `fix_openclaw_route_binding`, or `collect_trusted_reply_facts_if_needed`"
       - "updated `ops/scripts/openclaw_cliq_live_ingress_diagnostic.sh` to ignore self-generated `handlerKind=welcome` / `reason=unsupported_handler` public callback smoke audit records; the unit no-recent-webhook fixture now verifies `ignoredDiagnosticSmokeRecords=1`"

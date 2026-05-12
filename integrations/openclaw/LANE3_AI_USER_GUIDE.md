@@ -256,6 +256,10 @@ After sync, ensure the AI user follows:
     `ready_for_operator_live_fixture`, `normalUpsertExecuteBlocked=true`,
     `agentMayExecuteLiveFixture=false`, and
     `payloadTemplatePlaceholders.emailCount=0`
+  - run `ops/scripts/crm_fixture_payload_preflight.sh` before any Zoho-backed
+    smoke; require `cleanup.qualityReady=true`, and treat
+    `cleanup_plan_too_short`, `cleanup_plan_action_missing`, and
+    `cleanup_plan_target_missing` as stop-and-fix blockers
   - treat `summary_file_missing`, `fixture_evidence_not_ready`,
     `payload_placeholder_count_missing`, and
     `fixture_payload_placeholder_email` as stop-and-fix blockers

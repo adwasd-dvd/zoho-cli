@@ -1,20 +1,24 @@
-id: cliq-channel-472
-title: add native Cliq Bot no-response packet
-module: openclaw_cliq_channel
+id: crm-016
+title: harden CRM fixture cleanup plan quality gate
+module: crm
 stage: completed
 status: completed
 owner: coder
-updated_at: '2026-05-12T06:09:19Z'
+updated_at: '2026-05-12T06:22:45Z'
 execution_mode: turbo_20x
 throughput_policy_ref: ops/state/execution_policy.yml
 success_criteria:
-  - add a read-only no-response packet that combines public callback smoke and live ingress diagnostic evidence
-  - ignore self-generated public callback smoke audit records so the packet classifies the latest real Bot message window
-  - return one machine-readable nextAction for public callback, Bot handler trigger, webhook payload/policy, native dispatch, route binding, or reply delivery triage
-  - keep raw webhook payloads, message bodies, reply bodies, callback response bodies, and secrets out of stdout/report JSON
-  - keep publish/tag/release/integrity-fill actions operator-only
-next_if_done: Operator chooses the native Cliq RC artifact path, or fresh Bot no-response reports start with `ops/scripts/openclaw_cliq_bot_no_response_packet.sh`; CRM fixture work resumes with `ops/scripts/crm_fixture_operator_packet.sh` once a dedicated payload and cleanup plan exist.
+  - block vague CRM fixture cleanup plans before any Zoho-backed dry-run smoke
+  - report cleanup quality as redacted metadata only
+  - propagate cleanup quality blockers through the autonomous operator packet
+  - keep normal `zoho crm upsert --execute` and live fixture execution blocked
+next_if_done: Operator provides a dedicated CRM fixture payload and cleanup plan, then agents run `ops/scripts/crm_fixture_operator_packet.sh` and continue only if the packet reports `payload_preflight_ready` or `ready_for_operator_live_fixture`.
 progress:
+  - "2026-05-12T06:22:45Z crm-016 completed: `ops/scripts/crm_fixture_payload_preflight.sh` now blocks vague cleanup plans with `cleanup_plan_too_short`, `cleanup_plan_action_missing`, and `cleanup_plan_target_missing`, while reporting only redacted metadata: `lengthBucket`, `actionPresent`, `targetPresent`, `qualityReady`, and `rawCleanupPlanStored=false`."
+  - "2026-05-12T06:22:45Z `ops/scripts/crm_fixture_operator_packet.sh` now maps cleanup quality blockers to `nextAction=improve_cleanup_plan`, so autonomous runs stop before any Zoho-backed dry-run smoke when the cleanup plan is not specific enough."
+  - "2026-05-12T06:22:31Z local vague cleanup probe with a dedicated single-record Leads payload and cleanup plan `later` blocked with `cleanup_plan_too_short`, `cleanup_plan_action_missing`, `cleanup_plan_target_missing`, `cleanup.qualityReady=false`, and `nextAction=improve_cleanup_plan`; no Zoho call or CRM write was attempted."
+  - "2026-05-12T06:22:45Z local quality cleanup probe with the same dedicated single-record Leads payload and a specific delete-by-fixture-email cleanup plan returned `payload_preflight_ready`, `cleanup.qualityReady=true`, and `nextAction=run_crm_fixture_live_smoke_dry_run`; live execution remains blocked."
+  - "2026-05-12T06:22:45Z focused cleanup gate tests passed: shell syntax plus `test_crm_fixture_payload_preflight_blocks_template_payload`, `test_crm_fixture_payload_preflight_accepts_dedicated_payload`, `test_crm_fixture_payload_preflight_requires_cleanup_plan`, `test_crm_fixture_payload_preflight_blocks_vague_cleanup_plan`, `test_crm_fixture_operator_packet_accepts_payload_preflight`, and `test_crm_fixture_operator_packet_blocks_vague_cleanup_plan` -> 6 passed in 0.42s."
   - "2026-05-12T06:09:19Z cliq-channel-472 completed: added `ops/scripts/openclaw_cliq_bot_no_response_packet.sh`, a read-only wrapper that runs public callback smoke when `ZOHO_CLIQ_PUBLIC_WEBHOOK_URL` is set, runs live ingress diagnostics, and emits one `openclaw_cliq_bot_no_response_packet` with `nextAction` for public callback, Bot handler trigger, payload/policy, dispatch, route binding, or reply delivery triage."
   - "2026-05-12T06:09:19Z diagnostic smoke filtering: `ops/scripts/openclaw_cliq_live_ingress_diagnostic.sh` now ignores self-generated `handlerKind=welcome` / `reason=unsupported_handler` public callback smoke audit records so no-response packet runs do not classify their own callback smoke as a user Bot message."
   - "2026-05-12T06:09:19Z real packet run: `ZOHO_CLIQ_BOT_PACKET_RUN_ID=20260512T060342Z-no-response-packet-v2 ZOHO_CLIQ_PUBLIC_WEBHOOK_URL=https://cliq.hpyio.com/webhooks/cliq ZOHO_CLIQ_INGRESS_LOOKBACK_SECONDS=1800 ZOHO_CLIQ_EXPECTED_AGENT_ID=zoho-employee-test ZOHO_CLIQ_EXPECTED_AGENT_MODEL=openai-codex/gpt-5.3-codex ops/scripts/openclaw_cliq_bot_no_response_packet.sh` verified public callback auth/reachability, ignored two diagnostic smoke records, reported `no_recent_webhook_ingress`, and returned `nextAction=fix_zoho_bot_handler_trigger`."
@@ -45,4 +49,4 @@ progress:
   - "2026-05-05T10:52:22Z crm-008 completed: added `zoho crm upsert` as dry-run-only; accepted `--data-json` or `--data-file`, duplicate-check fields, and idempotency key; normalized single records and full request bodies; returned JSON-safe audit output with `fieldNames`, `recordCount`, `payloadDigest`, `recordDigests`, `requiredConfirmation`, endpoint metadata, and no raw field values; kept `--execute` blocked with `confirm_required` or `live_write_not_enabled`; refreshed Lane 2/3 docs and help snapshot; focused CRM/Lane 3 tests and manual CLI probes passed."
   - "2026-05-05T10:42:55Z crm-007 completed: added `crm_write_surface_policy()` plus `zoho crm write-plan`; exposed `writeSurfacePolicy` through `zoho crm status`, `zoho crm sdk-status`, and `zoho crm write-plan`; locked `writesEnabled=false`, dry-run default, exact confirmation, idempotency-key, JSON-payload, and audit-envelope requirements; chose `upsert` as the first implementation candidate and kept `delete` blocked; added `docs/architecture/CRM_WRITE_SURFACE_CONTRACT.md`; refreshed Lane 2/3 docs and help snapshot; focused CRM/Lane 3 tests plus CLI diagnostic probes passed."
   - "2026-05-05T10:33:29Z crm-006 completed: locked `crm_api_version_policy()` in code and diagnostics; HTTP v2 remains the default CRM adapter/version to preserve current output shapes, SDK/API v8 remains explicit-only through `--adapter sdk-v8`, HTTP v8 base inference is available only for compatibility work, and `zoho crm status` plus `zoho crm sdk-status` expose `apiVersionPolicy`. Focused lint, format, CRM tests, Lane 3 docs tests, markdown update tests, and CLI diagnostic probes passed."
-next_step: Use `ops/scripts/openclaw_cliq_bot_no_response_packet.sh` first for any fresh Bot no-response report. Use `ops/scripts/openclaw_cliq_rc_operator_decision_packet.sh` for recurring native Cliq RC publish handoff checks against the refreshed ingress-diagnostic-rc-restore artifact. Operator chooses `local_operator_rc`, `npm_rc_publish`, or `github_release_artifact`; then rerun with `OPENCLAW_CLIQ_OPERATOR_PUBLISH_PATH` set and require `operator_publish_selection_ready`. Resume CRM fixture work with `ops/scripts/crm_fixture_operator_packet.sh` once the operator provides a copied dedicated payload and cleanup plan; live mode still requires exact approval and live fixture gates.
+next_step: Use `ops/scripts/crm_fixture_operator_packet.sh` once the operator provides a copied dedicated CRM fixture payload and a specific cleanup plan; live mode still requires exact approval and live fixture gates. For Cliq, use `ops/scripts/openclaw_cliq_bot_no_response_packet.sh` first for fresh Bot no-response reports and `ops/scripts/openclaw_cliq_rc_operator_decision_packet.sh` for recurring native Cliq RC publish handoff checks.

@@ -20,6 +20,7 @@
 - Added the `crm-015` operator fixture readiness bundle: `ops/scripts/crm_fixture_operator_readiness_bundle.sh` wraps an existing dry-run smoke summary plus `zoho crm fixture-evidence`, requires placeholder email count zero, keeps normal `zoho crm upsert --execute` blocked, and reports `ready_for_operator_live_fixture` only for operator-reviewed live fixture handoff.
 - Added the `crm-015` fixture payload preflight: `ops/scripts/crm_fixture_payload_preflight.sh` validates a copied one-record `Leads` payload and cleanup plan locally before any Zoho-backed smoke, blocks template emails, missing required fields, and missing cleanup plans, emits redacted `payload_preflight_ready` evidence, and keeps live fixture execution operator-gated.
 - Added the `crm-015` operator packet wrapper: `ops/scripts/crm_fixture_operator_packet.sh` combines local payload preflight with optional dry-run readiness evidence into one redacted status packet and reports `blocked`, `payload_preflight_ready`, `ready_for_operator_live_fixture`, or `live_fixture_recorded` without granting live CRM write permission.
+- Hardened `crm-015` cleanup plan preflight: vague cleanup plans now block locally with `cleanup_plan_too_short`, `cleanup_plan_action_missing`, or `cleanup_plan_target_missing`, while reports expose only redacted quality booleans and keep live fixture execution operator-gated.
 
 ### Final release (2026-05-04T21:15:20Z)
 - Promoted `0.2.1rc1` to final `0.2.1` after the RC gate stayed green; no additional CLI behavior change was introduced for the final promotion.

@@ -219,9 +219,12 @@ Use this skill as the default operating contract for an OpenClaw agent acting li
   operator-owned test email plus cleanup plan before any live fixture gates are
   considered. Run `ops/scripts/crm_fixture_payload_preflight.sh` first; require
   `status=payload_preflight_ready`, `payload.placeholderEmailCount=0`,
-  `cleanup.present=true`, and `nextAction=run_crm_fixture_live_smoke_dry_run`.
+  `cleanup.present=true`, `cleanup.qualityReady=true`, and
+  `nextAction=run_crm_fixture_live_smoke_dry_run`.
   The preflight is local-only, stores no raw email or cleanup plan, and keeps
-  `agentMayRunLiveFixture=false`. Then run
+  `agentMayRunLiveFixture=false`; treat `cleanup_plan_too_short`,
+  `cleanup_plan_action_missing`, and `cleanup_plan_target_missing` as blockers
+  that require a more specific cleanup plan before any Zoho-backed smoke. Then run
   `ops/scripts/crm_fixture_operator_readiness_bundle.sh` against the dry-run
   smoke summary and require `ready_for_operator_live_fixture`; it keeps normal
   `zoho crm upsert --execute` blocked and reports

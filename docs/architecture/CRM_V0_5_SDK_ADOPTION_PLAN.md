@@ -269,6 +269,9 @@ adapter proves parity on the read-only surface. The CLI contract remains:
      smoke summary and agents keep `agentMayExecute=false`;
    - use `operatorReview.liveApproval.readyFacts` / `missingFacts` to explain
      remaining approval blockers without leaking raw payload or approval values;
+   - use `operatorReview.actionBoundary.agentExecutableCommandIds` as the only
+     automation command bucket, and stop on operator-only, Zoho-writing, or
+     explicit-approval command id buckets;
    - archive redacted reports and decide whether v0.5 should broaden guarded
      upsert support or stop at fixture evidence.
 

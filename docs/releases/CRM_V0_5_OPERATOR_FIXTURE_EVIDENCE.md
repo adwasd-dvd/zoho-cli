@@ -100,6 +100,13 @@ Every command uses placeholders such as `<copied-fixture-payload.json>` and
 `agentMayExecute=false`, `writesZohoData=true`, and
 `requiresExplicitOperatorApproval=true`.
 
+`operatorReview.actionBoundary` summarizes those command previews by id. Use
+`agentExecutableCommandIds` as the only runnable automation bucket, and stop
+before any id listed under `operatorOnlyCommandIds`, `zohoWriteCommandIds`, or
+`requiresExplicitOperatorApprovalCommandIds`. If
+`liveFixtureExecutionBoundary=operator_only`, the next Zoho-writing command is
+for a human operator only.
+
 `operatorReview.liveApproval` is the compact approval checklist for AI agents.
 It reports booleans such as `summaryFileReady`, `dryRunReadinessReady`,
 `fixtureEvidenceReady`, `payloadDigestPresent`, `idempotencyKeyPresent`,

@@ -2840,6 +2840,20 @@ def test_crm_fixture_operator_packet_reports_missing_payload(
     assert next_commands[0]["requiresExplicitOperatorApproval"] is False
     assert "ops/scripts/crm_fixture_operator_packet.sh" in next_commands[0]["command"]
     assert "<copied-fixture-payload.json>" in next_commands[0]["command"]
+    assert payload["operatorReview"]["actionBoundary"] == {
+        "nextCommandCount": 1,
+        "agentExecutableCommandIds": ["provide_fixture_payload_file"],
+        "operatorOnlyCommandIds": [],
+        "zohoWriteCommandIds": [],
+        "dryRunOnlyCommandIds": ["provide_fixture_payload_file"],
+        "requiresExplicitOperatorApprovalCommandIds": [],
+        "agentMayExecuteAny": True,
+        "operatorOnlyAny": False,
+        "writesZohoDataAny": False,
+        "requiresExplicitOperatorApprovalAny": False,
+        "normalUpsertExecuteBlocked": True,
+        "liveFixtureExecutionBoundary": "not_ready_or_dry_run_only",
+    }
     assert payload["operatorReview"]["cleanupSelectorTypes"] == []
     assert payload["operatorReview"]["liveApproval"] == {
         "readyFacts": [
@@ -2954,6 +2968,20 @@ def test_crm_fixture_operator_packet_accepts_payload_preflight(
     assert raw_email not in next_commands[0]["command"]
     assert raw_cleanup not in next_commands[0]["command"]
     assert str(tmp_path) not in next_commands[0]["command"]
+    assert payload["operatorReview"]["actionBoundary"] == {
+        "nextCommandCount": 1,
+        "agentExecutableCommandIds": ["run_crm_fixture_live_smoke_dry_run"],
+        "operatorOnlyCommandIds": [],
+        "zohoWriteCommandIds": [],
+        "dryRunOnlyCommandIds": ["run_crm_fixture_live_smoke_dry_run"],
+        "requiresExplicitOperatorApprovalCommandIds": [],
+        "agentMayExecuteAny": True,
+        "operatorOnlyAny": False,
+        "writesZohoDataAny": False,
+        "requiresExplicitOperatorApprovalAny": False,
+        "normalUpsertExecuteBlocked": True,
+        "liveFixtureExecutionBoundary": "not_ready_or_dry_run_only",
+    }
     assert payload["operatorReview"]["cleanupSelectorTypes"] == ["email_keyword"]
     assert payload["operatorReview"]["cleanupSelectorTypeCount"] == 1
     assert payload["operatorReview"]["liveApproval"]["summaryFileReady"] is False
@@ -3031,6 +3059,20 @@ def test_crm_fixture_operator_packet_blocks_vague_cleanup_plan(
     assert next_commands[0]["writesZohoData"] is False
     assert next_commands[0]["agentMayExecute"] is True
     assert "<cleanup-plan-with-fixture-selector>" in next_commands[0]["command"]
+    assert payload["operatorReview"]["actionBoundary"] == {
+        "nextCommandCount": 1,
+        "agentExecutableCommandIds": ["improve_cleanup_plan"],
+        "operatorOnlyCommandIds": [],
+        "zohoWriteCommandIds": [],
+        "dryRunOnlyCommandIds": ["improve_cleanup_plan"],
+        "requiresExplicitOperatorApprovalCommandIds": [],
+        "agentMayExecuteAny": True,
+        "operatorOnlyAny": False,
+        "writesZohoDataAny": False,
+        "requiresExplicitOperatorApprovalAny": False,
+        "normalUpsertExecuteBlocked": True,
+        "liveFixtureExecutionBoundary": "not_ready_or_dry_run_only",
+    }
     assert payload["nextAction"] == "improve_cleanup_plan"
 
 
@@ -3171,6 +3213,22 @@ def test_crm_fixture_operator_packet_wraps_dry_run_readiness(
     assert "ZOHO_CRM_ALLOW_LIVE_FIXTURE=1" in next_commands[0]["command"]
     assert "fixture-ready@operator.test" not in next_commands[0]["command"]
     assert str(tmp_path) not in next_commands[0]["command"]
+    assert payload["operatorReview"]["actionBoundary"] == {
+        "nextCommandCount": 1,
+        "agentExecutableCommandIds": [],
+        "operatorOnlyCommandIds": ["operator_review_live_fixture_approval"],
+        "zohoWriteCommandIds": ["operator_review_live_fixture_approval"],
+        "dryRunOnlyCommandIds": [],
+        "requiresExplicitOperatorApprovalCommandIds": [
+            "operator_review_live_fixture_approval"
+        ],
+        "agentMayExecuteAny": False,
+        "operatorOnlyAny": True,
+        "writesZohoDataAny": True,
+        "requiresExplicitOperatorApprovalAny": True,
+        "normalUpsertExecuteBlocked": True,
+        "liveFixtureExecutionBoundary": "operator_only",
+    }
     assert payload["nextAction"] == "operator_review_payload_cleanup_and_approval"
     calls = [json.loads(line) for line in calls_path.read_text().splitlines()]
     assert calls == [["crm", "fixture-evidence", "--summary-file", str(summary_path)]]

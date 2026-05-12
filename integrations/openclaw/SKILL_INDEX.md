@@ -115,7 +115,9 @@ CRM SDK planning:
   metadata for packet/preflight/readiness/smoke-summary handoff; `crm-023` adds
   redacted `operatorReview.liveApproval` booleans for approval readiness while
   keeping `agentMayExecute=false`; `crm-024` adds live-approval `readyFacts` and
-  `missingFacts` categories for AI handoff decisions)
+  `missingFacts` categories for AI handoff decisions; `crm-025` adds
+  `operatorReview.actionBoundary` command id buckets for agent-executable vs
+  operator-only/Zoho-writing steps)
 - `docs/releases/CRM_V0_5_FIXTURE_PAYLOAD_TEMPLATE.json` (`crm-015`: safe
   one-record `Leads` template with `.example.invalid` placeholder data; copy and
   edit outside the repo before live fixture mode; smoke reports

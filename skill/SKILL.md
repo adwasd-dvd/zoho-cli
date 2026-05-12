@@ -264,7 +264,10 @@ Use this skill as the default operating contract for an OpenClaw agent acting li
   text, or selector values. For command handoff, inspect
   `operatorReview.nextCommands`: run only entries with `agentMayExecute=true`,
   treat `writesZohoData=true` or `requiresExplicitOperatorApproval=true` as an
-  operator-only boundary, and never substitute raw values into logs. Inspect
+  operator-only boundary, and never substitute raw values into logs. Prefer
+  `operatorReview.actionBoundary.agentExecutableCommandIds` for automation;
+  stop on `operatorOnlyCommandIds`, `zohoWriteCommandIds`, or
+  `requiresExplicitOperatorApprovalCommandIds`. Inspect
   `operatorReview.liveApproval` before asking for live approval; require the
   summary/evidence, payload digest, idempotency key, required approval, and
   placeholder checks to be true while `agentMayExecute=false`. Prefer

@@ -210,6 +210,11 @@ PAYLOAD="$("$JQ_BIN" -n \
       ]
       end
     ) as $nextCommands
+  | ($nextCommands | map(select(.agentMayExecute == true) | .id)) as $agentExecutableCommandIds
+  | ($nextCommands | map(select(.operatorOnly == true) | .id)) as $operatorOnlyCommandIds
+  | ($nextCommands | map(select(.writesZohoData == true) | .id)) as $zohoWriteCommandIds
+  | ($nextCommands | map(select(.dryRunOnly == true) | .id)) as $dryRunOnlyCommandIds
+  | ($nextCommands | map(select(.requiresExplicitOperatorApproval == true) | .id)) as $approvalCommandIds
   | (
       [
         (if (($summaryFile != null) and ($readinessSkipped | not)) then "summary_file_ready" else empty end),
@@ -286,6 +291,20 @@ PAYLOAD="$("$JQ_BIN" -n \
         readyFacts: $readyFacts,
         missingFacts: $missingFacts,
         nextCommands: $nextCommands,
+        actionBoundary: {
+          nextCommandCount: ($nextCommands | length),
+          agentExecutableCommandIds: $agentExecutableCommandIds,
+          operatorOnlyCommandIds: $operatorOnlyCommandIds,
+          zohoWriteCommandIds: $zohoWriteCommandIds,
+          dryRunOnlyCommandIds: $dryRunOnlyCommandIds,
+          requiresExplicitOperatorApprovalCommandIds: $approvalCommandIds,
+          agentMayExecuteAny: (($agentExecutableCommandIds | length) > 0),
+          operatorOnlyAny: (($operatorOnlyCommandIds | length) > 0),
+          writesZohoDataAny: (($zohoWriteCommandIds | length) > 0),
+          requiresExplicitOperatorApprovalAny: (($approvalCommandIds | length) > 0),
+          normalUpsertExecuteBlocked: true,
+          liveFixtureExecutionBoundary: (if (($zohoWriteCommandIds | length) > 0) then "operator_only" else "not_ready_or_dry_run_only" end)
+        },
         cleanupSelectorTypes: ($preflightReport.cleanup.selectorTypes // []),
         cleanupSelectorTypeCount: (($preflightReport.cleanup.selectorTypes // []) | length),
         liveApproval: {

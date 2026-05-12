@@ -1,10 +1,15 @@
-last_run_at: "2026-05-12T12:27:40Z"
+last_run_at: "2026-05-12T12:42:49Z"
 last_result: passing
-current_focus: cliq-channel-485-post-crm-approval-facts-decision-ready
+current_focus: crm-025-operator-action-boundary
 suites:
   unit:
     status: passing
     notes:
+      - "crm-025 operator action boundary started at 2026-05-12T12:34:30Z: CRM fixture operator packets now expose `operatorReview.actionBoundary` derived from redacted `operatorReview.nextCommands`."
+      - "crm-025 action boundary buckets include `agentExecutableCommandIds`, `operatorOnlyCommandIds`, `zohoWriteCommandIds`, `dryRunOnlyCommandIds`, and `requiresExplicitOperatorApprovalCommandIds`; agents may automate only the agent-executable bucket."
+      - "crm-025 focused verification passed at 2026-05-12T12:36:00Z: shell syntax for CRM fixture scripts; CRM fixture operator packet/readiness bundle tests plus Lane 3 CRM contract and markdown update -> 6 passed, 78 deselected in 1.34s; ruff format/check passed."
+      - "crm-025 local no-write packet run `20260512T123344Z-action-boundary` returned `payload_preflight_ready`, `agentExecutableCommandIds=[run_crm_fixture_live_smoke_dry_run]`, empty operator-only/Zoho-write/approval command id buckets, `writesZohoDataAny=false`, and `liveFixtureExecutionBoundary=not_ready_or_dry_run_only` without any Zoho call or CRM write."
+      - "crm-025 broader verification passed at 2026-05-12T12:42:49Z: CRM fixture tests plus Lane 3 CRM contract and markdown update -> 15 passed, 70 deselected in 2.32s; ruff format/check, YAML parse, and `git diff --check` passed."
       - "cliq-channel-485 post-CRM live approval fact categories source drift started at 2026-05-12T12:18:44Z: run `20260512T121844Z-crm-live-approval-categories-postcommit-source` returned `package_source_unchanged`, no blockers, `headCommit=39642ae7e34286a37d34bdff8413dd47f3a3f1ba`, `repoChangedFileCount=28`, `packageDrift.packageChangedSinceManifest=false`, and `dirtyFileCount=0`."
       - "cliq-channel-485 decision packet started at 2026-05-12T12:18:44Z: run `20260512T121844Z-crm-live-approval-categories-postcommit-decision` returned `awaiting_operator_publish_path`, `publish_path_not_selected`, all `reportsReady=true`, `operator_publish_plan_ready`, `artifact_verified`, `install_smoke_passed`, `trusted_reply_recorded`, and `agentMayExecuteSelectedPath=false`."
       - "cliq-channel-485 performed no publish, tag, npm promotion, GitHub release, version bump, expectedIntegrity fill, Zoho call, or CRM write."

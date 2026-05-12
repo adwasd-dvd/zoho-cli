@@ -317,6 +317,12 @@ values.
 names such as `summary_file`, `dry_run_readiness`, `fixture_evidence`,
 `payload_digest`, `idempotency_key`, and `required_approval` without inferring
 from individual booleans or exposing raw values.
+`crm-025` adds `operatorReview.actionBoundary`, a command-id summary derived
+from `operatorReview.nextCommands`. Agents should treat
+`agentExecutableCommandIds` as the only runnable automation bucket, and must
+stop on `operatorOnlyCommandIds`, `zohoWriteCommandIds`, or
+`requiresExplicitOperatorApprovalCommandIds`; the live fixture boundary remains
+`operator_only` whenever a next command would write Zoho data.
 `reportFiles` and `reportsReady` expose only artifact basenames for the packet,
 payload preflight, optional dry-run readiness bundle, and optional smoke summary
 so agents can archive or pass evidence without logging local paths.

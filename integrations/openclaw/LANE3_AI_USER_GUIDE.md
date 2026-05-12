@@ -76,6 +76,7 @@ Current implementation-only delta:
 - `crm-022` adds the same basename-only `reportFiles` and `reportsReady` handoff metadata to `ops/scripts/crm_fixture_operator_readiness_bundle.sh` for `readinessBundle`, `smokeSummary`, and `fixtureEvidence`.
 - `crm-023` adds redacted `operatorReview.liveApproval` to CRM fixture operator packets and readiness bundles; inspect these booleans for summary/evidence readiness, payload digest, idempotency key, required approval presence, placeholder status, and `agentMayExecute=false` before asking the operator for a live fixture approval.
 - `crm-024` adds `operatorReview.liveApproval.readyFacts` and `operatorReview.liveApproval.missingFacts`; prefer those category lists when explaining what approval facts remain missing.
+- `crm-025` adds `operatorReview.actionBoundary`; run only ids in `agentExecutableCommandIds` and stop on `operatorOnlyCommandIds`, `zohoWriteCommandIds`, or `requiresExplicitOperatorApprovalCommandIds`.
 
 ## Required behavior support after lane3 sync
 
@@ -310,6 +311,10 @@ After sync, ensure the AI user follows:
     facts are `summary_file`, `dry_run_readiness`, `fixture_evidence`,
     `payload_digest`, `idempotency_key`, `required_approval`, or
     `placeholder_email_count_zero`
+  - inspect `operatorReview.actionBoundary`; only ids in
+    `agentExecutableCommandIds` may be automated, and any id in
+    `operatorOnlyCommandIds`, `zohoWriteCommandIds`, or
+    `requiresExplicitOperatorApprovalCommandIds` requires a human operator
   - treat `summary_file_missing`, `fixture_evidence_not_ready`,
     `payload_placeholder_count_missing`, and
     `fixture_payload_placeholder_email` as stop-and-fix blockers

@@ -235,6 +235,9 @@ Use `operatorReview.nextCommands` when an automation needs a command preview:
 commands are placeholder-only and include `agentMayExecute`, `dryRunOnly`,
 `writesZohoData`, and `requiresExplicitOperatorApproval` gates. Do not run
 entries marked `agentMayExecute=false`.
+Prefer `operatorReview.actionBoundary.agentExecutableCommandIds` as the
+runnable command bucket. Treat `operatorOnlyCommandIds`, `zohoWriteCommandIds`,
+and `requiresExplicitOperatorApprovalCommandIds` as stop-and-handoff lists.
 Use `operatorReview.liveApproval` before asking for live approval: it reports
 only booleans for summary/evidence readiness, payload digest, idempotency key,
 required approval presence, placeholder state, and the operator-only execution

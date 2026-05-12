@@ -1,10 +1,15 @@
-last_run_at: "2026-05-12T02:10:41Z"
+last_run_at: "2026-05-12T02:29:32Z"
 last_result: passing
-current_focus: cliq-channel-462-message-handler-deluge-hardening
+current_focus: cliq-channel-463-message-handler-rc-evidence-refresh
 suites:
   unit:
     status: passing
     notes:
+      - "cliq-channel-463 post-hardening RC evidence refresh completed at 2026-05-12T02:29:32Z"
+      - "reran the safe no-publish chain after the direct Message Handler parser/template fix: RC pack, artifact check, Temp-HOME install smoke, promotion preflight, operator bundle, release-notes draft, publish plan, and handoff manifest all passed"
+      - "OPENCLAW_CLIQ_PACK_RUN_ID=20260512T022801Z-message-handler-rc ops/scripts/openclaw_cliq_rc_pack.sh -> passed; tarball `adwasd-openclaw-zoho-cliq-0.4.0-rc.1.tgz`, shasum `72e5628acf639d48d7e2e3cfbf4a15e7deed0b48`, integrity `sha512-SzZtBYwud4xa+bEiZyjB/UbiiQc9xJDWx0oalmdXPw5s9aeKsR9Hg8VKK5V4lbWM6dGMN2Ig39LC13UH3Kw52w==`"
+      - "OPENCLAW_CLIQ_ARTIFACT_RUN_ID=20260512T022801Z-message-handler-artifact ops/scripts/openclaw_cliq_rc_artifact_check.sh -> `artifact_verified`; OPENCLAW_CLIQ_INSTALL_RUN_ID=20260512T022801Z-message-handler-install ops/scripts/openclaw_cliq_rc_install_smoke.sh -> `install_smoke_passed`"
+      - "OPENCLAW_CLIQ_PROMOTION_RUN_ID=20260512T022801Z-message-handler-promotion ops/scripts/openclaw_cliq_rc_promotion_check.sh -> `ready_for_operator_publish`; operator bundle, release notes draft, publish plan, and handoff manifest all refreshed to source commit `6748f4eb5de8a42a86dd829c93d3966d9f32deb2` with agent publish/tag/release/integrity-fill still false"
       - "cliq-channel-462 direct Bot Message Handler hardening completed at 2026-05-12T02:10:41Z"
       - "added Deluge Map-string webhook parsing for `{handler=message, message=..., user={...}}` bodies before form fallback, preserving strict JSON behavior while accepting Zoho `payload.toString()` shapes that are not strict JSON"
       - "updated real Bot Message Handler templates and setup/skill docs so direct Bot DMs wrap Zoho's text-like `message` value into an explicit `msg` map with `text`, `messageId`, `senderId`, `chatId`, and `chatType`; documented `handlerKind:\"message\"` + `reason:\"invalid_payload\"` as payload-shape repair rather than route/secret failure"

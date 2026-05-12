@@ -20,9 +20,9 @@ cliq:
 openclaw_cliq_channel:
   priority: 3
   status: completed_for_rc
-  phase: message_handler_deluge_hardened
+  phase: post_hardening_handoff_manifest_ready
   target_release: v0.4.0
-  current_milestone: cliq-channel-462-message-handler-deluge-hardening
+  current_milestone: cliq-channel-463-message-handler-rc-evidence-refresh
   blockers: []
 
 crm:

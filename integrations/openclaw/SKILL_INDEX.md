@@ -22,6 +22,9 @@ Native channel planning:
 - `ops/scripts/openclaw_cliq_trusted_reply_facts_prepare.sh`
 - `ops/scripts/openclaw_cliq_trusted_reply_evidence_prepare.sh`
 - `ops/scripts/openclaw_cliq_trusted_reply_evidence.sh`
+- `ops/scripts/openclaw_cliq_live_ingress_diagnostic.sh`
+- `ops/scripts/openclaw_cliq_bot_no_response_packet.sh`
+- `ops/scripts/openclaw_cliq_handler_trigger_packet.sh`
 - `skill/references/openclaw-cliq-channel.md`
 
 CRM SDK planning:
@@ -49,6 +52,14 @@ CRM SDK planning:
   returns `awaiting_operator_publish_path` until the operator selects
   `local_operator_rc`, `npm_rc_publish`, or `github_release_artifact`; keeps
   `agentMayExecuteSelectedPath=false`)
+- `ops/scripts/openclaw_cliq_bot_no_response_packet.sh`
+  (`cliq-channel-472/474`: first responder for Bot no-response reports; runs
+  public callback smoke plus live ingress diagnostics, then embeds
+  `handlerTrigger` when `no_recent_webhook_ingress` points to a Zoho handler
+  trigger/save issue)
+- `ops/scripts/openclaw_cliq_handler_trigger_packet.sh`
+  (`cliq-channel-473`: redacted handler paste/check packet for Message/Mention/
+  Participation/Context handler targets and Deluge `invokeurl` shape)
 - `zoho crm write-audit` (`crm-010`: redacted JSONL audit inspection for
   `crm.write.plan` and `crm.write.gate`; use `--audit-file` or
   `ZOHO_CRM_WRITE_AUDIT`; events must report `rawFieldValuesStored=false`)

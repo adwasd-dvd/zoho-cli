@@ -20,9 +20,9 @@ cliq:
 openclaw_cliq_channel:
   priority: 3
   status: completed_for_rc
-  phase: bot_no_response_handler_trigger_embedded
+  phase: rc_docs_hygiene_synced
   target_release: v0.4.0
-  current_milestone: cliq-channel-474-bot-no-response-handler-trigger-embedded
+  current_milestone: cliq-channel-475-rc-docs-hygiene-sync
   blockers: []
 
 crm:

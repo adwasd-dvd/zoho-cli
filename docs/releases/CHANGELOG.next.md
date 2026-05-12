@@ -38,6 +38,7 @@
 - Added `crm-029` agent next-command previews: `operatorReview.agentAutomation.nextAgentCommand` now embeds the redacted placeholder-only command preview for the next agent-executable dry-run/local step and stays `null` at operator-only, Zoho-writing, or approval-gated boundaries.
 - Added `crm-030` agent next-command wrapper: `ops/scripts/crm_fixture_agent_next_command.sh` runs or reads the no-write CRM fixture operator packet and emits a compact `crm_fixture_agent_next_command` summary with `operator_input_required`, `agent_next_command_ready`, or `stop_before_operator_live_fixture` states.
 - Hardened `crm-031` agent-ready wrapper coverage: `crm_fixture_agent_next_command` now has explicit regression coverage for the `agent_next_command_ready` branch, including basename-only report files, no normal upsert execution, and no live fixture execution for agents.
+- Added `crm-032` agent command allowlist enforcement: `crm_fixture_agent_next_command` now reports `agent_command_not_allowlisted` unless the next agent command id and script path match the built-in local/dry-run allowlist, and exposes `agentExecutableCommandAllowlist`, `agentExecutableCommandAllowed`, and `safety.nextCommandAllowedForAgent`.
 
 ### Final release (2026-05-04T21:15:20Z)
 - Promoted `0.2.1rc1` to final `0.2.1` after the RC gate stayed green; no additional CLI behavior change was introduced for the final promotion.

@@ -195,10 +195,13 @@ data and requires an operator.
 
 `ops/scripts/crm_fixture_agent_next_command.sh` is the compact AI wrapper for
 that stop/go contract. It emits `crm_fixture_agent_next_command` with
-`status=operator_input_required`, `agent_next_command_ready`, or
-`stop_before_operator_live_fixture`, plus the packet basename and safety flags.
-Agents should execute only the `agent_next_command_ready` state; the other
-states are handoff boundaries.
+`status=operator_input_required`, `agent_next_command_ready`,
+`agent_command_not_allowlisted`, or `stop_before_operator_live_fixture`, plus
+the packet basename and safety flags. Agents should execute only the
+`agent_next_command_ready` state; it is emitted only when the command id and
+script path match the wrapper's built-in `agentExecutableCommandAllowlist` and
+`safety.nextCommandAllowedForAgent=true`. The other states are handoff
+boundaries.
 
 ## Live fixture evidence
 

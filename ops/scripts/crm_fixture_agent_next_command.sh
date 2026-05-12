@@ -67,10 +67,62 @@ PAYLOAD="$("$JQ_BIN" -n \
   | ($packet.operatorReview.agentAutomation // {}) as $automation
   | ($packet.operatorReview.actionBoundary // {}) as $boundary
   | ($automation.nextAgentCommand // null) as $nextAgentCommand
+  | [
+      {
+        id: "provide_fixture_payload_file",
+        commandContains: "ops/scripts/crm_fixture_operator_packet.sh"
+      },
+      {
+        id: "provide_cleanup_plan",
+        commandContains: "ops/scripts/crm_fixture_operator_packet.sh"
+      },
+      {
+        id: "improve_cleanup_plan",
+        commandContains: "ops/scripts/crm_fixture_operator_packet.sh"
+      },
+      {
+        id: "fix_blockers",
+        commandContains: "ops/scripts/crm_fixture_operator_packet.sh"
+      },
+      {
+        id: "run_crm_fixture_live_smoke_dry_run",
+        commandContains: "ops/scripts/crm_fixture_live_smoke.sh"
+      },
+      {
+        id: "fix_readiness_blockers",
+        commandContains: "ops/scripts/crm_fixture_operator_readiness_bundle.sh"
+      },
+      {
+        id: "review_live_fixture_evidence",
+        commandContains: "ops/scripts/crm_fixture_operator_readiness_bundle.sh"
+      }
+    ] as $agentCommandAllowlist
   | (($automation.agentMayExecuteNextCommand // false) == true) as $agentMayExecuteNextCommand
   | (($nextAgentCommand != null) and (($nextAgentCommand.requiresOperatorInput // false) == true)) as $operatorInputRequired
   | (($nextAgentCommand != null) and (($nextAgentCommand.writesZohoData // false) == true)) as $nextCommandWritesZoho
+  | (($nextAgentCommand != null) and (($nextAgentCommand.dryRunOnly // false) == true)) as $nextCommandDryRunOnly
+  | (($nextAgentCommand != null) and (($nextAgentCommand.agentMayExecute // false) == true)) as $nextCommandAgentMayExecute
+  | (($nextAgentCommand != null) and (($nextAgentCommand.operatorOnly // false) == true)) as $nextCommandOperatorOnly
   | (($nextAgentCommand != null) and (($nextAgentCommand.requiresExplicitOperatorApproval // false) == true)) as $nextCommandRequiresApproval
+  | (
+      $nextAgentCommand != null
+      and (
+        $agentCommandAllowlist
+        | map(. as $allowed | select(
+            $allowed.id == ($nextAgentCommand.id // "")
+            and (($nextAgentCommand.command // "") | contains($allowed.commandContains))
+          ))
+        | length
+      ) > 0
+    ) as $nextCommandAllowlisted
+  | (
+      $nextCommandAllowlisted
+      and $nextCommandDryRunOnly
+      and $nextCommandAgentMayExecute
+      and ($nextCommandOperatorOnly | not)
+      and ($nextCommandWritesZoho | not)
+      and ($nextCommandRequiresApproval | not)
+    ) as $nextCommandAllowedForAgent
   | (($boundary.writesZohoDataAny // false) == true) as $writesZohoDataAny
   | (($boundary.requiresExplicitOperatorApprovalAny // false) == true) as $requiresExplicitOperatorApprovalAny
   | (($boundary.operatorOnlyAny // false) == true) as $operatorOnlyAny
@@ -85,6 +137,7 @@ PAYLOAD="$("$JQ_BIN" -n \
         or $nextCommandWritesZoho
         or $nextCommandRequiresApproval
       then "stop_before_operator_live_fixture"
+      elif $agentMayExecuteNextCommand and ($nextAgentCommand != null) and ($nextCommandAllowedForAgent | not) then "agent_command_not_allowlisted"
       elif $agentMayExecuteNextCommand and ($nextAgentCommand != null) and $operatorInputRequired then "operator_input_required"
       elif $agentMayExecuteNextCommand and ($nextAgentCommand != null) then "agent_next_command_ready"
       elif $packetStatus == "blocked" then "blocked"
@@ -112,6 +165,8 @@ PAYLOAD="$("$JQ_BIN" -n \
         missingFacts: ($packet.operatorReview.missingFacts // []),
         nextAgentExecutableCommandId: ($automation.nextAgentExecutableCommandId // null),
         nextAgentCommand: $nextAgentCommand,
+        agentExecutableCommandAllowed: $nextCommandAllowedForAgent,
+        agentExecutableCommandAllowlist: $agentCommandAllowlist,
         operatorInputRequiredForNextAgentCommand: $operatorInputRequired,
         agentMayExecuteNextCommand: ($status == "agent_next_command_ready"),
         agentMayExecuteAfterOperatorInput: ($status == "operator_input_required"),
@@ -125,6 +180,11 @@ PAYLOAD="$("$JQ_BIN" -n \
         writesZohoDataAny: $writesZohoDataAny,
         requiresExplicitOperatorApprovalAny: $requiresExplicitOperatorApprovalAny,
         operatorOnlyAny: $operatorOnlyAny,
+        nextCommandAllowlisted: $nextCommandAllowlisted,
+        nextCommandAllowedForAgent: $nextCommandAllowedForAgent,
+        nextCommandDryRunOnly: $nextCommandDryRunOnly,
+        nextCommandAgentMayExecute: $nextCommandAgentMayExecute,
+        nextCommandOperatorOnly: $nextCommandOperatorOnly,
         nextCommandWritesZohoData: $nextCommandWritesZoho,
         nextCommandRequiresExplicitOperatorApproval: $nextCommandRequiresApproval,
         redaction: {
@@ -146,6 +206,7 @@ PAYLOAD="$("$JQ_BIN" -n \
         if $status == "agent_next_command_ready" then "execute_next_agent_command"
         elif $status == "operator_input_required" then "collect_operator_input_for_next_agent_command"
         elif $status == "stop_before_operator_live_fixture" then "stop_for_operator_live_fixture_approval"
+        elif $status == "agent_command_not_allowlisted" then "fix_agent_command_allowlist_or_packet"
         elif $status == "blocked" then ($packet.nextAction // "fix_crm_fixture_packet_blockers")
         else "inspect_crm_fixture_operator_packet"
         end

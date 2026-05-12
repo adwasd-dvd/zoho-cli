@@ -1,10 +1,12 @@
-last_run_at: "2026-05-12T16:44:11Z"
+last_run_at: "2026-05-12T17:10:55Z"
 last_result: passing
-current_focus: cliq-channel-491-post-crm-agent-ready-decision-ready
+current_focus: crm-032-agent-command-allowlist
 suites:
   unit:
     status: passing
     notes:
+      - "crm-032 final verification passed at 2026-05-12T17:10:55Z: focused wrapper/Lane 3/markdown tests -> 7 passed in 0.22s; `bash -n ops/scripts/crm_fixture_agent_next_command.sh`, `make lint`, `ruff format --check zoho_cli tests`, YAML parse, and `git diff --check` passed."
+      - "crm-032 performed no publish, tag, npm promotion, GitHub release, version bump, expectedIntegrity fill, Zoho call, or CRM write; normal `zoho crm upsert --execute` and live fixture execution remain blocked for agents."
       - "cliq-channel-491 post-CRM agent-ready-wrapper source drift started at 2026-05-12T16:40:28Z: run `20260512T163945Z-crm031-postcommit-source` returned `package_source_unchanged`, no blockers, `headCommit=3020f7ef167fd9f8977fb916b259e3972e3d11de`, `repoChangedFileCount=36`, `packageDrift.packageChangedSinceManifest=false`, and `packageDirtyFileCount=0`."
       - "cliq-channel-491 decision packet started at 2026-05-12T16:40:28Z: run `20260512T163945Z-crm031-postcommit-decision` returned `awaiting_operator_publish_path`, blocker `publish_path_not_selected`, all `reportsReady=true`, `operator_publish_plan_ready`, `package_source_unchanged`, `artifact_verified`, `install_smoke_passed`, `trusted_reply_recorded`, and `agentMayExecuteSelectedPath=false`."
       - "cliq-channel-491 verification passed at 2026-05-12T16:44:11Z: OpenClaw channel/operator handoff, Lane 3 required/troubleshooting docs, and markdown update -> 5 passed in 0.02s; YAML parse and `git diff --check` passed."

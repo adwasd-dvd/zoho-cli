@@ -259,9 +259,12 @@ ops/scripts/crm_fixture_agent_next_command.sh
 
 It runs or reads the operator packet and emits
 `crm_fixture_agent_next_command`. Treat `status=agent_next_command_ready` as the
-only direct execution state. `status=operator_input_required` means the command
-preview is safe but still needs an operator-provided payload, cleanup plan, or
-summary value; `status=stop_before_operator_live_fixture` means the next step is
+only direct execution state, and require
+`safety.nextCommandAllowedForAgent=true`. `status=operator_input_required` means
+the command preview is safe but still needs an operator-provided payload,
+cleanup plan, or summary value; `status=agent_command_not_allowlisted` means the
+packet exposed an unknown command id or script path and must be fixed before
+automation; `status=stop_before_operator_live_fixture` means the next step is
 operator-only, Zoho-writing, or explicit-approval-gated.
 
 ```bash

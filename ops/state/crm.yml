@@ -1,11 +1,11 @@
 module: CRM
-updated_at: "2026-05-12T16:33:12Z"
+updated_at: "2026-05-12T17:10:55Z"
 status: in_progress
-phase: v0_5_agent_next_command_wrapper_hardening
+phase: v0_5_agent_command_allowlist
 blockers:
   - "operator-provided dedicated CRM fixture payload and cleanup approval required before Zoho-backed dry-run smoke and live fixture execution"
-current_milestone: crm-031-agent-ready-wrapper-coverage
+current_milestone: crm-032-agent-command-allowlist
 last_completed:
-  id: crm-031
-  summary: "Hardened `crm_fixture_agent_next_command` coverage for the agent-executable local/dry-run ready branch while preserving normal upsert and live fixture blocks."
-next_small_step: run `ops/scripts/crm_fixture_agent_next_command.sh` against an operator-edited dedicated fixture payload and cleanup plan; execute only on `status=agent_next_command_ready`, collect operator input on `operator_input_required`, and stop on `stop_before_operator_live_fixture`
+  id: crm-032
+  summary: "Enforced a built-in local/dry-run command allowlist in `crm_fixture_agent_next_command`; unknown command ids or script paths report `agent_command_not_allowlisted` instead of becoming agent-ready."
+next_small_step: run `ops/scripts/crm_fixture_agent_next_command.sh` against an operator-edited dedicated fixture payload and cleanup plan; execute only on `status=agent_next_command_ready` with `safety.nextCommandAllowedForAgent=true`, collect operator input on `operator_input_required`, fix packet/allowlist mismatches on `agent_command_not_allowlisted`, and stop on `stop_before_operator_live_fixture`

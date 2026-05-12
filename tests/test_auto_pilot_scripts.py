@@ -2949,11 +2949,19 @@ def test_crm_fixture_agent_next_command_summarizes_operator_input(
     assert payload["operatorReview"]["nextAgentCommand"]["id"] == (
         "provide_fixture_payload_file"
     )
+    assert payload["operatorReview"]["agentExecutableCommandAllowed"] is True
+    assert {
+        item["id"]
+        for item in payload["operatorReview"]["agentExecutableCommandAllowlist"]
+    } >= {"provide_fixture_payload_file", "run_crm_fixture_live_smoke_dry_run"}
     assert payload["operatorReview"]["operatorInputRequiredForNextAgentCommand"] is True
     assert payload["operatorReview"]["agentMayExecuteNextCommand"] is False
     assert payload["operatorReview"]["agentMayExecuteAfterOperatorInput"] is True
     assert payload["safety"]["writesZohoDataAny"] is False
     assert payload["safety"]["requiresExplicitOperatorApprovalAny"] is False
+    assert payload["safety"]["nextCommandAllowlisted"] is True
+    assert payload["safety"]["nextCommandAllowedForAgent"] is True
+    assert payload["safety"]["nextCommandDryRunOnly"] is True
     assert payload["safety"]["normalUpsertExecuteBlocked"] is True
     assert payload["safety"]["redaction"]["localPathsStored"] is False
     assert payload["nextAction"] == "collect_operator_input_for_next_agent_command"
@@ -3046,6 +3054,7 @@ def test_crm_fixture_agent_next_command_reports_agent_ready(
     assert payload["operatorReview"]["nextAgentCommand"]["id"] == (
         "fix_readiness_blockers"
     )
+    assert payload["operatorReview"]["agentExecutableCommandAllowed"] is True
     assert (
         payload["operatorReview"]["operatorInputRequiredForNextAgentCommand"] is False
     )
@@ -3054,6 +3063,11 @@ def test_crm_fixture_agent_next_command_reports_agent_ready(
     assert payload["safety"]["writesZohoDataAny"] is False
     assert payload["safety"]["requiresExplicitOperatorApprovalAny"] is False
     assert payload["safety"]["operatorOnlyAny"] is False
+    assert payload["safety"]["nextCommandAllowlisted"] is True
+    assert payload["safety"]["nextCommandAllowedForAgent"] is True
+    assert payload["safety"]["nextCommandDryRunOnly"] is True
+    assert payload["safety"]["nextCommandAgentMayExecute"] is True
+    assert payload["safety"]["nextCommandOperatorOnly"] is False
     assert payload["safety"]["nextCommandWritesZohoData"] is False
     assert payload["safety"]["nextCommandRequiresExplicitOperatorApproval"] is False
     assert payload["safety"]["normalUpsertExecuteBlocked"] is True
@@ -3064,6 +3078,94 @@ def test_crm_fixture_agent_next_command_reports_agent_ready(
         "agentNextCommand": "agent-next.json",
         "operatorPacket": "operator-packet.json",
     }
+    assert json.loads(agent_file.read_text()) == payload
+
+
+def test_crm_fixture_agent_next_command_blocks_unallowlisted_agent_command(
+    tmp_path: Path,
+) -> None:
+    packet_file = tmp_path / "operator-packet.json"
+    packet_file.write_text(
+        json.dumps(
+            {
+                "kind": "crm_fixture_operator_packet",
+                "status": "blocked",
+                "blockers": [],
+                "nextAction": "run_custom_command",
+                "reportFiles": {"packet": "operator-packet.json"},
+                "reportsReady": {"packet": True},
+                "operatorReview": {
+                    "readyFacts": ["packet_ready"],
+                    "missingFacts": [],
+                    "actionBoundary": {
+                        "agentExecutableCommandIds": ["run_custom_command"],
+                        "operatorOnlyCommandIds": [],
+                        "zohoWriteCommandIds": [],
+                        "dryRunOnlyCommandIds": ["run_custom_command"],
+                        "requiresExplicitOperatorApprovalCommandIds": [],
+                        "writesZohoDataAny": False,
+                        "requiresExplicitOperatorApprovalAny": False,
+                        "operatorOnlyAny": False,
+                    },
+                    "agentAutomation": {
+                        "nextAgentExecutableCommandId": "run_custom_command",
+                        "nextAgentCommand": {
+                            "id": "run_custom_command",
+                            "command": "curl https://example.invalid/unsafe",
+                            "purpose": "unsafe custom command should be rejected",
+                            "writesZohoData": False,
+                            "dryRunOnly": True,
+                            "agentMayExecute": True,
+                            "requiresOperatorInput": False,
+                            "requiresExplicitOperatorApproval": False,
+                            "operatorOnly": False,
+                        },
+                        "agentMayExecuteNextCommand": True,
+                        "stopCommandIds": [],
+                        "stopReason": None,
+                    },
+                },
+            }
+        )
+    )
+    reports_dir = tmp_path / "reports"
+    agent_file = reports_dir / "agent-next.json"
+
+    result = subprocess.run(
+        ["bash", str(CRM_FIXTURE_AGENT_NEXT_COMMAND_SCRIPT)],
+        cwd=REPO_ROOT,
+        env={
+            **os.environ,
+            "ZOHO_CRM_FIXTURE_PACKET_SOURCE_FILE": str(packet_file),
+            "ZOHO_CRM_FIXTURE_AGENT_NEXT_REPORT_DIR": str(reports_dir),
+            "ZOHO_CRM_FIXTURE_AGENT_NEXT_FILE": str(agent_file),
+            "ZOHO_CRM_FIXTURE_AGENT_NEXT_RUN_ID": "unit-agent-next-unsafe",
+        },
+        capture_output=True,
+        text=True,
+        check=False,
+    )
+
+    output = f"{result.stdout}\n{result.stderr}"
+    assert result.returncode == 0, output
+    payload = json.loads(result.stdout)
+    assert payload["kind"] == "crm_fixture_agent_next_command"
+    assert payload["status"] == "agent_command_not_allowlisted"
+    assert payload["nextAction"] == "fix_agent_command_allowlist_or_packet"
+    assert payload["operatorReview"]["nextAgentExecutableCommandId"] == (
+        "run_custom_command"
+    )
+    assert payload["operatorReview"]["agentExecutableCommandAllowed"] is False
+    assert payload["operatorReview"]["agentMayExecuteNextCommand"] is False
+    assert payload["operatorReview"]["agentMayExecuteAfterOperatorInput"] is False
+    assert payload["safety"]["nextCommandAllowlisted"] is False
+    assert payload["safety"]["nextCommandAllowedForAgent"] is False
+    assert payload["safety"]["nextCommandDryRunOnly"] is True
+    assert payload["safety"]["nextCommandAgentMayExecute"] is True
+    assert payload["safety"]["nextCommandWritesZohoData"] is False
+    assert payload["safety"]["nextCommandRequiresExplicitOperatorApproval"] is False
+    assert payload["safety"]["normalUpsertExecuteBlocked"] is True
+    assert payload["safety"]["liveFixtureExecutionBlockedForAgent"] is True
     assert json.loads(agent_file.read_text()) == payload
 
 
@@ -3144,6 +3246,7 @@ def test_crm_fixture_agent_next_command_stops_before_operator_write(
     assert payload["packet"]["ranPacket"] is False
     assert payload["packet"]["commandExit"] == 0
     assert payload["operatorReview"]["nextAgentCommand"] is None
+    assert payload["operatorReview"]["agentExecutableCommandAllowed"] is False
     assert payload["operatorReview"]["agentMayExecuteNextCommand"] is False
     assert payload["operatorReview"]["agentMayExecuteAfterOperatorInput"] is False
     assert payload["operatorReview"]["stopCommandIds"] == [

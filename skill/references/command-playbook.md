@@ -231,6 +231,10 @@ It emits one redacted `crm_fixture_operator_packet` with `status=blocked`,
 the next safe step is providing a payload, improving cleanup, running dry-run
 smoke, or asking for operator live approval; these facts are category names only
 and must not contain raw payload, email, cleanup, or selector values.
+Use `operatorReview.nextCommands` when an automation needs a command preview:
+commands are placeholder-only and include `agentMayExecute`, `dryRunOnly`,
+`writesZohoData`, and `requiresExplicitOperatorApproval` gates. Do not run
+entries marked `agentMayExecute=false`.
 
 ```bash
 ZOHO_CRM_FIXTURE_PAYLOAD_FILE=/tmp/lead-fixture.json \

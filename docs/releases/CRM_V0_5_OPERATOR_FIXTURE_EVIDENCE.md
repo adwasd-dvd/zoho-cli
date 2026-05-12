@@ -91,6 +91,15 @@ The packet also includes `operatorReview.readyFacts` and
 they do not include raw payload values, raw fixture email, raw cleanup text, or
 raw selector values.
 
+`operatorReview.nextCommands` provides the same handoff in command-preview form.
+Every command uses placeholders such as `<copied-fixture-payload.json>` and
+`<cleanup-plan>` instead of raw paths or values, and each entry carries
+`writesZohoData`, `dryRunOnly`, `agentMayExecute`, `operatorOnly`, and
+`requiresExplicitOperatorApproval`. Agents may run only entries where
+`agentMayExecute=true`; the live fixture approval preview is marked
+`agentMayExecute=false`, `writesZohoData=true`, and
+`requiresExplicitOperatorApproval=true`.
+
 ```bash
 ZOHO_CRM_FIXTURE_PAYLOAD_FILE=/tmp/lead-fixture.json \
 ZOHO_CRM_FIXTURE_IDEMPOTENCY_KEY=crm-fixture-$(date +%F) \

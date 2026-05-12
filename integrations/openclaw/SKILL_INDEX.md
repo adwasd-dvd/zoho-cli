@@ -92,7 +92,9 @@ CRM SDK planning:
   payload digest, otherwise `cleanup_plan_selector_missing` blocks before any
   Zoho-backed smoke; `crm-018` reports redacted `cleanup.selectorTypes` without
   raw selector values; `crm-019` adds redacted `operatorReview.readyFacts` and
-  `operatorReview.missingFacts`)
+  `operatorReview.missingFacts`; `crm-020` adds redacted
+  `operatorReview.nextCommands` command previews with explicit agent/live
+  execution gates)
 - `docs/releases/CRM_V0_5_FIXTURE_PAYLOAD_TEMPLATE.json` (`crm-015`: safe
   one-record `Leads` template with `.example.invalid` placeholder data; copy and
   edit outside the repo before live fixture mode; smoke reports

@@ -114,6 +114,100 @@ PAYLOAD="$("$JQ_BIN" -n \
         (if (($readinessSkipped | not) and ((($readinessStatus == "ready_for_operator_live_fixture") or ($readinessStatus == "live_fixture_recorded")) | not)) then "dry_run_readiness_evidence" else empty end)
       ] | unique
     ) as $missingFacts
+  | (
+      if $status == "live_fixture_recorded" then [
+        {
+          id: "review_live_fixture_evidence",
+          command: "ZOHO_CRM_FIXTURE_SUMMARY_FILE=<smoke-summary.json> ops/scripts/crm_fixture_operator_packet.sh",
+          purpose: "review the redacted recorded live fixture evidence packet",
+          writesZohoData: false,
+          dryRunOnly: true,
+          agentMayExecute: true,
+          requiresOperatorInput: true,
+          requiresExplicitOperatorApproval: false,
+          operatorOnly: false
+        }
+      ]
+      elif $status == "ready_for_operator_live_fixture" then [
+        {
+          id: "operator_review_live_fixture_approval",
+          command: "ZOHO_CRM_FIXTURE_EXECUTE=1 ZOHO_CRM_ALLOW_LIVE_FIXTURE=1 ZOHO_CRM_FIXTURE_PAYLOAD_FILE=<copied-fixture-payload.json> ZOHO_CRM_FIXTURE_CLEANUP_PLAN=<cleanup-plan> ops/scripts/crm_fixture_live_smoke.sh",
+          purpose: "operator-only live fixture approval after reviewing payload, cleanup, and dry-run evidence",
+          writesZohoData: true,
+          dryRunOnly: false,
+          agentMayExecute: false,
+          requiresOperatorInput: true,
+          requiresExplicitOperatorApproval: true,
+          operatorOnly: true
+        }
+      ]
+      elif $status == "payload_preflight_ready" then [
+        {
+          id: "run_crm_fixture_live_smoke_dry_run",
+          command: "ZOHO_CRM_FIXTURE_PAYLOAD_FILE=<copied-fixture-payload.json> ZOHO_CRM_FIXTURE_CLEANUP_PLAN=<cleanup-plan> ops/scripts/crm_fixture_live_smoke.sh",
+          purpose: "run the CRM fixture smoke in dry-run mode and collect a redacted summary",
+          writesZohoData: false,
+          dryRunOnly: true,
+          agentMayExecute: true,
+          requiresOperatorInput: true,
+          requiresExplicitOperatorApproval: false,
+          operatorOnly: false
+        }
+      ]
+      elif ($blockers | index("payload_file_required")) or ($blockers | index("payload_file_missing")) then [
+        {
+          id: "provide_fixture_payload_file",
+          command: "ZOHO_CRM_FIXTURE_PAYLOAD_FILE=<copied-fixture-payload.json> ZOHO_CRM_FIXTURE_CLEANUP_PLAN=<cleanup-plan> ops/scripts/crm_fixture_operator_packet.sh",
+          purpose: "rerun the no-write packet after providing a copied dedicated fixture payload",
+          writesZohoData: false,
+          dryRunOnly: true,
+          agentMayExecute: true,
+          requiresOperatorInput: true,
+          requiresExplicitOperatorApproval: false,
+          operatorOnly: false
+        }
+      ]
+      elif ($blockers | index("cleanup_plan_missing")) then [
+        {
+          id: "provide_cleanup_plan",
+          command: "ZOHO_CRM_FIXTURE_PAYLOAD_FILE=<copied-fixture-payload.json> ZOHO_CRM_FIXTURE_CLEANUP_PLAN=<cleanup-plan> ops/scripts/crm_fixture_operator_packet.sh",
+          purpose: "rerun the no-write packet after adding a cleanup plan with a selector",
+          writesZohoData: false,
+          dryRunOnly: true,
+          agentMayExecute: true,
+          requiresOperatorInput: true,
+          requiresExplicitOperatorApproval: false,
+          operatorOnly: false
+        }
+      ]
+      elif ($blockers | index("cleanup_plan_too_short")) or ($blockers | index("cleanup_plan_action_missing")) or ($blockers | index("cleanup_plan_target_missing")) or ($blockers | index("cleanup_plan_selector_missing")) then [
+        {
+          id: "improve_cleanup_plan",
+          command: "ZOHO_CRM_FIXTURE_PAYLOAD_FILE=<copied-fixture-payload.json> ZOHO_CRM_FIXTURE_CLEANUP_PLAN=<cleanup-plan-with-fixture-selector> ops/scripts/crm_fixture_operator_packet.sh",
+          purpose: "rerun the no-write packet after improving cleanup action, target, and selector specificity",
+          writesZohoData: false,
+          dryRunOnly: true,
+          agentMayExecute: true,
+          requiresOperatorInput: true,
+          requiresExplicitOperatorApproval: false,
+          operatorOnly: false
+        }
+      ]
+      else [
+        {
+          id: "fix_blockers",
+          command: "ZOHO_CRM_FIXTURE_PAYLOAD_FILE=<copied-fixture-payload.json> ZOHO_CRM_FIXTURE_CLEANUP_PLAN=<cleanup-plan> ops/scripts/crm_fixture_operator_packet.sh",
+          purpose: "fix the reported blockers and rerun the no-write packet",
+          writesZohoData: false,
+          dryRunOnly: true,
+          agentMayExecute: true,
+          requiresOperatorInput: true,
+          requiresExplicitOperatorApproval: false,
+          operatorOnly: false
+        }
+      ]
+      end
+    ) as $nextCommands
   | {
       schemaVersion: 1,
       kind: "crm_fixture_operator_packet",
@@ -153,6 +247,7 @@ PAYLOAD="$("$JQ_BIN" -n \
       operatorReview: {
         readyFacts: $readyFacts,
         missingFacts: $missingFacts,
+        nextCommands: $nextCommands,
         cleanupSelectorTypes: ($preflightReport.cleanup.selectorTypes // []),
         cleanupSelectorTypeCount: (($preflightReport.cleanup.selectorTypes // []) | length),
         redaction: {

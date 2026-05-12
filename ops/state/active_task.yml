@@ -1,23 +1,26 @@
-id: crm-019
-title: add redacted CRM fixture operator review facts
+id: crm-020
+title: add redacted CRM fixture operator command previews
 module: crm
 stage: completed
 status: completed
 owner: coder
-updated_at: '2026-05-12T09:04:02Z'
+updated_at: '2026-05-12T09:29:58Z'
 execution_mode: turbo_20x
 throughput_policy_ref: ops/state/execution_policy.yml
 success_criteria:
-  - CRM fixture operator packet reports redacted `operatorReview.readyFacts`
-  - CRM fixture operator packet reports redacted `operatorReview.missingFacts`
-  - review facts cover payload, cleanup, selector, dry-run summary, and readiness handoff states
-  - Lane 2 and Lane 3 docs describe the review facts for AI-safe branching
+  - CRM fixture operator packet reports redacted `operatorReview.nextCommands`
+  - command previews use placeholders instead of raw payload paths, fixture emails, cleanup text, or selector values
+  - local and dry-run commands are explicitly marked `agentMayExecute=true` and `writesZohoData=false`
+  - live fixture approval preview is explicitly marked `agentMayExecute=false`, `writesZohoData=true`, and `requiresExplicitOperatorApproval=true`
+  - Lane 2 and Lane 3 docs describe the command-preview gates
   - normal `zoho crm upsert --execute` and live fixture execution remain blocked
 next_if_done: CRM fixture Zoho-backed dry-run can start only after an operator provides a copied dedicated payload and a cleanup plan with `cleanup.qualityReady=true`, `cleanup.selectorPresent=true`, and appropriate redacted `cleanup.selectorTypes`; live fixture execution still requires exact approval and live env gates.
 progress:
-  - "2026-05-12T09:04:02Z crm-019 completed: `ops/scripts/crm_fixture_operator_packet.sh` now emits `operatorReview.readyFacts`, `operatorReview.missingFacts`, `cleanupSelectorTypes`, and redaction booleans without storing raw payload values, fixture email, cleanup text, or selector values."
-  - "2026-05-12T09:04:02Z ready facts include categories such as `dedicated_fixture_payload`, `cleanup_quality_ready`, `cleanup_selector_types_present`, `payload_preflight_ready`, `dry_run_readiness_ready`, and `placeholder_email_absent`; missing facts include categories such as `fixture_payload_file`, `cleanup_plan`, `cleanup_plan_quality`, `cleanup_selector`, and `dry_run_smoke_summary`."
-  - "2026-05-12T09:04:02Z Lane 2/3 docs now tell agents to branch on redacted operator review facts instead of raw fixture values."
-  - "2026-05-12T09:04:02Z no Zoho call, CRM live write, normal `zoho crm upsert --execute`, publish, tag, npm promotion, GitHub release, or expectedIntegrity fill was performed."
-  - "2026-05-12T09:07:33Z focused verification passed: shell syntax for CRM fixture scripts; CRM fixture operator packet/preflight/readiness tests plus Lane 3 CRM contract and markdown update -> 12 passed, 73 deselected in 1.45s; ruff format/check, YAML parse, and `git diff --check` passed."
-next_step: Commit and push the operator review facts slice, then continue to the next safe RC readiness milestone.
+  - "2026-05-12T09:23:49Z crm-020 completed: `ops/scripts/crm_fixture_operator_packet.sh` now emits `operatorReview.nextCommands` with placeholder-only command previews and explicit `agentMayExecute`, `dryRunOnly`, `writesZohoData`, `operatorOnly`, and `requiresExplicitOperatorApproval` gates."
+  - "2026-05-12T09:23:49Z local/dry-run next commands point to `ops/scripts/crm_fixture_operator_packet.sh` or `ops/scripts/crm_fixture_live_smoke.sh` with placeholder payload and cleanup values; live fixture approval is previewed as operator-only with `agentMayExecute=false` and `writesZohoData=true`."
+  - "2026-05-12T09:23:49Z tests assert command previews do not include raw fixture email, cleanup text, or temporary payload paths."
+  - "2026-05-12T09:29:58Z corrected the operator-only live command preview to match `ops/scripts/crm_fixture_live_smoke.sh`: exact fixture approval is generated from the dry-run plan inside the script, while the visible live preview carries only the two live env gates plus placeholder payload and cleanup values."
+  - "2026-05-12T09:23:49Z no Zoho call, CRM live write, normal `zoho crm upsert --execute`, publish, tag, npm promotion, GitHub release, or expectedIntegrity fill was performed."
+  - "2026-05-12T09:29:58Z focused verification passed: shell syntax for CRM fixture scripts; CRM fixture operator packet/preflight/readiness tests plus Lane 3 CRM contract and markdown update -> 12 passed, 73 deselected in 1.64s."
+  - "2026-05-12T09:29:58Z final local checks passed: ruff format --check, ruff check, YAML parse, and `git diff --check`."
+next_step: Commit and push the operator command-preview slice, then continue to the next safe RC readiness milestone.

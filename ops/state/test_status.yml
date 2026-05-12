@@ -1,10 +1,13 @@
-last_run_at: "2026-05-12T09:07:33Z"
+last_run_at: "2026-05-12T09:29:58Z"
 last_result: passing
-current_focus: crm-019-operator-review-facts
+current_focus: crm-020-operator-command-previews
 suites:
   unit:
     status: passing
     notes:
+      - "crm-020 operator command previews completed at 2026-05-12T09:23:49Z: CRM fixture operator packets now expose redacted `operatorReview.nextCommands` entries with placeholder-only commands and explicit `agentMayExecute`, `dryRunOnly`, `writesZohoData`, `operatorOnly`, and `requiresExplicitOperatorApproval` gates."
+      - "crm-020 tests assert dry-run command previews do not include raw fixture email, cleanup text, or temp payload paths; live fixture approval remains `agentMayExecute=false` and `writesZohoData=true`."
+      - "Focused crm-020 verification passed at 2026-05-12T09:29:58Z: shell syntax for CRM fixture scripts; CRM fixture operator packet/preflight/readiness tests plus Lane 3 CRM contract and markdown update -> 12 passed, 73 deselected in 1.64s; ruff format/check, YAML parse, and `git diff --check` passed."
       - "crm-019 operator review facts completed at 2026-05-12T09:04:02Z: CRM fixture operator packets now expose redacted `operatorReview.readyFacts` and `operatorReview.missingFacts` categories for payload, cleanup, selector, dry-run summary, and readiness handoff states."
       - "crm-019 keeps raw payload values, fixture email, cleanup text, and selector values out of stdout/reports while keeping normal `zoho crm upsert --execute` and live fixture execution blocked."
       - "Focused crm-019 verification passed at 2026-05-12T09:07:33Z: shell syntax for CRM fixture scripts; CRM fixture operator packet/preflight/readiness tests plus Lane 3 CRM contract and markdown update -> 12 passed, 73 deselected in 1.45s; ruff format/check, YAML parse, and `git diff --check` passed."

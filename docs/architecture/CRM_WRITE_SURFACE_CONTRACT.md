@@ -299,6 +299,10 @@ machine-readable `nextAction` plus `operatorReview.readyFacts` /
 operator handoff boundary without probing Zoho repeatedly. Those review facts
 are category names only, and the packet keeps raw payload fields, email values,
 cleanup plans, and selector values out of stdout and persisted reports.
+The packet also emits redacted `operatorReview.nextCommands` entries with
+placeholder-only command previews, `writesZohoData`, `dryRunOnly`,
+`agentMayExecute`, and `requiresExplicitOperatorApproval` booleans so agents can
+run the local/dry-run steps and stop before operator-only live execution.
 
 ## Operator payload template
 

@@ -95,6 +95,12 @@ pack, artifact, install smoke, promotion, and trusted reply reports into one
 redacted operator review JSON. It reports `operator_publish_bundle_ready` only
 when the strict promotion gate is ready and agent publish/tag/
 `expectedIntegrity` fill permissions remain false.
+`cliq-channel-459` is complete:
+`ops/scripts/openclaw_cliq_rc_release_notes_draft.sh` generates a read-only
+Markdown draft from the operator bundle. It fails if the bundle is missing/not
+ready or if any agent publish/tag/`expectedIntegrity` fill permission is true,
+and the draft explicitly says no npm publish, git tag, GitHub release, version
+bump, or integrity fill was performed.
 
 The v0.4 plugin targets OpenClaw `>=2026.5.3-1`. The upgraded global
 `OpenClaw 2026.5.3-1` host is suitable for native plugin checks; use

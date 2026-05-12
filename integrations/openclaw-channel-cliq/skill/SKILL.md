@@ -94,6 +94,12 @@ Use this skill when operating through the native OpenClaw Zoho Cliq channel.
   `operator_publish_bundle_ready`. It gathers pack, artifact, install smoke,
   promotion, and trusted reply report filenames plus artifact shasum/integrity
   while keeping agent publish/tag/integrity-fill permissions false.
+- For the release-note handoff, run
+  `ops/scripts/openclaw_cliq_rc_release_notes_draft.sh`; it must say no
+  npm publish, git tag, GitHub release, version bump, or
+  `openclaw.install.expectedIntegrity` fill was performed, and it must fail if
+  the operator bundle is missing/not ready or any agent publish/tag/integrity
+  permission is true.
 - For the operator approval boundary and release action handoff, use
   `docs/releases/OPENCLAW_CLIQ_CHANNEL_V0_4_OPERATOR_PUBLISH_HANDOFF.md`.
   It defines the no-agent `npm publish`/tag/GitHub release boundary, the
@@ -116,6 +122,7 @@ ops/scripts/openclaw_cliq_rc_install_smoke.sh
 ops/scripts/openclaw_cliq_rc_pack.sh
 ops/scripts/openclaw_cliq_rc_promotion_check.sh
 ops/scripts/openclaw_cliq_rc_operator_publish_bundle.sh
+ops/scripts/openclaw_cliq_rc_release_notes_draft.sh
 ops/scripts/openclaw_cliq_trusted_reply_evidence_bundle.sh
 ops/scripts/openclaw_cliq_trusted_reply_evidence_prepare.sh
 ops/scripts/openclaw_cliq_trusted_reply_evidence.sh

@@ -51,10 +51,14 @@ OPENCLAW_CLIQ_PROMOTION_RUN_ID="$(date -u +%Y%m%dT%H%M%SZ)-operator" \
 OPENCLAW_CLIQ_OPERATOR_BUNDLE_RUN_ID="$(date -u +%Y%m%dT%H%M%SZ)-operator-bundle" \
   ops/scripts/openclaw_cliq_rc_operator_publish_bundle.sh
 
+OPENCLAW_CLIQ_RELEASE_NOTES_RUN_ID="$(date -u +%Y%m%dT%H%M%SZ)-operator-draft" \
+  ops/scripts/openclaw_cliq_rc_release_notes_draft.sh
+
 ./.venv/bin/python -m pytest -q \
   tests/test_auto_pilot_scripts.py::test_openclaw_cliq_rc_promotion_check_requires_ready_local_evidence \
   tests/test_auto_pilot_scripts.py::test_openclaw_cliq_rc_promotion_check_blocks_published_integrity_too_early \
   tests/test_auto_pilot_scripts.py::test_openclaw_cliq_rc_operator_publish_bundle_collects_ready_evidence \
+  tests/test_auto_pilot_scripts.py::test_openclaw_cliq_rc_release_notes_draft_uses_ready_operator_bundle \
   tests/test_auto_pilot_scripts.py::test_openclaw_cliq_rc_artifact_check_verifies_tarball_contract \
   tests/test_auto_pilot_scripts.py::test_openclaw_cliq_rc_install_smoke_installs_verified_artifact \
   tests/test_openclaw_channel_contract.py::test_openclaw_cliq_channel_rc_checklist_has_cut_contract \
@@ -72,6 +76,7 @@ Expected local pre-publish posture:
 - `install.status=install_smoke_passed`
 - `trustedReply.status=trusted_reply_recorded`
 - `operatorBundle.status=operator_publish_bundle_ready`
+- release notes draft says no publish/tag/release/integrity fill was performed
 - `npmPromotionRequiresOperatorApproval=true`
 
 The promotion preflight is intentionally strict: `ready_for_operator_publish`
@@ -81,6 +86,8 @@ be present at the same time.
 The operator bundle is the read-only review packet for that posture; it must
 keep `agentMayPublish=false`, `agentMayTag=false`, and
 `agentMayFillExpectedIntegrity=false`.
+The release-notes draft is also read-only; it is generated from the operator
+bundle and is not a publish action.
 
 ## Operator publish choices
 
@@ -127,6 +134,9 @@ Abort and do not publish if any of these appear:
   `operator_publish_bundle_ready` absent, or any `agentMayPublish=true`,
   `agentMayTag=true`, or `agentMayFillExpectedIntegrity=true` in the operator
   bundle.
+- `operator_bundle_missing`, `operator_bundle_not_ready`,
+  `agent_publish_permission_unexpected`, `agent_tag_permission_unexpected`, or
+  `agent_integrity_fill_permission_unexpected` in the release-notes draft step.
 - `tarball_shasum_mismatch`, `artifact_version_mismatch`, or
   `required_entry_missing_*` in the local artifact check.
 - `artifact_not_verified`, `plugin_install_failed`, `plugin_inspect_failed`,

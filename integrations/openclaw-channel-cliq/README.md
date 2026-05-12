@@ -50,6 +50,9 @@ one operator review JSON with artifact shasum/integrity, release posture, and
 explicit `agentMayPublish=false`, `agentMayTag=false`, and
 `agentMayFillExpectedIntegrity=false` flags before reporting
 `operator_publish_bundle_ready`.
+`ops/scripts/openclaw_cliq_rc_release_notes_draft.sh` generates a read-only
+Markdown release-notes draft from that bundle and refuses to run if the bundle
+is not ready or any agent publish/tag/integrity-fill permission is true.
 `docs/releases/OPENCLAW_CLIQ_CHANNEL_V0_4_OPERATOR_PUBLISH_HANDOFF.md` is the
 operator handoff for the approval boundary, preflight commands, publish path
 choice, post-publish checks, and abort conditions; agents must not run
@@ -102,6 +105,9 @@ No-publish local RC promotion preflight:
 
 No-publish operator review bundle:
 `../../ops/scripts/openclaw_cliq_rc_operator_publish_bundle.sh`.
+
+Read-only release-notes draft:
+`../../ops/scripts/openclaw_cliq_rc_release_notes_draft.sh`.
 
 ## Config example
 

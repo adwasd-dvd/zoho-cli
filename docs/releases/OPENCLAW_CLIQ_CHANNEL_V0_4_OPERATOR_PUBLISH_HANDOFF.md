@@ -17,7 +17,7 @@ Current baseline:
 - Handoff manifest:
   `openclaw_cliq_rc_operator_handoff_manifest_20260512T055900Z-ingress-diagnostic-rc-restore-manifest.json`
 - Latest source drift guard:
-  `openclaw_cliq_rc_source_drift_check_20260512T094343Z-crm-report-metadata-postcommit-source.json`
+  `openclaw_cliq_rc_source_drift_check_20260512T100443Z-crm-readiness-report-metadata-postcommit-source.json`
 
 ## Non-automated approval boundary
 

@@ -17,7 +17,7 @@ Current baseline:
 - Handoff manifest:
   `openclaw_cliq_rc_operator_handoff_manifest_20260512T055900Z-ingress-diagnostic-rc-restore-manifest.json`
 - Latest source drift guard:
-  `openclaw_cliq_rc_source_drift_check_20260512T135144Z-crm-state-sync-postcommit-source.json`
+  `openclaw_cliq_rc_source_drift_check_20260512T143844Z-crm-next-command-preview-postcommit-source.json`
 
 ## Non-automated approval boundary
 
@@ -129,12 +129,16 @@ Expected local pre-publish posture:
   `20260512T110613Z-github-release-selection` reports
   `operator_publish_selection_ready`, previews `gh release create ...`, and
   keeps `selectedPublishPathReview.agentMayExecute=false`
-- the post-CRM state-sync docs/state decision packet
-  `20260512T135144Z-crm-state-sync-postcommit-decision` returns
+- the post-CRM next-command-preview docs/state decision packet
+  `20260512T143844Z-crm-next-command-preview-postcommit-decision` returns
   `awaiting_operator_publish_path`, `package_source_unchanged`,
-  `sourceDrift.headCommit=0319d9b8ebabf532f0b76230991a1feae2ee78a1`,
+  `sourceDrift.headCommit=3f1773c7d5deb7e1dae68db84445017d0efd0449`,
   `repoChangedFileCount=29`, all `reportsReady=true`, and
   `agentMayExecuteSelectedPath=false`
+- the previous post-CRM state-sync docs/state decision packet
+  `20260512T135144Z-crm-state-sync-postcommit-decision` remains retained as
+  historical evidence with
+  `sourceDrift.headCommit=0319d9b8ebabf532f0b76230991a1feae2ee78a1`
 - the previous post-CRM readiness-action-boundary decision packet
   `20260512T132144Z-crm-readiness-action-boundary-postcommit-decision` remains
   retained as historical evidence with

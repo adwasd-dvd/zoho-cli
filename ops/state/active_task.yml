@@ -1,21 +1,21 @@
-id: crm-029
-title: add CRM fixture agent next-command preview
-module: crm
+id: cliq-channel-489
+title: record post-CRM next-command-preview RC decision evidence
+module: openclaw_cliq_channel
 stage: completed
 status: completed
 owner: coder
-updated_at: '2026-05-12T14:34:47Z'
+updated_at: '2026-05-12T14:49:37Z'
 execution_mode: turbo_20x
 throughput_policy_ref: ops/state/execution_policy.yml
 success_criteria:
-  - "CRM fixture operator packets expose `operatorReview.agentAutomation.nextAgentCommand` when the next step is agent-executable"
-  - "CRM fixture readiness bundles expose the same next-command preview for blocked dry-run fixer steps"
-  - "Agent automation summary embeds only redacted placeholder commands and keeps `nextAgentCommand=null` at operator-only, Zoho-writing, or approval-gated boundaries"
-  - "Normal `zoho crm upsert --execute` and live fixture execution remain blocked for agents"
+  - "OpenClaw Cliq source-drift evidence is rerun after pushed CRM `crm-029`"
+  - "Decision packet still reports `awaiting_operator_publish_path` with all reports ready"
+  - "Package source remains unchanged relative to the handoff manifest"
+  - "Publish/tag/npm/GitHub release/expectedIntegrity fill and live CRM writes remain blocked for agents"
 next_if_done: Continue to the next safe RC readiness milestone without publishing, tagging, npm promotion, GitHub release creation, expectedIntegrity fill, or live CRM writes.
 progress:
-  - "2026-05-12T14:27:08Z added `operatorReview.agentAutomation.nextAgentCommand` to CRM fixture operator packets and readiness bundles; the field mirrors the selected dry-run/local command preview only when `agentMayExecuteNextCommand=true`."
-  - "2026-05-12T14:27:08Z kept `nextAgentCommand=null` for operator-only live fixture approval boundaries, so agents do not execute Zoho-writing or explicit-approval commands."
-  - "2026-05-12T14:34:47Z focused and broader verification passed: CRM fixture packet/readiness tests plus Lane 3 required paths, CRM contract, and markdown update -> 15 passed, 70 deselected in 2.43s; shell syntax, touched-scope ruff format/check, Ruby YAML parse, `git diff --check`, and local no-write packet field check passed."
-  - "2026-05-12T14:34:47Z no publish, tag, npm promotion, GitHub release, version bump, expectedIntegrity fill, Zoho call, or CRM write was performed."
-next_step: Commit and push the CRM next-command preview slice, then continue to the next safe milestone.
+  - "2026-05-12T14:40:36Z source drift run `20260512T143844Z-crm-next-command-preview-postcommit-source` returned `package_source_unchanged`, no blockers, `headCommit=3f1773c7d5deb7e1dae68db84445017d0efd0449`, `repoChangedFileCount=29`, `packageDrift.packageChangedSinceManifest=false`, and `dirtyFileCount=0`."
+  - "2026-05-12T14:40:36Z decision packet `20260512T143844Z-crm-next-command-preview-postcommit-decision` returned `awaiting_operator_publish_path`, `publish_path_not_selected`, all `reportsReady=true`, `operator_publish_plan_ready`, `artifact_verified`, `install_smoke_passed`, `trusted_reply_recorded`, and `agentMayExecuteSelectedPath=false`."
+  - "2026-05-12T14:40:36Z no publish, tag, npm promotion, GitHub release, version bump, expectedIntegrity fill, Zoho call, or CRM write was performed."
+  - "2026-05-12T14:49:37Z focused OpenClaw Cliq docs/contract verification passed: channel contract, Lane 3 required paths/troubleshooting contract, and markdown update -> 11 passed in 0.01s; touched-scope ruff check, Ruby YAML parse, and `git diff --check` passed."
+next_step: Commit and push the post-CRM next-command-preview evidence sync, then continue to the next safe milestone.

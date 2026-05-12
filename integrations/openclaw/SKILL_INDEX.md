@@ -77,8 +77,9 @@ CRM SDK planning:
   source-drift/decision evidence showing commit `25eb507d` still keeps
   `packageChangedSinceManifest=false`; `cliq-channel-488` records the
   post-CRM state-sync source-drift/decision evidence showing commit `0319d9b8`
-  still keeps
-  `packageChangedSinceManifest=false`)
+  still keeps `packageChangedSinceManifest=false`; `cliq-channel-489` records
+  the post-CRM next-command-preview source-drift/decision evidence showing
+  commit `3f1773c7` still keeps `packageChangedSinceManifest=false`)
 - `ops/scripts/openclaw_cliq_bot_no_response_packet.sh`
   (`cliq-channel-472/474`: first responder for Bot no-response reports; runs
   public callback smoke plus live ingress diagnostics, then embeds

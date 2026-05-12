@@ -1,10 +1,14 @@
-last_run_at: "2026-05-12T08:12:39Z"
+last_run_at: "2026-05-12T08:27:51Z"
 last_result: passing
-current_focus: crm-017-cleanup-selector-quality-gate
+current_focus: crm-018-cleanup-selector-type-metadata
 suites:
   unit:
     status: passing
     notes:
+      - "crm-018 cleanup selector type metadata completed at 2026-05-12T08:22:13Z: CRM fixture payload preflight now reports redacted `cleanup.selectorTypes` and `cleanup.selectorTypeCount` while keeping raw cleanup plans, raw selector values, fixture email, and field values unlogged."
+      - "crm-018 fixed the empty-selector blocked path under `set -u`, so cleanup-plan-missing, vague-cleanup, and selector-missing blockers still emit JSON with `cleanup.selectorTypes=[]` instead of exiting before output."
+      - "Focused crm-018 verification passed at 2026-05-12T08:22:13Z: CRM fixture selector-type tests, Lane 3 CRM contract, and markdown update -> 8 passed in 0.39s."
+      - "Broader crm-018 verification passed at 2026-05-12T08:27:51Z: shell syntax for CRM fixture scripts; `tests/test_auto_pilot_scripts.py -k crm_fixture`, `tests/test_lane3_docs.py`, and `tests/test_markdown_update.py` -> 16 passed, 78 deselected in 2.59s; ruff format/check, YAML parse, and `git diff --check` passed."
       - "crm-017 cleanup selector quality gate completed at 2026-05-12T08:01:55Z: CRM fixture payload preflight now reports `cleanup.selectorPresent` and blocks cleanup plans without a selector using `cleanup_plan_selector_missing` before any Zoho-backed smoke."
       - "`ops/scripts/crm_fixture_operator_packet.sh` maps `cleanup_plan_selector_missing` to `nextAction=improve_cleanup_plan`, keeping `normalUpsertExecuteBlocked=true` and `agentMayExecuteLiveFixture=false`."
       - "Focused crm-017 verification passed: selector preflight/operator packet tests plus Lane 3 CRM contract and markdown update -> 9 passed in 0.69s."

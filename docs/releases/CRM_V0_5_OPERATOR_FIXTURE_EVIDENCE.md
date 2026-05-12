@@ -46,6 +46,7 @@ Expected preflight status:
 - `cleanup.present=true`
 - `cleanup.qualityReady=true`
 - `cleanup.selectorPresent=true`
+- `cleanup.selectorTypes` contains one or more redacted selector categories
 - `releasePosture.normalUpsertExecuteBlocked=true`
 - `releasePosture.agentMayRunLiveFixture=false`
 - `nextAction=run_crm_fixture_live_smoke_dry_run`
@@ -58,7 +59,9 @@ smoke script. If it reports `cleanup_plan_too_short`,
 action will be taken, what fixture record/lead it applies to, and the selector
 used to find it, such as fixture email, record id, duplicate field, idempotency
 key, or payload digest. The preflight stores only redacted metadata and does not
-call Zoho.
+call Zoho; it may report selector categories such as `email_keyword`,
+`record_id`, `idempotency_key`, or `payload_digest`, but not the actual selector
+value.
 
 For automated handoff, use the operator packet wrapper. It runs the local
 preflight and, when a dry-run smoke summary is supplied, wraps the existing

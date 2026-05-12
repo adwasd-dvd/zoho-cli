@@ -2486,6 +2486,8 @@ def test_crm_fixture_payload_preflight_blocks_template_payload(
         "actionPresent": True,
         "targetPresent": True,
         "selectorPresent": True,
+        "selectorTypes": ["email_keyword"],
+        "selectorTypeCount": 1,
         "qualityReady": True,
         "rawCleanupPlanStored": False,
     }
@@ -2548,6 +2550,8 @@ def test_crm_fixture_payload_preflight_accepts_dedicated_payload(
     assert payload["cleanup"]["qualityReady"] is True
     assert payload["cleanup"]["lengthBucket"] == "sufficient"
     assert payload["cleanup"]["selectorPresent"] is True
+    assert payload["cleanup"]["selectorTypes"] == ["email_keyword"]
+    assert payload["cleanup"]["selectorTypeCount"] == 1
     assert payload["releasePosture"]["normalUpsertExecuteBlocked"] is True
     assert payload["releasePosture"]["agentMayRunLiveFixture"] is False
     assert payload["nextAction"] == "run_crm_fixture_live_smoke_dry_run"
@@ -2594,6 +2598,8 @@ def test_crm_fixture_payload_preflight_requires_cleanup_plan(
         "actionPresent": False,
         "targetPresent": False,
         "selectorPresent": False,
+        "selectorTypes": [],
+        "selectorTypeCount": 0,
         "qualityReady": False,
         "rawCleanupPlanStored": False,
     }
@@ -2648,6 +2654,8 @@ def test_crm_fixture_payload_preflight_blocks_vague_cleanup_plan(
         "actionPresent": False,
         "targetPresent": False,
         "selectorPresent": False,
+        "selectorTypes": [],
+        "selectorTypeCount": 0,
         "qualityReady": False,
         "rawCleanupPlanStored": False,
     }
@@ -2694,8 +2702,58 @@ def test_crm_fixture_payload_preflight_requires_cleanup_selector(
     assert payload["cleanup"]["actionPresent"] is True
     assert payload["cleanup"]["targetPresent"] is True
     assert payload["cleanup"]["selectorPresent"] is False
+    assert payload["cleanup"]["selectorTypes"] == []
+    assert payload["cleanup"]["selectorTypeCount"] == 0
     assert payload["cleanup"]["qualityReady"] is False
     assert payload["nextAction"] == "improve_cleanup_plan"
+
+
+def test_crm_fixture_payload_preflight_reports_cleanup_selector_types(
+    tmp_path: Path,
+) -> None:
+    raw_cleanup = (
+        "delete the fixture record using fixture email, idempotency key, "
+        "and payload digest after validation"
+    )
+    payload_file = tmp_path / "fixture-ready.json"
+    payload_file.write_text(
+        json.dumps(
+            {
+                "Last_Name": "ZohoCliFixtureReady",
+                "Company": "Zoho CLI Fixture",
+                "Email": "fixture-ready@operator.test",
+            }
+        ),
+        encoding="utf-8",
+    )
+
+    result = subprocess.run(
+        ["bash", str(CRM_FIXTURE_PAYLOAD_PREFLIGHT_SCRIPT)],
+        cwd=REPO_ROOT,
+        env={
+            **os.environ,
+            "ZOHO_CRM_FIXTURE_PAYLOAD_FILE": str(payload_file),
+            "ZOHO_CRM_FIXTURE_CLEANUP_PLAN": raw_cleanup,
+            "ZOHO_CRM_FIXTURE_PREFLIGHT_REPORT_DIR": str(tmp_path / "reports"),
+            "ZOHO_CRM_FIXTURE_PREFLIGHT_RUN_ID": "unit-cleanup-selector-types",
+        },
+        capture_output=True,
+        text=True,
+        check=False,
+    )
+
+    output = f"{result.stdout}\n{result.stderr}"
+    assert result.returncode == 0, output
+    assert raw_cleanup not in output
+    payload = json.loads(result.stdout)
+    assert payload["status"] == "payload_preflight_ready"
+    assert payload["cleanup"]["selectorPresent"] is True
+    assert payload["cleanup"]["selectorTypes"] == [
+        "email_keyword",
+        "idempotency_key",
+        "payload_digest",
+    ]
+    assert payload["cleanup"]["selectorTypeCount"] == 3
 
 
 def test_crm_fixture_operator_packet_reports_missing_payload(

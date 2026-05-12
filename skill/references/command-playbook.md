@@ -208,7 +208,9 @@ ops/scripts/crm_fixture_payload_preflight.sh
 
 Require `status=payload_preflight_ready`, `payload.placeholderEmailCount=0`,
 `cleanup.present=true`, `cleanup.selectorPresent=true`, and
-`nextAction=run_crm_fixture_live_smoke_dry_run`. The preflight blocks with
+`nextAction=run_crm_fixture_live_smoke_dry_run`; inspect
+`cleanup.selectorTypes` for redacted categories such as `email_keyword`,
+`record_id`, `idempotency_key`, or `payload_digest`. The preflight blocks with
 `fixture_payload_placeholder_email`, `required_fields_missing`,
 `cleanup_plan_missing`, `cleanup_plan_too_short`,
 `cleanup_plan_action_missing`, `cleanup_plan_target_missing`, or

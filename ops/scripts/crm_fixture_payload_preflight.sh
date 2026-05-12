@@ -103,6 +103,11 @@ CLEANUP_PLAN_LOWER="$(printf '%s' "$CLEANUP_PLAN" | tr '[:upper:]' '[:lower:]')"
 CLEANUP_ACTION_PRESENT=false
 CLEANUP_TARGET_PRESENT=false
 CLEANUP_SELECTOR_PRESENT=false
+CLEANUP_SELECTOR_TYPES=()
+add_cleanup_selector_type() {
+  CLEANUP_SELECTOR_TYPES+=("$1")
+  CLEANUP_SELECTOR_PRESENT=true
+}
 if [[ -n "$CLEANUP_PLAN_LOWER" ]]; then
   case "$CLEANUP_PLAN_LOWER" in
     *delete*|*remove*|*archive*|*cleanup*|*"clean up"*|*update*)
@@ -114,19 +119,23 @@ if [[ -n "$CLEANUP_PLAN_LOWER" ]]; then
       CLEANUP_TARGET_PRESENT=true
       ;;
   esac
-  if [[ "$CLEANUP_PLAN_LOWER" == *"@"* \
-    || "$CLEANUP_PLAN_LOWER" == *"email"* \
-    || "$CLEANUP_PLAN_LOWER" == *"e-mail"* \
-    || "$CLEANUP_PLAN_LOWER" == *"duplicate"* \
-    || "$CLEANUP_PLAN_LOWER" == *"idempotency"* \
-    || "$CLEANUP_PLAN_LOWER" == *"payload digest"* \
-    || "$CLEANUP_PLAN_LOWER" == *"record id"* \
-    || "$CLEANUP_PLAN_LOWER" == *"zoho id"* \
-    || "$CLEANUP_PLAN_LOWER" == *"crm id"* \
-    || "$CLEANUP_PLAN_LOWER" == *"external id"* \
-    || "$CLEANUP_PLAN_LOWER" == *"lead id"* ]]; then
-    CLEANUP_SELECTOR_PRESENT=true
-  fi
+  [[ "$CLEANUP_PLAN_LOWER" == *"@"* ]] && add_cleanup_selector_type "email_address_shape"
+  { [[ "$CLEANUP_PLAN_LOWER" == *"email"* ]] || [[ "$CLEANUP_PLAN_LOWER" == *"e-mail"* ]]; } && add_cleanup_selector_type "email_keyword"
+  [[ "$CLEANUP_PLAN_LOWER" == *"duplicate"* ]] && add_cleanup_selector_type "duplicate_field"
+  [[ "$CLEANUP_PLAN_LOWER" == *"idempotency"* ]] && add_cleanup_selector_type "idempotency_key"
+  [[ "$CLEANUP_PLAN_LOWER" == *"payload digest"* ]] && add_cleanup_selector_type "payload_digest"
+  [[ "$CLEANUP_PLAN_LOWER" == *"record id"* ]] && add_cleanup_selector_type "record_id"
+  [[ "$CLEANUP_PLAN_LOWER" == *"zoho id"* ]] && add_cleanup_selector_type "zoho_id"
+  [[ "$CLEANUP_PLAN_LOWER" == *"crm id"* ]] && add_cleanup_selector_type "crm_id"
+  [[ "$CLEANUP_PLAN_LOWER" == *"external id"* ]] && add_cleanup_selector_type "external_id"
+  [[ "$CLEANUP_PLAN_LOWER" == *"lead id"* ]] && add_cleanup_selector_type "lead_id"
+fi
+if ((${#CLEANUP_SELECTOR_TYPES[@]} > 0)); then
+  CLEANUP_SELECTOR_TYPES_JSON="$(
+    printf '%s\n' "${CLEANUP_SELECTOR_TYPES[@]}" | "$JQ_BIN" -R . | "$JQ_BIN" -s 'unique'
+  )"
+else
+  CLEANUP_SELECTOR_TYPES_JSON='[]'
 fi
 
 PAYLOAD="$("$JQ_BIN" -n \
@@ -144,6 +153,7 @@ PAYLOAD="$("$JQ_BIN" -n \
   --argjson cleanupActionPresent "$CLEANUP_ACTION_PRESENT" \
   --argjson cleanupTargetPresent "$CLEANUP_TARGET_PRESENT" \
   --argjson cleanupSelectorPresent "$CLEANUP_SELECTOR_PRESENT" \
+  --argjson cleanupSelectorTypes "$CLEANUP_SELECTOR_TYPES_JSON" \
   --argjson requireCleanup "$REQUIRE_CLEANUP" \
   '
   ($payloadSummary.recordCount // null) as $recordCount
@@ -204,6 +214,8 @@ PAYLOAD="$("$JQ_BIN" -n \
         actionPresent: $cleanupActionPresent,
         targetPresent: $cleanupTargetPresent,
         selectorPresent: $cleanupSelectorPresent,
+        selectorTypes: $cleanupSelectorTypes,
+        selectorTypeCount: ($cleanupSelectorTypes | length),
         qualityReady: (
           $cleanupPlanPresent
           and ($cleanupPlanLength >= 20)

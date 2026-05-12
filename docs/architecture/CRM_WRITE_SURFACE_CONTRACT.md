@@ -281,7 +281,10 @@ selector such as email, record id, duplicate field, idempotency key, or payload
 digest with `cleanup_plan_selector_missing`, and reports
 `status=payload_preflight_ready` with `nextAction=run_crm_fixture_live_smoke_dry_run`
 only when the payload is a dedicated fixture candidate and
-`cleanup.qualityReady=true`. It does not grant any live-write permission;
+`cleanup.qualityReady=true`. Successful or blocked reports include redacted
+`cleanup.selectorTypes` such as `email_keyword`, `record_id`,
+`idempotency_key`, or `payload_digest`, but never store raw selector values. It
+does not grant any live-write permission;
 `releasePosture.agentMayRunLiveFixture=false` remains true until the operator
 provides the exact live fixture gates.
 

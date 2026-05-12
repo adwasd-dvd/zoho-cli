@@ -240,7 +240,9 @@ Use this skill as the default operating contract for an OpenClaw agent acting li
   `cleanup_plan_action_missing`, `cleanup_plan_target_missing`, and
   `cleanup_plan_selector_missing` as blockers that require a more specific
   cleanup plan with a selector such as fixture email, record id, duplicate field,
-  idempotency key, or payload digest before any Zoho-backed smoke. Then run
+  idempotency key, or payload digest before any Zoho-backed smoke. Inspect
+  redacted `cleanup.selectorTypes` to see which selector category was detected;
+  do not ask for or log the raw selector value. Then run
   `ops/scripts/crm_fixture_operator_readiness_bundle.sh` against the dry-run
   smoke summary and require `ready_for_operator_live_fixture`; it keeps normal
   `zoho crm upsert --execute` blocked and reports

@@ -89,7 +89,8 @@ CRM SDK planning:
   or `live_fixture_recorded`; `crm-017` also requires cleanup plans to include a
   selector such as fixture email, record id, duplicate field, idempotency key, or
   payload digest, otherwise `cleanup_plan_selector_missing` blocks before any
-  Zoho-backed smoke)
+  Zoho-backed smoke; `crm-018` reports redacted `cleanup.selectorTypes` without
+  raw selector values)
 - `docs/releases/CRM_V0_5_FIXTURE_PAYLOAD_TEMPLATE.json` (`crm-015`: safe
   one-record `Leads` template with `.example.invalid` placeholder data; copy and
   edit outside the repo before live fixture mode; smoke reports

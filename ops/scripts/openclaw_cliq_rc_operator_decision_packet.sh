@@ -117,6 +117,25 @@ PAYLOAD="$("$JQ_BIN" -n \
         releaseNotesDraft: ($plan.evidence.releaseNotesDraft.file // null),
         handoffManifest: ($drift.source.manifestFile // null)
       },
+      reportFiles: {
+        publishPlan: $publishPlanFile,
+        sourceDrift: $sourceDriftFile,
+        selectionReview: $selectionReviewFile,
+        operatorBundle: ($plan.evidence.operatorBundle.file // null),
+        releaseNotesDraft: ($plan.evidence.releaseNotesDraft.file // null),
+        handoffManifest: ($drift.source.manifestFile // null)
+      },
+      reportsReady: {
+        publishPlan: (($publishPlanExit == 0) and ($planStatus == "operator_publish_plan_ready")),
+        sourceDrift: (($sourceDriftExit == 0) and ($driftStatus == "package_source_unchanged")),
+        selectionReview: (
+          (($selectionReviewExit == 0) and ($reviewStatus == "operator_publish_selection_ready"))
+          or (($reviewStatus == "blocked") and ((($review.blockers // []) | index("publish_path_not_selected")) != null))
+        ),
+        operatorBundle: (($plan.evidence.operatorBundle.file // null) != null and ($plan.evidence.operatorBundle.status // null) == "operator_publish_bundle_ready"),
+        releaseNotesDraft: (($plan.evidence.releaseNotesDraft.file // null) != null and ($plan.evidence.releaseNotesDraft.status // null) == "draft_ready"),
+        handoffManifest: (($drift.source.manifestFile // null) != null)
+      },
       commandExits: {
         publishPlan: $publishPlanExit,
         sourceDrift: $sourceDriftExit,

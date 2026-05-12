@@ -20,9 +20,9 @@ cliq:
 openclaw_cliq_channel:
   priority: 3
   status: completed_for_rc
-  phase: post_crm_readiness_report_metadata_decision_indexed
+  phase: decision_packet_report_metadata_indexed
   target_release: v0.4.0
-  current_milestone: cliq-channel-480-post-crm-readiness-report-metadata-decision-evidence
+  current_milestone: cliq-channel-481-decision-packet-report-metadata
   blockers: []
 
 crm:

@@ -120,6 +120,9 @@ Expected local pre-publish posture:
 - decision packet reports `awaiting_operator_publish_path` before a path is
   selected, or `operator_publish_selection_ready` after a path is selected,
   while keeping `agentMayExecuteSelectedPath=false`
+- decision packet exposes basename-only `reportFiles` and `reportsReady` for
+  the publish plan, source drift check, selection review, operator bundle,
+  release notes draft, and handoff manifest
 - `npmPromotionRequiresOperatorApproval=true`
 
 The promotion preflight is intentionally strict: `ready_for_operator_publish`

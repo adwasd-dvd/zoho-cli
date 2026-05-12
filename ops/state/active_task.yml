@@ -1,22 +1,21 @@
-id: cliq-channel-480
-title: record post-CRM readiness-report-metadata RC decision evidence
+id: cliq-channel-481
+title: add Cliq RC decision packet report metadata
 module: openclaw_cliq_channel
 stage: completed
 status: completed
 owner: coder
-updated_at: '2026-05-12T10:26:49Z'
+updated_at: '2026-05-12T10:39:21Z'
 execution_mode: turbo_20x
 throughput_policy_ref: ops/state/execution_policy.yml
 success_criteria:
-  - post-CRM readiness-report-metadata source drift guard reports `package_source_unchanged`
-  - operator decision packet reports `awaiting_operator_publish_path`
-  - artifact, install smoke, promotion, and trusted reply evidence remain ready in the decision packet
-  - RC checklist, operator handoff, README, Lane 3 index, and state docs record the new evidence
+  - operator decision packet emits basename-only `reportFiles`
+  - operator decision packet emits `reportsReady` booleans for generated and referenced evidence
+  - selected-path and awaiting-path decision states keep `agentMayExecuteSelectedPath=false`
+  - Lane 2, Lane 3, and Lane 1 docs describe the report metadata
   - publish, tag, npm promotion, GitHub release, and expectedIntegrity fill remain operator-only
-next_if_done: Operator chooses the native Cliq RC artifact path with `ops/scripts/openclaw_cliq_rc_operator_decision_packet.sh`; CRM fixture dry-run remains gated on a copied dedicated payload and cleanup plan.
+next_if_done: Continue to the next safe RC readiness milestone without publishing or tagging; CRM fixture dry-run remains gated on a copied dedicated payload and cleanup plan.
 progress:
-  - "2026-05-12T10:17:20Z source drift run `20260512T100443Z-crm-readiness-report-metadata-postcommit-source` returned `package_source_unchanged`, `headCommit=0789a7348f7ebebb97c07f7f61e6ac2a3c1cedce`, `repoChangedSinceManifest=true`, `repoChangedFileCount=26`, and `packageDrift.packageChangedSinceManifest=false`."
-  - "2026-05-12T10:17:20Z decision packet `20260512T100443Z-crm-readiness-report-metadata-postcommit-decision` returned `awaiting_operator_publish_path`, `publish_path_not_selected`, `operator_publish_plan_ready`, `artifact_verified`, `install_smoke_passed`, `trusted_reply_recorded`, and `agentMayExecuteSelectedPath=false`."
-  - "2026-05-12T10:17:20Z no publish, tag, npm promotion, GitHub release, expectedIntegrity fill, Zoho call, or CRM live write was performed."
-  - "2026-05-12T10:26:49Z focused verification passed: OpenClaw Cliq RC checklist/operator handoff contract, Lane 3 required paths/troubleshooting contract, and markdown update -> 5 passed in 0.02s; ruff format/check, YAML parse, and `git diff --check` passed."
-next_step: Commit and push the post-CRM readiness-report-metadata decision evidence slice, then continue to the next safe RC readiness milestone.
+  - "2026-05-12T10:33:34Z extended `ops/scripts/openclaw_cliq_rc_operator_decision_packet.sh` with basename-only `reportFiles` and `reportsReady` for publish plan, source drift, selection review, operator bundle, release notes draft, and handoff manifest."
+  - "2026-05-12T10:33:34Z focused script tests passed for awaiting publish path, selected publish path, and package drift decision states; no publish, tag, npm promotion, GitHub release, expectedIntegrity fill, Zoho call, or CRM live write was performed."
+  - "2026-05-12T10:39:21Z verification passed: shell syntax for decision packet/publish plan/source drift/selection review scripts; decision packet script states plus RC checklist/operator handoff contract, Lane 3 required paths/troubleshooting contract, and markdown update -> 8 passed in 1.76s; ruff format/check, YAML parse, and `git diff --check` passed."
+next_step: Commit and push the decision packet report metadata slice, then continue to the next safe RC readiness milestone.

@@ -227,6 +227,9 @@ After sync, ensure the AI user follows:
     current publish handoff; `awaiting_operator_publish_path` is the normal
     waiting state, `operator_publish_selection_ready` still requires operator
     review/execution, and `agentMayExecuteSelectedPath=false` must stay false
+  - parse decision-packet `reportFiles` and `reportsReady` to hand off publish
+    plan, source drift, selection review, operator bundle, release notes draft,
+    and handoff manifest evidence by basename without logging local paths
   - require `openclaw_cliq_public_callback_smoke` /
     `public_callback_verified` for a reachable public Bot callback URL before
     claiming production incident readiness

@@ -1875,6 +1875,22 @@ def test_openclaw_cliq_rc_operator_decision_packet_awaits_publish_path(
     assert payload["verifiedStatuses"]["sourceDrift"] == "package_source_unchanged"
     assert payload["verifiedStatuses"]["selectionReview"] == "blocked"
     assert payload["sourceDrift"]["packageChangedSinceManifest"] is False
+    assert payload["reportFiles"] == {
+        "publishPlan": "openclaw_cliq_rc_publish_plan_unit-decision-awaiting.json",
+        "sourceDrift": "openclaw_cliq_rc_source_drift_check_unit-decision-awaiting.json",
+        "selectionReview": "openclaw_cliq_rc_operator_selection_review_unit-decision-awaiting.json",
+        "operatorBundle": "operator-bundle.json",
+        "releaseNotesDraft": "release-notes.md",
+        "handoffManifest": "handoff-manifest.json",
+    }
+    assert payload["reportsReady"] == {
+        "publishPlan": True,
+        "sourceDrift": True,
+        "selectionReview": True,
+        "operatorBundle": True,
+        "releaseNotesDraft": True,
+        "handoffManifest": True,
+    }
     assert payload["nextAction"] == "operator_select_publish_path"
     assert payload["safety"]["agentMayExecuteSelectedPath"] is False
     assert "npm_rc_publish" in {path["id"] for path in payload["publishPaths"]}
@@ -1919,6 +1935,14 @@ def test_openclaw_cliq_rc_operator_decision_packet_indexes_selected_path(
     assert (
         payload["selectedPublishPathReview"]["requiresExplicitOperatorApproval"] is True
     )
+    assert payload["reportsReady"] == {
+        "publishPlan": True,
+        "sourceDrift": True,
+        "selectionReview": True,
+        "operatorBundle": True,
+        "releaseNotesDraft": True,
+        "handoffManifest": True,
+    }
     assert payload["nextAction"] == "operator_review_selected_publish_path"
 
 

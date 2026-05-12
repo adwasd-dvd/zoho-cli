@@ -182,7 +182,12 @@ Use this skill as the default operating contract for an OpenClaw agent acting li
   starting point for the operator's `/tmp/lead-fixture.json`; it contains
   `.example.invalid` placeholder data and must be replaced with a dedicated
   operator-owned test email plus cleanup plan before any live fixture gates are
-  considered. The smoke script reports
+  considered. Run
+  `ops/scripts/crm_fixture_operator_readiness_bundle.sh` against the dry-run
+  smoke summary and require `ready_for_operator_live_fixture`; it keeps normal
+  `zoho crm upsert --execute` blocked and reports
+  `fixture_payload_placeholder_email` while template markers remain. The smoke
+  script reports
   `payloadTemplatePlaceholders.emailCount` and blocks live mode with
   `fixture_payload_placeholder_email` if template email markers remain.
 - Draft before high-impact send/delete actions unless the user explicitly asks for direct execution.

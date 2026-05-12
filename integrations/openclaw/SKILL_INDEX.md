@@ -60,6 +60,10 @@ CRM SDK planning:
 - `zoho crm fixture-evidence` (`crm-014`: smoke summary/audit checker,
   `policyId=crm-014-operator-fixture-evidence`, reports `incomplete`,
   `ready_for_operator_live_fixture`, or `live_fixture_recorded`)
+- `ops/scripts/crm_fixture_operator_readiness_bundle.sh` (`crm-015`: no-write
+  operator readiness bundle for an existing dry-run smoke summary; requires
+  `ready_for_operator_live_fixture`, placeholder email count zero, and keeps
+  normal `zoho crm upsert --execute` blocked)
 - `docs/releases/CRM_V0_5_FIXTURE_PAYLOAD_TEMPLATE.json` (`crm-015`: safe
   one-record `Leads` template with `.example.invalid` placeholder data; copy and
   edit outside the repo before live fixture mode; smoke reports

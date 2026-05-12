@@ -246,6 +246,22 @@ reads the redacted audit JSONL, and reports:
 This command is the RC evidence checker. It does not enable broad CRM writes;
 normal `zoho crm upsert --execute` stays blocked.
 
+`ops/scripts/crm_fixture_operator_readiness_bundle.sh` wraps an existing
+dry-run smoke summary and `zoho crm fixture-evidence` into one no-write operator
+handoff JSON:
+
+```bash
+ZOHO_CRM_FIXTURE_SUMMARY_FILE=tests/auto_pilot/reports/crm_fixture_live_smoke_summary_<run>.json \
+ops/scripts/crm_fixture_operator_readiness_bundle.sh
+```
+
+The bundle reports `ready_for_operator_live_fixture` only when the evidence
+checker is ready, `payloadTemplatePlaceholders.emailCount=0`, redaction is OK,
+no live result was recorded, normal upsert execution remains blocked, and the
+agent still lacks permission to run the live fixture. It reports blockers such
+as `summary_file_missing`, `fixture_evidence_not_ready`,
+`payload_placeholder_count_missing`, and `fixture_payload_placeholder_email`.
+
 ## Operator payload template
 
 `docs/releases/CRM_V0_5_FIXTURE_PAYLOAD_TEMPLATE.json` is the copy-only starting

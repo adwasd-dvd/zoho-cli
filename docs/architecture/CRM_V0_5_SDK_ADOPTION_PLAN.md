@@ -198,6 +198,19 @@ adapter proves parity on the read-only surface. The CLI contract remains:
   missing reports/events, expected dry-run blockers, and live env gates.
 - Broad CRM writes remain disabled.
 
+## Implemented in crm-015
+
+- Added `ops/scripts/crm_fixture_operator_readiness_bundle.sh` as the no-write
+  operator handoff wrapper for an existing dry-run smoke summary.
+- The bundle runs `zoho crm fixture-evidence`, requires
+  `payloadTemplatePlaceholders.emailCount=0`, keeps normal
+  `zoho crm upsert --execute` blocked, and reports
+  `ready_for_operator_live_fixture` only when the remaining action is operator
+  live-fixture approval.
+- It blocks incomplete handoffs with stable reasons such as
+  `summary_file_missing`, `fixture_evidence_not_ready`,
+  `payload_placeholder_count_missing`, and `fixture_payload_placeholder_email`.
+
 ## v0.5 slices
 
 1. `crm-004` SDK adapter skeleton (completed):
@@ -245,9 +258,10 @@ adapter proves parity on the read-only surface. The CLI contract remains:
    - add a CLI evidence checker for the smoke summary and audit JSONL;
    - classify operator readiness and recorded live fixture evidence without
      writing CRM data.
-12. `crm-015` operator live fixture evidence:
+12. `crm-015` operator fixture readiness and live evidence:
    - use the smoke script against a real dedicated CRM fixture payload when the
      operator provides one;
+   - run the no-write readiness bundle before live mode;
    - archive redacted reports and decide whether v0.5 should broaden guarded
      upsert support or stop at fixture evidence.
 

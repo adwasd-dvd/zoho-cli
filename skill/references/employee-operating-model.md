@@ -99,3 +99,9 @@ classify smoke reports before and after a real fixture. Treat
 `ready_for_operator_live_fixture` as the last pre-live status and
 `live_fixture_recorded` as the only release evidence status for a completed CRM
 fixture write.
+In `crm-015`, run `ops/scripts/crm_fixture_operator_readiness_bundle.sh` against
+the dry-run smoke summary before live mode. It requires
+`payloadTemplatePlaceholders.emailCount=0`, keeps normal
+`zoho crm upsert --execute` blocked, and reports
+`fixture_payload_placeholder_email` while the copied payload still contains
+template markers.

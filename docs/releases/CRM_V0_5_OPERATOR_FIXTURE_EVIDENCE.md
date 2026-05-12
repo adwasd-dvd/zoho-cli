@@ -43,11 +43,21 @@ zoho crm fixture-evidence \
   --summary-file tests/auto_pilot/reports/crm_fixture_live_smoke_summary_<run>.json
 ```
 
+Or produce the operator readiness bundle from the same dry-run summary:
+
+```bash
+ZOHO_CRM_FIXTURE_SUMMARY_FILE=tests/auto_pilot/reports/crm_fixture_live_smoke_summary_<run>.json \
+ops/scripts/crm_fixture_operator_readiness_bundle.sh
+```
+
 Expected dry-run status before any live write:
 
 - `policyId=crm-014-operator-fixture-evidence`
 - `status=ready_for_operator_live_fixture`
 - `operatorReadiness.readyForLiveFixture=true`
+- bundle `status=ready_for_operator_live_fixture`
+- bundle `releasePosture.normalUpsertExecuteBlocked=true`
+- bundle `releasePosture.agentMayExecuteLiveFixture=false`
 - `blockingReasons=["live_fixture_not_recorded"]`
 - `redaction.ok=true`
 
@@ -55,6 +65,9 @@ If the status is `incomplete`, fix the reported missing report, audit event,
 scope evidence, cleanup plan, or redaction blocker before considering live mode.
 Before live mode, also inspect the smoke summary JSON directly and require
 `payloadTemplatePlaceholders.emailCount=0`.
+The readiness bundle enforces that same placeholder check and blocks with
+`fixture_payload_placeholder_email` when the copied template still contains a
+placeholder email.
 
 ## Live fixture evidence
 

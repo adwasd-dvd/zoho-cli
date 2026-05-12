@@ -222,9 +222,20 @@ zoho crm fixture-evidence \
   --summary-file tests/auto_pilot/reports/crm_fixture_live_smoke_summary_<run>.json
 ```
 
+Bundle the dry-run readiness handoff before live mode:
+
+```bash
+ZOHO_CRM_FIXTURE_SUMMARY_FILE=tests/auto_pilot/reports/crm_fixture_live_smoke_summary_<run>.json \
+ops/scripts/crm_fixture_operator_readiness_bundle.sh
+```
+
 `crm-014` reports `incomplete`, `ready_for_operator_live_fixture`, or
 `live_fixture_recorded`. Treat `redaction.ok=true` as required evidence and keep
 normal `zoho crm upsert --execute` blocked.
+The readiness bundle must report `ready_for_operator_live_fixture`,
+`normalUpsertExecuteBlocked=true`, and `agentMayExecuteLiveFixture=false`; it
+blocks with `fixture_payload_placeholder_email` until the copied fixture payload
+uses a dedicated non-placeholder test email.
 
 ## Bridge fallback (explicit)
 

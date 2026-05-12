@@ -162,6 +162,26 @@ PAYLOAD="$("$JQ_BIN" -n \
       },
       operatorReview: {
         liveApproval: {
+          readyFacts: ([
+            (if $summaryExists then "summary_file_ready" else empty end),
+            (if ($evidenceExists and ($evidenceStatus == "ready_for_operator_live_fixture" or $evidenceStatus == "live_fixture_recorded")) then "dry_run_readiness_ready" else empty end),
+            (if ($evidenceExists and ($evidenceStatus == "ready_for_operator_live_fixture" or $evidenceStatus == "live_fixture_recorded")) then "fixture_evidence_ready" else empty end),
+            (if (($summaryReport.payloadDigest // "") != "") then "payload_digest_present" else empty end),
+            (if (($summaryReport.idempotencyKey // "") != "") then "idempotency_key_present" else empty end),
+            (if (($summaryReport.requiredApproval // "") != "") then "required_approval_present" else empty end),
+            (if ($emailPlaceholders == 0) then "placeholder_email_count_zero" else empty end),
+            "command_preview_uses_placeholders",
+            "agent_execution_blocked"
+          ] | unique),
+          missingFacts: ([
+            (if $summaryExists then empty else "summary_file" end),
+            (if ($evidenceExists and ($evidenceStatus == "ready_for_operator_live_fixture" or $evidenceStatus == "live_fixture_recorded")) then empty else "dry_run_readiness" end),
+            (if ($evidenceExists and ($evidenceStatus == "ready_for_operator_live_fixture" or $evidenceStatus == "live_fixture_recorded")) then empty else "fixture_evidence" end),
+            (if (($summaryReport.payloadDigest // "") != "") then empty else "payload_digest" end),
+            (if (($summaryReport.idempotencyKey // "") != "") then empty else "idempotency_key" end),
+            (if (($summaryReport.requiredApproval // "") != "") then empty else "required_approval" end),
+            (if ($emailPlaceholders == 0) then empty else "placeholder_email_count_zero" end)
+          ] | unique),
           summaryFileReady: $summaryExists,
           dryRunReadinessReady: ($evidenceExists and ($evidenceStatus == "ready_for_operator_live_fixture" or $evidenceStatus == "live_fixture_recorded")),
           fixtureEvidenceReady: ($evidenceExists and ($evidenceStatus == "ready_for_operator_live_fixture" or $evidenceStatus == "live_fixture_recorded")),

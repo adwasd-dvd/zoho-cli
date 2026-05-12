@@ -267,6 +267,8 @@ adapter proves parity on the read-only surface. The CLI contract remains:
    - inspect redacted `operatorReview.liveApproval` booleans before asking for
      live approval; the exact approval token stays in the operator-controlled
      smoke summary and agents keep `agentMayExecute=false`;
+   - use `operatorReview.liveApproval.readyFacts` / `missingFacts` to explain
+     remaining approval blockers without leaking raw payload or approval values;
    - archive redacted reports and decide whether v0.5 should broaden guarded
      upsert support or stop at fixture evidence.
 

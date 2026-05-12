@@ -267,8 +267,9 @@ Use this skill as the default operating contract for an OpenClaw agent acting li
   operator-only boundary, and never substitute raw values into logs. Inspect
   `operatorReview.liveApproval` before asking for live approval; require the
   summary/evidence, payload digest, idempotency key, required approval, and
-  placeholder checks to be true while `agentMayExecute=false`, and never log
-  the exact approval token. Use
+  placeholder checks to be true while `agentMayExecute=false`. Prefer
+  `operatorReview.liveApproval.readyFacts` / `missingFacts` to explain missing
+  approval categories, and never log the exact approval token. Use
   `reportFiles` and `reportsReady` to pass generated packet/preflight/readiness
   evidence by basename; do not log local directories.
 - Draft before high-impact send/delete actions unless the user explicitly asks for direct execution.

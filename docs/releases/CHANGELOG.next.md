@@ -28,6 +28,7 @@
 - Added `crm-021` operator packet report metadata: CRM fixture operator packets now expose `reportFiles` and `reportsReady` basenames for packet/preflight/readiness/smoke-summary handoff without logging local paths.
 - Added `crm-022` readiness bundle report metadata: CRM fixture operator readiness bundles now expose `reportFiles` and `reportsReady` basenames for `readinessBundle`, `smokeSummary`, and `fixtureEvidence` handoff without logging local paths.
 - Added `crm-023` live approval facts: CRM fixture operator packets and readiness bundles now expose redacted `operatorReview.liveApproval` booleans for summary/evidence readiness, payload digest, idempotency key, required approval presence, placeholder status, and operator-only execution gates without logging the exact approval token.
+- Added `crm-024` live approval fact categories: `operatorReview.liveApproval.readyFacts` and `missingFacts` now tell agents exactly which approval facts are present or missing before the operator-only live fixture boundary.
 
 ### Final release (2026-05-04T21:15:20Z)
 - Promoted `0.2.1rc1` to final `0.2.1` after the RC gate stayed green; no additional CLI behavior change was introduced for the final promotion.

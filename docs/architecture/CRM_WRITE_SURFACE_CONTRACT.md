@@ -312,6 +312,11 @@ evidence, payload digest, idempotency key, exact approval token, and placeholder
 email check are present while keeping `agentMayExecute=false`; it stores no raw
 approval token, raw idempotency key, payload values, cleanup text, or selector
 values.
+`crm-024` adds `operatorReview.liveApproval.readyFacts` and
+`operatorReview.liveApproval.missingFacts` so an agent can branch on category
+names such as `summary_file`, `dry_run_readiness`, `fixture_evidence`,
+`payload_digest`, `idempotency_key`, and `required_approval` without inferring
+from individual booleans or exposing raw values.
 `reportFiles` and `reportsReady` expose only artifact basenames for the packet,
 payload preflight, optional dry-run readiness bundle, and optional smoke summary
 so agents can archive or pass evidence without logging local paths.

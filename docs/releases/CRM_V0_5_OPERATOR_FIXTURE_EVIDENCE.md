@@ -108,6 +108,10 @@ It reports booleans such as `summaryFileReady`, `dryRunReadinessReady`,
 `requiresExplicitOperatorApproval=true` before a live fixture, and it does not
 store the exact approval token, raw idempotency key, raw payload values, raw
 cleanup text, or raw selector values.
+It also includes `readyFacts` and `missingFacts` so agents can explain the
+operator handoff in stable categories such as `summary_file`,
+`dry_run_readiness`, `fixture_evidence`, `payload_digest`, `idempotency_key`,
+and `required_approval` without reconstructing or logging raw values.
 
 For evidence handoff, the same packet exposes `reportFiles` and `reportsReady`.
 Those fields contain only basenames for the operator packet, payload preflight,

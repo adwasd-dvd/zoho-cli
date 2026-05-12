@@ -2842,6 +2842,19 @@ def test_crm_fixture_operator_packet_reports_missing_payload(
     assert "<copied-fixture-payload.json>" in next_commands[0]["command"]
     assert payload["operatorReview"]["cleanupSelectorTypes"] == []
     assert payload["operatorReview"]["liveApproval"] == {
+        "readyFacts": [
+            "agent_execution_blocked",
+            "command_preview_uses_placeholders",
+        ],
+        "missingFacts": [
+            "dry_run_readiness",
+            "fixture_evidence",
+            "idempotency_key",
+            "payload_digest",
+            "placeholder_email_count_zero",
+            "required_approval",
+            "summary_file",
+        ],
         "summaryFileReady": False,
         "dryRunReadinessReady": False,
         "fixtureEvidenceReady": False,
@@ -2945,6 +2958,19 @@ def test_crm_fixture_operator_packet_accepts_payload_preflight(
     assert payload["operatorReview"]["cleanupSelectorTypeCount"] == 1
     assert payload["operatorReview"]["liveApproval"]["summaryFileReady"] is False
     assert payload["operatorReview"]["liveApproval"]["dryRunReadinessReady"] is False
+    assert payload["operatorReview"]["liveApproval"]["readyFacts"] == [
+        "agent_execution_blocked",
+        "command_preview_uses_placeholders",
+    ]
+    assert payload["operatorReview"]["liveApproval"]["missingFacts"] == [
+        "dry_run_readiness",
+        "fixture_evidence",
+        "idempotency_key",
+        "payload_digest",
+        "placeholder_email_count_zero",
+        "required_approval",
+        "summary_file",
+    ]
     assert payload["operatorReview"]["liveApproval"]["agentMayExecute"] is False
     assert (
         payload["operatorReview"]["liveApproval"]["requiresExplicitOperatorApproval"]
@@ -3104,6 +3130,18 @@ def test_crm_fixture_operator_packet_wraps_dry_run_readiness(
     ]
     assert payload["operatorReview"]["missingFacts"] == []
     assert payload["operatorReview"]["liveApproval"] == {
+        "readyFacts": [
+            "agent_execution_blocked",
+            "command_preview_uses_placeholders",
+            "dry_run_readiness_ready",
+            "fixture_evidence_ready",
+            "idempotency_key_present",
+            "payload_digest_present",
+            "placeholder_email_count_zero",
+            "required_approval_present",
+            "summary_file_ready",
+        ],
+        "missingFacts": [],
         "summaryFileReady": True,
         "dryRunReadinessReady": True,
         "fixtureEvidenceReady": True,
@@ -3255,6 +3293,18 @@ def test_crm_fixture_operator_readiness_bundle_requires_dry_run_evidence(
         ],
     }
     assert payload["operatorReview"]["liveApproval"] == {
+        "readyFacts": [
+            "agent_execution_blocked",
+            "command_preview_uses_placeholders",
+            "dry_run_readiness_ready",
+            "fixture_evidence_ready",
+            "idempotency_key_present",
+            "payload_digest_present",
+            "placeholder_email_count_zero",
+            "required_approval_present",
+            "summary_file_ready",
+        ],
+        "missingFacts": [],
         "summaryFileReady": True,
         "dryRunReadinessReady": True,
         "fixtureEvidenceReady": True,

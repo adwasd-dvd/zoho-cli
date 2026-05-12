@@ -1,24 +1,23 @@
-id: crm-023
-title: add CRM fixture live approval facts
+id: crm-024
+title: add CRM fixture live approval fact categories
 module: crm
 stage: completed
 status: completed
 owner: coder
-updated_at: '2026-05-12T12:02:02Z'
+updated_at: '2026-05-12T12:13:06Z'
 execution_mode: turbo_20x
 throughput_policy_ref: ops/state/execution_policy.yml
 success_criteria:
-  - CRM fixture operator packets expose redacted `operatorReview.liveApproval` booleans
-  - CRM fixture readiness bundles expose the same live approval readiness booleans
+  - CRM fixture operator packets expose `operatorReview.liveApproval.readyFacts` and `missingFacts`
+  - CRM fixture readiness bundles expose the same live approval fact categories
   - exact approval token, raw idempotency key, raw payload values, raw cleanup text, and raw selector values stay out of reports
   - live fixture execution remains operator-only with `agentMayExecute=false`
   - Lane 2, Lane 3, and Lane 1 docs record the new handoff contract
 next_if_done: Continue to the next safe RC readiness milestone without publishing, tagging, or running live CRM writes.
 progress:
-  - "2026-05-12T11:49:00Z added `operatorReview.liveApproval` to `ops/scripts/crm_fixture_operator_packet.sh` and `ops/scripts/crm_fixture_operator_readiness_bundle.sh`."
-  - "2026-05-12T11:49:00Z live approval facts include summary/evidence readiness, payload digest presence, idempotency key presence, required approval presence, placeholder-email zero state, placeholder command-preview state, and operator-only execution booleans."
-  - "2026-05-12T11:49:00Z redaction flags keep raw approval token, raw idempotency key, raw payload values, raw cleanup text, and raw selector values out of reports."
-  - "2026-05-12T11:50:00Z focused script verification passed: CRM operator packet/readiness bundle live-approval tests -> 5 passed in 1.29s."
-  - "2026-05-12T11:52:00Z local no-write packet run `20260512T114543Z-live-approval-facts` returned `payload_preflight_ready`, `missingFacts=[dry_run_smoke_summary]`, `operatorReview.liveApproval.agentMayExecute=false`, and `nextAction=run_crm_fixture_live_smoke_dry_run` without any Zoho call or CRM write."
-  - "2026-05-12T12:02:02Z broader verification passed: shell syntax for CRM fixture scripts; CRM fixture tests plus Lane 3 CRM contract and markdown update -> 15 passed, 70 deselected in 2.08s; ruff format/check, YAML parse, and `git diff --check` passed."
-next_step: Commit and push the CRM live approval facts slice, then continue to the next safe RC readiness milestone.
+  - "2026-05-12T12:04:30Z added `operatorReview.liveApproval.readyFacts` and `operatorReview.liveApproval.missingFacts` to `ops/scripts/crm_fixture_operator_packet.sh` and `ops/scripts/crm_fixture_operator_readiness_bundle.sh`."
+  - "2026-05-12T12:04:30Z category names include `summary_file`, `dry_run_readiness`, `fixture_evidence`, `payload_digest`, `idempotency_key`, `required_approval`, and `placeholder_email_count_zero` so agents do not infer approval blockers from booleans."
+  - "2026-05-12T12:05:00Z focused script verification passed: CRM operator packet/readiness bundle approval category tests -> 5 passed in 1.29s."
+  - "2026-05-12T12:05:30Z local no-write packet run `20260512T120343Z-live-approval-facts-detail` returned `payload_preflight_ready`, top-level `missingFacts=[dry_run_smoke_summary]`, `operatorReview.liveApproval.readyFacts=[agent_execution_blocked,command_preview_uses_placeholders]`, and live-approval missing facts for summary/readiness/evidence/digest/idempotency/approval/placeholder without any Zoho call or CRM write."
+  - "2026-05-12T12:13:06Z broader verification passed: shell syntax for CRM fixture scripts; CRM fixture tests plus Lane 3 CRM contract and markdown update -> 15 passed, 70 deselected in 2.54s; ruff format/check, YAML parse, and `git diff --check` passed."
+next_step: Commit and push the CRM live approval fact categories slice, then continue to the next safe RC readiness milestone.

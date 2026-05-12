@@ -111,7 +111,8 @@ CRM SDK planning:
   execution gates; `crm-021` adds `reportFiles` and `reportsReady` basename
   metadata for packet/preflight/readiness/smoke-summary handoff; `crm-023` adds
   redacted `operatorReview.liveApproval` booleans for approval readiness while
-  keeping `agentMayExecute=false`)
+  keeping `agentMayExecute=false`; `crm-024` adds live-approval `readyFacts` and
+  `missingFacts` categories for AI handoff decisions)
 - `docs/releases/CRM_V0_5_FIXTURE_PAYLOAD_TEMPLATE.json` (`crm-015`: safe
   one-record `Leads` template with `.example.invalid` placeholder data; copy and
   edit outside the repo before live fixture mode; smoke reports

@@ -210,6 +210,30 @@ PAYLOAD="$("$JQ_BIN" -n \
       ]
       end
     ) as $nextCommands
+  | (
+      [
+        (if (($summaryFile != null) and ($readinessSkipped | not)) then "summary_file_ready" else empty end),
+        (if (($readinessStatus == "ready_for_operator_live_fixture") or ($readinessStatus == "live_fixture_recorded")) then "dry_run_readiness_ready" else empty end),
+        (if ($readinessReport.operatorReview.liveApproval.fixtureEvidenceReady // false) then "fixture_evidence_ready" else empty end),
+        (if ($readinessReport.summary.payloadDigestPresent // (($readinessReport.summary.payloadDigest // null) != null)) then "payload_digest_present" else empty end),
+        (if ($readinessReport.summary.idempotencyKeyPresent // false) then "idempotency_key_present" else empty end),
+        (if ($readinessReport.summary.requiredApprovalPresent // false) then "required_approval_present" else empty end),
+        (if (($readinessReport.summary.payloadTemplatePlaceholders.emailCount // null) == 0) then "placeholder_email_count_zero" else empty end),
+        "command_preview_uses_placeholders",
+        "agent_execution_blocked"
+      ] | unique
+    ) as $liveApprovalReadyFacts
+  | (
+      [
+        (if (($summaryFile != null) and ($readinessSkipped | not)) then empty else "summary_file" end),
+        (if (($readinessStatus == "ready_for_operator_live_fixture") or ($readinessStatus == "live_fixture_recorded")) then empty else "dry_run_readiness" end),
+        (if ($readinessReport.operatorReview.liveApproval.fixtureEvidenceReady // false) then empty else "fixture_evidence" end),
+        (if ($readinessReport.summary.payloadDigestPresent // (($readinessReport.summary.payloadDigest // null) != null)) then empty else "payload_digest" end),
+        (if ($readinessReport.summary.idempotencyKeyPresent // false) then empty else "idempotency_key" end),
+        (if ($readinessReport.summary.requiredApprovalPresent // false) then empty else "required_approval" end),
+        (if (($readinessReport.summary.payloadTemplatePlaceholders.emailCount // null) == 0) then empty else "placeholder_email_count_zero" end)
+      ] | unique
+    ) as $liveApprovalMissingFacts
   | {
       schemaVersion: 1,
       kind: "crm_fixture_operator_packet",
@@ -265,6 +289,8 @@ PAYLOAD="$("$JQ_BIN" -n \
         cleanupSelectorTypes: ($preflightReport.cleanup.selectorTypes // []),
         cleanupSelectorTypeCount: (($preflightReport.cleanup.selectorTypes // []) | length),
         liveApproval: {
+          readyFacts: $liveApprovalReadyFacts,
+          missingFacts: $liveApprovalMissingFacts,
           summaryFileReady: (($summaryFile != null) and ($readinessSkipped | not)),
           dryRunReadinessReady: (($readinessStatus == "ready_for_operator_live_fixture") or ($readinessStatus == "live_fixture_recorded")),
           fixtureEvidenceReady: ($readinessReport.operatorReview.liveApproval.fixtureEvidenceReady // false),

@@ -75,6 +75,7 @@ Current implementation-only delta:
 - `crm-021` adds `reportFiles` and `reportsReady` to the packet so agents can hand off generated packet/preflight/readiness/smoke-summary basenames without logging local paths.
 - `crm-022` adds the same basename-only `reportFiles` and `reportsReady` handoff metadata to `ops/scripts/crm_fixture_operator_readiness_bundle.sh` for `readinessBundle`, `smokeSummary`, and `fixtureEvidence`.
 - `crm-023` adds redacted `operatorReview.liveApproval` to CRM fixture operator packets and readiness bundles; inspect these booleans for summary/evidence readiness, payload digest, idempotency key, required approval presence, placeholder status, and `agentMayExecute=false` before asking the operator for a live fixture approval.
+- `crm-024` adds `operatorReview.liveApproval.readyFacts` and `operatorReview.liveApproval.missingFacts`; prefer those category lists when explaining what approval facts remain missing.
 
 ## Required behavior support after lane3 sync
 
@@ -304,6 +305,11 @@ After sync, ensure the AI user follows:
     `idempotencyKeyPresent=true`, `requiredApprovalPresent=true`,
     `placeholderEmailCountZero=true`, `commandPreviewUsesPlaceholders=true`,
     and `agentMayExecute=false`
+  - use `operatorReview.liveApproval.readyFacts` /
+    `operatorReview.liveApproval.missingFacts` to decide whether the missing
+    facts are `summary_file`, `dry_run_readiness`, `fixture_evidence`,
+    `payload_digest`, `idempotency_key`, `required_approval`, or
+    `placeholder_email_count_zero`
   - treat `summary_file_missing`, `fixture_evidence_not_ready`,
     `payload_placeholder_count_missing`, and
     `fixture_payload_placeholder_email` as stop-and-fix blockers

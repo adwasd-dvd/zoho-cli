@@ -65,7 +65,9 @@ CRM SDK planning:
   `operator_publish_selection_ready` and agent execution still disabled;
   `cliq-channel-483` records read-only `npm_rc_publish` and
   `github_release_artifact` selected-path readiness with command previews still
-  non-executable by agents)
+  non-executable by agents; `cliq-channel-484` records the post-selected-path
+  source-drift/decision evidence showing commit `8695726a` changed only
+  docs/state relative to the handoff manifest package source)
 - `ops/scripts/openclaw_cliq_bot_no_response_packet.sh`
   (`cliq-channel-472/474`: first responder for Bot no-response reports; runs
   public callback smoke plus live ingress diagnostics, then embeds

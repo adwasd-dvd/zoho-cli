@@ -1,10 +1,14 @@
-last_run_at: "2026-05-12T11:14:45Z"
+last_run_at: "2026-05-12T11:41:00Z"
 last_result: passing
-current_focus: cliq-channel-483-operator-publish-paths-selection-ready
+current_focus: cliq-channel-484-post-selected-path-decision-ready
 suites:
   unit:
     status: passing
     notes:
+      - "cliq-channel-484 post-selected-path source drift started at 2026-05-12T11:31:00Z: run `20260512T113043Z-operator-paths-postcommit-source` returned `package_source_unchanged`, no blockers, `headCommit=8695726a7ac4e421efd04f7e0e25a4a4df6063e3`, `repoChangedFileCount=27`, `packageChangedSinceManifest=false`, and `dirtyFileCount=0`."
+      - "cliq-channel-484 decision packet started at 2026-05-12T11:31:01Z: run `20260512T113043Z-operator-paths-postcommit-decision` returned `awaiting_operator_publish_path`, `publish_path_not_selected`, all `reportsReady=true`, `operator_publish_plan_ready`, `artifact_verified`, `install_smoke_passed`, `trusted_reply_recorded`, and `agentMayExecuteSelectedPath=false`."
+      - "cliq-channel-484 performed no publish, tag, npm promotion, GitHub release, expectedIntegrity fill, Zoho call, or CRM write."
+      - "cliq-channel-484 verification passed at 2026-05-12T11:41:00Z: OpenClaw Cliq RC checklist/operator handoff contract, Lane 3 required paths/troubleshooting contract, and markdown update -> 5 passed in 0.02s; ruff format/check, YAML parse, and `git diff --check` passed."
       - "cliq-channel-483 npm/GitHub RC selected-path evidence started at 2026-05-12T11:06:43Z: decision packet run `20260512T110613Z-npm-rc-selection` returned `operator_publish_selection_ready`, no blockers, `selectedPublishPath=npm_rc_publish`, command preview `npm publish ... --tag rc --access public`, `fillsExpectedIntegrityAfterPublish=true`, all `reportsReady=true`, and `agentMayExecuteSelectedPath=false`."
       - "cliq-channel-483 GitHub artifact selected-path evidence started at 2026-05-12T11:07:08Z: decision packet run `20260512T110613Z-github-release-selection` returned `operator_publish_selection_ready`, no blockers, `selectedPublishPath=github_release_artifact`, command preview `gh release create <operator-approved-rc-tag> ... --prerelease --notes-file <release-notes-draft-path>`, all `reportsReady=true`, and `agentMayExecuteSelectedPath=false`."
       - "cliq-channel-483 selected path reviews kept `selectedPublishPathReview.agentMayExecute=false`, `requiresExplicitOperatorApproval=true`, and no publish/tag/npm promotion/GitHub release/integrity fill or CRM write was performed."

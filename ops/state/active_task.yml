@@ -1,24 +1,24 @@
-id: cliq-channel-483
-title: record npm and GitHub operator RC selected-path evidence
+id: cliq-channel-484
+title: record post-selected-path source-drift decision evidence
 module: openclaw_cliq_channel
 stage: completed
 status: completed
 owner: coder
-updated_at: '2026-05-12T11:14:45Z'
+updated_at: '2026-05-12T11:41:00Z'
 execution_mode: turbo_20x
 throughput_policy_ref: ops/state/execution_policy.yml
 success_criteria:
-  - read-only decision packets report `operator_publish_selection_ready` for `npm_rc_publish` and `github_release_artifact`
-  - selected path reviews expose command previews while keeping `requiresExplicitOperatorApproval=true`
-  - selected path review keeps `agentMayExecute=false` and `agentMayExecuteSelectedPath=false`
-  - Lane 2, Lane 3, and Lane 1 docs record npm RC and GitHub artifact selected-path evidence
-  - publish, tag, npm promotion, GitHub release creation, and expectedIntegrity fill remain operator-only
+  - source drift check after the pushed selected-path evidence commit reports `package_source_unchanged`
+  - decision packet after the pushed selected-path evidence commit reports `awaiting_operator_publish_path`
+  - decision packet keeps all report metadata ready and `agentMayExecuteSelectedPath=false`
+  - Lane 2, Lane 3, and Lane 1 docs record the post-selected-path evidence
+  - publish, tag, npm promotion, GitHub release creation, expectedIntegrity fill, and CRM writes remain blocked
 next_if_done: Continue to the next safe RC readiness milestone without publishing or tagging; CRM fixture dry-run remains gated on a copied dedicated payload and cleanup plan.
 progress:
-  - "2026-05-12T11:06:43Z ran `OPENCLAW_CLIQ_OPERATOR_PUBLISH_PATH=npm_rc_publish OPENCLAW_CLIQ_DECISION_PACKET_RUN_ID=20260512T110613Z-npm-rc-selection ops/scripts/openclaw_cliq_rc_operator_decision_packet.sh`."
-  - "2026-05-12T11:06:43Z npm RC decision packet returned `operator_publish_selection_ready`, no blockers, `selectedPublishPath=npm_rc_publish`, command preview `npm publish ... --tag rc --access public`, `fillsExpectedIntegrityAfterPublish=true`, `requiresExplicitOperatorApproval=true`, all `reportsReady=true`, and `agentMayExecuteSelectedPath=false`."
-  - "2026-05-12T11:07:08Z ran `OPENCLAW_CLIQ_OPERATOR_PUBLISH_PATH=github_release_artifact OPENCLAW_CLIQ_DECISION_PACKET_RUN_ID=20260512T110613Z-github-release-selection ops/scripts/openclaw_cliq_rc_operator_decision_packet.sh`."
-  - "2026-05-12T11:07:08Z GitHub artifact decision packet returned `operator_publish_selection_ready`, no blockers, `selectedPublishPath=github_release_artifact`, command preview `gh release create <operator-approved-rc-tag> ... --prerelease --notes-file <release-notes-draft-path>`, `requiresExplicitOperatorApproval=true`, all `reportsReady=true`, and `agentMayExecuteSelectedPath=false`."
-  - "2026-05-12T11:07:08Z no publish, tag, npm promotion, GitHub release, expectedIntegrity fill, Zoho call, or CRM live write was performed."
-  - "2026-05-12T11:14:45Z verification passed: OpenClaw Cliq RC checklist/operator handoff contract, Lane 3 required paths/troubleshooting contract, and markdown update -> 5 passed in 0.02s; ruff format/check, YAML parse, and `git diff --check` passed."
-next_step: Commit and push the npm/GitHub selected-path evidence slice, then continue to the next safe RC readiness milestone.
+  - "2026-05-12T11:31:00Z ran `OPENCLAW_CLIQ_SOURCE_DRIFT_RUN_ID=20260512T113043Z-operator-paths-postcommit-source ops/scripts/openclaw_cliq_rc_source_drift_check.sh` after pushed commit `8695726a7ac4e421efd04f7e0e25a4a4df6063e3`."
+  - "2026-05-12T11:31:00Z source drift returned `package_source_unchanged`, no blockers, `repoChangedFileCount=27`, `headMatchesManifestSource=false`, `packageDrift.packageChangedSinceManifest=false`, and `packageDrift.dirtyFileCount=0`."
+  - "2026-05-12T11:31:01Z ran `OPENCLAW_CLIQ_DECISION_PACKET_RUN_ID=20260512T113043Z-operator-paths-postcommit-decision ops/scripts/openclaw_cliq_rc_operator_decision_packet.sh`."
+  - "2026-05-12T11:31:01Z decision packet returned `awaiting_operator_publish_path`, `blockers=[publish_path_not_selected]`, `operator_publish_plan_ready`, `package_source_unchanged`, `artifact_verified`, `install_smoke_passed`, `trusted_reply_recorded`, all `reportsReady=true`, and `agentMayExecuteSelectedPath=false`."
+  - "2026-05-12T11:31:01Z no publish, tag, npm promotion, GitHub release, expectedIntegrity fill, Zoho call, or CRM live write was performed."
+  - "2026-05-12T11:41:00Z verification passed: OpenClaw Cliq RC checklist/operator handoff contract, Lane 3 required paths/troubleshooting contract, and markdown update -> 5 passed in 0.02s; ruff format/check, YAML parse, and `git diff --check` passed."
+next_step: Commit and push the post-selected-path decision evidence slice, then continue to the next safe RC readiness milestone.

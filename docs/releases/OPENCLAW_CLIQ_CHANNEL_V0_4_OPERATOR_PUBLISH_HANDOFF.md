@@ -129,6 +129,11 @@ Expected local pre-publish posture:
   `20260512T110613Z-github-release-selection` reports
   `operator_publish_selection_ready`, previews `gh release create ...`, and
   keeps `selectedPublishPathReview.agentMayExecute=false`
+- the post-selected-path docs/state decision packet
+  `20260512T113043Z-operator-paths-postcommit-decision` returns
+  `awaiting_operator_publish_path`, `package_source_unchanged`,
+  `sourceDrift.headCommit=8695726a7ac4e421efd04f7e0e25a4a4df6063e3`,
+  `repoChangedFileCount=27`, and `agentMayExecuteSelectedPath=false`
 - decision packet reports `awaiting_operator_publish_path` before a path is
   selected, or `operator_publish_selection_ready` after a path is selected,
   while keeping `agentMayExecuteSelectedPath=false`

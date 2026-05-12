@@ -142,6 +142,7 @@ integrations/openclaw/ # OpenClaw automation helpers
 ```bash
 uv venv && uv pip install -e ".[dev]"
 pytest
+make lint          # Ruff checks source and tests
 make release-gate   # Packaging + lint checks
 ```
 

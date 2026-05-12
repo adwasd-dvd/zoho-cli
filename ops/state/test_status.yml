@@ -1,10 +1,13 @@
-last_run_at: "2026-05-12T14:59:37Z"
+last_run_at: "2026-05-12T15:17:46Z"
 last_result: passing
-current_focus: platform-212-full-ruff-test-import-hygiene
+current_focus: platform-213-make-lint-tests-gate
 suites:
   unit:
     status: passing
     notes:
+      - "platform-213 lint-gate verification passed at 2026-05-12T15:16:32Z: `make lint` now runs `ruff check zoho_cli/ tests/`; `ruff format --check zoho_cli tests` passed; tooling/docs focus tests (`tests/test_dev_tooling_contract.py`, markdown update, Lane 3 required paths) -> 3 passed in 0.01s."
+      - "platform-213 final hygiene checks passed at 2026-05-12T15:17:46Z: YAML parse and `git diff --check` passed."
+      - "platform-213 performed no CLI behavior change, publish, tag, npm promotion, GitHub release, version bump, expectedIntegrity fill, Zoho call, or CRM write."
       - "platform-212 full-ruff hygiene passed at 2026-05-12T14:57:26Z: removed stale unused imports from parser/config/utils tests; full `ruff check zoho_cli tests`, `ruff format --check zoho_cli tests`, and touched test files -> 43 passed in 0.05s."
       - "platform-212 final verification passed at 2026-05-12T14:59:37Z: markdown update plus touched tests -> 44 passed in 0.03s; Ruby YAML parse and `git diff --check` passed."
       - "platform-212 performed no CLI behavior change, publish, tag, npm promotion, GitHub release, version bump, expectedIntegrity fill, Zoho call, or CRM write."

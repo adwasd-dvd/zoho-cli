@@ -16,6 +16,7 @@ Run this whenever command surfaces or workflows change.
    ```
 6. Run focused validation:
    ```bash
+   make lint
    ./.venv/bin/python -m pytest -q tests/test_lane3_docs.py
    ```
 7. For RC or stable release updates, verify `zoho --version` matches the approved version before syncing AI-user skill files.

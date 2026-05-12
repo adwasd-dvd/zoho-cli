@@ -10,7 +10,7 @@ help:
 	@echo ""
 	@echo "  install     Install package + dev deps in .venv"
 	@echo "  test        Run tests"
-	@echo "  lint        Run ruff linter"
+	@echo "  lint        Run ruff linter on source and tests"
 	@echo "  fmt         Auto-format code with ruff"
 	@echo "  fmt-check   Check formatting (no changes)"
 	@echo "  package-smoke Build wheel and smoke-install in isolated venv"
@@ -25,7 +25,7 @@ test:
 	$(PYTEST) tests/ -v
 
 lint:
-	$(RUFF) check zoho_cli/
+	$(RUFF) check zoho_cli/ tests/
 
 fmt:
 	$(RUFF) format zoho_cli/ tests/

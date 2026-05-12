@@ -2,6 +2,9 @@
 
 ## Unreleased
 
+### Platform hygiene (2026-05-12T15:14:26Z)
+- Extended `make lint` to run Ruff across both `zoho_cli/` and `tests/`, added a small tooling contract test to keep that gate from regressing, and synced the developer/agent maintenance docs with the broader lint target.
+
 ### CRM v0.5 SDK adoption (2026-05-05T09:49:08Z)
 - Added the first `crm-003` SDK adoption slice: `zoho crm sdk-status` reports official Zoho CRM Python SDK readiness for `zohocrmsdk8_0==5.0.0`, `pyproject.toml` now exposes optional `zoho-cli[crm-sdk]`, and `docs/architecture/CRM_V0_5_SDK_ADOPTION_PLAN.md` locks the v0.5 adapter plan while keeping the current JSON-safe HTTP CRM adapter as default.
 - Added `crm-004` SDK adapter skeleton: `zoho_cli/crm_sdk.py` now maps account config to SDK data-center environments, keeps SDK resource/token files under CLI-managed cache paths (`ZOHO_CRM_SDK_RESOURCE_PATH` override), exposes default-disabled read-only adapter methods that normalize SDK models into JSON-safe dict/list payloads, and extends `zoho crm sdk-status` with `adapterSkeleton` diagnostics while preserving the `http-v2` default.

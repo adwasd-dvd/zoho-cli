@@ -264,12 +264,30 @@ PAYLOAD="$("$JQ_BIN" -n \
         nextCommands: $nextCommands,
         cleanupSelectorTypes: ($preflightReport.cleanup.selectorTypes // []),
         cleanupSelectorTypeCount: (($preflightReport.cleanup.selectorTypes // []) | length),
+        liveApproval: {
+          summaryFileReady: (($summaryFile != null) and ($readinessSkipped | not)),
+          dryRunReadinessReady: (($readinessStatus == "ready_for_operator_live_fixture") or ($readinessStatus == "live_fixture_recorded")),
+          fixtureEvidenceReady: ($readinessReport.operatorReview.liveApproval.fixtureEvidenceReady // false),
+          payloadDigestPresent: ($readinessReport.summary.payloadDigestPresent // (($readinessReport.summary.payloadDigest // null) != null)),
+          idempotencyKeyPresent: ($readinessReport.summary.idempotencyKeyPresent // false),
+          requiredApprovalPresent: ($readinessReport.summary.requiredApprovalPresent // false),
+          placeholderEmailCountZero: (($readinessReport.summary.payloadTemplatePlaceholders.emailCount // null) == 0),
+          commandPreviewUsesPlaceholders: true,
+          writesZohoData: ($status == "ready_for_operator_live_fixture"),
+          agentMayExecute: false,
+          agentMayExecuteLiveFixture: false,
+          agentMayRunNormalUpsertExecute: false,
+          operatorOnly: ($status == "ready_for_operator_live_fixture"),
+          requiresExplicitOperatorApproval: ($status == "ready_for_operator_live_fixture")
+        },
         redaction: {
           rawPayloadStored: false,
           rawFieldValuesStored: false,
           rawEmailStored: false,
           rawCleanupPlanStored: false,
-          rawSelectorValuesStored: false
+          rawSelectorValuesStored: false,
+          rawRequiredApprovalStored: false,
+          rawIdempotencyKeyStored: false
         }
       },
       releasePosture: {

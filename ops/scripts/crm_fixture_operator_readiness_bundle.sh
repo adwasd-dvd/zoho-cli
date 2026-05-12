@@ -130,6 +130,8 @@ PAYLOAD="$("$JQ_BIN" -n \
         module: ($summaryReport.module // null),
         duplicateField: ($summaryReport.duplicateField // null),
         payloadDigest: ($summaryReport.payloadDigest // null),
+        payloadDigestPresent: (($summaryReport.payloadDigest // "") != ""),
+        idempotencyKeyPresent: (($summaryReport.idempotencyKey // "") != ""),
         requiredApprovalPresent: (($summaryReport.requiredApproval // "") != ""),
         payloadTemplatePlaceholders: {
           emailCount: $emailPlaceholders
@@ -157,6 +159,30 @@ PAYLOAD="$("$JQ_BIN" -n \
           "ZOHO_CRM_FIXTURE_EXECUTE=1",
           "ZOHO_CRM_ALLOW_LIVE_FIXTURE=1"
         ]
+      },
+      operatorReview: {
+        liveApproval: {
+          summaryFileReady: $summaryExists,
+          dryRunReadinessReady: ($evidenceExists and ($evidenceStatus == "ready_for_operator_live_fixture" or $evidenceStatus == "live_fixture_recorded")),
+          fixtureEvidenceReady: ($evidenceExists and ($evidenceStatus == "ready_for_operator_live_fixture" or $evidenceStatus == "live_fixture_recorded")),
+          payloadDigestPresent: (($summaryReport.payloadDigest // "") != ""),
+          idempotencyKeyPresent: (($summaryReport.idempotencyKey // "") != ""),
+          requiredApprovalPresent: (($summaryReport.requiredApproval // "") != ""),
+          placeholderEmailCountZero: ($emailPlaceholders == 0),
+          commandPreviewUsesPlaceholders: true,
+          writesZohoData: ($evidenceStatus == "ready_for_operator_live_fixture"),
+          agentMayExecute: false,
+          agentMayExecuteLiveFixture: false,
+          agentMayRunNormalUpsertExecute: false,
+          operatorOnly: true,
+          requiresExplicitOperatorApproval: true
+        },
+        redaction: {
+          rawRequiredApprovalStored: false,
+          rawIdempotencyKeyStored: false,
+          rawPayloadValuesStored: false,
+          rawCleanupPlanStored: false
+        }
       },
       nextAction: (
         if ($blockers | length) != 0 then "fix_blockers"

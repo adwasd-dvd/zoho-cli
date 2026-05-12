@@ -1,24 +1,24 @@
-id: cliq-channel-484
-title: record post-selected-path source-drift decision evidence
-module: openclaw_cliq_channel
+id: crm-023
+title: add CRM fixture live approval facts
+module: crm
 stage: completed
 status: completed
 owner: coder
-updated_at: '2026-05-12T11:41:00Z'
+updated_at: '2026-05-12T12:02:02Z'
 execution_mode: turbo_20x
 throughput_policy_ref: ops/state/execution_policy.yml
 success_criteria:
-  - source drift check after the pushed selected-path evidence commit reports `package_source_unchanged`
-  - decision packet after the pushed selected-path evidence commit reports `awaiting_operator_publish_path`
-  - decision packet keeps all report metadata ready and `agentMayExecuteSelectedPath=false`
-  - Lane 2, Lane 3, and Lane 1 docs record the post-selected-path evidence
-  - publish, tag, npm promotion, GitHub release creation, expectedIntegrity fill, and CRM writes remain blocked
-next_if_done: Continue to the next safe RC readiness milestone without publishing or tagging; CRM fixture dry-run remains gated on a copied dedicated payload and cleanup plan.
+  - CRM fixture operator packets expose redacted `operatorReview.liveApproval` booleans
+  - CRM fixture readiness bundles expose the same live approval readiness booleans
+  - exact approval token, raw idempotency key, raw payload values, raw cleanup text, and raw selector values stay out of reports
+  - live fixture execution remains operator-only with `agentMayExecute=false`
+  - Lane 2, Lane 3, and Lane 1 docs record the new handoff contract
+next_if_done: Continue to the next safe RC readiness milestone without publishing, tagging, or running live CRM writes.
 progress:
-  - "2026-05-12T11:31:00Z ran `OPENCLAW_CLIQ_SOURCE_DRIFT_RUN_ID=20260512T113043Z-operator-paths-postcommit-source ops/scripts/openclaw_cliq_rc_source_drift_check.sh` after pushed commit `8695726a7ac4e421efd04f7e0e25a4a4df6063e3`."
-  - "2026-05-12T11:31:00Z source drift returned `package_source_unchanged`, no blockers, `repoChangedFileCount=27`, `headMatchesManifestSource=false`, `packageDrift.packageChangedSinceManifest=false`, and `packageDrift.dirtyFileCount=0`."
-  - "2026-05-12T11:31:01Z ran `OPENCLAW_CLIQ_DECISION_PACKET_RUN_ID=20260512T113043Z-operator-paths-postcommit-decision ops/scripts/openclaw_cliq_rc_operator_decision_packet.sh`."
-  - "2026-05-12T11:31:01Z decision packet returned `awaiting_operator_publish_path`, `blockers=[publish_path_not_selected]`, `operator_publish_plan_ready`, `package_source_unchanged`, `artifact_verified`, `install_smoke_passed`, `trusted_reply_recorded`, all `reportsReady=true`, and `agentMayExecuteSelectedPath=false`."
-  - "2026-05-12T11:31:01Z no publish, tag, npm promotion, GitHub release, expectedIntegrity fill, Zoho call, or CRM live write was performed."
-  - "2026-05-12T11:41:00Z verification passed: OpenClaw Cliq RC checklist/operator handoff contract, Lane 3 required paths/troubleshooting contract, and markdown update -> 5 passed in 0.02s; ruff format/check, YAML parse, and `git diff --check` passed."
-next_step: Commit and push the post-selected-path decision evidence slice, then continue to the next safe RC readiness milestone.
+  - "2026-05-12T11:49:00Z added `operatorReview.liveApproval` to `ops/scripts/crm_fixture_operator_packet.sh` and `ops/scripts/crm_fixture_operator_readiness_bundle.sh`."
+  - "2026-05-12T11:49:00Z live approval facts include summary/evidence readiness, payload digest presence, idempotency key presence, required approval presence, placeholder-email zero state, placeholder command-preview state, and operator-only execution booleans."
+  - "2026-05-12T11:49:00Z redaction flags keep raw approval token, raw idempotency key, raw payload values, raw cleanup text, and raw selector values out of reports."
+  - "2026-05-12T11:50:00Z focused script verification passed: CRM operator packet/readiness bundle live-approval tests -> 5 passed in 1.29s."
+  - "2026-05-12T11:52:00Z local no-write packet run `20260512T114543Z-live-approval-facts` returned `payload_preflight_ready`, `missingFacts=[dry_run_smoke_summary]`, `operatorReview.liveApproval.agentMayExecute=false`, and `nextAction=run_crm_fixture_live_smoke_dry_run` without any Zoho call or CRM write."
+  - "2026-05-12T12:02:02Z broader verification passed: shell syntax for CRM fixture scripts; CRM fixture tests plus Lane 3 CRM contract and markdown update -> 15 passed, 70 deselected in 2.08s; ruff format/check, YAML parse, and `git diff --check` passed."
+next_step: Commit and push the CRM live approval facts slice, then continue to the next safe RC readiness milestone.

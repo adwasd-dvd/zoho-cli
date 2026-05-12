@@ -2841,7 +2841,25 @@ def test_crm_fixture_operator_packet_reports_missing_payload(
     assert "ops/scripts/crm_fixture_operator_packet.sh" in next_commands[0]["command"]
     assert "<copied-fixture-payload.json>" in next_commands[0]["command"]
     assert payload["operatorReview"]["cleanupSelectorTypes"] == []
+    assert payload["operatorReview"]["liveApproval"] == {
+        "summaryFileReady": False,
+        "dryRunReadinessReady": False,
+        "fixtureEvidenceReady": False,
+        "payloadDigestPresent": False,
+        "idempotencyKeyPresent": False,
+        "requiredApprovalPresent": False,
+        "placeholderEmailCountZero": False,
+        "commandPreviewUsesPlaceholders": True,
+        "writesZohoData": False,
+        "agentMayExecute": False,
+        "agentMayExecuteLiveFixture": False,
+        "agentMayRunNormalUpsertExecute": False,
+        "operatorOnly": False,
+        "requiresExplicitOperatorApproval": False,
+    }
     assert payload["operatorReview"]["redaction"]["rawSelectorValuesStored"] is False
+    assert payload["operatorReview"]["redaction"]["rawRequiredApprovalStored"] is False
+    assert payload["operatorReview"]["redaction"]["rawIdempotencyKeyStored"] is False
     assert payload["nextAction"] == "provide_fixture_payload_file"
     assert json.loads(packet_file.read_text()) == payload
 
@@ -2925,6 +2943,13 @@ def test_crm_fixture_operator_packet_accepts_payload_preflight(
     assert str(tmp_path) not in next_commands[0]["command"]
     assert payload["operatorReview"]["cleanupSelectorTypes"] == ["email_keyword"]
     assert payload["operatorReview"]["cleanupSelectorTypeCount"] == 1
+    assert payload["operatorReview"]["liveApproval"]["summaryFileReady"] is False
+    assert payload["operatorReview"]["liveApproval"]["dryRunReadinessReady"] is False
+    assert payload["operatorReview"]["liveApproval"]["agentMayExecute"] is False
+    assert (
+        payload["operatorReview"]["liveApproval"]["requiresExplicitOperatorApproval"]
+        is False
+    )
     assert payload["nextAction"] == "run_crm_fixture_live_smoke_dry_run"
 
 
@@ -3078,6 +3103,24 @@ def test_crm_fixture_operator_packet_wraps_dry_run_readiness(
         "placeholder_email_absent",
     ]
     assert payload["operatorReview"]["missingFacts"] == []
+    assert payload["operatorReview"]["liveApproval"] == {
+        "summaryFileReady": True,
+        "dryRunReadinessReady": True,
+        "fixtureEvidenceReady": True,
+        "payloadDigestPresent": True,
+        "idempotencyKeyPresent": True,
+        "requiredApprovalPresent": True,
+        "placeholderEmailCountZero": True,
+        "commandPreviewUsesPlaceholders": True,
+        "writesZohoData": True,
+        "agentMayExecute": False,
+        "agentMayExecuteLiveFixture": False,
+        "agentMayRunNormalUpsertExecute": False,
+        "operatorOnly": True,
+        "requiresExplicitOperatorApproval": True,
+    }
+    assert payload["operatorReview"]["redaction"]["rawRequiredApprovalStored"] is False
+    assert payload["operatorReview"]["redaction"]["rawIdempotencyKeyStored"] is False
     next_commands = payload["operatorReview"]["nextCommands"]
     assert len(next_commands) == 1
     assert next_commands[0]["id"] == "operator_review_live_fixture_approval"
@@ -3198,6 +3241,8 @@ def test_crm_fixture_operator_readiness_bundle_requires_dry_run_evidence(
     }
     assert payload["summary"]["file"] == summary_path.name
     assert payload["summary"]["payloadTemplatePlaceholders"] == {"emailCount": 0}
+    assert payload["summary"]["payloadDigestPresent"] is True
+    assert payload["summary"]["idempotencyKeyPresent"] is True
     assert payload["evidence"]["status"] == "ready_for_operator_live_fixture"
     assert payload["releasePosture"] == {
         "normalUpsertExecuteBlocked": True,
@@ -3208,6 +3253,28 @@ def test_crm_fixture_operator_readiness_bundle_requires_dry_run_evidence(
             "ZOHO_CRM_FIXTURE_EXECUTE=1",
             "ZOHO_CRM_ALLOW_LIVE_FIXTURE=1",
         ],
+    }
+    assert payload["operatorReview"]["liveApproval"] == {
+        "summaryFileReady": True,
+        "dryRunReadinessReady": True,
+        "fixtureEvidenceReady": True,
+        "payloadDigestPresent": True,
+        "idempotencyKeyPresent": True,
+        "requiredApprovalPresent": True,
+        "placeholderEmailCountZero": True,
+        "commandPreviewUsesPlaceholders": True,
+        "writesZohoData": True,
+        "agentMayExecute": False,
+        "agentMayExecuteLiveFixture": False,
+        "agentMayRunNormalUpsertExecute": False,
+        "operatorOnly": True,
+        "requiresExplicitOperatorApproval": True,
+    }
+    assert payload["operatorReview"]["redaction"] == {
+        "rawRequiredApprovalStored": False,
+        "rawIdempotencyKeyStored": False,
+        "rawPayloadValuesStored": False,
+        "rawCleanupPlanStored": False,
     }
     assert payload["nextAction"] == "operator_review_payload_cleanup_and_approval"
     assert json.loads(bundle_file.read_text()) == payload

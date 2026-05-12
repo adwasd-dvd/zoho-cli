@@ -1,10 +1,15 @@
-last_run_at: "2026-05-12T11:41:00Z"
+last_run_at: "2026-05-12T12:02:02Z"
 last_result: passing
-current_focus: cliq-channel-484-post-selected-path-decision-ready
+current_focus: crm-023-live-approval-facts
 suites:
   unit:
     status: passing
     notes:
+      - "crm-023 live approval facts started at 2026-05-12T11:49:00Z: CRM fixture operator packets and readiness bundles now expose redacted `operatorReview.liveApproval` booleans for summary/evidence readiness, payload digest presence, idempotency key presence, required approval presence, placeholder-email zero state, and operator-only execution gates."
+      - "crm-023 redaction keeps raw approval tokens, raw idempotency keys, raw payload values, raw cleanup text, and raw selector values out of stdout/reports while keeping normal `zoho crm upsert --execute` and live fixture execution blocked."
+      - "crm-023 focused verification passed at 2026-05-12T11:50:00Z: bash syntax for CRM fixture scripts and CRM operator packet/readiness bundle live-approval tests -> 5 passed in 1.29s."
+      - "crm-023 local no-write packet run `20260512T114543Z-live-approval-facts` returned `payload_preflight_ready`, `missingFacts=[dry_run_smoke_summary]`, `operatorReview.liveApproval.agentMayExecute=false`, and `nextAction=run_crm_fixture_live_smoke_dry_run` without any Zoho call or CRM write."
+      - "crm-023 broader verification passed at 2026-05-12T12:02:02Z: shell syntax for CRM fixture scripts; CRM fixture tests plus Lane 3 CRM contract and markdown update -> 15 passed, 70 deselected in 2.08s; ruff format/check, YAML parse, and `git diff --check` passed."
       - "cliq-channel-484 post-selected-path source drift started at 2026-05-12T11:31:00Z: run `20260512T113043Z-operator-paths-postcommit-source` returned `package_source_unchanged`, no blockers, `headCommit=8695726a7ac4e421efd04f7e0e25a4a4df6063e3`, `repoChangedFileCount=27`, `packageChangedSinceManifest=false`, and `dirtyFileCount=0`."
       - "cliq-channel-484 decision packet started at 2026-05-12T11:31:01Z: run `20260512T113043Z-operator-paths-postcommit-decision` returned `awaiting_operator_publish_path`, `publish_path_not_selected`, all `reportsReady=true`, `operator_publish_plan_ready`, `artifact_verified`, `install_smoke_passed`, `trusted_reply_recorded`, and `agentMayExecuteSelectedPath=false`."
       - "cliq-channel-484 performed no publish, tag, npm promotion, GitHub release, expectedIntegrity fill, Zoho call, or CRM write."

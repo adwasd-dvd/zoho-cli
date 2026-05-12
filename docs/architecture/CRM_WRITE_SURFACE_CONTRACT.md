@@ -306,6 +306,12 @@ The packet also emits redacted `operatorReview.nextCommands` entries with
 placeholder-only command previews, `writesZohoData`, `dryRunOnly`,
 `agentMayExecute`, and `requiresExplicitOperatorApproval` booleans so agents can
 run the local/dry-run steps and stop before operator-only live execution.
+`crm-023` also adds `operatorReview.liveApproval`, a redacted boolean checklist
+for the operator-only boundary. It reports whether the smoke summary, fixture
+evidence, payload digest, idempotency key, exact approval token, and placeholder
+email check are present while keeping `agentMayExecute=false`; it stores no raw
+approval token, raw idempotency key, payload values, cleanup text, or selector
+values.
 `reportFiles` and `reportsReady` expose only artifact basenames for the packet,
 payload preflight, optional dry-run readiness bundle, and optional smoke summary
 so agents can archive or pass evidence without logging local paths.

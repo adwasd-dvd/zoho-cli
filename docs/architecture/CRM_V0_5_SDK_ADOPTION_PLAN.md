@@ -264,6 +264,9 @@ adapter proves parity on the read-only surface. The CLI contract remains:
    - run the local payload preflight first so placeholder emails, missing Leads
      fields, and missing cleanup plans are caught before any Zoho-backed smoke;
    - run the no-write readiness bundle before live mode;
+   - inspect redacted `operatorReview.liveApproval` booleans before asking for
+     live approval; the exact approval token stays in the operator-controlled
+     smoke summary and agents keep `agentMayExecute=false`;
    - archive redacted reports and decide whether v0.5 should broaden guarded
      upsert support or stop at fixture evidence.
 

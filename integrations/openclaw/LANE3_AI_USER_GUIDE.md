@@ -74,6 +74,7 @@ Current implementation-only delta:
 - `crm-020` adds redacted `operatorReview.nextCommands` command previews with `agentMayExecute`, `dryRunOnly`, `writesZohoData`, and `requiresExplicitOperatorApproval` gates; agents may run local/dry-run entries only and must stop at operator-only live approval entries.
 - `crm-021` adds `reportFiles` and `reportsReady` to the packet so agents can hand off generated packet/preflight/readiness/smoke-summary basenames without logging local paths.
 - `crm-022` adds the same basename-only `reportFiles` and `reportsReady` handoff metadata to `ops/scripts/crm_fixture_operator_readiness_bundle.sh` for `readinessBundle`, `smokeSummary`, and `fixtureEvidence`.
+- `crm-023` adds redacted `operatorReview.liveApproval` to CRM fixture operator packets and readiness bundles; inspect these booleans for summary/evidence readiness, payload digest, idempotency key, required approval presence, placeholder status, and `agentMayExecute=false` before asking the operator for a live fixture approval.
 
 ## Required behavior support after lane3 sync
 
@@ -297,6 +298,12 @@ After sync, ensure the AI user follows:
     and `cleanup.selectorTypes` reports only redacted selector categories
   - inspect `operatorReview.readyFacts` and `operatorReview.missingFacts` for
     redacted handoff categories before asking for another operator action
+  - inspect `operatorReview.liveApproval` before live fixture handoff; require
+    `summaryFileReady=true`, `dryRunReadinessReady=true`,
+    `fixtureEvidenceReady=true`, `payloadDigestPresent=true`,
+    `idempotencyKeyPresent=true`, `requiredApprovalPresent=true`,
+    `placeholderEmailCountZero=true`, `commandPreviewUsesPlaceholders=true`,
+    and `agentMayExecute=false`
   - treat `summary_file_missing`, `fixture_evidence_not_ready`,
     `payload_placeholder_count_missing`, and
     `fixture_payload_placeholder_email` as stop-and-fix blockers

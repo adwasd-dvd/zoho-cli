@@ -264,7 +264,11 @@ Use this skill as the default operating contract for an OpenClaw agent acting li
   text, or selector values. For command handoff, inspect
   `operatorReview.nextCommands`: run only entries with `agentMayExecute=true`,
   treat `writesZohoData=true` or `requiresExplicitOperatorApproval=true` as an
-  operator-only boundary, and never substitute raw values into logs. Use
+  operator-only boundary, and never substitute raw values into logs. Inspect
+  `operatorReview.liveApproval` before asking for live approval; require the
+  summary/evidence, payload digest, idempotency key, required approval, and
+  placeholder checks to be true while `agentMayExecute=false`, and never log
+  the exact approval token. Use
   `reportFiles` and `reportsReady` to pass generated packet/preflight/readiness
   evidence by basename; do not log local directories.
 - Draft before high-impact send/delete actions unless the user explicitly asks for direct execution.

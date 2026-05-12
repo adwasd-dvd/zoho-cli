@@ -100,6 +100,15 @@ Every command uses placeholders such as `<copied-fixture-payload.json>` and
 `agentMayExecute=false`, `writesZohoData=true`, and
 `requiresExplicitOperatorApproval=true`.
 
+`operatorReview.liveApproval` is the compact approval checklist for AI agents.
+It reports booleans such as `summaryFileReady`, `dryRunReadinessReady`,
+`fixtureEvidenceReady`, `payloadDigestPresent`, `idempotencyKeyPresent`,
+`requiredApprovalPresent`, `placeholderEmailCountZero`, and
+`commandPreviewUsesPlaceholders`. It must keep `agentMayExecute=false` and
+`requiresExplicitOperatorApproval=true` before a live fixture, and it does not
+store the exact approval token, raw idempotency key, raw payload values, raw
+cleanup text, or raw selector values.
+
 For evidence handoff, the same packet exposes `reportFiles` and `reportsReady`.
 Those fields contain only basenames for the operator packet, payload preflight,
 optional dry-run readiness bundle, and optional smoke summary, so agents can

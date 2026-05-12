@@ -1,11 +1,11 @@
 module: CRM
-updated_at: "2026-05-12T16:17:08Z"
+updated_at: "2026-05-12T16:33:12Z"
 status: in_progress
-phase: v0_5_agent_next_command_wrapper
+phase: v0_5_agent_next_command_wrapper_hardening
 blockers:
   - "operator-provided dedicated CRM fixture payload and cleanup approval required before Zoho-backed dry-run smoke and live fixture execution"
-current_milestone: crm-030-agent-next-command-wrapper
+current_milestone: crm-031-agent-ready-wrapper-coverage
 last_completed:
-  id: crm-030
-  summary: "Added `ops/scripts/crm_fixture_agent_next_command.sh`, a no-write wrapper that runs or reads the CRM fixture operator packet and emits compact `operator_input_required`, `agent_next_command_ready`, or `stop_before_operator_live_fixture` states."
+  id: crm-031
+  summary: "Hardened `crm_fixture_agent_next_command` coverage for the agent-executable local/dry-run ready branch while preserving normal upsert and live fixture blocks."
 next_small_step: run `ops/scripts/crm_fixture_agent_next_command.sh` against an operator-edited dedicated fixture payload and cleanup plan; execute only on `status=agent_next_command_ready`, collect operator input on `operator_input_required`, and stop on `stop_before_operator_live_fixture`

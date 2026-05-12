@@ -1,10 +1,12 @@
-last_run_at: "2026-05-12T16:22:26Z"
+last_run_at: "2026-05-12T16:33:12Z"
 last_result: passing
-current_focus: crm-030-agent-next-command-wrapper
+current_focus: crm-031-agent-ready-wrapper-coverage
 suites:
   unit:
     status: passing
     notes:
+      - "crm-031 final verification passed at 2026-05-12T16:33:12Z: focused wrapper branch coverage (`test_crm_fixture_agent_next_command_reports_agent_ready`, `test_crm_fixture_agent_next_command_summarizes_operator_input`, and `test_crm_fixture_agent_next_command_stops_before_operator_write`) -> 3 passed in 0.43s; `make lint`, `ruff format --check zoho_cli tests`, and YAML parse passed."
+      - "crm-031 performed no publish, tag, npm promotion, GitHub release, version bump, expectedIntegrity fill, Zoho call, or CRM write; normal `zoho crm upsert --execute` and live fixture execution remain blocked for agents."
       - "crm-030 agent next-command wrapper verification passed at 2026-05-12T16:18:53Z: shell syntax for CRM fixture scripts; focused CRM fixture/Lane 3/markdown tests -> 14 passed, 73 deselected in 1.82s; Ruff format/check passed."
       - "crm-030 local no-write wrapper run `20260512T160545Z-crm030-missing-input` returned `status=operator_input_required`, `packet.status=blocked`, `nextAgentCommand.id=provide_fixture_payload_file`, `operatorInputRequiredForNextAgentCommand=true`, and all Zoho-writing/approval flags false."
       - "crm-030 final verification passed at 2026-05-12T16:22:26Z: focused wrapper/Lane 3/markdown tests -> 5 passed in 0.17s; `make lint`, `ruff format --check zoho_cli tests`, YAML parse, and `git diff --check` passed."

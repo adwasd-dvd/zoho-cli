@@ -1,10 +1,14 @@
-last_run_at: "2026-05-12T17:34:19Z"
+last_run_at: "2026-05-12T17:52:18Z"
 last_result: passing
-current_focus: platform-214-rc-autonomy-packet
+current_focus: cliq-channel-492-post-platform214-autonomy-evidence
 suites:
   unit:
     status: passing
     notes:
+      - "cliq-channel-492 post-platform-214 no-write evidence started at 2026-05-12T17:43:09Z: autonomy run `20260512T174215Z-post-platform214-autonomy` returned `operator_input_required`, `openclawCliqPublishPath=true`, `crmFixtureFacts=[cleanup_plan, fixture_payload_file]`, `agentMayRunCrmNextCommand=false`, and `crmNextCommandAllowedForAgent=false`."
+      - "cliq-channel-492 source drift run `20260512T174215Z-platform214-postcommit-source` returned `package_source_unchanged`, no blockers, `headCommit=a03de9e507f8c0dd8369f5fa19395e0f500b63c1`, `repoChangedFileCount=38`, `packageDrift.packageChangedSinceManifest=false`, and `dirtyFileCount=0`."
+      - "cliq-channel-492 decision packet run `20260512T174215Z-platform214-postcommit-decision` returned `awaiting_operator_publish_path`, blocker `publish_path_not_selected`, all `reportsReady=true`, `operator_publish_plan_ready`, `package_source_unchanged`, `artifact_verified`, `install_smoke_passed`, `trusted_reply_recorded`, and `agentMayExecuteSelectedPath=false`."
+      - "cliq-channel-492 final verification passed at 2026-05-12T17:52:18Z: OpenClaw RC checklist, Lane 3 required paths, and markdown update -> 3 passed in 0.01s; `make lint`, `ruff format --check zoho_cli tests`, YAML parse, and `git diff --check` passed."
       - "platform-214 final verification passed at 2026-05-12T17:34:19Z: shell syntax for `ops/scripts/zoho_cli_rc_autonomy_packet.sh`; focused autonomy/Lane 3/RC markdown tests -> 6 passed in 0.35s; live no-write autonomy packet run returned `operator_input_required`; `make lint`, `ruff format --check zoho_cli tests`, YAML parse, and `git diff --check` passed."
       - "crm-032 final verification passed at 2026-05-12T17:10:55Z: focused wrapper/Lane 3/markdown tests -> 7 passed in 0.22s; `bash -n ops/scripts/crm_fixture_agent_next_command.sh`, `make lint`, `ruff format --check zoho_cli tests`, YAML parse, and `git diff --check` passed."
       - "crm-032 performed no publish, tag, npm promotion, GitHub release, version bump, expectedIntegrity fill, Zoho call, or CRM write; normal `zoho crm upsert --execute` and live fixture execution remain blocked for agents."

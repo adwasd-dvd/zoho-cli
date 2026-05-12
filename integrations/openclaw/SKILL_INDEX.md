@@ -79,7 +79,10 @@ CRM SDK planning:
   post-CRM state-sync source-drift/decision evidence showing commit `0319d9b8`
   still keeps `packageChangedSinceManifest=false`; `cliq-channel-489` records
   the post-CRM next-command-preview source-drift/decision evidence showing
-  commit `3f1773c7` still keeps `packageChangedSinceManifest=false`)
+  commit `3f1773c7` still keeps `packageChangedSinceManifest=false`;
+  `cliq-channel-492` records the post-platform-214 autonomy-packet
+  source-drift/decision evidence showing commit `a03de9e5` still keeps
+  `packageChangedSinceManifest=false` while awaiting operator input)
 - `ops/scripts/zoho_cli_rc_autonomy_packet.sh` (`platform-214`: read-only
   cross-lane RC autonomy packet that combines native Cliq RC decision state with
   CRM fixture next-command state; emits `agent_next_command_ready` only when the

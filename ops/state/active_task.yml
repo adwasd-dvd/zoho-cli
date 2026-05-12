@@ -1,21 +1,21 @@
-id: platform-214
-title: add cross-lane RC autonomy packet
-module: platform
+id: cliq-channel-492
+title: record post-platform-214 autonomy packet RC evidence
+module: openclaw_cliq_channel
 stage: completed
 status: completed
 owner: coder
-updated_at: '2026-05-12T17:34:19Z'
+updated_at: '2026-05-12T17:52:18Z'
 execution_mode: turbo_20x
 throughput_policy_ref: ops/state/execution_policy.yml
 success_criteria:
-  - "`ops/scripts/zoho_cli_rc_autonomy_packet.sh` combines native Cliq RC decision state and CRM fixture next-command state without publishing, tagging, releasing, filling expectedIntegrity, or writing Zoho data"
-  - "The packet surfaces `agent_next_command_ready` only when the CRM next command is already allowlisted and dry-run/local"
-  - "Operator-only states such as publish path selection, selected publish execution, missing fixture input, and live fixture approval remain explicit stop/handoff states"
-  - "Lane 2/3 docs and state describe the cross-lane autonomy packet"
+  - "Run `ops/scripts/zoho_cli_rc_autonomy_packet.sh` after the pushed platform-214 commit and record the go/stop state"
+  - "Run source-drift and operator-decision packets after platform-214 and confirm package source remains unchanged"
+  - "Sync Lane 1/2/3 docs with the post-platform-214 evidence"
+  - "Do not publish, tag, npm-promote, create GitHub releases, fill expectedIntegrity, call Zoho, or write CRM data"
 next_if_done: Continue to the next safe RC readiness milestone without publishing, tagging, npm promotion, GitHub release creation, expectedIntegrity fill, or live CRM writes.
 progress:
-  - "2026-05-12T17:22:45Z added `ops/scripts/zoho_cli_rc_autonomy_packet.sh`, a read-only JSON packet that runs or reads `openclaw_cliq_rc_operator_decision_packet` and `crm_fixture_agent_next_command` evidence."
-  - "2026-05-12T17:22:45Z added regression coverage for operator-input, safe CRM agent-command, and selected-publish-path stop states."
-  - "2026-05-12T17:22:45Z synced README, changelog, RC checklist, Lane 3 guide/index, skill, and command playbook for the new autonomy packet."
-  - "2026-05-12T17:34:19Z final verification passed: shell syntax, focused autonomy/Lane 3/RC markdown tests -> 6 passed, `make lint`, Ruff format, YAML parse, and `git diff --check` passed. Live autonomy packet run `20260512T172245Z-platform214-autonomy-v2` returned `operator_input_required` with no agent-executable command."
-next_step: Commit and push the autonomy packet slice, then continue to the next safe milestone.
+  - "2026-05-12T17:43:09Z `ZOHO_CLI_RC_AUTONOMY_RUN_ID=20260512T174215Z-post-platform214-autonomy ops/scripts/zoho_cli_rc_autonomy_packet.sh` returned `operator_input_required`, `openclawCliqPublishPath=true`, `crmFixtureFacts=[cleanup_plan, fixture_payload_file]`, `agentMayRunCrmNextCommand=false`, and `crmNextCommandAllowedForAgent=false`."
+  - "2026-05-12T17:43:09Z source drift run `20260512T174215Z-platform214-postcommit-source` returned `package_source_unchanged`, no blockers, `headCommit=a03de9e507f8c0dd8369f5fa19395e0f500b63c1`, `repoChangedFileCount=38`, and `packageDrift.packageChangedSinceManifest=false`."
+  - "2026-05-12T17:43:09Z decision packet run `20260512T174215Z-platform214-postcommit-decision` returned `awaiting_operator_publish_path`, blocker `publish_path_not_selected`, all `reportsReady=true`, and `agentMayExecuteSelectedPath=false`."
+  - "2026-05-12T17:52:18Z final verification passed: OpenClaw RC checklist/Lane 3/markdown tests -> 3 passed in 0.01s; `make lint`, Ruff format, YAML parse, and `git diff --check` passed."
+next_step: Commit and push the post-platform-214 evidence slice, then continue to the next safe milestone.

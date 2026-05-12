@@ -1,7 +1,7 @@
 module: Platform
-updated_at: "2026-05-12T21:28:45Z"
+updated_at: "2026-05-12T21:46:16Z"
 status: in_progress
 execution_mode: turbo_20x
 throughput_policy_ref: ops/state/execution_policy.yml
 blockers: []
-next_small_step: "platform-217 adds `ops/scripts/zoho_cli_rc_operator_action_prompt.sh`, a read-only wrapper that renders autonomy-packet `operatorActionRequests` into JSON plus Markdown handoff while keeping raw paths, payload values, cleanup text, secrets, publish/tag/release/expectedIntegrity fill, normal CRM upsert execution, and live Zoho writes disabled for agents; continue safe RC readiness work."
+next_small_step: "platform-218 adds `--md` / `--markdown` to `ops/scripts/zoho_cli_rc_operator_action_prompt.sh` so recurring agents can print the compact redacted operator handoff directly while JSON remains the default stdout contract; continue safe RC readiness work without publish/tag/release/expectedIntegrity fill or live Zoho writes."

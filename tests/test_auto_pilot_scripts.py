@@ -2533,6 +2533,39 @@ def test_zoho_cli_rc_operator_action_prompt_handles_no_requests(
     assert payload["messageMarkdown"] is None
 
 
+def test_zoho_cli_rc_operator_action_prompt_can_emit_markdown(
+    tmp_path: Path,
+) -> None:
+    autonomy_packet = _write_operator_action_prompt_autonomy_packet(tmp_path)
+    prompt_file = tmp_path / "operator-actions.json"
+
+    result = subprocess.run(
+        ["bash", str(ZOHO_CLI_RC_OPERATOR_ACTION_PROMPT_SCRIPT), "--md"],
+        cwd=REPO_ROOT,
+        env={
+            **os.environ,
+            "ZOHO_CLI_RC_OPERATOR_ACTION_RUN_ID": "unit-operator-actions-md",
+            "ZOHO_CLI_RC_OPERATOR_ACTION_REPORT_DIR": str(tmp_path),
+            "ZOHO_CLI_RC_OPERATOR_ACTION_FILE": str(prompt_file),
+            "ZOHO_CLI_RC_OPERATOR_ACTION_AUTONOMY_SOURCE_FILE": str(autonomy_packet),
+        },
+        capture_output=True,
+        text=True,
+        check=False,
+    )
+
+    output = f"{result.stdout}\n{result.stderr}"
+    assert result.returncode == 0, output
+    assert result.stdout.startswith("### zoho-cli RC operator actions\n")
+    assert "select_openclaw_cliq_publish_path" in result.stdout
+    assert "`local_operator_rc`" in result.stdout
+    assert "<copied-payload-file>" in result.stdout
+    assert str(tmp_path) not in result.stdout
+    payload = json.loads(prompt_file.read_text())
+    assert payload["status"] == "operator_action_prompt_ready"
+    assert payload["messageMarkdown"] == result.stdout.rstrip("\n")
+
+
 def _write_openclaw_cliq_test_tarball(
     tarball_path: Path,
     *,

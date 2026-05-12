@@ -1,20 +1,20 @@
-id: platform-217
-title: add autonomy operator action prompt wrapper
+id: platform-218
+title: add operator action prompt markdown output
 module: platform
 stage: completed
 status: completed
 owner: coder
-updated_at: '2026-05-12T21:28:45Z'
+updated_at: '2026-05-12T21:46:16Z'
 execution_mode: turbo_20x
 throughput_policy_ref: ops/state/execution_policy.yml
 success_criteria:
-  - "Add a read-only wrapper that renders autonomy-packet `operatorActionRequests` into JSON plus Markdown for operator handoff"
+  - "Add `--md` / `--markdown` output to the read-only operator-action prompt wrapper while keeping JSON stdout as the default"
   - "Keep raw secrets, payload values, cleanup text, local paths, publish/tag/release/integrity actions, normal CRM upsert execution, and live Zoho writes out of agent execution"
-  - "Sync Lane 1/2/3 docs and regression tests with the new operator-action prompt contract"
+  - "Sync Lane 1/2/3 docs and regression tests with the markdown handoff contract"
   - "Do not publish, tag, npm-promote, create GitHub releases, fill expectedIntegrity, call Zoho, or write CRM data"
 next_if_done: Continue to the next safe RC readiness milestone without publishing, tagging, npm promotion, GitHub release creation, expectedIntegrity fill, or live CRM writes.
 progress:
-  - "2026-05-12T21:28:45Z autonomy check `20260512T212845Z-next-check` returned `operator_input_required` with action requests for Cliq publish path selection, CRM fixture cleanup plan, and CRM fixture payload file."
-  - "2026-05-12T21:28:45Z operator action prompt run `20260512T212845Z-operator-action-prompt-dev` returned `operator_action_prompt_ready`, `nextAction=send_operator_action_prompt`, basename-only report files, and `actionRequestsAgentExecutableAny=false`."
-  - "2026-05-12T21:28:45Z final verification passed: focused operator-action/autonomy/Lane 3/RC markdown tests -> 6 passed in 0.35s; shell syntax, `make lint`, Ruff format, YAML parse, and `git diff --check` passed."
-next_step: Commit and push the platform-217 operator-action prompt wrapper slice, then continue to the next safe milestone.
+  - "2026-05-12T21:46:16Z go/stop prompt run `20260512T214616Z-heartbeat-prompt` returned `operator_action_prompt_ready` with the same three operator asks and no agent-executable request."
+  - "2026-05-12T21:46:16Z markdown prompt run `20260512T214616Z-operator-action-md-dev` printed the compact redacted handoff through `--md` while still writing JSON evidence."
+  - "2026-05-12T21:46:16Z final verification passed: focused operator-action/autonomy/Lane 3/RC markdown tests -> 6 passed in 0.14s; shell syntax, `make lint`, Ruff format, YAML parse, and `git diff --check` passed."
+next_step: Commit and push the platform-218 operator-action prompt markdown output slice, then continue to the next safe milestone.

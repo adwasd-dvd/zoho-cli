@@ -26,6 +26,41 @@ json_basename() {
   fi
 }
 
+OUTPUT_FORMAT="${ZOHO_CLI_RC_OPERATOR_ACTION_FORMAT:-json}"
+while (($#)); do
+  case "$1" in
+    --json)
+      OUTPUT_FORMAT="json"
+      ;;
+    --md|--markdown)
+      OUTPUT_FORMAT="markdown"
+      ;;
+    -h|--help)
+      cat <<'USAGE'
+Usage: ops/scripts/zoho_cli_rc_operator_action_prompt.sh [--json|--md]
+
+Emits JSON by default. Use --md to print the redacted operator handoff
+Markdown while still writing the JSON report file.
+USAGE
+      exit 0
+      ;;
+    *)
+      emit_error "unknown_argument"
+      exit 2
+      ;;
+  esac
+  shift
+done
+
+case "$OUTPUT_FORMAT" in
+  json|markdown)
+    ;;
+  *)
+    emit_error "unsupported_output_format"
+    exit 2
+    ;;
+esac
+
 command -v "$JQ_BIN" >/dev/null 2>&1 || {
   emit_error "jq_required"
   exit 2
@@ -149,7 +184,21 @@ PAYLOAD="$("$JQ_BIN" -n \
   ')"
 
 printf '%s\n' "$PAYLOAD" >"$PROMPT_FILE"
-printf '%s\n' "$PAYLOAD"
+if [[ "$OUTPUT_FORMAT" == "markdown" ]]; then
+  "$JQ_BIN" -r '
+    if .messageMarkdown != null then
+      .messageMarkdown
+    elif .status == "agent_next_command_ready" then
+      "### zoho-cli RC agent command\n\nStatus: `agent_next_command_ready`.\n\nRead the JSON report before executing the recommended agent command."
+    elif .status == "no_operator_action" then
+      "### zoho-cli RC operator actions\n\nStatus: `no_operator_action`.\n\nNo operator action requests are present."
+    else
+      "### zoho-cli RC operator actions\n\nStatus: `" + (.status // "unknown") + "`.\n\nReview the JSON report for blockers."
+    end
+  ' "$PROMPT_FILE"
+else
+  printf '%s\n' "$PAYLOAD"
+fi
 
 case "$("$JQ_BIN" -r '.status' "$PROMPT_FILE")" in
   blocked|error)

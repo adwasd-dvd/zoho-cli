@@ -258,7 +258,8 @@ After sync, ensure the AI user follows:
     autonomy packet, returns `operator_action_prompt_ready` with
     `nextAction=send_operator_action_prompt`, and emits `messageMarkdown`
     without raw payload paths, cleanup text, secrets, publish/write execution,
-    or local report paths
+    or local report paths. Use `--md` when you need direct human-readable
+    stdout; default stdout stays JSON for scripts and agents
   - `OPENCLAW_CLIQ_OPERATOR_PUBLISH_PATH=local_operator_rc` may be rehearsed
     read-only; require `operator_publish_selection_ready` plus
     `selectedPublishPathReview.agentMayExecute=false` before handing the choice

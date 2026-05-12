@@ -288,7 +288,8 @@ It runs or reads the autonomy packet and emits
 execution grant. The `messageMarkdown` field is intentionally compact and
 redacted: report files are basenames, command previews use placeholders, and
 publish/tag/GitHub release/expectedIntegrity fill plus live Zoho writes remain
-disabled for agents.
+disabled for agents. Use `--md` when printing that handoff directly to a human;
+without `--md`, stdout stays JSON for scripts and agents.
 
 For a compact AI go/stop summary, run:
 

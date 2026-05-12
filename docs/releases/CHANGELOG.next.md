@@ -9,6 +9,7 @@
 - Recorded post-platform-215 source-drift, operator decision, and autonomy-packet evidence: pushed operator-action-request commit `9fac452e` still reports `package_source_unchanged`, all decision-packet `reportsReady=true`, and autonomy `operator_input_required` with the same three redacted operator request ids, while no publish/tag/release/expectedIntegrity fill or live Zoho write was performed.
 - Added placeholder-only `commandPreview` and `unblocks` hints to autonomy-packet `operatorActionRequests`, so humans can see the next local recheck gate after supplying a publish path or CRM fixture input without logging raw payload paths, cleanup text, or secrets.
 - Added `ops/scripts/zoho_cli_rc_operator_action_prompt.sh`, a read-only wrapper that renders autonomy-packet `operatorActionRequests` into JSON plus a compact Markdown handoff. It reports `operator_action_prompt_ready` and `nextAction=send_operator_action_prompt` while preserving basename-only report files, no raw paths/secrets/payloads/cleanup text, and no agent publish/write permission.
+- Added `--md` / `--markdown` output mode to the operator-action prompt wrapper so heartbeat agents can print the compact human handoff directly while still writing the JSON evidence report and preserving JSON stdout by default.
 
 ### Platform hygiene (2026-05-12T15:14:26Z)
 - Extended `make lint` to run Ruff across both `zoho_cli/` and `tests/`, added a small tooling contract test to keep that gate from regressing, and synced the developer/agent maintenance docs with the broader lint target.

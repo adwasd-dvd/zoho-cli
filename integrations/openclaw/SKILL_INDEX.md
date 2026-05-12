@@ -103,7 +103,9 @@ CRM SDK planning:
   `nextAction=send_operator_action_prompt` when human inputs are missing, and
   renders a compact Markdown handoff while keeping report files basename-only
   and all raw secrets, payload values, cleanup text, local paths, publish/tag/
-  release/integrity actions, and live Zoho writes out of agent execution)
+  release/integrity actions, and live Zoho writes out of agent execution;
+  `platform-218` adds `--md` / `--markdown` for direct human-readable stdout
+  while preserving JSON output by default)
 - `ops/scripts/openclaw_cliq_bot_no_response_packet.sh`
   (`cliq-channel-472/474`: first responder for Bot no-response reports; runs
   public callback smoke plus live ingress diagnostics, then embeds

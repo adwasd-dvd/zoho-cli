@@ -199,7 +199,8 @@ Use this skill as the default operating contract for an OpenClaw agent acting li
   `operator_action_prompt_ready`, `nextAction=send_operator_action_prompt`,
   and `messageMarkdown` while keeping report files basename-only and publish,
   tag, GitHub release, expectedIntegrity fill, normal CRM upsert execution, and
-  live Zoho writes disabled for agents.
+  live Zoho writes disabled for agents. Use `--md` only when direct
+  human-readable stdout is desired; default stdout remains JSON.
 - For CRM SDK work, run `zoho crm sdk-status` first. Treat
   `zohocrmsdk8_0==5.0.0` as optional `zoho-cli[crm-sdk]` readiness, keep the
   current HTTP adapter as default, use `zoho_cli/crm_sdk.py` only as the

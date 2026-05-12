@@ -1,10 +1,12 @@
-last_run_at: "2026-05-12T21:28:45Z"
+last_run_at: "2026-05-12T21:46:16Z"
 last_result: passing
-current_focus: platform-217-operator-action-prompt
+current_focus: platform-218-operator-action-prompt-markdown
 suites:
   unit:
     status: passing
     notes:
+      - "platform-218 markdown prompt run `20260512T214616Z-operator-action-md-dev` printed the compact redacted operator handoff with `--md` while still writing JSON evidence; request ids remained `[select_openclaw_cliq_publish_path, provide_crm_fixture_cleanup_plan, provide_crm_fixture_payload_file]` and no agent-executable request was exposed."
+      - "platform-218 final verification passed at 2026-05-12T21:46:16Z: operator-action/autonomy/Lane 3/RC markdown tests -> 6 passed in 0.14s; shell syntax, `make lint`, Ruff format, YAML parse, and `git diff --check` passed."
       - "platform-217 operator action prompt run `20260512T212845Z-operator-action-prompt-dev` returned `operator_action_prompt_ready`, `nextAction=send_operator_action_prompt`, request ids `[select_openclaw_cliq_publish_path, provide_crm_fixture_cleanup_plan, provide_crm_fixture_payload_file]`, basename-only report files, and `actionRequestsAgentExecutableAny=false`."
       - "platform-217 final verification passed at 2026-05-12T21:28:45Z: operator-action/autonomy/Lane 3/RC markdown tests -> 6 passed in 0.35s; shell syntax, `make lint`, Ruff format, YAML parse, and `git diff --check` passed."
       - "platform-216 autonomy run `20260512T210846Z-operator-request-hints-dev` returned `operator_input_required` with placeholder-only `commandPreview` and `unblocks` hints on the publish-path, cleanup-plan, and payload-file operator action requests."

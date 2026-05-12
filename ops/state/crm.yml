@@ -1,11 +1,11 @@
 module: CRM
-updated_at: "2026-05-05T20:24:21Z"
+updated_at: "2026-05-12T13:40:58Z"
 status: in_progress
-phase: v0_5_operator_fixture_live_run
+phase: v0_5_readiness_action_boundary
 blockers:
-  - "operator-provided dedicated CRM fixture payload and cleanup approval required before live fixture execution"
-current_milestone: crm-015-operator-live-fixture-run
+  - "operator-provided dedicated CRM fixture payload and cleanup approval required before Zoho-backed dry-run smoke and live fixture execution"
+current_milestone: crm-026-readiness-action-boundary
 last_completed:
-  id: crm-014
-  summary: "Added `zoho crm fixture-evidence` to classify controlled fixture smoke summaries and redacted audit JSONL as `incomplete`, `ready_for_operator_live_fixture`, or `live_fixture_recorded` without writing CRM data."
-next_small_step: run dry-run smoke on the operator-edited payload and require `payloadTemplatePlaceholders.emailCount=0` before any live env gates
+  id: crm-026
+  summary: "Added redacted `operatorReview.nextCommands` and `operatorReview.actionBoundary` to CRM fixture operator readiness bundles so blocked bundles expose only dry-run fixer ids and ready bundles expose live fixture approval as operator-only/Zoho-writing."
+next_small_step: run `ops/scripts/crm_fixture_operator_packet.sh` against an operator-edited dedicated fixture payload and cleanup plan; execute only ids with `agentMayExecute=true`, and keep live fixture approval operator-only

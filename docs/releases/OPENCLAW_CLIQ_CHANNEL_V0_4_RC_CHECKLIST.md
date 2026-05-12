@@ -16,6 +16,8 @@ smoke for the RC tarball. `cliq-channel-457` tightens the promotion preflight,
 `cliq-channel-459` adds the release-notes draft generator,
 `cliq-channel-460` adds the read-only operator publish plan, and
 `cliq-channel-461` adds the read-only operator handoff manifest.
+`cliq-channel-464` adds the source drift guard as the no-repack check for later
+non-package commits.
 
 SDK contract source of truth:
 `docs/architecture/OPENCLAW_CLIQ_CHANNEL_SDK_CONTRACT.md`.
@@ -67,6 +69,7 @@ environment currently binds `cliq/default` to `zoho-employee-test`.
 | Release notes draft | `OPENCLAW_CLIQ_RELEASE_NOTES_RUN_ID=20260512T012041Z-operator-draft ops/scripts/openclaw_cliq_rc_release_notes_draft.sh` generated a read-only Markdown draft from the operator bundle with local artifact facts, evidence report filenames, verified callback/reply facts, and explicit no-publish/no-tag/no-release/no-integrity-fill language. |
 | Operator publish plan | `OPENCLAW_CLIQ_PUBLISH_PLAN_RUN_ID=20260512T013541Z-operator-plan ops/scripts/openclaw_cliq_rc_publish_plan.sh` passed at `2026-05-12T01:48:31Z` with `status=operator_publish_plan_ready` from the ready operator bundle plus safe release-notes draft; it keeps `agentMayExecutePlan=false`, preserves `agentMayPublish=false` / `agentMayTag=false` / `agentMayFillExpectedIntegrity=false`, lists local/operator, npm RC, and GitHub release artifact choices, and records publish/tag/release/integrity fill as operator-only actions. |
 | Operator handoff manifest | `OPENCLAW_CLIQ_HANDOFF_MANIFEST_RUN_ID=20260512T015141Z-operator-manifest ops/scripts/openclaw_cliq_rc_operator_handoff_manifest.sh` passed at `2026-05-12T01:54:58Z` with `status=operator_handoff_manifest_ready`, no blockers, package/artifact facts, report filenames, `operator_publish_plan_ready`, `trusted_reply_recorded`, and blocked agent actions including `npm_publish`, `git_tag`, `github_release_create`, and `expectedIntegrity_fill`. |
+| Source drift check | `OPENCLAW_CLIQ_SOURCE_DRIFT_RUN_ID=20260512T025841Z-current-head ops/scripts/openclaw_cliq_rc_source_drift_check.sh` passed with `status=package_source_unchanged`, no blockers, `repoChangedSinceManifest=true`, `packageDrift.packageChangedSinceManifest=false`, and artifact facts carried from the latest handoff manifest. If package files drift, it blocks with `package_source_drift_detected` before operator publish. |
 | Operator publish handoff | `docs/releases/OPENCLAW_CLIQ_CHANNEL_V0_4_OPERATOR_PUBLISH_HANDOFF.md` defines the non-automated approval boundary, required preflight commands, publish path choices, post-publish checks, abort conditions, and release-note facts. |
 | Public callback auth/reachability | Cloudflare Published application route `https://cliq.hpyio.com/webhooks/cliq` is reachable; `ops/scripts/openclaw_cliq_public_callback_smoke.sh` passed with `status=public_callback_verified`, missing-secret `401`, authenticated unsupported-handler `200`, and no stored webhook bodies, response bodies, or secrets. |
 | Live route binding | `openclaw config validate` passes with `cliq/default -> zoho-employee-test`; both `main` and `zoho-employee-test` are configured for `openai-codex/gpt-5.3-codex`. |
@@ -250,6 +253,11 @@ If `ops/scripts/openclaw_cliq_rc_operator_handoff_manifest.sh` reports
 `release_notes_draft_file_mismatch`, or anything other than
 `operator_handoff_manifest_ready`, fix the indexed handoff packet before asking
 for an operator publish decision.
+If `ops/scripts/openclaw_cliq_rc_source_drift_check.sh` reports
+`package_source_drift_detected`, `package_worktree_dirty`,
+`package_index_dirty`, `package_untracked_files`, or anything other than
+`package_source_unchanged`, rebuild the RC artifact and rerun the handoff
+packet before operator publish.
 
 ## RC cut steps
 
@@ -261,8 +269,9 @@ for an operator publish decision.
    `ops/scripts/openclaw_cliq_rc_operator_publish_bundle.sh`,
    `ops/scripts/openclaw_cliq_rc_release_notes_draft.sh`,
    `ops/scripts/openclaw_cliq_rc_publish_plan.sh`,
-   `ops/scripts/openclaw_cliq_rc_operator_handoff_manifest.sh`, focused
-   channel/docs tests, and `make ci`.
+   `ops/scripts/openclaw_cliq_rc_operator_handoff_manifest.sh`,
+   `ops/scripts/openclaw_cliq_rc_source_drift_check.sh`, focused channel/docs
+   tests, and `make ci`.
 3. Re-run `docs/releases/OPENCLAW_CLIQ_CHANNEL_COMPATIBILITY.md` latest/beta
    checks if OpenClaw published a newer stable or beta after this checklist.
 4. Package metadata is already set to `0.4.0-rc.1` for the source-controlled

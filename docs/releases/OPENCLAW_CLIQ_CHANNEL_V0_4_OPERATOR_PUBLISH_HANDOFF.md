@@ -60,6 +60,9 @@ OPENCLAW_CLIQ_PUBLISH_PLAN_RUN_ID="$(date -u +%Y%m%dT%H%M%SZ)-operator-plan" \
 OPENCLAW_CLIQ_HANDOFF_MANIFEST_RUN_ID="$(date -u +%Y%m%dT%H%M%SZ)-operator-manifest" \
   ops/scripts/openclaw_cliq_rc_operator_handoff_manifest.sh
 
+OPENCLAW_CLIQ_SOURCE_DRIFT_RUN_ID="$(date -u +%Y%m%dT%H%M%SZ)-source-drift" \
+  ops/scripts/openclaw_cliq_rc_source_drift_check.sh
+
 ./.venv/bin/python -m pytest -q \
   tests/test_auto_pilot_scripts.py::test_openclaw_cliq_rc_promotion_check_requires_ready_local_evidence \
   tests/test_auto_pilot_scripts.py::test_openclaw_cliq_rc_promotion_check_blocks_published_integrity_too_early \
@@ -67,6 +70,7 @@ OPENCLAW_CLIQ_HANDOFF_MANIFEST_RUN_ID="$(date -u +%Y%m%dT%H%M%SZ)-operator-manif
   tests/test_auto_pilot_scripts.py::test_openclaw_cliq_rc_release_notes_draft_uses_ready_operator_bundle \
   tests/test_auto_pilot_scripts.py::test_openclaw_cliq_rc_publish_plan_uses_ready_bundle_and_draft \
   tests/test_auto_pilot_scripts.py::test_openclaw_cliq_rc_operator_handoff_manifest_indexes_ready_packet \
+  tests/test_auto_pilot_scripts.py::test_openclaw_cliq_rc_source_drift_check_allows_non_package_head_drift \
   tests/test_auto_pilot_scripts.py::test_openclaw_cliq_rc_artifact_check_verifies_tarball_contract \
   tests/test_auto_pilot_scripts.py::test_openclaw_cliq_rc_install_smoke_installs_verified_artifact \
   tests/test_openclaw_channel_contract.py::test_openclaw_cliq_channel_rc_checklist_has_cut_contract \
@@ -88,6 +92,9 @@ Expected local pre-publish posture:
 - publish plan reports `operator_publish_plan_ready` and
   `agentMayExecutePlan=false`
 - handoff manifest reports `operator_handoff_manifest_ready`
+- source drift check reports `package_source_unchanged`; it may report
+  `repoChangedSinceManifest=true` after CRM/docs/state commits, but must keep
+  `packageDrift.packageChangedSinceManifest=false`
 - `npmPromotionRequiresOperatorApproval=true`
 
 The promotion preflight is intentionally strict: `ready_for_operator_publish`
@@ -103,9 +110,15 @@ The publish plan is read-only too; it can preview local/operator, npm RC, and
 GitHub artifact paths, but it must keep publish/tag/release/integrity-fill
 actions operator-only.
 The handoff manifest is the final read-only packet index. It must tie the
-operator bundle, release-notes draft, publish plan, artifact facts, report
-filenames, source commit, and false agent permission flags together before an
-operator chooses a publish path.
+operator bundle, release-notes draft, publish plan, artifact facts, and source
+commit together before any operator publish decision.
+The source drift check is the no-repack guard for later unrelated commits: it
+compares the handoff manifest source commit to current `HEAD` and blocks with
+`package_source_drift_detected`, `package_worktree_dirty`,
+`package_index_dirty`, or `package_untracked_files` if
+`integrations/openclaw-channel-cliq/` changed after the manifest. If only
+CRM/docs/state files changed, it reports `package_source_unchanged` so the
+operator knows the RC tarball is still current for package code.
 
 ## Operator publish choices
 

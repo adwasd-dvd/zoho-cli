@@ -1,10 +1,19 @@
-last_run_at: "2026-05-12T02:51:24Z"
+last_run_at: "2026-05-12T03:11:07Z"
 last_result: passing
-current_focus: crm-015-fixture-payload-preflight
+current_focus: cliq-channel-464-source-drift-check
 suites:
   unit:
     status: passing
     notes:
+      - "cliq-channel-464 source drift guard completed at 2026-05-12T03:11:07Z"
+      - "added `ops/scripts/openclaw_cliq_rc_source_drift_check.sh`; it reads the ready operator handoff manifest, compares its source commit to current HEAD, reports `package_source_unchanged` when later commits do not touch `integrations/openclaw-channel-cliq/`, and blocks with `package_source_drift_detected`, `package_worktree_dirty`, `package_index_dirty`, or `package_untracked_files` before operator publish"
+      - "OPENCLAW_CLIQ_SOURCE_DRIFT_RUN_ID=20260512T030652Z-current-head-v4 ops/scripts/openclaw_cliq_rc_source_drift_check.sh -> `package_source_unchanged`; manifest source commit `6748f4eb5de8a42a86dd829c93d3966d9f32deb2`, current HEAD `e1bae6a7bd75257f4c0aecdabb90df55223d953a`, `repoChangedSinceManifest=true`, `repoChangedFileCount=15`, `packageDrift.packageChangedSinceManifest=false`, `dirtyFileCount=0`; no publish/tag/release/version bump/integrity fill performed"
+      - "bash -n ops/scripts/openclaw_cliq_rc_source_drift_check.sh ops/scripts/openclaw_cliq_rc_operator_handoff_manifest.sh -> passed"
+      - "./.venv/bin/python -m pytest -q tests/test_auto_pilot_scripts.py::test_openclaw_cliq_rc_source_drift_check_allows_non_package_head_drift tests/test_auto_pilot_scripts.py::test_openclaw_cliq_rc_source_drift_check_blocks_package_drift tests/test_lane3_docs.py::test_lane3_required_paths_exist tests/test_lane3_docs.py::test_native_cliq_channel_ai_troubleshooting_contract_present tests/test_openclaw_channel_contract.py::test_openclaw_cliq_channel_rc_checklist_has_cut_contract tests/test_openclaw_channel_contract.py::test_openclaw_cliq_operator_publish_handoff_has_approval_boundary tests/test_markdown_update.py -> 7 passed in 0.85s"
+      - "./.venv/bin/ruff format --check tests/test_auto_pilot_scripts.py tests/test_lane3_docs.py tests/test_openclaw_channel_contract.py -> 3 files already formatted"
+      - "./.venv/bin/ruff check tests/test_auto_pilot_scripts.py tests/test_lane3_docs.py tests/test_openclaw_channel_contract.py -> All checks passed"
+      - "ruby YAML parse for project/module_status/test_status/active_task -> YAML_PARSE_OK"
+      - "git diff --check -> passed"
       - "crm-015 fixture payload preflight completed at 2026-05-12T02:51:24Z"
       - "added `ops/scripts/crm_fixture_payload_preflight.sh`; it validates a copied one-record `Leads` fixture payload plus cleanup plan locally before any Zoho-backed smoke, blocks placeholder emails, missing required fields, missing cleanup plans, unsupported modules, and non-single-record payloads, and emits redacted `payload_preflight_ready` or blocker JSON"
       - "ZOHO_CRM_FIXTURE_PAYLOAD_FILE=docs/releases/CRM_V0_5_FIXTURE_PAYLOAD_TEMPLATE.json ZOHO_CRM_FIXTURE_CLEANUP_PLAN='remove fixture record after validation' ZOHO_CRM_FIXTURE_PREFLIGHT_RUN_ID=20260512T024849Z-template-block ops/scripts/crm_fixture_payload_preflight.sh -> expected blocked state with `fixture_payload_placeholder_email`; no Zoho call or CRM write attempted"

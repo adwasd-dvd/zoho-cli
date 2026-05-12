@@ -65,6 +65,9 @@ OPENCLAW_CLIQ_RC_PUBLISH_PLAN_SCRIPT = (
 OPENCLAW_CLIQ_RC_HANDOFF_MANIFEST_SCRIPT = (
     REPO_ROOT / "ops" / "scripts" / "openclaw_cliq_rc_operator_handoff_manifest.sh"
 )
+OPENCLAW_CLIQ_RC_SOURCE_DRIFT_CHECK_SCRIPT = (
+    REPO_ROOT / "ops" / "scripts" / "openclaw_cliq_rc_source_drift_check.sh"
+)
 
 
 def test_export_scope_recheck_runner_propagates_probe_exit_codes(
@@ -1431,6 +1434,144 @@ def test_openclaw_cliq_rc_operator_handoff_manifest_blocks_unsafe_plan(
     assert payload["kind"] == "openclaw_cliq_rc_operator_handoff_manifest"
     assert payload["status"] == "error"
     assert payload["error"] == "publish_plan_permission_unexpected"
+
+
+def _write_fake_git_for_openclaw_cliq_source_drift(tmp_path: Path) -> Path:
+    fake_git = tmp_path / "fake_git.py"
+    fake_git.write_text(
+        """#!/usr/bin/env python3
+import os
+import sys
+
+args = sys.argv[1:]
+if args[:1] == ["-C"]:
+    args = args[2:]
+
+package_filter = "integrations/openclaw-channel-cliq"
+
+if args == ["rev-parse", "HEAD"]:
+    print("HEAD123")
+elif args == ["branch", "--show-current"]:
+    print("autobot/source-drift")
+elif args[:3] == ["diff", "--name-only", "SRC..HEAD"] and args[3:] == ["--", package_filter]:
+    print(os.environ.get("FAKE_PACKAGE_DRIFT", ""))
+elif args == ["diff", "--name-only", "--", package_filter]:
+    print(os.environ.get("FAKE_PACKAGE_WORKTREE", ""))
+elif args == ["diff", "--cached", "--name-only", "--", package_filter]:
+    print(os.environ.get("FAKE_PACKAGE_INDEX", ""))
+elif args == ["ls-files", "--others", "--exclude-standard", "--", package_filter]:
+    print(os.environ.get("FAKE_PACKAGE_UNTRACKED", ""))
+elif args == ["diff", "--name-only", "SRC..HEAD"]:
+    print("README.md")
+    print("ops/state/project.yml")
+else:
+    print(f"unexpected git args: {args}", file=sys.stderr)
+    raise SystemExit(9)
+"""
+    )
+    fake_git.chmod(fake_git.stat().st_mode | stat.S_IXUSR)
+    return fake_git
+
+
+def _write_openclaw_cliq_handoff_manifest_for_source_drift(tmp_path: Path) -> Path:
+    manifest = tmp_path / "handoff-manifest.json"
+    manifest.write_text(
+        json.dumps(
+            {
+                "status": "operator_handoff_manifest_ready",
+                "source": {
+                    "gitCommit": "SRC",
+                    "gitBranch": "autobot/zoho-platform",
+                },
+                "package": {
+                    "name": "@adwasd/openclaw-zoho-cliq",
+                    "version": "0.4.0-rc.1",
+                    "expectedIntegrityState": "placeholder",
+                },
+                "artifact": {
+                    "filename": "adwasd-openclaw-zoho-cliq-0.4.0-rc.1.tgz",
+                    "shasum": "abc123",
+                    "integrity": "sha512-test",
+                },
+            }
+        ),
+        encoding="utf-8",
+    )
+    return manifest
+
+
+def test_openclaw_cliq_rc_source_drift_check_allows_non_package_head_drift(
+    tmp_path: Path,
+) -> None:
+    fake_git = _write_fake_git_for_openclaw_cliq_source_drift(tmp_path)
+    manifest = _write_openclaw_cliq_handoff_manifest_for_source_drift(tmp_path)
+    report_file = tmp_path / "source-drift.json"
+
+    result = subprocess.run(
+        ["bash", str(OPENCLAW_CLIQ_RC_SOURCE_DRIFT_CHECK_SCRIPT)],
+        cwd=REPO_ROOT,
+        env={
+            **os.environ,
+            "GIT_BIN": str(fake_git),
+            "OPENCLAW_CLIQ_HANDOFF_MANIFEST_FILE": str(manifest),
+            "OPENCLAW_CLIQ_SOURCE_DRIFT_REPORT_FILE": str(report_file),
+            "OPENCLAW_CLIQ_SOURCE_DRIFT_RUN_ID": "unit-source-drift-ok",
+        },
+        capture_output=True,
+        text=True,
+        check=False,
+    )
+
+    output = f"{result.stdout}\n{result.stderr}"
+    assert result.returncode == 0, output
+    assert str(tmp_path) not in result.stdout
+    payload = json.loads(result.stdout)
+    assert payload["status"] == "package_source_unchanged"
+    assert payload["blockers"] == []
+    assert payload["source"]["manifestFile"] == manifest.name
+    assert payload["source"]["sourceCommit"] == "SRC"
+    assert payload["source"]["headCommit"] == "HEAD123"
+    assert payload["source"]["repoChangedSinceManifest"] is True
+    assert payload["source"]["repoChangedFileCount"] == 2
+    assert payload["packageDrift"]["packageChangedSinceManifest"] is False
+    assert payload["packageDrift"]["changedFiles"] == []
+    assert payload["nextAction"] == "operator_handoff_still_current_for_package"
+    assert payload["releasePosture"]["agentMayPublish"] is False
+    assert json.loads(report_file.read_text()) == payload
+
+
+def test_openclaw_cliq_rc_source_drift_check_blocks_package_drift(
+    tmp_path: Path,
+) -> None:
+    fake_git = _write_fake_git_for_openclaw_cliq_source_drift(tmp_path)
+    manifest = _write_openclaw_cliq_handoff_manifest_for_source_drift(tmp_path)
+
+    result = subprocess.run(
+        ["bash", str(OPENCLAW_CLIQ_RC_SOURCE_DRIFT_CHECK_SCRIPT)],
+        cwd=REPO_ROOT,
+        env={
+            **os.environ,
+            "GIT_BIN": str(fake_git),
+            "FAKE_PACKAGE_DRIFT": "integrations/openclaw-channel-cliq/src/runtime.ts",
+            "OPENCLAW_CLIQ_HANDOFF_MANIFEST_FILE": str(manifest),
+            "OPENCLAW_CLIQ_SOURCE_DRIFT_REPORT_FILE": str(tmp_path / "drift.json"),
+            "OPENCLAW_CLIQ_SOURCE_DRIFT_RUN_ID": "unit-source-drift-blocked",
+        },
+        capture_output=True,
+        text=True,
+        check=False,
+    )
+
+    output = f"{result.stdout}\n{result.stderr}"
+    assert result.returncode == 1, output
+    payload = json.loads(result.stdout)
+    assert payload["status"] == "blocked"
+    assert payload["blockers"] == ["package_source_drift_detected"]
+    assert payload["packageDrift"]["changedFileCount"] == 1
+    assert payload["packageDrift"]["changedFiles"] == [
+        "integrations/openclaw-channel-cliq/src/runtime.ts"
+    ]
+    assert payload["nextAction"] == "repack_current_head_before_operator_publish"
 
 
 def _write_openclaw_cliq_test_tarball(

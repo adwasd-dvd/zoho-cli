@@ -1,10 +1,14 @@
-last_run_at: "2026-05-12T13:40:58Z"
+last_run_at: "2026-05-12T14:02:06Z"
 last_result: passing
-current_focus: crm-027-state-sync
+current_focus: cliq-channel-488-post-crm-state-sync-decision-ready
 suites:
   unit:
     status: passing
     notes:
+      - "cliq-channel-488 post-CRM state sync source drift started at 2026-05-12T13:52:34Z: run `20260512T135144Z-crm-state-sync-postcommit-source` returned `package_source_unchanged`, no blockers, `headCommit=0319d9b8ebabf532f0b76230991a1feae2ee78a1`, `repoChangedFileCount=29`, `packageDrift.packageChangedSinceManifest=false`, and `dirtyFileCount=0`."
+      - "cliq-channel-488 decision packet started at 2026-05-12T13:52:34Z: run `20260512T135144Z-crm-state-sync-postcommit-decision` returned `awaiting_operator_publish_path`, `publish_path_not_selected`, all `reportsReady=true`, `operator_publish_plan_ready`, `artifact_verified`, `install_smoke_passed`, `trusted_reply_recorded`, and `agentMayExecuteSelectedPath=false`."
+      - "cliq-channel-488 verification passed at 2026-05-12T14:02:06Z: OpenClaw Cliq RC checklist/operator handoff contract, Lane 3 required paths/troubleshooting contract, and markdown update -> 5 passed in 0.02s; ruff format/check, YAML parse, and `git diff --check` passed."
+      - "cliq-channel-488 performed no publish, tag, npm promotion, GitHub release, version bump, expectedIntegrity fill, Zoho call, or CRM write."
       - "crm-027 state sync started at 2026-05-12T13:40:58Z: CRM module state now reflects `crm-026-readiness-action-boundary` instead of stale `crm-015`/`crm-014` status."
       - "crm-027 keeps live CRM writes blocked; next CRM step is operator packet/preflight with only `agentMayExecute=true` command ids runnable by agents."
       - "crm-027 verification passed at 2026-05-12T13:44:50Z: YAML parse and `git diff --check` passed."

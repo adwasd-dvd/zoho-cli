@@ -243,8 +243,8 @@ After sync, ensure the AI user follows:
     read-only rehearsals; command previews are for operator review only and
     must keep `agentMayExecuteSelectedPath=false`
   - after docs/state-only commits, rerun the source drift check and decision
-    packet; `20260512T124844Z-crm-action-boundary-postcommit-decision`
-    is the current evidence that commit `8a67bbb3` keeps
+    packet; `20260512T135144Z-crm-state-sync-postcommit-decision`
+    is the current evidence that commit `0319d9b8` keeps
     `packageChangedSinceManifest=false` while returning
     `awaiting_operator_publish_path`
   - require `openclaw_cliq_public_callback_smoke` /

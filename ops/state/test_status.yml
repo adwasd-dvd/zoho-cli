@@ -1,10 +1,12 @@
-last_run_at: "2026-05-12T07:28:56Z"
+last_run_at: "2026-05-12T07:43:29Z"
 last_result: passing
-current_focus: cliq-channel-475-rc-docs-hygiene-sync
+current_focus: cliq-channel-476-post-doc-sync-decision-evidence
 suites:
   unit:
     status: passing
     notes:
+      - "cliq-channel-476 post-doc-sync RC evidence started at 2026-05-12T07:38:24Z: RC checklist/README/Lane 3 contract now records postcommit source drift run `20260512T071842Z-rc-doc-sync-postcommit-source` and decision packet `20260512T071842Z-rc-doc-sync-postcommit-decision`, where repo docs/state moved HEAD to `49f2692d` but package drift stayed false."
+      - "cliq-channel-476 verification passed at 2026-05-12T07:43:29Z: RC checklist contract, markdown update, Lane 3 required paths/troubleshooting contract -> 4 passed in 0.02s; ruff format/check, YAML parse, and git diff --check passed."
       - "cliq-channel-475 docs hygiene started at 2026-05-12T07:24:31Z: README, v0.4 RC checklist, Lane 3 skill index, and RC checklist contract markers now reflect cliq-channel-473/474 embedded handler-trigger diagnostics for Bot no-response triage."
       - "cliq-channel-475 verification passed at 2026-05-12T07:28:56Z: RC checklist contract, markdown update, Lane 3 required paths/troubleshooting contract -> 4 passed in 0.02s; ruff format/check, YAML parse, and git diff --check passed."
       - "cliq-channel-474 Bot no-response handler trigger integration completed at 2026-05-12T06:52:05Z"

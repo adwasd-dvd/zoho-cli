@@ -1,24 +1,23 @@
-id: cliq-channel-475
-title: sync RC docs with embedded handler trigger diagnostics
+id: cliq-channel-476
+title: record post-doc-sync RC source drift decision evidence
 module: openclaw_cliq_channel
 stage: completed
 status: completed
 owner: coder
-updated_at: '2026-05-12T07:28:56Z'
+updated_at: '2026-05-12T07:43:29Z'
 execution_mode: turbo_20x
 throughput_policy_ref: ops/state/execution_policy.yml
 success_criteria:
-  - README current status reflects the cliq-channel-473/474 Bot no-response handler-trigger diagnostics
-  - v0.4 RC checklist records the embedded `handlerTrigger` evidence and latest live no-response run
-  - Lane 3 AI index points agents at the no-response and handler-trigger packet scripts
-  - contract tests lock the new RC checklist markers
+  - RC checklist records the post-doc-sync source drift run after commit `49f2692d`
+  - operator decision packet evidence shows `package_source_unchanged` despite repo docs/state changes after the handoff manifest
+  - README and Lane 3 guidance explain that repo-only drift is acceptable only when package drift is false
+  - contract tests lock the post-doc-sync drift markers
   - keep publish/tag/npm promotion, published integrity fill, and live CRM writes blocked
-next_if_done: Use `ops/scripts/openclaw_cliq_bot_no_response_packet.sh` for fresh Bot no-response reports; if it returns `fix_zoho_bot_handler_trigger`, inspect its embedded `handlerTrigger` object before editing Zoho handlers. Operator publish selection remains gated by `ops/scripts/openclaw_cliq_rc_operator_decision_packet.sh`.
+next_if_done: Operator publish selection remains gated by `ops/scripts/openclaw_cliq_rc_operator_decision_packet.sh`; after any later docs-only commit, rerun source drift/decision packets and require `package_source_unchanged` before operator publish.
 progress:
-  - "2026-05-12T07:24:31Z cliq-channel-475 started as a docs/state hygiene slice after cliq-channel-473/474 landed and were pushed."
-  - "2026-05-12T07:24:31Z root README now names `ops/scripts/openclaw_cliq_bot_no_response_packet.sh` as the first responder for Bot no-response reports and says it embeds `handlerTrigger` from `ops/scripts/openclaw_cliq_handler_trigger_packet.sh` when `no_recent_webhook_ingress` points to a Zoho handler trigger/save issue."
-  - "2026-05-12T07:24:31Z v0.4 RC checklist now lists cliq-channel-473/474, records real run `20260512T064842Z-embedded-handler-trigger-live`, and captures embedded `handlerTrigger.status=handler_trigger_packet_ready` evidence."
-  - "2026-05-12T07:24:31Z Lane 3 skill index now includes the live ingress diagnostic, Bot no-response packet, and handler-trigger packet paths so AI agents can choose the right packet before editing Zoho handlers."
-  - "2026-05-12T07:24:31Z no publish, tag, npm promotion, expectedIntegrity fill, GitHub release, or live CRM write was performed."
-  - "2026-05-12T07:28:56Z focused verification passed: RC checklist contract, markdown update, Lane 3 required paths/troubleshooting contract -> 4 passed in 0.02s; ruff format/check passed; YAML parse returned YAML_PARSE_OK; git diff --check passed."
-next_step: Commit and push the docs hygiene slice, then rerun read-only RC source drift and operator decision packets.
+  - "2026-05-12T07:38:24Z cliq-channel-476 started after pushed docs/state commit `49f2692d`; postcommit source drift run `20260512T071842Z-rc-doc-sync-postcommit-source` reported `package_source_unchanged`, `headMatchesManifestSource=false`, `repoChangedSinceManifest=true`, `repoChangedFileCount=22`, and `packageDrift.packageChangedSinceManifest=false`."
+  - "2026-05-12T07:38:24Z postcommit decision packet `20260512T071842Z-rc-doc-sync-postcommit-decision` reported `awaiting_operator_publish_path`, `publish_path_not_selected`, `operator_publish_plan_ready`, `artifact_verified`, `install_smoke_passed`, `trusted_reply_recorded`, and `agentMayExecuteSelectedPath=false`."
+  - "2026-05-12T07:38:24Z RC checklist now records the docs/state-only HEAD drift as safe for the package; README and Lane 3 index point agents at the same package-drift distinction before operator publish."
+  - "2026-05-12T07:38:24Z no publish, tag, npm promotion, expectedIntegrity fill, GitHub release, or live CRM write was performed."
+  - "2026-05-12T07:43:29Z focused verification passed: RC checklist contract, markdown update, Lane 3 required paths/troubleshooting contract -> 4 passed in 0.02s; ruff format/check passed; YAML parse returned YAML_PARSE_OK; git diff --check passed."
+next_step: Commit and push the post-doc-sync RC evidence slice, then rerun read-only RC source drift and operator decision packets.

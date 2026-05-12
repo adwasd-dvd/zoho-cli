@@ -51,7 +51,10 @@ CRM SDK planning:
   (`cliq-channel-468`: one-command read-only native Cliq RC publish handoff;
   returns `awaiting_operator_publish_path` until the operator selects
   `local_operator_rc`, `npm_rc_publish`, or `github_release_artifact`; keeps
-  `agentMayExecuteSelectedPath=false`)
+  `agentMayExecuteSelectedPath=false`; after repo-only docs/state commits,
+  `sourceDrift.repoChangedSinceManifest=true` is acceptable only when
+  `sourceDrift.packageChangedSinceManifest=false` and
+  `package_source_unchanged` is still reported)
 - `ops/scripts/openclaw_cliq_bot_no_response_packet.sh`
   (`cliq-channel-472/474`: first responder for Bot no-response reports; runs
   public callback smoke plus live ingress diagnostics, then embeds

@@ -20,9 +20,9 @@ cliq:
 openclaw_cliq_channel:
   priority: 3
   status: completed_for_rc
-  phase: rc_docs_hygiene_synced
+  phase: post_doc_sync_decision_packet_indexed
   target_release: v0.4.0
-  current_milestone: cliq-channel-475-rc-docs-hygiene-sync
+  current_milestone: cliq-channel-476-post-doc-sync-decision-evidence
   blockers: []
 
 crm:

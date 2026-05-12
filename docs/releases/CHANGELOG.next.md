@@ -112,6 +112,8 @@
 - Added `ops/scripts/openclaw_cliq_bot_no_response_packet.sh` as the preferred no-response wrapper: it runs public callback smoke when a public webhook URL is provided, runs live ingress diagnostics, and returns one redacted `nextAction` for handler trigger, webhook payload/policy, route binding, or reply delivery triage.
 - Added `ops/scripts/openclaw_cliq_handler_trigger_packet.sh`, a read-only Bot handler trigger packet that turns `no_recent_webhook_ingress` into a machine-readable Zoho handler paste/checklist for the public `/webhooks/cliq` URL, accepted handler targets, Deluge `invokeurl` body/header shape, and rerun commands while storing no secrets or raw message bodies.
 - Wired the handler trigger packet into `ops/scripts/openclaw_cliq_bot_no_response_packet.sh`, so `no_recent_webhook_ingress` reports now include a redacted `handlerTrigger` subpacket and evidence file when public callback setup is not the blocker.
+- Synced README, the v0.4 RC checklist, Lane 3 index, and contract markers with the embedded handler-trigger no-response flow.
+- Recorded the post-doc-sync source drift and decision packet evidence: repo docs/state commits moved HEAD after the handoff manifest, but `package_source_unchanged` and `packageDrift.packageChangedSinceManifest=false` keep the verified RC package current while publish path selection remains operator-only.
 
 ### Architecture / modularization (2026-05-04T18:19:47Z)
 - Started `cliq-210` post-RC modularization by extracting the `zoho cliq status` and `zoho cliq capabilities` command bodies into `zoho_cli/commands/cliq_readiness.py`, leaving `zoho_cli/cli.py` with runtime dependency injection plus existing Typer registration only. Command names, help text, and JSON output are unchanged.

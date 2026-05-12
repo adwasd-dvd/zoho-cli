@@ -1,22 +1,22 @@
-id: crm-031
-title: harden CRM fixture agent-ready wrapper coverage
-module: crm
+id: cliq-channel-491
+title: record post-CRM agent-ready wrapper RC decision evidence
+module: openclaw_cliq_channel
 stage: completed
 status: completed
 owner: coder
-updated_at: '2026-05-12T16:33:12Z'
+updated_at: '2026-05-12T16:44:11Z'
 execution_mode: turbo_20x
 throughput_policy_ref: ops/state/execution_policy.yml
 success_criteria:
-  - "`ops/scripts/crm_fixture_agent_next_command.sh` has explicit regression coverage for `agent_next_command_ready`"
-  - "The covered ready branch keeps `normalUpsertExecuteBlocked=true` and `liveFixtureExecutionBlockedForAgent=true`"
-  - "The ready branch emits basename-only report files and `nextAction=execute_next_agent_command` for local/dry-run commands"
-  - "Lane 1 state and release notes record the hardening slice"
+  - "Read-only source drift check after CRM `3020f7ef` reports `package_source_unchanged`"
+  - "Read-only operator decision packet reports `awaiting_operator_publish_path` with all reports ready"
+  - "`agentMayExecuteSelectedPath=false` and publish/tag/release/integrity-fill remain operator-only"
+  - "Lane 1 state and release notes record the post-CRM decision evidence"
   - "No publish, tag, npm promotion, GitHub release, expectedIntegrity fill, Zoho call, or CRM write is performed"
 next_if_done: Continue to the next safe RC readiness milestone without publishing, tagging, npm promotion, GitHub release creation, expectedIntegrity fill, or live CRM writes.
 progress:
-  - "2026-05-12T16:29:14Z added `test_crm_fixture_agent_next_command_reports_agent_ready`, covering a source-file packet with an agent-executable local/dry-run command."
-  - "2026-05-12T16:29:14Z focused wrapper branch tests passed: `operator_input_required`, `agent_next_command_ready`, and `stop_before_operator_live_fixture` -> 3 passed in 0.41s."
-  - "2026-05-12T16:29:14Z no publish, tag, npm promotion, GitHub release, expectedIntegrity fill, Zoho call, or CRM write was performed."
-  - "2026-05-12T16:33:12Z final verification passed: focused wrapper branch tests -> 3 passed in 0.43s; `make lint`, `ruff format --check zoho_cli tests`, and YAML parse passed."
-next_step: Commit and push the wrapper hardening slice, then continue to the next safe milestone.
+  - "2026-05-12T16:40:28Z source drift run `20260512T163945Z-crm031-postcommit-source` returned `package_source_unchanged`, `headCommit=3020f7ef167fd9f8977fb916b259e3972e3d11de`, `repoChangedFileCount=36`, `packageChangedSinceManifest=false`, and `dirtyFileCount=0`."
+  - "2026-05-12T16:40:28Z decision packet `20260512T163945Z-crm031-postcommit-decision` returned `awaiting_operator_publish_path`, `publish_path_not_selected`, `operator_publish_plan_ready`, `artifact_verified`, `install_smoke_passed`, `trusted_reply_recorded`, all `reportsReady=true`, and `agentMayExecuteSelectedPath=false`."
+  - "2026-05-12T16:40:28Z no publish, tag, npm promotion, GitHub release, expectedIntegrity fill, Zoho call, or CRM write was performed."
+  - "2026-05-12T16:44:11Z verification passed: OpenClaw channel/operator handoff, Lane 3 required/troubleshooting docs, and markdown update -> 5 passed in 0.02s; YAML parse and `git diff --check` passed."
+next_step: Commit and push the evidence sync, then continue to the next safe milestone.

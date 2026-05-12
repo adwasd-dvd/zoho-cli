@@ -271,7 +271,9 @@ read-only and keeps publish/tag/GitHub release/expectedIntegrity fill plus live
 Zoho writes disabled for agents. Read `operatorActionRequests` for the exact
 human-facing asks, such as `select_openclaw_cliq_publish_path`,
 `provide_crm_fixture_cleanup_plan`, and `provide_crm_fixture_payload_file`;
-these entries are guidance only and always keep `agentMayExecute=false`.
+these entries are guidance only, include placeholder-only `commandPreview` /
+`unblocks` hints for the next local recheck, and always keep
+`agentMayExecute=false`.
 
 For a compact AI go/stop summary, run:
 

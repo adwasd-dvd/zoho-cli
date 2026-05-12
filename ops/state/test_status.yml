@@ -1,10 +1,12 @@
-last_run_at: "2026-05-12T20:59:29Z"
+last_run_at: "2026-05-12T21:14:00Z"
 last_result: passing
-current_focus: cliq-channel-493-post-platform215-evidence
+current_focus: platform-216-autonomy-request-hints
 suites:
   unit:
     status: passing
     notes:
+      - "platform-216 autonomy run `20260512T210846Z-operator-request-hints-dev` returned `operator_input_required` with placeholder-only `commandPreview` and `unblocks` hints on the publish-path, cleanup-plan, and payload-file operator action requests."
+      - "platform-216 final verification passed at 2026-05-12T21:14:00Z: autonomy/Lane 3/RC markdown tests -> 6 passed in 0.14s; shell syntax, `make lint`, Ruff format, YAML parse, and `git diff --check` passed."
       - "cliq-channel-493 post-platform-215 evidence started at 2026-05-12T20:53:45Z: source drift run `20260512T205345Z-platform215-postcommit-source` returned `package_source_unchanged`, no blockers, `headCommit=9fac452e0fd25e6a58f3054369dec01f83cb0950`, `repoChangedFileCount=38`, `packageDrift.packageChangedSinceManifest=false`, and `dirtyFileCount=0`."
       - "cliq-channel-493 decision packet run `20260512T205345Z-platform215-postcommit-decision` returned `awaiting_operator_publish_path`, blocker `publish_path_not_selected`, all `reportsReady=true`, `operator_publish_plan_ready`, `package_source_unchanged`, `artifact_verified`, `install_smoke_passed`, `trusted_reply_recorded`, and `agentMayExecuteSelectedPath=false`."
       - "cliq-channel-493 autonomy run `20260512T205345Z-platform215-postcommit-autonomy` returned `operator_input_required`, `operatorActionRequests=[select_openclaw_cliq_publish_path, provide_crm_fixture_cleanup_plan, provide_crm_fixture_payload_file]`, `agentMayRunCrmNextCommand=false`, and `crmNextCommandAllowedForAgent=false`."

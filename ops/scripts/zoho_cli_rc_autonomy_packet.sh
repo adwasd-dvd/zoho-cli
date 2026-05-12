@@ -169,6 +169,7 @@ PAYLOAD="$("$JQ_BIN" -n \
                 "github_release_artifact"
               ],
               commandPreview: "OPENCLAW_CLIQ_OPERATOR_PUBLISH_PATH=<choice> ops/scripts/openclaw_cliq_rc_operator_decision_packet.sh",
+              unblocks: "openclaw_cliq_operator_publish_selection_review",
               agentMayExecute: false,
               requiresExplicitOperatorApproval: true,
               redaction: {
@@ -184,6 +185,7 @@ PAYLOAD="$("$JQ_BIN" -n \
               required: true,
               inputKind: "operator_review",
               selectedPublishPath: ($cliq.selectedPublishPath // null),
+              unblocks: "operator_publish_execution_review",
               agentMayExecute: false,
               requiresExplicitOperatorApproval: true,
               redaction: {
@@ -204,6 +206,8 @@ PAYLOAD="$("$JQ_BIN" -n \
                   inputKind: "file",
                   template: "docs/releases/CRM_V0_5_FIXTURE_PAYLOAD_TEMPLATE.json",
                   guidance: "Copy the template outside the repo and replace placeholder values with a dedicated test fixture before any live gate.",
+                  commandPreview: "ZOHO_CRM_FIXTURE_PAYLOAD_FILE=<copied-payload-file> ZOHO_CRM_FIXTURE_CLEANUP_PLAN=<cleanup-plan> ops/scripts/crm_fixture_agent_next_command.sh",
+                  unblocks: "crm_fixture_agent_next_command_recheck",
                   agentMayExecute: false,
                   requiresExplicitOperatorApproval: false,
                   redaction: {
@@ -218,6 +222,8 @@ PAYLOAD="$("$JQ_BIN" -n \
                   required: true,
                   inputKind: "text",
                   guidance: "Provide a cleanup plan with an action, target, and selector category such as fixture email, record id, duplicate field, idempotency key, or payload digest.",
+                  commandPreview: "ZOHO_CRM_FIXTURE_PAYLOAD_FILE=<copied-payload-file> ZOHO_CRM_FIXTURE_CLEANUP_PLAN=<cleanup-plan> ops/scripts/crm_fixture_agent_next_command.sh",
+                  unblocks: "crm_fixture_agent_next_command_recheck",
                   agentMayExecute: false,
                   requiresExplicitOperatorApproval: false,
                   redaction: {
@@ -231,6 +237,7 @@ PAYLOAD="$("$JQ_BIN" -n \
                   required: true,
                   inputKind: "operator_input",
                   fact: .,
+                  unblocks: "crm_fixture_agent_next_command_recheck",
                   agentMayExecute: false,
                   requiresExplicitOperatorApproval: false,
                   redaction: {

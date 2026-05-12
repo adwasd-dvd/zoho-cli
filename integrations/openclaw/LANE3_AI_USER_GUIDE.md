@@ -247,7 +247,9 @@ After sync, ensure the AI user follows:
     `safety.crmNextCommandAllowlistedDryRunLocal` only confirms the CRM command
     shape is recognized; it does not override a non-ready top-level status.
     Use `operatorActionRequests` to generate the exact human ask without
-    exposing raw values; expected ids include
+    exposing raw values. `commandPreview` values are placeholder-only recheck
+    hints, and `unblocks` names the next gate the operator input should unlock.
+    Expected ids include
     `select_openclaw_cliq_publish_path`,
     `provide_crm_fixture_cleanup_plan`, and
     `provide_crm_fixture_payload_file`

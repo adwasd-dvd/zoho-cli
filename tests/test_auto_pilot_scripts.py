@@ -2194,8 +2194,22 @@ def test_zoho_cli_rc_autonomy_packet_collects_operator_input(
         action_requests["select_openclaw_cliq_publish_path"]["agentMayExecute"] is False
     )
     assert (
+        action_requests["select_openclaw_cliq_publish_path"]["unblocks"]
+        == "openclaw_cliq_operator_publish_selection_review"
+    )
+    assert (
         action_requests["provide_crm_fixture_payload_file"]["template"]
         == "docs/releases/CRM_V0_5_FIXTURE_PAYLOAD_TEMPLATE.json"
+    )
+    assert (
+        action_requests["provide_crm_fixture_payload_file"]["commandPreview"]
+        == "ZOHO_CRM_FIXTURE_PAYLOAD_FILE=<copied-payload-file> "
+        "ZOHO_CRM_FIXTURE_CLEANUP_PLAN=<cleanup-plan> "
+        "ops/scripts/crm_fixture_agent_next_command.sh"
+    )
+    assert (
+        action_requests["provide_crm_fixture_payload_file"]["unblocks"]
+        == "crm_fixture_agent_next_command_recheck"
     )
     assert (
         action_requests["provide_crm_fixture_payload_file"]["redaction"][
@@ -2204,6 +2218,16 @@ def test_zoho_cli_rc_autonomy_packet_collects_operator_input(
         is False
     )
     assert action_requests["provide_crm_fixture_cleanup_plan"]["inputKind"] == "text"
+    assert (
+        action_requests["provide_crm_fixture_cleanup_plan"]["commandPreview"]
+        == "ZOHO_CRM_FIXTURE_PAYLOAD_FILE=<copied-payload-file> "
+        "ZOHO_CRM_FIXTURE_CLEANUP_PLAN=<cleanup-plan> "
+        "ops/scripts/crm_fixture_agent_next_command.sh"
+    )
+    assert (
+        action_requests["provide_crm_fixture_cleanup_plan"]["unblocks"]
+        == "crm_fixture_agent_next_command_recheck"
+    )
     assert (
         action_requests["provide_crm_fixture_cleanup_plan"]["redaction"][
             "rawCleanupPlanStored"
@@ -2315,6 +2339,7 @@ def test_zoho_cli_rc_autonomy_packet_stops_for_selected_publish_path(
             "required": True,
             "inputKind": "operator_review",
             "selectedPublishPath": "local_operator_rc",
+            "unblocks": "operator_publish_execution_review",
             "agentMayExecute": False,
             "requiresExplicitOperatorApproval": True,
             "redaction": {

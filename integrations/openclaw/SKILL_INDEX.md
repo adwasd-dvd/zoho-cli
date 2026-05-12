@@ -93,8 +93,8 @@ CRM SDK planning:
   operator-input or operator-only stop states while keeping publish/tag/release,
   expectedIntegrity fill, normal CRM upsert execution, and live Zoho writes
   disabled for agents; exposes redacted `operatorActionRequests` with stable
-  ids for publish-path selection, fixture cleanup plan, and fixture payload
-  file inputs)
+  ids plus placeholder-only `commandPreview` / `unblocks` hints for
+  publish-path selection, fixture cleanup plan, and fixture payload file inputs)
 - `ops/scripts/openclaw_cliq_bot_no_response_packet.sh`
   (`cliq-channel-472/474`: first responder for Bot no-response reports; runs
   public callback smoke plus live ingress diagnostics, then embeds

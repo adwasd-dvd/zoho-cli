@@ -190,7 +190,8 @@ Use this skill as the default operating contract for an OpenClaw agent acting li
   keeping publish/tag/release/expectedIntegrity fill and live Zoho writes
   disabled for agents. Use `operatorActionRequests` to explain exactly which
   operator choices or fixture inputs are needed; entries are redacted,
-  non-executable by agents, and include stable ids such as
+  non-executable by agents, include placeholder-only `commandPreview` /
+  `unblocks` hints for the next recheck, and include stable ids such as
   `select_openclaw_cliq_publish_path`,
   `provide_crm_fixture_cleanup_plan`, and
   `provide_crm_fixture_payload_file`.

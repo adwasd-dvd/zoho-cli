@@ -28,8 +28,8 @@ openclaw_cliq_channel:
 crm:
   priority: 4
   status: in_progress
-  phase: v0_5_operator_command_previews
+  phase: v0_5_operator_report_metadata
   target_release: v0.5.0
-  current_milestone: crm-020-operator-command-previews
+  current_milestone: crm-021-operator-report-metadata
   blockers:
     - "operator-provided dedicated CRM fixture payload and cleanup approval required before Zoho-backed dry-run smoke and live fixture execution"

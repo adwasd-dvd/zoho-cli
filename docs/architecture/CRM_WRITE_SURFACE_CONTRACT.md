@@ -303,6 +303,9 @@ The packet also emits redacted `operatorReview.nextCommands` entries with
 placeholder-only command previews, `writesZohoData`, `dryRunOnly`,
 `agentMayExecute`, and `requiresExplicitOperatorApproval` booleans so agents can
 run the local/dry-run steps and stop before operator-only live execution.
+`reportFiles` and `reportsReady` expose only artifact basenames for the packet,
+payload preflight, optional dry-run readiness bundle, and optional smoke summary
+so agents can archive or pass evidence without logging local paths.
 
 ## Operator payload template
 

@@ -59,6 +59,7 @@ fi
 PREFLIGHT_BASENAME="$(json_basename "$PREFLIGHT_FILE")"
 READINESS_BASENAME="$(json_basename "$READINESS_FILE")"
 SUMMARY_BASENAME="$(json_basename "$SUMMARY_FILE")"
+PACKET_BASENAME="$(json_basename "$PACKET_FILE")"
 
 PAYLOAD="$("$JQ_BIN" -n \
   --arg runId "$RUN_ID" \
@@ -66,6 +67,7 @@ PAYLOAD="$("$JQ_BIN" -n \
   --argjson preflightExit "$PREFLIGHT_EXIT" \
   --argjson readinessExit "$READINESS_EXIT" \
   --argjson readinessSkipped "$READINESS_SKIPPED" \
+  --argjson packetFile "$PACKET_BASENAME" \
   --argjson preflightFile "$PREFLIGHT_BASENAME" \
   --argjson readinessFile "$READINESS_BASENAME" \
   --argjson summaryFile "$SUMMARY_BASENAME" \
@@ -215,6 +217,18 @@ PAYLOAD="$("$JQ_BIN" -n \
       checkedAt: $checkedAt,
       status: $status,
       blockers: ($blockers | unique),
+      reportFiles: {
+        packet: $packetFile,
+        payloadPreflight: $preflightFile,
+        dryRunReadiness: (if $readinessSkipped then null else $readinessFile end),
+        smokeSummary: $summaryFile
+      },
+      reportsReady: {
+        packet: true,
+        payloadPreflight: true,
+        dryRunReadiness: ($readinessSkipped | not),
+        smokeSummary: ($summaryFile != null)
+      },
       payloadPreflight: {
         ready: ($preflightStatus == "payload_preflight_ready"),
         file: $preflightFile,

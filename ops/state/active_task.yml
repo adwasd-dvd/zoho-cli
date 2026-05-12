@@ -1,22 +1,24 @@
-id: cliq-channel-478
-title: record post-CRM command-preview RC decision evidence
-module: openclaw_cliq_channel
+id: crm-021
+title: add CRM fixture operator report metadata
+module: crm
 stage: completed
 status: completed
 owner: coder
-updated_at: '2026-05-12T09:40:37Z'
+updated_at: '2026-05-12T09:51:20Z'
 execution_mode: turbo_20x
 throughput_policy_ref: ops/state/execution_policy.yml
 success_criteria:
-  - post-CRM command-preview source drift guard reports `package_source_unchanged`
-  - operator decision packet reports `awaiting_operator_publish_path`
-  - artifact, install smoke, promotion, and trusted reply evidence remain ready in the decision packet
-  - RC checklist, operator handoff, README, Lane 3 index, and state docs record the new evidence
-  - publish, tag, npm promotion, GitHub release, and expectedIntegrity fill remain operator-only
-next_if_done: Operator chooses the native Cliq RC artifact path with `ops/scripts/openclaw_cliq_rc_operator_decision_packet.sh`; CRM fixture dry-run remains gated on a copied dedicated payload and cleanup plan.
+  - CRM fixture operator packet reports `reportFiles`
+  - CRM fixture operator packet reports `reportsReady`
+  - report filenames are basenames only, not local workspace or temp paths
+  - tests cover blocked, payload-preflight-ready, and dry-run-readiness packet states
+  - Lane 2 and Lane 3 docs describe the report metadata for AI-safe evidence handoff
+  - normal `zoho crm upsert --execute` and live fixture execution remain blocked
+next_if_done: CRM fixture Zoho-backed dry-run can start only after an operator provides a copied dedicated payload and a cleanup plan with `cleanup.qualityReady=true`, `cleanup.selectorPresent=true`, and appropriate redacted `cleanup.selectorTypes`; live fixture execution still requires exact approval and live env gates.
 progress:
-  - "2026-05-12T09:32:44Z source drift run `20260512T091513Z-crm-command-previews-postcommit-source` returned `package_source_unchanged`, `headCommit=df683f7e0bba4650cdff23bc7692cbfcc2545e51`, `repoChangedSinceManifest=true`, `repoChangedFileCount=25`, and `packageDrift.packageChangedSinceManifest=false`."
-  - "2026-05-12T09:32:44Z decision packet `20260512T091513Z-crm-command-previews-postcommit-decision` returned `awaiting_operator_publish_path`, `publish_path_not_selected`, `operator_publish_plan_ready`, `artifact_verified`, `install_smoke_passed`, `trusted_reply_recorded`, and `agentMayExecuteSelectedPath=false`."
-  - "2026-05-12T09:32:44Z no publish, tag, npm promotion, GitHub release, expectedIntegrity fill, Zoho call, or CRM live write was performed."
-  - "2026-05-12T09:40:37Z focused verification passed: OpenClaw Cliq RC checklist/operator handoff contract, Lane 3 required paths/troubleshooting contract, and markdown update -> 5 passed in 0.02s; ruff format/check, YAML parse, and `git diff --check` passed."
-next_step: Commit and push the post-CRM command-preview decision evidence slice, then continue to the next safe RC readiness milestone.
+  - "2026-05-12T09:48:01Z crm-021 completed: `ops/scripts/crm_fixture_operator_packet.sh` now emits top-level `reportFiles` and `reportsReady` for the operator packet, payload preflight, optional dry-run readiness bundle, and optional smoke summary."
+  - "2026-05-12T09:48:01Z report metadata uses basenames only; skipped readiness reports return `dryRunReadiness=null` and `reportsReady.dryRunReadiness=false`."
+  - "2026-05-12T09:48:01Z tests now cover report metadata for missing-payload, payload-preflight-ready, and ready-for-operator-live-fixture packet states."
+  - "2026-05-12T09:48:01Z no Zoho call, CRM live write, normal `zoho crm upsert --execute`, publish, tag, npm promotion, GitHub release, or expectedIntegrity fill was performed."
+  - "2026-05-12T09:51:20Z focused verification passed: shell syntax for CRM fixture scripts; CRM fixture operator packet/preflight/readiness tests plus Lane 3 CRM contract and markdown update -> 12 passed, 73 deselected in 1.46s; ruff format/check, YAML parse, and `git diff --check` passed."
+next_step: Commit and push the operator report metadata slice, then refresh RC source-drift evidence if this CRM-only commit moves HEAD.

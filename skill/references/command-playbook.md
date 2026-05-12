@@ -235,6 +235,8 @@ Use `operatorReview.nextCommands` when an automation needs a command preview:
 commands are placeholder-only and include `agentMayExecute`, `dryRunOnly`,
 `writesZohoData`, and `requiresExplicitOperatorApproval` gates. Do not run
 entries marked `agentMayExecute=false`.
+Use `reportFiles` and `reportsReady` to hand off the packet, preflight,
+readiness bundle, and smoke-summary basenames without exposing local paths.
 
 ```bash
 ZOHO_CRM_FIXTURE_PAYLOAD_FILE=/tmp/lead-fixture.json \

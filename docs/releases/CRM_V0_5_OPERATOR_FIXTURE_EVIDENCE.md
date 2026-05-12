@@ -100,6 +100,12 @@ Every command uses placeholders such as `<copied-fixture-payload.json>` and
 `agentMayExecute=false`, `writesZohoData=true`, and
 `requiresExplicitOperatorApproval=true`.
 
+For evidence handoff, the same packet exposes `reportFiles` and `reportsReady`.
+Those fields contain only basenames for the operator packet, payload preflight,
+optional dry-run readiness bundle, and optional smoke summary, so agents can
+archive or pass report filenames without logging local directories or raw
+fixture values.
+
 ```bash
 ZOHO_CRM_FIXTURE_PAYLOAD_FILE=/tmp/lead-fixture.json \
 ZOHO_CRM_FIXTURE_IDEMPOTENCY_KEY=crm-fixture-$(date +%F) \

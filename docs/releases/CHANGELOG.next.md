@@ -25,6 +25,7 @@
 - Added `crm-018` cleanup selector type metadata: CRM fixture preflight reports redacted `cleanup.selectorTypes` such as `email_keyword`, `record_id`, `idempotency_key`, and `payload_digest` so operators and agents can fix cleanup plans without exposing raw selector values.
 - Added `crm-019` operator review facts: CRM fixture operator packets now expose redacted `operatorReview.readyFacts` and `operatorReview.missingFacts` so agents can branch to payload, cleanup, dry-run, or operator-approval steps without logging raw fixture values.
 - Added `crm-020` operator command previews: CRM fixture operator packets now expose redacted `operatorReview.nextCommands` entries with placeholder-only commands plus `agentMayExecute`, `dryRunOnly`, `writesZohoData`, and `requiresExplicitOperatorApproval` gates.
+- Added `crm-021` operator packet report metadata: CRM fixture operator packets now expose `reportFiles` and `reportsReady` basenames for packet/preflight/readiness/smoke-summary handoff without logging local paths.
 
 ### Final release (2026-05-04T21:15:20Z)
 - Promoted `0.2.1rc1` to final `0.2.1` after the RC gate stayed green; no additional CLI behavior change was introduced for the final promotion.

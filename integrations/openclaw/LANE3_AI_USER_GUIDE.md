@@ -72,6 +72,7 @@ Current implementation-only delta:
 - `crm-015` also adds `ops/scripts/crm_fixture_operator_packet.sh` as the preferred autonomous handoff wrapper: it reports missing payload/cleanup, payload preflight readiness, dry-run readiness, or recorded live fixture evidence without granting live CRM write permission.
 - `crm-019` adds `operatorReview.readyFacts` and `operatorReview.missingFacts` to that packet so AI agents can branch on redacted fact categories instead of raw payload, email, cleanup, or selector values.
 - `crm-020` adds redacted `operatorReview.nextCommands` command previews with `agentMayExecute`, `dryRunOnly`, `writesZohoData`, and `requiresExplicitOperatorApproval` gates; agents may run local/dry-run entries only and must stop at operator-only live approval entries.
+- `crm-021` adds `reportFiles` and `reportsReady` to the packet so agents can hand off generated packet/preflight/readiness/smoke-summary basenames without logging local paths.
 
 ## Required behavior support after lane3 sync
 

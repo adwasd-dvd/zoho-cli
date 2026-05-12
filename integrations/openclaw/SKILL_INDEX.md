@@ -95,7 +95,8 @@ CRM SDK planning:
   raw selector values; `crm-019` adds redacted `operatorReview.readyFacts` and
   `operatorReview.missingFacts`; `crm-020` adds redacted
   `operatorReview.nextCommands` command previews with explicit agent/live
-  execution gates)
+  execution gates; `crm-021` adds `reportFiles` and `reportsReady` basename
+  metadata for packet/preflight/readiness/smoke-summary handoff)
 - `docs/releases/CRM_V0_5_FIXTURE_PAYLOAD_TEMPLATE.json` (`crm-015`: safe
   one-record `Leads` template with `.example.invalid` placeholder data; copy and
   edit outside the repo before live fixture mode; smoke reports

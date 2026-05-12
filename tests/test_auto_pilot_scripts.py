@@ -2782,6 +2782,18 @@ def test_crm_fixture_operator_packet_reports_missing_payload(
     payload = json.loads(result.stdout)
     assert payload["status"] == "blocked"
     assert payload["blockers"] == ["cleanup_plan_missing", "payload_file_required"]
+    assert payload["reportFiles"] == {
+        "packet": "packet.json",
+        "payloadPreflight": "crm_fixture_payload_preflight_unit-missing-payload.json",
+        "dryRunReadiness": None,
+        "smokeSummary": None,
+    }
+    assert payload["reportsReady"] == {
+        "packet": True,
+        "payloadPreflight": True,
+        "dryRunReadiness": False,
+        "smokeSummary": False,
+    }
     assert payload["payloadPreflight"]["status"] == "blocked"
     assert payload["payloadPreflight"]["blockers"] == [
         "payload_file_required",
@@ -2850,6 +2862,18 @@ def test_crm_fixture_operator_packet_accepts_payload_preflight(
     payload = json.loads(result.stdout)
     assert payload["status"] == "payload_preflight_ready"
     assert payload["blockers"] == []
+    assert payload["reportFiles"] == {
+        "packet": "crm_fixture_operator_packet_unit-ready-payload.json",
+        "payloadPreflight": "crm_fixture_payload_preflight_unit-ready-payload.json",
+        "dryRunReadiness": None,
+        "smokeSummary": None,
+    }
+    assert payload["reportsReady"] == {
+        "packet": True,
+        "payloadPreflight": True,
+        "dryRunReadiness": False,
+        "smokeSummary": False,
+    }
     assert payload["payloadPreflight"]["ready"] is True
     assert payload["payloadPreflight"]["payload"]["dedicatedFixtureCandidate"] is True
     assert payload["payloadPreflight"]["payload"]["placeholderEmailCount"] == 0
@@ -3003,6 +3027,18 @@ def test_crm_fixture_operator_packet_wraps_dry_run_readiness(
     assert result.returncode == 0, output
     payload = json.loads(result.stdout)
     assert payload["status"] == "ready_for_operator_live_fixture"
+    assert payload["reportFiles"] == {
+        "packet": "crm_fixture_operator_packet_unit-ready-evidence.json",
+        "payloadPreflight": "crm_fixture_payload_preflight_unit-ready-evidence.json",
+        "dryRunReadiness": "crm_fixture_operator_readiness_bundle_unit-ready-evidence.json",
+        "smokeSummary": "crm_fixture_live_smoke_summary.json",
+    }
+    assert payload["reportsReady"] == {
+        "packet": True,
+        "payloadPreflight": True,
+        "dryRunReadiness": True,
+        "smokeSummary": True,
+    }
     assert payload["payloadPreflight"]["ready"] is True
     assert payload["dryRunReadiness"]["ready"] is True
     assert payload["dryRunReadiness"]["status"] == "ready_for_operator_live_fixture"

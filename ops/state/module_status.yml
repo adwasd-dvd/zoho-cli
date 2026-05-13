@@ -28,11 +28,12 @@ cliq:
 openclaw_cliq_channel:
   priority: 3
   status: blocked
-  phase: bot_direct_reply_rate_limit_cooldown_rc_artifact_refreshed
+  phase: deluge_native_reply_handler_trigger_ready_pending_handler_install
   target_release: v0.4.0
-  current_milestone: cliq-channel-503-rc-artifact-refresh-after-rate-limit-fix
+  current_milestone: cliq-channel-507-deluge-handler-trigger-guidance
   blockers:
-    - "latest real `oldsix老六` direct message returned the Deluge handler ACK, but OpenClaw final reply delivery was blocked by Zoho `rate_limited`; wait for cooldown, then replay one quiet-lifecycle direct message"
+    - "real `oldsix老六` Message Handler must be re-pasted/saved with `reply_mode=deluge_response` and `return webhook_response` before the next direct Bot message can prove visible native replies"
+    - "if the next direct Bot message still reports `no_recent_webhook_ingress`, debug Zoho handler trigger/save state before OAuth delivery"
 
 crm:
   priority: 4

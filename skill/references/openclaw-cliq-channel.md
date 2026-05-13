@@ -149,8 +149,12 @@ message and approval workflows.
 
 Keep native channel lifecycle handling on the shared wrapper. Do not let
 status/read failures trigger another agent turn. For real Bot webhooks, prefer
-quiet lifecycle and treat the Deluge `response.put("text", "...")` value as a
-Zoho handler ACK, not proof that OpenClaw final delivery succeeded.
+quiet lifecycle. Use the current Deluge templates with
+`reply_mode=deluge_response`, capture `webhook_response = invokeurl [...]`, and
+return the webhook map when it has a `text` key so the OpenClaw final answer is
+rendered by Zoho's native Bot handler response. Treat any fixed Deluge
+`response.put("text", "...")` value as a handler ACK, not proof that OpenClaw
+final delivery succeeded.
 
 Diagnostic commands:
 
@@ -334,7 +338,10 @@ Human setup checkpoints:
   Zoho again. Require `handler_trigger_packet_ready`; use the packet's
   `handlers.saveTargets`, `delugeContract`, and `operatorChecklist` to verify
   the selected Message/Mention/Participation/Context handlers without storing
-  secrets or raw message bodies.
+  secrets or raw message bodies. Current handler-trigger packets require
+  `delugeContract.replyMode=deluge_response` and `operatorChecklist` should tell
+  operators to return `webhook_response` when it contains `text`; a fixed
+  `received` ACK is only a handler smoke signal and is not normal operation.
 - Direct Bot DMs use the wrapped Message Handler template because Zoho may pass
   `message` as text; if logs show `handlerKind:"message"` plus
   `reason:"invalid_payload"`, fix the handler payload shape before debugging the

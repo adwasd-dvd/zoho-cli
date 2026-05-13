@@ -819,6 +819,43 @@
   - cliq-channel-502
   agent_action: keep the refreshed tarball/operator handoff as local evidence only; do not publish, tag, release, version-bump, or fill `expectedIntegrity`
   completion_signal: pack/artifact/install/promotion/operator bundle/release notes/publish plan/handoff manifest are refreshed for tarball shasum `754afe56b33fa6551b6e8f9298b4531c88df3f3a`
+- id: cliq-channel-504
+  title: add Deluge-native Bot reply transport
+  module: openclaw_cliq_channel
+  stage: completed
+  priority: high
+  depends_on:
+  - cliq-channel-502
+  agent_action: use `reply_mode=deluge_response` for real Bot handlers so OpenClaw final answer text is returned in the webhook response and rendered by Zoho's native Bot handler response
+  completion_signal: webhook/native dispatch supports `deluge_response`, handler templates return `webhook_response` when it contains `text`, and focused runtime/template tests pass without live Zoho probes
+- id: cliq-channel-505
+  title: verify real oldsix Bot with Deluge-native reply template
+  module: openclaw_cliq_channel
+  stage: blocked
+  priority: high
+  depends_on:
+  - cliq-channel-507
+  blocker: "operator must re-paste/save the current `docs/releases/OPENCLAW_CLIQ_BOT_HANDLER_TEMPLATES.md` Message Handler template, then send exactly one fresh direct Bot message"
+  agent_action: after the operator sends one fresh message, rerun `ZOHO_CLIQ_PUBLIC_WEBHOOK_URL=https://cliq.hpyio.com/webhooks/cliq ZOHO_CLIQ_INGRESS_LOOKBACK_SECONDS=600 ops/scripts/openclaw_cliq_bot_no_response_packet.sh`; if it reports `no_recent_webhook_ingress`, run the handler trigger packet and ask for Zoho handler save/trigger fixes; if ingress is active, confirm the Bot chat shows the OpenClaw answer instead of a fixed `received` ACK
+  completion_signal: fresh `oldsix老六` direct message produces one webhook ingress, one native OpenClaw turn, and one visible Bot-native reply via Deluge response mode
+- id: cliq-channel-506
+  title: refresh no-publish RC artifact chain after Deluge-native reply mode
+  module: openclaw_cliq_channel
+  stage: completed
+  priority: high
+  depends_on:
+  - cliq-channel-504
+  agent_action: keep the refreshed tarball/operator handoff as local evidence only; do not publish, tag, release, version-bump, or fill `expectedIntegrity`
+  completion_signal: pack/artifact/install/promotion/operator bundle/release notes/publish plan/handoff manifest are refreshed for tarball shasum `295555b784d69838f3f01590e59c9e5cf5bbde20`
+- id: cliq-channel-507
+  title: refresh Bot no-response handler guidance for Deluge-native replies
+  module: openclaw_cliq_channel
+  stage: completed
+  priority: high
+  depends_on:
+  - cliq-channel-506
+  agent_action: make no-response and handler-trigger packets point operators at Deluge-native reply mode instead of fixed ACK smoke templates
+  completion_signal: handler-trigger packets expose `replyMode=deluge_response`, `return webhook_response` guidance, and classify `你好123456` as `no_recent_webhook_ingress` pending Zoho handler save/trigger fixes
 - id: cliq-channel-496
   title: collect operator native Cliq RC publish-path selection
   module: openclaw_cliq_channel

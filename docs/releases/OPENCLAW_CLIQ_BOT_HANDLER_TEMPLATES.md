@@ -3,7 +3,7 @@
 This runbook gives operator-copyable Deluge templates for connecting a real
 Zoho Cliq Bot to the native OpenClaw `cliq` channel webhook at `/webhooks/cliq`.
 
-Updated: `2026-05-12T03:58:30Z`.
+Updated: `2026-05-13T06:35:00Z`.
 
 Official references:
 
@@ -27,6 +27,12 @@ private tunnel if the URL is not meant to be public.
 The RC channel accepts Message, Mention, Participation, and Context handlers.
 Welcome, Incoming Webhook, Call, and Menu handlers are intentionally not used for
 native OpenClaw agent turns yet.
+
+Set `reply_mode` to `deluge_response` in Bot handlers. In this mode OpenClaw
+captures the agent's final answer and returns it in the webhook JSON `text`
+field; the Deluge handler then returns that map directly so Zoho renders the
+reply as the Bot's native handler response. This avoids the less reliable
+second-hop OAuth `zoho cliq send` path for direct Bot chats.
 
 ## Message Handler
 
@@ -54,6 +60,7 @@ msg.put("chatType",chat_type);
 
 payload = Map();
 payload.put("handler","message");
+payload.put("reply_mode","deluge_response");
 payload.put("message",msg);
 payload.put("attachments",attachments);
 payload.put("mentions",mentions);
@@ -62,7 +69,7 @@ payload.put("user",user);
 payload.put("chat",chat);
 payload.put("location",location);
 
-invokeurl
+webhook_response = invokeurl
 [
   url :webhook_url
   type :POST
@@ -70,12 +77,17 @@ invokeurl
   headers:{"Content-Type":"application/json","X-Cliq-Webhook-Secret":"<rotated-secret>"}
 ]
 
+if(webhook_response != null && webhook_response.containKey("text") && webhook_response.get("text") != null)
+{
+  return webhook_response;
+}
+
 return response;
 ```
 
-For a one-message smoke test, temporarily add
-`response.put("text","received");` before `return response;`. Remove that line
-for normal operation so OpenClaw owns the visible reply.
+Do not keep a fixed `response.put("text","received");` ACK in normal operation.
+That text only proves Zoho ran the handler; it does not prove OpenClaw received
+the event or delivered the agent answer.
 
 If the audit log shows `handlerKind:"message"` with
 `reason:"invalid_payload"`, the handler is reaching OpenClaw but the posted
@@ -101,19 +113,25 @@ webhook_url = "https://<your-tunnel-or-gateway>/webhooks/cliq";
 
 payload = Map();
 payload.put("handler","mention");
+payload.put("reply_mode","deluge_response");
 payload.put("message",message);
 payload.put("mentions",mentions);
 payload.put("user",user);
 payload.put("chat",chat);
 payload.put("location",location);
 
-invokeurl
+webhook_response = invokeurl
 [
   url :webhook_url
   type :POST
   body:payload.toString()
   headers:{"Content-Type":"application/json","X-Cliq-Webhook-Secret":"<rotated-secret>"}
 ]
+
+if(webhook_response != null && webhook_response.containKey("text") && webhook_response.get("text") != null)
+{
+  return webhook_response;
+}
 
 return response;
 ```
@@ -134,6 +152,7 @@ webhook_url = "https://<your-tunnel-or-gateway>/webhooks/cliq";
 
 payload = Map();
 payload.put("handler","participation");
+payload.put("reply_mode","deluge_response");
 payload.put("operation",operation);
 payload.put("data",data);
 payload.put("user",user);
@@ -150,13 +169,18 @@ else
   payload.put("message",data);
 }
 
-invokeurl
+webhook_response = invokeurl
 [
   url :webhook_url
   type :POST
   body:payload.toString()
   headers:{"Content-Type":"application/json","X-Cliq-Webhook-Secret":"<rotated-secret>"}
 ]
+
+if(webhook_response != null && webhook_response.containKey("text") && webhook_response.get("text") != null)
+{
+  return webhook_response;
+}
 
 return response;
 ```
@@ -183,19 +207,25 @@ context_message.put("answers",answers);
 
 payload = Map();
 payload.put("handler","context");
+payload.put("reply_mode","deluge_response");
 payload.put("message",context_message);
 payload.put("context_id",context_id);
 payload.put("answers",answers);
 payload.put("user",user);
 payload.put("chat",chat);
 
-invokeurl
+webhook_response = invokeurl
 [
   url :webhook_url
   type :POST
   body:payload.toString()
   headers:{"Content-Type":"application/json","X-Cliq-Webhook-Secret":"<rotated-secret>"}
 ]
+
+if(webhook_response != null && webhook_response.containKey("text") && webhook_response.get("text") != null)
+{
+  return webhook_response;
+}
 
 return response;
 ```
@@ -224,6 +254,11 @@ one native OpenClaw turn and one Cliq reply.
 7. Send one trusted Message or Mention from Cliq.
 8. Verify one accepted webhook event, one native OpenClaw turn, one Cliq reply,
    and no duplicate dispatch in the turn ledger.
+
+If the Bot replies with a delayed literal `received`, the handler is still using
+an ACK-only template. Re-paste the current template with
+`payload.put("reply_mode","deluge_response");`, assign `webhook_response =
+invokeurl [...]`, and return `webhook_response` when it has a `text` key.
 
 If public callback smoke passes but the no-response packet reports
 `no_recent_webhook_ingress`, run

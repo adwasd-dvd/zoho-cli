@@ -1,20 +1,28 @@
-id: cliq-channel-503
-title: refresh no-publish RC artifact chain after quiet lifecycle fix
+id: cliq-channel-507
+title: refresh Bot no-response handler guidance for Deluge-native replies
 module: openclaw_cliq_channel
 stage: completed
 status: completed
 owner: coder
-updated_at: '2026-05-13T05:18:59Z'
+updated_at: '2026-05-13T07:37:39Z'
 execution_mode: turbo_20x
 throughput_policy_ref: ops/state/execution_policy.yml
 success_criteria:
-  - "Keep real Bot webhook routes quiet by default so Zoho API quota is preserved for the final agent reply"
-  - "Expose final reply delivery failures as redacted `deliveryFailures` and classify `rate_limited` as `dispatch_reply_rate_limited`"
-  - "Refresh no-publish RC pack/artifact/install/promotion/operator handoff evidence without publishing, tagging, or filling artifact integrity"
-next_if_done: Wait for Zoho Cliq send-rate cooldown, ask the operator to send exactly one fresh `oldsix老六` direct message, then rerun the no-response packet; return to the RC autonomy queue only after the reply is visible or a new blocker is recorded.
+  - "Support `reply_mode=deluge_response` so webhook handlers can return OpenClaw's final answer as the native Zoho Bot response"
+  - "Avoid the second-hop OAuth `zoho cliq send` path for real Bot handler replies when Deluge-native mode is selected"
+  - "Update Lane 2/3 handler templates and docs so operators remove fixed `received` ACKs and return `webhook_response` when it contains `text`"
+  - "Update handler-trigger/no-response diagnostic packets so `no_recent_webhook_ingress` tells operators to use `reply_mode=deluge_response` and `return webhook_response`"
+next_if_done: Ask the operator to re-paste/save the current Message Handler template, then send exactly one fresh `oldsix老六` direct message such as `你好123456`; rerun the no-response packet and treat `no_recent_webhook_ingress` as a Zoho handler save/trigger issue.
 progress:
+  - "2026-05-13T06:53:13Z added Deluge-native reply transport: webhook payloads with `reply_mode=deluge_response` capture the native OpenClaw final reply text and include it as the webhook response `text`, while native dispatch records only redacted reply length/captured diagnostics."
+  - "2026-05-13T06:53:13Z updated real Bot Message/Mention/Participation/Context Deluge templates to assign `webhook_response = invokeurl [...]`, return it when it contains `text`, and document that a literal delayed `received` is only a handler ACK."
+  - "2026-05-13T06:53:13Z validation passed for `npm --prefix integrations/openclaw-channel-cliq run build` and `pytest tests/test_openclaw_channel_skeleton.py -q` (21 passed); no Zoho live probe, publish, tag, npm promotion, GitHub release, expectedIntegrity fill, CRM write, or live CRM fixture was performed."
+  - "2026-05-13T07:16:32Z expanded validation passed after Lane 1/2/3 sync: `npm --prefix integrations/openclaw-channel-cliq run build`; `pytest tests/test_openclaw_channel_skeleton.py tests/test_lane3_docs.py -q` -> 33 passed; `make lint`; `.venv/bin/ruff format --check zoho_cli tests`; YAML parse for state files; and `git diff --check`."
+  - "2026-05-13T07:16:32Z no-publish RC artifact chain refreshed after the Deluge-native reply change: pack shasum `295555b784d69838f3f01590e59c9e5cf5bbde20`, integrity `sha512-bwwguPTgXvzNirjX6bUZQQjHEwkExZIPmxAaxCX+CRLz55sYsMf8GHF/QufF7JWXNAPC+vtHs53syTu5T2mpOQ==`, artifact verified, Temp-HOME install smoke passed, promotion preflight ready, and operator bundle/release notes/publish plan/handoff manifest ready; no release action was executed."
+  - "2026-05-13T07:37:39Z refreshed `ops/scripts/openclaw_cliq_handler_trigger_packet.sh` so embedded no-response guidance now exposes `delugeContract.replyMode=deluge_response`, `webhookResponseVariable=webhook_response`, and `fixedAckTextAllowedInNormalOperation=false` instead of recommending a temporary `received` ACK."
+  - "2026-05-13T07:37:39Z after reinstalling the linked local plugin and restarting the OpenClaw gateway (PID 40475), public callback smoke for `https://cliq.hpyio.com/webhooks/cliq` passed but the user-sent `你好123456` check still returned `no_recent_webhook_ingress` over a 1-hour window, so the current blocker is Zoho Bot handler save/trigger state, not the tunnel or OpenClaw gateway."
   - "2026-05-13T05:20:00Z live Bot debugging found the Deluge `received` ACK is separate from OpenClaw delivery: the latest real message reached webhook/native dispatch and generated an assistant answer, but final `zoho cliq send --chat-id ...` failed with `rate_limited`."
   - "2026-05-13T05:18:59Z rebuilt `integrations/openclaw-channel-cliq`, linked the local plugin, restarted the OpenClaw gateway on port 18789, and verified `https://cliq.hpyio.com/webhooks/cliq` with public callback smoke."
   - "2026-05-13T05:21:00Z focused quiet-lifecycle/rate-limit diagnostic tests passed; no publish, tag, npm promotion, GitHub release, expectedIntegrity fill, or CRM write was performed."
   - "2026-05-13T05:24:45Z no-publish RC artifact chain refreshed: pack shasum `754afe56b33fa6551b6e8f9298b4531c88df3f3a`, integrity `sha512-LT5tTsvyQdw6b4sCCSgWzNF08kJsPx2gGdH6J2M8QVPmmqOTaV+/G+95LpVAj0Yq0J3kAwjON18tt6E0dl48Fg==`, artifact verified, Temp-HOME install smoke passed, promotion preflight ready, operator bundle/publish plan/handoff manifest ready; no release action was executed."
-next_step: Wait a few minutes for Zoho rate-limit cooldown, then have the operator send one fresh direct Bot message and rerun `ZOHO_CLIQ_PUBLIC_WEBHOOK_URL=https://cliq.hpyio.com/webhooks/cliq ops/scripts/openclaw_cliq_bot_no_response_packet.sh`.
+next_step: Re-paste/save the current Message Handler template from `docs/releases/OPENCLAW_CLIQ_BOT_HANDLER_TEMPLATES.md`, send one fresh direct Bot message, then rerun `ZOHO_CLIQ_PUBLIC_WEBHOOK_URL=https://cliq.hpyio.com/webhooks/cliq ops/scripts/openclaw_cliq_bot_no_response_packet.sh`.

@@ -316,6 +316,19 @@ function normalizeHandlerKind(raw) {
         return "message";
     return "unknown";
 }
+function normalizeReplyMode(raw) {
+    const normalized = (raw ?? "")
+        .trim()
+        .toLowerCase()
+        .replace(/[\s-]+/g, "_");
+    if (normalized === "deluge_response" || normalized === "deluge") {
+        return "deluge_response";
+    }
+    if (normalized === "zoho_cli" || normalized === "cli" || normalized === "oauth") {
+        return "zoho_cli";
+    }
+    return undefined;
+}
 function shouldAcceptHandler(kind) {
     return ["message", "mention", "participation", "context"].includes(kind);
 }
@@ -337,6 +350,12 @@ function extractCliqWebhookEnvelope(payload) {
         "type",
     ]) ?? "message";
     const handlerKind = normalizeHandlerKind(handler);
+    const replyMode = normalizeReplyMode(readFirstText(root, [
+        "replyMode",
+        "reply_mode",
+        "openclawReplyMode",
+        "openclaw_reply_mode",
+    ]));
     const user = readFirstRecord(root, [
         "user",
         "sender",
@@ -370,6 +389,7 @@ function extractCliqWebhookEnvelope(payload) {
     return {
         handler,
         handlerKind,
+        ...(replyMode ? { replyMode } : {}),
         message,
         ...(user ? { user } : {}),
         ...(chat ? { chat } : {}),
@@ -719,17 +739,21 @@ export async function processCliqWebhookPayload(options) {
             security,
         };
     }
+    let nativeDispatch;
     const turn = await runCliqInboundTurn({
         account: options.account,
         event,
         turnLedger,
         lifecycle: options.lifecycle,
         onEvent: options.onEvent
-            ? (acceptedEvent) => options.onEvent?.(acceptedEvent, {
-                account: options.account,
-                handlerKind: envelope.handlerKind,
-                security,
-            })
+            ? async (acceptedEvent) => {
+                nativeDispatch = await options.onEvent?.(acceptedEvent, {
+                    account: options.account,
+                    handlerKind: envelope.handlerKind,
+                    replyMode: envelope.replyMode,
+                    security,
+                });
+            }
             : undefined,
     });
     if (turn.turn.state === "failed") {
@@ -778,6 +802,7 @@ export async function processCliqWebhookPayload(options) {
         lifecycle: turn.lifecycle,
         turn: turn.turn,
         ...(turn.error ? { dispatchError: turn.error } : {}),
+        ...(nativeDispatch === undefined ? {} : { nativeDispatch }),
         dispatched: turn.dispatched,
     };
 }
@@ -812,6 +837,35 @@ function responseTurnSummary(turn) {
         deadLetterReason: turn.deadLetterReason,
         coalescedCount: turn.coalescedCount,
     };
+}
+function isCliqNativeDispatchResult(value) {
+    return value !== null && typeof value === "object" && "deliveryTransport" in value;
+}
+function responseNativeDispatchSummary(value) {
+    if (!isCliqNativeDispatchResult(value))
+        return undefined;
+    return {
+        dispatched: value.dispatched,
+        admission: value.admission,
+        agentId: value.agentId,
+        target: value.target,
+        replyToId: value.replyToId,
+        threadId: value.threadId,
+        deliveryTransport: value.deliveryTransport,
+        deliveryCount: value.deliveryCount,
+        messageIdCount: value.messageIds.length,
+        deliveryFailures: value.deliveryFailures,
+        replyTextCaptured: typeof value.replyText === "string" && value.replyText.length > 0,
+        replyTextLength: value.replyText?.length ?? 0,
+    };
+}
+function responseReplyText(value) {
+    if (!isCliqNativeDispatchResult(value))
+        return undefined;
+    if (value.deliveryTransport !== "deluge_response")
+        return undefined;
+    const text = value.replyText?.trim();
+    return text || undefined;
 }
 function sendJson(res, statusCode, payload) {
     if (res.headersSent)
@@ -890,15 +944,18 @@ export function createCliqWebhookHttpHandler(options) {
                 resolvedTurnLedger: turnLedger,
             });
             if (result.accepted) {
+                const replyText = responseReplyText(result.nativeDispatch);
                 sendJson(res, 200, {
                     ok: true,
                     accepted: true,
+                    ...(replyText ? { text: replyText } : {}),
                     accountId: result.accountId,
                     handlerKind: result.handlerKind,
                     dispatched: result.dispatched,
                     event: responseEventSummary(result.event),
                     lifecycle: responseLifecycleSummary(result.lifecycle),
                     turn: responseTurnSummary(result.turn),
+                    nativeDispatch: responseNativeDispatchSummary(result.nativeDispatch),
                     dispatchError: result.dispatchError,
                 });
                 return true;
@@ -950,9 +1007,12 @@ export function registerCliqWebhookRoutes(api) {
                     failureStatus: null,
                 },
                 onEvent: async (event, context) => {
-                    await nativeDispatcher(event, {
+                    return nativeDispatcher(event, {
                         ...context,
                         source: "webhook",
+                        replyTransport: context.replyMode === "deluge_response"
+                            ? "deluge_response"
+                            : "zoho_cli",
                     });
                 },
             }),

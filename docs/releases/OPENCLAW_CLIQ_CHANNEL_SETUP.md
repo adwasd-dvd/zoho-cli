@@ -165,24 +165,32 @@ script. For direct Bot DMs, use the Message Handler template that wraps Zoho's
 text-like `message` value into an explicit `msg` map with `text`, `messageId`,
 `senderId`, `chatId`, and `chatType`. Full Deluge templates for all four
 accepted handlers live in `docs/releases/OPENCLAW_CLIQ_BOT_HANDLER_TEMPLATES.md`.
+Current real-Bot handlers should set `reply_mode` to `deluge_response`, assign
+the `invokeurl` result to `webhook_response`, and return that map when it has a
+`text` key so Zoho renders the OpenClaw agent's final answer as the Bot's native
+handler response.
 
 ```deluge
 response = Map();
 webhook_url = "https://<your-tunnel-or-gateway>/webhooks/cliq";
 payload = Map();
 payload.put("handler","mention");
+payload.put("reply_mode","deluge_response");
 payload.put("message",message);
 payload.put("user",user);
 payload.put("chat",chat);
 payload.put("mentions",mentions);
-invokeurl
+webhook_response = invokeurl
 [
   url :webhook_url
   type :POST
   body:payload.toString()
   headers:{"Content-Type":"application/json","X-Cliq-Webhook-Secret":"<rotated-secret>"}
 ]
-response.put("text","received");
+if(webhook_response != null && webhook_response.containKey("text") && webhook_response.get("text") != null)
+{
+  return webhook_response;
+}
 return response;
 ```
 
@@ -197,6 +205,10 @@ If the OpenClaw audit log shows `handlerKind:"message"` with
 `reason:"invalid_payload"`, the public route and secret are already working; the
 next fix is to re-paste the wrapped Message Handler template so OpenClaw can
 read both text and sender/chat identity.
+
+A delayed literal `received` message is only a Deluge handler ACK. It does not
+prove OpenClaw final delivery succeeded, and it should be removed once
+`deluge_response` mode is installed.
 
 For RC, Welcome, Incoming Webhook, Call, and Menu handlers are ignored with a
 200 `unsupported_handler` response so Zoho does not retry unrelated bot events.
@@ -296,9 +308,12 @@ checks that selected handler targets are one of Message, Mention,
 Participation, or Context, points to the matching sections in
 `docs/releases/OPENCLAW_CLIQ_BOT_HANDLER_TEMPLATES.md`, and repeats the Deluge
 contract: use `body:payload.toString()`, `Content-Type: application/json`, and
-`X-Cliq-Webhook-Secret` from `ZOHO_CLIQ_WEBHOOK_SECRET`. It reports whether a
-secret is available in the current environment, but it never stores the secret
-value, webhook payload, message body, response body, or reply body.
+`X-Cliq-Webhook-Secret` from `ZOHO_CLIQ_WEBHOOK_SECRET`. Current packets also
+require `reply_mode=deluge_response`, `webhook_response = invokeurl [...]`, and
+returning `webhook_response` when it has a `text` key; a fixed `received` ACK is
+only a handler smoke signal. The packet reports whether a secret is available in
+the current environment, but it never stores the secret value, webhook payload,
+message body, response body, or reply body.
 
 ### Cloudflare Tunnel fast path
 

@@ -218,35 +218,40 @@ Use `../../docs/releases/OPENCLAW_CLIQ_BOT_HANDLER_TEMPLATES.md` for
 copy-ready Message, Mention, Participation, and Context Handler Deluge code.
 Direct Bot DMs should use the Message Handler template that wraps Zoho's
 text-like `message` value into an explicit message map before posting.
-If the handler cannot expose a real Zoho message id, use the template's
-`zoho-message-*` dedupe id; native dispatch will not attempt a reply against
-that synthetic id and will deliver the agent answer as a direct send to the
-provided `chatId`.
+Current Bot handlers should set `reply_mode` to `deluge_response`, assign
+`webhook_response = invokeurl [...]`, and return that map when it contains a
+`text` key. That lets Zoho render OpenClaw's final answer as the native Bot
+handler response instead of relying on a second OAuth send. If the handler
+cannot expose a real Zoho message id, use the template's `zoho-message-*`
+dedupe id; native dispatch will not attempt a reply against that synthetic id.
 
 ```deluge
 response = Map();
 webhook_url = "https://<your-tunnel-or-gateway>/webhooks/cliq";
 payload = Map();
 payload.put("handler","mention");
+payload.put("reply_mode","deluge_response");
 payload.put("message",message);
 payload.put("user",user);
 payload.put("chat",chat);
 payload.put("mentions",mentions);
-invokeurl
+webhook_response = invokeurl
 [
   url :webhook_url
   type :POST
   body:payload.toString()
   headers:{"Content-Type":"application/json","X-Cliq-Webhook-Secret":"<rotated-secret>"}
 ]
-response.put("text","received");
+if(webhook_response != null && webhook_response.containKey("text") && webhook_response.get("text") != null)
+{
+  return webhook_response;
+}
 return response;
 ```
 
 `response.put("text","received")` is only a Zoho handler ACK. It may appear
 before or after the OpenClaw answer and does not prove final agent reply
-delivery. Keep it while testing if useful, then remove it or replace it with a
-clear "received, processing" text so OpenClaw owns the visible answer.
+delivery. Remove fixed ACKs once `deluge_response` mode is installed.
 
 `parameters:payload.toString()` is tolerated for Deluge compatibility, but
 `body:payload.toString()` keeps the HTTP JSON intent clearer. The webhook parser

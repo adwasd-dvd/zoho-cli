@@ -249,9 +249,11 @@ export async function dispatchCliqEventToNativeOpenClaw(options) {
         },
     });
     const deliveryStats = {
+        transport: options.replyTransport ?? "zoho_cli",
         count: 0,
         messageIds: [],
         failures: [],
+        replyTexts: [],
     };
     let result;
     try {
@@ -297,12 +299,16 @@ export async function dispatchCliqEventToNativeOpenClaw(options) {
                                 !hasOutboundReplyContent(payload, { trimText: true })) {
                                 return { visibleReplySent: false };
                             }
-                            const adapter = await runtime.outbound.loadAdapter(CLIQ_CHANNEL_ID);
-                            if (!adapter?.sendText) {
+                            const mediaUrls = resolveOutboundMediaUrls(payload);
+                            const adapter = deliveryStats.transport === "zoho_cli"
+                                ? await runtime.outbound.loadAdapter(CLIQ_CHANNEL_ID)
+                                : undefined;
+                            if (deliveryStats.transport === "zoho_cli" && !adapter?.sendText) {
                                 throw new Error("cliq_outbound_adapter_unavailable");
                             }
-                            const mediaUrls = resolveOutboundMediaUrls(payload);
-                            const outboundPayload = mediaUrls.length > 0 && !adapter.sendMedia
+                            const outboundPayload = mediaUrls.length > 0 &&
+                                (deliveryStats.transport === "deluge_response" ||
+                                    !adapter?.sendMedia)
                                 ? {
                                     ...payload,
                                     text: formatTextWithAttachmentLinks(payload.text, mediaUrls),
@@ -315,6 +321,22 @@ export async function dispatchCliqEventToNativeOpenClaw(options) {
                                 facts,
                                 payloadReplyToId: outboundPayload.replyToId,
                             });
+                            if (deliveryStats.transport === "deluge_response") {
+                                const replyText = String(outboundPayload.text ?? "").trim();
+                                if (!replyText)
+                                    return { visibleReplySent: false };
+                                deliveryStats.count += 1;
+                                deliveryStats.replyTexts.push(replyText);
+                                return {
+                                    messageIds: [],
+                                    replyToId: deliveryRoute.replyToId ?? undefined,
+                                    threadId: options.event.threadId,
+                                    visibleReplySent: true,
+                                };
+                            }
+                            if (!adapter) {
+                                throw new Error("cliq_outbound_adapter_unavailable");
+                            }
                             const sent = await sendTextMediaPayload({
                                 channel: CLIQ_CHANNEL_ID,
                                 ctx: {
@@ -366,9 +388,12 @@ export async function dispatchCliqEventToNativeOpenClaw(options) {
             nativeDispatch: {
                 target: facts.target,
                 routeSessionKey: route.sessionKey,
+                deliveryTransport: deliveryStats.transport,
                 deliveryCount: deliveryStats.count,
                 messageIds: deliveryStats.messageIds,
                 deliveryFailures: deliveryStats.failures,
+                replyTextCaptured: deliveryStats.replyTexts.length > 0,
+                replyTextLength: deliveryStats.replyTexts.join("\n\n").length,
             },
         }));
         throw error;
@@ -389,9 +414,12 @@ export async function dispatchCliqEventToNativeOpenClaw(options) {
             routeSessionKey: dispatched(result)
                 ? result.routeSessionKey
                 : result.routeSessionKey,
+            deliveryTransport: deliveryStats.transport,
             deliveryCount: deliveryStats.count,
             messageIds: deliveryStats.messageIds,
             deliveryFailures: deliveryStats.failures,
+            replyTextCaptured: deliveryStats.replyTexts.length > 0,
+            replyTextLength: deliveryStats.replyTexts.join("\n\n").length,
         },
     }));
     return {
@@ -407,9 +435,13 @@ export async function dispatchCliqEventToNativeOpenClaw(options) {
         target: facts.target,
         replyToId: options.event.messageId,
         ...(options.event.threadId ? { threadId: options.event.threadId } : {}),
+        deliveryTransport: deliveryStats.transport,
         deliveryCount: deliveryStats.count,
         messageIds: deliveryStats.messageIds,
         deliveryFailures: deliveryStats.failures,
+        ...(deliveryStats.replyTexts.length > 0
+            ? { replyText: deliveryStats.replyTexts.join("\n\n") }
+            : {}),
         dispatchResult: dispatched(result) ? result.dispatchResult : undefined,
     };
 }
@@ -421,6 +453,7 @@ export function createCliqNativeEventDispatcher(api) {
         account: context.account,
         event,
         source: context.source ?? "manual",
+        replyTransport: context.replyTransport,
         handlerKind: context.handlerKind,
         security: context.security,
     });

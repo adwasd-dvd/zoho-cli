@@ -159,6 +159,11 @@ PAYLOAD="$("$JQ_BIN" -n \
         secretValueSource: "ZOHO_CLIQ_WEBHOOK_SECRET",
         secretPresentInCurrentEnv: $secretPresent,
         secretValueStored: false,
+        replyMode: "deluge_response",
+        replyModeField: "payload.put(\"reply_mode\",\"deluge_response\");",
+        webhookResponseVariable: "webhook_response",
+        webhookResponseReturnRule: "return webhook_response when it contains a non-null text key",
+        fixedAckTextAllowedInNormalOperation: false,
         messageHandlerWrapsTextIntoMsgMap: true,
         unsupportedHandlersForRc: ["welcome", "incoming_webhook", "call", "menu"]
       },
@@ -174,8 +179,9 @@ PAYLOAD="$("$JQ_BIN" -n \
           ready: $ready,
           source: "docs/releases/OPENCLAW_CLIQ_BOT_HANDLER_TEMPLATES.md",
           selectedSections: ($selected | map(. + " handler")),
-          temporaryVisibleAck: "response.put(\"text\",\"received\");",
-          normalOperation: "remove the temporary visible ack so OpenClaw owns the visible reply"
+          requiredReplyMode: "deluge_response",
+          requiredWebhookResponse: "webhook_response = invokeurl [...]",
+          normalOperation: "return webhook_response when it contains text; do not keep a fixed received ACK"
         },
         {
           stepId: "send_one_trusted_message",

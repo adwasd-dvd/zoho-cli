@@ -12,9 +12,11 @@ export type DeliveryFailure = {
     errorKind?: string;
 };
 export type CliqNativeDispatchSource = "webhook" | "polling" | "manual";
+export type CliqNativeReplyTransport = "zoho_cli" | "deluge_response";
 export type CliqNativeDispatchContext = {
     account: CliqResolvedAccount;
     source?: CliqNativeDispatchSource;
+    replyTransport?: CliqNativeReplyTransport;
     handlerKind?: string;
     security?: CliqAllowedSecurityDecision;
 };
@@ -29,9 +31,11 @@ export type CliqNativeDispatchResult = {
     target: string;
     replyToId: string;
     threadId?: string;
+    deliveryTransport: CliqNativeReplyTransport;
     deliveryCount: number;
     messageIds: string[];
     deliveryFailures: DeliveryFailure[];
+    replyText?: string;
     dispatchResult?: unknown;
 };
 export type CliqNativeEventDispatcher = (event: CliqNormalizedInboundEvent, context: CliqNativeDispatchContext) => Promise<CliqNativeDispatchResult>;
@@ -42,6 +46,7 @@ export type CliqNativeDispatchOptions = {
     account: CliqResolvedAccount;
     event: CliqNormalizedInboundEvent;
     source?: CliqNativeDispatchSource;
+    replyTransport?: CliqNativeReplyTransport;
     handlerKind?: string;
     security?: CliqAllowedSecurityDecision;
 };

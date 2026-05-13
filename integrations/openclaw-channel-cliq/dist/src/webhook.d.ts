@@ -4,12 +4,14 @@ import type { OpenClawConfig, OpenClawPluginApi, PluginLogger } from "openclaw/p
 import { type CliqResolvedAccount } from "./config.js";
 import { type CliqInboundDedupeStore, type CliqMentionMatcher, type CliqNormalizedInboundEvent } from "./inbound.js";
 import { type CliqInboundLifecycleOption, type CliqInboundLifecycleResult } from "./lifecycle.js";
+import type { CliqNativeReplyTransport } from "./native-dispatch.js";
 import type { CliqInboundSecurityDecision } from "./security.js";
 import { type CliqInboundTurnResult, type CliqTurnLedgerOption, type CliqTurnLedgerStore } from "./turn-ledger.js";
 export type CliqWebhookHandlerKind = "message" | "mention" | "participation" | "context" | "incoming_webhook" | "welcome" | "call" | "menu" | "unknown";
 export type CliqWebhookPayloadEnvelope = {
     handler: string;
     handlerKind: CliqWebhookHandlerKind;
+    replyMode?: CliqNativeReplyTransport;
     message: Record<string, unknown>;
     user?: Record<string, unknown>;
     chat?: Record<string, unknown>;
@@ -35,6 +37,7 @@ export type CliqWebhookProcessResult = {
     lifecycle?: CliqInboundLifecycleResult;
     turn: CliqInboundTurnResult["turn"];
     dispatchError?: string;
+    nativeDispatch?: unknown;
     dispatched: boolean;
 } | {
     ok: true;
@@ -59,10 +62,11 @@ export type CliqWebhookHandlerOptions = {
     onEvent?: (event: CliqNormalizedInboundEvent, context: {
         account: CliqResolvedAccount;
         handlerKind: CliqWebhookHandlerKind;
+        replyMode?: CliqNativeReplyTransport;
         security: Extract<CliqInboundSecurityDecision, {
             allowed: true;
         }>;
-    }) => void | Promise<void>;
+    }) => unknown | Promise<unknown>;
 };
 type CliqWebhookProcessOptions = CliqWebhookHandlerOptions & {
     account: CliqResolvedAccount;

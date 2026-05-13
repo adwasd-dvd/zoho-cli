@@ -5111,6 +5111,11 @@ def test_openclaw_cliq_bot_no_response_packet_embeds_handler_trigger_packet(
         == "https://cliq.example.test/webhooks/cliq"
     )
     assert payload["handlerTrigger"]["delugeContract"]["secretValueStored"] is False
+    assert payload["handlerTrigger"]["delugeContract"]["replyMode"] == "deluge_response"
+    assert (
+        payload["handlerTrigger"]["operatorChecklist"][1]["normalOperation"]
+        == "return webhook_response when it contains text; do not keep a fixed received ACK"
+    )
     assert payload["handlerTrigger"]["redaction"]["secretsStored"] is False
     assert (report_dir / payload["evidenceFiles"]["handlerTrigger"]).exists()
 
@@ -5346,8 +5351,19 @@ def test_openclaw_cliq_handler_trigger_packet_is_ready_without_leaking_secret(
     assert payload["delugeContract"]["bodyField"] == "body:payload.toString()"
     assert payload["delugeContract"]["secretPresentInCurrentEnv"] is True
     assert payload["delugeContract"]["secretValueStored"] is False
+    assert payload["delugeContract"]["replyMode"] == "deluge_response"
+    assert (
+        payload["delugeContract"]["replyModeField"]
+        == 'payload.put("reply_mode","deluge_response");'
+    )
+    assert payload["delugeContract"]["fixedAckTextAllowedInNormalOperation"] is False
     assert (
         payload["operatorChecklist"][0]["expectedStatus"] == "public_callback_verified"
+    )
+    assert payload["operatorChecklist"][1]["requiredReplyMode"] == "deluge_response"
+    assert (
+        payload["operatorChecklist"][1]["normalOperation"]
+        == "return webhook_response when it contains text; do not keep a fixed received ACK"
     )
     assert payload["redaction"]["secretsStored"] is False
     assert payload["nextAction"] == "paste_or_recheck_zoho_bot_handlers"

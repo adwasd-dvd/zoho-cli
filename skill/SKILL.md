@@ -86,7 +86,10 @@ Use this skill as the default operating contract for an OpenClaw agent acting li
   `kind=openclaw_cliq_handler_trigger_packet` and
   `status=handler_trigger_packet_ready`; then use `handlers.saveTargets`,
   `operatorChecklist`, and `delugeContract` to re-check Message/Mention
-  handlers. Treat `public_webhook_path_mismatch`,
+  handlers. For real Bot DMs, require
+  `delugeContract.replyMode=deluge_response` and an operator checklist that says
+  to return `webhook_response` when it contains `text`, not a fixed `received`
+  ACK. Treat `public_webhook_path_mismatch`,
   `handler_targets_invalid`, and related blockers as setup errors. The packet
   may report whether `ZOHO_CLIQ_WEBHOOK_SECRET` is present, but must keep
   `redaction.secretsStored=false` and `delugeContract.secretValueStored=false`.

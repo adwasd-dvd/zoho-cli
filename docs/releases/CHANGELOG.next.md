@@ -9,6 +9,21 @@
   to use it for synthetic Bot direct events with no replyable Zoho message id,
   keeping Bot answers in the original Cliq Bot chat instead of falling back to a
   separate user DM or chat-id-as-channel-id send path.
+- Added Deluge-native Bot reply mode for real Zoho Cliq handlers:
+  `reply_mode=deluge_response` captures the OpenClaw final answer and returns it
+  as webhook response `text`, so Deluge can `return webhook_response` and Zoho
+  renders the answer as the Bot's native handler response without a second OAuth
+  send.
+- Refreshed the no-publish OpenClaw Cliq RC artifact chain after the
+  Deluge-native reply change; the local RC tarball now has shasum
+  `295555b784d69838f3f01590e59c9e5cf5bbde20`, artifact/install/promotion
+  checks pass, and publish/tag/release/integrity-fill actions remain
+  operator-only.
+- Updated the Bot handler-trigger/no-response packet guidance so
+  `no_recent_webhook_ingress` now points operators at
+  `reply_mode=deluge_response`, `webhook_response = invokeurl [...]`, and
+  returning `webhook_response` when it contains `text`, instead of preserving a
+  fixed `received` ACK.
 
 - Extended the RC autonomy packet with redacted `operatorActionRequests` so recurring agents can ask for exactly the missing operator publish path, CRM fixture cleanup plan, and CRM fixture payload file without reading raw payloads, cleanup text, local paths, secrets, or lower-level report internals.
 - Recorded post-platform-215 source-drift, operator decision, and autonomy-packet evidence: pushed operator-action-request commit `9fac452e` still reports `package_source_unchanged`, all decision-packet `reportsReady=true`, and autonomy `operator_input_required` with the same three redacted operator request ids, while no publish/tag/release/expectedIntegrity fill or live Zoho write was performed.

@@ -122,6 +122,23 @@ def test_openclaw_cliq_webhook_registration_uses_quiet_lifecycle() -> None:
     assert "startStatuses: []" in source
     assert "successStatus: null" in source
     assert "failureStatus: null" in source
+    assert "replyMode: envelope.replyMode" in source
+    assert "replyTransport:" in source
+    assert '"deluge_response"' in source
+    assert "text: replyText" in source
+
+
+def test_openclaw_cliq_bot_templates_use_deluge_native_reply_mode() -> None:
+    template = (
+        ROOT / "docs" / "releases" / "OPENCLAW_CLIQ_BOT_HANDLER_TEMPLATES.md"
+    ).read_text(encoding="utf-8")
+
+    assert 'payload.put("reply_mode","deluge_response");' in template
+    assert "webhook_response = invokeurl" in template
+    assert 'webhook_response.containKey("text")' in template
+    assert "return webhook_response;" in template
+    assert 'response.put("text","received");' in template
+    assert "only proves Zoho ran the handler" in template
 
 
 def test_openclaw_cliq_channel_sources_use_locked_sdk_surfaces() -> None:
@@ -1942,6 +1959,51 @@ assert.equal(nativeResults[2].replyToId, "zoho-message-20260512033826000");
 assert.equal(fake.sent[2].to, "chat:CT_TEMPLATE");
 assert.equal(fake.sent[2].replyToId ?? undefined, undefined);
 assert.equal(fake.sent[2].threadId ?? undefined, undefined);
+
+const directDelugeResponse = await processCliqWebhookPayload({
+  cfg,
+  account,
+  payload: {
+    handler: "message",
+    reply_mode: "deluge_response",
+    message: {
+      id: "zoho-message-20260513063500000",
+      text: "deluge capture",
+      senderId: "U2",
+      chatId: "CT_DELUGE",
+      chatType: "direct",
+    },
+    user: { id: "U2", name: "Alice" },
+    chat: { id: "CT_DELUGE", chatType: "direct" },
+  },
+  dedupe: webhookDedupe,
+  turnLedger: webhookLedger,
+  lifecycle: false,
+  mentionMatchers: [/@bot\\b/i],
+  onEvent: async (event, context) => {
+    return dispatchCliqEventToNativeOpenClaw({
+      cfg,
+      runtime: fake.runtime,
+      account: context.account,
+      event,
+      source: "webhook",
+      replyTransport:
+        context.replyMode === "deluge_response" ? "deluge_response" : "zoho_cli",
+      handlerKind: context.handlerKind,
+      security: context.security,
+    });
+  },
+});
+assert.equal(directDelugeResponse.accepted, true);
+assert.equal(directDelugeResponse.dispatched, true);
+assert.equal(
+  directDelugeResponse.nativeDispatch.deliveryTransport,
+  "deluge_response",
+);
+assert.equal(directDelugeResponse.nativeDispatch.replyText, "agent reply");
+assert.equal(directDelugeResponse.nativeDispatch.deliveryCount, 1);
+assert.deepEqual(directDelugeResponse.nativeDispatch.messageIds, []);
+assert.equal(fake.sent.length, 3);
 
 const directReal = await processCliqWebhookPayload({
   cfg,

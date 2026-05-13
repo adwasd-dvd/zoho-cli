@@ -239,6 +239,10 @@ After sync, ensure the AI user follows:
   - run `ops/scripts/openclaw_cliq_rc_source_drift_check.sh` before relying on an older operator handoff
   - when no explicit manifest path is set, it selects the newest ready handoff manifest and skips blocked drafts
   - require `package_source_unchanged`; rebuild the RC artifact if package files changed or are dirty
+- native Cliq Bot handler operator handoff:
+  - run `ops/scripts/openclaw_cliq_bot_handler_operator_prompt.sh --md` when `no_recent_webhook_ingress` or `diagnosis.code=zoho_bot_handler_not_posting` points at Zoho handler save/trigger state
+  - ask for the Bot details Handlers list to include **Message Handler** before testing direct Bot DMs
+  - after the operator saves the handler, run at most one short-window no-response packet for the fresh message
 - native channel compatibility maintenance:
   - read `docs/releases/OPENCLAW_CLIQ_CHANNEL_COMPATIBILITY.md` before changing host/plugin API floors
   - keep `>=2026.5.3-1` as the v0.4 floor unless a newer OpenClaw SDK is genuinely required

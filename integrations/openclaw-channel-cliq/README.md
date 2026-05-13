@@ -85,6 +85,11 @@ operator handoff for the approval boundary, preflight commands, publish path
 choice, post-publish checks, and abort conditions; agents must not run
 `npm publish`, create tags/releases, or fill `openclaw.install.expectedIntegrity`
 without explicit operator approval.
+`ops/scripts/openclaw_cliq_bot_handler_operator_prompt.sh --md` renders the
+current direct-DM Bot handler handoff for humans: it names the required Message
+Handler visible signal, links the Message Handler template section, includes the
+public callback and one-message recheck commands, and stores no raw payloads,
+message text, reply text, local paths, or secrets.
 `ops/scripts/openclaw_cliq_rc_artifact_check.sh` verifies the packed tarball
 without publishing: it checks the pack summary, shasum, package metadata,
 manifest/channel identity, required runtime/docs/skill entries, and no

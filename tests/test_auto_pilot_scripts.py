@@ -41,6 +41,9 @@ OPENCLAW_CLIQ_BOT_NO_RESPONSE_PACKET_SCRIPT = (
 OPENCLAW_CLIQ_HANDLER_TRIGGER_PACKET_SCRIPT = (
     REPO_ROOT / "ops" / "scripts" / "openclaw_cliq_handler_trigger_packet.sh"
 )
+OPENCLAW_CLIQ_BOT_HANDLER_OPERATOR_PROMPT_SCRIPT = (
+    REPO_ROOT / "ops" / "scripts" / "openclaw_cliq_bot_handler_operator_prompt.sh"
+)
 OPENCLAW_CLIQ_HASH_REF_SCRIPT = (
     REPO_ROOT / "ops" / "scripts" / "openclaw_cliq_hash_ref.sh"
 )
@@ -5482,6 +5485,134 @@ def test_openclaw_cliq_handler_trigger_packet_blocks_bad_inputs(
     assert payload["handlers"]["invalid"] == ["call"]
     assert payload["publicWebhook"]["path"] == "/not-webhook"
     assert payload["nextAction"] == "fix_public_webhook_url"
+
+
+def test_openclaw_cliq_bot_handler_operator_prompt_renders_direct_dm_handoff(
+    tmp_path: Path,
+) -> None:
+    handler_packet = tmp_path / "handler-packet.json"
+    handler_packet.write_text(
+        json.dumps(
+            {
+                "kind": "openclaw_cliq_handler_trigger_packet",
+                "status": "handler_trigger_packet_ready",
+                "blockers": [],
+                "nextAction": "paste_or_recheck_zoho_bot_handlers",
+                "handlers": {
+                    "directMessageRequirement": {
+                        "requiredHandler": "message",
+                        "botDetailsVisibleSignal": "Handlers list includes Message Handler",
+                        "why": "Direct Bot DMs trigger the Message Handler.",
+                    }
+                },
+                "delugeContract": {
+                    "replyMode": "deluge_response",
+                    "secretValueStored": False,
+                },
+            }
+        ),
+        encoding="utf-8",
+    )
+    report_file = tmp_path / "handler-operator-prompt.json"
+
+    result = subprocess.run(
+        ["bash", str(OPENCLAW_CLIQ_BOT_HANDLER_OPERATOR_PROMPT_SCRIPT)],
+        cwd=REPO_ROOT,
+        env={
+            **os.environ,
+            "ZOHO_CLIQ_PUBLIC_WEBHOOK_URL": "https://cliq.example.test/webhooks/cliq",
+            "ZOHO_CLIQ_HANDLER_OPERATOR_PROMPT_HANDLER_PACKET_FILE": str(
+                handler_packet
+            ),
+            "ZOHO_CLIQ_HANDLER_OPERATOR_PROMPT_FILE": str(report_file),
+            "ZOHO_CLIQ_HANDLER_OPERATOR_PROMPT_RUN_ID": "unit-handler-prompt",
+        },
+        capture_output=True,
+        text=True,
+        check=False,
+    )
+
+    output = f"{result.stdout}\n{result.stderr}"
+    assert result.returncode == 0, output
+    assert str(tmp_path) not in result.stdout
+    payload = json.loads(result.stdout)
+    assert payload["kind"] == "openclaw_cliq_bot_handler_operator_prompt"
+    assert payload["status"] == "handler_operator_prompt_ready"
+    assert payload["blockers"] == []
+    assert payload["handlerTrigger"]["reportFile"] == handler_packet.name
+    assert payload["handlerTrigger"]["ranHandlerPacket"] is False
+    assert payload["handlerTrigger"]["directMessageRequirement"]["requiredHandler"] == (
+        "message"
+    )
+    assert payload["requestIds"] == [
+        "verify_public_callback",
+        "install_message_handler",
+        "send_one_fresh_direct_message",
+        "rerun_no_response_packet",
+    ]
+    install_request = {request["id"]: request for request in payload["requests"]}[
+        "install_message_handler"
+    ]
+    assert install_request["zohoVisibleSignal"] == (
+        "Handlers list includes Message Handler"
+    )
+    assert install_request["template"] == (
+        "docs/releases/OPENCLAW_CLIQ_BOT_HANDLER_TEMPLATES.md#message-handler"
+    )
+    assert install_request["requiredReplyMode"] == "deluge_response"
+    assert install_request["agentMayExecute"] is False
+    assert "ZOHO_CLIQ_INGRESS_LOOKBACK_SECONDS=600" in payload["requests"][3]["command"]
+    assert "Message Handler" in payload["messageMarkdown"]
+    assert "received" in payload["messageMarkdown"]
+    assert payload["redaction"]["secretsStored"] is False
+    assert payload["nextAction"] == "send_handler_operator_prompt"
+    assert json.loads(report_file.read_text()) == payload
+
+
+def test_openclaw_cliq_bot_handler_operator_prompt_markdown_output(
+    tmp_path: Path,
+) -> None:
+    handler_packet = tmp_path / "handler-packet.json"
+    handler_packet.write_text(
+        json.dumps(
+            {
+                "kind": "openclaw_cliq_handler_trigger_packet",
+                "status": "handler_trigger_packet_ready",
+                "blockers": [],
+                "handlers": {
+                    "directMessageRequirement": {
+                        "requiredHandler": "message",
+                        "botDetailsVisibleSignal": "Handlers list includes Message Handler",
+                    }
+                },
+            }
+        ),
+        encoding="utf-8",
+    )
+
+    result = subprocess.run(
+        ["bash", str(OPENCLAW_CLIQ_BOT_HANDLER_OPERATOR_PROMPT_SCRIPT), "--md"],
+        cwd=REPO_ROOT,
+        env={
+            **os.environ,
+            "ZOHO_CLIQ_HANDLER_OPERATOR_PROMPT_HANDLER_PACKET_FILE": str(
+                handler_packet
+            ),
+            "ZOHO_CLIQ_HANDLER_OPERATOR_PROMPT_REPORT_DIR": str(tmp_path),
+            "ZOHO_CLIQ_HANDLER_OPERATOR_PROMPT_RUN_ID": "unit-handler-prompt-md",
+        },
+        capture_output=True,
+        text=True,
+        check=False,
+    )
+
+    output = f"{result.stdout}\n{result.stderr}"
+    assert result.returncode == 0, output
+    assert result.stdout.startswith("### OpenClaw Cliq Bot handler handoff")
+    assert "install_message_handler" in result.stdout
+    assert "Message Handler" in result.stdout
+    assert "handler_operator_prompt_ready" in result.stdout
+    assert str(tmp_path) not in result.stdout
 
 
 def test_openclaw_cliq_hash_ref_hashes_stdin_without_echoing_raw_id() -> None:

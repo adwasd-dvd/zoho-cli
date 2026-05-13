@@ -252,10 +252,17 @@ one native OpenClaw turn and one Cliq reply.
    unsupported-handler `200`, and no stored webhook bodies, response bodies, or
    secrets. Set `ZOHO_CLIQ_PUBLIC_CALLBACK_REPORT_FILE` when automation needs a
    redacted report file.
-5. Paste one handler template into Zoho Cliq and save it.
-6. Run `ops/scripts/openclaw_cliq_live_smoke.sh`.
-7. Send one trusted Message or Mention from Cliq.
-8. Verify one accepted webhook event, one native OpenClaw turn, one Cliq reply,
+5. Run `ops/scripts/openclaw_cliq_bot_handler_operator_prompt.sh --md` when an
+   operator needs the compact direct-DM handoff. It renders the Message Handler
+   requirement, public callback recheck, one-fresh-message rule, and no-response
+   packet command without storing raw payloads, message text, reply text, local
+   paths, or secrets.
+6. Paste one handler template into Zoho Cliq and save it.
+   For direct Bot DMs, the Bot details page must visibly list **Message
+   Handler** before testing.
+7. Run `ops/scripts/openclaw_cliq_live_smoke.sh`.
+8. Send one trusted Message or Mention from Cliq.
+9. Verify one accepted webhook event, one native OpenClaw turn, one Cliq reply,
    and no duplicate dispatch in the turn ledger.
 
 If the Bot replies with a delayed literal `received`, the handler is still using

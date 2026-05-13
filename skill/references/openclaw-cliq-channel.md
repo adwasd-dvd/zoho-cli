@@ -118,6 +118,10 @@ consistent.
 `ops/scripts/openclaw_cliq_rc_source_drift_check.sh` defaults to the newest
 ready handoff manifest and skips newer blocked drafts, so recurring agents do
 not mistake a stale failed manifest attempt for package source drift.
+`ops/scripts/openclaw_cliq_bot_handler_operator_prompt.sh --md` turns the
+handler-trigger packet into a compact direct-DM operator handoff. Use it when
+the Bot details page still needs Message Handler installation or save
+confirmation before the next single live no-response check.
 
 The v0.4 plugin targets OpenClaw `>=2026.5.3-1`. The upgraded global
 `OpenClaw 2026.5.3-1` host is suitable for native plugin checks; use

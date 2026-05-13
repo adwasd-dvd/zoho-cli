@@ -865,6 +865,15 @@
   - cliq-channel-507
   agent_action: read `diagnosis.code` from `ops/scripts/openclaw_cliq_bot_no_response_packet.sh` and `handlers.directMessageRequirement` from `ops/scripts/openclaw_cliq_handler_trigger_packet.sh` before asking the operator to edit Zoho
   completion_signal: public-callback-green/no-ingress packets identify `zoho_bot_handler_not_posting`, direct Bot DMs require a saved Message Handler in the Zoho Bot details Handlers list, delayed `received` remains ACK-only, focused tests pass, no-publish package verification is refreshed for tarball shasum `eb48b7e8b23ed1eac33a03dd452bd02a6d3f9a92`, and no live probe/publish/write is performed
+- id: cliq-channel-509
+  title: add Bot handler operator prompt
+  module: openclaw_cliq_channel
+  stage: completed
+  priority: high
+  depends_on:
+  - cliq-channel-508
+  agent_action: run `ops/scripts/openclaw_cliq_bot_handler_operator_prompt.sh --md` when direct Bot DM diagnostics point at Zoho handler save/trigger state
+  completion_signal: prompt emits `handler_operator_prompt_ready`, direct-DM Message Handler visible signal, template section, public callback recheck, one-fresh-message rule, and no-response command without raw payloads, message text, reply text, local paths, or secrets; no-publish package verification is refreshed for tarball shasum `10a5eb6cafb3343bcec8253663745d9e883e81b8`
 - id: cliq-channel-496
   title: collect operator native Cliq RC publish-path selection
   module: openclaw_cliq_channel

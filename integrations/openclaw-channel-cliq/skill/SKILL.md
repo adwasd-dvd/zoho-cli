@@ -125,6 +125,11 @@ Use this skill when operating through the native OpenClaw Zoho Cliq channel.
   `local_operator_rc`, `npm_rc_publish`, or `github_release_artifact`; after a
   chosen path, require `operator_publish_selection_ready` and keep
   `agentMayExecuteSelectedPath=false`.
+- When the real Bot direct-message path needs operator action, run
+  `ops/scripts/openclaw_cliq_bot_handler_operator_prompt.sh --md`. It prints the
+  Message Handler visible-signal requirement, template section, public callback
+  recheck, one-fresh-message rule, and no-response packet command without raw
+  payloads, message text, reply text, local paths, or secrets.
 - For the operator approval boundary and release action handoff, use
   `docs/releases/OPENCLAW_CLIQ_CHANNEL_V0_4_OPERATOR_PUBLISH_HANDOFF.md`.
   It defines the no-agent `npm publish`/tag/GitHub release boundary, the

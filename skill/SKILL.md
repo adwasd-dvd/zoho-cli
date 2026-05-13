@@ -211,6 +211,11 @@ Use this skill as the default operating contract for an OpenClaw agent acting li
   tag, GitHub release, expectedIntegrity fill, normal CRM upsert execution, and
   live Zoho writes disabled for agents. Use `--md` only when direct
   human-readable stdout is desired; default stdout remains JSON.
+- For real `oldsix老六` Bot direct-message handler fixes, use
+  `ops/scripts/openclaw_cliq_bot_handler_operator_prompt.sh --md` to generate
+  the compact human handoff. It points at the Message Handler template and the
+  one-message/no-response recheck flow without storing raw message text,
+  payloads, reply text, local paths, or secrets.
 - For CRM SDK work, run `zoho crm sdk-status` first. Treat
   `zohocrmsdk8_0==5.0.0` as optional `zoho-cli[crm-sdk]` readiness, keep the
   current HTTP adapter as default, use `zoho_cli/crm_sdk.py` only as the

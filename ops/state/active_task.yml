@@ -1,21 +1,21 @@
-id: platform-221
-title: harden RC source-drift handoff manifest selection
-module: platform
+id: cliq-channel-509
+title: add Bot handler operator prompt
+module: openclaw_cliq_channel
 stage: completed
 status: completed
 owner: coder
-updated_at: '2026-05-13T15:32:00Z'
+updated_at: '2026-05-13T15:43:19Z'
 execution_mode: turbo_20x
 throughput_policy_ref: ops/state/execution_policy.yml
 success_criteria:
-  - "Make `ops/scripts/openclaw_cliq_rc_source_drift_check.sh` default to the newest ready handoff manifest instead of the lexicographically last report"
-  - "Keep blocked handoff manifest drafts from causing false `source_drift_not_clean` autonomy blockers"
-  - "Update Lane 1/2/3 docs and regression tests for the ready-manifest selection behavior"
+  - "Add a read-only JSON/Markdown operator prompt for the real `oldsix老六` direct Bot DM handler path"
+  - "Make the handoff distinguish direct-DM Message Handler save/trigger state from Mention Handler, OAuth, gateway, and delayed Deluge ACK symptoms"
+  - "Keep raw webhook payloads, message text, reply text, local paths, and secrets out of stdout/report JSON"
+  - "Sync Lane 1/2/3 docs, tests, and RC checklist markers"
 progress:
-  - "2026-05-13T15:32:00Z added ready-status filtering to source-drift manifest discovery; when `OPENCLAW_CLIQ_HANDOFF_MANIFEST_FILE` is unset, the script now skips newer blocked drafts and selects the newest `operator_handoff_manifest_ready` report."
-  - "2026-05-13T15:32:00Z added regression coverage that creates a lexicographically newer blocked handoff manifest beside a ready manifest and verifies source drift still reports `package_source_unchanged` against the ready manifest."
-  - "2026-05-13T15:32:00Z synced Lane 2/3 docs, changelog, and state so recurring agents understand this is an autonomy false-blocker fix, not a publish or CRM live-write action."
-  - "2026-05-13T15:29:13Z refreshed no-publish package verification after the package-local docs changed: pack shasum `d3dc407303ca8796657134d99821f983714ffbc1`, integrity `sha512-3pCaI85N1vIqsFklEGkuXkZuenDRL4U7GIbxn+b+2tvX/w59BLKxG+xB+Nmr13IOL7MF76rge+4RnDPvlCkM4w==`, artifact verified, Temp-HOME install smoke passed, and promotion preflight returned `ready_for_operator_publish`."
-  - "2026-05-13T15:31:40Z post-commit autonomy packet `20260513T153500Z-platform221-postcommit-autonomy` returned `operator_input_required` with no blockers, OpenClaw Cliq `awaiting_operator_publish_path`, all Cliq reports ready, source drift `package_source_unchanged`, and CRM fixture still missing cleanup plan plus fixture payload file."
-next_if_done: Return to the normal work queue; the autonomy packet now reaches the real operator-input boundary instead of the stale source-drift blocker.
-next_step: Continue bot handler-trigger debugging when the operator confirms Message Handler save/fresh message, or choose the next agent-safe local/docs/test slice from `ops/state/work_queue.yml`.
+  - "2026-05-13T15:43:19Z added `ops/scripts/openclaw_cliq_bot_handler_operator_prompt.sh`, which emits JSON by default and Markdown with `--md`."
+  - "2026-05-13T15:43:19Z the prompt reports `handler_operator_prompt_ready`, points operators to the Message Handler template, includes the public callback recheck, asks for exactly one fresh direct Bot message, and gives the one-shot no-response packet rerun command."
+  - "2026-05-13T15:43:19Z focused tests cover both JSON and Markdown output while preserving redaction and no-live-probe behavior."
+  - "2026-05-13T15:57:21Z refreshed the no-publish RC package chain after package-local docs changed: pack shasum `10a5eb6cafb3343bcec8253663745d9e883e81b8`, integrity `sha512-e4jefPwV73aZbp472i1KuWSHLYSagZm+dtf0mswSdsjafg9vmc5uozrq0zjMpziffaBFresUD1tkqZljfsMY1g==`, artifact verified, Temp-HOME install smoke passed, and promotion preflight returned `ready_for_operator_publish`."
+next_if_done: Return to the normal RC work queue; do not run another live Bot probe until the operator confirms the Message Handler was saved or sends exactly one fresh direct Bot message.
+next_step: Ask the operator to make the Bot details Handlers list show Message Handler, re-paste/save the current Message Handler template, send one fresh direct message, then rerun the no-response packet once.

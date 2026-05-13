@@ -281,7 +281,9 @@ human-facing asks, such as `save_openclaw_cliq_bot_message_handler`,
 `provide_crm_fixture_cleanup_plan`, and `provide_crm_fixture_payload_file`;
 these entries are guidance only, include placeholder-only `commandPreview` /
 `followUpCommandPreview` / `unblocks` hints for the next local recheck, and always keep
-`agentMayExecute=false`.
+`agentMayExecute=false`. When present, prefer `nextOperatorActionId` and
+`nextOperatorActionRequest` for the current top human ask; for the active real
+Bot blocker, that id is `save_openclaw_cliq_bot_message_handler`.
 
 To render the exact human handoff from those requests, run:
 

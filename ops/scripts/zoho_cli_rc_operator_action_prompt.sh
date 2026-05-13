@@ -152,6 +152,8 @@ PAYLOAD="$("$JQ_BIN" -n \
       requestCount: ($requests | length),
       requiredRequestCount: ($requests | map(select((.required // false) == true)) | length),
       requestIds: ($requests | map(.id // "unknown_request")),
+      nextOperatorActionId: (($requests[0].id) // null),
+      nextOperatorActionRequest: ($requests[0] // null),
       requests: $requests,
       messageMarkdown: (if ($requests | length) > 0 then ($markdownLines | join("\n")) else null end),
       safety: {

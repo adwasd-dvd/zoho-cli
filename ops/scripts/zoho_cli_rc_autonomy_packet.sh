@@ -332,6 +332,10 @@ PAYLOAD="$("$JQ_BIN" -n \
         end
       )
     }
+    | . + {
+      nextOperatorActionId: ((.operatorActionRequests[0].id) // null),
+      nextOperatorActionRequest: ((.operatorActionRequests[0]) // null)
+    }
   ')"
 
 printf '%s\n' "$PAYLOAD" >"$PACKET_FILE"

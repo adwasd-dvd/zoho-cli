@@ -208,7 +208,10 @@ Use this skill as the default operating contract for an OpenClaw agent acting li
   include stable ids such as `save_openclaw_cliq_bot_message_handler`,
   `select_openclaw_cliq_publish_path`,
   `provide_crm_fixture_cleanup_plan`, and
-  `provide_crm_fixture_payload_file`. To produce the human-facing handoff,
+  `provide_crm_fixture_payload_file`. Read `nextOperatorActionId` and
+  `nextOperatorActionRequest` first when deciding what to ask a human; while the
+  real direct Bot blocker is active, `nextOperatorActionId` should be
+  `save_openclaw_cliq_bot_message_handler`. To produce the human-facing handoff,
   prefer `ops/scripts/zoho_cli_rc_operator_action_prompt.sh`; it returns
   `operator_action_prompt_ready`, `nextAction=send_operator_action_prompt`,
   and `messageMarkdown` while keeping report files basename-only and publish,

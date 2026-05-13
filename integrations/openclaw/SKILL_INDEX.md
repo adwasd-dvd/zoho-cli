@@ -103,7 +103,8 @@ CRM SDK planning:
   disabled for agents; exposes redacted `operatorActionRequests` with stable
   ids plus placeholder-only `commandPreview` / `unblocks` hints for
   Bot Message Handler save/recheck, publish-path selection, fixture cleanup
-  plan, and fixture payload file inputs)
+  plan, and fixture payload file inputs; also emits `nextOperatorActionId` and
+  `nextOperatorActionRequest` for the top human handoff)
 - `ops/scripts/zoho_cli_rc_operator_action_prompt.sh` (`platform-217`:
   read-only operator-action prompt wrapper that runs or reads the autonomy
   packet, emits `operator_action_prompt_ready` plus

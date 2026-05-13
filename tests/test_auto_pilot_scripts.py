@@ -2229,6 +2229,10 @@ def test_zoho_cli_rc_autonomy_packet_collects_operator_input(
     payload = json.loads(result.stdout)
     assert payload["status"] == "operator_input_required"
     assert payload["nextAction"] == "collect_operator_input_or_select_publish_path"
+    assert payload["nextOperatorActionId"] == "save_openclaw_cliq_bot_message_handler"
+    assert payload["nextOperatorActionRequest"]["id"] == (
+        "save_openclaw_cliq_bot_message_handler"
+    )
     assert payload["operatorInputsNeeded"] == {
         "openclawCliqPublishPath": True,
         "openclawCliqBotMessageHandler": True,
@@ -2387,6 +2391,10 @@ def test_zoho_cli_rc_autonomy_packet_surfaces_safe_crm_agent_command(
     assert payload["safety"]["crmNextCommandAllowedForAgent"] is True
     assert payload["safety"]["crmNextCommandAllowlistedDryRunLocal"] is True
     assert payload["operatorInputsNeeded"]["openclawCliqPublishPath"] is True
+    assert payload["nextOperatorActionId"] == "save_openclaw_cliq_bot_message_handler"
+    assert payload["nextOperatorActionRequest"]["id"] == (
+        "save_openclaw_cliq_bot_message_handler"
+    )
     assert [request["id"] for request in payload["operatorActionRequests"]] == [
         "save_openclaw_cliq_bot_message_handler",
         "select_openclaw_cliq_publish_path",
@@ -2432,6 +2440,12 @@ def test_zoho_cli_rc_autonomy_packet_stops_for_selected_publish_path(
     assert payload["recommendedAgentCommand"] is None
     assert payload["safety"]["agentMayPublish"] is False
     assert payload["safety"]["agentMayRunCrmNextCommand"] is False
+    assert payload["nextOperatorActionId"] == (
+        "review_execute_selected_openclaw_cliq_publish_path"
+    )
+    assert payload["nextOperatorActionRequest"]["id"] == (
+        "review_execute_selected_openclaw_cliq_publish_path"
+    )
     assert payload["operatorActionRequests"] == [
         {
             "id": "review_execute_selected_openclaw_cliq_publish_path",
@@ -2623,6 +2637,10 @@ def test_zoho_cli_rc_operator_action_prompt_summarizes_requests(
         "provide_crm_fixture_cleanup_plan",
         "provide_crm_fixture_payload_file",
     ]
+    assert payload["nextOperatorActionId"] == "save_openclaw_cliq_bot_message_handler"
+    assert payload["nextOperatorActionRequest"]["id"] == (
+        "save_openclaw_cliq_bot_message_handler"
+    )
     assert payload["safety"]["agentMayExecutePromptRequests"] is False
     assert payload["safety"]["actionRequestsAgentExecutableAny"] is False
     assert payload["safety"]["redaction"]["rawPayloadStored"] is False
@@ -2673,6 +2691,8 @@ def test_zoho_cli_rc_operator_action_prompt_handles_no_requests(
     assert payload["status"] == "no_operator_action"
     assert payload["nextAction"] == "inspect_rc_autonomy_packet"
     assert payload["requestCount"] == 0
+    assert payload["nextOperatorActionId"] is None
+    assert payload["nextOperatorActionRequest"] is None
     assert payload["messageMarkdown"] is None
 
 

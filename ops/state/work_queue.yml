@@ -901,6 +901,15 @@
   - cliq-channel-511
   agent_action: "when autonomy returns operator input, show `save_openclaw_cliq_bot_message_handler` before release-path and CRM fixture asks"
   completion_signal: "`ops/scripts/zoho_cli_rc_autonomy_packet.sh` and `ops/scripts/zoho_cli_rc_operator_action_prompt.sh --md` list the Bot handler save/recheck action first while keeping all requests non-executable for agents"
+- id: cliq-channel-513
+  title: expose next operator action in RC autonomy JSON
+  module: openclaw_cliq_channel
+  stage: completed
+  priority: high
+  depends_on:
+  - cliq-channel-512
+  agent_action: "read `nextOperatorActionId` / `nextOperatorActionRequest` before parsing all `operatorActionRequests`; while direct Bot reliability is blocked, the top id is `save_openclaw_cliq_bot_message_handler`"
+  completion_signal: "`ops/scripts/zoho_cli_rc_autonomy_packet.sh` and `ops/scripts/zoho_cli_rc_operator_action_prompt.sh` expose `nextOperatorActionId=save_openclaw_cliq_bot_message_handler` plus the full first request, with all publish/write requests still non-executable for agents"
 - id: cliq-channel-496
   title: collect operator native Cliq RC publish-path selection
   module: openclaw_cliq_channel

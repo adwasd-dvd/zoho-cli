@@ -279,6 +279,7 @@ def test_native_cliq_channel_ai_troubleshooting_contract_present() -> None:
         "ops/scripts/openclaw_cliq_bot_handler_operator_prompt.sh",
         "ops/scripts/openclaw_cliq_bot_handler_template_render.sh",
         "handler_template_render_ready",
+        "nextOperatorActionId",
         "save_openclaw_cliq_bot_message_handler",
         "followUpCommandPreview",
         "Message Handler",

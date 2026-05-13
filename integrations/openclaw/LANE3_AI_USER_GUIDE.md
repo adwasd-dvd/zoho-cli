@@ -273,6 +273,9 @@ After sync, ensure the AI user follows:
     exposing raw values. `commandPreview` values are placeholder-only recheck
     hints, optional `followUpCommandPreview` values name the next diagnostic
     command, and `unblocks` names the next gate the operator input should unlock.
+    Read `nextOperatorActionId` / `nextOperatorActionRequest` first when present;
+    while the real Bot direct-message blocker is active, that id should be
+    `save_openclaw_cliq_bot_message_handler`.
     Expected ids include
     `save_openclaw_cliq_bot_message_handler`,
     `select_openclaw_cliq_publish_path`,

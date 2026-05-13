@@ -1,21 +1,21 @@
-id: cliq-channel-516
-title: fix Deluge invokeurl task terminator in Bot handler templates
+id: cliq-channel-517
+title: return clean Deluge Bot response map
 module: openclaw_cliq_channel
 stage: completed
 status: completed
 owner: coder
-updated_at: '2026-05-13T23:23:28Z'
+updated_at: '2026-05-13T23:57:56Z'
 execution_mode: deep_milestone_batch
 throughput_policy_ref: ops/state/execution_policy.yml
 success_criteria:
-  - "Fix the generated Deluge syntax that Zoho Creator rejected at the assigned `invokeurl` line"
-  - "Apply the same `];` terminator to Message, Mention, Participation, and Context handler templates"
-  - "Lock the terminator in focused tests so future renders stay Zoho-pasteable"
-  - "Update Lane 1/2/3 state without running publish/write actions or extra live Bot probes"
+  - "Stop returning the full OpenClaw diagnostic webhook response from Zoho Deluge handlers"
+  - "Copy only `webhook_response.text` into `response.text` before returning to Zoho"
+  - "Update renderer, handler-trigger/no-response/operator prompt guidance, Lane 2/3 docs, and focused tests"
+  - "Update Lane 1 state without publishing, tagging, npm-promoting, GitHub releasing, expectedIntegrity filling, or running CRM writes"
 progress:
-  - "User's Zoho Creator screenshot showed `Line No - 23 Expecting ';' at the end of statement` for `webhook_response = invokeurl`."
-  - "Updated generated and documented handler templates so assigned `invokeurl [...]` blocks close with `];`."
-  - "Added focused assertions that rendered/docs templates include the Deluge task terminator."
-  - "Operator confirmed the paste/save path succeeded after this syntax fix."
-next_if_done: Wait for the operator to paste/save the rendered Message Handler and send exactly one fresh direct `oldsix老六` Bot message, then run a single short-window no-response packet.
-next_step: "After one fresh direct Bot message from the operator, run exactly one `ZOHO_CLIQ_INGRESS_LOOKBACK_SECONDS=600 ops/scripts/openclaw_cliq_bot_no_response_packet.sh` check. If the Bot still does not answer and public callback smoke reports Cloudflare `530`, stabilize the tunnel before further Zoho live probes."
+  - "Fresh live `测试4` evidence showed ingress and native dispatch active with `deliveryTransport=deluge_response`, `replyTextCaptured=true`, and no visible Bot reply."
+  - "Local synthetic POST with the same trusted sender/chat returned top-level `text`, but the response also included diagnostic keys that Zoho may not render when returned directly."
+  - "Current fix changes templates to return a clean `response` map containing only the captured text."
+  - "Focused template/no-response/handler-trigger/Lane 3/markdown tests passed, plus shell syntax, YAML parse, Ruff format/check for touched tests, `make lint`, and `git diff --check`."
+next_if_done: Ask the operator to paste/save the refreshed Message Handler, send exactly one fresh direct `oldsix老六` Bot message, then run a single short-window no-response packet.
+next_step: "After validation and commit, operator should replace the Message Handler return block with the clean `response.put(\"text\",webhook_response.get(\"text\")); return response;` form, save, and send one fresh direct Bot message. Then run exactly one `ZOHO_CLIQ_PUBLIC_WEBHOOK_URL=https://cliq.hpyio.com/webhooks/cliq ZOHO_CLIQ_INGRESS_LOOKBACK_SECONDS=600 ops/scripts/openclaw_cliq_bot_no_response_packet.sh` check."

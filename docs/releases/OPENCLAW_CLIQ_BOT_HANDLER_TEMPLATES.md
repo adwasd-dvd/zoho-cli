@@ -30,9 +30,11 @@ native OpenClaw agent turns yet.
 
 Set `reply_mode` to `deluge_response` in Bot handlers. In this mode OpenClaw
 captures the agent's final answer and returns it in the webhook JSON `text`
-field; the Deluge handler then returns that map directly so Zoho renders the
-reply as the Bot's native handler response. This avoids the less reliable
-second-hop OAuth `zoho cliq send` path for direct Bot chats.
+field; the Deluge handler copies only that value into a clean `response.text`
+map before returning it so Zoho renders the reply as the Bot's native handler
+response. Do not return the full OpenClaw diagnostic webhook response to Zoho.
+This avoids the less reliable second-hop OAuth `zoho cliq send` path for direct
+Bot chats.
 
 ## Message Handler
 
@@ -80,7 +82,7 @@ webhook_response = invokeurl
 
 if(webhook_response != null && webhook_response.containKey("text") && webhook_response.get("text") != null)
 {
-  return webhook_response;
+  response.put("text",webhook_response.get("text"));
 }
 
 return response;
@@ -131,7 +133,7 @@ webhook_response = invokeurl
 
 if(webhook_response != null && webhook_response.containKey("text") && webhook_response.get("text") != null)
 {
-  return webhook_response;
+  response.put("text",webhook_response.get("text"));
 }
 
 return response;
@@ -180,7 +182,7 @@ webhook_response = invokeurl
 
 if(webhook_response != null && webhook_response.containKey("text") && webhook_response.get("text") != null)
 {
-  return webhook_response;
+  response.put("text",webhook_response.get("text"));
 }
 
 return response;
@@ -225,7 +227,7 @@ webhook_response = invokeurl
 
 if(webhook_response != null && webhook_response.containKey("text") && webhook_response.get("text") != null)
 {
-  return webhook_response;
+  response.put("text",webhook_response.get("text"));
 }
 
 return response;
@@ -272,7 +274,9 @@ one native OpenClaw turn and one Cliq reply.
 If the Bot replies with a delayed literal `received`, the handler is still using
 an ACK-only template. Re-paste the current template with
 `payload.put("reply_mode","deluge_response");`, assign `webhook_response =
-invokeurl [...]`, and return `webhook_response` when it has a `text` key.
+invokeurl [...]`, close the assigned invokeUrl task with `];`, and copy
+`webhook_response.get("text")` into `response.put("text",...)` when it has a
+`text` key.
 
 If public callback smoke passes but the no-response packet reports
 `no_recent_webhook_ingress`, run

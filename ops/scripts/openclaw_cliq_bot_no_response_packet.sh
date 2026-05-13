@@ -259,10 +259,10 @@ PAYLOAD="$("$JQ_BIN" -n \
         elif ($blockers | index("dispatch_reply_not_delivered")) then {
           code: "openclaw_dispatched_but_reply_not_visible",
           likelyCause: "OpenClaw dispatched the turn, but no final reply delivery was recorded.",
-          operatorFix: "Confirm the handler returns webhook_response when it contains text, not a fixed response map.",
+          operatorFix: "Confirm the handler copies webhook_response.text into response.text and returns the clean response map, not the full diagnostic webhook response.",
           agentSafeNextStep: "Inspect latestNativeDispatch delivery facts and reply transport.",
           directDmRequiresMessageHandler: true,
-          handlerSectionToCheck: "Message Handler return webhook_response branch.",
+          handlerSectionToCheck: "Message Handler clean response.text branch.",
           receivedAckMeaning: "A literal received reply can hide that the handler returned the ACK map instead of OpenClaw text."
         }
         elif ($blockers | length) == 0 then {

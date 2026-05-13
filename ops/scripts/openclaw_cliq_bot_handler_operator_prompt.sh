@@ -147,7 +147,7 @@ PAYLOAD="$("$JQ_BIN" -n \
           end
         ),
         requiredReplyMode: "deluge_response",
-        requiredReturn: "return webhook_response when it contains a non-null text key",
+        requiredReturn: "copy webhook_response.text into response.text and return the clean response map",
         agentMayExecute: false
       },
       {
@@ -184,7 +184,7 @@ PAYLOAD="$("$JQ_BIN" -n \
     ] + ($requests | map(mdline_request))
       + [
           "",
-          "A delayed literal `received` is only a Deluge ACK; the expected final answer is returned through `webhook_response.text` in `reply_mode=deluge_response`.",
+          "A delayed literal `received` is only a Deluge ACK; the expected final answer is copied from `webhook_response.text` into a clean `response.text` map in `reply_mode=deluge_response`.",
           "",
           "Safety: this handoff stores no raw webhook payloads, message bodies, reply bodies, local paths, or secrets."
         ]) as $markdownLines

@@ -171,7 +171,7 @@ webhook_response = invokeurl
 
 if(webhook_response != null && webhook_response.containKey("text") && webhook_response.get("text") != null)
 {
-  return webhook_response;
+  response.put("text",webhook_response.get("text"));
 }
 
 return response;
@@ -202,7 +202,7 @@ webhook_response = invokeurl
 
 if(webhook_response != null && webhook_response.containKey("text") && webhook_response.get("text") != null)
 {
-  return webhook_response;
+  response.put("text",webhook_response.get("text"));
 }
 
 return response;
@@ -243,7 +243,7 @@ webhook_response = invokeurl
 
 if(webhook_response != null && webhook_response.containKey("text") && webhook_response.get("text") != null)
 {
-  return webhook_response;
+  response.put("text",webhook_response.get("text"));
 }
 
 return response;
@@ -279,7 +279,7 @@ webhook_response = invokeurl
 
 if(webhook_response != null && webhook_response.containKey("text") && webhook_response.get("text") != null)
 {
-  return webhook_response;
+  response.put("text",webhook_response.get("text"));
 }
 
 return response;
@@ -438,7 +438,7 @@ PAYLOAD="$("$JQ_BIN" -n \
         + [
           "After saving, send exactly one fresh direct Bot message, then run `" + $payload.copyPlan.followUpCommand + "`.",
           "",
-          "A literal `received` reply is only an ACK branch. Normal operation returns `webhook_response.text` through `reply_mode=deluge_response`."
+          "A literal `received` reply is only an ACK branch. Normal operation copies `webhook_response.text` into a clean `response.text` map through `reply_mode=deluge_response`."
         ]
         | join("\n")
       )

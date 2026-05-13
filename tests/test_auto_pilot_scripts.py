@@ -5286,7 +5286,7 @@ def test_openclaw_cliq_bot_no_response_packet_embeds_handler_trigger_packet(
     assert payload["handlerTrigger"]["delugeContract"]["replyMode"] == "deluge_response"
     assert (
         payload["handlerTrigger"]["operatorChecklist"][1]["normalOperation"]
-        == "return webhook_response when it contains text; do not keep a fixed received ACK"
+        == "copy webhook_response.text into response.text; do not keep a fixed received ACK"
     )
     assert (
         payload["handlerTrigger"]["operatorChecklist"][1]["directBotDmRequirement"]
@@ -5548,7 +5548,7 @@ def test_openclaw_cliq_handler_trigger_packet_is_ready_without_leaking_secret(
     assert payload["operatorChecklist"][1]["requiredReplyMode"] == "deluge_response"
     assert (
         payload["operatorChecklist"][1]["normalOperation"]
-        == "return webhook_response when it contains text; do not keep a fixed received ACK"
+        == "copy webhook_response.text into response.text; do not keep a fixed received ACK"
     )
     assert (
         payload["operatorChecklist"][1]["directBotDmRequirement"]
@@ -5780,7 +5780,8 @@ def test_openclaw_cliq_bot_handler_template_render_outputs_copyable_deluge(
     )
     assert "webhook_response = invokeurl" in message_deluge
     assert "];" in message_deluge
-    assert "return webhook_response;" in message_deluge
+    assert 'response.put("text",webhook_response.get("text"));' in message_deluge
+    assert "return webhook_response;" not in message_deluge
     assert 'response.put("text","received");' not in message_deluge
     assert payload["reportFiles"]["templateRender"] == report_file.name
     assert json.loads(report_file.read_text()) == payload

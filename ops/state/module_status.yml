@@ -30,7 +30,7 @@ openclaw_cliq_channel:
   status: blocked
   phase: bot_handler_minimal_template_ready_pending_handler_install_and_stable_tunnel
   target_release: v0.4.0
-  current_milestone: cliq-channel-514-minimal-message-handler
+  current_milestone: cliq-channel-517-clean-deluge-response-map
   blockers:
     - "`ops/scripts/openclaw_cliq_bot_handler_template_render.sh --md --handlers message` now renders a minimal direct-DM Message Handler that avoids optional undefined Deluge variables; the real `oldsix老六` Bot details Handlers list must include Message Handler, then this simplified handler must be re-pasted/saved before the next direct Bot message can prove visible native replies"
     - "the Cloudflare tunnel route for `https://cliq.hpyio.com/webhooks/cliq` intermittently returns `530`; local gateway `127.0.0.1:18789` is healthy, but the persistent tunnel service likely needs a stable protocol/route fix before Zoho can reliably POST"

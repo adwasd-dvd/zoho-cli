@@ -11,9 +11,9 @@
   separate user DM or chat-id-as-channel-id send path.
 - Added Deluge-native Bot reply mode for real Zoho Cliq handlers:
   `reply_mode=deluge_response` captures the OpenClaw final answer and returns it
-  as webhook response `text`, so Deluge can `return webhook_response` and Zoho
-  renders the answer as the Bot's native handler response without a second OAuth
-  send.
+  as webhook response `text`, so Deluge can copy that value into a clean
+  `response.text` map and Zoho renders the answer as the Bot's native handler
+  response without a second OAuth send.
 - Refreshed the no-publish OpenClaw Cliq RC artifact chain after the
   Deluge-native reply change; the local RC tarball now has shasum
   `295555b784d69838f3f01590e59c9e5cf5bbde20`, artifact/install/promotion
@@ -22,8 +22,8 @@
 - Updated the Bot handler-trigger/no-response packet guidance so
   `no_recent_webhook_ingress` now points operators at
   `reply_mode=deluge_response`, `webhook_response = invokeurl [...]`, and
-  returning `webhook_response` when it contains `text`, instead of preserving a
-  fixed `received` ACK.
+  copying `webhook_response.text` into `response.text`, instead of preserving a
+  fixed `received` ACK or returning the full diagnostic webhook response.
 - Added direct-Bot-DM diagnosis to the handler-trigger/no-response packets:
   `openclaw_cliq_bot_no_response_packet` now emits a redacted `diagnosis`
   object, and `openclaw_cliq_handler_trigger_packet` exposes
@@ -80,6 +80,9 @@
   `invokeurl [...]` tasks with `];`, matching Zoho Creator syntax validation and
   preventing the Message Handler editor error `Expecting ';' at the end of
   statement`.
+- Updated the generated Deluge handler templates to return a clean response map
+  that contains only `text` copied from `webhook_response.text`, avoiding Zoho
+  Bot UI drops when the full OpenClaw diagnostic webhook response is returned.
 
 - Extended the RC autonomy packet with redacted `operatorActionRequests` so recurring agents can ask for exactly the missing operator publish path, CRM fixture cleanup plan, and CRM fixture payload file without reading raw payloads, cleanup text, local paths, secrets, or lower-level report internals.
 - Recorded post-platform-215 source-drift, operator decision, and autonomy-packet evidence: pushed operator-action-request commit `9fac452e` still reports `package_source_unchanged`, all decision-packet `reportsReady=true`, and autonomy `operator_input_required` with the same three redacted operator request ids, while no publish/tag/release/expectedIntegrity fill or live Zoho write was performed.

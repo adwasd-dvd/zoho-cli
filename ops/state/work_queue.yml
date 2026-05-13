@@ -827,7 +827,7 @@
   depends_on:
   - cliq-channel-502
   agent_action: use `reply_mode=deluge_response` for real Bot handlers so OpenClaw final answer text is returned in the webhook response and rendered by Zoho's native Bot handler response
-  completion_signal: webhook/native dispatch supports `deluge_response`, handler templates return `webhook_response` when it contains `text`, and focused runtime/template tests pass without live Zoho probes
+  completion_signal: webhook/native dispatch supports `deluge_response`, handler templates expose the OpenClaw final answer as `webhook_response.text`, and focused runtime/template tests pass without live Zoho probes
 - id: cliq-channel-505
   title: verify real oldsix Bot with Deluge-native reply template
   module: openclaw_cliq_channel
@@ -855,7 +855,7 @@
   depends_on:
   - cliq-channel-506
   agent_action: make no-response and handler-trigger packets point operators at Deluge-native reply mode instead of fixed ACK smoke templates
-  completion_signal: handler-trigger packets expose `replyMode=deluge_response`, `return webhook_response` guidance, classify `你好123456` as `no_recent_webhook_ingress` pending Zoho handler save/trigger fixes, and post-commit source drift reports `package_source_unchanged` for commit `4cbce2cc`
+  completion_signal: handler-trigger packets expose `replyMode=deluge_response` guidance, classify `你好123456` as `no_recent_webhook_ingress` pending Zoho handler save/trigger fixes, and post-commit source drift reports `package_source_unchanged` for commit `4cbce2cc`
 - id: cliq-channel-508
   title: add direct Bot DM no-ingress diagnosis
   module: openclaw_cliq_channel
@@ -918,7 +918,7 @@
   depends_on:
   - cliq-channel-513
   agent_action: "render the direct-DM Message Handler with only `message`, `user`, and `chat`, avoiding optional Deluge variables that can be undefined before `invokeurl`"
-  completion_signal: "`ops/scripts/openclaw_cliq_bot_handler_template_render.sh --md --handlers message` omits `attachments`, `mentions`, `links`, and `location` from the Message Handler while keeping `reply_mode=deluge_response` and `return webhook_response`"
+  completion_signal: "`ops/scripts/openclaw_cliq_bot_handler_template_render.sh --md --handlers message` omits `attachments`, `mentions`, `links`, and `location` from the Message Handler while keeping `reply_mode=deluge_response`"
 - id: cliq-channel-515
   title: record post-minimal-handler no-publish RC evidence
   module: openclaw_cliq_channel
@@ -937,6 +937,15 @@
   - cliq-channel-514
   agent_action: "terminate every generated assigned `invokeurl [...]` Deluge task with `];` so the Zoho Creator syntax checker accepts the paste block"
   completion_signal: "operator confirmed the Message Handler editor accepted the block after adding `];`; renderer/docs/tests now lock the terminator for Message, Mention, Participation, and Context handlers"
+- id: cliq-channel-517
+  title: return clean Deluge Bot response map
+  module: openclaw_cliq_channel
+  stage: completed
+  priority: high
+  depends_on:
+  - cliq-channel-516
+  agent_action: "change generated Bot handler templates and diagnostics so Deluge copies `webhook_response.text` into `response.text` and returns only the clean response map"
+  completion_signal: "renderer/docs/tests/operator prompts no longer ask operators to return the full OpenClaw diagnostic `webhook_response`; rendered templates copy `webhook_response.text` into `response.text` and return the clean response map"
 - id: cliq-channel-496
   title: collect operator native Cliq RC publish-path selection
   module: openclaw_cliq_channel

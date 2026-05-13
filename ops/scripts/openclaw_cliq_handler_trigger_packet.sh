@@ -168,7 +168,7 @@ PAYLOAD="$("$JQ_BIN" -n \
         replyMode: "deluge_response",
         replyModeField: "payload.put(\"reply_mode\",\"deluge_response\");",
         webhookResponseVariable: "webhook_response",
-        webhookResponseReturnRule: "return webhook_response when it contains a non-null text key",
+        webhookResponseReturnRule: "copy webhook_response.text into response.text and return the clean response map",
         fixedAckTextAllowedInNormalOperation: false,
         messageHandlerWrapsTextIntoMsgMap: true,
         unsupportedHandlersForRc: ["welcome", "incoming_webhook", "call", "menu"]
@@ -187,7 +187,7 @@ PAYLOAD="$("$JQ_BIN" -n \
           selectedSections: ($selected | map(. + " handler")),
           requiredReplyMode: "deluge_response",
           requiredWebhookResponse: "webhook_response = invokeurl [...]",
-          normalOperation: "return webhook_response when it contains text; do not keep a fixed received ACK",
+          normalOperation: "copy webhook_response.text into response.text; do not keep a fixed received ACK",
           directBotDmRequirement: "Bot details must list Message Handler for direct Bot DMs; Mention Handler alone only handles mentions/channel contexts."
         },
         {

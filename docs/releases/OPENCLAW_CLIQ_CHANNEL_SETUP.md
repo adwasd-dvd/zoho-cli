@@ -189,7 +189,7 @@ webhook_response = invokeurl
 ]
 if(webhook_response != null && webhook_response.containKey("text") && webhook_response.get("text") != null)
 {
-  return webhook_response;
+  response.put("text",webhook_response.get("text"));
 }
 return response;
 ```

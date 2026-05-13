@@ -28,11 +28,11 @@ cliq:
 openclaw_cliq_channel:
   priority: 3
   status: blocked
-  phase: awaiting_fresh_bot_message_confirmation
+  phase: awaiting_operator_visible_reply_confirmation
   target_release: v0.4.0
   current_milestone: cliq-channel-501-bot-direct-chat-send-routing
   blockers:
-    - "fresh operator-sent direct message to `oldsix老六` is needed after the local `--chat-id` route fix and gateway restart to confirm visible Bot-chat reply"
+    - "fresh post-fix `oldsix老六` direct message reached webhook and dispatched one delivery; operator must confirm whether the reply is visible in the same Bot chat"
 
 crm:
   priority: 4

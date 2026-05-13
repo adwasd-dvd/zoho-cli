@@ -798,8 +798,8 @@
   priority: high
   depends_on:
   - platform-219
-  blocker: "operator must send one fresh direct message to `oldsix老六` after the local `--chat-id` route fix and gateway restart"
-  agent_action: rerun `ops/scripts/openclaw_cliq_bot_no_response_packet.sh` with a short lookback after the fresh message and confirm visible same-chat delivery
+  blocker: "fresh post-fix direct message reached OpenClaw and recorded one delivery; operator must confirm visible same-chat reply"
+  agent_action: wait for the operator's visual confirmation, then mark cliq-channel-501 complete or continue reply-delivery debugging
   completion_signal: real `oldsix` Bot direct replies are visible in the original Bot chat after synthetic Bot direct events route through `--chat-id`
 - id: cliq-channel-496
   title: collect operator native Cliq RC publish-path selection

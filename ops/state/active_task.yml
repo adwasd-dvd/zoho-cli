@@ -4,7 +4,7 @@ module: openclaw_cliq_channel
 stage: blocked
 status: blocked
 owner: coder
-updated_at: '2026-05-12T23:11:03Z'
+updated_at: '2026-05-13T00:04:11Z'
 execution_mode: turbo_20x
 throughput_policy_ref: ops/state/execution_policy.yml
 success_criteria:
@@ -20,4 +20,5 @@ progress:
   - "Focused validation passed for chat-id text sends, chat-id local voice sends, existing channel sends, native adapter send args, Ruff format/check, and TypeScript build."
   - "2026-05-12T23:15:53Z linked the local plugin into OpenClaw, restarted the gateway on port 18789, verified `https://cliq.hpyio.com/webhooks/cliq` public callback auth/reachability, and confirmed `zoho cliq send --chat-id` returned `204 ok` against the recorded Bot direct chat route."
   - "A fresh 5-minute no-response packet after the fix returned `no_recent_webhook_ingress`, so final visible-reply confirmation is waiting on one new operator-sent Bot direct message."
-next_step: Ask the operator to send one fresh short direct message to `oldsix老六`, then rerun the no-response packet with a short lookback and confirm the reply is visible in the same Bot chat.
+  - "2026-05-13T00:04:11Z fresh post-fix Bot direct message arrived: public callback verified, webhook ingress was active, native dispatch reached `zoho-employee-test`, and OpenClaw recorded `deliveryCount=1` / `messageIdCount=1` for correlation `cliq-cc770c4c0028b457`."
+next_step: Ask the operator to confirm whether the latest `oldsix老六` reply was visible in the same Bot chat; if yes, mark cliq-channel-501 complete and return to the RC work queue/autonomy packet flow.

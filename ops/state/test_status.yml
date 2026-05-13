@@ -1,10 +1,11 @@
-last_run_at: "2026-05-13T16:05:19Z"
+last_run_at: "2026-05-13T16:25:19Z"
 last_result: passing
-current_focus: cliq-channel-499-no-publish-handoff-hygiene
+current_focus: cliq-channel-500-source-drift-no-repack
 suites:
   unit:
     status: passing
     notes:
+      - "cliq-channel-500 validation passed at 2026-05-13T16:25:19Z: source drift run `20260513T162519Z-package-recheck-source` reported `package_source_unchanged` and `packageDrift.packageChangedSinceManifest=false`; docs/state now record that pack/artifact/install smoke was skipped because package source did not change; focused OpenClaw channel/Lane 3/markdown tests -> 21 passed; `make lint`, YAML parse, and `git diff --check` passed."
       - "cliq-channel-499 validation passed at 2026-05-13T16:05:19Z: operator publish handoff, README, changelog, and Lane 1 state were synced to the `20260513T154319Z-handler-prompt` no-publish evidence baseline; focused OpenClaw channel/Lane 3/markdown tests -> 21 passed; `make lint`, YAML parse, and `git diff --check` passed. No live Bot probe, publish, tag, npm promotion, GitHub release, expectedIntegrity fill, CRM write, or live CRM fixture was performed."
       - "cliq-channel-509 validation passed at 2026-05-13T15:57:21Z: shell syntax for `ops/scripts/openclaw_cliq_bot_handler_operator_prompt.sh` and handler-trigger packet; direct `--md` run returned `handler_operator_prompt_ready`; focused operator-prompt/Lane 3/RC checklist/markdown tests -> 23 passed; `make lint`, Ruff format/check, YAML parse, and `git diff --check` passed; no-publish pack/artifact/install/promotion passed with shasum `10a5eb6cafb3343bcec8253663745d9e883e81b8`, integrity `sha512-e4jefPwV73aZbp472i1KuWSHLYSagZm+dtf0mswSdsjafg9vmc5uozrq0zjMpziffaBFresUD1tkqZljfsMY1g==`, artifact verified, install smoke passed, and `ready_for_operator_publish`. The script is read-only and ran no live Bot probe."
       - "platform-221 validation passed at 2026-05-13T15:31:40Z: shell syntax for `ops/scripts/openclaw_cliq_rc_source_drift_check.sh`; focused source-drift/decision/Lane 3/markdown tests -> 16 passed; `make lint` passed; Ruff format/check passed for the touched test file; YAML parse and `git diff --check` passed; no-publish package verification refreshed shasum `d3dc407303ca8796657134d99821f983714ffbc1` with artifact/install/promotion checks passing; post-commit autonomy returned `operator_input_required` with no `source_drift_not_clean` blocker. No live Zoho probe, publish, tag, npm promotion, GitHub release, expectedIntegrity fill, CRM write, or live CRM fixture was performed."

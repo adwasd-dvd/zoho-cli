@@ -44,6 +44,11 @@
   `10a5eb6cafb3343bcec8253663745d9e883e81b8`, artifact/install/promotion
   checks pass, and publish/tag/release/integrity-fill actions remain
   operator-only.
+- Recorded the follow-up no-repack source-drift recheck after the
+  `cliq-channel-499` docs/state handoff sync: package source remains unchanged
+  against the `20260513T154319Z-handler-prompt` manifest, so recurring agents
+  should skip pack/artifact/install smoke unless package files drift or the
+  operator asks.
 
 - Extended the RC autonomy packet with redacted `operatorActionRequests` so recurring agents can ask for exactly the missing operator publish path, CRM fixture cleanup plan, and CRM fixture payload file without reading raw payloads, cleanup text, local paths, secrets, or lower-level report internals.
 - Recorded post-platform-215 source-drift, operator decision, and autonomy-packet evidence: pushed operator-action-request commit `9fac452e` still reports `package_source_unchanged`, all decision-packet `reportsReady=true`, and autonomy `operator_input_required` with the same three redacted operator request ids, while no publish/tag/release/expectedIntegrity fill or live Zoho write was performed.

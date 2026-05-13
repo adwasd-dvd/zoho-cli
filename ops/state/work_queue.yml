@@ -917,12 +917,12 @@
 - id: cliq-channel-500
   title: rerun native Cliq package verification only when source drift requires it
   module: openclaw_cliq_channel
-  stage: pending
+  stage: completed
   priority: medium
   depends_on:
   - cliq-channel-499
   agent_action: use source-drift guard first; run pack/artifact/install smoke only when package source changed or operator asks
-  completion_signal: no-publish verification is fresh and docs record whether package source changed
+  completion_signal: source drift run `20260513T162519Z-package-recheck-source` reports `package_source_unchanged`, `packageDrift.packageChangedSinceManifest=false`, and no package dirty/index/untracked files, so the `20260513T154319Z-handler-prompt` tarball remains current without rerunning pack/artifact/install smoke
 - id: crm-034
   title: collect CRM fixture payload and cleanup-plan operator inputs
   module: crm

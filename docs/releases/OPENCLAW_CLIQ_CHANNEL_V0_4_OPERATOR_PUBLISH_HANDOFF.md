@@ -135,6 +135,13 @@ Expected local pre-publish posture:
   `sourceDrift.headCommit=c634097218a6ccf038ac276546ce9a797f88db99`,
   `repoChangedFileCount=0`, all `reportsReady=true`, and
   `agentMayExecuteSelectedPath=false`
+- the latest no-repack source-drift recheck
+  `20260513T162519Z-package-recheck-source` returns
+  `package_source_unchanged` after the docs/state handoff sync at HEAD
+  `0d146bb605d3c7fb922dbbf6262879603f58655a`, with
+  `repoChangedFileCount=8`, `packageDrift.packageChangedSinceManifest=false`,
+  and no package dirty files; do not rerun pack/artifact/install smoke unless
+  package files drift or the operator asks
 - the previous post-CRM next-command-preview docs/state decision packet
   `20260512T143844Z-crm-next-command-preview-postcommit-decision` returns
   `awaiting_operator_publish_path`, `package_source_unchanged`,

@@ -1,19 +1,19 @@
-id: cliq-channel-499
-title: refresh no-publish native Cliq RC release notes and artifact checklist hygiene
+id: cliq-channel-500
+title: rerun native Cliq package verification only when source drift requires it
 module: openclaw_cliq_channel
 stage: completed
 status: completed
 owner: coder
-updated_at: '2026-05-13T16:05:19Z'
+updated_at: '2026-05-13T16:25:19Z'
 execution_mode: turbo_20x
 throughput_policy_ref: ops/state/execution_policy.yml
 success_criteria:
-  - "Sync the operator publish handoff and public README with the latest no-publish artifact facts after `cliq-channel-509`"
-  - "Keep publish/tag/GitHub release/npm promotion and `expectedIntegrity` fill operator-only"
-  - "Preserve the Bot Message Handler next step as the active live blocker"
+  - "Use the source-drift guard before any repeat pack/artifact/install smoke"
+  - "Record whether package source changed after the latest no-publish handoff manifest"
+  - "Avoid unnecessary package rebuilds when only docs/state files changed"
 progress:
-  - "2026-05-13T16:05:19Z refreshed `docs/releases/OPENCLAW_CLIQ_CHANNEL_V0_4_OPERATOR_PUBLISH_HANDOFF.md` to the `20260513T154319Z-handler-prompt` artifact, handoff manifest, source-drift, and decision-packet evidence."
-  - "2026-05-13T16:05:19Z synced `README.md` and `docs/releases/CHANGELOG.next.md` so the current native Cliq lane names `cliq-channel-509`, the Bot handler operator prompt, and tarball shasum `10a5eb6cafb3343bcec8253663745d9e883e81b8`."
-  - "2026-05-13T16:05:19Z no publish, tag, npm promotion, GitHub release, `expectedIntegrity` fill, CRM write, live CRM fixture, or live Bot probe was performed."
-next_if_done: Return to the normal RC work queue; run no-publish verification only if package source changes or operator asks.
-next_step: Use `ops/scripts/openclaw_cliq_bot_handler_operator_prompt.sh --md` for the exact Message Handler save/check ask, then wait for one fresh operator Bot message before running a single live no-response packet.
+  - "2026-05-13T16:25:59Z ran `OPENCLAW_CLIQ_SOURCE_DRIFT_RUN_ID=20260513T162519Z-package-recheck-source ops/scripts/openclaw_cliq_rc_source_drift_check.sh`."
+  - "2026-05-13T16:25:59Z source drift returned `package_source_unchanged`, no blockers, `repoChangedFileCount=8`, `packageDrift.packageChangedSinceManifest=false`, and no package dirty/index/untracked files against the `20260513T154319Z-handler-prompt` handoff manifest."
+  - "2026-05-13T16:25:59Z skipped pack/artifact/install smoke because package source did not change and the operator did not ask for a rebuild."
+next_if_done: Return to the normal RC work queue; next unblocked work requires either operator input or a new safe local/docs/test slice.
+next_step: Keep using source-drift as the first package recheck; only rerun package verification when `integrations/openclaw-channel-cliq/` changes or the operator explicitly asks.

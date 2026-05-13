@@ -3,6 +3,7 @@ import { resolveInboundLastRouteSessionKey } from "openclaw/plugin-sdk/routing";
 import { CLIQ_CHANNEL_ID } from "./constants.js";
 import { buildCliqAuditEvent, emitCliqAuditEvent } from "./observability.js";
 import { buildCliqSessionPeerId, normalizeCliqSessionToken, } from "./session.js";
+import { ZohoCliqCommandError } from "./zoho-cli.js";
 function isRecord(value) {
     return Boolean(value) && typeof value === "object" && !Array.isArray(value);
 }
@@ -136,6 +137,19 @@ function dispatched(result) {
 function errorText(error) {
     return error instanceof Error ? error.message : String(error);
 }
+function deliveryFailureForError(error, stage) {
+    if (error instanceof ZohoCliqCommandError) {
+        return {
+            stage,
+            reason: "zoho_cli_failed",
+            errorKind: error.kind,
+        };
+    }
+    return {
+        stage,
+        reason: "delivery_failed",
+    };
+}
 export async function dispatchCliqEventToNativeOpenClaw(options) {
     const cfg = withCliqDirectSessionScope(options.cfg);
     const runtime = options.runtime.channel;
@@ -237,6 +251,7 @@ export async function dispatchCliqEventToNativeOpenClaw(options) {
     const deliveryStats = {
         count: 0,
         messageIds: [],
+        failures: [],
     };
     let result;
     try {
@@ -325,6 +340,7 @@ export async function dispatchCliqEventToNativeOpenClaw(options) {
                             };
                         },
                         onError: (error, info) => {
+                            deliveryStats.failures.push(deliveryFailureForError(error, info.kind));
                             options.logger?.warn?.(`[zoho-cliq] native ${info.kind} reply delivery failed: ${errorText(error)}`);
                         },
                     },
@@ -352,6 +368,7 @@ export async function dispatchCliqEventToNativeOpenClaw(options) {
                 routeSessionKey: route.sessionKey,
                 deliveryCount: deliveryStats.count,
                 messageIds: deliveryStats.messageIds,
+                deliveryFailures: deliveryStats.failures,
             },
         }));
         throw error;
@@ -374,6 +391,7 @@ export async function dispatchCliqEventToNativeOpenClaw(options) {
                 : result.routeSessionKey,
             deliveryCount: deliveryStats.count,
             messageIds: deliveryStats.messageIds,
+            deliveryFailures: deliveryStats.failures,
         },
     }));
     return {
@@ -391,6 +409,7 @@ export async function dispatchCliqEventToNativeOpenClaw(options) {
         ...(options.event.threadId ? { threadId: options.event.threadId } : {}),
         deliveryCount: deliveryStats.count,
         messageIds: deliveryStats.messageIds,
+        deliveryFailures: deliveryStats.failures,
         dispatchResult: dispatched(result) ? result.dispatchResult : undefined,
     };
 }

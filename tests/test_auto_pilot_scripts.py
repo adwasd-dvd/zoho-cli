@@ -4935,6 +4935,70 @@ def test_openclaw_cliq_live_ingress_diagnostic_reports_active_delivery(
     assert "unit-secret" not in output
 
 
+def test_openclaw_cliq_live_ingress_diagnostic_reports_rate_limited_delivery(
+    tmp_path: Path,
+) -> None:
+    log_path = tmp_path / "openclaw.log"
+    log_path.write_text(
+        "\n".join(
+            [
+                (
+                    '[zoho-cliq-audit] {"kind":"native_dispatch",'
+                    '"outcome":"dispatched","correlationId":"c-rate",'
+                    '"accountId":"default","network":"happydistrouklimited",'
+                    '"handlerKind":"message","createdAt":"2026-05-12T05:00:20Z",'
+                    '"event":{"chatType":"direct","mentioned":true,"textLength":10},'
+                    '"nativeDispatch":{"agentId":"zoho-employee-test",'
+                    '"deliveryCount":0,"messageIds":[],'
+                    '"deliveryFailures":[{"stage":"final","reason":"zoho_cli_failed",'
+                    '"errorKind":"rate_limited"}]}}'
+                ),
+                (
+                    '[zoho-cliq-audit] {"kind":"webhook_ingress",'
+                    '"outcome":"dispatched","correlationId":"c-rate",'
+                    '"accountId":"default","network":"happydistrouklimited",'
+                    '"handlerKind":"message","createdAt":"2026-05-12T05:00:30Z",'
+                    '"event":{"chatType":"direct","mentioned":true,"textLength":10}}'
+                ),
+            ]
+        )
+        + "\n"
+    )
+
+    result = subprocess.run(
+        ["bash", str(OPENCLAW_CLIQ_LIVE_INGRESS_DIAGNOSTIC_SCRIPT)],
+        cwd=REPO_ROOT,
+        env={
+            **os.environ,
+            "OPENCLAW_LOG_FILE": str(log_path),
+            "ZOHO_CLIQ_INGRESS_NOW_ISO": "2026-05-12T05:01:00Z",
+            "ZOHO_CLIQ_INGRESS_LOOKBACK_SECONDS": "900",
+            "ZOHO_CLIQ_INGRESS_RUN_ID": "unit-rate-limited-ingress",
+            "ZOHO_CLIQ_EXPECTED_AGENT_ID": "zoho-employee-test",
+        },
+        capture_output=True,
+        text=True,
+        check=False,
+    )
+
+    output = f"{result.stdout}\n{result.stderr}"
+    assert result.returncode == 1, output
+    payload = json.loads(result.stdout)
+    assert payload["status"] == "blocked"
+    assert payload["error"] == "dispatch_reply_rate_limited"
+    assert payload["blockers"] == ["dispatch_reply_rate_limited"]
+    assert payload["nextAction"] == "wait_for_zoho_rate_limit_cooldown_or_retry"
+    latest_dispatch = payload["latestNativeDispatch"]
+    assert latest_dispatch["deliveryCount"] == 0
+    assert latest_dispatch["messageIdCount"] == 0
+    assert latest_dispatch["deliveryFailureCount"] == 1
+    assert latest_dispatch["latestDeliveryFailure"] == {
+        "stage": "final",
+        "reason": "zoho_cli_failed",
+        "errorKind": "rate_limited",
+    }
+
+
 def test_openclaw_cliq_bot_no_response_packet_reports_handler_not_posting(
     tmp_path: Path,
 ) -> None:
@@ -5107,6 +5171,64 @@ def test_openclaw_cliq_bot_no_response_packet_reports_active_ingress(
     assert payload["publicCallback"]["status"] == "not_checked"
     assert payload["handlerTrigger"]["checked"] is False
     assert payload["handlerTrigger"]["reason"] == "not_no_recent_webhook_ingress"
+
+
+def test_openclaw_cliq_bot_no_response_packet_reports_rate_limited_reply(
+    tmp_path: Path,
+) -> None:
+    log_path = tmp_path / "openclaw.log"
+    log_path.write_text(
+        "\n".join(
+            [
+                (
+                    '[zoho-cliq-audit] {"kind":"webhook_ingress",'
+                    '"outcome":"dispatched","correlationId":"c-rate",'
+                    '"handlerKind":"message","createdAt":"2026-05-12T05:00:00Z",'
+                    '"event":{"chatType":"direct","mentioned":true,"textLength":10}}'
+                ),
+                (
+                    '[zoho-cliq-audit] {"kind":"native_dispatch",'
+                    '"outcome":"dispatched","correlationId":"c-rate",'
+                    '"handlerKind":"message","createdAt":"2026-05-12T05:00:02Z",'
+                    '"event":{"chatType":"direct","mentioned":true,"textLength":10},'
+                    '"nativeDispatch":{"agentId":"zoho-employee-test",'
+                    '"deliveryCount":0,"messageIds":[],'
+                    '"deliveryFailures":[{"stage":"final","reason":"zoho_cli_failed",'
+                    '"errorKind":"rate_limited"}]}}'
+                ),
+            ]
+        )
+        + "\n"
+    )
+
+    result = subprocess.run(
+        ["bash", str(OPENCLAW_CLIQ_BOT_NO_RESPONSE_PACKET_SCRIPT)],
+        cwd=REPO_ROOT,
+        env={
+            **os.environ,
+            "OPENCLAW_LOG_FILE": str(log_path),
+            "ZOHO_CLIQ_INGRESS_NOW_ISO": "2026-05-12T05:00:10Z",
+            "ZOHO_CLIQ_INGRESS_LOOKBACK_SECONDS": "900",
+            "ZOHO_CLIQ_EXPECTED_AGENT_ID": "zoho-employee-test",
+            "ZOHO_CLIQ_BOT_PACKET_RUN_ID": "unit-rate-limited-response",
+            "ZOHO_CLIQ_BOT_PACKET_REPORT_DIR": str(tmp_path / "reports"),
+        },
+        capture_output=True,
+        text=True,
+        check=False,
+    )
+
+    output = f"{result.stdout}\n{result.stderr}"
+    assert result.returncode == 1, output
+    payload = json.loads(result.stdout)
+    assert payload["status"] == "blocked"
+    assert payload["blockers"] == ["dispatch_reply_rate_limited"]
+    assert payload["nextAction"] == "wait_for_zoho_rate_limit_cooldown_or_retry"
+    assert payload["ingress"]["error"] == "dispatch_reply_rate_limited"
+    assert (
+        payload["ingress"]["latestNativeDispatch"]["latestDeliveryFailure"]["errorKind"]
+        == "rate_limited"
+    )
 
 
 def test_openclaw_cliq_bot_no_response_packet_prioritizes_callback_failure(

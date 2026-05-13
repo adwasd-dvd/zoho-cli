@@ -243,6 +243,11 @@ response.put("text","received");
 return response;
 ```
 
+`response.put("text","received")` is only a Zoho handler ACK. It may appear
+before or after the OpenClaw answer and does not prove final agent reply
+delivery. Keep it while testing if useful, then remove it or replace it with a
+clear "received, processing" text so OpenClaw owns the visible answer.
+
 `parameters:payload.toString()` is tolerated for Deluge compatibility, but
 `body:payload.toString()` keeps the HTTP JSON intent clearer. The webhook parser
 also accepts Deluge Map-string bodies such as
@@ -323,10 +328,14 @@ surface with markdown chunking and maps text sends to `zoho cliq send`, message
 replies to `zoho cliq reply`, and thread delivery to `zoho cliq thread-reply`.
 Inbound webhook delivery registers OpenClaw plugin HTTP routes with
 `auth: "plugin"` and exact matching. Accepted events can be observed through
-the native OpenClaw channel turn runtime. Accepted webhook and polling events
-now use the shared lifecycle wrapper: `received -> thinking`, native agent
-dispatch, `mark-read`, and `done`; dispatch failures attempt `failed`. The turn
-ledger blocks duplicate completed events, coalesces concurrent
+the native OpenClaw channel turn runtime. Registered Bot webhook routes default
+to quiet lifecycle mode so direct Bot DMs do not spend Zoho send quota on
+status/read-ack calls before the final answer. The shared lifecycle wrapper
+still supports `received -> thinking`, native agent dispatch, `mark-read`, and
+`done` for explicit smoke/polling runtimes; dispatch failures attempt `failed`.
+Final delivery failures record redacted `deliveryFailures[].errorKind`, so
+`rate_limited` is visible in diagnostics without storing message bodies. The
+turn ledger blocks duplicate completed events, coalesces concurrent
 same-conversation bursts, and dead-letters failed turns after bounded attempts.
 `src/native-dispatch.ts` records session and last-route metadata, then delivers
 agent replies through the Cliq outbound adapter. It sets OpenClaw

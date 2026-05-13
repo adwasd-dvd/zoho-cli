@@ -942,6 +942,13 @@ export function registerCliqWebhookRoutes(api) {
                 cfg: api.config,
                 webhookPath: path,
                 logger: api.logger,
+                lifecycle: {
+                    statusReactions: false,
+                    markRead: false,
+                    startStatuses: [],
+                    successStatus: null,
+                    failureStatus: null,
+                },
                 onEvent: async (event, context) => {
                     await nativeDispatcher(event, {
                         ...context,

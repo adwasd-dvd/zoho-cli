@@ -798,9 +798,27 @@
   priority: high
   depends_on:
   - platform-219
-  blocker: "fresh post-fix direct message reached OpenClaw and recorded one delivery; operator must confirm visible same-chat reply"
-  agent_action: wait for the operator's visual confirmation, then mark cliq-channel-501 complete or continue reply-delivery debugging
+  blocker: "latest real Bot direct message returned the Deluge handler ACK but OpenClaw final reply delivery hit Zoho `rate_limited`; wait for cooldown and replay one quiet-lifecycle message"
+  agent_action: after cooldown, ask the operator for one fresh direct message, then rerun `ops/scripts/openclaw_cliq_bot_no_response_packet.sh` and continue debugging only if it still reports a delivery blocker
   completion_signal: real `oldsix` Bot direct replies are visible in the original Bot chat after synthetic Bot direct events route through `--chat-id`
+- id: cliq-channel-502
+  title: reduce real Bot webhook API noise and classify reply rate limits
+  module: openclaw_cliq_channel
+  stage: completed
+  priority: high
+  depends_on:
+  - cliq-channel-501
+  agent_action: keep real Bot webhook routes on quiet lifecycle by default and treat `dispatch_reply_rate_limited` as a cooldown/retry condition, not a handler or route failure
+  completion_signal: native dispatch audits include redacted `deliveryFailures`, live ingress/no-response packets report `dispatch_reply_rate_limited`, and the linked local gateway is restarted with the quiet lifecycle build
+- id: cliq-channel-503
+  title: refresh no-publish RC artifact chain after quiet lifecycle fix
+  module: openclaw_cliq_channel
+  stage: completed
+  priority: high
+  depends_on:
+  - cliq-channel-502
+  agent_action: keep the refreshed tarball/operator handoff as local evidence only; do not publish, tag, release, version-bump, or fill `expectedIntegrity`
+  completion_signal: pack/artifact/install/promotion/operator bundle/release notes/publish plan/handoff manifest are refreshed for tarball shasum `754afe56b33fa6551b6e8f9298b4531c88df3f3a`
 - id: cliq-channel-496
   title: collect operator native Cliq RC publish-path selection
   module: openclaw_cliq_channel

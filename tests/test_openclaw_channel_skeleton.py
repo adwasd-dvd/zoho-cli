@@ -113,6 +113,17 @@ def test_openclaw_cliq_channel_manifest_matches_contract() -> None:
     assert ui_hints["employeeMode"]["advanced"] is True
 
 
+def test_openclaw_cliq_webhook_registration_uses_quiet_lifecycle() -> None:
+    source = read("src/webhook.ts")
+
+    assert "lifecycle: {" in source
+    assert "statusReactions: false" in source
+    assert "markRead: false" in source
+    assert "startStatuses: []" in source
+    assert "successStatus: null" in source
+    assert "failureStatus: null" in source
+
+
 def test_openclaw_cliq_channel_sources_use_locked_sdk_surfaces() -> None:
     source = "\n".join(
         [

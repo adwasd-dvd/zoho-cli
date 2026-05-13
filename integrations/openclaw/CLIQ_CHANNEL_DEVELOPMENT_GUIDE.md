@@ -187,6 +187,12 @@ no-publish local tarball verification through
 `ops/scripts/openclaw_cliq_rc_artifact_check.sh`; `cliq-channel-456` adds
 Temp-HOME OpenClaw install smoke through
 `ops/scripts/openclaw_cliq_rc_install_smoke.sh`.
+Real Bot webhook routes now run in quiet lifecycle mode by default to preserve
+Zoho send quota for the final agent answer; explicit smoke/polling paths can
+still exercise the status/read lifecycle wrapper. Native dispatch audits include
+redacted `deliveryFailures[].errorKind`, and live ingress diagnostics surface
+final reply throttling as `dispatch_reply_rate_limited` with next action
+`wait_for_zoho_rate_limit_cooldown_or_retry`.
 Both inbound paths normalize messages into the shared
 inbound event shape, run mention/allowlist/employee policy checks, dedupe by
 account/network/chat/message before optional dispatch, keep status/read failures

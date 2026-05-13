@@ -1,10 +1,13 @@
-last_run_at: "2026-05-13T01:22:46Z"
+last_run_at: "2026-05-13T05:18:59Z"
 last_result: passing
-current_focus: platform-220-heartbeat-work-queue-sync
+current_focus: cliq-channel-503-rc-artifact-refresh-after-rate-limit-fix
 suites:
   unit:
     status: passing
     notes:
+      - "cliq-channel-502 focused validation passed at 2026-05-13T05:18:59Z: `npm --prefix integrations/openclaw-channel-cliq run build`; focused quiet-lifecycle/rate-limit diagnostic tests -> 6 passed in 1.96s; `npm --prefix integrations/openclaw-channel-cliq run openclaw:install`; gateway restart on port 18789; public callback smoke for `https://cliq.hpyio.com/webhooks/cliq` -> `public_callback_verified`. No publish, tag, npm promotion, GitHub release, expectedIntegrity fill, Zoho CRM write, or live CRM fixture was performed."
+      - "cliq-channel-502 live diagnosis at 2026-05-13T05:20:00Z: the delayed visible `received` text is the Zoho Deluge handler ACK, while OpenClaw final delivery for the latest direct Bot message failed with Zoho `rate_limited`; diagnostics now classify this as `dispatch_reply_rate_limited` with next action `wait_for_zoho_rate_limit_cooldown_or_retry`."
+      - "cliq-channel-503 no-publish RC artifact refresh passed at 2026-05-13T05:24:45Z: pack/typecheck/build passed for `adwasd-openclaw-zoho-cliq-0.4.0-rc.1.tgz`, shasum `754afe56b33fa6551b6e8f9298b4531c88df3f3a`, integrity `sha512-LT5tTsvyQdw6b4sCCSgWzNF08kJsPx2gGdH6J2M8QVPmmqOTaV+/G+95LpVAj0Yq0J3kAwjON18tt6E0dl48Fg==`; artifact check, Temp-HOME install smoke, promotion preflight, operator bundle, release notes draft, publish plan, and handoff manifest all passed/ready with publish/tag/release/version-bump/expectedIntegrity fill still blocked for agents."
       - "platform-220 heartbeat/work-queue sync validation passed at 2026-05-13T01:22:46Z: post-crm038 autonomy gate `20260513T003746Z-post-crm038-heartbeat` returned `operator_input_required`, `package_source_unchanged`, `ready_for_operator_publish`, `awaiting_operator_publish_path`, and no agent-executable publish/write action; worktree stayed clean after the gate."
       - "crm-038 local precheck examples validation passed at 2026-05-13T00:25:10Z: Lane 3 required paths plus markdown update -> 2 passed; `make lint`, Ruff format/check for `tests/test_lane3_docs.py`, YAML parse for work_queue/active_task/module_status/project/test_status, and `git diff --check` passed. No Zoho calls, CRM writes, publish, tag, npm promotion, GitHub release, or expectedIntegrity fill were performed."
       - "cliq-channel-501 fresh post-fix Bot direct diagnostic passed at 2026-05-13T00:04:11Z: `ops/scripts/openclaw_cliq_bot_no_response_packet.sh` returned `ingress_active`, public callback verified, webhook ingress and native dispatch were both present in the short window, `agentId=zoho-employee-test`, `deliveryCount=1`, and `messageIdCount=1`; awaiting operator visual confirmation that the reply appeared in the same Bot chat."

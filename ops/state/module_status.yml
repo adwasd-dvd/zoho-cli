@@ -28,11 +28,11 @@ cliq:
 openclaw_cliq_channel:
   priority: 3
   status: blocked
-  phase: awaiting_operator_visible_reply_confirmation
+  phase: bot_direct_reply_rate_limit_cooldown_rc_artifact_refreshed
   target_release: v0.4.0
-  current_milestone: cliq-channel-501-bot-direct-chat-send-routing
+  current_milestone: cliq-channel-503-rc-artifact-refresh-after-rate-limit-fix
   blockers:
-    - "fresh post-fix `oldsix老六` direct message reached webhook and dispatched one delivery; operator must confirm whether the reply is visible in the same Bot chat"
+    - "latest real `oldsix老六` direct message returned the Deluge handler ACK, but OpenClaw final reply delivery was blocked by Zoho `rate_limited`; wait for cooldown, then replay one quiet-lifecycle direct message"
 
 crm:
   priority: 4

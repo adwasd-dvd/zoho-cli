@@ -6,6 +6,11 @@ type PluginRuntime = OpenClawPluginApi["runtime"];
 type CliqAllowedSecurityDecision = Extract<CliqInboundSecurityDecision, {
     allowed: true;
 }>;
+export type DeliveryFailure = {
+    stage: string;
+    reason: string;
+    errorKind?: string;
+};
 export type CliqNativeDispatchSource = "webhook" | "polling" | "manual";
 export type CliqNativeDispatchContext = {
     account: CliqResolvedAccount;
@@ -26,6 +31,7 @@ export type CliqNativeDispatchResult = {
     threadId?: string;
     deliveryCount: number;
     messageIds: string[];
+    deliveryFailures: DeliveryFailure[];
     dispatchResult?: unknown;
 };
 export type CliqNativeEventDispatcher = (event: CliqNormalizedInboundEvent, context: CliqNativeDispatchContext) => Promise<CliqNativeDispatchResult>;

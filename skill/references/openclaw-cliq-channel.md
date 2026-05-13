@@ -37,10 +37,12 @@ registers Bot webhook routes such as `/webhooks/cliq`, verifies
 `X-Cliq-Webhook-Secret`, accepts Message/Mention/Participation/Context handler
 payloads, normalizes them into the same inbound event shape as polling, and
 applies dedupe plus policy gates. `cliq-channel-408` is complete: accepted
-webhook and polling events now use shared lifecycle handling for visible
-`received -> thinking -> done` or `failed` status reactions, attempt
-`mark-read`, and record status/read failures as diagnostics without dispatching
-new inbound work. `cliq-channel-413` is complete: accepted events now pass
+events can use shared lifecycle handling for visible `received -> thinking ->
+done` or `failed` status reactions, attempt `mark-read`, and record status/read
+failures as diagnostics without dispatching new inbound work. Registered Bot
+webhook routes default to quiet lifecycle mode so real direct Bot DMs preserve
+Zoho API quota for the final agent reply; explicit smoke and polling paths can
+still exercise lifecycle behavior. `cliq-channel-413` is complete: accepted events now pass
 through a native turn ledger that blocks duplicate completed events, coalesces
 active same-conversation bursts, and dead-letters failed turns after bounded
 attempts. `cliq-channel-409` is complete: `src/status.ts` now exposes
@@ -146,7 +148,9 @@ security, session grammar, and transport behavior while OpenClaw owns the shared
 message and approval workflows.
 
 Keep native channel lifecycle handling on the shared wrapper. Do not let
-status/read failures trigger another agent turn.
+status/read failures trigger another agent turn. For real Bot webhooks, prefer
+quiet lifecycle and treat the Deluge `response.put("text", "...")` value as a
+Zoho handler ACK, not proof that OpenClaw final delivery succeeded.
 
 Diagnostic commands:
 
@@ -280,6 +284,7 @@ AI troubleshooting ladder:
 | native dispatch failure / dead-letter | webhook or polling turn diagnostics | Do not retry blindly; inspect the turn id, dispatch error, and dead-letter metadata before replay. |
 | `live_verification_pending` | channel status diagnostics | Do not claim production incident readiness until the smoke gate, public Bot callback, route preflight, and trusted agent reply evidence pass; continue with redacted diagnostic bundle evidence only. |
 | `token_refresh_rate_limited` | `zoho cliq ...` JSON error or native polling adapter error kind `rate_limited` | Record as `skip_deferred`, wait for cooldown, and avoid bursty probe loops. |
+| `dispatch_reply_rate_limited` | `ops/scripts/openclaw_cliq_live_ingress_diagnostic.sh` or no-response packet | The handler and agent dispatch worked, but final `zoho cliq send` was throttled; wait for cooldown, avoid probe bursts, and rerun one message after the quiet webhook lifecycle build is installed. |
 | Zoho endpoint `not_supported` or `inactive_appaccount_user` | `zoho cliq ...` JSON error | Record as `skip_deferred` when repeated; do not block unrelated local channel work. |
 
 Human setup runbook:

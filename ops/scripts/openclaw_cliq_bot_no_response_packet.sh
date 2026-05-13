@@ -225,6 +225,7 @@ PAYLOAD="$("$JQ_BIN" -n \
         elif ($blockers | index("no_recent_webhook_ingress")) then "fix_zoho_bot_handler_trigger"
         elif ($blockers | index("latest_webhook_not_dispatched")) then "fix_webhook_payload_or_policy"
         elif ($blockers | index("native_dispatch_missing")) then "check_openclaw_channel_dispatch"
+        elif ($blockers | index("dispatch_reply_rate_limited")) then "wait_for_zoho_rate_limit_cooldown_or_retry"
         elif ($blockers | index("dispatch_reply_not_delivered")) then "check_cliq_reply_delivery"
         elif (($blockers | index("agent_mismatch")) or ($blockers | index("agent_model_mismatch"))) then "fix_openclaw_route_binding"
         elif ($blockers | length) == 0 then "collect_trusted_reply_facts_if_needed"

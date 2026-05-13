@@ -21,6 +21,7 @@ import {
   normalizeCliqSessionToken,
   type CliqTargetChatType,
 } from "./session.js";
+import { ZohoCliqCommandError } from "./zoho-cli.js";
 
 type PluginRuntimeChannel = OpenClawPluginApi["runtime"]["channel"];
 type PluginRuntime = OpenClawPluginApi["runtime"];
@@ -32,6 +33,12 @@ type CliqAllowedSecurityDecision = Extract<
   CliqInboundSecurityDecision,
   { allowed: true }
 >;
+
+export type DeliveryFailure = {
+  stage: string;
+  reason: string;
+  errorKind?: string;
+};
 
 export type CliqNativeDispatchSource = "webhook" | "polling" | "manual";
 
@@ -55,6 +62,7 @@ export type CliqNativeDispatchResult = {
   threadId?: string;
   deliveryCount: number;
   messageIds: string[];
+  deliveryFailures: DeliveryFailure[];
   dispatchResult?: unknown;
 };
 
@@ -96,6 +104,7 @@ type CliqNativeRouteFacts = {
 type DeliveryStats = {
   count: number;
   messageIds: string[];
+  failures: DeliveryFailure[];
 };
 
 function isRecord(value: unknown): value is Record<string, unknown> {
@@ -257,6 +266,20 @@ function errorText(error: unknown): string {
   return error instanceof Error ? error.message : String(error);
 }
 
+function deliveryFailureForError(error: unknown, stage: string): DeliveryFailure {
+  if (error instanceof ZohoCliqCommandError) {
+    return {
+      stage,
+      reason: "zoho_cli_failed",
+      errorKind: error.kind,
+    };
+  }
+  return {
+    stage,
+    reason: "delivery_failed",
+  };
+}
+
 export async function dispatchCliqEventToNativeOpenClaw(
   options: CliqNativeDispatchOptions,
 ): Promise<CliqNativeDispatchResult> {
@@ -362,6 +385,7 @@ export async function dispatchCliqEventToNativeOpenClaw(
   const deliveryStats: DeliveryStats = {
     count: 0,
     messageIds: [],
+    failures: [],
   };
   let result: ChannelTurnRunResult;
   try {
@@ -458,6 +482,9 @@ export async function dispatchCliqEventToNativeOpenClaw(
               };
             },
             onError: (error, info) => {
+              deliveryStats.failures.push(
+                deliveryFailureForError(error, info.kind),
+              );
               options.logger?.warn?.(
                 `[zoho-cliq] native ${info.kind} reply delivery failed: ${errorText(
                   error,
@@ -494,6 +521,7 @@ export async function dispatchCliqEventToNativeOpenClaw(
           routeSessionKey: route.sessionKey,
           deliveryCount: deliveryStats.count,
           messageIds: deliveryStats.messageIds,
+          deliveryFailures: deliveryStats.failures,
         },
       }),
     );
@@ -520,6 +548,7 @@ export async function dispatchCliqEventToNativeOpenClaw(
           : result.routeSessionKey,
         deliveryCount: deliveryStats.count,
         messageIds: deliveryStats.messageIds,
+        deliveryFailures: deliveryStats.failures,
       },
     }),
   );
@@ -539,6 +568,7 @@ export async function dispatchCliqEventToNativeOpenClaw(
     ...(options.event.threadId ? { threadId: options.event.threadId } : {}),
     deliveryCount: deliveryStats.count,
     messageIds: deliveryStats.messageIds,
+    deliveryFailures: deliveryStats.failures,
     dispatchResult: dispatched(result) ? result.dispatchResult : undefined,
   };
 }

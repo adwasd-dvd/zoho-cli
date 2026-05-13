@@ -126,6 +126,12 @@ const summarize = (record) => {
   const event = record.event || {};
   const nativeDispatch = record.nativeDispatch || {};
   const turn = record.turn || {};
+  const deliveryFailures = Array.isArray(nativeDispatch.deliveryFailures)
+    ? nativeDispatch.deliveryFailures.filter(
+        (item) => item && typeof item === "object" && !Array.isArray(item),
+      )
+    : [];
+  const latestDeliveryFailure = deliveryFailures.at(-1) || {};
   return {
     createdAt: record.createdAt || null,
     kind: record.kind || null,
@@ -146,6 +152,24 @@ const summarize = (record) => {
     messageIdCount: Array.isArray(nativeDispatch.messageIds)
       ? nativeDispatch.messageIds.length
       : null,
+    deliveryFailureCount: deliveryFailures.length,
+    latestDeliveryFailure:
+      deliveryFailures.length > 0
+        ? {
+            stage:
+              typeof latestDeliveryFailure.stage === "string"
+                ? latestDeliveryFailure.stage
+                : null,
+            reason:
+              typeof latestDeliveryFailure.reason === "string"
+                ? latestDeliveryFailure.reason
+                : null,
+            errorKind:
+              typeof latestDeliveryFailure.errorKind === "string"
+                ? latestDeliveryFailure.errorKind
+                : null,
+          }
+        : null,
     turnState: turn.state || null,
     lifecycleDispatched:
       typeof record.lifecycle?.dispatched === "boolean"
@@ -234,16 +258,25 @@ if (env.EXPECTED_AGENT_MODEL && nativeSummary.agentModel !== env.EXPECTED_AGENT_
   blockers.push("agent_model_mismatch");
 }
 if (!Number.isFinite(nativeSummary.deliveryCount) || nativeSummary.deliveryCount < 1) {
-  blockers.push("dispatch_reply_not_delivered");
+  blockers.push(
+    nativeSummary.latestDeliveryFailure?.errorKind === "rate_limited"
+      ? "dispatch_reply_rate_limited"
+      : "dispatch_reply_not_delivered",
+  );
 }
 
 if (blockers.length > 0) {
+  const rateLimited = blockers.includes("dispatch_reply_rate_limited");
   fail(
-    blockers.includes("dispatch_reply_not_delivered")
+    rateLimited
+      ? "dispatch_reply_rate_limited"
+      : blockers.includes("dispatch_reply_not_delivered")
       ? "dispatch_reply_not_delivered"
       : "route_mismatch",
     blockers,
-    blockers.includes("dispatch_reply_not_delivered")
+    rateLimited
+      ? "wait_for_zoho_rate_limit_cooldown_or_retry"
+      : blockers.includes("dispatch_reply_not_delivered")
       ? "check_cliq_reply_delivery"
       : "fix_openclaw_route_binding",
     common,

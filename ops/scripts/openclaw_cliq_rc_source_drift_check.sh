@@ -22,6 +22,19 @@ latest_report() {
   find "$REPORT_DIR" -maxdepth 1 -type f -name "$pattern" -print 2>/dev/null | sort | tail -n 1
 }
 
+latest_ready_json_report() {
+  local pattern="$1"
+  local expected_status="$2"
+  local candidate
+  while IFS= read -r candidate; do
+    if [[ "$("$JQ_BIN" -r '.status // ""' "$candidate" 2>/dev/null || true)" == "$expected_status" ]]; then
+      printf '%s\n' "$candidate"
+      return 0
+    fi
+  done < <(find "$REPORT_DIR" -maxdepth 1 -type f -name "$pattern" -print 2>/dev/null | sort -r)
+  return 1
+}
+
 basename_or_null() {
   local path="${1:-}"
   if [[ -z "$path" ]]; then
@@ -53,6 +66,14 @@ command -v "$GIT_BIN" >/dev/null 2>&1 || {
 
 mkdir -p "$REPORT_DIR"
 
+if [[ -z "$MANIFEST_FILE" ]]; then
+  MANIFEST_FILE="$(
+    latest_ready_json_report \
+      "openclaw_cliq_rc_operator_handoff_manifest_*.json" \
+      "operator_handoff_manifest_ready" \
+      || true
+  )"
+fi
 if [[ -z "$MANIFEST_FILE" ]]; then
   MANIFEST_FILE="$(latest_report "openclaw_cliq_rc_operator_handoff_manifest_*.json")"
 fi

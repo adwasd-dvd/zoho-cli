@@ -1,32 +1,20 @@
-id: cliq-channel-508
-title: add direct Bot DM no-ingress diagnosis
-module: openclaw_cliq_channel
+id: platform-221
+title: harden RC source-drift handoff manifest selection
+module: platform
 stage: completed
 status: completed
 owner: coder
-updated_at: '2026-05-13T15:08:00Z'
+updated_at: '2026-05-13T15:32:00Z'
 execution_mode: turbo_20x
 throughput_policy_ref: ops/state/execution_policy.yml
 success_criteria:
-  - "Add a redacted `diagnosis` object to Bot no-response packets so public-callback-green/no-ingress cases identify Zoho handler save/trigger state"
-  - "Expose `handlers.directMessageRequirement` from handler-trigger packets so agents and operators know plain direct Bot DMs require Message Handler, not only Mention Handler"
-  - "Update Lane 2/3 docs and tests so a delayed literal `received` remains classified as ACK-only smoke and not OpenClaw's final answer"
-next_if_done: Ask the operator to make the Bot details Handlers list include Message Handler, re-paste/save the current Message Handler template from `docs/releases/OPENCLAW_CLIQ_BOT_HANDLER_TEMPLATES.md`, then send exactly one fresh `oldsix老六` direct message; rerun the no-response packet and expect either `diagnosis.code=zoho_bot_handler_not_posting` or active ingress.
+  - "Make `ops/scripts/openclaw_cliq_rc_source_drift_check.sh` default to the newest ready handoff manifest instead of the lexicographically last report"
+  - "Keep blocked handoff manifest drafts from causing false `source_drift_not_clean` autonomy blockers"
+  - "Update Lane 1/2/3 docs and regression tests for the ready-manifest selection behavior"
 progress:
-  - "2026-05-13T15:08:00Z added top-level `diagnosis` output to `ops/scripts/openclaw_cliq_bot_no_response_packet.sh`, including stable codes such as `zoho_bot_handler_not_posting`, `zoho_bot_handler_trigger_unverified`, `public_callback_unverified`, and `zoho_reply_rate_limited` without storing raw webhook payloads, message bodies, reply bodies, or secrets."
-  - "2026-05-13T15:08:00Z added `handlers.directMessageRequirement`, `operatorChecklist[].directBotDmRequirement`, and delayed-ACK interpretation to `ops/scripts/openclaw_cliq_handler_trigger_packet.sh`, making the direct-Bot-DM Message Handler requirement machine-readable."
-  - "2026-05-13T15:08:00Z updated Lane 2/3 docs and focused tests so public-callback-green/no-ingress now points at Zoho handler save/trigger state, especially a missing saved Message Handler for direct Bot DMs."
-  - "2026-05-13T15:12:05Z refreshed the no-publish RC artifact chain after the package-local docs changed: pack shasum `eb48b7e8b23ed1eac33a03dd452bd02a6d3f9a92`, integrity `sha512-g5w42zPihYR+Y7nJqYF1Ls+19UlaAvUuhm2xQzUcz6ts9uthE2ZdLacY9voAc6yxxP+blxPorjvUtb5RBFOkzA==`, artifact verified, Temp-HOME install smoke passed, and promotion preflight ready; no publish/tag/release/expectedIntegrity fill was performed."
-  - "2026-05-13T06:53:13Z added Deluge-native reply transport: webhook payloads with `reply_mode=deluge_response` capture the native OpenClaw final reply text and include it as the webhook response `text`, while native dispatch records only redacted reply length/captured diagnostics."
-  - "2026-05-13T06:53:13Z updated real Bot Message/Mention/Participation/Context Deluge templates to assign `webhook_response = invokeurl [...]`, return it when it contains `text`, and document that a literal delayed `received` is only a handler ACK."
-  - "2026-05-13T06:53:13Z validation passed for `npm --prefix integrations/openclaw-channel-cliq run build` and `pytest tests/test_openclaw_channel_skeleton.py -q` (21 passed); no Zoho live probe, publish, tag, npm promotion, GitHub release, expectedIntegrity fill, CRM write, or live CRM fixture was performed."
-  - "2026-05-13T07:16:32Z expanded validation passed after Lane 1/2/3 sync: `npm --prefix integrations/openclaw-channel-cliq run build`; `pytest tests/test_openclaw_channel_skeleton.py tests/test_lane3_docs.py -q` -> 33 passed; `make lint`; `.venv/bin/ruff format --check zoho_cli tests`; YAML parse for state files; and `git diff --check`."
-  - "2026-05-13T07:16:32Z no-publish RC artifact chain refreshed after the Deluge-native reply change: pack shasum `295555b784d69838f3f01590e59c9e5cf5bbde20`, integrity `sha512-bwwguPTgXvzNirjX6bUZQQjHEwkExZIPmxAaxCX+CRLz55sYsMf8GHF/QufF7JWXNAPC+vtHs53syTu5T2mpOQ==`, artifact verified, Temp-HOME install smoke passed, promotion preflight ready, and operator bundle/release notes/publish plan/handoff manifest ready; no release action was executed."
-  - "2026-05-13T07:37:39Z refreshed `ops/scripts/openclaw_cliq_handler_trigger_packet.sh` so embedded no-response guidance now exposes `delugeContract.replyMode=deluge_response`, `webhookResponseVariable=webhook_response`, and `fixedAckTextAllowedInNormalOperation=false` instead of recommending a temporary `received` ACK."
-  - "2026-05-13T07:37:39Z after reinstalling the linked local plugin and restarting the OpenClaw gateway (PID 40475), public callback smoke for `https://cliq.hpyio.com/webhooks/cliq` passed but the user-sent `你好123456` check still returned `no_recent_webhook_ingress` over a 1-hour window, so the current blocker is Zoho Bot handler save/trigger state, not the tunnel or OpenClaw gateway."
-  - "2026-05-13T07:48:29Z post-commit RC evidence after commit `4cbce2cc` reports `operator_handoff_manifest_ready`, `package_source_unchanged`, `awaiting_operator_publish_path`, and autonomy `operator_input_required`; artifact shasum remains `295555b784d69838f3f01590e59c9e5cf5bbde20`, and no publish/tag/release/expectedIntegrity fill or CRM write was performed."
-  - "2026-05-13T05:20:00Z live Bot debugging found the Deluge `received` ACK is separate from OpenClaw delivery: the latest real message reached webhook/native dispatch and generated an assistant answer, but final `zoho cliq send --chat-id ...` failed with `rate_limited`."
-  - "2026-05-13T05:18:59Z rebuilt `integrations/openclaw-channel-cliq`, linked the local plugin, restarted the OpenClaw gateway on port 18789, and verified `https://cliq.hpyio.com/webhooks/cliq` with public callback smoke."
-  - "2026-05-13T05:21:00Z focused quiet-lifecycle/rate-limit diagnostic tests passed; no publish, tag, npm promotion, GitHub release, expectedIntegrity fill, or CRM write was performed."
-  - "2026-05-13T05:24:45Z no-publish RC artifact chain refreshed: pack shasum `754afe56b33fa6551b6e8f9298b4531c88df3f3a`, integrity `sha512-LT5tTsvyQdw6b4sCCSgWzNF08kJsPx2gGdH6J2M8QVPmmqOTaV+/G+95LpVAj0Yq0J3kAwjON18tt6E0dl48Fg==`, artifact verified, Temp-HOME install smoke passed, promotion preflight ready, operator bundle/publish plan/handoff manifest ready; no release action was executed."
-next_step: Make sure the `oldsix老六` Bot details Handlers list includes Message Handler, re-paste/save the current Message Handler template from `docs/releases/OPENCLAW_CLIQ_BOT_HANDLER_TEMPLATES.md`, send one fresh direct Bot message, then rerun `ZOHO_CLIQ_PUBLIC_WEBHOOK_URL=https://cliq.hpyio.com/webhooks/cliq ops/scripts/openclaw_cliq_bot_no_response_packet.sh`.
+  - "2026-05-13T15:32:00Z added ready-status filtering to source-drift manifest discovery; when `OPENCLAW_CLIQ_HANDOFF_MANIFEST_FILE` is unset, the script now skips newer blocked drafts and selects the newest `operator_handoff_manifest_ready` report."
+  - "2026-05-13T15:32:00Z added regression coverage that creates a lexicographically newer blocked handoff manifest beside a ready manifest and verifies source drift still reports `package_source_unchanged` against the ready manifest."
+  - "2026-05-13T15:32:00Z synced Lane 2/3 docs, changelog, and state so recurring agents understand this is an autonomy false-blocker fix, not a publish or CRM live-write action."
+  - "2026-05-13T15:29:13Z refreshed no-publish package verification after the package-local docs changed: pack shasum `d3dc407303ca8796657134d99821f983714ffbc1`, integrity `sha512-3pCaI85N1vIqsFklEGkuXkZuenDRL4U7GIbxn+b+2tvX/w59BLKxG+xB+Nmr13IOL7MF76rge+4RnDPvlCkM4w==`, artifact verified, Temp-HOME install smoke passed, and promotion preflight returned `ready_for_operator_publish`."
+next_if_done: Rerun the autonomy packet; it should no longer block on stale blocked handoff manifests and should return the real operator-input boundary for publish-path/CRM fixture inputs.
+next_step: Rerun `ZOHO_CLI_RC_AUTONOMY_RUN_ID=<run-id> ops/scripts/zoho_cli_rc_autonomy_packet.sh`, then continue with bot handler-trigger debugging or other agent-safe work from `ops/state/work_queue.yml`.

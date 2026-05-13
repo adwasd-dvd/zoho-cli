@@ -235,6 +235,10 @@ After sync, ensure the AI user follows:
   - run `ops/scripts/openclaw_cliq_rc_operator_handoff_manifest.sh` after the publish plan is ready
   - require `operator_handoff_manifest_ready`, `nextAction=operator_review_handoff_manifest`, no blockers, indexed report filenames, `operator_publish_plan_ready`, and `trusted_reply_recorded`
   - treat `publish_plan_permission_unexpected`, `operator_bundle_file_mismatch`, and `release_notes_draft_file_mismatch` as stop-before-publish blockers
+- native channel RC source drift:
+  - run `ops/scripts/openclaw_cliq_rc_source_drift_check.sh` before relying on an older operator handoff
+  - when no explicit manifest path is set, it selects the newest ready handoff manifest and skips blocked drafts
+  - require `package_source_unchanged`; rebuild the RC artifact if package files changed or are dirty
 - native channel compatibility maintenance:
   - read `docs/releases/OPENCLAW_CLIQ_CHANNEL_COMPATIBILITY.md` before changing host/plugin API floors
   - keep `>=2026.5.3-1` as the v0.4 floor unless a newer OpenClaw SDK is genuinely required

@@ -1567,6 +1567,58 @@ def test_openclaw_cliq_rc_source_drift_check_allows_non_package_head_drift(
     assert json.loads(report_file.read_text()) == payload
 
 
+def test_openclaw_cliq_rc_source_drift_check_skips_latest_blocked_manifest(
+    tmp_path: Path,
+) -> None:
+    fake_git = _write_fake_git_for_openclaw_cliq_source_drift(tmp_path)
+    ready_manifest = (
+        tmp_path
+        / "openclaw_cliq_rc_operator_handoff_manifest_20260513T151300Z-ready-v3.json"
+    )
+    ready_manifest.write_text(
+        _write_openclaw_cliq_handoff_manifest_for_source_drift(tmp_path).read_text(),
+        encoding="utf-8",
+    )
+    blocked_manifest = (
+        tmp_path
+        / "openclaw_cliq_rc_operator_handoff_manifest_20260513T151300Z-ready.json"
+    )
+    blocked_manifest.write_text(
+        json.dumps(
+            {
+                "status": "blocked",
+                "blockers": ["release_notes_draft_unsafe"],
+                "source": {"gitCommit": "BAD"},
+            }
+        ),
+        encoding="utf-8",
+    )
+    report_file = tmp_path / "source-drift.json"
+
+    result = subprocess.run(
+        ["bash", str(OPENCLAW_CLIQ_RC_SOURCE_DRIFT_CHECK_SCRIPT)],
+        cwd=REPO_ROOT,
+        env={
+            **os.environ,
+            "GIT_BIN": str(fake_git),
+            "OPENCLAW_CLIQ_SOURCE_DRIFT_REPORT_DIR": str(tmp_path),
+            "OPENCLAW_CLIQ_SOURCE_DRIFT_REPORT_FILE": str(report_file),
+            "OPENCLAW_CLIQ_SOURCE_DRIFT_RUN_ID": "unit-source-drift-ready-latest",
+        },
+        capture_output=True,
+        text=True,
+        check=False,
+    )
+
+    output = f"{result.stdout}\n{result.stderr}"
+    assert result.returncode == 0, output
+    payload = json.loads(result.stdout)
+    assert payload["status"] == "package_source_unchanged"
+    assert payload["source"]["manifestFile"] == ready_manifest.name
+    assert payload["source"]["sourceCommit"] == "SRC"
+    assert payload["source"]["manifestStatus"] == "operator_handoff_manifest_ready"
+
+
 def test_openclaw_cliq_rc_source_drift_check_blocks_package_drift(
     tmp_path: Path,
 ) -> None:

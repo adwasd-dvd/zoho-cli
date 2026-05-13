@@ -177,7 +177,9 @@ Use this skill as the default operating contract for an OpenClaw agent acting li
   `package_source_unchanged` and treat `package_source_drift_detected`,
   `package_worktree_dirty`, `package_index_dirty`, or
   `package_untracked_files` as a signal to rebuild the RC artifact before
-  operator publish. The check is read-only and does not publish, tag, or fill
+  operator publish. Without an explicit manifest path, the check selects the
+  newest ready handoff manifest and skips newer blocked drafts. The check is
+  read-only and does not publish, tag, or fill
   `openclaw.install.expectedIntegrity`.
   If the operator selects a publish path, rerun
   `ops/scripts/openclaw_cliq_rc_publish_plan.sh` with

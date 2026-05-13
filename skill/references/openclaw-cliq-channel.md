@@ -115,6 +115,9 @@ operator bundle, safe release-notes draft, publish plan, artifact facts, report
 filenames, source commit, and false agent permission flags. It reports
 `operator_handoff_manifest_ready` only when the handoff packet is internally
 consistent.
+`ops/scripts/openclaw_cliq_rc_source_drift_check.sh` defaults to the newest
+ready handoff manifest and skips newer blocked drafts, so recurring agents do
+not mistake a stale failed manifest attempt for package source drift.
 
 The v0.4 plugin targets OpenClaw `>=2026.5.3-1`. The upgraded global
 `OpenClaw 2026.5.3-1` host is suitable for native plugin checks; use

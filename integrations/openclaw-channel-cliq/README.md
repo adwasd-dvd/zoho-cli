@@ -69,7 +69,10 @@ source commit, and false agent permission flags before reporting
 `operator_handoff_manifest_ready`.
 `ops/scripts/openclaw_cliq_rc_source_drift_check.sh` keeps the handoff manifest
 current after later repo commits by reporting `package_source_unchanged` only
-when `integrations/openclaw-channel-cliq/` did not drift.
+when `integrations/openclaw-channel-cliq/` did not drift. When no explicit
+`OPENCLAW_CLIQ_HANDOFF_MANIFEST_FILE` is provided, it selects the newest
+`operator_handoff_manifest_ready` report and skips newer blocked drafts so
+recurring autonomy checks do not stop on stale failed manifest attempts.
 `ops/scripts/openclaw_cliq_rc_operator_selection_review.sh` validates a selected
 operator path without running it, and
 `ops/scripts/openclaw_cliq_rc_operator_decision_packet.sh` is the preferred

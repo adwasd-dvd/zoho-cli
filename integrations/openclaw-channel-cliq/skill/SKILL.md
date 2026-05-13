@@ -116,7 +116,9 @@ Use this skill when operating through the native OpenClaw Zoho Cliq channel.
 - If later commits land before publish, run
   `ops/scripts/openclaw_cliq_rc_source_drift_check.sh`; require
   `package_source_unchanged`, and rebuild the RC artifact if package files are
-  dirty or changed since the handoff manifest.
+  dirty or changed since the handoff manifest. If no manifest file is supplied,
+  the guard chooses the newest `operator_handoff_manifest_ready` report and
+  ignores newer blocked manifest drafts.
 - For recurring publish-path handoff checks, prefer
   `ops/scripts/openclaw_cliq_rc_operator_decision_packet.sh`. It returns
   `awaiting_operator_publish_path` until the operator chooses

@@ -974,3 +974,12 @@
   - platform-219
   agent_action: update the recurring automation prompt when queue state, blockers, or next safe milestones change materially
   completion_signal: heartbeat instructions point at `ops/state/work_queue.yml`, autonomy packet, and operator prompt instead of stale free-text status
+- id: platform-221
+  title: harden RC source-drift handoff manifest selection
+  module: platform
+  stage: completed
+  priority: high
+  depends_on:
+  - platform-220
+  agent_action: make source-drift default discovery choose the newest ready handoff manifest and skip newer blocked drafts
+  completion_signal: autonomy checks no longer false-block on stale blocked handoff manifests; source drift reports the ready manifest unless an explicit manifest path is supplied; no-publish package verification was refreshed with shasum `d3dc407303ca8796657134d99821f983714ffbc1`

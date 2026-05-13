@@ -1,9 +1,9 @@
 platform:
   priority: 0
   status: completed
-  phase: rc_heartbeat_work_queue_synced
+  phase: rc_autonomy_source_drift_manifest_selection_hardened
   target_release: cross-lane-rc
-  current_milestone: platform-220-heartbeat-work-queue-sync
+  current_milestone: platform-221-source-drift-ready-manifest-selection
   blockers: []
 
 mail:

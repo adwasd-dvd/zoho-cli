@@ -1,10 +1,11 @@
-last_run_at: "2026-05-13T23:05:30Z"
+last_run_at: "2026-05-13T23:23:28Z"
 last_result: passing
-current_focus: cliq-channel-515-post-minimal-handler-evidence
+current_focus: cliq-channel-516-deluge-invokeurl-terminator
 suites:
   unit:
     status: passing
     notes:
+      - "cliq-channel-516 validation passed at 2026-05-13T23:23:28Z: generated and documented Bot handler templates now close assigned `invokeurl [...]` Deluge tasks with `];` after the operator hit Zoho Creator `Expecting ';' at the end of statement`; direct Markdown render confirms the `];` terminator; focused template/contract/markdown tests -> 5 passed. No live Bot probe, publish, tag, npm promotion, GitHub release, expectedIntegrity fill, CRM write, or live CRM fixture was performed."
       - "cliq-channel-515 read-only evidence refresh passed at 2026-05-13T23:05:30Z: autonomy returned `nextOperatorActionId=save_openclaw_cliq_bot_message_handler`; source drift `20260513T230530Z-cliq514-postcommit-source` returned `package_source_unchanged` and `packageDrift.packageChangedSinceManifest=false`; decision packet `20260513T230530Z-cliq514-postcommit-decision` returned `awaiting_operator_publish_path`; operator prompt `20260513T230530Z-cliq514-postcommit-prompt --md` led with the Message Handler save/recheck request. No live Bot probe, publish, tag, npm promotion, GitHub release, expectedIntegrity fill, CRM write, or live CRM fixture was performed."
       - "cliq-channel-514 validation passed at 2026-05-13T22:45:30Z: direct Bot Message Handler template/renderer now omit optional `attachments`, `mentions`, `links`, and `location` variables that may be undefined before `invokeurl`; shell syntax for `ops/scripts/openclaw_cliq_bot_handler_template_render.sh`; focused Message Handler template/operator-prompt/markdown tests -> 6 passed. Local gateway stayed healthy but public callback smoke intermittently returned Cloudflare `530`, so no fresh live Bot probe was run. No publish, tag, npm promotion, GitHub release, expectedIntegrity fill, CRM write, or live CRM fixture was performed."
       - "cliq-channel-513 validation passed at 2026-05-13T21:02:00Z: shell syntax for `ops/scripts/zoho_cli_rc_autonomy_packet.sh` and `ops/scripts/zoho_cli_rc_operator_action_prompt.sh`; focused autonomy/operator-action/RC checklist/Lane 3/markdown tests -> 9 passed; direct autonomy and operator-action JSON runs returned `nextOperatorActionId=save_openclaw_cliq_bot_message_handler`; `make lint`, Ruff format/check for touched tests, YAML parse, and `git diff --check` passed. No live Bot probe, publish, tag, npm promotion, GitHub release, expectedIntegrity fill, CRM write, or live CRM fixture was performed."

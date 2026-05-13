@@ -423,6 +423,7 @@ def test_openclaw_cliq_bot_handler_templates_cover_real_handlers():
         'msg.put("senderId",sender_id);',
         'msg.put("chatId",chat_id);',
         "body:payload.toString()",
+        "];",
         "Deluge Map-string bodies",
         'reason:"invalid_payload"',
         "ZOHO_CLIQ_WEBHOOK_SECRET",

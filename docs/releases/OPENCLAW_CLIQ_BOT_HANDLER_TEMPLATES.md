@@ -76,7 +76,7 @@ webhook_response = invokeurl
   type :POST
   body:payload.toString()
   headers:{"Content-Type":"application/json","X-Cliq-Webhook-Secret":"<rotated-secret>"}
-]
+];
 
 if(webhook_response != null && webhook_response.containKey("text") && webhook_response.get("text") != null)
 {
@@ -127,7 +127,7 @@ webhook_response = invokeurl
   type :POST
   body:payload.toString()
   headers:{"Content-Type":"application/json","X-Cliq-Webhook-Secret":"<rotated-secret>"}
-]
+];
 
 if(webhook_response != null && webhook_response.containKey("text") && webhook_response.get("text") != null)
 {
@@ -176,7 +176,7 @@ webhook_response = invokeurl
   type :POST
   body:payload.toString()
   headers:{"Content-Type":"application/json","X-Cliq-Webhook-Secret":"<rotated-secret>"}
-]
+];
 
 if(webhook_response != null && webhook_response.containKey("text") && webhook_response.get("text") != null)
 {
@@ -221,7 +221,7 @@ webhook_response = invokeurl
   type :POST
   body:payload.toString()
   headers:{"Content-Type":"application/json","X-Cliq-Webhook-Secret":"<rotated-secret>"}
-]
+];
 
 if(webhook_response != null && webhook_response.containKey("text") && webhook_response.get("text") != null)
 {

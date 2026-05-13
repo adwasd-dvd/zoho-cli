@@ -928,6 +928,15 @@
   - cliq-channel-514
   agent_action: "run read-only source-drift, decision, autonomy, and operator-prompt evidence after the minimal handler template slice; do not rerun live Bot probes until the operator saves the handler and sends one fresh direct message"
   completion_signal: "postcommit source drift `20260513T230530Z-cliq514-postcommit-source` reports `package_source_unchanged`, decision `20260513T230530Z-cliq514-postcommit-decision` still reports `awaiting_operator_publish_path`, and the operator prompt still leads with `save_openclaw_cliq_bot_message_handler`"
+- id: cliq-channel-516
+  title: fix Deluge invokeurl task terminator in Bot handler templates
+  module: openclaw_cliq_channel
+  stage: completed
+  priority: high
+  depends_on:
+  - cliq-channel-514
+  agent_action: "terminate every generated assigned `invokeurl [...]` Deluge task with `];` so the Zoho Creator syntax checker accepts the paste block"
+  completion_signal: "operator confirmed the Message Handler editor accepted the block after adding `];`; renderer/docs/tests now lock the terminator for Message, Mention, Participation, and Context handlers"
 - id: cliq-channel-496
   title: collect operator native Cliq RC publish-path selection
   module: openclaw_cliq_channel

@@ -5779,6 +5779,7 @@ def test_openclaw_cliq_bot_handler_template_render_outputs_copyable_deluge(
         message_deluge
     )
     assert "webhook_response = invokeurl" in message_deluge
+    assert "];" in message_deluge
     assert "return webhook_response;" in message_deluge
     assert 'response.put("text","received");' not in message_deluge
     assert payload["reportFiles"]["templateRender"] == report_file.name

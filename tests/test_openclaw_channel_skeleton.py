@@ -135,6 +135,7 @@ def test_openclaw_cliq_bot_templates_use_deluge_native_reply_mode() -> None:
 
     assert 'payload.put("reply_mode","deluge_response");' in template
     assert "webhook_response = invokeurl" in template
+    assert "];" in template
     assert 'webhook_response.containKey("text")' in template
     assert "return webhook_response;" in template
     assert 'response.put("text","received");' in template

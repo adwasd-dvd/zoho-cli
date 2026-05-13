@@ -1,21 +1,21 @@
-id: cliq-channel-515
-title: record post-minimal-handler no-publish RC evidence
+id: cliq-channel-516
+title: fix Deluge invokeurl task terminator in Bot handler templates
 module: openclaw_cliq_channel
 stage: completed
 status: completed
 owner: coder
-updated_at: '2026-05-13T23:05:30Z'
+updated_at: '2026-05-13T23:23:28Z'
 execution_mode: deep_milestone_batch
 throughput_policy_ref: ops/state/execution_policy.yml
 success_criteria:
-  - "Run read-only postcommit source-drift and decision evidence after the minimal Message Handler slice"
-  - "Confirm package source remains unchanged and no pack/artifact/install smoke rerun is needed"
-  - "Confirm the top operator handoff remains `save_openclaw_cliq_bot_message_handler`"
-  - "Preserve non-executable publish/write boundaries and avoid extra live Bot probes"
+  - "Fix the generated Deluge syntax that Zoho Creator rejected at the assigned `invokeurl` line"
+  - "Apply the same `];` terminator to Message, Mention, Participation, and Context handler templates"
+  - "Lock the terminator in focused tests so future renders stay Zoho-pasteable"
+  - "Update Lane 1/2/3 state without running publish/write actions or extra live Bot probes"
 progress:
-  - "Autonomy packet returned `nextOperatorActionId=save_openclaw_cliq_bot_message_handler` and kept publish/write actions non-executable for agents."
-  - "Source drift `20260513T230530Z-cliq514-postcommit-source` reported `package_source_unchanged`, `repoChangedSinceManifest=true`, and `packageDrift.packageChangedSinceManifest=false`."
-  - "Decision packet `20260513T230530Z-cliq514-postcommit-decision` still reports `awaiting_operator_publish_path` with all publish actions operator-only."
-  - "Operator prompt `20260513T230530Z-cliq514-postcommit-prompt --md` leads with the saved Message Handler handoff."
+  - "User's Zoho Creator screenshot showed `Line No - 23 Expecting ';' at the end of statement` for `webhook_response = invokeurl`."
+  - "Updated generated and documented handler templates so assigned `invokeurl [...]` blocks close with `];`."
+  - "Added focused assertions that rendered/docs templates include the Deluge task terminator."
+  - "Operator confirmed the paste/save path succeeded after this syntax fix."
 next_if_done: Wait for the operator to paste/save the rendered Message Handler and send exactly one fresh direct `oldsix老六` Bot message, then run a single short-window no-response packet.
-next_step: "Ask the operator to run `ZOHO_CLIQ_PUBLIC_WEBHOOK_URL=https://cliq.hpyio.com/webhooks/cliq ops/scripts/openclaw_cliq_bot_handler_template_render.sh --md --handlers message`, paste/save the simplified Message Handler, stabilize the public callback if smoke returns Cloudflare `530`, then send one fresh direct Bot message before rerunning `ZOHO_CLIQ_INGRESS_LOOKBACK_SECONDS=600 ops/scripts/openclaw_cliq_bot_no_response_packet.sh` exactly once."
+next_step: "After one fresh direct Bot message from the operator, run exactly one `ZOHO_CLIQ_INGRESS_LOOKBACK_SECONDS=600 ops/scripts/openclaw_cliq_bot_no_response_packet.sh` check. If the Bot still does not answer and public callback smoke reports Cloudflare `530`, stabilize the tunnel before further Zoho live probes."

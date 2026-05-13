@@ -76,6 +76,10 @@
   undefined for plain Bot DMs. The Message Handler now posts only `message`,
   `user`, and `chat` plus `reply_mode=deluge_response`, reducing the chance
   that Deluge aborts before `invokeurl`.
+- Fixed the generated Deluge handler templates to terminate assigned
+  `invokeurl [...]` tasks with `];`, matching Zoho Creator syntax validation and
+  preventing the Message Handler editor error `Expecting ';' at the end of
+  statement`.
 
 - Extended the RC autonomy packet with redacted `operatorActionRequests` so recurring agents can ask for exactly the missing operator publish path, CRM fixture cleanup plan, and CRM fixture payload file without reading raw payloads, cleanup text, local paths, secrets, or lower-level report internals.
 - Recorded post-platform-215 source-drift, operator decision, and autonomy-packet evidence: pushed operator-action-request commit `9fac452e` still reports `package_source_unchanged`, all decision-packet `reportsReady=true`, and autonomy `operator_input_required` with the same three redacted operator request ids, while no publish/tag/release/expectedIntegrity fill or live Zoho write was performed.

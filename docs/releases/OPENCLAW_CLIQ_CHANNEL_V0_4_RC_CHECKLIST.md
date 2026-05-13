@@ -166,6 +166,9 @@ active, `nextOperatorActionId=save_openclaw_cliq_bot_message_handler`.
 does not reference optional Deluge variables such as `attachments`, `mentions`,
 `links`, or `location`; this avoids a Zoho-side handler exception before
 `invokeurl` when plain direct DMs only expose `message`, `user`, and `chat`.
+`cliq-channel-516` fixes the generated Deluge snippets to close assigned
+`invokeurl [...]` tasks with `];`, matching Zoho Creator's syntax checker and
+preventing the Message Handler editor from stopping at the webhook call.
 
 SDK contract source of truth:
 `docs/architecture/OPENCLAW_CLIQ_CHANNEL_SDK_CONTRACT.md`.

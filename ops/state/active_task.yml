@@ -1,19 +1,22 @@
-id: cliq-channel-500
-title: rerun native Cliq package verification only when source drift requires it
+id: cliq-channel-510
+title: render no-secret Bot Message Handler paste block
 module: openclaw_cliq_channel
 stage: completed
 status: completed
 owner: coder
-updated_at: '2026-05-13T16:25:19Z'
-execution_mode: turbo_20x
+updated_at: '2026-05-13T17:55:50Z'
+execution_mode: deep_milestone_batch
 throughput_policy_ref: ops/state/execution_policy.yml
 success_criteria:
-  - "Use the source-drift guard before any repeat pack/artifact/install smoke"
-  - "Record whether package source changed after the latest no-publish handoff manifest"
-  - "Avoid unnecessary package rebuilds when only docs/state files changed"
+  - "Render exact Zoho Message Handler Deluge templates without printing or storing the real webhook secret"
+  - "Make the Bot handler operator prompt point at the template renderer"
+  - "Keep direct Bot DM troubleshooting on the Message Handler save/trigger path before any fresh live probe"
+  - "Update Lane 1/2/3 docs, tests, and RC checklist state"
 progress:
-  - "2026-05-13T16:25:59Z ran `OPENCLAW_CLIQ_SOURCE_DRIFT_RUN_ID=20260513T162519Z-package-recheck-source ops/scripts/openclaw_cliq_rc_source_drift_check.sh`."
-  - "2026-05-13T16:25:59Z source drift returned `package_source_unchanged`, no blockers, `repoChangedFileCount=8`, `packageDrift.packageChangedSinceManifest=false`, and no package dirty/index/untracked files against the `20260513T154319Z-handler-prompt` handoff manifest."
-  - "2026-05-13T16:25:59Z skipped pack/artifact/install smoke because package source did not change and the operator did not ask for a rebuild."
-next_if_done: Return to the normal RC work queue; next unblocked work requires either operator input or a new safe local/docs/test slice.
-next_step: Keep using source-drift as the first package recheck; only rerun package verification when `integrations/openclaw-channel-cliq/` changes or the operator explicitly asks.
+  - "Added `ops/scripts/openclaw_cliq_bot_handler_template_render.sh`, a read-only JSON/Markdown renderer for Message/Mention/Participation/Context Deluge handlers."
+  - "The renderer reports `handler_template_render_ready`, fills `ZOHO_CLIQ_PUBLIC_WEBHOOK_URL` into the template when set, and leaves `X-Cliq-Webhook-Secret` as `<paste-ZOHO_CLIQ_WEBHOOK_SECRET>` so the real secret is never printed or persisted."
+  - "Updated `ops/scripts/openclaw_cliq_bot_handler_operator_prompt.sh --md` so the `install_message_handler` request includes the exact render command before the operator pastes/saves the Zoho Message Handler."
+  - "Synced README, Bot handler template runbook, RC checklist, Lane 3 skill docs, OpenClaw guide, changelog, and queue state."
+  - "Validation passed: shell syntax, direct no-secret Markdown render, focused operator-prompt/template-render/Lane 3/RC checklist/markdown tests, `make lint`, Ruff format/check, YAML parse, and `git diff --check`."
+next_if_done: Wait for the operator to paste/save the rendered Message Handler and send exactly one fresh direct `oldsix老六` Bot message, then run a single short-window no-response packet.
+next_step: "Ask the operator to run `ops/scripts/openclaw_cliq_bot_handler_template_render.sh --md --handlers message`, paste/save the rendered Message Handler in Zoho, send one fresh direct Bot message, then rerun `ops/scripts/openclaw_cliq_bot_no_response_packet.sh` with a short lookback."

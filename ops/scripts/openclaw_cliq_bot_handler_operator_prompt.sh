@@ -104,6 +104,7 @@ PAYLOAD="$("$JQ_BIN" -n \
   def mdline_request:
     "- `" + .id + "`: " + .summary
     + (if (.template // null) != null then " Template: `" + .template + "`." else "" end)
+    + (if (.renderCommand // null) != null then " Render: `" + .renderCommand + "`." else "" end)
     + (if (.command // null) != null then " Command: `" + .command + "`." else "" end);
 
   ($packet[0] // {}) as $packet
@@ -138,6 +139,13 @@ PAYLOAD="$("$JQ_BIN" -n \
         summary: "Paste and save the Message Handler so plain direct Bot DMs can trigger OpenClaw.",
         zohoVisibleSignal: ($directRequirement.botDetailsVisibleSignal // "Handlers list includes Message Handler"),
         template: "docs/releases/OPENCLAW_CLIQ_BOT_HANDLER_TEMPLATES.md#message-handler",
+        renderCommand: (
+          if $publicWebhookUrl == "" then
+            "ops/scripts/openclaw_cliq_bot_handler_template_render.sh --md --handlers message"
+          else
+            "ZOHO_CLIQ_PUBLIC_WEBHOOK_URL=" + $publicWebhookUrl + " ops/scripts/openclaw_cliq_bot_handler_template_render.sh --md --handlers message"
+          end
+        ),
         requiredReplyMode: "deluge_response",
         requiredReturn: "return webhook_response when it contains a non-null text key",
         agentMayExecute: false

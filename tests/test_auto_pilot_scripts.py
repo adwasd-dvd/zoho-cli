@@ -44,6 +44,9 @@ OPENCLAW_CLIQ_HANDLER_TRIGGER_PACKET_SCRIPT = (
 OPENCLAW_CLIQ_BOT_HANDLER_OPERATOR_PROMPT_SCRIPT = (
     REPO_ROOT / "ops" / "scripts" / "openclaw_cliq_bot_handler_operator_prompt.sh"
 )
+OPENCLAW_CLIQ_BOT_HANDLER_TEMPLATE_RENDER_SCRIPT = (
+    REPO_ROOT / "ops" / "scripts" / "openclaw_cliq_bot_handler_template_render.sh"
+)
 OPENCLAW_CLIQ_HASH_REF_SCRIPT = (
     REPO_ROOT / "ops" / "scripts" / "openclaw_cliq_hash_ref.sh"
 )
@@ -5559,6 +5562,10 @@ def test_openclaw_cliq_bot_handler_operator_prompt_renders_direct_dm_handoff(
     assert install_request["template"] == (
         "docs/releases/OPENCLAW_CLIQ_BOT_HANDLER_TEMPLATES.md#message-handler"
     )
+    assert install_request["renderCommand"] == (
+        "ZOHO_CLIQ_PUBLIC_WEBHOOK_URL=https://cliq.example.test/webhooks/cliq "
+        "ops/scripts/openclaw_cliq_bot_handler_template_render.sh --md --handlers message"
+    )
     assert install_request["requiredReplyMode"] == "deluge_response"
     assert install_request["agentMayExecute"] is False
     assert "ZOHO_CLIQ_INGRESS_LOOKBACK_SECONDS=600" in payload["requests"][3]["command"]
@@ -5611,8 +5618,138 @@ def test_openclaw_cliq_bot_handler_operator_prompt_markdown_output(
     assert result.stdout.startswith("### OpenClaw Cliq Bot handler handoff")
     assert "install_message_handler" in result.stdout
     assert "Message Handler" in result.stdout
+    assert "openclaw_cliq_bot_handler_template_render.sh --md --handlers message" in (
+        result.stdout
+    )
     assert "handler_operator_prompt_ready" in result.stdout
     assert str(tmp_path) not in result.stdout
+
+
+def test_openclaw_cliq_bot_handler_template_render_outputs_copyable_deluge(
+    tmp_path: Path,
+) -> None:
+    report_file = tmp_path / "handler-template.json"
+    secret = "unit-render-secret"
+
+    result = subprocess.run(
+        [
+            "bash",
+            str(OPENCLAW_CLIQ_BOT_HANDLER_TEMPLATE_RENDER_SCRIPT),
+            "--handlers",
+            "message,mention",
+        ],
+        cwd=REPO_ROOT,
+        env={
+            **os.environ,
+            "ZOHO_CLIQ_PUBLIC_WEBHOOK_URL": "https://cliq.example.test/webhooks/cliq",
+            "ZOHO_CLIQ_WEBHOOK_SECRET": secret,
+            "ZOHO_CLIQ_HANDLER_TEMPLATE_FILE": str(report_file),
+            "ZOHO_CLIQ_HANDLER_TEMPLATE_RUN_ID": "unit-template-render",
+        },
+        capture_output=True,
+        text=True,
+        check=False,
+    )
+
+    output = f"{result.stdout}\n{result.stderr}"
+    assert result.returncode == 0, output
+    assert secret not in output
+    assert str(tmp_path) not in result.stdout
+    payload = json.loads(result.stdout)
+    assert payload["kind"] == "openclaw_cliq_bot_handler_template_render"
+    assert payload["status"] == "handler_template_render_ready"
+    assert payload["blockers"] == []
+    assert payload["publicWebhook"]["configured"] is True
+    assert payload["publicWebhook"]["templateUrl"] == (
+        "https://cliq.example.test/webhooks/cliq"
+    )
+    assert payload["secret"]["source"] == "ZOHO_CLIQ_WEBHOOK_SECRET"
+    assert payload["secret"]["presentInCurrentEnv"] is True
+    assert payload["secret"]["secretValueStored"] is False
+    assert payload["handlers"]["selected"] == ["message", "mention"]
+
+    templates = {item["handler"]: item for item in payload["templates"]}
+    message_deluge = templates["message"]["deluge"]
+    assert 'payload.put("reply_mode","deluge_response");' in message_deluge
+    assert 'msg.put("text",message.toString());' in message_deluge
+    assert 'headers:{"Content-Type":"application/json",' in message_deluge
+    assert '"X-Cliq-Webhook-Secret":"<paste-ZOHO_CLIQ_WEBHOOK_SECRET>"}' in (
+        message_deluge
+    )
+    assert "webhook_response = invokeurl" in message_deluge
+    assert "return webhook_response;" in message_deluge
+    assert 'response.put("text","received");' not in message_deluge
+    assert payload["reportFiles"]["templateRender"] == report_file.name
+    assert json.loads(report_file.read_text()) == payload
+    assert secret not in report_file.read_text()
+
+
+def test_openclaw_cliq_bot_handler_template_render_markdown_redacts_secret(
+    tmp_path: Path,
+) -> None:
+    result = subprocess.run(
+        [
+            "bash",
+            str(OPENCLAW_CLIQ_BOT_HANDLER_TEMPLATE_RENDER_SCRIPT),
+            "--md",
+            "--handlers",
+            "message",
+        ],
+        cwd=REPO_ROOT,
+        env={
+            **os.environ,
+            "ZOHO_CLIQ_PUBLIC_WEBHOOK_URL": "https://cliq.example.test/webhooks/cliq",
+            "ZOHO_CLIQ_WEBHOOK_SECRET": "unit-md-secret",
+            "ZOHO_CLIQ_HANDLER_TEMPLATE_REPORT_DIR": str(tmp_path),
+            "ZOHO_CLIQ_HANDLER_TEMPLATE_RUN_ID": "unit-template-render-md",
+        },
+        capture_output=True,
+        text=True,
+        check=False,
+    )
+
+    output = f"{result.stdout}\n{result.stderr}"
+    assert result.returncode == 0, output
+    assert result.stdout.startswith("### OpenClaw Cliq Bot handler templates")
+    assert "handler_template_render_ready" in result.stdout
+    assert "```deluge" in result.stdout
+    assert "Message Handler" in result.stdout
+    assert "<paste-ZOHO_CLIQ_WEBHOOK_SECRET>" in result.stdout
+    assert "unit-md-secret" not in output
+    assert str(tmp_path) not in result.stdout
+
+
+def test_openclaw_cliq_bot_handler_template_render_blocks_invalid_target(
+    tmp_path: Path,
+) -> None:
+    result = subprocess.run(
+        [
+            "bash",
+            str(OPENCLAW_CLIQ_BOT_HANDLER_TEMPLATE_RENDER_SCRIPT),
+            "--handlers",
+            "message,call",
+        ],
+        cwd=REPO_ROOT,
+        env={
+            **os.environ,
+            "ZOHO_CLIQ_PUBLIC_WEBHOOK_URL": "http://cliq.example.test/webhooks/cliq",
+            "ZOHO_CLIQ_HANDLER_TEMPLATE_REPORT_DIR": str(tmp_path),
+            "ZOHO_CLIQ_HANDLER_TEMPLATE_RUN_ID": "unit-template-render-blocked",
+        },
+        capture_output=True,
+        text=True,
+        check=False,
+    )
+
+    output = f"{result.stdout}\n{result.stderr}"
+    assert result.returncode == 1, output
+    payload = json.loads(result.stdout)
+    assert payload["status"] == "blocked"
+    assert payload["blockers"] == [
+        "public_webhook_url_requires_https",
+        "unsupported_handler_target:call",
+    ]
+    assert payload["nextAction"] == "set_https_public_webhook_url"
 
 
 def test_openclaw_cliq_hash_ref_hashes_stdin_without_echoing_raw_id() -> None:

@@ -122,6 +122,10 @@ not mistake a stale failed manifest attempt for package source drift.
 handler-trigger packet into a compact direct-DM operator handoff. Use it when
 the Bot details page still needs Message Handler installation or save
 confirmation before the next single live no-response check.
+`ops/scripts/openclaw_cliq_bot_handler_template_render.sh --md --handlers message`
+then renders `handler_template_render_ready` plus the exact Deluge Message
+Handler block to paste, with the configured public URL filled and the webhook
+secret kept as `<paste-ZOHO_CLIQ_WEBHOOK_SECRET>`.
 
 The v0.4 plugin targets OpenClaw `>=2026.5.3-1`. The upgraded global
 `OpenClaw 2026.5.3-1` host is suitable for native plugin checks; use
@@ -336,6 +340,10 @@ Human setup checkpoints:
   `zoho cliq chats` plus `zoho cliq context`.
 - Real Zoho Bot handler edits use the Deluge templates and placeholders in
   `docs/releases/OPENCLAW_CLIQ_BOT_HANDLER_TEMPLATES.md`.
+  For direct Bot DMs, prefer rendering the exact paste block with
+  `ops/scripts/openclaw_cliq_bot_handler_template_render.sh --md --handlers message`
+  so the public `/webhooks/cliq` URL is filled while the real
+  `ZOHO_CLIQ_WEBHOOK_SECRET` value stays out of logs and reports.
 - If public callback smoke is verified but the no-response packet reports
   `no_recent_webhook_ingress`, inspect the embedded `handlerTrigger` subpacket;
   the top-level `diagnosis.code=zoho_bot_handler_not_posting` means the public

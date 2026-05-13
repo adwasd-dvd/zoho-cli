@@ -161,6 +161,7 @@ def test_openclaw_cliq_channel_rc_checklist_has_cut_contract():
         "cliq-channel-493",
         "cliq-channel-494",
         "cliq-channel-495",
+        "cliq-channel-510",
         "platform-214",
         "platform-215",
         "platform-216",
@@ -180,6 +181,8 @@ def test_openclaw_cliq_channel_rc_checklist_has_cut_contract():
         "ops/scripts/zoho_cli_rc_autonomy_packet.sh",
         "ops/scripts/zoho_cli_rc_operator_action_prompt.sh",
         "ops/scripts/openclaw_cliq_bot_handler_operator_prompt.sh",
+        "ops/scripts/openclaw_cliq_bot_handler_template_render.sh",
+        "handler_template_render_ready",
         "operatorActionRequests",
         "commandPreview",
         "unblocks",
@@ -421,6 +424,8 @@ def test_openclaw_cliq_bot_handler_templates_cover_real_handlers():
         "Welcome, Incoming Webhook, Call, and Menu handlers",
         "cliq-channel-421",
         "processCliqWebhookPayload()",
+        "openclaw_cliq_bot_handler_template_render.sh --md",
+        "handler_template_render_ready",
     ]
 
     for marker in required:

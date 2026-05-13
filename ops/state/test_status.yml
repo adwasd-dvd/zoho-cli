@@ -1,10 +1,11 @@
-last_run_at: "2026-05-13T16:25:19Z"
+last_run_at: "2026-05-13T17:55:50Z"
 last_result: passing
-current_focus: cliq-channel-500-source-drift-no-repack
+current_focus: cliq-channel-510-handler-template-render
 suites:
   unit:
     status: passing
     notes:
+      - "cliq-channel-510 validation passed at 2026-05-13T17:55:50Z: shell syntax for the template renderer/operator prompt; direct `--md` render with `ZOHO_CLIQ_PUBLIC_WEBHOOK_URL=https://cliq.hpyio.com/webhooks/cliq` returned `handler_template_render_ready` and did not print the test secret; focused operator-prompt/template-render/Lane 3/RC checklist/markdown/template-doc tests -> 11 passed; `make lint`, Ruff format/check, YAML parse, and `git diff --check` passed. No live Bot probe, publish, tag, npm promotion, GitHub release, expectedIntegrity fill, CRM write, or live CRM fixture was performed."
       - "cliq-channel-500 validation passed at 2026-05-13T16:25:19Z: source drift run `20260513T162519Z-package-recheck-source` reported `package_source_unchanged` and `packageDrift.packageChangedSinceManifest=false`; docs/state now record that pack/artifact/install smoke was skipped because package source did not change; focused OpenClaw channel/Lane 3/markdown tests -> 21 passed; `make lint`, YAML parse, and `git diff --check` passed."
       - "cliq-channel-499 validation passed at 2026-05-13T16:05:19Z: operator publish handoff, README, changelog, and Lane 1 state were synced to the `20260513T154319Z-handler-prompt` no-publish evidence baseline; focused OpenClaw channel/Lane 3/markdown tests -> 21 passed; `make lint`, YAML parse, and `git diff --check` passed. No live Bot probe, publish, tag, npm promotion, GitHub release, expectedIntegrity fill, CRM write, or live CRM fixture was performed."
       - "cliq-channel-509 validation passed at 2026-05-13T15:57:21Z: shell syntax for `ops/scripts/openclaw_cliq_bot_handler_operator_prompt.sh` and handler-trigger packet; direct `--md` run returned `handler_operator_prompt_ready`; focused operator-prompt/Lane 3/RC checklist/markdown tests -> 23 passed; `make lint`, Ruff format/check, YAML parse, and `git diff --check` passed; no-publish pack/artifact/install/promotion passed with shasum `10a5eb6cafb3343bcec8253663745d9e883e81b8`, integrity `sha512-e4jefPwV73aZbp472i1KuWSHLYSagZm+dtf0mswSdsjafg9vmc5uozrq0zjMpziffaBFresUD1tkqZljfsMY1g==`, artifact verified, install smoke passed, and `ready_for_operator_publish`. The script is read-only and ran no live Bot probe."

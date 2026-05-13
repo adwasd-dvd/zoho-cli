@@ -49,6 +49,13 @@
   against the `20260513T154319Z-handler-prompt` manifest, so recurring agents
   should skip pack/artifact/install smoke unless package files drift or the
   operator asks.
+- Added a no-secret Bot handler template renderer for the current real
+  `oldsix老六` direct-DM blocker:
+  `ops/scripts/openclaw_cliq_bot_handler_template_render.sh --md --handlers
+  message` reports `handler_template_render_ready` and prints the exact Deluge
+  Message Handler paste block with `reply_mode=deluge_response`, the configured
+  public `/webhooks/cliq` URL, and `<paste-ZOHO_CLIQ_WEBHOOK_SECRET>` instead of
+  the real secret. The existing operator prompt now points to that renderer.
 
 - Extended the RC autonomy packet with redacted `operatorActionRequests` so recurring agents can ask for exactly the missing operator publish path, CRM fixture cleanup plan, and CRM fixture payload file without reading raw payloads, cleanup text, local paths, secrets, or lower-level report internals.
 - Recorded post-platform-215 source-drift, operator decision, and autonomy-packet evidence: pushed operator-action-request commit `9fac452e` still reports `package_source_unchanged`, all decision-packet `reportsReady=true`, and autonomy `operator_input_required` with the same three redacted operator request ids, while no publish/tag/release/expectedIntegrity fill or live Zoho write was performed.

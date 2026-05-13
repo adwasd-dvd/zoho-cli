@@ -874,6 +874,15 @@
   - cliq-channel-508
   agent_action: run `ops/scripts/openclaw_cliq_bot_handler_operator_prompt.sh --md` when direct Bot DM diagnostics point at Zoho handler save/trigger state
   completion_signal: prompt emits `handler_operator_prompt_ready`, direct-DM Message Handler visible signal, template section, public callback recheck, one-fresh-message rule, and no-response command without raw payloads, message text, reply text, local paths, or secrets; no-publish package verification is refreshed for tarball shasum `10a5eb6cafb3343bcec8253663745d9e883e81b8`
+- id: cliq-channel-510
+  title: render no-secret Bot Message Handler paste block
+  module: openclaw_cliq_channel
+  stage: completed
+  priority: high
+  depends_on:
+  - cliq-channel-509
+  agent_action: run `ops/scripts/openclaw_cliq_bot_handler_template_render.sh --md --handlers message` after the Bot handler operator prompt when the operator needs the exact Zoho Message Handler Deluge block
+  completion_signal: template renderer emits `handler_template_render_ready`, fills the configured `/webhooks/cliq` URL, keeps the secret as `<paste-ZOHO_CLIQ_WEBHOOK_SECRET>`, updates the operator prompt render command, and stores no raw payloads, message text, reply text, local paths, or secrets
 - id: cliq-channel-496
   title: collect operator native Cliq RC publish-path selection
   module: openclaw_cliq_channel

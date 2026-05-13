@@ -28,11 +28,11 @@ cliq:
 openclaw_cliq_channel:
   priority: 3
   status: blocked
-  phase: package_recheck_clean_pending_handler_install
+  phase: bot_handler_template_render_ready_pending_handler_install
   target_release: v0.4.0
-  current_milestone: cliq-channel-500-source-drift-no-repack
+  current_milestone: cliq-channel-510-handler-template-render
   blockers:
-    - "real `oldsix老六` Bot details Handlers list must include Message Handler, then the Message Handler must be re-pasted/saved with `reply_mode=deluge_response` and `return webhook_response` before the next direct Bot message can prove visible native replies"
+    - "real `oldsix老六` Bot details Handlers list must include Message Handler, then the rendered Message Handler from `ops/scripts/openclaw_cliq_bot_handler_template_render.sh --md --handlers message` must be re-pasted/saved with `reply_mode=deluge_response` and `return webhook_response` before the next direct Bot message can prove visible native replies"
     - "if the next direct Bot message still reports `diagnosis.code=zoho_bot_handler_not_posting` or `no_recent_webhook_ingress`, debug Zoho handler trigger/save state before OAuth or tunnel delivery"
 
 crm:

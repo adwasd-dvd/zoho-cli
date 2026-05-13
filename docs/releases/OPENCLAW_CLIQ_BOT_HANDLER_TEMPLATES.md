@@ -3,7 +3,7 @@
 This runbook gives operator-copyable Deluge templates for connecting a real
 Zoho Cliq Bot to the native OpenClaw `cliq` channel webhook at `/webhooks/cliq`.
 
-Updated: `2026-05-13T06:35:00Z`.
+Updated: `2026-05-13T17:55:50Z`.
 
 Official references:
 
@@ -257,12 +257,18 @@ one native OpenClaw turn and one Cliq reply.
    requirement, public callback recheck, one-fresh-message rule, and no-response
    packet command without storing raw payloads, message text, reply text, local
    paths, or secrets.
-6. Paste one handler template into Zoho Cliq and save it.
+6. Run `ops/scripts/openclaw_cliq_bot_handler_template_render.sh --md --handlers
+   message` to print the exact Message Handler Deluge block to paste. The
+   renderer reports `handler_template_render_ready`, fills the configured
+   public webhook URL when `ZOHO_CLIQ_PUBLIC_WEBHOOK_URL` is set, and keeps the
+   secret as `<paste-ZOHO_CLIQ_WEBHOOK_SECRET>` so the real secret is never
+   stored in stdout or report JSON.
+7. Paste one handler template into Zoho Cliq and save it.
    For direct Bot DMs, the Bot details page must visibly list **Message
    Handler** before testing.
-7. Run `ops/scripts/openclaw_cliq_live_smoke.sh`.
-8. Send one trusted Message or Mention from Cliq.
-9. Verify one accepted webhook event, one native OpenClaw turn, one Cliq reply,
+8. Run `ops/scripts/openclaw_cliq_live_smoke.sh`.
+9. Send one trusted Message or Mention from Cliq.
+10. Verify one accepted webhook event, one native OpenClaw turn, one Cliq reply,
    and no duplicate dispatch in the turn ledger.
 
 If the Bot replies with a delayed literal `received`, the handler is still using

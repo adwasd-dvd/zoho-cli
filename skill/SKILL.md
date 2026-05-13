@@ -41,7 +41,10 @@ Use this skill as the default operating contract for an OpenClaw agent acting li
 - Native Cliq agent dispatch is now implemented for accepted webhook/polling
   events, and redacted audit/diagnostic bundles are now available; use
   `docs/releases/OPENCLAW_CLIQ_BOT_HANDLER_TEMPLATES.md` before editing a real
-  Zoho Bot handler, use `ops/scripts/openclaw_cliq_live_smoke.sh` for the
+  Zoho Bot handler, use
+  `ops/scripts/openclaw_cliq_bot_handler_template_render.sh --md --handlers message`
+  to render the exact direct-DM Message Handler paste block without printing the
+  real webhook secret, use `ops/scripts/openclaw_cliq_live_smoke.sh` for the
   controlled gate, treat `token_refresh_rate_limited` and
   `dispatch_reply_rate_limited` as cooldown signals, and do not claim production
   incident readiness until public Bot callback
@@ -213,8 +216,12 @@ Use this skill as the default operating contract for an OpenClaw agent acting li
   human-readable stdout is desired; default stdout remains JSON.
 - For real `oldsix老六` Bot direct-message handler fixes, use
   `ops/scripts/openclaw_cliq_bot_handler_operator_prompt.sh --md` to generate
-  the compact human handoff. It points at the Message Handler template and the
-  one-message/no-response recheck flow without storing raw message text,
+  the compact human handoff, then use
+  `ops/scripts/openclaw_cliq_bot_handler_template_render.sh --md --handlers message`
+  for `handler_template_render_ready` and the exact Deluge block to
+  paste. The renderer fills the public `/webhooks/cliq` URL when configured,
+  leaves the secret as `<paste-ZOHO_CLIQ_WEBHOOK_SECRET>`, and the handoff keeps
+  the one-message/no-response recheck flow without storing raw message text,
   payloads, reply text, local paths, or secrets.
 - For CRM SDK work, run `zoho crm sdk-status` first. Treat
   `zohocrmsdk8_0==5.0.0` as optional `zoho-cli[crm-sdk]` readiness, keep the

@@ -128,6 +128,10 @@ Follow the stack from the architecture plan:
     `docs/releases/OPENCLAW_CLIQ_BOT_HANDLER_TEMPLATES.md` provides Deluge
     templates for Message, Mention, Participation, and Context handlers with
     placeholder webhook URL and rotated secret values)
+21a. `cliq-channel-510` Bot handler template renderer (complete;
+     `ops/scripts/openclaw_cliq_bot_handler_template_render.sh --md --handlers message`
+     renders `handler_template_render_ready` plus the exact direct-DM Message
+     Handler paste block without printing or storing the real webhook secret)
 22. `cliq-channel-421` real Bot handler runtime contract coverage (complete;
     webhook runtime tests process Message, Mention, Participation, and Context
     shaped payloads through native normalization/security/dedupe/lifecycle/ledger
@@ -304,23 +308,30 @@ response = Map();
 webhook_url = "https://<your-tunnel-or-gateway>/webhooks/cliq";
 payload = Map();
 payload.put("handler","mention");
+payload.put("reply_mode","deluge_response");
 payload.put("message",message);
 payload.put("user",user);
 payload.put("chat",chat);
 payload.put("mentions",mentions);
-invokeurl
+webhook_response = invokeurl
 [
   url :webhook_url
   type :POST
   body:payload.toString()
   headers:{"Content-Type":"application/json","X-Cliq-Webhook-Secret":"<rotated-secret>"}
 ]
-response.put("text","received");
+if(webhook_response != null && webhook_response.containKey("text") && webhook_response.get("text") != null)
+{
+  return webhook_response;
+}
 return response;
 ```
 
 The intake accepts Message, Mention, Participation, and Context handlers for
-RC. Rotate any exposed webhook secret before live use.
+RC. Rotate any exposed webhook secret before live use. For direct Bot DMs, use
+`ops/scripts/openclaw_cliq_bot_handler_template_render.sh --md --handlers message`
+to render the current Message Handler block; a fixed `received` ACK is
+only a smoke signal and is not normal operation.
 
 ## Human install UX checklist
 

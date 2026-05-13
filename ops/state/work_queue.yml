@@ -919,6 +919,15 @@
   - cliq-channel-513
   agent_action: "render the direct-DM Message Handler with only `message`, `user`, and `chat`, avoiding optional Deluge variables that can be undefined before `invokeurl`"
   completion_signal: "`ops/scripts/openclaw_cliq_bot_handler_template_render.sh --md --handlers message` omits `attachments`, `mentions`, `links`, and `location` from the Message Handler while keeping `reply_mode=deluge_response` and `return webhook_response`"
+- id: cliq-channel-515
+  title: record post-minimal-handler no-publish RC evidence
+  module: openclaw_cliq_channel
+  stage: completed
+  priority: medium
+  depends_on:
+  - cliq-channel-514
+  agent_action: "run read-only source-drift, decision, autonomy, and operator-prompt evidence after the minimal handler template slice; do not rerun live Bot probes until the operator saves the handler and sends one fresh direct message"
+  completion_signal: "postcommit source drift `20260513T230530Z-cliq514-postcommit-source` reports `package_source_unchanged`, decision `20260513T230530Z-cliq514-postcommit-decision` still reports `awaiting_operator_publish_path`, and the operator prompt still leads with `save_openclaw_cliq_bot_message_handler`"
 - id: cliq-channel-496
   title: collect operator native Cliq RC publish-path selection
   module: openclaw_cliq_channel

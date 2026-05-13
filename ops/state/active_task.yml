@@ -1,19 +1,19 @@
-id: crm-038
-title: improve local-only CRM fixture examples and validation handoff
-module: crm
+id: platform-220
+title: keep RC heartbeat and work-queue state synchronized
+module: platform
 stage: completed
 status: completed
 owner: coder
-updated_at: '2026-05-13T00:25:10Z'
+updated_at: '2026-05-13T01:22:46Z'
 execution_mode: turbo_20x
 throughput_policy_ref: ops/state/execution_policy.yml
 success_criteria:
-  - "Add a no-write CRM fixture local precheck examples doc that operators can use to copy/edit payload and cleanup templates outside the repo"
-  - "Link the new examples from Lane 2 CRM write-surface docs and Lane 3 skill/OpenClaw docs"
-  - "Keep normal `zoho crm upsert --execute` and live CRM fixture execution blocked for agents"
-next_if_done: Return to the RC work queue; `cliq-channel-501` still needs operator visual confirmation that the latest `oldsix老六` reply was visible in the same Bot chat.
+  - "Keep the recurring heartbeat instructions aligned with `ops/state/work_queue.yml` after crm-038"
+  - "Record that the first go/stop check is the RC autonomy packet and operator asks come from the operator-action prompt"
+  - "Preserve publish/tag/npm/GitHub release/integrity-fill and CRM live-write boundaries"
+next_if_done: Wait for operator visual confirmation on `cliq-channel-501`; otherwise continue with RC autonomy packet checks and only agent-safe no-write follow-ups.
 progress:
-  - "2026-05-13T00:18:46Z added `docs/releases/CRM_V0_5_FIXTURE_LOCAL_PRECHECK_EXAMPLES.md` with copy/edit template commands, cleanup-plan shape, local wrapper recheck command, expected no-write states, and common blocker fixes."
-  - "Linked the local precheck examples from `docs/architecture/CRM_WRITE_SURFACE_CONTRACT.md`, `skill/SKILL.md`, `skill/references/command-playbook.md`, `integrations/openclaw/LANE3_AI_USER_GUIDE.md`, and `integrations/openclaw/SKILL_INDEX.md`."
-  - "2026-05-13T00:25:10Z focused validation passed: Lane 3 required paths plus markdown update -> 2 passed; `make lint`, Ruff format/check for `tests/test_lane3_docs.py`, YAML parse, and `git diff --check` passed."
-next_step: Commit and push crm-038, then return to `cliq-channel-501` visible Bot reply confirmation or the RC autonomy packet flow.
+  - "2026-05-13T00:37:46Z heartbeat automation prompt was updated after crm-038 to point at the latest work queue, autonomy packet, operator-action prompt, and current blockers."
+  - "2026-05-13T00:38:07Z autonomy gate `20260513T003746Z-post-crm038-heartbeat` returned `operator_input_required` with `package_source_unchanged`, `ready_for_operator_publish`, `awaiting_operator_publish_path`, missing CRM facts `cleanup_plan` and `fixture_payload_file`, and no agent-executable publish/write action."
+  - "2026-05-13T01:22:46Z platform-220 state sync records the heartbeat/work-queue alignment; no publish, tag, npm promotion, GitHub release, expectedIntegrity fill, Zoho call, or CRM write was performed."
+next_step: Ask the operator to confirm whether the latest `oldsix老六` reply was visible in the same Bot chat; if yes, close `cliq-channel-501`, otherwise continue reply-delivery debugging.

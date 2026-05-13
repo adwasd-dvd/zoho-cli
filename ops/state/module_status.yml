@@ -1,9 +1,9 @@
 platform:
   priority: 0
   status: completed
-  phase: rc_work_queue_normalized
+  phase: rc_heartbeat_work_queue_synced
   target_release: cross-lane-rc
-  current_milestone: platform-219-normalize-rc-work-queue
+  current_milestone: platform-220-heartbeat-work-queue-sync
   blockers: []
 
 mail:

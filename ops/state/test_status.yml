@@ -1,10 +1,11 @@
-last_run_at: "2026-05-13T00:25:10Z"
+last_run_at: "2026-05-13T01:22:46Z"
 last_result: passing
-current_focus: crm-038-local-precheck-examples
+current_focus: platform-220-heartbeat-work-queue-sync
 suites:
   unit:
     status: passing
     notes:
+      - "platform-220 heartbeat/work-queue sync validation passed at 2026-05-13T01:22:46Z: post-crm038 autonomy gate `20260513T003746Z-post-crm038-heartbeat` returned `operator_input_required`, `package_source_unchanged`, `ready_for_operator_publish`, `awaiting_operator_publish_path`, and no agent-executable publish/write action; worktree stayed clean after the gate."
       - "crm-038 local precheck examples validation passed at 2026-05-13T00:25:10Z: Lane 3 required paths plus markdown update -> 2 passed; `make lint`, Ruff format/check for `tests/test_lane3_docs.py`, YAML parse for work_queue/active_task/module_status/project/test_status, and `git diff --check` passed. No Zoho calls, CRM writes, publish, tag, npm promotion, GitHub release, or expectedIntegrity fill were performed."
       - "cliq-channel-501 fresh post-fix Bot direct diagnostic passed at 2026-05-13T00:04:11Z: `ops/scripts/openclaw_cliq_bot_no_response_packet.sh` returned `ingress_active`, public callback verified, webhook ingress and native dispatch were both present in the short window, `agentId=zoho-employee-test`, `deliveryCount=1`, and `messageIdCount=1`; awaiting operator visual confirmation that the reply appeared in the same Bot chat."
       - "cliq-channel-501 focused validation passed at 2026-05-12T23:11:03Z: `ruff format zoho_cli/cliq.py`; `ruff format --check zoho_cli tests`; `ruff check zoho_cli tests`; TypeScript package build for `integrations/openclaw-channel-cliq`; focused chat-id/channel/native adapter tests -> 6 passed in 0.93s."

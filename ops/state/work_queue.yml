@@ -904,7 +904,7 @@
 - id: platform-220
   title: keep RC heartbeat and work-queue state synchronized
   module: platform
-  stage: pending
+  stage: completed
   priority: medium
   depends_on:
   - platform-219

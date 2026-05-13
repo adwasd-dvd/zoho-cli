@@ -200,6 +200,11 @@ payload to one `Leads` record, and write a selector-specific cleanup plan. The
 smoke summary reports `payloadTemplatePlaceholders.emailCount`, and live mode fails with
 `fixture_payload_placeholder_email` if template email markers remain.
 
+For a no-write copy/edit walkthrough, cleanup-plan shape, local recheck command,
+and common blocker fixes, use
+`docs/releases/CRM_V0_5_FIXTURE_LOCAL_PRECHECK_EXAMPLES.md`. It is only a
+preparation aid and does not grant live CRM fixture execution.
+
 Preflight the copied payload locally before any Zoho-backed smoke:
 
 ```bash

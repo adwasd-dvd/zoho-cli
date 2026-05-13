@@ -50,6 +50,7 @@ def test_lane3_required_paths_exist() -> None:
         REPO_ROOT / "docs" / "releases" / "CRM_V0_5_OPERATOR_FIXTURE_EVIDENCE.md",
         REPO_ROOT / "docs" / "releases" / "CRM_V0_5_FIXTURE_PAYLOAD_TEMPLATE.json",
         REPO_ROOT / "docs" / "releases" / "CRM_V0_5_FIXTURE_CLEANUP_PLAN_TEMPLATE.md",
+        REPO_ROOT / "docs" / "releases" / "CRM_V0_5_FIXTURE_LOCAL_PRECHECK_EXAMPLES.md",
         REPO_ROOT / "ops" / "scripts" / "crm_fixture_payload_preflight.sh",
         REPO_ROOT / "ops" / "scripts" / "crm_fixture_operator_readiness_bundle.sh",
         REPO_ROOT / "ops" / "scripts" / "crm_fixture_operator_packet.sh",

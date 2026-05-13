@@ -1,24 +1,19 @@
-id: cliq-channel-501
-title: fix Bot direct chat reply routing for native Cliq channel
-module: openclaw_cliq_channel
-stage: blocked
-status: blocked
+id: crm-038
+title: improve local-only CRM fixture examples and validation handoff
+module: crm
+stage: completed
+status: completed
 owner: coder
-updated_at: '2026-05-13T00:04:11Z'
+updated_at: '2026-05-13T00:25:10Z'
 execution_mode: turbo_20x
 throughput_policy_ref: ops/state/execution_policy.yml
 success_criteria:
-  - "Explain why a real `oldsix` Bot direct message from another account reached OpenClaw but did not visibly reply in the original Cliq Bot chat"
-  - "Add a first-class `zoho cliq send --chat-id` destination for text and local media sends"
-  - "Update the native OpenClaw Cliq channel adapter so synthetic Bot direct events route `chat:<id>` through `--chat-id` instead of channel-id fallback"
-  - "Synchronize Lane 2/3 docs, Lane 1 state, tests, and generated plugin dist output"
-  - "Reinstall/restart the local OpenClaw Cliq plugin and recheck the public Bot callback path before asking for a fresh live Bot message"
-next_if_done: Reinstall the local OpenClaw Cliq plugin, restart the gateway, run callback/status checks, then ask the operator to send one fresh `oldsix` Bot direct message to verify the visible reply.
+  - "Add a no-write CRM fixture local precheck examples doc that operators can use to copy/edit payload and cleanup templates outside the repo"
+  - "Link the new examples from Lane 2 CRM write-surface docs and Lane 3 skill/OpenClaw docs"
+  - "Keep normal `zoho crm upsert --execute` and live CRM fixture execution blocked for agents"
+next_if_done: Return to the RC work queue; `cliq-channel-501` still needs operator visual confirmation that the latest `oldsix老六` reply was visible in the same Bot chat.
 progress:
-  - "2026-05-12T23:11:03Z diagnosed the live no-response report: recent Bot webhook ingress was active, native dispatch completed, and OpenClaw recorded one delivery, but synthetic Bot direct replies were sent via `chat:<id>` mapped to `zoho cliq send --channel-id` because the CLI lacked a `--chat-id` send destination."
-  - "Added `chat_id` support to `ZohoCliqClient.send_message` and `send_local_file_message`, exposed `zoho cliq send --chat-id`, and updated OpenClaw channel send args so `chat:<id>` maps to `--chat-id`."
-  - "Focused validation passed for chat-id text sends, chat-id local voice sends, existing channel sends, native adapter send args, Ruff format/check, and TypeScript build."
-  - "2026-05-12T23:15:53Z linked the local plugin into OpenClaw, restarted the gateway on port 18789, verified `https://cliq.hpyio.com/webhooks/cliq` public callback auth/reachability, and confirmed `zoho cliq send --chat-id` returned `204 ok` against the recorded Bot direct chat route."
-  - "A fresh 5-minute no-response packet after the fix returned `no_recent_webhook_ingress`, so final visible-reply confirmation is waiting on one new operator-sent Bot direct message."
-  - "2026-05-13T00:04:11Z fresh post-fix Bot direct message arrived: public callback verified, webhook ingress was active, native dispatch reached `zoho-employee-test`, and OpenClaw recorded `deliveryCount=1` / `messageIdCount=1` for correlation `cliq-cc770c4c0028b457`."
-next_step: Ask the operator to confirm whether the latest `oldsix老六` reply was visible in the same Bot chat; if yes, mark cliq-channel-501 complete and return to the RC work queue/autonomy packet flow.
+  - "2026-05-13T00:18:46Z added `docs/releases/CRM_V0_5_FIXTURE_LOCAL_PRECHECK_EXAMPLES.md` with copy/edit template commands, cleanup-plan shape, local wrapper recheck command, expected no-write states, and common blocker fixes."
+  - "Linked the local precheck examples from `docs/architecture/CRM_WRITE_SURFACE_CONTRACT.md`, `skill/SKILL.md`, `skill/references/command-playbook.md`, `integrations/openclaw/LANE3_AI_USER_GUIDE.md`, and `integrations/openclaw/SKILL_INDEX.md`."
+  - "2026-05-13T00:25:10Z focused validation passed: Lane 3 required paths plus markdown update -> 2 passed; `make lint`, Ruff format/check for `tests/test_lane3_docs.py`, YAML parse, and `git diff --check` passed."
+next_step: Commit and push crm-038, then return to `cliq-channel-501` visible Bot reply confirmation or the RC autonomy packet flow.

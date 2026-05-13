@@ -37,8 +37,8 @@ openclaw_cliq_channel:
 crm:
   priority: 4
   status: in_progress
-  phase: v0_5_operator_fixture_inputs_required
+  phase: v0_5_local_fixture_examples_ready
   target_release: v0.5.0
-  current_milestone: crm-034-fixture-payload-and-cleanup-plan-inputs
+  current_milestone: crm-038-local-precheck-examples
   blockers:
     - "operator-provided dedicated CRM fixture payload and cleanup approval required before Zoho-backed dry-run smoke and live fixture execution"

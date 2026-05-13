@@ -366,6 +366,11 @@ the dedicated `Leads` fixture target, and a selector category such as fixture
 email, record id, duplicate field, idempotency key, or payload digest. Agents
 may use the completed text only for local preflight and dry-run readiness checks.
 
+`docs/releases/CRM_V0_5_FIXTURE_LOCAL_PRECHECK_EXAMPLES.md` gives the
+operator-safe copy/edit flow, cleanup-plan shape, local recheck command, and
+common blocker fixes. It is a no-write aid only; it contains placeholders and
+does not approve live CRM fixture execution.
+
 Before live mode, the operator must copy both templates outside the repo, keep
 the payload to one `Leads` record, replace `Email` with a dedicated test address,
 and provide a cleanup plan that can remove or update only the resulting fixture

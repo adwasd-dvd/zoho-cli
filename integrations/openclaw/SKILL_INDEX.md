@@ -180,6 +180,9 @@ CRM SDK planning:
   copy/edit cleanup-plan starter with action, target, selector category, and
   agent/operator boundary guidance; copy and edit outside the repo before any
   live fixture mode)
+- `docs/releases/CRM_V0_5_FIXTURE_LOCAL_PRECHECK_EXAMPLES.md` (`crm-038`:
+  no-write copy/edit walkthrough with cleanup-plan shape, local recheck command,
+  and common fixture blocker fixes)
 - `docs/architecture/CRM_WRITE_SURFACE_CONTRACT.md`
 
 GitHub intake:

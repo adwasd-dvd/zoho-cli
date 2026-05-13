@@ -311,6 +311,9 @@ After sync, ensure the AI user follows:
     matching cleanup-plan starter; replace all placeholders with a dedicated
     operator-owned CRM test address plus selector-specific cleanup text before
     live mode
+  - use `docs/releases/CRM_V0_5_FIXTURE_LOCAL_PRECHECK_EXAMPLES.md` as the
+    no-write copy/edit walkthrough for cleanup-plan shape, local rechecks, and
+    common blocker fixes
   - verify `payloadTemplatePlaceholders.emailCount=0`; live smoke blocks with
     `fixture_payload_placeholder_email` if template email markers remain
   - run `zoho crm fixture-evidence --summary-file <summary.json>` after smoke

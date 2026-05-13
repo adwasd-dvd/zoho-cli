@@ -251,7 +251,10 @@ Use this skill as the default operating contract for an OpenClaw agent acting li
   `docs/releases/CRM_V0_5_FIXTURE_CLEANUP_PLAN_TEMPLATE.md` only as a copy/edit
   starting point for the cleanup plan; both contain placeholders and must be
   replaced with a dedicated operator-owned test email plus selector-specific
-  cleanup text before any live fixture gates are considered. Run
+  cleanup text before any live fixture gates are considered. Use
+  `docs/releases/CRM_V0_5_FIXTURE_LOCAL_PRECHECK_EXAMPLES.md` as the no-write
+  operator preparation aid for the copy/edit flow, cleanup-plan shape, local
+  recheck command, and common blocker fixes. Run
   `ops/scripts/crm_fixture_payload_preflight.sh` first; require
   `status=payload_preflight_ready`, `payload.placeholderEmailCount=0`,
   `cleanup.present=true`, `cleanup.qualityReady=true`, and

@@ -895,7 +895,7 @@
 - id: crm-038
   title: improve local-only CRM fixture examples and validation handoff
   module: crm
-  stage: pending
+  stage: completed
   priority: medium
   depends_on:
   - crm-033

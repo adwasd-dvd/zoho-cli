@@ -4,7 +4,7 @@ module: openclaw_cliq_channel
 stage: completed
 status: completed
 owner: coder
-updated_at: '2026-05-13T07:37:39Z'
+updated_at: '2026-05-13T07:48:29Z'
 execution_mode: turbo_20x
 throughput_policy_ref: ops/state/execution_policy.yml
 success_criteria:
@@ -21,6 +21,7 @@ progress:
   - "2026-05-13T07:16:32Z no-publish RC artifact chain refreshed after the Deluge-native reply change: pack shasum `295555b784d69838f3f01590e59c9e5cf5bbde20`, integrity `sha512-bwwguPTgXvzNirjX6bUZQQjHEwkExZIPmxAaxCX+CRLz55sYsMf8GHF/QufF7JWXNAPC+vtHs53syTu5T2mpOQ==`, artifact verified, Temp-HOME install smoke passed, promotion preflight ready, and operator bundle/release notes/publish plan/handoff manifest ready; no release action was executed."
   - "2026-05-13T07:37:39Z refreshed `ops/scripts/openclaw_cliq_handler_trigger_packet.sh` so embedded no-response guidance now exposes `delugeContract.replyMode=deluge_response`, `webhookResponseVariable=webhook_response`, and `fixedAckTextAllowedInNormalOperation=false` instead of recommending a temporary `received` ACK."
   - "2026-05-13T07:37:39Z after reinstalling the linked local plugin and restarting the OpenClaw gateway (PID 40475), public callback smoke for `https://cliq.hpyio.com/webhooks/cliq` passed but the user-sent `你好123456` check still returned `no_recent_webhook_ingress` over a 1-hour window, so the current blocker is Zoho Bot handler save/trigger state, not the tunnel or OpenClaw gateway."
+  - "2026-05-13T07:48:29Z post-commit RC evidence after commit `4cbce2cc` reports `operator_handoff_manifest_ready`, `package_source_unchanged`, `awaiting_operator_publish_path`, and autonomy `operator_input_required`; artifact shasum remains `295555b784d69838f3f01590e59c9e5cf5bbde20`, and no publish/tag/release/expectedIntegrity fill or CRM write was performed."
   - "2026-05-13T05:20:00Z live Bot debugging found the Deluge `received` ACK is separate from OpenClaw delivery: the latest real message reached webhook/native dispatch and generated an assistant answer, but final `zoho cliq send --chat-id ...` failed with `rate_limited`."
   - "2026-05-13T05:18:59Z rebuilt `integrations/openclaw-channel-cliq`, linked the local plugin, restarted the OpenClaw gateway on port 18789, and verified `https://cliq.hpyio.com/webhooks/cliq` with public callback smoke."
   - "2026-05-13T05:21:00Z focused quiet-lifecycle/rate-limit diagnostic tests passed; no publish, tag, npm promotion, GitHub release, expectedIntegrity fill, or CRM write was performed."

@@ -9,15 +9,15 @@ Current baseline:
 - Version: `0.4.0-rc.1`
 - Tarball: `adwasd-openclaw-zoho-cliq-0.4.0-rc.1.tgz`
 - Local pack integrity:
-  `sha512-tOZ8qARh62jh8fQKQ/f1ClihYwofq59qjJXnI9TDdMyZrjjG0V+4pzV6SqJ1a8wnoBmoLkqFhCL+gH6p/fGrfg==`
-- Local pack shasum: `9fca0282ff0c6bfeec6d6158d1bb6fab3f63bcc5`
+  `sha512-e4jefPwV73aZbp472i1KuWSHLYSagZm+dtf0mswSdsjafg9vmc5uozrq0zjMpziffaBFresUD1tkqZljfsMY1g==`
+- Local pack shasum: `10a5eb6cafb3343bcec8253663745d9e883e81b8`
 - Trusted reply evidence: `trusted_reply_recorded`
 - Local artifact check: `artifact_verified`
 - Local OpenClaw install smoke: `install_smoke_passed`
 - Handoff manifest:
-  `openclaw_cliq_rc_operator_handoff_manifest_20260512T055900Z-ingress-diagnostic-rc-restore-manifest.json`
+  `openclaw_cliq_rc_operator_handoff_manifest_20260513T154319Z-handler-prompt-manifest.json`
 - Latest source drift guard:
-  `openclaw_cliq_rc_source_drift_check_20260512T152614Z-platform213-postcommit-decision.json`
+  `openclaw_cliq_rc_source_drift_check_20260513T154319Z-handler-prompt-source.json`
 
 ## Non-automated approval boundary
 
@@ -129,11 +129,11 @@ Expected local pre-publish posture:
   `20260512T110613Z-github-release-selection` reports
   `operator_publish_selection_ready`, previews `gh release create ...`, and
   keeps `selectedPublishPathReview.agentMayExecute=false`
-- the latest post-platform-213 lint-gate decision packet
-  `20260512T152614Z-platform213-postcommit-decision` returns
+- the latest post-Bot-handler-prompt decision packet
+  `20260513T154319Z-handler-prompt-decision` returns
   `awaiting_operator_publish_path`, `package_source_unchanged`,
-  `sourceDrift.headCommit=ae45c69fe26d89401f119c94591ef617d922f55f`,
-  `repoChangedFileCount=35`, all `reportsReady=true`, and
+  `sourceDrift.headCommit=c634097218a6ccf038ac276546ce9a797f88db99`,
+  `repoChangedFileCount=0`, all `reportsReady=true`, and
   `agentMayExecuteSelectedPath=false`
 - the previous post-CRM next-command-preview docs/state decision packet
   `20260512T143844Z-crm-next-command-preview-postcommit-decision` returns

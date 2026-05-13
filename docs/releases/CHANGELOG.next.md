@@ -35,6 +35,15 @@
   `eb48b7e8b23ed1eac33a03dd452bd02a6d3f9a92`, artifact/install/promotion
   checks pass, and publish/tag/release/integrity-fill actions remain
   operator-only.
+- Added a Bot handler operator prompt for the current `oldsix老六` direct-DM
+  blocker: `ops/scripts/openclaw_cliq_bot_handler_operator_prompt.sh --md`
+  renders the Message Handler save/check handoff, public callback recheck, one
+  fresh message rule, and no-response rerun command without storing raw
+  payloads, message text, reply text, local paths, or secrets. The follow-up
+  no-publish package refresh now has shasum
+  `10a5eb6cafb3343bcec8253663745d9e883e81b8`, artifact/install/promotion
+  checks pass, and publish/tag/release/integrity-fill actions remain
+  operator-only.
 
 - Extended the RC autonomy packet with redacted `operatorActionRequests` so recurring agents can ask for exactly the missing operator publish path, CRM fixture cleanup plan, and CRM fixture payload file without reading raw payloads, cleanup text, local paths, secrets, or lower-level report internals.
 - Recorded post-platform-215 source-drift, operator decision, and autonomy-packet evidence: pushed operator-action-request commit `9fac452e` still reports `package_source_unchanged`, all decision-packet `reportsReady=true`, and autonomy `operator_input_required` with the same three redacted operator request ids, while no publish/tag/release/expectedIntegrity fill or live Zoho write was performed.

@@ -908,12 +908,12 @@
 - id: cliq-channel-499
   title: refresh no-publish native Cliq RC release notes and artifact checklist hygiene
   module: openclaw_cliq_channel
-  stage: pending
+  stage: completed
   priority: medium
   depends_on:
   - platform-219
   agent_action: update docs/checklists only if safe read-only evidence changed; do not publish or mutate artifact integrity fields
-  completion_signal: RC checklist and operator handoff match the latest no-publish baseline
+  completion_signal: RC checklist, operator publish handoff, README, changelog, and state match the latest `20260513T154319Z-handler-prompt` no-publish baseline without publish/tag/release/integrity-fill actions
 - id: cliq-channel-500
   title: rerun native Cliq package verification only when source drift requires it
   module: openclaw_cliq_channel

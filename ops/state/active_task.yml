@@ -1,21 +1,19 @@
-id: cliq-channel-509
-title: add Bot handler operator prompt
+id: cliq-channel-499
+title: refresh no-publish native Cliq RC release notes and artifact checklist hygiene
 module: openclaw_cliq_channel
 stage: completed
 status: completed
 owner: coder
-updated_at: '2026-05-13T15:43:19Z'
+updated_at: '2026-05-13T16:05:19Z'
 execution_mode: turbo_20x
 throughput_policy_ref: ops/state/execution_policy.yml
 success_criteria:
-  - "Add a read-only JSON/Markdown operator prompt for the real `oldsix老六` direct Bot DM handler path"
-  - "Make the handoff distinguish direct-DM Message Handler save/trigger state from Mention Handler, OAuth, gateway, and delayed Deluge ACK symptoms"
-  - "Keep raw webhook payloads, message text, reply text, local paths, and secrets out of stdout/report JSON"
-  - "Sync Lane 1/2/3 docs, tests, and RC checklist markers"
+  - "Sync the operator publish handoff and public README with the latest no-publish artifact facts after `cliq-channel-509`"
+  - "Keep publish/tag/GitHub release/npm promotion and `expectedIntegrity` fill operator-only"
+  - "Preserve the Bot Message Handler next step as the active live blocker"
 progress:
-  - "2026-05-13T15:43:19Z added `ops/scripts/openclaw_cliq_bot_handler_operator_prompt.sh`, which emits JSON by default and Markdown with `--md`."
-  - "2026-05-13T15:43:19Z the prompt reports `handler_operator_prompt_ready`, points operators to the Message Handler template, includes the public callback recheck, asks for exactly one fresh direct Bot message, and gives the one-shot no-response packet rerun command."
-  - "2026-05-13T15:43:19Z focused tests cover both JSON and Markdown output while preserving redaction and no-live-probe behavior."
-  - "2026-05-13T15:57:21Z refreshed the no-publish RC package chain after package-local docs changed: pack shasum `10a5eb6cafb3343bcec8253663745d9e883e81b8`, integrity `sha512-e4jefPwV73aZbp472i1KuWSHLYSagZm+dtf0mswSdsjafg9vmc5uozrq0zjMpziffaBFresUD1tkqZljfsMY1g==`, artifact verified, Temp-HOME install smoke passed, and promotion preflight returned `ready_for_operator_publish`."
-next_if_done: Return to the normal RC work queue; do not run another live Bot probe until the operator confirms the Message Handler was saved or sends exactly one fresh direct Bot message.
-next_step: Ask the operator to make the Bot details Handlers list show Message Handler, re-paste/save the current Message Handler template, send one fresh direct message, then rerun the no-response packet once.
+  - "2026-05-13T16:05:19Z refreshed `docs/releases/OPENCLAW_CLIQ_CHANNEL_V0_4_OPERATOR_PUBLISH_HANDOFF.md` to the `20260513T154319Z-handler-prompt` artifact, handoff manifest, source-drift, and decision-packet evidence."
+  - "2026-05-13T16:05:19Z synced `README.md` and `docs/releases/CHANGELOG.next.md` so the current native Cliq lane names `cliq-channel-509`, the Bot handler operator prompt, and tarball shasum `10a5eb6cafb3343bcec8253663745d9e883e81b8`."
+  - "2026-05-13T16:05:19Z no publish, tag, npm promotion, GitHub release, `expectedIntegrity` fill, CRM write, live CRM fixture, or live Bot probe was performed."
+next_if_done: Return to the normal RC work queue; run no-publish verification only if package source changes or operator asks.
+next_step: Use `ops/scripts/openclaw_cliq_bot_handler_operator_prompt.sh --md` for the exact Message Handler save/check ask, then wait for one fresh operator Bot message before running a single live no-response packet.

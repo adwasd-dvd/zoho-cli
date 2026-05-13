@@ -180,27 +180,6 @@ PAYLOAD="$("$JQ_BIN" -n \
       operatorActionRequests: (
         [
           (
-            if $cliqStatus == "awaiting_operator_publish_path" then {
-              id: "select_openclaw_cliq_publish_path",
-              lane: "openclawCliq",
-              required: true,
-              inputKind: "choice",
-              allowedValues: [
-                "local_operator_rc",
-                "npm_rc_publish",
-                "github_release_artifact"
-              ],
-              commandPreview: "OPENCLAW_CLIQ_OPERATOR_PUBLISH_PATH=<choice> ops/scripts/openclaw_cliq_rc_operator_decision_packet.sh",
-              unblocks: "openclaw_cliq_operator_publish_selection_review",
-              agentMayExecute: false,
-              requiresExplicitOperatorApproval: true,
-              redaction: {
-                rawSecretsStored: false,
-                rawLocalPathsStored: false
-              }
-            } else empty end
-          ),
-          (
             if $botHandlerRequestNeeded then {
               id: "save_openclaw_cliq_bot_message_handler",
               lane: "openclawCliqBot",
@@ -218,6 +197,27 @@ PAYLOAD="$("$JQ_BIN" -n \
                 rawSecretsStored: false,
                 rawMessageBodyStored: false,
                 rawReplyTextStored: false,
+                rawLocalPathsStored: false
+              }
+            } else empty end
+          ),
+          (
+            if $cliqStatus == "awaiting_operator_publish_path" then {
+              id: "select_openclaw_cliq_publish_path",
+              lane: "openclawCliq",
+              required: true,
+              inputKind: "choice",
+              allowedValues: [
+                "local_operator_rc",
+                "npm_rc_publish",
+                "github_release_artifact"
+              ],
+              commandPreview: "OPENCLAW_CLIQ_OPERATOR_PUBLISH_PATH=<choice> ops/scripts/openclaw_cliq_rc_operator_decision_packet.sh",
+              unblocks: "openclaw_cliq_operator_publish_selection_review",
+              agentMayExecute: false,
+              requiresExplicitOperatorApproval: true,
+              redaction: {
+                rawSecretsStored: false,
                 rawLocalPathsStored: false
               }
             } else empty end

@@ -63,6 +63,10 @@
   recurring agents ask for the real Zoho Message Handler paste/save step before
   treating publish-path and CRM fixture inputs as the only remaining operator
   actions.
+- Prioritized the Bot handler save/recheck request in RC autonomy/operator
+  prompts, so `ops/scripts/zoho_cli_rc_operator_action_prompt.sh --md` leads
+  with the current `oldsix老六` reliability blocker before the release-path and
+  CRM fixture asks.
 
 - Extended the RC autonomy packet with redacted `operatorActionRequests` so recurring agents can ask for exactly the missing operator publish path, CRM fixture cleanup plan, and CRM fixture payload file without reading raw payloads, cleanup text, local paths, secrets, or lower-level report internals.
 - Recorded post-platform-215 source-drift, operator decision, and autonomy-packet evidence: pushed operator-action-request commit `9fac452e` still reports `package_source_unchanged`, all decision-packet `reportsReady=true`, and autonomy `operator_input_required` with the same three redacted operator request ids, while no publish/tag/release/expectedIntegrity fill or live Zoho write was performed.

@@ -137,6 +137,10 @@ Follow the stack from the architecture plan:
      `save_openclaw_cliq_bot_message_handler` operator action so recurring
      agents surface the handler paste/save/recheck gate before another live
      probe)
+21c. `cliq-channel-512` Bot handler prompt prioritization (complete; the
+     cross-lane operator action order now starts with
+     `save_openclaw_cliq_bot_message_handler`, then publish-path and CRM fixture
+     inputs)
 22. `cliq-channel-421` real Bot handler runtime contract coverage (complete;
     webhook runtime tests process Message, Mention, Participation, and Context
     shaped payloads through native normalization/security/dedupe/lifecycle/ledger
@@ -337,8 +341,8 @@ RC. Rotate any exposed webhook secret before live use. For direct Bot DMs, use
 `ops/scripts/openclaw_cliq_bot_handler_template_render.sh --md --handlers message`
 to render the current Message Handler block; a fixed `received` ACK is
 only a smoke signal and is not normal operation. The cross-lane autonomy packet
-also lists `save_openclaw_cliq_bot_message_handler` when this Zoho UI step is
-still the next operator-owned recheck gate.
+also lists `save_openclaw_cliq_bot_message_handler` first when this Zoho UI step
+is still the next operator-owned recheck gate.
 
 ## Human install UX checklist
 

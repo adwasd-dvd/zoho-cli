@@ -2388,8 +2388,8 @@ def test_zoho_cli_rc_autonomy_packet_surfaces_safe_crm_agent_command(
     assert payload["safety"]["crmNextCommandAllowlistedDryRunLocal"] is True
     assert payload["operatorInputsNeeded"]["openclawCliqPublishPath"] is True
     assert [request["id"] for request in payload["operatorActionRequests"]] == [
-        "select_openclaw_cliq_publish_path",
         "save_openclaw_cliq_bot_message_handler",
+        "select_openclaw_cliq_publish_path",
     ]
 
 
@@ -2460,28 +2460,6 @@ def _write_operator_action_prompt_autonomy_packet(
     if with_requests:
         requests = [
             {
-                "id": "select_openclaw_cliq_publish_path",
-                "lane": "openclawCliq",
-                "required": True,
-                "inputKind": "choice",
-                "allowedValues": [
-                    "local_operator_rc",
-                    "npm_rc_publish",
-                    "github_release_artifact",
-                ],
-                "commandPreview": (
-                    "OPENCLAW_CLIQ_OPERATOR_PUBLISH_PATH=<choice> "
-                    "ops/scripts/openclaw_cliq_rc_operator_decision_packet.sh"
-                ),
-                "unblocks": "openclaw_cliq_operator_publish_selection_review",
-                "agentMayExecute": False,
-                "requiresExplicitOperatorApproval": True,
-                "redaction": {
-                    "rawSecretsStored": False,
-                    "rawLocalPathsStored": False,
-                },
-            },
-            {
                 "id": "save_openclaw_cliq_bot_message_handler",
                 "lane": "openclawCliqBot",
                 "required": True,
@@ -2517,6 +2495,28 @@ def _write_operator_action_prompt_autonomy_packet(
                     "rawSecretsStored": False,
                     "rawMessageBodyStored": False,
                     "rawReplyTextStored": False,
+                    "rawLocalPathsStored": False,
+                },
+            },
+            {
+                "id": "select_openclaw_cliq_publish_path",
+                "lane": "openclawCliq",
+                "required": True,
+                "inputKind": "choice",
+                "allowedValues": [
+                    "local_operator_rc",
+                    "npm_rc_publish",
+                    "github_release_artifact",
+                ],
+                "commandPreview": (
+                    "OPENCLAW_CLIQ_OPERATOR_PUBLISH_PATH=<choice> "
+                    "ops/scripts/openclaw_cliq_rc_operator_decision_packet.sh"
+                ),
+                "unblocks": "openclaw_cliq_operator_publish_selection_review",
+                "agentMayExecute": False,
+                "requiresExplicitOperatorApproval": True,
+                "redaction": {
+                    "rawSecretsStored": False,
                     "rawLocalPathsStored": False,
                 },
             },
@@ -2618,8 +2618,8 @@ def test_zoho_cli_rc_operator_action_prompt_summarizes_requests(
     assert payload["requestCount"] == 4
     assert payload["requiredRequestCount"] == 4
     assert payload["requestIds"] == [
-        "select_openclaw_cliq_publish_path",
         "save_openclaw_cliq_bot_message_handler",
+        "select_openclaw_cliq_publish_path",
         "provide_crm_fixture_cleanup_plan",
         "provide_crm_fixture_payload_file",
     ]

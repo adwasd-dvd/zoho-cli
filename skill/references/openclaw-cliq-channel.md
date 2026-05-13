@@ -128,9 +128,8 @@ Handler block to paste, with the configured public URL filled and the webhook
 secret kept as `<paste-ZOHO_CLIQ_WEBHOOK_SECRET>`.
 `ops/scripts/zoho_cli_rc_autonomy_packet.sh` surfaces the same operator-owned
 Zoho UI step as `save_openclaw_cliq_bot_message_handler`, with the renderer
-command and the one-follow-up no-response diagnostic command, so heartbeat
-agents do not skip the Bot handler gate while waiting on publish-path or CRM
-fixture inputs.
+command and the one-follow-up no-response diagnostic command, and keeps it
+first in operator prompts while Bot reliability is the leading blocker.
 
 The v0.4 plugin targets OpenClaw `>=2026.5.3-1`. The upgraded global
 `OpenClaw 2026.5.3-1` host is suitable for native plugin checks; use

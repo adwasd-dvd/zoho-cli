@@ -274,10 +274,11 @@ After sync, ensure the AI user follows:
     hints, optional `followUpCommandPreview` values name the next diagnostic
     command, and `unblocks` names the next gate the operator input should unlock.
     Expected ids include
-    `select_openclaw_cliq_publish_path`,
     `save_openclaw_cliq_bot_message_handler`,
+    `select_openclaw_cliq_publish_path`,
     `provide_crm_fixture_cleanup_plan`, and
-    `provide_crm_fixture_payload_file`
+    `provide_crm_fixture_payload_file`; the Bot handler id should be treated as
+    the first ask while direct Bot replies are still the leading blocker
   - when you need to hand those asks back to a human, prefer
     `ops/scripts/zoho_cli_rc_operator_action_prompt.sh`; it runs or reads the
     autonomy packet, returns `operator_action_prompt_ready` with

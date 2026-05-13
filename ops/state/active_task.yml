@@ -1,21 +1,20 @@
-id: cliq-channel-511
-title: surface Bot Message Handler save request in RC autonomy
+id: cliq-channel-512
+title: prioritize Bot Message Handler save request in RC operator prompts
 module: openclaw_cliq_channel
 stage: completed
 status: completed
 owner: coder
-updated_at: '2026-05-13T18:55:50Z'
+updated_at: '2026-05-13T20:01:52Z'
 execution_mode: deep_milestone_batch
 throughput_policy_ref: ops/state/execution_policy.yml
 success_criteria:
-  - "Make the cross-lane RC autonomy packet include the real Bot Message Handler paste/save/recheck operator action"
-  - "Keep the Bot handler action non-executable for agents and redact secrets, message bodies, reply text, and local paths"
-  - "Make the operator-action Markdown handoff show the template-render command plus the single follow-up no-response diagnostic"
+  - "Make the Bot Message Handler save/recheck request the first RC operator action while direct Bot reliability is the leading blocker"
+  - "Keep publish-path and CRM fixture requests present but lower in the handoff order"
+  - "Preserve non-executable publish/write boundaries and redaction flags"
   - "Update Lane 1/2/3 docs, tests, and RC checklist state"
 progress:
-  - "Extended `ops/scripts/zoho_cli_rc_autonomy_packet.sh` with `save_openclaw_cliq_bot_message_handler` when the native Cliq RC lane is awaiting operator input."
-  - "The new request points at `docs/releases/OPENCLAW_CLIQ_BOT_HANDLER_TEMPLATES.md#message-handler`, renders `ops/scripts/openclaw_cliq_bot_handler_template_render.sh --md --handlers message`, then follows with one short-window `ops/scripts/openclaw_cliq_bot_no_response_packet.sh` diagnostic."
-  - "Updated `ops/scripts/zoho_cli_rc_operator_action_prompt.sh` so Markdown includes `followUpCommandPreview` and Bot-visible reply guidance."
+  - "Reordered `ops/scripts/zoho_cli_rc_autonomy_packet.sh` so `save_openclaw_cliq_bot_message_handler` is emitted before `select_openclaw_cliq_publish_path`."
+  - "Updated operator-action tests and docs so `ops/scripts/zoho_cli_rc_operator_action_prompt.sh --md` leads with the real `oldsix老六` handler save/recheck ask."
   - "Synced README, RC checklist, changelog, Lane 3 skill docs, OpenClaw guide, command playbook, and queue state."
 next_if_done: Wait for the operator to paste/save the rendered Message Handler and send exactly one fresh direct `oldsix老六` Bot message, then run a single short-window no-response packet.
-next_step: "Run `ops/scripts/zoho_cli_rc_operator_action_prompt.sh --md` for the consolidated redacted ask; after the operator saves the Message Handler and sends one fresh direct Bot message, run exactly one `ZOHO_CLIQ_INGRESS_LOOKBACK_SECONDS=600 ops/scripts/openclaw_cliq_bot_no_response_packet.sh` check."
+next_step: "Run `ops/scripts/zoho_cli_rc_operator_action_prompt.sh --md`; the first item should be `save_openclaw_cliq_bot_message_handler`. After the operator saves the Message Handler and sends one fresh direct Bot message, run exactly one `ZOHO_CLIQ_INGRESS_LOOKBACK_SECONDS=600 ops/scripts/openclaw_cliq_bot_no_response_packet.sh` check."

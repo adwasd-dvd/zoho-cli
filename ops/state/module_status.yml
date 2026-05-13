@@ -28,11 +28,11 @@ cliq:
 openclaw_cliq_channel:
   priority: 3
   status: blocked
-  phase: bot_handler_autonomy_request_ready_pending_handler_install
+  phase: bot_handler_autonomy_prompt_prioritized_pending_handler_install
   target_release: v0.4.0
-  current_milestone: cliq-channel-511-bot-handler-autonomy-request
+  current_milestone: cliq-channel-512-bot-handler-prompt-priority
   blockers:
-    - "`ops/scripts/zoho_cli_rc_autonomy_packet.sh` and `ops/scripts/zoho_cli_rc_operator_action_prompt.sh --md` now surface `save_openclaw_cliq_bot_message_handler`; the real `oldsix老六` Bot details Handlers list must include Message Handler, then the rendered Message Handler from `ops/scripts/openclaw_cliq_bot_handler_template_render.sh --md --handlers message` must be re-pasted/saved with `reply_mode=deluge_response` and `return webhook_response` before the next direct Bot message can prove visible native replies"
+    - "`ops/scripts/zoho_cli_rc_autonomy_packet.sh` and `ops/scripts/zoho_cli_rc_operator_action_prompt.sh --md` now surface `save_openclaw_cliq_bot_message_handler` first; the real `oldsix老六` Bot details Handlers list must include Message Handler, then the rendered Message Handler from `ops/scripts/openclaw_cliq_bot_handler_template_render.sh --md --handlers message` must be re-pasted/saved with `reply_mode=deluge_response` and `return webhook_response` before the next direct Bot message can prove visible native replies"
     - "if the next direct Bot message still reports `diagnosis.code=zoho_bot_handler_not_posting` or `no_recent_webhook_ingress`, debug Zoho handler trigger/save state before OAuth or tunnel delivery"
 
 crm:

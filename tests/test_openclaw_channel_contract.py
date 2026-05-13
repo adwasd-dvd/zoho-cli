@@ -163,6 +163,7 @@ def test_openclaw_cliq_channel_rc_checklist_has_cut_contract():
         "cliq-channel-495",
         "cliq-channel-510",
         "cliq-channel-511",
+        "cliq-channel-512",
         "platform-214",
         "platform-215",
         "platform-216",

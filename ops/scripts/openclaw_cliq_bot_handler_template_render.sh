@@ -158,12 +158,8 @@ payload = Map();
 payload.put("handler","message");
 payload.put("reply_mode","deluge_response");
 payload.put("message",msg);
-payload.put("attachments",attachments);
-payload.put("mentions",mentions);
-payload.put("links",links);
 payload.put("user",user);
 payload.put("chat",chat);
-payload.put("location",location);
 
 webhook_response = invokeurl
 [

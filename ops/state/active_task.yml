@@ -1,21 +1,20 @@
-id: cliq-channel-513
-title: expose next operator action in RC autonomy JSON
+id: cliq-channel-514
+title: simplify direct Bot Message Handler Deluge variables
 module: openclaw_cliq_channel
 stage: completed
 status: completed
 owner: coder
-updated_at: '2026-05-13T21:02:00Z'
+updated_at: '2026-05-13T22:45:30Z'
 execution_mode: deep_milestone_batch
 throughput_policy_ref: ops/state/execution_policy.yml
 success_criteria:
-  - "Expose the top pending operator request as `nextOperatorActionId` and `nextOperatorActionRequest`"
-  - "Keep `save_openclaw_cliq_bot_message_handler` as the first action while direct Bot reliability is the leading blocker"
-  - "Preserve non-executable publish/write boundaries and redaction flags"
+  - "Render the direct Bot Message Handler without optional Deluge variables that may be undefined in plain DMs"
+  - "Keep `reply_mode=deluge_response` and `return webhook_response` for native Bot-visible replies"
+  - "Preserve non-executable publish/write boundaries and secret redaction"
   - "Update Lane 1/2/3 docs, tests, and RC checklist state"
 progress:
-  - "Added `nextOperatorActionId` and `nextOperatorActionRequest` to `ops/scripts/zoho_cli_rc_autonomy_packet.sh`."
-  - "Added the same next-operator-action fields to `ops/scripts/zoho_cli_rc_operator_action_prompt.sh`."
-  - "Updated operator-action tests and docs so heartbeat agents can read the real `oldsix老六` handler save/recheck ask without reparsing the full request list."
-  - "Synced README, RC checklist, changelog, Lane 3 skill docs, OpenClaw guide, command playbook, and queue state."
+  - "Removed `attachments`, `mentions`, `links`, and `location` from the direct Message Handler template and renderer."
+  - "Documented that undefined optional Deluge variables can stop the handler before `invokeurl`."
+  - "Updated RC checklist, README, changelog, tests, and queue state."
 next_if_done: Wait for the operator to paste/save the rendered Message Handler and send exactly one fresh direct `oldsix老六` Bot message, then run a single short-window no-response packet.
-next_step: "Run `ops/scripts/zoho_cli_rc_operator_action_prompt.sh` and read `nextOperatorActionId`; it should be `save_openclaw_cliq_bot_message_handler`. After the operator saves the Message Handler and sends one fresh direct Bot message, run exactly one `ZOHO_CLIQ_INGRESS_LOOKBACK_SECONDS=600 ops/scripts/openclaw_cliq_bot_no_response_packet.sh` check."
+next_step: "Run `ops/scripts/openclaw_cliq_bot_handler_template_render.sh --md --handlers message`, paste/save the simplified Message Handler, restore a stable public callback route, then send one fresh direct Bot message and run exactly one `ZOHO_CLIQ_INGRESS_LOOKBACK_SECONDS=600 ops/scripts/openclaw_cliq_bot_no_response_packet.sh` check."

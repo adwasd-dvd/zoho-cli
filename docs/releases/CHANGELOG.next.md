@@ -71,6 +71,11 @@
   autonomy packet and operator-action prompt JSON output so heartbeat agents can
   read the top human handoff directly; while the direct Bot reliability blocker
   is active this resolves to `save_openclaw_cliq_bot_message_handler`.
+- Simplified the direct Bot Message Handler paste block to avoid optional
+  Deluge variables (`attachments`, `mentions`, `links`, `location`) that may be
+  undefined for plain Bot DMs. The Message Handler now posts only `message`,
+  `user`, and `chat` plus `reply_mode=deluge_response`, reducing the chance
+  that Deluge aborts before `invokeurl`.
 
 - Extended the RC autonomy packet with redacted `operatorActionRequests` so recurring agents can ask for exactly the missing operator publish path, CRM fixture cleanup plan, and CRM fixture payload file without reading raw payloads, cleanup text, local paths, secrets, or lower-level report internals.
 - Recorded post-platform-215 source-drift, operator decision, and autonomy-packet evidence: pushed operator-action-request commit `9fac452e` still reports `package_source_unchanged`, all decision-packet `reportsReady=true`, and autonomy `operator_input_required` with the same three redacted operator request ids, while no publish/tag/release/expectedIntegrity fill or live Zoho write was performed.

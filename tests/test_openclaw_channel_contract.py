@@ -438,5 +438,17 @@ def test_openclaw_cliq_bot_handler_templates_cover_real_handlers():
     for marker in required:
         assert marker in templates
 
+    message_section = templates.split("## Message Handler", 1)[1].split(
+        "## Mention Handler", 1
+    )[0]
+    assert 'payload.put("attachments",attachments);' not in message_section
+    assert 'payload.put("mentions",mentions);' not in message_section
+    assert 'payload.put("links",links);' not in message_section
+    assert 'payload.put("location",location);' not in message_section
+    normalized_message_section = " ".join(message_section.split())
+    assert "undefined optional variable can stop Deluge before `invokeurl` runs" in (
+        normalized_message_section
+    )
+
     assert "qSEeU3" not in templates
     assert "trycloudflare.com" not in templates

@@ -39,11 +39,13 @@ second-hop OAuth `zoho cliq send` path for direct Bot chats.
 Use this for direct Bot DMs and Bot message subscriptions. The Bot details page
 must list **Message Handler** for plain direct Bot chats; **Mention Handler**
 alone only handles @mentions/channel contexts and can make messages from another
-account appear ignored even when the Bot profile looks configured. Zoho passes
-`message`, `attachments`, `mentions`, `links`, `user`, `chat`, and `location` to
-the handler. In the direct Bot Message Handler, Zoho often exposes `message` as
-the text value itself, so wrap it into an explicit message map before posting to
-OpenClaw.
+account appear ignored even when the Bot profile looks configured. Keep this
+direct-message template minimal: use only `message`, `user`, and `chat`, because
+some Zoho Message Handler executions do not define optional variables such as
+`attachments`, `mentions`, `links`, or `location`. Referencing an undefined
+optional variable can stop Deluge before `invokeurl` runs. In the direct Bot
+Message Handler, Zoho often exposes `message` as the text value itself, so wrap
+it into an explicit message map before posting to OpenClaw.
 
 ```deluge
 response = Map();
@@ -65,12 +67,8 @@ payload = Map();
 payload.put("handler","message");
 payload.put("reply_mode","deluge_response");
 payload.put("message",msg);
-payload.put("attachments",attachments);
-payload.put("mentions",mentions);
-payload.put("links",links);
 payload.put("user",user);
 payload.put("chat",chat);
-payload.put("location",location);
 
 webhook_response = invokeurl
 [

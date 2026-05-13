@@ -291,10 +291,13 @@ classified error kind, and redacted stderr summary.
 Use Zoho Cliq Bot Message, Mention, Participation, or Context handlers for live
 inbound smoke. POST JSON to `webhookPath` with `X-Cliq-Webhook-Secret`; keep the
 secret in `ZOHO_CLIQ_WEBHOOK_SECRET` and rotate any value that was exposed in
-chat or screenshots. For direct Bot DMs, use the wrapped Message Handler
-template from `docs/releases/OPENCLAW_CLIQ_BOT_HANDLER_TEMPLATES.md`; Zoho can
-pass `message` as text, so the handler should post an explicit message map with
-`text`, `messageId`, `senderId`, `chatId`, and `chatType`. Current real Bot
+chat or screenshots. For direct Bot DMs, the Zoho Bot details **Handlers** list
+must include **Message Handler**; Mention Handler alone only covers
+@mentions/channel contexts and will not handle plain direct Bot messages. Use
+the wrapped Message Handler template from
+`docs/releases/OPENCLAW_CLIQ_BOT_HANDLER_TEMPLATES.md`; Zoho can pass `message`
+as text, so the handler should post an explicit message map with `text`,
+`messageId`, `senderId`, `chatId`, and `chatType`. Current real Bot
 handlers should also set `reply_mode` to `deluge_response`, assign
 `webhook_response = invokeurl [...]`, and return that map when it contains a
 `text` key so Zoho displays the OpenClaw final answer as the Bot's native
@@ -302,6 +305,10 @@ handler response. Welcome, Incoming Webhook, Call, and Menu handlers are ignored
 until a later slice assigns explicit OpenClaw workflows. If the direct handler
 uses a generated `zoho-message-*` id or OpenClaw synthesizes a `webhook-*` id,
 native dispatch must not reply against that synthetic id.
+When `ops/scripts/openclaw_cliq_bot_no_response_packet.sh` reports
+`diagnosis.code=zoho_bot_handler_not_posting`, treat public callback and OAuth as
+already past the first gate and ask the operator to save the Message Handler
+before sending exactly one fresh direct Bot message.
 After saving a handler, verify redacted audit logs show `nativeDispatch.agentId` matching the
 intended OpenClaw route binding and exactly one visible outbound Cliq delivery
 for the trusted smoke message.

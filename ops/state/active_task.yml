@@ -1,19 +1,22 @@
-id: cliq-channel-507
-title: refresh Bot no-response handler guidance for Deluge-native replies
+id: cliq-channel-508
+title: add direct Bot DM no-ingress diagnosis
 module: openclaw_cliq_channel
 stage: completed
 status: completed
 owner: coder
-updated_at: '2026-05-13T07:48:29Z'
+updated_at: '2026-05-13T15:08:00Z'
 execution_mode: turbo_20x
 throughput_policy_ref: ops/state/execution_policy.yml
 success_criteria:
-  - "Support `reply_mode=deluge_response` so webhook handlers can return OpenClaw's final answer as the native Zoho Bot response"
-  - "Avoid the second-hop OAuth `zoho cliq send` path for real Bot handler replies when Deluge-native mode is selected"
-  - "Update Lane 2/3 handler templates and docs so operators remove fixed `received` ACKs and return `webhook_response` when it contains `text`"
-  - "Update handler-trigger/no-response diagnostic packets so `no_recent_webhook_ingress` tells operators to use `reply_mode=deluge_response` and `return webhook_response`"
-next_if_done: Ask the operator to re-paste/save the current Message Handler template, then send exactly one fresh `oldsix老六` direct message such as `你好123456`; rerun the no-response packet and treat `no_recent_webhook_ingress` as a Zoho handler save/trigger issue.
+  - "Add a redacted `diagnosis` object to Bot no-response packets so public-callback-green/no-ingress cases identify Zoho handler save/trigger state"
+  - "Expose `handlers.directMessageRequirement` from handler-trigger packets so agents and operators know plain direct Bot DMs require Message Handler, not only Mention Handler"
+  - "Update Lane 2/3 docs and tests so a delayed literal `received` remains classified as ACK-only smoke and not OpenClaw's final answer"
+next_if_done: Ask the operator to make the Bot details Handlers list include Message Handler, re-paste/save the current Message Handler template from `docs/releases/OPENCLAW_CLIQ_BOT_HANDLER_TEMPLATES.md`, then send exactly one fresh `oldsix老六` direct message; rerun the no-response packet and expect either `diagnosis.code=zoho_bot_handler_not_posting` or active ingress.
 progress:
+  - "2026-05-13T15:08:00Z added top-level `diagnosis` output to `ops/scripts/openclaw_cliq_bot_no_response_packet.sh`, including stable codes such as `zoho_bot_handler_not_posting`, `zoho_bot_handler_trigger_unverified`, `public_callback_unverified`, and `zoho_reply_rate_limited` without storing raw webhook payloads, message bodies, reply bodies, or secrets."
+  - "2026-05-13T15:08:00Z added `handlers.directMessageRequirement`, `operatorChecklist[].directBotDmRequirement`, and delayed-ACK interpretation to `ops/scripts/openclaw_cliq_handler_trigger_packet.sh`, making the direct-Bot-DM Message Handler requirement machine-readable."
+  - "2026-05-13T15:08:00Z updated Lane 2/3 docs and focused tests so public-callback-green/no-ingress now points at Zoho handler save/trigger state, especially a missing saved Message Handler for direct Bot DMs."
+  - "2026-05-13T15:12:05Z refreshed the no-publish RC artifact chain after the package-local docs changed: pack shasum `eb48b7e8b23ed1eac33a03dd452bd02a6d3f9a92`, integrity `sha512-g5w42zPihYR+Y7nJqYF1Ls+19UlaAvUuhm2xQzUcz6ts9uthE2ZdLacY9voAc6yxxP+blxPorjvUtb5RBFOkzA==`, artifact verified, Temp-HOME install smoke passed, and promotion preflight ready; no publish/tag/release/expectedIntegrity fill was performed."
   - "2026-05-13T06:53:13Z added Deluge-native reply transport: webhook payloads with `reply_mode=deluge_response` capture the native OpenClaw final reply text and include it as the webhook response `text`, while native dispatch records only redacted reply length/captured diagnostics."
   - "2026-05-13T06:53:13Z updated real Bot Message/Mention/Participation/Context Deluge templates to assign `webhook_response = invokeurl [...]`, return it when it contains `text`, and document that a literal delayed `received` is only a handler ACK."
   - "2026-05-13T06:53:13Z validation passed for `npm --prefix integrations/openclaw-channel-cliq run build` and `pytest tests/test_openclaw_channel_skeleton.py -q` (21 passed); no Zoho live probe, publish, tag, npm promotion, GitHub release, expectedIntegrity fill, CRM write, or live CRM fixture was performed."
@@ -26,4 +29,4 @@ progress:
   - "2026-05-13T05:18:59Z rebuilt `integrations/openclaw-channel-cliq`, linked the local plugin, restarted the OpenClaw gateway on port 18789, and verified `https://cliq.hpyio.com/webhooks/cliq` with public callback smoke."
   - "2026-05-13T05:21:00Z focused quiet-lifecycle/rate-limit diagnostic tests passed; no publish, tag, npm promotion, GitHub release, expectedIntegrity fill, or CRM write was performed."
   - "2026-05-13T05:24:45Z no-publish RC artifact chain refreshed: pack shasum `754afe56b33fa6551b6e8f9298b4531c88df3f3a`, integrity `sha512-LT5tTsvyQdw6b4sCCSgWzNF08kJsPx2gGdH6J2M8QVPmmqOTaV+/G+95LpVAj0Yq0J3kAwjON18tt6E0dl48Fg==`, artifact verified, Temp-HOME install smoke passed, promotion preflight ready, operator bundle/publish plan/handoff manifest ready; no release action was executed."
-next_step: Re-paste/save the current Message Handler template from `docs/releases/OPENCLAW_CLIQ_BOT_HANDLER_TEMPLATES.md`, send one fresh direct Bot message, then rerun `ZOHO_CLIQ_PUBLIC_WEBHOOK_URL=https://cliq.hpyio.com/webhooks/cliq ops/scripts/openclaw_cliq_bot_no_response_packet.sh`.
+next_step: Make sure the `oldsix老六` Bot details Handlers list includes Message Handler, re-paste/save the current Message Handler template from `docs/releases/OPENCLAW_CLIQ_BOT_HANDLER_TEMPLATES.md`, send one fresh direct Bot message, then rerun `ZOHO_CLIQ_PUBLIC_WEBHOOK_URL=https://cliq.hpyio.com/webhooks/cliq ops/scripts/openclaw_cliq_bot_no_response_packet.sh`.

@@ -36,7 +36,10 @@ second-hop OAuth `zoho cliq send` path for direct Bot chats.
 
 ## Message Handler
 
-Use this for direct Bot DMs and Bot message subscriptions. Zoho passes
+Use this for direct Bot DMs and Bot message subscriptions. The Bot details page
+must list **Message Handler** for plain direct Bot chats; **Mention Handler**
+alone only handles @mentions/channel contexts and can make messages from another
+account appear ignored even when the Bot profile looks configured. Zoho passes
 `message`, `attachments`, `mentions`, `links`, `user`, `chat`, and `location` to
 the handler. In the direct Bot Message Handler, Zoho often exposes `message` as
 the text value itself, so wrap it into an explicit message map before posting to
@@ -268,6 +271,12 @@ Zoho again. The packet gives a redacted, machine-readable checklist for the
 exact handler sections to paste, the expected `/webhooks/cliq` URL, the Deluge
 `invokeurl` `body:payload.toString()` contract, and the follow-up no-response
 packet command without storing webhook secrets or message bodies.
+For direct Bot DMs, the packet now also calls out the visible Zoho UI signal:
+the Bot details **Handlers** list must include **Message Handler**. If it only
+lists **Mention Handler**, direct messages are expected to miss OpenClaw and
+diagnostics should report `diagnosis.code=zoho_bot_handler_not_posting` or
+`zoho_bot_handler_trigger_unverified` depending on whether public callback smoke
+was checked.
 
 ## Contract coverage
 

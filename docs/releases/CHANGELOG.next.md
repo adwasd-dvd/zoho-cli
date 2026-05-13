@@ -24,6 +24,17 @@
   `reply_mode=deluge_response`, `webhook_response = invokeurl [...]`, and
   returning `webhook_response` when it contains `text`, instead of preserving a
   fixed `received` ACK.
+- Added direct-Bot-DM diagnosis to the handler-trigger/no-response packets:
+  `openclaw_cliq_bot_no_response_packet` now emits a redacted `diagnosis`
+  object, and `openclaw_cliq_handler_trigger_packet` exposes
+  `handlers.directMessageRequirement` so public-callback-green/no-ingress cases
+  point operators at saving **Message Handler** for plain direct Bot messages
+  rather than chasing OAuth or tunnel issues.
+- Refreshed the no-publish OpenClaw Cliq RC artifact chain after the direct-DM
+  diagnosis package-local doc update; the local RC tarball now has shasum
+  `eb48b7e8b23ed1eac33a03dd452bd02a6d3f9a92`, artifact/install/promotion
+  checks pass, and publish/tag/release/integrity-fill actions remain
+  operator-only.
 
 - Extended the RC autonomy packet with redacted `operatorActionRequests` so recurring agents can ask for exactly the missing operator publish path, CRM fixture cleanup plan, and CRM fixture payload file without reading raw payloads, cleanup text, local paths, secrets, or lower-level report internals.
 - Recorded post-platform-215 source-drift, operator decision, and autonomy-packet evidence: pushed operator-action-request commit `9fac452e` still reports `package_source_unchanged`, all decision-packet `reportsReady=true`, and autonomy `operator_input_required` with the same three redacted operator request ids, while no publish/tag/release/expectedIntegrity fill or live Zoho write was performed.

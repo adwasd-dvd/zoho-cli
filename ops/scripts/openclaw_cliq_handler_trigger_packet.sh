@@ -139,6 +139,12 @@ PAYLOAD="$("$JQ_BIN" -n \
         selected: $selected,
         invalid: $invalidHandlers,
         recommendedFirst: ["mention", "message"],
+        directMessageRequirement: {
+          requiredHandler: "message",
+          botDetailsVisibleSignal: "Handlers list includes Message Handler",
+          why: "Direct Bot DMs trigger the Message Handler. Mention Handler alone is for @mentions/channel contexts and will not handle plain direct Bot messages.",
+          commonMiss: "Saving only Mention Handler can make direct messages from another account appear ignored even while the Bot profile looks configured."
+        },
         saveTargets: (
           $selected
           | map({
@@ -181,7 +187,8 @@ PAYLOAD="$("$JQ_BIN" -n \
           selectedSections: ($selected | map(. + " handler")),
           requiredReplyMode: "deluge_response",
           requiredWebhookResponse: "webhook_response = invokeurl [...]",
-          normalOperation: "return webhook_response when it contains text; do not keep a fixed received ACK"
+          normalOperation: "return webhook_response when it contains text; do not keep a fixed received ACK",
+          directBotDmRequirement: "Bot details must list Message Handler for direct Bot DMs; Mention Handler alone only handles mentions/channel contexts."
         },
         {
           stepId: "send_one_trusted_message",
@@ -196,6 +203,7 @@ PAYLOAD="$("$JQ_BIN" -n \
       ],
       noResponseInterpretation: {
         publicCallbackVerifiedPlusNoIngress: "Zoho can reach the OpenClaw webhook, but the selected Bot handler did not POST during the send window.",
+        delayedReceivedAck: "A literal received reply only proves a fixed ACK branch ran; it does not prove OpenClaw received the event or produced the final answer.",
         latestWebhookNotDispatched: "The handler posted, then payload shape or OpenClaw policy blocked native dispatch.",
         dispatchReplyNotDelivered: "OpenClaw dispatched the turn, then Cliq reply delivery did not record a sent message."
       },

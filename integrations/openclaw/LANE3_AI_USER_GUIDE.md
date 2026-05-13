@@ -170,7 +170,10 @@ After sync, ensure the AI user follows:
     diagnostic so the packet does not classify its own smoke as the latest Bot
     message;
     `no_recent_webhook_ingress` means the Zoho Bot handler did not POST to the
-    gateway during that window, `latest_webhook_not_dispatched` means payload or
+    gateway during that window; if public callback smoke is verified,
+    `diagnosis.code=zoho_bot_handler_not_posting` means the public route is past
+    the first gate and Zoho handler save/trigger state is the likely blocker,
+    with direct Bot DMs requiring a saved **Message Handler**. `latest_webhook_not_dispatched` means payload or
     policy blocked dispatch, `dispatch_reply_not_delivered` means the agent turn
     ran but no Cliq reply was delivered, and `live_ingress_active` means the
     latest observed turn dispatched and delivered at least one reply. The
@@ -184,8 +187,11 @@ After sync, ensure the AI user follows:
     handler trigger script directly with `ZOHO_CLIQ_PUBLIC_WEBHOOK_URL` and
     optional `ZOHO_CLIQ_HANDLER_TARGETS`; require
     `status=handler_trigger_packet_ready` before using its
-    `handlers.saveTargets`, `delugeContract`, and `operatorChecklist` to guide
-    Zoho Message/Mention/Participation/Context handler edits. Current packets
+    `handlers.saveTargets`, `handlers.directMessageRequirement`,
+    `delugeContract`, and `operatorChecklist` to guide Zoho
+    Message/Mention/Participation/Context handler edits. Direct Bot DMs require
+    the Bot details **Handlers** list to include **Message Handler**; Mention
+    Handler alone only handles @mentions/channel contexts. Current packets
     should require `delugeContract.replyMode=deluge_response` and
     `operatorChecklist` should say to return `webhook_response` when it has a
     `text` key; a fixed `received` ACK means the handler is still in smoke-test

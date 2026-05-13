@@ -5033,6 +5033,9 @@ def test_openclaw_cliq_bot_no_response_packet_reports_handler_not_posting(
     assert payload["status"] == "blocked"
     assert payload["blockers"] == ["no_recent_webhook_ingress"]
     assert payload["nextAction"] == "fix_zoho_bot_handler_trigger"
+    assert payload["diagnosis"]["code"] == "zoho_bot_handler_trigger_unverified"
+    assert payload["diagnosis"]["directDmRequiresMessageHandler"] is True
+    assert "Message Handler" in payload["diagnosis"]["handlerSectionToCheck"]
     assert payload["publicCallback"]["checked"] is False
     assert payload["publicCallback"]["status"] == "not_checked"
     assert payload["ingress"]["error"] == "no_recent_webhook_ingress"
@@ -5097,6 +5100,9 @@ def test_openclaw_cliq_bot_no_response_packet_embeds_handler_trigger_packet(
     assert payload["status"] == "blocked"
     assert payload["blockers"] == ["no_recent_webhook_ingress"]
     assert payload["nextAction"] == "fix_zoho_bot_handler_trigger"
+    assert payload["diagnosis"]["code"] == "zoho_bot_handler_not_posting"
+    assert "public webhook is reachable" in payload["diagnosis"]["likelyCause"]
+    assert payload["diagnosis"]["directDmRequiresMessageHandler"] is True
     assert payload["commandExits"]["handlerTrigger"] == 0
     assert payload["evidenceFiles"]["handlerTrigger"].endswith("_handler_trigger.json")
     assert payload["handlerTrigger"]["checked"] is True
@@ -5107,6 +5113,12 @@ def test_openclaw_cliq_bot_no_response_packet_embeds_handler_trigger_packet(
     assert payload["handlerTrigger"]["expectedBot"]["name"] == "oldsix"
     assert payload["handlerTrigger"]["handlers"]["selected"] == ["mention", "message"]
     assert (
+        payload["handlerTrigger"]["handlers"]["directMessageRequirement"][
+            "requiredHandler"
+        ]
+        == "message"
+    )
+    assert (
         payload["handlerTrigger"]["publicWebhook"]["url"]
         == "https://cliq.example.test/webhooks/cliq"
     )
@@ -5115,6 +5127,10 @@ def test_openclaw_cliq_bot_no_response_packet_embeds_handler_trigger_packet(
     assert (
         payload["handlerTrigger"]["operatorChecklist"][1]["normalOperation"]
         == "return webhook_response when it contains text; do not keep a fixed received ACK"
+    )
+    assert (
+        payload["handlerTrigger"]["operatorChecklist"][1]["directBotDmRequirement"]
+        == "Bot details must list Message Handler for direct Bot DMs; Mention Handler alone only handles mentions/channel contexts."
     )
     assert payload["handlerTrigger"]["redaction"]["secretsStored"] is False
     assert (report_dir / payload["evidenceFiles"]["handlerTrigger"]).exists()
@@ -5171,6 +5187,7 @@ def test_openclaw_cliq_bot_no_response_packet_reports_active_ingress(
     assert payload["status"] == "ingress_active"
     assert payload["blockers"] == []
     assert payload["nextAction"] == "collect_trusted_reply_facts_if_needed"
+    assert payload["diagnosis"]["code"] == "ingress_and_dispatch_active"
     assert payload["ingress"]["status"] == "live_ingress_active"
     assert payload["ingress"]["latestNativeDispatch"]["deliveryCount"] == 1
     assert payload["publicCallback"]["status"] == "not_checked"
@@ -5229,6 +5246,7 @@ def test_openclaw_cliq_bot_no_response_packet_reports_rate_limited_reply(
     assert payload["status"] == "blocked"
     assert payload["blockers"] == ["dispatch_reply_rate_limited"]
     assert payload["nextAction"] == "wait_for_zoho_rate_limit_cooldown_or_retry"
+    assert payload["diagnosis"]["code"] == "zoho_reply_rate_limited"
     assert payload["ingress"]["error"] == "dispatch_reply_rate_limited"
     assert (
         payload["ingress"]["latestNativeDispatch"]["latestDeliveryFailure"]["errorKind"]
@@ -5288,6 +5306,7 @@ def test_openclaw_cliq_bot_no_response_packet_prioritizes_callback_failure(
     assert payload["status"] == "blocked"
     assert payload["blockers"] == ["public_callback_unverified"]
     assert payload["nextAction"] == "fix_public_callback"
+    assert payload["diagnosis"]["code"] == "public_callback_unverified"
     assert payload["commandExits"]["publicCallback"] == 1
     assert payload["commandExits"]["handlerTrigger"] is None
     assert payload["publicCallback"]["error"] == "authenticated_status_mismatch"
@@ -5343,6 +5362,12 @@ def test_openclaw_cliq_handler_trigger_packet_is_ready_without_leaking_secret(
     assert payload["handlers"]["selected"] == ["mention", "message"]
     assert payload["handlers"]["invalid"] == []
     assert payload["handlers"]["recommendedFirst"] == ["mention", "message"]
+    assert payload["handlers"]["directMessageRequirement"] == {
+        "requiredHandler": "message",
+        "botDetailsVisibleSignal": "Handlers list includes Message Handler",
+        "why": "Direct Bot DMs trigger the Message Handler. Mention Handler alone is for @mentions/channel contexts and will not handle plain direct Bot messages.",
+        "commonMiss": "Saving only Mention Handler can make direct messages from another account appear ignored even while the Bot profile looks configured.",
+    }
     assert payload["handlers"]["saveTargets"][0]["handler"] == "mention"
     assert (
         payload["handlers"]["saveTargets"][0]["zohoScreen"]
@@ -5364,6 +5389,10 @@ def test_openclaw_cliq_handler_trigger_packet_is_ready_without_leaking_secret(
     assert (
         payload["operatorChecklist"][1]["normalOperation"]
         == "return webhook_response when it contains text; do not keep a fixed received ACK"
+    )
+    assert (
+        payload["operatorChecklist"][1]["directBotDmRequirement"]
+        == "Bot details must list Message Handler for direct Bot DMs; Mention Handler alone only handles mentions/channel contexts."
     )
     assert payload["redaction"]["secretsStored"] is False
     assert payload["nextAction"] == "paste_or_recheck_zoho_bot_handlers"

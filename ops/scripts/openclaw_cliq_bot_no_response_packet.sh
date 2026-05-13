@@ -163,6 +163,7 @@ PAYLOAD="$("$JQ_BIN" -n \
        else (($ingressReport.blockers // [($ingressReport.error // "ingress_diagnostic_not_active")])[])
        end)
     ] as $blockers
+  | ($publicCallbackChecked and (($public.status // "") == "public_callback_verified")) as $publicVerified
   | {
       schemaVersion: 1,
       kind: "openclaw_cliq_bot_no_response_packet",
@@ -213,6 +214,77 @@ PAYLOAD="$("$JQ_BIN" -n \
         operatorChecklist: ($handlerPacket.operatorChecklist // null),
         redaction: ($handlerPacket.redaction // null)
       },
+      diagnosis: (
+        if ($blockers | index("public_callback_unverified")) then {
+          code: "public_callback_unverified",
+          likelyCause: "The public webhook did not pass the callback smoke check, so Zoho may not be able to reach OpenClaw.",
+          operatorFix: "Fix the public route to /webhooks/cliq before editing Bot handlers.",
+          agentSafeNextStep: "Rerun the public callback smoke after the route changes.",
+          directDmRequiresMessageHandler: true,
+          handlerSectionToCheck: "Message Handler for direct Bot DMs; Mention Handler for @mentions/channel contexts.",
+          receivedAckMeaning: "A literal received reply only proves a fixed ACK branch ran; it is not the OpenClaw final answer."
+        }
+        elif ($blockers | index("no_recent_webhook_ingress")) then {
+          code: (if $publicVerified then "zoho_bot_handler_not_posting" else "zoho_bot_handler_trigger_unverified" end),
+          likelyCause: (
+            if $publicVerified
+            then "The public webhook is reachable, but no Bot handler POST reached OpenClaw during the window. For direct Bot DMs, the Zoho Bot details page must list Message Handler; Mention Handler alone will not fire for plain direct messages."
+            else "No recent Bot handler POST reached OpenClaw; verify the public callback and paste/save the selected handlers."
+            end
+          ),
+          operatorFix: "Paste and save the Deluge-native Message Handler for direct Bot DMs, paste Mention Handler for @mentions if needed, then send exactly one fresh trusted message.",
+          agentSafeNextStep: "Run the handler trigger packet now, or one no-response packet after the operator confirms a fresh save/send.",
+          directDmRequiresMessageHandler: true,
+          handlerSectionToCheck: "Message Handler for direct Bot DMs; Mention Handler for @mentions/channel contexts.",
+          receivedAckMeaning: "A literal received reply only proves a fixed ACK branch ran; it does not prove OpenClaw received the event or produced the final answer."
+        }
+        elif ($blockers | index("latest_webhook_not_dispatched")) then {
+          code: "handler_posted_but_payload_or_policy_blocked",
+          likelyCause: "Zoho posted to OpenClaw, but payload shape or OpenClaw policy blocked native dispatch.",
+          operatorFix: "Re-paste the current handler template so the message map includes text, senderId, chatId, and reply_mode=deluge_response.",
+          agentSafeNextStep: "Inspect the redacted ingress diagnostic latestWebhook reason.",
+          directDmRequiresMessageHandler: true,
+          handlerSectionToCheck: "Message Handler payload shape for direct Bot DMs.",
+          receivedAckMeaning: "A literal received reply is only a handler ACK and may appear even when payload dispatch is blocked."
+        }
+        elif ($blockers | index("dispatch_reply_rate_limited")) then {
+          code: "zoho_reply_rate_limited",
+          likelyCause: "OpenClaw dispatched the turn, but Zoho reply delivery was rate-limited.",
+          operatorFix: "Wait for cooldown or switch the handler to deluge_response mode so Zoho renders the webhook response directly.",
+          agentSafeNextStep: "Avoid bursty live probes; rerun one packet after cooldown or handler-save confirmation.",
+          directDmRequiresMessageHandler: true,
+          handlerSectionToCheck: "Message Handler reply_mode=deluge_response.",
+          receivedAckMeaning: "A fixed received ACK is separate from the rate-limited OpenClaw final reply."
+        }
+        elif ($blockers | index("dispatch_reply_not_delivered")) then {
+          code: "openclaw_dispatched_but_reply_not_visible",
+          likelyCause: "OpenClaw dispatched the turn, but no final reply delivery was recorded.",
+          operatorFix: "Confirm the handler returns webhook_response when it contains text, not a fixed response map.",
+          agentSafeNextStep: "Inspect latestNativeDispatch delivery facts and reply transport.",
+          directDmRequiresMessageHandler: true,
+          handlerSectionToCheck: "Message Handler return webhook_response branch.",
+          receivedAckMeaning: "A literal received reply can hide that the handler returned the ACK map instead of OpenClaw text."
+        }
+        elif ($blockers | length) == 0 then {
+          code: "ingress_and_dispatch_active",
+          likelyCause: "Recent webhook ingress and native dispatch are active.",
+          operatorFix: "Visually confirm the Bot chat shows the OpenClaw answer.",
+          agentSafeNextStep: "Record trusted reply facts if the operator confirms visibility.",
+          directDmRequiresMessageHandler: true,
+          handlerSectionToCheck: "None unless the visible reply is still a fixed ACK.",
+          receivedAckMeaning: "If the visible reply is only received, the handler is still returning a fixed ACK."
+        }
+        else {
+          code: "inspect_packet_reports",
+          likelyCause: "The no-response packet found blockers that need report inspection.",
+          operatorFix: "Review the redacted evidence files listed in this packet.",
+          agentSafeNextStep: "Inspect bot no-response packet reports.",
+          directDmRequiresMessageHandler: true,
+          handlerSectionToCheck: "Message Handler for direct Bot DMs first.",
+          receivedAckMeaning: "A literal received reply is a handler ACK, not the OpenClaw final answer."
+        }
+        end
+      ),
       redaction: {
         rawWebhookPayloadStored: false,
         rawMessageBodyStored: false,

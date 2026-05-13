@@ -218,6 +218,10 @@ Use `../../docs/releases/OPENCLAW_CLIQ_BOT_HANDLER_TEMPLATES.md` for
 copy-ready Message, Mention, Participation, and Context Handler Deluge code.
 Direct Bot DMs should use the Message Handler template that wraps Zoho's
 text-like `message` value into an explicit message map before posting.
+For plain direct Bot chats, the Zoho Bot details **Handlers** list must include
+**Message Handler**; saving only **Mention Handler** is enough for @mentions in
+channel/group contexts but will not handle regular direct messages from another
+account.
 Current Bot handlers should set `reply_mode` to `deluge_response`, assign
 `webhook_response = invokeurl [...]`, and return that map when it contains a
 `text` key. That lets Zoho render OpenClaw's final answer as the native Bot
@@ -252,6 +256,10 @@ return response;
 `response.put("text","received")` is only a Zoho handler ACK. It may appear
 before or after the OpenClaw answer and does not prove final agent reply
 delivery. Remove fixed ACKs once `deluge_response` mode is installed.
+The no-response packet includes a `diagnosis` object; when public callback smoke
+is green but no recent webhook arrives, `diagnosis.code=zoho_bot_handler_not_posting`
+points at a Zoho handler save/trigger issue rather than OAuth or tunnel
+delivery.
 
 `parameters:payload.toString()` is tolerated for Deluge compatibility, but
 `body:payload.toString()` keeps the HTTP JSON intent clearer. The webhook parser

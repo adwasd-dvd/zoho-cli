@@ -69,7 +69,9 @@ Use this skill as the default operating contract for an OpenClaw agent acting li
   need the log-window classifier. The packet ignores its own public callback
   smoke records when classifying the latest real Bot message window.
   `no_recent_webhook_ingress` means the Zoho Bot handler did not POST to the
-  gateway during that window;
+  gateway during that window; if public callback smoke is verified, read
+  `diagnosis.code=zoho_bot_handler_not_posting` as a Zoho handler save/trigger
+  issue, especially a missing **Message Handler** for plain direct Bot DMs.
   `latest_webhook_not_dispatched` means payload or policy blocked dispatch;
   `dispatch_reply_not_delivered` means OpenClaw ran the turn but did not record
   a Cliq reply; `live_ingress_active` means the latest observed handler event
@@ -85,8 +87,10 @@ Use this skill as the default operating contract for an OpenClaw agent acting li
   before asking the operator to edit Zoho. Require
   `kind=openclaw_cliq_handler_trigger_packet` and
   `status=handler_trigger_packet_ready`; then use `handlers.saveTargets`,
-  `operatorChecklist`, and `delugeContract` to re-check Message/Mention
-  handlers. For real Bot DMs, require
+  `handlers.directMessageRequirement`, `operatorChecklist`, and
+  `delugeContract` to re-check Message/Mention handlers. For real Bot DMs, the
+  Zoho Bot details **Handlers** list must include **Message Handler**; Mention
+  Handler alone only covers @mentions/channel contexts. Also require
   `delugeContract.replyMode=deluge_response` and an operator checklist that says
   to return `webhook_response` when it contains `text`, not a fixed `received`
   ACK. Treat `public_webhook_path_mismatch`,

@@ -331,6 +331,9 @@ Human setup checkpoints:
   `docs/releases/OPENCLAW_CLIQ_BOT_HANDLER_TEMPLATES.md`.
 - If public callback smoke is verified but the no-response packet reports
   `no_recent_webhook_ingress`, inspect the embedded `handlerTrigger` subpacket;
+  the top-level `diagnosis.code=zoho_bot_handler_not_posting` means the public
+  route is reachable and the Zoho Bot handler did not POST during the send
+  window.
   the no-response wrapper auto-runs
   `ops/scripts/openclaw_cliq_handler_trigger_packet.sh` when public callback is
   not the blocker. You can also run the handler trigger script directly with
@@ -338,12 +341,16 @@ Human setup checkpoints:
   Zoho again. Require `handler_trigger_packet_ready`; use the packet's
   `handlers.saveTargets`, `delugeContract`, and `operatorChecklist` to verify
   the selected Message/Mention/Participation/Context handlers without storing
-  secrets or raw message bodies. Current handler-trigger packets require
+  secrets or raw message bodies. Use `handlers.directMessageRequirement` to
+  remember that plain direct Bot DMs require a saved **Message Handler** in the
+  Bot details Handlers list; Mention Handler alone only covers @mentions/channel
+  contexts. Current handler-trigger packets require
   `delugeContract.replyMode=deluge_response` and `operatorChecklist` should tell
   operators to return `webhook_response` when it contains `text`; a fixed
   `received` ACK is only a handler smoke signal and is not normal operation.
 - Direct Bot DMs use the wrapped Message Handler template because Zoho may pass
-  `message` as text; if logs show `handlerKind:"message"` plus
+  `message` as text and because Mention Handler alone will not fire for plain
+  direct messages; if logs show `handlerKind:"message"` plus
   `reason:"invalid_payload"`, fix the handler payload shape before debugging the
   public route.
 - The public callback smoke is run from the repo root when a tunnel/gateway URL

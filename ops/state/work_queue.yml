@@ -856,6 +856,15 @@
   - cliq-channel-506
   agent_action: make no-response and handler-trigger packets point operators at Deluge-native reply mode instead of fixed ACK smoke templates
   completion_signal: handler-trigger packets expose `replyMode=deluge_response`, `return webhook_response` guidance, classify `你好123456` as `no_recent_webhook_ingress` pending Zoho handler save/trigger fixes, and post-commit source drift reports `package_source_unchanged` for commit `4cbce2cc`
+- id: cliq-channel-508
+  title: add direct Bot DM no-ingress diagnosis
+  module: openclaw_cliq_channel
+  stage: completed
+  priority: high
+  depends_on:
+  - cliq-channel-507
+  agent_action: read `diagnosis.code` from `ops/scripts/openclaw_cliq_bot_no_response_packet.sh` and `handlers.directMessageRequirement` from `ops/scripts/openclaw_cliq_handler_trigger_packet.sh` before asking the operator to edit Zoho
+  completion_signal: public-callback-green/no-ingress packets identify `zoho_bot_handler_not_posting`, direct Bot DMs require a saved Message Handler in the Zoho Bot details Handlers list, delayed `received` remains ACK-only, focused tests pass, no-publish package verification is refreshed for tarball shasum `eb48b7e8b23ed1eac33a03dd452bd02a6d3f9a92`, and no live probe/publish/write is performed
 - id: cliq-channel-496
   title: collect operator native Cliq RC publish-path selection
   module: openclaw_cliq_channel

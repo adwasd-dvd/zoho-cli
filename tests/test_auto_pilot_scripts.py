@@ -2231,6 +2231,7 @@ def test_zoho_cli_rc_autonomy_packet_collects_operator_input(
     assert payload["nextAction"] == "collect_operator_input_or_select_publish_path"
     assert payload["operatorInputsNeeded"] == {
         "openclawCliqPublishPath": True,
+        "openclawCliqBotMessageHandler": True,
         "crmFixtureFacts": ["cleanup_plan", "fixture_payload_file"],
     }
     action_requests = {
@@ -2238,6 +2239,7 @@ def test_zoho_cli_rc_autonomy_packet_collects_operator_input(
     }
     assert set(action_requests) == {
         "select_openclaw_cliq_publish_path",
+        "save_openclaw_cliq_bot_message_handler",
         "provide_crm_fixture_cleanup_plan",
         "provide_crm_fixture_payload_file",
     }
@@ -2257,6 +2259,38 @@ def test_zoho_cli_rc_autonomy_packet_collects_operator_input(
     assert (
         action_requests["select_openclaw_cliq_publish_path"]["unblocks"]
         == "openclaw_cliq_operator_publish_selection_review"
+    )
+    assert (
+        action_requests["save_openclaw_cliq_bot_message_handler"]["template"]
+        == "docs/releases/OPENCLAW_CLIQ_BOT_HANDLER_TEMPLATES.md#message-handler"
+    )
+    assert (
+        action_requests["save_openclaw_cliq_bot_message_handler"]["commandPreview"]
+        == "ZOHO_CLIQ_PUBLIC_WEBHOOK_URL=<public-webhook-url> "
+        "ops/scripts/openclaw_cliq_bot_handler_template_render.sh --md --handlers message"
+    )
+    assert (
+        action_requests["save_openclaw_cliq_bot_message_handler"][
+            "followUpCommandPreview"
+        ]
+        == "ZOHO_CLIQ_INGRESS_LOOKBACK_SECONDS=600 "
+        "ops/scripts/openclaw_cliq_bot_no_response_packet.sh"
+    )
+    assert (
+        action_requests["save_openclaw_cliq_bot_message_handler"]["unblocks"]
+        == "openclaw_cliq_bot_direct_dm_recheck"
+    )
+    assert (
+        action_requests["save_openclaw_cliq_bot_message_handler"]["redaction"][
+            "rawSecretsStored"
+        ]
+        is False
+    )
+    assert (
+        action_requests["save_openclaw_cliq_bot_message_handler"]["redaction"][
+            "rawMessageBodyStored"
+        ]
+        is False
     )
     assert (
         action_requests["provide_crm_fixture_payload_file"]["template"]
@@ -2354,7 +2388,8 @@ def test_zoho_cli_rc_autonomy_packet_surfaces_safe_crm_agent_command(
     assert payload["safety"]["crmNextCommandAllowlistedDryRunLocal"] is True
     assert payload["operatorInputsNeeded"]["openclawCliqPublishPath"] is True
     assert [request["id"] for request in payload["operatorActionRequests"]] == [
-        "select_openclaw_cliq_publish_path"
+        "select_openclaw_cliq_publish_path",
+        "save_openclaw_cliq_bot_message_handler",
     ]
 
 
@@ -2443,6 +2478,45 @@ def _write_operator_action_prompt_autonomy_packet(
                 "requiresExplicitOperatorApproval": True,
                 "redaction": {
                     "rawSecretsStored": False,
+                    "rawLocalPathsStored": False,
+                },
+            },
+            {
+                "id": "save_openclaw_cliq_bot_message_handler",
+                "lane": "openclawCliqBot",
+                "required": True,
+                "inputKind": "zoho_bot_handler_save",
+                "template": (
+                    "docs/releases/OPENCLAW_CLIQ_BOT_HANDLER_TEMPLATES.md"
+                    "#message-handler"
+                ),
+                "guidance": (
+                    "Render the no-secret Message Handler Deluge block, paste "
+                    "it into the oldsix老六 Bot Message Handler, save it, then "
+                    "send exactly one fresh direct Bot message before rerunning "
+                    "diagnostics."
+                ),
+                "commandPreview": (
+                    "ZOHO_CLIQ_PUBLIC_WEBHOOK_URL=<public-webhook-url> "
+                    "ops/scripts/openclaw_cliq_bot_handler_template_render.sh "
+                    "--md --handlers message"
+                ),
+                "followUpCommandPreview": (
+                    "ZOHO_CLIQ_INGRESS_LOOKBACK_SECONDS=600 "
+                    "ops/scripts/openclaw_cliq_bot_no_response_packet.sh"
+                ),
+                "zohoVisibleSignal": (
+                    "The same Bot chat should show the OpenClaw reply from "
+                    "the handler response, not only a delayed literal Deluge "
+                    "acknowledgement such as `received`."
+                ),
+                "unblocks": "openclaw_cliq_bot_direct_dm_recheck",
+                "agentMayExecute": False,
+                "requiresExplicitOperatorApproval": False,
+                "redaction": {
+                    "rawSecretsStored": False,
+                    "rawMessageBodyStored": False,
+                    "rawReplyTextStored": False,
                     "rawLocalPathsStored": False,
                 },
             },
@@ -2541,10 +2615,11 @@ def test_zoho_cli_rc_operator_action_prompt_summarizes_requests(
     payload = json.loads(result.stdout)
     assert payload["status"] == "operator_action_prompt_ready"
     assert payload["nextAction"] == "send_operator_action_prompt"
-    assert payload["requestCount"] == 3
-    assert payload["requiredRequestCount"] == 3
+    assert payload["requestCount"] == 4
+    assert payload["requiredRequestCount"] == 4
     assert payload["requestIds"] == [
         "select_openclaw_cliq_publish_path",
+        "save_openclaw_cliq_bot_message_handler",
         "provide_crm_fixture_cleanup_plan",
         "provide_crm_fixture_payload_file",
     ]
@@ -2553,6 +2628,10 @@ def test_zoho_cli_rc_operator_action_prompt_summarizes_requests(
     assert payload["safety"]["redaction"]["rawPayloadStored"] is False
     assert "select_openclaw_cliq_publish_path" in payload["messageMarkdown"]
     assert "`local_operator_rc`" in payload["messageMarkdown"]
+    assert "save_openclaw_cliq_bot_message_handler" in payload["messageMarkdown"]
+    assert "openclaw_cliq_bot_handler_template_render.sh" in payload["messageMarkdown"]
+    assert "openclaw_cliq_bot_no_response_packet.sh" in payload["messageMarkdown"]
+    assert "openclaw_cliq_bot_direct_dm_recheck" in payload["messageMarkdown"]
     assert "CRM_V0_5_FIXTURE_CLEANUP_PLAN_TEMPLATE.md" in payload["messageMarkdown"]
     assert "<copied-payload-file>" in payload["messageMarkdown"]
     assert "crm_fixture_agent_next_command_recheck" in payload["messageMarkdown"]
@@ -2623,6 +2702,9 @@ def test_zoho_cli_rc_operator_action_prompt_can_emit_markdown(
     assert result.stdout.startswith("### zoho-cli RC operator actions\n")
     assert "select_openclaw_cliq_publish_path" in result.stdout
     assert "`local_operator_rc`" in result.stdout
+    assert "save_openclaw_cliq_bot_message_handler" in result.stdout
+    assert "openclaw_cliq_bot_handler_template_render.sh" in result.stdout
+    assert "openclaw_cliq_bot_no_response_packet.sh" in result.stdout
     assert "CRM_V0_5_FIXTURE_CLEANUP_PLAN_TEMPLATE.md" in result.stdout
     assert "<copied-payload-file>" in result.stdout
     assert str(tmp_path) not in result.stdout

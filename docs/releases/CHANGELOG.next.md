@@ -56,6 +56,13 @@
   Message Handler paste block with `reply_mode=deluge_response`, the configured
   public `/webhooks/cliq` URL, and `<paste-ZOHO_CLIQ_WEBHOOK_SECRET>` instead of
   the real secret. The existing operator prompt now points to that renderer.
+- Added the Bot handler save/recheck gate to the cross-lane RC autonomy packet:
+  `ops/scripts/zoho_cli_rc_autonomy_packet.sh` now emits
+  `save_openclaw_cliq_bot_message_handler` with the no-secret template-render
+  command, one-follow-up no-response diagnostic command, and redaction flags, so
+  recurring agents ask for the real Zoho Message Handler paste/save step before
+  treating publish-path and CRM fixture inputs as the only remaining operator
+  actions.
 
 - Extended the RC autonomy packet with redacted `operatorActionRequests` so recurring agents can ask for exactly the missing operator publish path, CRM fixture cleanup plan, and CRM fixture payload file without reading raw payloads, cleanup text, local paths, secrets, or lower-level report internals.
 - Recorded post-platform-215 source-drift, operator decision, and autonomy-packet evidence: pushed operator-action-request commit `9fac452e` still reports `package_source_unchanged`, all decision-packet `reportsReady=true`, and autonomy `operator_input_required` with the same three redacted operator request ids, while no publish/tag/release/expectedIntegrity fill or live Zoho write was performed.

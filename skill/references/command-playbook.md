@@ -277,9 +277,10 @@ to execute while the top-level status is still an operator-input state. Treat
 read-only and keeps publish/tag/GitHub release/expectedIntegrity fill plus live
 Zoho writes disabled for agents. Read `operatorActionRequests` for the exact
 human-facing asks, such as `select_openclaw_cliq_publish_path`,
+`save_openclaw_cliq_bot_message_handler`,
 `provide_crm_fixture_cleanup_plan`, and `provide_crm_fixture_payload_file`;
 these entries are guidance only, include placeholder-only `commandPreview` /
-`unblocks` hints for the next local recheck, and always keep
+`followUpCommandPreview` / `unblocks` hints for the next local recheck, and always keep
 `agentMayExecute=false`.
 
 To render the exact human handoff from those requests, run:

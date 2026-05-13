@@ -104,6 +104,8 @@ PAYLOAD="$("$JQ_BIN" -n \
     + (if (.template // null) != null then ": start from `" + .template + "`" else "" end)
     + (if (.guidance // null) != null then ": " + .guidance else "" end)
     + (if (.commandPreview // null) != null then " Recheck: `" + .commandPreview + "`." else "" end)
+    + (if (.followUpCommandPreview // null) != null then " Follow-up: `" + .followUpCommandPreview + "`." else "" end)
+    + (if (.zohoVisibleSignal // null) != null then " Visible check: " + .zohoVisibleSignal else "" end)
     + (if (.unblocks // null) != null then " Unlocks: `" + .unblocks + "`." else "" end);
 
   ($autonomy[0] // {}) as $packet

@@ -271,9 +271,11 @@ After sync, ensure the AI user follows:
     shape is recognized; it does not override a non-ready top-level status.
     Use `operatorActionRequests` to generate the exact human ask without
     exposing raw values. `commandPreview` values are placeholder-only recheck
-    hints, and `unblocks` names the next gate the operator input should unlock.
+    hints, optional `followUpCommandPreview` values name the next diagnostic
+    command, and `unblocks` names the next gate the operator input should unlock.
     Expected ids include
     `select_openclaw_cliq_publish_path`,
+    `save_openclaw_cliq_bot_message_handler`,
     `provide_crm_fixture_cleanup_plan`, and
     `provide_crm_fixture_payload_file`
   - when you need to hand those asks back to a human, prefer

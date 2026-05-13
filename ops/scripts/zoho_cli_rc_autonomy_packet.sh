@@ -13,6 +13,17 @@ CLIQ_DECISION_SOURCE_FILE="${ZOHO_CLI_RC_AUTONOMY_CLIQ_DECISION_SOURCE_FILE:-}"
 CRM_AGENT_NEXT_SOURCE_FILE="${ZOHO_CLI_RC_AUTONOMY_CRM_AGENT_NEXT_SOURCE_FILE:-}"
 CLIQ_DECISION_FILE="${CLIQ_DECISION_SOURCE_FILE:-"$REPORT_DIR/openclaw_cliq_rc_operator_decision_packet_$RUN_ID.json"}"
 CRM_AGENT_NEXT_FILE="${CRM_AGENT_NEXT_SOURCE_FILE:-"$REPORT_DIR/crm_fixture_agent_next_command_$RUN_ID.json"}"
+BOT_HANDLER_REQUEST_MODE="${ZOHO_CLI_RC_AUTONOMY_INCLUDE_BOT_HANDLER_REQUEST:-auto}"
+BOT_HANDLER_REQUEST_MODE_NORMALIZED="$(printf '%s' "$BOT_HANDLER_REQUEST_MODE" | tr '[:upper:]' '[:lower:]')"
+case "$BOT_HANDLER_REQUEST_MODE_NORMALIZED" in
+  0|false|off|no)
+    BOT_HANDLER_REQUEST_ENABLED=false
+    ;;
+  *)
+    BOT_HANDLER_REQUEST_ENABLED=true
+    ;;
+esac
+BOT_HANDLER_PUBLIC_WEBHOOK_URL="${ZOHO_CLIQ_PUBLIC_WEBHOOK_URL:-}"
 
 emit_error() {
   local error="$1"
@@ -83,6 +94,8 @@ PAYLOAD="$("$JQ_BIN" -n \
   --argjson cliqDecisionRan "$CLIQ_DECISION_RAN" \
   --argjson crmAgentNextExit "$CRM_AGENT_NEXT_EXIT" \
   --argjson crmAgentNextRan "$CRM_AGENT_NEXT_RAN" \
+  --argjson botHandlerRequestEnabled "$BOT_HANDLER_REQUEST_ENABLED" \
+  --arg botHandlerPublicWebhookUrl "$BOT_HANDLER_PUBLIC_WEBHOOK_URL" \
   --slurpfile cliq "$CLIQ_DECISION_FILE" \
   --slurpfile crm "$CRM_AGENT_NEXT_FILE" \
   '
@@ -92,6 +105,13 @@ PAYLOAD="$("$JQ_BIN" -n \
   | ($crm.status // "missing") as $crmStatus
   | (($crm.safety.nextCommandAllowedForAgent // false) == true) as $crmNextAllowed
   | (($crm.operatorReview.nextAgentCommand // null)) as $crmNextCommand
+  | ($botHandlerRequestEnabled and $cliqStatus == "awaiting_operator_publish_path") as $botHandlerRequestNeeded
+  | (
+      if ($botHandlerPublicWebhookUrl // "") == ""
+      then "<public-webhook-url>"
+      else $botHandlerPublicWebhookUrl
+      end
+    ) as $botHandlerCommandWebhookUrl
   | [
       (if ($cliq.kind // "") == "openclaw_cliq_rc_operator_decision_packet" then empty else "cliq_decision_packet_invalid" end),
       (if ($crm.kind // "") == "crm_fixture_agent_next_command" then empty else "crm_agent_next_command_invalid" end),
@@ -107,7 +127,7 @@ PAYLOAD="$("$JQ_BIN" -n \
       elif $crmStatus == "agent_next_command_ready" and $crmNextAllowed then "agent_next_command_ready"
       elif $cliqStatus == "operator_publish_selection_ready" then "stop_before_operator_publish"
       elif $crmStatus == "stop_before_operator_live_fixture" then "stop_before_operator_live_fixture"
-      elif $crmStatus == "operator_input_required" then "operator_input_required"
+      elif $crmStatus == "operator_input_required" or $botHandlerRequestNeeded then "operator_input_required"
       elif $cliqStatus == "awaiting_operator_publish_path" then "operator_publish_path_required"
       else "no_agent_command"
       end
@@ -129,6 +149,7 @@ PAYLOAD="$("$JQ_BIN" -n \
           verifiedStatuses: ($cliq.verifiedStatuses // {}),
           package: ($cliq.package // {}),
           artifact: ($cliq.artifact // {}),
+          botHandlerOperatorActionRequired: $botHandlerRequestNeeded,
           safety: ($cliq.safety // {})
         },
         crmFixture: {
@@ -148,6 +169,7 @@ PAYLOAD="$("$JQ_BIN" -n \
       ),
       operatorInputsNeeded: {
         openclawCliqPublishPath: ($cliqStatus == "awaiting_operator_publish_path"),
+        openclawCliqBotMessageHandler: $botHandlerRequestNeeded,
         crmFixtureFacts: (
           if $crmStatus == "operator_input_required"
           then ($crm.operatorReview.missingFacts // [])
@@ -174,6 +196,28 @@ PAYLOAD="$("$JQ_BIN" -n \
               requiresExplicitOperatorApproval: true,
               redaction: {
                 rawSecretsStored: false,
+                rawLocalPathsStored: false
+              }
+            } else empty end
+          ),
+          (
+            if $botHandlerRequestNeeded then {
+              id: "save_openclaw_cliq_bot_message_handler",
+              lane: "openclawCliqBot",
+              required: true,
+              inputKind: "zoho_bot_handler_save",
+              template: "docs/releases/OPENCLAW_CLIQ_BOT_HANDLER_TEMPLATES.md#message-handler",
+              guidance: "Render the no-secret Message Handler Deluge block, paste it into the oldsix老六 Bot Message Handler, save it, then send exactly one fresh direct Bot message before rerunning diagnostics.",
+              commandPreview: ("ZOHO_CLIQ_PUBLIC_WEBHOOK_URL=" + $botHandlerCommandWebhookUrl + " ops/scripts/openclaw_cliq_bot_handler_template_render.sh --md --handlers message"),
+              followUpCommandPreview: "ZOHO_CLIQ_INGRESS_LOOKBACK_SECONDS=600 ops/scripts/openclaw_cliq_bot_no_response_packet.sh",
+              zohoVisibleSignal: "The same Bot chat should show the OpenClaw reply from the handler response, not only a delayed literal Deluge acknowledgement such as `received`.",
+              unblocks: "openclaw_cliq_bot_direct_dm_recheck",
+              agentMayExecute: false,
+              requiresExplicitOperatorApproval: false,
+              redaction: {
+                rawSecretsStored: false,
+                rawMessageBodyStored: false,
+                rawReplyTextStored: false,
                 rawLocalPathsStored: false
               }
             } else empty end

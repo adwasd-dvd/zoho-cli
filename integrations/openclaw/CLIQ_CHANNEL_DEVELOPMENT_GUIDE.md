@@ -132,6 +132,11 @@ Follow the stack from the architecture plan:
      `ops/scripts/openclaw_cliq_bot_handler_template_render.sh --md --handlers message`
      renders `handler_template_render_ready` plus the exact direct-DM Message
      Handler paste block without printing or storing the real webhook secret)
+21b. `cliq-channel-511` Bot handler autonomy request (complete;
+     `ops/scripts/zoho_cli_rc_autonomy_packet.sh` now includes the redacted
+     `save_openclaw_cliq_bot_message_handler` operator action so recurring
+     agents surface the handler paste/save/recheck gate before another live
+     probe)
 22. `cliq-channel-421` real Bot handler runtime contract coverage (complete;
     webhook runtime tests process Message, Mention, Participation, and Context
     shaped payloads through native normalization/security/dedupe/lifecycle/ledger
@@ -331,7 +336,9 @@ The intake accepts Message, Mention, Participation, and Context handlers for
 RC. Rotate any exposed webhook secret before live use. For direct Bot DMs, use
 `ops/scripts/openclaw_cliq_bot_handler_template_render.sh --md --handlers message`
 to render the current Message Handler block; a fixed `received` ACK is
-only a smoke signal and is not normal operation.
+only a smoke signal and is not normal operation. The cross-lane autonomy packet
+also lists `save_openclaw_cliq_bot_message_handler` when this Zoho UI step is
+still the next operator-owned recheck gate.
 
 ## Human install UX checklist
 

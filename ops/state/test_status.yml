@@ -1,10 +1,11 @@
-last_run_at: "2026-05-13T17:55:50Z"
+last_run_at: "2026-05-13T19:06:27Z"
 last_result: passing
-current_focus: cliq-channel-510-handler-template-render
+current_focus: cliq-channel-511-bot-handler-autonomy-request
 suites:
   unit:
     status: passing
     notes:
+      - "cliq-channel-511 validation passed at 2026-05-13T19:06:27Z: shell syntax for `ops/scripts/zoho_cli_rc_autonomy_packet.sh` and `ops/scripts/zoho_cli_rc_operator_action_prompt.sh`; focused autonomy/operator-action/RC checklist/Lane 3/markdown tests -> 8 passed; direct autonomy run `20260513T185550Z-cliq511-dev` returned `operator_input_required`, `operatorInputsNeeded.openclawCliqBotMessageHandler=true`, and `operatorActionRequests` including `save_openclaw_cliq_bot_message_handler`; direct operator prompt run `20260513T185550Z-cliq511-dev-prompt --md` printed the no-secret Message Handler render command plus one follow-up no-response diagnostic; `make lint`, Ruff format/check for touched tests, YAML parse, and `git diff --check` passed. No live Bot probe, publish, tag, npm promotion, GitHub release, expectedIntegrity fill, CRM write, or live CRM fixture was performed."
       - "cliq-channel-510 validation passed at 2026-05-13T17:55:50Z: shell syntax for the template renderer/operator prompt; direct `--md` render with `ZOHO_CLIQ_PUBLIC_WEBHOOK_URL=https://cliq.hpyio.com/webhooks/cliq` returned `handler_template_render_ready` and did not print the test secret; focused operator-prompt/template-render/Lane 3/RC checklist/markdown/template-doc tests -> 11 passed; `make lint`, Ruff format/check, YAML parse, and `git diff --check` passed. No live Bot probe, publish, tag, npm promotion, GitHub release, expectedIntegrity fill, CRM write, or live CRM fixture was performed."
       - "cliq-channel-500 validation passed at 2026-05-13T16:25:19Z: source drift run `20260513T162519Z-package-recheck-source` reported `package_source_unchanged` and `packageDrift.packageChangedSinceManifest=false`; docs/state now record that pack/artifact/install smoke was skipped because package source did not change; focused OpenClaw channel/Lane 3/markdown tests -> 21 passed; `make lint`, YAML parse, and `git diff --check` passed."
       - "cliq-channel-499 validation passed at 2026-05-13T16:05:19Z: operator publish handoff, README, changelog, and Lane 1 state were synced to the `20260513T154319Z-handler-prompt` no-publish evidence baseline; focused OpenClaw channel/Lane 3/markdown tests -> 21 passed; `make lint`, YAML parse, and `git diff --check` passed. No live Bot probe, publish, tag, npm promotion, GitHub release, expectedIntegrity fill, CRM write, or live CRM fixture was performed."

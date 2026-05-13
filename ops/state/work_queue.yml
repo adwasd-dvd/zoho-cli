@@ -883,6 +883,15 @@
   - cliq-channel-509
   agent_action: run `ops/scripts/openclaw_cliq_bot_handler_template_render.sh --md --handlers message` after the Bot handler operator prompt when the operator needs the exact Zoho Message Handler Deluge block
   completion_signal: template renderer emits `handler_template_render_ready`, fills the configured `/webhooks/cliq` URL, keeps the secret as `<paste-ZOHO_CLIQ_WEBHOOK_SECRET>`, updates the operator prompt render command, and stores no raw payloads, message text, reply text, local paths, or secrets
+- id: cliq-channel-511
+  title: surface Bot Message Handler save request in RC autonomy
+  module: openclaw_cliq_channel
+  stage: completed
+  priority: high
+  depends_on:
+  - cliq-channel-510
+  agent_action: start recurring RC passes with `ops/scripts/zoho_cli_rc_autonomy_packet.sh`, then read `operatorActionRequests` for `save_openclaw_cliq_bot_message_handler` before asking for another live Bot probe
+  completion_signal: autonomy packets and `ops/scripts/zoho_cli_rc_operator_action_prompt.sh --md` include the no-secret Message Handler render command, one-follow-up no-response diagnostic command, redacted visible-reply guidance, and no agent-executable publish/write request
 - id: cliq-channel-496
   title: collect operator native Cliq RC publish-path selection
   module: openclaw_cliq_channel

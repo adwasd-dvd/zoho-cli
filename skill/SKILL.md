@@ -204,8 +204,9 @@ Use this skill as the default operating contract for an OpenClaw agent acting li
   disabled for agents. Use `operatorActionRequests` to explain exactly which
   operator choices or fixture inputs are needed; entries are redacted,
   non-executable by agents, include placeholder-only `commandPreview` /
-  `unblocks` hints for the next recheck, and include stable ids such as
-  `select_openclaw_cliq_publish_path`,
+  `followUpCommandPreview` / `unblocks` hints for the next recheck, and
+  include stable ids such as `select_openclaw_cliq_publish_path`,
+  `save_openclaw_cliq_bot_message_handler`,
   `provide_crm_fixture_cleanup_plan`, and
   `provide_crm_fixture_payload_file`. To produce the human-facing handoff,
   prefer `ops/scripts/zoho_cli_rc_operator_action_prompt.sh`; it returns
@@ -222,7 +223,11 @@ Use this skill as the default operating contract for an OpenClaw agent acting li
   paste. The renderer fills the public `/webhooks/cliq` URL when configured,
   leaves the secret as `<paste-ZOHO_CLIQ_WEBHOOK_SECRET>`, and the handoff keeps
   the one-message/no-response recheck flow without storing raw message text,
-  payloads, reply text, local paths, or secrets.
+  payloads, reply text, local paths, or secrets. The cross-lane RC autonomy
+  packet surfaces the same save/recheck need as
+  `save_openclaw_cliq_bot_message_handler` when the native Cliq lane is still
+  awaiting operator publish-path selection, so heartbeat agents should not miss
+  the Bot handler blocker.
 - For CRM SDK work, run `zoho crm sdk-status` first. Treat
   `zohocrmsdk8_0==5.0.0` as optional `zoho-cli[crm-sdk]` readiness, keep the
   current HTTP adapter as default, use `zoho_cli/crm_sdk.py` only as the

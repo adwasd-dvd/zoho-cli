@@ -973,6 +973,15 @@
   - cliq-channel-518
   agent_action: "verify the current `oldsix老六` account (`cliq/default`) is bound to OpenClaw agent `zoho-employee-test`, expose the `bindings[]` match in deep channel status, and document the Discord-style agent selection model"
   completion_signal: "`openclaw channels status --channel cliq --deep --json` exposes `agentBinding.agentId=zoho-employee-test` for `cliq/default`, the offline route binding gate passes with `ZOHO_CLIQ_EXPECTED_AGENT_ID=zoho-employee-test`, and Lane 1/2/3 docs tell operators to use OpenClaw `bindings[]` for Cliq Bot-to-agent selection"
+- id: cliq-channel-521
+  title: refresh no-publish RC evidence after agent binding diagnostics
+  module: openclaw_cliq_channel
+  stage: completed
+  priority: medium
+  depends_on:
+  - cliq-channel-520
+  agent_action: "run source drift first, then refresh no-publish pack/artifact/install/promotion/bundle/notes/plan/manifest evidence because the package source changed for deep agent-binding diagnostics"
+  completion_signal: "post-manifest source drift `20260514T005526Z-cliq520-binding-diagnostics-postmanifest-source` reports `package_source_unchanged` for commit `87dd2852`; local RC tarball shasum is `7f50359917d1e784f3ebc28e85b8303f700dbfdc` with integrity `sha512-axQPmucR/GcBRTLCGJKTTuafEckyy60+wQQm0foDXX4RLr2DXq+ewmEMPTwHglGNxXpL0xw5Q0KjYS44ciKM3A==`; decision packet remains `awaiting_operator_publish_path`; no publish/tag/release/integrity-fill action was performed"
 - id: cliq-channel-496
   title: collect operator native Cliq RC publish-path selection
   module: openclaw_cliq_channel

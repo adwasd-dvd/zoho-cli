@@ -24,6 +24,13 @@
   operator config verifies `oldsix老六 -> zoho-employee-test` with the same
   routing model Discord uses.
 - Refreshed the no-publish OpenClaw Cliq RC artifact chain after the
+  agent-binding diagnostics package-source change; the local RC tarball now has
+  shasum `7f50359917d1e784f3ebc28e85b8303f700dbfdc`, integrity
+  `sha512-axQPmucR/GcBRTLCGJKTTuafEckyy60+wQQm0foDXX4RLr2DXq+ewmEMPTwHglGNxXpL0xw5Q0KjYS44ciKM3A==`,
+  artifact/install/promotion checks pass, the handoff manifest is current for
+  commit `87dd2852`, and publish/tag/release/integrity-fill actions remain
+  operator-only.
+- Refreshed the no-publish OpenClaw Cliq RC artifact chain after the
   Deluge-native reply change; the local RC tarball now has shasum
   `295555b784d69838f3f01590e59c9e5cf5bbde20`, artifact/install/promotion
   checks pass, and publish/tag/release/integrity-fill actions remain

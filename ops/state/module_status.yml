@@ -28,12 +28,12 @@ cliq:
 openclaw_cliq_channel:
   priority: 3
   status: in_progress
-  phase: bot_direct_dm_working_agent_binding_verified_reaction_capability_planned
+  phase: bot_direct_dm_working_agent_binding_verified_rc_evidence_refreshed_reaction_capability_planned
   target_release: v0.4.0
   current_milestone: cliq-channel-519-bot-message-reaction-discovery
   blockers:
     - "true Bot message reactions require a real Zoho inbound message id; current direct Message Handler templates may only have plain message text, so cliq-channel-519 must discover/preserve the real id before enabling `zoho cliq react` or `zoho cliq status-react`"
-    - "publish/tag/npm promotion/GitHub release/expectedIntegrity fill remain operator-approved only even though no-publish RC evidence is ready"
+    - "publish/tag/npm promotion/GitHub release/expectedIntegrity fill remain operator-approved only even though no-publish RC evidence is ready with tarball shasum `7f50359917d1e784f3ebc28e85b8303f700dbfdc`"
 
 crm:
   priority: 4

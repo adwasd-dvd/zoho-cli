@@ -199,9 +199,10 @@ text-like `message` value into an explicit `msg` map with `text`, `messageId`,
 `senderId`, `chatId`, and `chatType`. Full Deluge templates for all four
 accepted handlers live in `docs/releases/OPENCLAW_CLIQ_BOT_HANDLER_TEMPLATES.md`.
 Current real-Bot handlers should set `reply_mode` to `deluge_response`, assign
-the `invokeurl` result to `webhook_response`, and return that map when it has a
-`text` key so Zoho renders the OpenClaw agent's final answer as the Bot's native
-handler response.
+the `invokeurl` result to `webhook_response`, normalize either a KEY-VALUE
+response or a TEXT JSON response into `webhook_text`, and return a clean
+`response.text` map so Zoho renders the OpenClaw agent's final answer as the
+Bot's native handler response.
 
 ```deluge
 response = Map();
@@ -220,9 +221,30 @@ webhook_response = invokeurl
   body:payload.toString()
   headers:{"Content-Type":"application/json","X-Cliq-Webhook-Secret":"<rotated-secret>"}
 ]
-if(webhook_response != null && webhook_response.containKey("text") && webhook_response.get("text") != null)
+webhook_text = "";
+webhook_map = Map();
+if(webhook_response != null)
 {
-  response.put("text",webhook_response.get("text"));
+  try
+  {
+    webhook_text = webhook_response.get("text");
+  }
+  catch (e)
+  {
+    try
+    {
+      webhook_map = webhook_response.toString().toMap();
+      webhook_text = webhook_map.get("text");
+    }
+    catch (e2)
+    {
+      webhook_text = "";
+    }
+  }
+}
+if(webhook_text != null && webhook_text != "")
+{
+  response.put("text",webhook_text);
 }
 return response;
 ```
@@ -343,8 +365,8 @@ Participation, or Context, points to the matching sections in
 contract: use `body:payload.toString()`, `Content-Type: application/json`, and
 `X-Cliq-Webhook-Secret` from `ZOHO_CLIQ_WEBHOOK_SECRET`. Current packets also
 require `reply_mode=deluge_response`, `webhook_response = invokeurl [...]`, and
-returning `webhook_response` when it has a `text` key; a fixed `received` ACK is
-only a handler smoke signal. The packet reports whether a secret is available in
+the safe `webhook_text` normalization block from the template; a fixed
+`received` ACK is only a handler smoke signal. The packet reports whether a secret is available in
 the current environment, but it never stores the secret value, webhook payload,
 message body, response body, or reply body.
 

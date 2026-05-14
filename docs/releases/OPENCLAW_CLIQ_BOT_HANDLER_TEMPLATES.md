@@ -3,7 +3,7 @@
 This runbook gives operator-copyable Deluge templates for connecting a real
 Zoho Cliq Bot to the native OpenClaw `cliq` channel webhook at `/webhooks/cliq`.
 
-Updated: `2026-05-13T17:55:50Z`.
+Updated: `2026-05-13T21:25:01Z`.
 
 Official references:
 
@@ -30,11 +30,11 @@ native OpenClaw agent turns yet.
 
 Set `reply_mode` to `deluge_response` in Bot handlers. In this mode OpenClaw
 captures the agent's final answer and returns it in the webhook JSON `text`
-field; the Deluge handler copies only that value into a clean `response.text`
-map before returning it so Zoho renders the reply as the Bot's native handler
-response. Do not return the full OpenClaw diagnostic webhook response to Zoho.
-This avoids the less reliable second-hop OAuth `zoho cliq send` path for direct
-Bot chats.
+field; the Deluge handler safely normalizes either a KEY-VALUE response or a
+TEXT JSON response, copies only that value into a clean `response.text` map, and
+returns that map so Zoho renders the reply as the Bot's native handler response.
+Do not return the full OpenClaw diagnostic webhook response to Zoho. This avoids
+the less reliable second-hop OAuth `zoho cliq send` path for direct Bot chats.
 
 True `zoho cliq status-react` reactions require Zoho's real inbound message id.
 The minimal direct Message Handler below uses a generated `zoho-message-*`
@@ -88,9 +88,31 @@ webhook_response = invokeurl
   headers:{"Content-Type":"application/json","X-Cliq-Webhook-Secret":"<rotated-secret>"}
 ];
 
-if(webhook_response != null && webhook_response.containKey("text") && webhook_response.get("text") != null)
+webhook_text = "";
+webhook_map = Map();
+if(webhook_response != null)
 {
-  response.put("text",webhook_response.get("text"));
+  try
+  {
+    webhook_text = webhook_response.get("text");
+  }
+  catch (e)
+  {
+    try
+    {
+      webhook_map = webhook_response.toString().toMap();
+      webhook_text = webhook_map.get("text");
+    }
+    catch (e2)
+    {
+      webhook_text = "";
+    }
+  }
+}
+
+if(webhook_text != null && webhook_text != "")
+{
+  response.put("text",webhook_text);
 }
 
 return response;
@@ -141,9 +163,31 @@ webhook_response = invokeurl
   headers:{"Content-Type":"application/json","X-Cliq-Webhook-Secret":"<rotated-secret>"}
 ];
 
-if(webhook_response != null && webhook_response.containKey("text") && webhook_response.get("text") != null)
+webhook_text = "";
+webhook_map = Map();
+if(webhook_response != null)
 {
-  response.put("text",webhook_response.get("text"));
+  try
+  {
+    webhook_text = webhook_response.get("text");
+  }
+  catch (e)
+  {
+    try
+    {
+      webhook_map = webhook_response.toString().toMap();
+      webhook_text = webhook_map.get("text");
+    }
+    catch (e2)
+    {
+      webhook_text = "";
+    }
+  }
+}
+
+if(webhook_text != null && webhook_text != "")
+{
+  response.put("text",webhook_text);
 }
 
 return response;
@@ -190,9 +234,31 @@ webhook_response = invokeurl
   headers:{"Content-Type":"application/json","X-Cliq-Webhook-Secret":"<rotated-secret>"}
 ];
 
-if(webhook_response != null && webhook_response.containKey("text") && webhook_response.get("text") != null)
+webhook_text = "";
+webhook_map = Map();
+if(webhook_response != null)
 {
-  response.put("text",webhook_response.get("text"));
+  try
+  {
+    webhook_text = webhook_response.get("text");
+  }
+  catch (e)
+  {
+    try
+    {
+      webhook_map = webhook_response.toString().toMap();
+      webhook_text = webhook_map.get("text");
+    }
+    catch (e2)
+    {
+      webhook_text = "";
+    }
+  }
+}
+
+if(webhook_text != null && webhook_text != "")
+{
+  response.put("text",webhook_text);
 }
 
 return response;
@@ -235,9 +301,31 @@ webhook_response = invokeurl
   headers:{"Content-Type":"application/json","X-Cliq-Webhook-Secret":"<rotated-secret>"}
 ];
 
-if(webhook_response != null && webhook_response.containKey("text") && webhook_response.get("text") != null)
+webhook_text = "";
+webhook_map = Map();
+if(webhook_response != null)
 {
-  response.put("text",webhook_response.get("text"));
+  try
+  {
+    webhook_text = webhook_response.get("text");
+  }
+  catch (e)
+  {
+    try
+    {
+      webhook_map = webhook_response.toString().toMap();
+      webhook_text = webhook_map.get("text");
+    }
+    catch (e2)
+    {
+      webhook_text = "";
+    }
+  }
+}
+
+if(webhook_text != null && webhook_text != "")
+{
+  response.put("text",webhook_text);
 }
 
 return response;
@@ -284,9 +372,11 @@ one native OpenClaw turn and one Cliq reply.
 If the Bot replies with a delayed literal `received`, the handler is still using
 an ACK-only template. Re-paste the current template with
 `payload.put("reply_mode","deluge_response");`, assign `webhook_response =
-invokeurl [...]`, close the assigned invokeUrl task with `];`, and copy
-`webhook_response.get("text")` into `response.put("text",...)` when it has a
-`text` key.
+invokeurl [...]`, close the assigned invokeUrl task with `];`, normalize
+`webhook_response` through the template's `webhook_text` block, and copy
+`webhook_text` into `response.put("text",...)` when it is not empty. Do not call
+`webhook_response.containKey("text")` directly; some Zoho Bot executions expose
+the `invokeurl` result as TEXT, not KEY-VALUE.
 
 If public callback smoke passes but the no-response packet reports
 `no_recent_webhook_ingress`, run

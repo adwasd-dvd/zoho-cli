@@ -334,9 +334,30 @@ webhook_response = invokeurl
   body:payload.toString()
   headers:{"Content-Type":"application/json","X-Cliq-Webhook-Secret":"<rotated-secret>"}
 ]
-if(webhook_response != null && webhook_response.containKey("text") && webhook_response.get("text") != null)
+webhook_text = "";
+webhook_map = Map();
+if(webhook_response != null)
 {
-  return webhook_response;
+  try
+  {
+    webhook_text = webhook_response.get("text");
+  }
+  catch (e)
+  {
+    try
+    {
+      webhook_map = webhook_response.toString().toMap();
+      webhook_text = webhook_map.get("text");
+    }
+    catch (e2)
+    {
+      webhook_text = "";
+    }
+  }
+}
+if(webhook_text != null && webhook_text != "")
+{
+  response.put("text",webhook_text);
 }
 return response;
 ```

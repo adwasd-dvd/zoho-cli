@@ -245,9 +245,10 @@ For plain direct Bot chats, the Zoho Bot details **Handlers** list must include
 channel/group contexts but will not handle regular direct messages from another
 account.
 Current Bot handlers should set `reply_mode` to `deluge_response`, assign
-`webhook_response = invokeurl [...]`, and return that map when it contains a
-`text` key. That lets Zoho render OpenClaw's final answer as the native Bot
-handler response instead of relying on a second OAuth send. If the handler
+`webhook_response = invokeurl [...]`, normalize either a KEY-VALUE response or
+a TEXT JSON response into `webhook_text`, and return a clean `response.text`
+map. That lets Zoho render OpenClaw's final answer as the native Bot handler
+response instead of relying on a second OAuth send. If the handler
 cannot expose a real Zoho message id, use the template's `zoho-message-*`
 dedupe id; native dispatch will not attempt a reply against that synthetic id.
 True status reactions are attempted only when the payload carries a real Zoho
@@ -273,9 +274,30 @@ webhook_response = invokeurl
   body:payload.toString()
   headers:{"Content-Type":"application/json","X-Cliq-Webhook-Secret":"<rotated-secret>"}
 ]
-if(webhook_response != null && webhook_response.containKey("text") && webhook_response.get("text") != null)
+webhook_text = "";
+webhook_map = Map();
+if(webhook_response != null)
 {
-  response.put("text",webhook_response.get("text"));
+  try
+  {
+    webhook_text = webhook_response.get("text");
+  }
+  catch (e)
+  {
+    try
+    {
+      webhook_map = webhook_response.toString().toMap();
+      webhook_text = webhook_map.get("text");
+    }
+    catch (e2)
+    {
+      webhook_text = "";
+    }
+  }
+}
+if(webhook_text != null && webhook_text != "")
+{
+  response.put("text",webhook_text);
 }
 return response;
 ```

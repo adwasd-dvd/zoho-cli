@@ -314,10 +314,13 @@ the wrapped Message Handler template from
 as text, so the handler should post an explicit message map with `text`,
 `messageId`, `senderId`, `chatId`, and `chatType`. Current real Bot
 handlers should also set `reply_mode` to `deluge_response`, assign
-`webhook_response = invokeurl [...]`, and return that map when it contains a
-`text` key so Zoho displays the OpenClaw final answer as the Bot's native
-handler response. Welcome, Incoming Webhook, Call, and Menu handlers are ignored
-until a later slice assigns explicit OpenClaw workflows. If the direct handler
+`webhook_response = invokeurl [...]`, and normalize either a KEY-VALUE response
+or a TEXT JSON response into `webhook_text` before returning a clean
+`response.text` map. Do not call `webhook_response.containKey("text")`
+directly; some Zoho Bot executions expose the `invokeurl` result as TEXT and
+will raise a Deluge type error. Welcome, Incoming Webhook, Call, and Menu
+handlers are ignored until a later slice assigns explicit OpenClaw workflows. If
+the direct handler
 uses a generated `zoho-message-*` id or OpenClaw synthesizes a `webhook-*` id,
 native dispatch must not reply or status-react against that synthetic id; the
 Deluge-native response uses the emoji-prefixed reply fallback instead.

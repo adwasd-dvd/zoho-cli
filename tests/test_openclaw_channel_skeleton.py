@@ -136,8 +136,13 @@ def test_openclaw_cliq_bot_templates_use_deluge_native_reply_mode() -> None:
     assert 'payload.put("reply_mode","deluge_response");' in template
     assert "webhook_response = invokeurl" in template
     assert "];" in template
-    assert 'webhook_response.containKey("text")' in template
-    assert 'response.put("text",webhook_response.get("text"));' in template
+    assert (
+        'if(webhook_response != null && webhook_response.containKey("text")'
+        not in template
+    )
+    assert 'webhook_text = webhook_response.get("text");' in template
+    assert "webhook_response.toString().toMap();" in template
+    assert 'response.put("text",webhook_text);' in template
     assert "return webhook_response;" not in template
     assert 'response.put("text","received");' in template
     assert "only proves Zoho ran the handler" in template

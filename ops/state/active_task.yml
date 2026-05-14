@@ -1,16 +1,16 @@
-id: cliq-channel-496
-title: collect operator native Cliq RC publish-path selection
+id: cliq-channel-525
+title: refresh no-publish RC evidence after Deluge containKey fix
 module: openclaw_cliq_channel
-stage: blocked
-status: blocked
+stage: pending
+status: in_progress
 owner: coder
-updated_at: '2026-05-14T01:26:54Z'
+updated_at: '2026-05-14T04:36:26Z'
 execution_mode: deep_milestone_batch
 throughput_policy_ref: ops/state/execution_policy.yml
 success_criteria:
-  - "Operator selects exactly one publish path: `local_operator_rc`, `npm_rc_publish`, or `github_release_artifact`."
-  - "Agents continue to keep publish, tag, npm promotion, GitHub release, and expectedIntegrity fill non-executable."
-  - "RC autonomy/operator prompts surface only current operator inputs, not stale Bot handler-save asks."
+  - "Source drift is checked before repacking."
+  - "No-publish pack/artifact/install/promotion/operator handoff evidence is refreshed for the Deluge `containKey` fix."
+  - "Decision/autonomy evidence still blocks publish/tag/release/integrity-fill for agents."
 progress:
   - "Operator confirmed the clean-response direct Bot path is now normal after Deluge returns only `response.text`."
   - "User requested emoji/reaction behavior for incoming Bot messages; queued this as `cliq-channel-519`."
@@ -19,5 +19,6 @@ progress:
   - "cliq-channel-519 implemented the reaction boundary: synthetic `zoho-message-*` / `webhook-*` ids skip true Zoho lifecycle reactions with `synthetic_message_id`; native ids with chat/channel route facts remain true-reaction eligible; Deluge-native synthetic Bot replies get a visible `✅ ` prefix fallback plus privacy-safe `reactionFallback` diagnostics."
   - "cliq-channel-522 refreshed no-publish RC evidence after the reaction fallback package-source change: local tarball shasum `a41406448dda8ca6c7229750ff14cb535c7570e5`, integrity `sha512-5CxFO7kA7VX6ztyNiMzejdk1VC7mLjxZ2fBtZ2mLNdRr64Ci8reP932YJr+pPg6SDJpsjYI734ETZJB9FYaciQ==`, source drift clean, decision still awaiting operator publish path."
   - "cliq-channel-523 retired the stale default Bot handler-save ask: default autonomy now reports `nextOperatorActionId=select_openclaw_cliq_publish_path` and keeps handler-save only as forced/debug triage."
-next_if_done: After the operator selects a publish path, record read-only selected-path decision evidence; never execute publish/tag/release/integrity-fill as an agent.
-next_step: "Ask for or wait on the operator publish-path selection. Current choices are `local_operator_rc`, `npm_rc_publish`, or `github_release_artifact`; all execution remains operator-only."
+  - "cliq-channel-524 fixed the Deluge Bot handler `containKey` type crash by normalizing `webhook_response` into `webhook_text` before returning `response.text`; focused handler/template tests pass."
+next_if_done: Return to RC publish-path selection (`cliq-channel-496`) and CRM fixture operator inputs unless another Bot reliability issue appears.
+next_step: "Refresh the no-publish RC evidence for the package README/skill source change caused by cliq-channel-524; do not publish, tag, release, promote, or fill expectedIntegrity."

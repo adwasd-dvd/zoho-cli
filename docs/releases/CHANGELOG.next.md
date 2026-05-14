@@ -49,6 +49,11 @@
   Default RC autonomy now points first to `select_openclaw_cliq_publish_path`
   and keeps handler-save triage available only when explicitly forced with
   `ZOHO_CLI_RC_AUTONOMY_INCLUDE_BOT_HANDLER_REQUEST=force`.
+- Hardened the real Bot Deluge response template after mobile Cliq showed
+  `containkey` type errors: generated and documented handlers now normalize
+  `webhook_response` into `webhook_text` with a KEY-VALUE first path and a TEXT
+  JSON `.toMap()` fallback before returning the clean `response.text` map.
+  The templates no longer call `webhook_response.containKey("text")` directly.
 - Refreshed the no-publish OpenClaw Cliq RC artifact chain after the
   Deluge-native reply change; the local RC tarball now has shasum
   `295555b784d69838f3f01590e59c9e5cf5bbde20`, artifact/install/promotion
@@ -57,8 +62,9 @@
 - Updated the Bot handler-trigger/no-response packet guidance so
   `no_recent_webhook_ingress` now points operators at
   `reply_mode=deluge_response`, `webhook_response = invokeurl [...]`, and
-  copying `webhook_response.text` into `response.text`, instead of preserving a
-  fixed `received` ACK or returning the full diagnostic webhook response.
+  normalizing `webhook_response` into `webhook_text`, instead of preserving a
+  fixed `received` ACK, calling `containKey` on a TEXT response, or returning
+  the full diagnostic webhook response.
 - Added direct-Bot-DM diagnosis to the handler-trigger/no-response packets:
   `openclaw_cliq_bot_no_response_packet` now emits a redacted `diagnosis`
   object, and `openclaw_cliq_handler_trigger_packet` exposes

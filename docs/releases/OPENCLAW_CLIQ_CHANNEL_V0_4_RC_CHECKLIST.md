@@ -180,11 +180,16 @@ no-publish RC evidence after that package-source change.
 autonomy after the clean Deluge direct Bot path was operator-confirmed working;
 forced/debug triage remains available through
 `ZOHO_CLI_RC_AUTONOMY_INCLUDE_BOT_HANDLER_REQUEST=force`.
+`cliq-channel-524` hardens generated and documented Zoho Bot Deluge handlers so
+TEXT `invokeurl` responses no longer crash on
+`webhook_response.containKey("text")`; handlers now normalize the webhook result
+into `webhook_text` with a KEY-VALUE `.get("text")` path and a TEXT JSON
+`.toMap()` fallback before returning a clean `response.text` map.
 
 SDK contract source of truth:
 `docs/architecture/OPENCLAW_CLIQ_CHANNEL_SDK_CONTRACT.md`.
 
-Updated: `2026-05-14T01:12:24Z`.
+Updated: `2026-05-14T04:40:40Z`.
 
 ## Decision
 
@@ -210,7 +215,7 @@ environment currently binds `cliq/default` to `zoho-employee-test`.
 - Host floor: OpenClaw `>=2026.5.3-1`
 - Package version: `0.4.0-rc.1`
 - Implemented slices:
-  `cliq-channel-401/402/416/403/414/404/405/406/407/408/413/409/410/417/415/411/412/418/419/420/421/422/453/454/455/456/457/458/459/460/461/462/463/464/465/466/467/468/469/470/471/472/473/474/475/476/477/478/479/480/481/482/483/484/485/486/487/488/489/490/491/492/493/494/495/509/510/511/512/513/514/516/517/519/520/521/522/523`
+  `cliq-channel-401/402/416/403/414/404/405/406/407/408/413/409/410/417/415/411/412/418/419/420/421/422/453/454/455/456/457/458/459/460/461/462/463/464/465/466/467/468/469/470/471/472/473/474/475/476/477/478/479/480/481/482/483/484/485/486/487/488/489/490/491/492/493/494/495/509/510/511/512/513/514/516/517/519/520/521/522/523/524`
 - Cross-lane RC automation guard: `platform-214/215/216/217/218`
 
 ## Evidence

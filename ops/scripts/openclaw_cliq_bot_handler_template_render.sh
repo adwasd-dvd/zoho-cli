@@ -137,6 +137,35 @@ if [[ -z "$WEBHOOK_URL_FOR_TEMPLATE" ]]; then
   URL_PLACEHOLDER_USED=true
 fi
 
+read -r -d '' WEBHOOK_TEXT_COPY_BLOCK <<'EOF' || true
+webhook_text = "";
+webhook_map = Map();
+if(webhook_response != null)
+{
+  try
+  {
+    webhook_text = webhook_response.get("text");
+  }
+  catch (e)
+  {
+    try
+    {
+      webhook_map = webhook_response.toString().toMap();
+      webhook_text = webhook_map.get("text");
+    }
+    catch (e2)
+    {
+      webhook_text = "";
+    }
+  }
+}
+
+if(webhook_text != null && webhook_text != "")
+{
+  response.put("text",webhook_text);
+}
+EOF
+
 render_message_template() {
   cat <<EOF
 response = Map();
@@ -169,10 +198,7 @@ webhook_response = invokeurl
   headers:{"Content-Type":"application/json","X-Cliq-Webhook-Secret":"$SECRET_PLACEHOLDER"}
 ];
 
-if(webhook_response != null && webhook_response.containKey("text") && webhook_response.get("text") != null)
-{
-  response.put("text",webhook_response.get("text"));
-}
+$WEBHOOK_TEXT_COPY_BLOCK
 
 return response;
 EOF
@@ -200,10 +226,7 @@ webhook_response = invokeurl
   headers:{"Content-Type":"application/json","X-Cliq-Webhook-Secret":"$SECRET_PLACEHOLDER"}
 ];
 
-if(webhook_response != null && webhook_response.containKey("text") && webhook_response.get("text") != null)
-{
-  response.put("text",webhook_response.get("text"));
-}
+$WEBHOOK_TEXT_COPY_BLOCK
 
 return response;
 EOF
@@ -241,10 +264,7 @@ webhook_response = invokeurl
   headers:{"Content-Type":"application/json","X-Cliq-Webhook-Secret":"$SECRET_PLACEHOLDER"}
 ];
 
-if(webhook_response != null && webhook_response.containKey("text") && webhook_response.get("text") != null)
-{
-  response.put("text",webhook_response.get("text"));
-}
+$WEBHOOK_TEXT_COPY_BLOCK
 
 return response;
 EOF
@@ -277,10 +297,7 @@ webhook_response = invokeurl
   headers:{"Content-Type":"application/json","X-Cliq-Webhook-Secret":"$SECRET_PLACEHOLDER"}
 ];
 
-if(webhook_response != null && webhook_response.containKey("text") && webhook_response.get("text") != null)
-{
-  response.put("text",webhook_response.get("text"));
-}
+$WEBHOOK_TEXT_COPY_BLOCK
 
 return response;
 EOF
@@ -438,7 +455,7 @@ PAYLOAD="$("$JQ_BIN" -n \
         + [
           "After saving, send exactly one fresh direct Bot message, then run `" + $payload.copyPlan.followUpCommand + "`.",
           "",
-          "A literal `received` reply is only an ACK branch. Normal operation copies `webhook_response.text` into a clean `response.text` map through `reply_mode=deluge_response`."
+          "A literal `received` reply is only an ACK branch. Normal operation normalizes `webhook_response` into a clean `response.text` map through `reply_mode=deluge_response`."
         ]
         | join("\n")
       )

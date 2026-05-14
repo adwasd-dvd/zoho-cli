@@ -448,8 +448,43 @@ type ConfigWithChannels = OpenClawConfig & {
   channels?: Record<string, unknown>;
 };
 
+type ConfigWithBindings = OpenClawConfig & {
+  bindings?: unknown;
+};
+
+export type CliqAgentBindingDiagnostic = {
+  channel: typeof CLIQ_CHANNEL_ID;
+  accountId: string;
+  configured: boolean;
+  agentId?: string;
+  matchedBy?: "account_binding" | "channel_binding";
+  bindingScope?: "account" | "channel";
+  configurationPath: "bindings[]";
+  nextAction?: "add_openclaw_agent_binding";
+};
+
 function isRecord(value: unknown): value is Record<string, unknown> {
   return Boolean(value) && typeof value === "object" && !Array.isArray(value);
+}
+
+function bindingMatchChannel(match: unknown): string | undefined {
+  return isRecord(match) && typeof match.channel === "string"
+    ? match.channel
+    : undefined;
+}
+
+function bindingMatchAccount(match: unknown): string | undefined {
+  if (!isRecord(match)) return undefined;
+  if (typeof match.accountId === "string") return match.accountId;
+  if (typeof match.account === "string") return match.account;
+  return undefined;
+}
+
+function bindingAgentId(binding: unknown): string | undefined {
+  if (!isRecord(binding)) return undefined;
+  return typeof binding.agentId === "string" && binding.agentId.trim()
+    ? binding.agentId.trim()
+    : undefined;
 }
 
 function readCliqSection(cfg: OpenClawConfig): CliqChannelConfig {
@@ -577,6 +612,64 @@ export function resolveCliqAccount(
   };
 }
 
+export function describeCliqAgentBinding(
+  cfg: OpenClawConfig,
+  accountId?: string | null,
+): CliqAgentBindingDiagnostic {
+  const resolvedAccountId = accountId || defaultCliqAccountId(cfg);
+  const bindings = (cfg as ConfigWithBindings).bindings;
+  const base: Pick<
+    CliqAgentBindingDiagnostic,
+    "channel" | "accountId" | "configurationPath"
+  > = {
+    channel: CLIQ_CHANNEL_ID,
+    accountId: resolvedAccountId,
+    configurationPath: "bindings[]",
+  };
+  if (!Array.isArray(bindings)) {
+    return {
+      ...base,
+      configured: false,
+      nextAction: "add_openclaw_agent_binding",
+    };
+  }
+
+  let channelBinding: string | undefined;
+  for (const binding of bindings) {
+    const agentId = bindingAgentId(binding);
+    if (!agentId || !isRecord(binding)) continue;
+    const channel = bindingMatchChannel(binding.match);
+    if (channel !== CLIQ_CHANNEL_ID) continue;
+    const bindingAccountId = bindingMatchAccount(binding.match);
+    if (bindingAccountId === resolvedAccountId) {
+      return {
+        ...base,
+        configured: true,
+        agentId,
+        matchedBy: "account_binding",
+        bindingScope: "account",
+      };
+    }
+    if (!bindingAccountId) channelBinding = agentId;
+  }
+
+  if (channelBinding) {
+    return {
+      ...base,
+      configured: true,
+      agentId: channelBinding,
+      matchedBy: "channel_binding",
+      bindingScope: "channel",
+    };
+  }
+
+  return {
+    ...base,
+    configured: false,
+    nextAction: "add_openclaw_agent_binding",
+  };
+}
+
 export function envSecretRef(id: string): SecretRef {
   return {
     source: "env",
@@ -651,8 +744,14 @@ export function describeCliqCapabilityDiagnostics(account: CliqResolvedAccount) 
   };
 }
 
-export function describeCliqAccountDiagnostics(account: CliqResolvedAccount) {
+export function describeCliqAccountDiagnostics(
+  account: CliqResolvedAccount,
+  cfg?: OpenClawConfig,
+) {
   const capabilities = describeCliqCapabilityDiagnostics(account);
+  const agentBinding = cfg
+    ? describeCliqAgentBinding(cfg, account.accountId)
+    : undefined;
   const blockers: string[] = [];
   if (!account.enabled) blockers.push("account_disabled");
   if (!account.network) blockers.push("network_missing");
@@ -676,6 +775,7 @@ export function describeCliqAccountDiagnostics(account: CliqResolvedAccount) {
       blockers.length === 0 ? "pending_live_verification" : "setup_required",
     webhookPath: account.webhookPath,
     defaultTarget: account.defaultTo,
+    agentBinding,
     capabilities,
     blockers: productionBlockers,
     observability: describeCliqObservabilityDiagnostics(),

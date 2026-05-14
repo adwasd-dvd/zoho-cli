@@ -332,6 +332,27 @@ export const cliqChannelConfigSchema = {
 function isRecord(value) {
     return Boolean(value) && typeof value === "object" && !Array.isArray(value);
 }
+function bindingMatchChannel(match) {
+    return isRecord(match) && typeof match.channel === "string"
+        ? match.channel
+        : undefined;
+}
+function bindingMatchAccount(match) {
+    if (!isRecord(match))
+        return undefined;
+    if (typeof match.accountId === "string")
+        return match.accountId;
+    if (typeof match.account === "string")
+        return match.account;
+    return undefined;
+}
+function bindingAgentId(binding) {
+    if (!isRecord(binding))
+        return undefined;
+    return typeof binding.agentId === "string" && binding.agentId.trim()
+        ? binding.agentId.trim()
+        : undefined;
+}
 function readCliqSection(cfg) {
     const channels = cfg.channels;
     const raw = channels?.[CLIQ_CHANNEL_ID];
@@ -435,6 +456,57 @@ export function resolveCliqAccount(cfg, accountId) {
         defaultTo: entry.defaultTo || section.defaultTo,
     };
 }
+export function describeCliqAgentBinding(cfg, accountId) {
+    const resolvedAccountId = accountId || defaultCliqAccountId(cfg);
+    const bindings = cfg.bindings;
+    const base = {
+        channel: CLIQ_CHANNEL_ID,
+        accountId: resolvedAccountId,
+        configurationPath: "bindings[]",
+    };
+    if (!Array.isArray(bindings)) {
+        return {
+            ...base,
+            configured: false,
+            nextAction: "add_openclaw_agent_binding",
+        };
+    }
+    let channelBinding;
+    for (const binding of bindings) {
+        const agentId = bindingAgentId(binding);
+        if (!agentId || !isRecord(binding))
+            continue;
+        const channel = bindingMatchChannel(binding.match);
+        if (channel !== CLIQ_CHANNEL_ID)
+            continue;
+        const bindingAccountId = bindingMatchAccount(binding.match);
+        if (bindingAccountId === resolvedAccountId) {
+            return {
+                ...base,
+                configured: true,
+                agentId,
+                matchedBy: "account_binding",
+                bindingScope: "account",
+            };
+        }
+        if (!bindingAccountId)
+            channelBinding = agentId;
+    }
+    if (channelBinding) {
+        return {
+            ...base,
+            configured: true,
+            agentId: channelBinding,
+            matchedBy: "channel_binding",
+            bindingScope: "channel",
+        };
+    }
+    return {
+        ...base,
+        configured: false,
+        nextAction: "add_openclaw_agent_binding",
+    };
+}
 export function envSecretRef(id) {
     return {
         source: "env",
@@ -504,8 +576,11 @@ export function describeCliqCapabilityDiagnostics(account) {
         npmIntegrityPlaceholder: true,
     };
 }
-export function describeCliqAccountDiagnostics(account) {
+export function describeCliqAccountDiagnostics(account, cfg) {
     const capabilities = describeCliqCapabilityDiagnostics(account);
+    const agentBinding = cfg
+        ? describeCliqAgentBinding(cfg, account.accountId)
+        : undefined;
     const blockers = [];
     if (!account.enabled)
         blockers.push("account_disabled");
@@ -527,6 +602,7 @@ export function describeCliqAccountDiagnostics(account) {
         productionReadiness: blockers.length === 0 ? "pending_live_verification" : "setup_required",
         webhookPath: account.webhookPath,
         defaultTarget: account.defaultTo,
+        agentBinding,
         capabilities,
         blockers: productionBlockers,
         observability: describeCliqObservabilityDiagnostics(),

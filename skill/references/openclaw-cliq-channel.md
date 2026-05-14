@@ -192,6 +192,11 @@ ops/scripts/openclaw_cliq_rc_operator_decision_packet.sh
 ops/scripts/openclaw_cliq_trusted_reply_evidence.sh
 ```
 
+Before live Bot tests, confirm `agentBinding.agentId` in
+`openclaw channels status --channel cliq --deep --json`. `oldsix老六` /
+`cliq/default` should route to `zoho-employee-test`, using the same OpenClaw
+`bindings[]` model as Discord.
+
 Native diagnostic behavior:
 
 - Check OpenClaw channel status/capability/routing summaries before falling back

@@ -16,5 +16,6 @@ success_criteria:
 progress:
   - "Operator confirmed the clean-response direct Bot path is now normal after Deluge returns only `response.text`."
   - "User requested emoji/reaction behavior for incoming Bot messages; queued this as `cliq-channel-519`."
+  - "User also requested Discord-like Bot-to-agent selection and asked to bind `oldsix老六` to `zoho-employee-test`; cliq-channel-520 verified the current `cliq/default -> zoho-employee-test` binding and added deep-status diagnostics for it."
 next_if_done: Return to RC publish-path selection (`cliq-channel-496`) and CRM fixture operator inputs unless another Bot reliability issue appears.
 next_step: "Inspect current OpenClaw Cliq inbound/lifecycle code and Bot handler templates for message-id handling, then add a privacy-safe discovery/implementation slice for true reactions or a documented fallback."

@@ -1,4 +1,4 @@
-import { describeCliqAccount, describeCliqAccountDiagnostics, describeCliqCapabilityDiagnostics, isCliqAccountConfigured, resolveCliqAccount, } from "./config.js";
+import { describeCliqAccount, describeCliqAccountDiagnostics, describeCliqAgentBinding, describeCliqCapabilityDiagnostics, isCliqAccountConfigured, resolveCliqAccount, } from "./config.js";
 import { CLIQ_CHANNEL_ID } from "./constants.js";
 import { buildCliqOutboundSessionRoute, inferCliqTargetChatType, normalizeCliqTarget, parseCliqExplicitTarget, } from "./session.js";
 import { resolveCliqSetupStateCodes, resolveCliqSetupStatusLines, } from "./setup-wizard.js";
@@ -20,7 +20,8 @@ export function resolveCliqChannelStatusSummary(params) {
             configured,
         }),
         account: describeCliqAccount(account),
-        diagnostics: describeCliqAccountDiagnostics(account),
+        diagnostics: describeCliqAccountDiagnostics(account, params.cfg),
+        agentBinding: describeCliqAgentBinding(params.cfg, account.accountId),
     };
 }
 export function resolveCliqChannelCapabilitySummary(params) {

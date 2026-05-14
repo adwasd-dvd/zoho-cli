@@ -1,5 +1,5 @@
 import type { OpenClawConfig } from "openclaw/plugin-sdk";
-import { describeCliqAccount, describeCliqAccountDiagnostics, describeCliqCapabilityDiagnostics } from "./config.js";
+import { describeCliqAccount, describeCliqAccountDiagnostics, describeCliqAgentBinding, describeCliqCapabilityDiagnostics } from "./config.js";
 import { buildCliqOutboundSessionRoute } from "./session.js";
 export type CliqChannelStatusSummary = {
     channel: "cliq";
@@ -10,6 +10,7 @@ export type CliqChannelStatusSummary = {
     statusLines: string[];
     account: ReturnType<typeof describeCliqAccount>;
     diagnostics: ReturnType<typeof describeCliqAccountDiagnostics>;
+    agentBinding: ReturnType<typeof describeCliqAgentBinding>;
 };
 export type CliqChannelCapabilitySummary = {
     channel: "cliq";

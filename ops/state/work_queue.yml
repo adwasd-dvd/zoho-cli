@@ -964,6 +964,15 @@
   - cliq-channel-518
   agent_action: "first record the operator confirmation that `oldsix老六` now replies normally with the clean Deluge response map; then add a privacy-safe diagnostic/development path for true emoji reactions on inbound Bot messages by discovering whether Zoho Message Handler payloads expose a real message id; if a real message id exists, pass it through and enable lifecycle/status reactions; if not, document and implement the best supported fallback such as emoji-prefixed Bot replies without pretending a true reaction was applied"
   completion_signal: "Bot reaction support is either enabled with real `messageId`-backed `zoho cliq react/status-react` calls and focused tests/docs, or explicitly downgraded with a tested/documented fallback when Zoho's direct Message Handler does not expose a usable message id"
+- id: cliq-channel-520
+  title: expose Cliq Bot OpenClaw agent binding diagnostics
+  module: openclaw_cliq_channel
+  stage: completed
+  priority: high
+  depends_on:
+  - cliq-channel-518
+  agent_action: "verify the current `oldsix老六` account (`cliq/default`) is bound to OpenClaw agent `zoho-employee-test`, expose the `bindings[]` match in deep channel status, and document the Discord-style agent selection model"
+  completion_signal: "`openclaw channels status --channel cliq --deep --json` exposes `agentBinding.agentId=zoho-employee-test` for `cliq/default`, the offline route binding gate passes with `ZOHO_CLIQ_EXPECTED_AGENT_ID=zoho-employee-test`, and Lane 1/2/3 docs tell operators to use OpenClaw `bindings[]` for Cliq Bot-to-agent selection"
 - id: cliq-channel-496
   title: collect operator native Cliq RC publish-path selection
   module: openclaw_cliq_channel

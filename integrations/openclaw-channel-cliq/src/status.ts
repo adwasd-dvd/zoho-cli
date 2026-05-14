@@ -3,6 +3,7 @@ import type { OpenClawConfig } from "openclaw/plugin-sdk";
 import {
   describeCliqAccount,
   describeCliqAccountDiagnostics,
+  describeCliqAgentBinding,
   describeCliqCapabilityDiagnostics,
   isCliqAccountConfigured,
   resolveCliqAccount,
@@ -28,6 +29,7 @@ export type CliqChannelStatusSummary = {
   statusLines: string[];
   account: ReturnType<typeof describeCliqAccount>;
   diagnostics: ReturnType<typeof describeCliqAccountDiagnostics>;
+  agentBinding: ReturnType<typeof describeCliqAgentBinding>;
 };
 
 export type CliqChannelCapabilitySummary = {
@@ -74,7 +76,8 @@ export function resolveCliqChannelStatusSummary(params: {
       configured,
     }),
     account: describeCliqAccount(account),
-    diagnostics: describeCliqAccountDiagnostics(account),
+    diagnostics: describeCliqAccountDiagnostics(account, params.cfg),
+    agentBinding: describeCliqAgentBinding(params.cfg, account.accountId),
   };
 }
 

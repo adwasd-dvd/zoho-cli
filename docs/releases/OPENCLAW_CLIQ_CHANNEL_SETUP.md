@@ -35,8 +35,8 @@ This runbook is for the native OpenClaw `cliq` channel package in
   dead-letter with actionable metadata.
 - Native UX/status diagnostics smoke testing is ready now: channel status
   summaries include setup state, webhook/polling/lifecycle/ledger readiness,
-  capabilities, and target routing previews without exposing secrets or message
-  bodies.
+  capabilities, explicit OpenClaw agent binding diagnostics, and target routing
+  previews without exposing secrets or message bodies.
 - Production/bidirectional agent replies now have native dispatch plus redacted
   observability support. The fake/live gate harness is in place; public Bot
   callback auth/reachability and one controlled trusted Mention-to-agent reply
@@ -76,6 +76,39 @@ For real Zoho Bot handler code, use
 `docs/releases/OPENCLAW_CLIQ_BOT_HANDLER_TEMPLATES.md`.
 For tunnel-agnostic public callback verification, use
 `ops/scripts/openclaw_cliq_public_callback_smoke.sh`.
+
+## Agent binding
+
+Zoho Cliq uses the same OpenClaw `bindings[]` routing model as Discord. Bind the
+Cliq account to the virtual-employee agent explicitly:
+
+```json
+{
+  "bindings": [
+    {
+      "agentId": "zoho-employee-test",
+      "match": {
+        "channel": "cliq",
+        "accountId": "default"
+      }
+    }
+  ]
+}
+```
+
+The current `oldsix老六` account is `cliq/default`, and the local operator config
+is bound to `zoho-employee-test`. Verify that binding without sending Zoho
+traffic:
+
+```bash
+ZOHO_CLIQ_ROUTE_BINDING_ONLY=1 \
+ZOHO_CLIQ_EXPECTED_AGENT_ID=zoho-employee-test \
+ops/scripts/openclaw_cliq_live_smoke.sh
+```
+
+`openclaw channels status --channel cliq --deep --json` also exposes
+`agentBinding.agentId` and `diagnostics.agentBinding.agentId` so operators can
+see which OpenClaw agent owns the Bot before running a live message check.
 
 ## Install from the workspace
 
@@ -477,6 +510,7 @@ trusted reply checker JSON.
 | `webhook_unverified` | Inbound webhook is not verified. | Configure `webhookSecret` and POST a controlled Bot handler event to `/webhooks/cliq`; polling fallback dry-runs can still be tested locally. |
 | `allowlist_empty` | No trusted Cliq senders are configured. | Add trusted user ids to `allowFrom` and group/channel ids to `groupAllowFrom`. |
 | `employee_scope_empty` | Scoped employee mode has no work scope. | Add `workScopes.<profile>` or pick a valid `employeeMode.scopeProfile`. |
+| missing `agentBinding.agentId` | Cliq is configured, but OpenClaw has no `bindings[]` entry for this account. | Add a `bindings[]` entry for `channel=cliq` and the intended `accountId`; for `oldsix老六`, use `agentId=zoho-employee-test`. |
 
 ## AI diagnostic prompts
 

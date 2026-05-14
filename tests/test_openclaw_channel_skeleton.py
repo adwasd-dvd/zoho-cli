@@ -335,6 +335,12 @@ import {
 } from "./integrations/openclaw-channel-cliq/dist/src/status.js";
 
 const cfg = {
+  bindings: [
+    {
+      agentId: "zoho-employee-test",
+      match: { channel: "cliq", accountId: "default" },
+    },
+  ],
   channels: {
     cliq: {
       accounts: {
@@ -366,6 +372,10 @@ assert.equal(status.diagnostics.capabilities.inboundWebhook, true);
 assert.equal(status.diagnostics.capabilities.turnLedger, true);
 assert.equal(status.diagnostics.capabilities.observabilityBundle, true);
 assert.equal(status.diagnostics.capabilities.rateLimitDiagnostics, true);
+assert.equal(status.agentBinding.configured, true);
+assert.equal(status.agentBinding.agentId, "zoho-employee-test");
+assert.equal(status.agentBinding.matchedBy, "account_binding");
+assert.equal(status.diagnostics.agentBinding.agentId, "zoho-employee-test");
 assert.equal(status.diagnostics.productionReadiness, "pending_live_verification");
 assert.deepEqual(status.diagnostics.blockers, ["live_verification_pending"]);
 assert.equal(status.diagnostics.observability.rateLimits.webhook.maxRequests, 120);

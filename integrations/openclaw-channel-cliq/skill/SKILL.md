@@ -163,6 +163,11 @@ ops/scripts/openclaw_cliq_trusted_reply_evidence_prepare.sh
 ops/scripts/openclaw_cliq_trusted_reply_evidence.sh
 ```
 
+Before live Bot tests, confirm `agentBinding.agentId` in deep channel status.
+The `oldsix老六` account (`cliq/default`) should be explicitly bound to the
+`zoho-employee-test` virtual employee agent through OpenClaw `bindings[]`, the
+same routing model Discord uses.
+
 For rollout smoke that must target a specific agent, set
 `ZOHO_CLIQ_EXPECTED_AGENT_ID` and optionally
 `ZOHO_CLIQ_EXPECTED_AGENT_MODEL` before running

@@ -19,6 +19,10 @@
   discover whether Zoho Bot Message Handler payloads expose a real inbound
   message id; true `react` / `status-react` is allowed only with that id,
   otherwise the channel should use a documented emoji-reply fallback.
+- Added explicit Cliq Bot agent-binding diagnostics: deep channel status now
+  reports the OpenClaw `bindings[]` match for `cliq/default`, and the current
+  operator config verifies `oldsix老六 -> zoho-employee-test` with the same
+  routing model Discord uses.
 - Refreshed the no-publish OpenClaw Cliq RC artifact chain after the
   Deluge-native reply change; the local RC tarball now has shasum
   `295555b784d69838f3f01590e59c9e5cf5bbde20`, artifact/install/promotion

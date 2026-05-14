@@ -1,5 +1,6 @@
 import type { ChannelAccountSnapshot, ChannelConfigSchema, ChannelSetupInput, OpenClawConfig } from "openclaw/plugin-sdk";
 import type { SecretInput, SecretRef } from "openclaw/plugin-sdk/secret-ref-runtime";
+import { CLIQ_CHANNEL_ID } from "./constants.js";
 export type CliqConfigValueInput = string | SecretRef;
 export type CliqAccountConfig = {
     name?: string;
@@ -68,9 +69,20 @@ export type CliqResolvedAccount = {
 export declare const DEFAULT_CLIQ_EMPLOYEE_MODE: Required<Pick<CliqEmployeeModeConfig, "enabled" | "scopeProfile" | "policy" | "allowDebugFromChannel" | "allowInstallFromChannel" | "allowConfigWritesFromChannel">> & Pick<CliqEmployeeModeConfig, "adminAllowFrom" | "allowedIntents" | "deniedIntents">;
 export declare const DEFAULT_CLIQ_WORK_SCOPES: CliqWorkScopesConfig;
 export declare const cliqChannelConfigSchema: ChannelConfigSchema;
+export type CliqAgentBindingDiagnostic = {
+    channel: typeof CLIQ_CHANNEL_ID;
+    accountId: string;
+    configured: boolean;
+    agentId?: string;
+    matchedBy?: "account_binding" | "channel_binding";
+    bindingScope?: "account" | "channel";
+    configurationPath: "bindings[]";
+    nextAction?: "add_openclaw_agent_binding";
+};
 export declare function listCliqAccountIds(cfg: OpenClawConfig): string[];
 export declare function defaultCliqAccountId(cfg: OpenClawConfig): string;
 export declare function resolveCliqAccount(cfg: OpenClawConfig, accountId?: string | null): CliqResolvedAccount;
+export declare function describeCliqAgentBinding(cfg: OpenClawConfig, accountId?: string | null): CliqAgentBindingDiagnostic;
 export declare function envSecretRef(id: string): SecretRef;
 export declare function isCliqAccountConfigured(account: CliqResolvedAccount): boolean;
 export declare function describeCliqCapabilityDiagnostics(account: CliqResolvedAccount): {
@@ -93,11 +105,12 @@ export declare function describeCliqCapabilityDiagnostics(account: CliqResolvedA
     deadLetterReplayGuard: boolean;
     npmIntegrityPlaceholder: boolean;
 };
-export declare function describeCliqAccountDiagnostics(account: CliqResolvedAccount): {
+export declare function describeCliqAccountDiagnostics(account: CliqResolvedAccount, cfg?: OpenClawConfig): {
     readiness: string;
     productionReadiness: string;
     webhookPath: string;
     defaultTarget: string | undefined;
+    agentBinding: CliqAgentBindingDiagnostic | undefined;
     capabilities: {
         outboundText: boolean;
         outboundReply: boolean;

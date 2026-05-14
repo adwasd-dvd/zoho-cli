@@ -28,7 +28,7 @@ cliq:
 openclaw_cliq_channel:
   priority: 3
   status: in_progress
-  phase: bot_direct_dm_working_reaction_capability_planned
+  phase: bot_direct_dm_working_agent_binding_verified_reaction_capability_planned
   target_release: v0.4.0
   current_milestone: cliq-channel-519-bot-message-reaction-discovery
   blockers:

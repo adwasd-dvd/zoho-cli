@@ -114,6 +114,20 @@ The source of truth is
 
 Human setup and troubleshooting live in
 `../../docs/releases/OPENCLAW_CLIQ_CHANNEL_SETUP.md`.
+Agent routing uses OpenClaw `bindings[]`, the same model as Discord. The
+`oldsix老六` Bot account is `cliq/default` and should be bound to the virtual
+employee agent with:
+
+```json
+{
+  "agentId": "zoho-employee-test",
+  "match": { "channel": "cliq", "accountId": "default" }
+}
+```
+
+`openclaw channels status --channel cliq --deep --json` reports
+`agentBinding.agentId` so the target agent can be verified before live Bot
+traffic.
 Real Zoho Bot Deluge handler templates live in
 `../../docs/releases/OPENCLAW_CLIQ_BOT_HANDLER_TEMPLATES.md`.
 Host compatibility maintenance lives in

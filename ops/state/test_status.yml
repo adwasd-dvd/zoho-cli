@@ -1,10 +1,11 @@
-last_run_at: "2026-05-14T00:20:03Z"
+last_run_at: "2026-05-14T00:33:36Z"
 last_result: passing
 current_focus: cliq-channel-519-bot-message-reaction-discovery
 suites:
   unit:
     status: passing
     notes:
+      - "cliq-channel-520 validation passed at 2026-05-14T00:33:36Z: offline route binding gate returned `status=ok` for `cliq/default -> zoho-employee-test`; `npm --prefix integrations/openclaw-channel-cliq run build`; focused OpenClaw channel/Lane 3/markdown tests -> 14 passed; YAML parse; Ruff format/check for `tests/test_openclaw_channel_skeleton.py`; `make lint`; and `git diff --check` all passed. No live Bot probe, publish, tag, npm promotion, GitHub release, expectedIntegrity fill, CRM write, or live CRM fixture was performed."
       - "cliq-channel-519 queued at 2026-05-14T00:20:03Z after the operator confirmed the clean-response `oldsix老六` direct Bot path is normal. Next validation should focus on whether Zoho Bot Message Handler payloads expose a real message id for true `react`/`status-react`; if not, implement and document a tested emoji-reply fallback. No code change, live probe, publish, tag, npm promotion, GitHub release, expectedIntegrity fill, CRM write, or live CRM fixture was performed in this queue update."
       - "cliq-channel-518 no-publish RC evidence refresh passed at 2026-05-14T00:03:25Z: initial source drift detected package drift in `integrations/openclaw-channel-cliq/README.md`; repack `20260514T000000-cliq517-clean-response-repack` passed with shasum `55350794bc8251f3329818ff4cecdfd0afdf9d15`; artifact check `artifact_verified`; Temp-HOME install smoke `install_smoke_passed`; promotion preflight `ready_for_operator_publish`; operator bundle, release notes draft, publish plan, and handoff manifest ready; post-manifest source drift `20260514T000317-cliq517-postmanifest-source` returned `package_source_unchanged`. No publish, tag, npm promotion, GitHub release, expectedIntegrity fill, live Bot retry, CRM write, or live CRM fixture was performed."
       - "cliq-channel-516 validation passed at 2026-05-13T23:23:28Z: generated and documented Bot handler templates now close assigned `invokeurl [...]` Deluge tasks with `];` after the operator hit Zoho Creator `Expecting ';' at the end of statement`; direct Markdown render confirms the `];` terminator; focused template/contract/markdown tests -> 5 passed. No live Bot probe, publish, tag, npm promotion, GitHub release, expectedIntegrity fill, CRM write, or live CRM fixture was performed."

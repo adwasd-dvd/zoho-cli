@@ -1031,12 +1031,12 @@
 - id: cliq-channel-527
   title: refresh no-publish RC evidence after Deluge getJSON fix
   module: openclaw_cliq_channel
-  stage: pending
+  stage: completed
   priority: medium
   depends_on:
   - cliq-channel-526
   agent_action: "run source drift first, then refresh no-publish pack/artifact/install/promotion/bundle/notes/plan/manifest evidence because cliq-channel-526 changed package README/skill source"
-  completion_signal: "post-manifest source drift reports `package_source_unchanged` for the cliq-channel-526 commit, promotion remains `ready_for_operator_publish`, and no publish/tag/release/integrity-fill action is performed"
+  completion_signal: "post-manifest source drift `20260514T054000Z-getjson-postmanifest-source` reports `package_source_unchanged` for commit `da1d3bef`; local RC tarball shasum is `789329438bcd1b4d60ca3970f702bbc3ce192f27` with integrity `sha512-BB+zg/d3waTGAs8O06ZtC2ACB0wkoVGTwWbfd87TDeXUctQBKTocn89avvZtcBIgZHAmc0c4eRx2de4cL/rpMw==`; decision remains `awaiting_operator_publish_path`; no publish/tag/release/integrity-fill action was performed"
 - id: cliq-channel-496
   title: collect operator native Cliq RC publish-path selection
   module: openclaw_cliq_channel

@@ -67,6 +67,13 @@
   artifact/install/promotion checks pass, the handoff manifest is current for
   commit `65edc2a9`, and publish/tag/release/integrity-fill actions remain
   operator-only.
+- Refreshed the no-publish OpenClaw Cliq RC artifact chain again after the
+  Deluge `getJSON("text")` package-source follow-up; the local RC tarball now
+  has shasum `789329438bcd1b4d60ca3970f702bbc3ce192f27`, integrity
+  `sha512-BB+zg/d3waTGAs8O06ZtC2ACB0wkoVGTwWbfd87TDeXUctQBKTocn89avvZtcBIgZHAmc0c4eRx2de4cL/rpMw==`,
+  artifact/install/promotion checks pass, the handoff manifest is current for
+  commit `da1d3bef`, and publish/tag/release/integrity-fill actions remain
+  operator-only.
 - Refreshed the no-publish OpenClaw Cliq RC artifact chain after the
   Deluge-native reply change; the local RC tarball now has shasum
   `295555b784d69838f3f01590e59c9e5cf5bbde20`, artifact/install/promotion

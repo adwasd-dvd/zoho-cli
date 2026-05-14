@@ -1403,6 +1403,7 @@ import {
   normalizeCliqWebhookPayload,
   parseCliqWebhookPayload,
   processCliqWebhookPayload,
+  shouldProcessCliqWebhookPayloadInBackground,
   verifyCliqWebhookSecret,
 } from "./integrations/openclaw-channel-cliq/dist/src/webhook.js";
 import { createCliqTurnLedgerStore } from "./integrations/openclaw-channel-cliq/dist/src/turn-ledger.js";
@@ -1497,6 +1498,21 @@ assert.equal(mentionNormalized.envelope.handlerKind, "mention");
 assert.equal(mentionNormalized.event.peerId, "channel:C123");
 assert.equal(mentionNormalized.event.senderId, "U2");
 assert.equal(mentionNormalized.event.mentioned, true);
+assert.equal(shouldProcessCliqWebhookPayloadInBackground(mentionPayload), false);
+assert.equal(
+  shouldProcessCliqWebhookPayloadInBackground({
+    ...mentionPayload,
+    reply_mode: "zoho_cli",
+  }),
+  true,
+);
+assert.equal(
+  shouldProcessCliqWebhookPayloadInBackground({
+    ...mentionPayload,
+    reply_mode: "deluge_response",
+  }),
+  false,
+);
 
 const dedupe = new CliqInboundDedupeStore(100);
 const turnLedger = createCliqTurnLedgerStore();

@@ -77,6 +77,7 @@ type CliqWebhookHttpRouteHandler = (req: IncomingMessage, res: ServerResponse) =
 export declare function parseCliqWebhookPayload(body: string | Buffer | unknown, contentType?: string | string[]): unknown;
 export declare function normalizeCliqWebhookPath(value?: string | null): string;
 export declare function listCliqWebhookRoutePaths(cfg: OpenClawConfig): string[];
+export declare function shouldProcessCliqWebhookPayloadInBackground(payload: unknown): boolean;
 export declare function normalizeCliqWebhookPayload(params: {
     account: CliqResolvedAccount;
     payload: unknown;

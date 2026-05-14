@@ -167,12 +167,13 @@ message and approval workflows.
 
 Keep native channel lifecycle handling on the shared wrapper. Do not let
 status/read failures trigger another agent turn. For real Bot webhooks, prefer
-quiet lifecycle. Use the current Deluge templates with
-`reply_mode=deluge_response`, capture `webhook_response = invokeurl [...]`, and
-return the webhook map when it has a `text` key so the OpenClaw final answer is
-rendered by Zoho's native Bot handler response. Treat any fixed Deluge
-`response.put("text", "...")` value as a handler ACK, not proof that OpenClaw
-final delivery succeeded.
+quiet lifecycle. Use `reply_mode=zoho_cli` for slow local models or queued
+OpenClaw sessions so the webhook can ACK immediately while the final answer is
+delivered later through the OAuth `zoho cliq send --chat-id` path. Keep
+`reply_mode=deluge_response` for fast synchronous smoke tests where Zoho Deluge
+can wait for the final model answer and render it directly. Treat any fixed
+Deluge `response.put("text", "...")` value as a handler ACK, not proof that
+OpenClaw final delivery succeeded.
 
 Diagnostic commands:
 

@@ -12,6 +12,7 @@ success_criteria:
   - "Agents do not publish, tag, create a GitHub release, npm-promote, or fill expectedIntegrity without explicit approval and artifact source."
   - "If package source changes again before the operator selects a path, source drift detects it and a no-publish evidence refresh is run first."
 progress:
+  - "At 2026-05-14T12:21:09Z the live gateway secret environment was restored and cliq-channel-528 added slow-model-safe `reply_mode=zoho_cli` background ACK handling: Zoho Deluge can return immediately while OpenClaw completes the `zoho-employee-test` turn and sends the final Bot answer through `zoho cliq send --chat-id`."
   - "Live user evidence at 2026-05-14T05:28:53Z showed the direct Bot message reached OpenClaw, the `zoho-employee-test` agent turn completed, `deliveryTransport=deluge_response` captured a 13-character reply, and Zoho Cliq still did not visibly render the Bot reply."
   - "cliq-channel-526 updated the Deluge response extraction branch to use Zoho's JSON getter on the `invokeurl` result before falling back to KEY-VALUE `.get(\"text\")`; focused validation passed."
   - "cliq-channel-527 refreshed the no-publish RC package evidence after the getJSON package-source change. Pack `20260514T054000Z-getjson-repack` produced shasum `789329438bcd1b4d60ca3970f702bbc3ce192f27` and integrity `sha512-BB+zg/d3waTGAs8O06ZtC2ACB0wkoVGTwWbfd87TDeXUctQBKTocn89avvZtcBIgZHAmc0c4eRx2de4cL/rpMw==`."
@@ -21,4 +22,4 @@ progress:
   - "cliq-channel-525 artifact check, Temp-HOME install smoke, promotion preflight, operator bundle, release notes draft, publish plan, and handoff manifest are ready; post-manifest source drift reports `package_source_unchanged`; decision remains `awaiting_operator_publish_path`; autonomy returns `operator_input_required` with `nextOperatorActionId=select_openclaw_cliq_publish_path`."
   - "The real `oldsix老六` direct Bot path remains configured for `cliq/default -> zoho-employee-test`; handler-save triage is no longer a default autonomy ask and remains forced/debug only."
 next_if_done: "Proceed only after an operator-approved publish path is selected; otherwise continue only on genuinely new agent-safe tasks from the work queue."
-next_step: "Wait for operator publish-path selection or new Bot/CRM fixture input. Do not invent package work while all remaining RC release actions are operator-only."
+next_step: "Ask the operator to change the live Zoho Bot Message Handler line from `payload.put(\"reply_mode\",\"deluge_response\");` to `payload.put(\"reply_mode\",\"zoho_cli\");`, save it, and send one fresh Bot DM to verify the background OAuth send path. Then refresh no-publish RC evidence because package source changed."

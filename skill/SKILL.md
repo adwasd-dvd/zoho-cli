@@ -94,9 +94,12 @@ Use this skill as the default operating contract for an OpenClaw agent acting li
   `delugeContract` to re-check Message/Mention handlers. For real Bot DMs, the
   Zoho Bot details **Handlers** list must include **Message Handler**; Mention
   Handler alone only covers @mentions/channel contexts. Also require
-  `delugeContract.replyMode=deluge_response` and an operator checklist that says
-  to return `webhook_response` when it contains `text`, not a fixed `received`
-  ACK. Treat `public_webhook_path_mismatch`,
+  either `delugeContract.replyMode=deluge_response` for fast synchronous smoke
+  tests or `reply_mode=zoho_cli` for real slow-model Bot chats. With
+  `zoho_cli`, OpenClaw should acknowledge the webhook immediately and deliver
+  the final answer later through the OAuth send path. Treat any fixed
+  `received` ACK as handler-only evidence, not proof of final delivery.
+  Treat `public_webhook_path_mismatch`,
   `handler_targets_invalid`, and related blockers as setup errors. The packet
   may report whether `ZOHO_CLIQ_WEBHOOK_SECRET` is present, but must keep
   `redaction.secretsStored=false` and `delugeContract.secretValueStored=false`.

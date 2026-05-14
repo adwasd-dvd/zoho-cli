@@ -244,13 +244,14 @@ For plain direct Bot chats, the Zoho Bot details **Handlers** list must include
 **Message Handler**; saving only **Mention Handler** is enough for @mentions in
 channel/group contexts but will not handle regular direct messages from another
 account.
-Current Bot handlers should set `reply_mode` to `deluge_response`, assign
-`webhook_response = invokeurl [...]`, normalize either a KEY-VALUE response or
-a TEXT JSON response into `webhook_text`, and return a clean `response.text`
-map. That lets Zoho render OpenClaw's final answer as the native Bot handler
-response instead of relying on a second OAuth send. If the handler
-cannot expose a real Zoho message id, use the template's `zoho-message-*`
-dedupe id; native dispatch will not attempt a reply against that synthetic id.
+For slow local models or queued sessions, set `reply_mode` to `zoho_cli`.
+OpenClaw acknowledges the webhook immediately, completes the agent turn in the
+background, and sends the final answer back through the OAuth `zoho cliq send`
+path using the Bot chat id. Use `reply_mode=deluge_response` only for fast
+smoke tests or deployments where Zoho's synchronous Deluge handler can wait for
+the final model answer. If the handler cannot expose a real Zoho message id, use
+the template's `zoho-message-*` dedupe id; native dispatch will not attempt a
+reply against that synthetic id.
 True status reactions are attempted only when the payload carries a real Zoho
 message id plus a chat/channel route. For synthetic `zoho-message-*` or
 `webhook-*` ids, the Deluge-native response falls back to prefixing the Bot
@@ -262,7 +263,7 @@ response = Map();
 webhook_url = "https://<your-tunnel-or-gateway>/webhooks/cliq";
 payload = Map();
 payload.put("handler","mention");
-payload.put("reply_mode","deluge_response");
+payload.put("reply_mode","zoho_cli");
 payload.put("message",message);
 payload.put("user",user);
 payload.put("chat",chat);
@@ -302,7 +303,8 @@ return response;
 
 `response.put("text","received")` is only a Zoho handler ACK. It may appear
 before or after the OpenClaw answer and does not prove final agent reply
-delivery. Remove fixed ACKs once `deluge_response` mode is installed.
+delivery. For `zoho_cli` background mode, the visible final answer comes from
+OpenClaw's OAuth send path rather than the Deluge return value.
 The no-response packet includes a `diagnosis` object; when public callback smoke
 is green but no recent webhook arrives, `diagnosis.code=zoho_bot_handler_not_posting`
 points at a Zoho handler save/trigger issue rather than OAuth or tunnel

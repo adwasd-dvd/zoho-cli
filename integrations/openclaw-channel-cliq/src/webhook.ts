@@ -494,6 +494,15 @@ function shouldAcceptHandler(kind: CliqWebhookHandlerKind): boolean {
   return ["message", "mention", "participation", "context"].includes(kind);
 }
 
+export function shouldProcessCliqWebhookPayloadInBackground(
+  payload: unknown,
+): boolean {
+  const envelope = extractCliqWebhookEnvelope(payload);
+  return (
+    envelope?.replyMode === "zoho_cli" && shouldAcceptHandler(envelope.handlerKind)
+  );
+}
+
 function extractCliqWebhookEnvelope(
   payload: unknown,
 ): CliqWebhookPayloadEnvelope | null {
@@ -1180,6 +1189,32 @@ export function createCliqWebhookHttpHandler(
         body.value,
         req.headers["content-type"],
       );
+      if (shouldProcessCliqWebhookPayloadInBackground(payload)) {
+        const envelope = extractCliqWebhookEnvelope(payload);
+        void processCliqWebhookPayload({
+          ...options,
+          account: verified.account,
+          payload,
+          dedupe,
+          resolvedTurnLedger: turnLedger,
+        }).catch((error) => {
+          options.logger?.error?.(
+            `[zoho-cliq] background webhook handler failed: ${
+              error instanceof Error ? error.message : String(error)
+            }`,
+          );
+        });
+        sendJson(res, 200, {
+          ok: true,
+          accepted: true,
+          background: true,
+          transport: "zoho_cli",
+          accountId: verified.accountId,
+          handlerKind: envelope?.handlerKind,
+          dispatched: false,
+        });
+        return true;
+      }
       const result = await processCliqWebhookPayload({
         ...options,
         account: verified.account,

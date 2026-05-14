@@ -56,6 +56,12 @@
   handlers now use `webhook_response.getJSON("text")` as the first extraction
   path for the `invokeurl` result, fall back to `.get("text")`, and avoid
   `.toString().toMap()` for the final response text.
+- Added a slow-model-safe Bot reply path for real Zoho Cliq handlers:
+  when the handler sends `reply_mode=zoho_cli`, the webhook now returns an
+  immediate background ACK and lets OpenClaw finish the agent turn before
+  delivering the final answer through the OAuth `zoho cliq send --chat-id`
+  path. `reply_mode=deluge_response` remains available for fast synchronous
+  smoke tests where Zoho Deluge can wait for the final model answer.
 - Hardened the real Bot Deluge response template after mobile Cliq showed
   `containkey` type errors: generated and documented handlers now normalize
   `webhook_response` into `webhook_text` with a `getJSON("text")` first path and a KEY-VALUE `.get("text")` fallback before returning the clean `response.text` map.

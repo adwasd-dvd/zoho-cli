@@ -322,7 +322,7 @@ response = Map();
 webhook_url = "https://<your-tunnel-or-gateway>/webhooks/cliq";
 payload = Map();
 payload.put("handler","mention");
-payload.put("reply_mode","deluge_response");
+payload.put("reply_mode","zoho_cli");
 payload.put("message",message);
 payload.put("user",user);
 payload.put("chat",chat);
@@ -359,6 +359,12 @@ if(webhook_text != null && webhook_text != "")
 }
 return response;
 ```
+
+Use `reply_mode=zoho_cli` for real Bot chats backed by slower local models or
+queued OpenClaw sessions. The webhook returns an immediate background ACK and
+the final answer is delivered later through the OAuth `zoho cliq send --chat-id`
+path. Keep `reply_mode=deluge_response` for fast synchronous smoke tests where
+Zoho Deluge can wait for the final model answer and render it directly.
 
 The intake accepts Message, Mention, Participation, and Context handlers for
 RC. Rotate any exposed webhook secret before live use. For direct Bot DMs, use

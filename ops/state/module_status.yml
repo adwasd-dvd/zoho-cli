@@ -27,15 +27,14 @@ cliq:
 
 openclaw_cliq_channel:
   priority: 3
-  status: in_progress
-  phase: deluge_containkey_fix_evidence_refresh
+  status: blocked
+  phase: awaiting_operator_publish_path
   target_release: v0.4.0
-  current_milestone: cliq-channel-525-no-publish-evidence-refresh
+  current_milestone: cliq-channel-496-operator-publish-path-selection
   blockers:
     - "true Bot message reactions require a real Zoho inbound message id; current direct Message Handler templates synthesize `zoho-message-*`, so cliq-channel-519 implements a tested `✅ ` Deluge reply fallback and skips true reaction/read calls for synthetic ids"
-    - "cliq-channel-524 changed package README/skill source for the Deluge `containKey` fix, so no-publish RC evidence must be refreshed before operator publish selection resumes"
     - "operator must choose one native Cliq RC publish path: `local_operator_rc`, `npm_rc_publish`, or `github_release_artifact`"
-    - "publish/tag/npm promotion/GitHub release/expectedIntegrity fill remain operator-approved only even though no-publish RC evidence is ready with tarball shasum `a41406448dda8ca6c7229750ff14cb535c7570e5`"
+    - "publish/tag/npm promotion/GitHub release/expectedIntegrity fill remain operator-approved only even though no-publish RC evidence is ready with tarball shasum `8d49036d78c3d2c3e4e18eab88757cd74254343b`"
 
 crm:
   priority: 4

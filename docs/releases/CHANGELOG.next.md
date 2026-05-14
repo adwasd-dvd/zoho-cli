@@ -55,6 +55,13 @@
   JSON `.toMap()` fallback before returning the clean `response.text` map.
   The templates no longer call `webhook_response.containKey("text")` directly.
 - Refreshed the no-publish OpenClaw Cliq RC artifact chain after the
+  Deluge response-normalization package-source change; the local RC tarball now
+  has shasum `8d49036d78c3d2c3e4e18eab88757cd74254343b`, integrity
+  `sha512-OebIvgCPfW0OtaSonw0Gub+DEcuaxYFL6CQp6EeEqUWejhOpO/rqfGeVs5d3/kbp7FRYZjiDL3g9DnVnRw+LSg==`,
+  artifact/install/promotion checks pass, the handoff manifest is current for
+  commit `65edc2a9`, and publish/tag/release/integrity-fill actions remain
+  operator-only.
+- Refreshed the no-publish OpenClaw Cliq RC artifact chain after the
   Deluge-native reply change; the local RC tarball now has shasum
   `295555b784d69838f3f01590e59c9e5cf5bbde20`, artifact/install/promotion
   checks pass, and publish/tag/release/integrity-fill actions remain

@@ -1013,12 +1013,12 @@
 - id: cliq-channel-525
   title: refresh no-publish RC evidence after Deluge containKey fix
   module: openclaw_cliq_channel
-  stage: pending
+  stage: completed
   priority: medium
   depends_on:
   - cliq-channel-524
   agent_action: "run source drift first, then refresh no-publish pack/artifact/install/promotion/bundle/notes/plan/manifest evidence because cliq-channel-524 changed package README/skill source"
-  completion_signal: "post-manifest source drift reports `package_source_unchanged` for the containKey fix commit; decision remains `awaiting_operator_publish_path`; no publish/tag/release/integrity-fill action was performed"
+  completion_signal: "post-manifest source drift `20260514T044106Z-containkey-fix-postmanifest-source` reports `package_source_unchanged` for commit `65edc2a9`; local RC tarball shasum is `8d49036d78c3d2c3e4e18eab88757cd74254343b` with integrity `sha512-OebIvgCPfW0OtaSonw0Gub+DEcuaxYFL6CQp6EeEqUWejhOpO/rqfGeVs5d3/kbp7FRYZjiDL3g9DnVnRw+LSg==`; decision remains `awaiting_operator_publish_path`; no publish/tag/release/integrity-fill action was performed"
 - id: cliq-channel-496
   title: collect operator native Cliq RC publish-path selection
   module: openclaw_cliq_channel

@@ -946,6 +946,15 @@
   - cliq-channel-516
   agent_action: "change generated Bot handler templates and diagnostics so Deluge copies `webhook_response.text` into `response.text` and returns only the clean response map"
   completion_signal: "renderer/docs/tests/operator prompts no longer ask operators to return the full OpenClaw diagnostic `webhook_response`; rendered templates copy `webhook_response.text` into `response.text` and return the clean response map"
+- id: cliq-channel-518
+  title: refresh no-publish RC evidence after clean-response template docs
+  module: openclaw_cliq_channel
+  stage: completed
+  priority: medium
+  depends_on:
+  - cliq-channel-517
+  agent_action: "run source drift first, then refresh pack/artifact/install/promotion/bundle/notes/plan/manifest evidence because the package-local README changed"
+  completion_signal: "post-manifest source drift `20260514T000317-cliq517-postmanifest-source` reports `package_source_unchanged` for commit `050e146d`; local RC tarball shasum is `55350794bc8251f3329818ff4cecdfd0afdf9d15`; no publish/tag/release/integrity-fill action was performed"
 - id: cliq-channel-496
   title: collect operator native Cliq RC publish-path selection
   module: openclaw_cliq_channel

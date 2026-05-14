@@ -83,6 +83,11 @@
 - Updated the generated Deluge handler templates to return a clean response map
   that contains only `text` copied from `webhook_response.text`, avoiding Zoho
   Bot UI drops when the full OpenClaw diagnostic webhook response is returned.
+- Refreshed the no-publish OpenClaw Cliq RC artifact chain after the
+  clean-response package-local README update; the local RC tarball now has
+  shasum `55350794bc8251f3329818ff4cecdfd0afdf9d15`, artifact/install/promotion
+  checks pass, the handoff manifest is current for commit `050e146d`, and
+  publish/tag/release/integrity-fill actions remain operator-only.
 
 - Extended the RC autonomy packet with redacted `operatorActionRequests` so recurring agents can ask for exactly the missing operator publish path, CRM fixture cleanup plan, and CRM fixture payload file without reading raw payloads, cleanup text, local paths, secrets, or lower-level report internals.
 - Recorded post-platform-215 source-drift, operator decision, and autonomy-packet evidence: pushed operator-action-request commit `9fac452e` still reports `package_source_unchanged`, all decision-packet `reportsReady=true`, and autonomy `operator_input_required` with the same three redacted operator request ids, while no publish/tag/release/expectedIntegrity fill or live Zoho write was performed.

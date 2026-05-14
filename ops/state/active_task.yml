@@ -1,21 +1,21 @@
-id: cliq-channel-517
-title: return clean Deluge Bot response map
+id: cliq-channel-518
+title: refresh no-publish RC evidence after clean-response template docs
 module: openclaw_cliq_channel
 stage: completed
 status: completed
 owner: coder
-updated_at: '2026-05-13T23:57:56Z'
+updated_at: '2026-05-14T00:03:25Z'
 execution_mode: deep_milestone_batch
 throughput_policy_ref: ops/state/execution_policy.yml
 success_criteria:
-  - "Stop returning the full OpenClaw diagnostic webhook response from Zoho Deluge handlers"
-  - "Copy only `webhook_response.text` into `response.text` before returning to Zoho"
-  - "Update renderer, handler-trigger/no-response/operator prompt guidance, Lane 2/3 docs, and focused tests"
-  - "Update Lane 1 state without publishing, tagging, npm-promoting, GitHub releasing, expectedIntegrity filling, or running CRM writes"
+  - "Use source drift to detect the package-local README change from cliq-channel-517"
+  - "Refresh local no-publish RC pack, artifact, install smoke, promotion, operator bundle, release notes, publish plan, and handoff manifest evidence"
+  - "Record the new artifact shasum and source-drift-ready manifest in Lane 1/2 state"
+  - "Do not publish, tag, npm-promote, create a GitHub release, fill expectedIntegrity, or run CRM writes"
 progress:
-  - "Fresh live `测试4` evidence showed ingress and native dispatch active with `deliveryTransport=deluge_response`, `replyTextCaptured=true`, and no visible Bot reply."
-  - "Local synthetic POST with the same trusted sender/chat returned top-level `text`, but the response also included diagnostic keys that Zoho may not render when returned directly."
-  - "Current fix changes templates to return a clean `response` map containing only the captured text."
-  - "Focused template/no-response/handler-trigger/Lane 3/markdown tests passed, plus shell syntax, YAML parse, Ruff format/check for touched tests, `make lint`, and `git diff --check`."
+  - "Post-commit source drift first blocked with `package_source_drift_detected` because `integrations/openclaw-channel-cliq/README.md` changed."
+  - "No-publish repack `20260514T000000-cliq517-clean-response-repack` passed with shasum `55350794bc8251f3329818ff4cecdfd0afdf9d15` and integrity `sha512-DVEDnL60lMwYMrqBPpNajPnsvuKDxqCukBIcmmt2W8MEdcQXmBIhb7MROXuoUfI4YZSpEDY4Uun15ClQFaUdJg==`."
+  - "Artifact check, Temp-HOME install smoke, promotion preflight, operator bundle, release notes draft, publish plan, and handoff manifest are ready."
+  - "Post-manifest source drift `20260514T000317-cliq517-postmanifest-source` reports `package_source_unchanged`, `headMatchesManifestSource=true`, and no package dirty files."
 next_if_done: Ask the operator to paste/save the refreshed Message Handler, send exactly one fresh direct `oldsix老六` Bot message, then run a single short-window no-response packet.
-next_step: "After validation and commit, operator should replace the Message Handler return block with the clean `response.put(\"text\",webhook_response.get(\"text\")); return response;` form, save, and send one fresh direct Bot message. Then run exactly one `ZOHO_CLIQ_PUBLIC_WEBHOOK_URL=https://cliq.hpyio.com/webhooks/cliq ZOHO_CLIQ_INGRESS_LOOKBACK_SECONDS=600 ops/scripts/openclaw_cliq_bot_no_response_packet.sh` check."
+next_step: "Operator should replace the Message Handler return block with the clean `response.put(\"text\",webhook_response.get(\"text\")); return response;` form, save, and send one fresh direct Bot message. Then run exactly one `ZOHO_CLIQ_PUBLIC_WEBHOOK_URL=https://cliq.hpyio.com/webhooks/cliq ZOHO_CLIQ_INGRESS_LOOKBACK_SECONDS=600 ops/scripts/openclaw_cliq_bot_no_response_packet.sh` check."

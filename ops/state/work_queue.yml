@@ -995,12 +995,12 @@
 - id: cliq-channel-523
   title: retire stale Bot handler save ask after verified direct DM path
   module: openclaw_cliq_channel
-  stage: pending
+  stage: completed
   priority: high
   depends_on:
   - cliq-channel-522
   agent_action: "update RC autonomy/operator-action request logic so `save_openclaw_cliq_bot_message_handler` is not surfaced after the operator-confirmed clean Deluge direct Bot path is working; keep publish path and CRM fixture requests intact"
-  completion_signal: "autonomy/operator prompt defaults no longer ask for `save_openclaw_cliq_bot_message_handler` after Bot direct DM reliability is confirmed, while tests still cover a forced/debug mode for handler-save triage"
+  completion_signal: "default autonomy now reports `nextOperatorActionId=select_openclaw_cliq_publish_path`, `operatorInputsNeeded.openclawCliqBotMessageHandler=false`, and request ids `[select_openclaw_cliq_publish_path, provide_crm_fixture_cleanup_plan, provide_crm_fixture_payload_file]`; forced/debug mode remains available with `ZOHO_CLI_RC_AUTONOMY_INCLUDE_BOT_HANDLER_REQUEST=force`"
 - id: cliq-channel-496
   title: collect operator native Cliq RC publish-path selection
   module: openclaw_cliq_channel

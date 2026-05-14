@@ -16,11 +16,20 @@ CRM_AGENT_NEXT_FILE="${CRM_AGENT_NEXT_SOURCE_FILE:-"$REPORT_DIR/crm_fixture_agen
 BOT_HANDLER_REQUEST_MODE="${ZOHO_CLI_RC_AUTONOMY_INCLUDE_BOT_HANDLER_REQUEST:-auto}"
 BOT_HANDLER_REQUEST_MODE_NORMALIZED="$(printf '%s' "$BOT_HANDLER_REQUEST_MODE" | tr '[:upper:]' '[:lower:]')"
 case "$BOT_HANDLER_REQUEST_MODE_NORMALIZED" in
+  1|true|on|yes|force|forced|always)
+    BOT_HANDLER_REQUEST_ENABLED=true
+    ;;
   0|false|off|no)
     BOT_HANDLER_REQUEST_ENABLED=false
     ;;
+  auto|"")
+    # The real oldsix老六 Message Handler path is operator-confirmed working.
+    # Keep the handler-save request available only as an explicit debug/forced
+    # mode so normal RC autonomy does not keep asking for a stale Zoho UI step.
+    BOT_HANDLER_REQUEST_ENABLED=false
+    ;;
   *)
-    BOT_HANDLER_REQUEST_ENABLED=true
+    BOT_HANDLER_REQUEST_ENABLED=false
     ;;
 esac
 BOT_HANDLER_PUBLIC_WEBHOOK_URL="${ZOHO_CLIQ_PUBLIC_WEBHOOK_URL:-}"

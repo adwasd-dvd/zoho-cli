@@ -2217,6 +2217,7 @@ def test_zoho_cli_rc_autonomy_packet_collects_operator_input(
             "ZOHO_CLI_RC_AUTONOMY_FILE": str(packet_file),
             "ZOHO_CLI_RC_AUTONOMY_CLIQ_DECISION_SOURCE_FILE": str(cliq_packet),
             "ZOHO_CLI_RC_AUTONOMY_CRM_AGENT_NEXT_SOURCE_FILE": str(crm_packet),
+            "ZOHO_CLI_RC_AUTONOMY_INCLUDE_BOT_HANDLER_REQUEST": "force",
         },
         capture_output=True,
         text=True,
@@ -2354,6 +2355,43 @@ def test_zoho_cli_rc_autonomy_packet_collects_operator_input(
     assert json.loads(packet_file.read_text()) == payload
 
 
+def test_zoho_cli_rc_autonomy_packet_skips_stale_bot_handler_request_by_default(
+    tmp_path: Path,
+) -> None:
+    cliq_packet = _write_zoho_cli_rc_autonomy_cliq_packet(tmp_path)
+    crm_packet = _write_zoho_cli_rc_autonomy_crm_packet(tmp_path)
+
+    result = subprocess.run(
+        ["bash", str(ZOHO_CLI_RC_AUTONOMY_PACKET_SCRIPT)],
+        cwd=REPO_ROOT,
+        env={
+            **os.environ,
+            "ZOHO_CLI_RC_AUTONOMY_RUN_ID": "unit-autonomy-no-stale-bot-ask",
+            "ZOHO_CLI_RC_AUTONOMY_REPORT_DIR": str(tmp_path),
+            "ZOHO_CLI_RC_AUTONOMY_FILE": str(tmp_path / "autonomy.json"),
+            "ZOHO_CLI_RC_AUTONOMY_CLIQ_DECISION_SOURCE_FILE": str(cliq_packet),
+            "ZOHO_CLI_RC_AUTONOMY_CRM_AGENT_NEXT_SOURCE_FILE": str(crm_packet),
+        },
+        capture_output=True,
+        text=True,
+        check=False,
+    )
+
+    output = f"{result.stdout}\n{result.stderr}"
+    assert result.returncode == 0, output
+    payload = json.loads(result.stdout)
+    assert payload["status"] == "operator_input_required"
+    assert payload["nextOperatorActionId"] == "select_openclaw_cliq_publish_path"
+    assert payload["operatorInputsNeeded"]["openclawCliqBotMessageHandler"] is False
+    assert payload["lanes"]["openclawCliq"]["botHandlerOperatorActionRequired"] is False
+    request_ids = [request["id"] for request in payload["operatorActionRequests"]]
+    assert request_ids == [
+        "select_openclaw_cliq_publish_path",
+        "provide_crm_fixture_cleanup_plan",
+        "provide_crm_fixture_payload_file",
+    ]
+
+
 def test_zoho_cli_rc_autonomy_packet_surfaces_safe_crm_agent_command(
     tmp_path: Path,
 ) -> None:
@@ -2373,6 +2411,7 @@ def test_zoho_cli_rc_autonomy_packet_surfaces_safe_crm_agent_command(
             "ZOHO_CLI_RC_AUTONOMY_FILE": str(tmp_path / "autonomy.json"),
             "ZOHO_CLI_RC_AUTONOMY_CLIQ_DECISION_SOURCE_FILE": str(cliq_packet),
             "ZOHO_CLI_RC_AUTONOMY_CRM_AGENT_NEXT_SOURCE_FILE": str(crm_packet),
+            "ZOHO_CLI_RC_AUTONOMY_INCLUDE_BOT_HANDLER_REQUEST": "force",
         },
         capture_output=True,
         text=True,

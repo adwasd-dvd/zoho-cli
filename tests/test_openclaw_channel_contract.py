@@ -286,7 +286,7 @@ def test_openclaw_cliq_channel_rc_checklist_has_cut_contract():
         "repoChangedFileCount=28",
         "repoChangedFileCount=38",
         "operatorInputsNeeded.openclawCliqPublishPath=true",
-        "operatorInputsNeeded.openclawCliqBotMessageHandler=true",
+        "operatorInputsNeeded.openclawCliqBotMessageHandler=false",
         "crmNextCommandAllowedForAgent=false",
         "1901 passed in 53.30s",
         "token_refresh_rate_limited",

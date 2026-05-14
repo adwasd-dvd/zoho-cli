@@ -44,6 +44,11 @@
   artifact/install/promotion checks pass, the handoff manifest is current for
   commit `b50dab1b`, and publish/tag/release/integrity-fill actions remain
   operator-only.
+- Retired the stale default `save_openclaw_cliq_bot_message_handler` autonomy
+  ask after the clean Deluge direct Bot path was operator-confirmed working.
+  Default RC autonomy now points first to `select_openclaw_cliq_publish_path`
+  and keeps handler-save triage available only when explicitly forced with
+  `ZOHO_CLI_RC_AUTONOMY_INCLUDE_BOT_HANDLER_REQUEST=force`.
 - Refreshed the no-publish OpenClaw Cliq RC artifact chain after the
   Deluge-native reply change; the local RC tarball now has shasum
   `295555b784d69838f3f01590e59c9e5cf5bbde20`, artifact/install/promotion

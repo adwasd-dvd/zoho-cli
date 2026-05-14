@@ -117,9 +117,9 @@ def test_openclaw_cliq_webhook_registration_uses_quiet_lifecycle() -> None:
     source = read("src/webhook.ts")
 
     assert "lifecycle: {" in source
-    assert "statusReactions: false" in source
+    assert "statusReactions: true" in source
     assert "markRead: false" in source
-    assert "startStatuses: []" in source
+    assert 'startStatuses: ["received"]' in source
     assert "successStatus: null" in source
     assert "failureStatus: null" in source
     assert "replyMode: envelope.replyMode" in source
@@ -1172,6 +1172,29 @@ assert.deepEqual(successCalls[2], ["cliq", "mark-read", "M1", "--network", "happ
 assert.deepEqual(successCalls[3], ["cliq", "status-react", "M1", "--status", "done", "--network", "happy", "--chat-id", "CHAT1", "--clear-known"]);
 
 fs.writeFileSync(process.env.FAKE_ZOHO_CALLS, "");
+const synthetic = await runCliqInboundLifecycle({{
+  account,
+  event: {{ ...event, messageId: "zoho-message-20260514010000000", dedupeKey: "synthetic" }},
+  lifecycle: {{
+    statusReactions: true,
+    markRead: true,
+    startStatuses: ["received"],
+    successStatus: null,
+    failureStatus: null,
+  }},
+  onEvent: () => undefined,
+}});
+assert.equal(synthetic.dispatched, true);
+assert.deepEqual(
+  synthetic.actions.map((action) => [action.kind, action.status ?? "", action.ok, action.reason ?? ""]),
+  [
+    ["status", "received", false, "synthetic_message_id"],
+    ["mark_read", "", false, "synthetic_message_id"],
+  ],
+);
+assert.equal(fs.readFileSync(process.env.FAKE_ZOHO_CALLS, "utf8"), "");
+
+fs.writeFileSync(process.env.FAKE_ZOHO_CALLS, "");
 process.env.FAKE_MARK_READ_FAIL = "1";
 const readFailure = await runCliqInboundLifecycle({{
   account,
@@ -2012,9 +2035,61 @@ assert.equal(
   directDelugeResponse.nativeDispatch.deliveryTransport,
   "deluge_response",
 );
-assert.equal(directDelugeResponse.nativeDispatch.replyText, "agent reply");
+assert.equal(directDelugeResponse.nativeDispatch.replyText, "✅ agent reply");
+assert.deepEqual(directDelugeResponse.nativeDispatch.reactionFallback, {
+  mode: "emoji_prefixed_reply",
+  applied: true,
+  reason: "synthetic_message_id",
+  messageIdKind: "synthetic",
+  trueReactionEligible: false,
+});
 assert.equal(directDelugeResponse.nativeDispatch.deliveryCount, 1);
 assert.deepEqual(directDelugeResponse.nativeDispatch.messageIds, []);
+assert.equal(fake.sent.length, 3);
+
+const directDelugeRealId = await processCliqWebhookPayload({
+  cfg,
+  account,
+  payload: {
+    handler: "message",
+    reply_mode: "deluge_response",
+    message: {
+      id: "MREAL-DELUGE",
+      text: "deluge real id",
+      senderId: "U2",
+      chatId: "CT_DELUGE_REAL",
+      chatType: "direct",
+    },
+    user: { id: "U2", name: "Alice" },
+    chat: { id: "CT_DELUGE_REAL", chatType: "direct" },
+  },
+  dedupe: webhookDedupe,
+  turnLedger: webhookLedger,
+  lifecycle: false,
+  mentionMatchers: [/@bot\\b/i],
+  onEvent: async (event, context) => {
+    return dispatchCliqEventToNativeOpenClaw({
+      cfg,
+      runtime: fake.runtime,
+      account: context.account,
+      event,
+      source: "webhook",
+      replyTransport:
+        context.replyMode === "deluge_response" ? "deluge_response" : "zoho_cli",
+      handlerKind: context.handlerKind,
+      security: context.security,
+    });
+  },
+});
+assert.equal(directDelugeRealId.accepted, true);
+assert.equal(directDelugeRealId.nativeDispatch.replyText, "agent reply");
+assert.deepEqual(directDelugeRealId.nativeDispatch.reactionFallback, {
+  mode: "emoji_prefixed_reply",
+  applied: false,
+  reason: "native_message_id_available",
+  messageIdKind: "native",
+  trueReactionEligible: true,
+});
 assert.equal(fake.sent.length, 3);
 
 const directReal = await processCliqWebhookPayload({

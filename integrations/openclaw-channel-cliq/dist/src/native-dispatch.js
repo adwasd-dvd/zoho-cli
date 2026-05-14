@@ -52,6 +52,40 @@ function normalizeReplyableCliqMessageId(value) {
         ? undefined
         : normalized;
 }
+function cliqMessageIdKind(value) {
+    const normalized = String(value ?? "").trim().toLowerCase();
+    return normalized.startsWith("webhook-") || normalized.startsWith("zoho-message-")
+        ? "synthetic"
+        : "native";
+}
+function applyEmojiReplyFallback(params) {
+    const messageIdKind = cliqMessageIdKind(params.event.messageId);
+    const trueReactionEligible = messageIdKind === "native" &&
+        Boolean(params.event.messageId && (params.event.chatId || params.event.channelId));
+    if (trueReactionEligible) {
+        return {
+            text: params.text,
+            summary: {
+                mode: "emoji_prefixed_reply",
+                applied: false,
+                reason: "native_message_id_available",
+                messageIdKind,
+                trueReactionEligible,
+            },
+        };
+    }
+    const prefix = "✅ ";
+    return {
+        text: params.text.startsWith(prefix) ? params.text : `${prefix}${params.text}`,
+        summary: {
+            mode: "emoji_prefixed_reply",
+            applied: true,
+            reason: "synthetic_message_id",
+            messageIdKind,
+            trueReactionEligible,
+        },
+    };
+}
 function resolveCliqDeliveryRoute(params) {
     const replyToId = normalizeReplyableCliqMessageId(params.payloadReplyToId) ??
         normalizeReplyableCliqMessageId(params.event.messageId);
@@ -325,8 +359,13 @@ export async function dispatchCliqEventToNativeOpenClaw(options) {
                                 const replyText = String(outboundPayload.text ?? "").trim();
                                 if (!replyText)
                                     return { visibleReplySent: false };
+                                const fallback = applyEmojiReplyFallback({
+                                    event: options.event,
+                                    text: replyText,
+                                });
+                                deliveryStats.reactionFallback = fallback.summary;
                                 deliveryStats.count += 1;
-                                deliveryStats.replyTexts.push(replyText);
+                                deliveryStats.replyTexts.push(fallback.text);
                                 return {
                                     messageIds: [],
                                     replyToId: deliveryRoute.replyToId ?? undefined,
@@ -394,6 +433,7 @@ export async function dispatchCliqEventToNativeOpenClaw(options) {
                 deliveryFailures: deliveryStats.failures,
                 replyTextCaptured: deliveryStats.replyTexts.length > 0,
                 replyTextLength: deliveryStats.replyTexts.join("\n\n").length,
+                reactionFallback: deliveryStats.reactionFallback,
             },
         }));
         throw error;
@@ -420,6 +460,7 @@ export async function dispatchCliqEventToNativeOpenClaw(options) {
             deliveryFailures: deliveryStats.failures,
             replyTextCaptured: deliveryStats.replyTexts.length > 0,
             replyTextLength: deliveryStats.replyTexts.join("\n\n").length,
+            reactionFallback: deliveryStats.reactionFallback,
         },
     }));
     return {
@@ -439,6 +480,9 @@ export async function dispatchCliqEventToNativeOpenClaw(options) {
         deliveryCount: deliveryStats.count,
         messageIds: deliveryStats.messageIds,
         deliveryFailures: deliveryStats.failures,
+        ...(deliveryStats.reactionFallback
+            ? { reactionFallback: deliveryStats.reactionFallback }
+            : {}),
         ...(deliveryStats.replyTexts.length > 0
             ? { replyText: deliveryStats.replyTexts.join("\n\n") }
             : {}),

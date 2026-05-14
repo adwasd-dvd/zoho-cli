@@ -1,22 +1,22 @@
-id: cliq-channel-519
-title: investigate Bot message reactions for Deluge-native direct messages
+id: cliq-channel-522
+title: refresh no-publish RC evidence after Bot reaction fallback
 module: openclaw_cliq_channel
 stage: pending
 status: pending
 owner: coder
-updated_at: '2026-05-14T00:56:17Z'
+updated_at: '2026-05-14T01:12:24Z'
 execution_mode: deep_milestone_batch
 throughput_policy_ref: ops/state/execution_policy.yml
 success_criteria:
-  - "Record the operator confirmation that the clean-response `oldsix老六` Message Handler now replies normally."
-  - "Determine whether Zoho Bot Message Handler payloads expose a real inbound message id that can be used by `zoho cliq react` / `zoho cliq status-react`."
-  - "If a real message id is available, pass it through the Deluge-native handler path and enable true lifecycle/status reactions with focused coverage."
-  - "If no real message id is available, document the limitation and provide a tested fallback such as emoji-prefixed Bot replies without claiming true message reactions."
+  - "Run source drift first after the cliq-channel-519 package-source change."
+  - "Refresh no-publish pack/artifact/install/promotion/bundle/notes/plan/manifest evidence only because package source changed."
+  - "Keep publish, tag, npm promotion, GitHub release, and expectedIntegrity fill operator-only."
   - "Keep diagnostics privacy-safe: no raw message bodies, reply bodies, local paths, or secrets in reports."
 progress:
   - "Operator confirmed the clean-response direct Bot path is now normal after Deluge returns only `response.text`."
   - "User requested emoji/reaction behavior for incoming Bot messages; queued this as `cliq-channel-519`."
   - "User also requested Discord-like Bot-to-agent selection and asked to bind `oldsix老六` to `zoho-employee-test`; cliq-channel-520 verified the current `cliq/default -> zoho-employee-test` binding and added deep-status diagnostics for it."
   - "cliq-channel-521 refreshed the no-publish RC package chain after the agent-binding diagnostics package-source change: local tarball shasum `7f50359917d1e784f3ebc28e85b8303f700dbfdc`, integrity `sha512-axQPmucR/GcBRTLCGJKTTuafEckyy60+wQQm0foDXX4RLr2DXq+ewmEMPTwHglGNxXpL0xw5Q0KjYS44ciKM3A==`, source drift clean, decision still awaiting operator publish path."
+  - "cliq-channel-519 implemented the reaction boundary: synthetic `zoho-message-*` / `webhook-*` ids skip true Zoho lifecycle reactions with `synthetic_message_id`; native ids with chat/channel route facts remain true-reaction eligible; Deluge-native synthetic Bot replies get a visible `✅ ` prefix fallback plus privacy-safe `reactionFallback` diagnostics."
 next_if_done: Return to RC publish-path selection (`cliq-channel-496`) and CRM fixture operator inputs unless another Bot reliability issue appears.
-next_step: "Inspect current OpenClaw Cliq inbound/lifecycle code and Bot handler templates for message-id handling, then add a privacy-safe discovery/implementation slice for true reactions or a documented fallback."
+next_step: "Run source drift and refresh the no-publish RC package evidence for the cliq-channel-519 package-source changes; do not publish, tag, promote, create releases, or fill expectedIntegrity."

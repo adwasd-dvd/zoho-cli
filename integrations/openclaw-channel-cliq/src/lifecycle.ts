@@ -69,6 +69,16 @@ function routeForEvent(event: CliqNormalizedInboundEvent): {
   };
 }
 
+function syntheticMessageIdReason(
+  messageId: string | undefined,
+): "synthetic_message_id" | undefined {
+  const normalized = messageId?.trim().toLowerCase();
+  if (!normalized) return undefined;
+  return normalized.startsWith("webhook-") || normalized.startsWith("zoho-message-")
+    ? "synthetic_message_id"
+    : undefined;
+}
+
 function errorAction(params: {
   kind: CliqInboundLifecycleActionKind;
   status?: CliqLifecycleStatus;
@@ -98,8 +108,13 @@ function errorAction(params: {
   };
 }
 
-function shouldAttemptRoute(event: CliqNormalizedInboundEvent): boolean {
-  return Boolean(event.messageId && (event.chatId || event.channelId));
+function routeSkipReason(
+  event: CliqNormalizedInboundEvent,
+): "missing_message_route" | "synthetic_message_id" | undefined {
+  return syntheticMessageIdReason(event.messageId) ??
+    (event.messageId && (event.chatId || event.channelId)
+      ? undefined
+      : "missing_message_route");
 }
 
 function normalizeLifecycleOptions(
@@ -129,13 +144,14 @@ export async function runCliqInboundLifecycle(params: {
 
   const addStatus = async (status: CliqLifecycleStatus): Promise<void> => {
     if (!lifecycle || lifecycle.statusReactions === false) return;
-    if (!shouldAttemptRoute(params.event)) {
+    const skipReason = routeSkipReason(params.event);
+    if (skipReason) {
       actions.push({
         kind: "status",
         ok: false,
         applied: false,
         status,
-        reason: "missing_message_route",
+        reason: skipReason,
       });
       return;
     }
@@ -166,12 +182,13 @@ export async function runCliqInboundLifecycle(params: {
 
   const markRead = async (): Promise<void> => {
     if (!lifecycle || lifecycle.markRead === false) return;
-    if (!shouldAttemptRoute(params.event)) {
+    const skipReason = routeSkipReason(params.event);
+    if (skipReason) {
       actions.push({
         kind: "mark_read",
         ok: false,
         applied: false,
-        reason: "missing_message_route",
+        reason: skipReason,
       });
       return;
     }

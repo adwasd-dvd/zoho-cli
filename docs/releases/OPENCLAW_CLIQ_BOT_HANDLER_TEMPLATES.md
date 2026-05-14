@@ -36,6 +36,14 @@ response. Do not return the full OpenClaw diagnostic webhook response to Zoho.
 This avoids the less reliable second-hop OAuth `zoho cliq send` path for direct
 Bot chats.
 
+True `zoho cliq status-react` reactions require Zoho's real inbound message id.
+The minimal direct Message Handler below uses a generated `zoho-message-*`
+dedupe id because Zoho's `message` Deluge variable can be plain text. OpenClaw
+therefore skips true reaction API calls for that synthetic id and prefixes the
+native Bot response with `✅ ` as the tested emoji fallback. If a future handler
+can pass Zoho's real message id, OpenClaw can use the real chat/message pair for
+status reactions instead of the fallback.
+
 ## Message Handler
 
 Use this for direct Bot DMs and Bot message subscriptions. The Bot details page
@@ -98,9 +106,11 @@ shape did not include a usable message text plus sender/chat identity. Re-paste
 the wrapped `msg` template above before debugging the tunnel or secret.
 The generated `zoho-message-*` id is only a dedupe anchor. Native dispatch treats
 it as non-replyable and sends the agent answer to the provided direct `chatId`
-instead of trying to reply to a non-existent Cliq message id. If your handler
-can expose Zoho's real message id, use that value and the channel will reply
-against the real chat/message pair.
+instead of trying to reply to a non-existent Cliq message id. It also skips true
+status reactions for that synthetic id and uses the emoji-prefixed native Bot
+reply fallback. If your handler can expose Zoho's real message id, use that
+value and the channel can apply status reactions against the real chat/message
+pair.
 The webhook parser also tolerates Deluge Map-string bodies such as
 `{handler=message, message=..., user={...}}` when Zoho does not emit strict
 JSON.

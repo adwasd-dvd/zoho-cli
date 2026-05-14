@@ -250,6 +250,11 @@ Current Bot handlers should set `reply_mode` to `deluge_response`, assign
 handler response instead of relying on a second OAuth send. If the handler
 cannot expose a real Zoho message id, use the template's `zoho-message-*`
 dedupe id; native dispatch will not attempt a reply against that synthetic id.
+True status reactions are attempted only when the payload carries a real Zoho
+message id plus a chat/channel route. For synthetic `zoho-message-*` or
+`webhook-*` ids, the Deluge-native response falls back to prefixing the Bot
+reply with `✅ ` so users still get a visible received-style signal without a
+doomed `status-react` API call.
 
 ```deluge
 response = Map();
@@ -363,11 +368,12 @@ surface with markdown chunking and maps text sends to `zoho cliq send`, message
 replies to `zoho cliq reply`, and thread delivery to `zoho cliq thread-reply`.
 Inbound webhook delivery registers OpenClaw plugin HTTP routes with
 `auth: "plugin"` and exact matching. Accepted events can be observed through
-the native OpenClaw channel turn runtime. Registered Bot webhook routes default
-to quiet lifecycle mode so direct Bot DMs do not spend Zoho send quota on
-status/read-ack calls before the final answer. The shared lifecycle wrapper
-still supports `received -> thinking`, native agent dispatch, `mark-read`, and
-`done` for explicit smoke/polling runtimes; dispatch failures attempt `failed`.
+the native OpenClaw channel turn runtime. Registered Bot webhook routes attempt
+only a single `received` status reaction, and the lifecycle guard skips
+synthetic `zoho-message-*` / `webhook-*` ids before calling Zoho. The shared
+lifecycle wrapper still supports `received -> thinking`, native agent dispatch,
+`mark-read`, and `done` for explicit smoke/polling runtimes; dispatch failures
+attempt `failed`.
 Final delivery failures record redacted `deliveryFailures[].errorKind`, so
 `rate_limited` is visible in diagnostics without storing message bodies. The
 turn ledger blocks duplicate completed events, coalesces concurrent

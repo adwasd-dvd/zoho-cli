@@ -958,12 +958,12 @@
 - id: cliq-channel-519
   title: investigate Bot message reactions for Deluge-native direct messages
   module: openclaw_cliq_channel
-  stage: pending
+  stage: completed
   priority: high
   depends_on:
   - cliq-channel-518
   agent_action: "first record the operator confirmation that `oldsix老六` now replies normally with the clean Deluge response map; then add a privacy-safe diagnostic/development path for true emoji reactions on inbound Bot messages by discovering whether Zoho Message Handler payloads expose a real message id; if a real message id exists, pass it through and enable lifecycle/status reactions; if not, document and implement the best supported fallback such as emoji-prefixed Bot replies without pretending a true reaction was applied"
-  completion_signal: "Bot reaction support is either enabled with real `messageId`-backed `zoho cliq react/status-react` calls and focused tests/docs, or explicitly downgraded with a tested/documented fallback when Zoho's direct Message Handler does not expose a usable message id"
+  completion_signal: "Direct Bot Message Handler templates still synthesize `zoho-message-*` ids rather than exposing a proven native Zoho message id, so true `status-react` is attempted only for native ids with chat/channel route facts; synthetic ids skip Zoho reaction/read calls with `synthetic_message_id`, and Deluge-native replies use a tested `✅ ` prefix fallback with privacy-safe `reactionFallback` diagnostics"
 - id: cliq-channel-520
   title: expose Cliq Bot OpenClaw agent binding diagnostics
   module: openclaw_cliq_channel
@@ -982,6 +982,16 @@
   - cliq-channel-520
   agent_action: "run source drift first, then refresh no-publish pack/artifact/install/promotion/bundle/notes/plan/manifest evidence because the package source changed for deep agent-binding diagnostics"
   completion_signal: "post-manifest source drift `20260514T005526Z-cliq520-binding-diagnostics-postmanifest-source` reports `package_source_unchanged` for commit `87dd2852`; local RC tarball shasum is `7f50359917d1e784f3ebc28e85b8303f700dbfdc` with integrity `sha512-axQPmucR/GcBRTLCGJKTTuafEckyy60+wQQm0foDXX4RLr2DXq+ewmEMPTwHglGNxXpL0xw5Q0KjYS44ciKM3A==`; decision packet remains `awaiting_operator_publish_path`; no publish/tag/release/integrity-fill action was performed"
+- id: cliq-channel-522
+  title: refresh no-publish RC evidence after Bot reaction fallback
+  module: openclaw_cliq_channel
+  stage: pending
+  priority: medium
+  depends_on:
+  - cliq-channel-519
+  - cliq-channel-521
+  agent_action: "run source drift first, then refresh no-publish pack/artifact/install/promotion/bundle/notes/plan/manifest evidence because cliq-channel-519 changed package source for lifecycle reaction handling and Deluge-native reply fallback"
+  completion_signal: "post-manifest source drift reports `package_source_unchanged` for the reaction-fallback commit; local RC tarball shasum/integrity, artifact check, install smoke, promotion preflight, operator bundle, notes, publish plan, and handoff manifest are ready; no publish/tag/release/integrity-fill action was performed"
 - id: cliq-channel-496
   title: collect operator native Cliq RC publish-path selection
   module: openclaw_cliq_channel

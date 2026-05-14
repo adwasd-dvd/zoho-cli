@@ -13,6 +13,13 @@ export type DeliveryFailure = {
 };
 export type CliqNativeDispatchSource = "webhook" | "polling" | "manual";
 export type CliqNativeReplyTransport = "zoho_cli" | "deluge_response";
+export type CliqReactionFallbackSummary = {
+    mode: "emoji_prefixed_reply";
+    applied: boolean;
+    reason: "synthetic_message_id" | "native_message_id_available";
+    messageIdKind: "native" | "synthetic";
+    trueReactionEligible: boolean;
+};
 export type CliqNativeDispatchContext = {
     account: CliqResolvedAccount;
     source?: CliqNativeDispatchSource;
@@ -35,6 +42,7 @@ export type CliqNativeDispatchResult = {
     deliveryCount: number;
     messageIds: string[];
     deliveryFailures: DeliveryFailure[];
+    reactionFallback?: CliqReactionFallbackSummary;
     replyText?: string;
     dispatchResult?: unknown;
 };

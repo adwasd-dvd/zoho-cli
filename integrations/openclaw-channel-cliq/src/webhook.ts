@@ -1089,6 +1089,7 @@ function responseNativeDispatchSummary(
     deliveryCount: value.deliveryCount,
     messageIdCount: value.messageIds.length,
     deliveryFailures: value.deliveryFailures,
+    reactionFallback: value.reactionFallback,
     replyTextCaptured:
       typeof value.replyText === "string" && value.replyText.length > 0,
     replyTextLength: value.replyText?.length ?? 0,
@@ -1247,9 +1248,9 @@ export function registerCliqWebhookRoutes(api: OpenClawPluginApi): void {
         webhookPath: path,
         logger: api.logger,
         lifecycle: {
-          statusReactions: false,
+          statusReactions: true,
           markRead: false,
-          startStatuses: [],
+          startStatuses: ["received"],
           successStatus: null,
           failureStatus: null,
         },

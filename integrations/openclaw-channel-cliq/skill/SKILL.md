@@ -28,6 +28,9 @@ Use this skill when operating through the native OpenClaw Zoho Cliq channel.
   status (`received`, `thinking`, `writing`, `testing`, `blocked`, `done`,
   `failed`) and `zoho cliq mark-read` for read acknowledgement when available.
   Treat status/read failures as diagnostics, not new inbound work.
+- True status reactions require a real Zoho message id. For direct Bot Message
+  Handler payloads with synthetic `zoho-message-*` or `webhook-*` ids, do not
+  call `status-react`; use the Deluge-native emoji-prefixed reply fallback.
 - Run accepted native events through the turn ledger before dispatch. Duplicate
   completed events, active same-conversation bursts, and dead-lettered replays
   must not start another agent turn.
@@ -316,7 +319,8 @@ handlers should also set `reply_mode` to `deluge_response`, assign
 handler response. Welcome, Incoming Webhook, Call, and Menu handlers are ignored
 until a later slice assigns explicit OpenClaw workflows. If the direct handler
 uses a generated `zoho-message-*` id or OpenClaw synthesizes a `webhook-*` id,
-native dispatch must not reply against that synthetic id.
+native dispatch must not reply or status-react against that synthetic id; the
+Deluge-native response uses the emoji-prefixed reply fallback instead.
 When `ops/scripts/openclaw_cliq_bot_no_response_packet.sh` reports
 `diagnosis.code=zoho_bot_handler_not_posting`, treat public callback and OAuth as
 already past the first gate and ask the operator to save the Message Handler

@@ -30,6 +30,13 @@
   artifact/install/promotion checks pass, the handoff manifest is current for
   commit `87dd2852`, and publish/tag/release/integrity-fill actions remain
   operator-only.
+- Added Bot emoji reaction boundaries for Deluge-native Cliq direct messages:
+  true Zoho lifecycle/status reactions are attempted only when the inbound event
+  has a native message id plus chat/channel route facts; synthetic
+  `zoho-message-*` and `webhook-*` ids skip true reaction/read calls with
+  `synthetic_message_id`, and Deluge-native synthetic replies use a tested
+  visible `✅ ` prefix fallback with privacy-safe `reactionFallback`
+  diagnostics.
 - Refreshed the no-publish OpenClaw Cliq RC artifact chain after the
   Deluge-native reply change; the local RC tarball now has shasum
   `295555b784d69838f3f01590e59c9e5cf5bbde20`, artifact/install/promotion

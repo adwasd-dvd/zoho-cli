@@ -169,11 +169,18 @@ does not reference optional Deluge variables such as `attachments`, `mentions`,
 `cliq-channel-516` fixes the generated Deluge snippets to close assigned
 `invokeurl [...]` tasks with `];`, matching Zoho Creator's syntax checker and
 preventing the Message Handler editor from stopping at the webhook call.
+`cliq-channel-519` adds the Bot emoji reaction boundary: true Zoho lifecycle
+reactions require a native inbound message id plus chat/channel route facts,
+while synthetic `zoho-message-*` / `webhook-*` ids skip true reaction/read
+calls and Deluge-native synthetic replies use the tested `✅ ` prefix fallback.
+`cliq-channel-520` exposes OpenClaw `bindings[]` agent diagnostics for
+`cliq/default -> zoho-employee-test`, and `cliq-channel-521` refreshes the
+no-publish RC evidence after that package-source change.
 
 SDK contract source of truth:
 `docs/architecture/OPENCLAW_CLIQ_CHANNEL_SDK_CONTRACT.md`.
 
-Updated: `2026-05-13T17:55:50Z`.
+Updated: `2026-05-14T01:12:24Z`.
 
 ## Decision
 
@@ -199,7 +206,7 @@ environment currently binds `cliq/default` to `zoho-employee-test`.
 - Host floor: OpenClaw `>=2026.5.3-1`
 - Package version: `0.4.0-rc.1`
 - Implemented slices:
-  `cliq-channel-401/402/416/403/414/404/405/406/407/408/413/409/410/417/415/411/412/418/419/420/421/422/453/454/455/456/457/458/459/460/461/462/463/464/465/466/467/468/469/470/471/472/473/474/475/476/477/478/479/480/481/482/483/484/485/486/487/488/489/490/491/492/493/494/495/509/510/511/512`
+  `cliq-channel-401/402/416/403/414/404/405/406/407/408/413/409/410/417/415/411/412/418/419/420/421/422/453/454/455/456/457/458/459/460/461/462/463/464/465/466/467/468/469/470/471/472/473/474/475/476/477/478/479/480/481/482/483/484/485/486/487/488/489/490/491/492/493/494/495/509/510/511/512/513/514/516/517/519/520/521`
 - Cross-lane RC automation guard: `platform-214/215/216/217/218`
 
 ## Evidence

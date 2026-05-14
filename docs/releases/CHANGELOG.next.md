@@ -14,6 +14,11 @@
   as webhook response `text`, so Deluge can copy that value into a clean
   `response.text` map and Zoho renders the answer as the Bot's native handler
   response without a second OAuth send.
+- Queued `cliq-channel-519` for Bot emoji reaction support after the operator
+  confirmed the clean-response direct Bot path is normal. The slice must first
+  discover whether Zoho Bot Message Handler payloads expose a real inbound
+  message id; true `react` / `status-react` is allowed only with that id,
+  otherwise the channel should use a documented emoji-reply fallback.
 - Refreshed the no-publish OpenClaw Cliq RC artifact chain after the
   Deluge-native reply change; the local RC tarball now has shasum
   `295555b784d69838f3f01590e59c9e5cf5bbde20`, artifact/install/promotion

@@ -955,6 +955,15 @@
   - cliq-channel-517
   agent_action: "run source drift first, then refresh pack/artifact/install/promotion/bundle/notes/plan/manifest evidence because the package-local README changed"
   completion_signal: "post-manifest source drift `20260514T000317-cliq517-postmanifest-source` reports `package_source_unchanged` for commit `050e146d`; local RC tarball shasum is `55350794bc8251f3329818ff4cecdfd0afdf9d15`; no publish/tag/release/integrity-fill action was performed"
+- id: cliq-channel-519
+  title: investigate Bot message reactions for Deluge-native direct messages
+  module: openclaw_cliq_channel
+  stage: pending
+  priority: high
+  depends_on:
+  - cliq-channel-518
+  agent_action: "first record the operator confirmation that `oldsix老六` now replies normally with the clean Deluge response map; then add a privacy-safe diagnostic/development path for true emoji reactions on inbound Bot messages by discovering whether Zoho Message Handler payloads expose a real message id; if a real message id exists, pass it through and enable lifecycle/status reactions; if not, document and implement the best supported fallback such as emoji-prefixed Bot replies without pretending a true reaction was applied"
+  completion_signal: "Bot reaction support is either enabled with real `messageId`-backed `zoho cliq react/status-react` calls and focused tests/docs, or explicitly downgraded with a tested/documented fallback when Zoho's direct Message Handler does not expose a usable message id"
 - id: cliq-channel-496
   title: collect operator native Cliq RC publish-path selection
   module: openclaw_cliq_channel

@@ -140,8 +140,9 @@ def test_openclaw_cliq_bot_templates_use_deluge_native_reply_mode() -> None:
         'if(webhook_response != null && webhook_response.containKey("text")'
         not in template
     )
+    assert 'webhook_text = webhook_response.getJSON("text");' in template
     assert 'webhook_text = webhook_response.get("text");' in template
-    assert "webhook_response.toString().toMap();" in template
+    assert "webhook_response.toString().toMap();" not in template
     assert 'response.put("text",webhook_text);' in template
     assert "return webhook_response;" not in template
     assert 'response.put("text","received");' in template

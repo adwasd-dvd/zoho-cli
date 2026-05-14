@@ -1,20 +1,23 @@
-id: cliq-channel-496
-title: collect operator native Cliq RC publish-path selection
+id: cliq-channel-527
+title: refresh no-publish RC evidence after Deluge getJSON fix
 module: openclaw_cliq_channel
-stage: blocked
-status: blocked
-owner: operator
-updated_at: '2026-05-14T04:44:51Z'
+stage: pending
+status: in_progress
+owner: agent
+updated_at: '2026-05-14T05:35:54Z'
 execution_mode: deep_milestone_batch
 throughput_policy_ref: ops/state/execution_policy.yml
 success_criteria:
-  - "Operator selects exactly one native Cliq RC publish path: `local_operator_rc`, `npm_rc_publish`, or `github_release_artifact`."
+  - "Generated and documented Bot handlers use Deluge `getJSON(\"text\")` before the KEY-VALUE `.get(\"text\")` fallback and no longer depend on `.toString().toMap()` for the OpenClaw response."
+  - "Focused handler/template tests, shell syntax, lint, YAML parse, and diff checks pass."
+  - "No-publish RC evidence is refreshed because package README/skill source changed."
   - "Agents do not publish, tag, create a GitHub release, npm-promote, or fill expectedIntegrity without explicit approval and artifact source."
-  - "If package source changes again before the operator selects a path, source drift detects it and a no-publish evidence refresh is run first."
 progress:
+  - "Live user evidence at 2026-05-14T05:28:53Z showed the direct Bot message reached OpenClaw, the `zoho-employee-test` agent turn completed, `deliveryTransport=deluge_response` captured a 13-character reply, and Zoho Cliq still did not visibly render the Bot reply."
+  - "cliq-channel-526 updates the Deluge response extraction branch to use Zoho's JSON getter on the `invokeurl` result before falling back to KEY-VALUE `.get(\"text\")`."
   - "cliq-channel-524 fixed the Deluge Bot handler `containKey` type crash by normalizing `webhook_response` into `webhook_text` before returning `response.text`; focused handler/template tests, lint, YAML parse, and diff checks passed."
   - "cliq-channel-525 refreshed the no-publish RC package evidence after the Deluge response-normalization package-source change. Pack `20260514T044106Z-containkey-fix-repack` produced shasum `8d49036d78c3d2c3e4e18eab88757cd74254343b` and integrity `sha512-OebIvgCPfW0OtaSonw0Gub+DEcuaxYFL6CQp6EeEqUWejhOpO/rqfGeVs5d3/kbp7FRYZjiDL3g9DnVnRw+LSg==`."
   - "cliq-channel-525 artifact check, Temp-HOME install smoke, promotion preflight, operator bundle, release notes draft, publish plan, and handoff manifest are ready; post-manifest source drift reports `package_source_unchanged`; decision remains `awaiting_operator_publish_path`; autonomy returns `operator_input_required` with `nextOperatorActionId=select_openclaw_cliq_publish_path`."
   - "The real `oldsix老六` direct Bot path remains configured for `cliq/default -> zoho-employee-test`; handler-save triage is no longer a default autonomy ask and remains forced/debug only."
-next_if_done: "Proceed only after an operator-approved publish path is selected; otherwise continue only on genuinely new agent-safe tasks from the work queue."
-next_step: "Wait for operator publish-path selection or new Bot/CRM fixture input. Do not invent package work while all remaining RC release actions are operator-only."
+next_if_done: "Return to operator publish-path selection after source drift reports package_source_unchanged and the no-publish RC evidence chain is current for the getJSON handler fix."
+next_step: "Run focused handler/template validation, commit the cliq-channel-526 fix, then refresh the no-publish RC evidence for cliq-channel-527. Do not run publish/tag/release/npm promotion or expectedIntegrity fill."

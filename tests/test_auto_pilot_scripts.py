@@ -5820,8 +5820,9 @@ def test_openclaw_cliq_bot_handler_template_render_outputs_copyable_deluge(
     assert "webhook_response = invokeurl" in message_deluge
     assert "];" in message_deluge
     assert 'webhook_response.containKey("text")' not in message_deluge
+    assert 'webhook_text = webhook_response.getJSON("text");' in message_deluge
     assert 'webhook_text = webhook_response.get("text");' in message_deluge
-    assert "webhook_response.toString().toMap();" in message_deluge
+    assert "webhook_response.toString().toMap();" not in message_deluge
     assert 'response.put("text",webhook_text);' in message_deluge
     assert "return webhook_response;" not in message_deluge
     assert 'response.put("text","received");' not in message_deluge

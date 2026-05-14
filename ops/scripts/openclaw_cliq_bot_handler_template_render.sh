@@ -139,19 +139,17 @@ fi
 
 read -r -d '' WEBHOOK_TEXT_COPY_BLOCK <<'EOF' || true
 webhook_text = "";
-webhook_map = Map();
 if(webhook_response != null)
 {
   try
   {
-    webhook_text = webhook_response.get("text");
+    webhook_text = webhook_response.getJSON("text");
   }
   catch (e)
   {
     try
     {
-      webhook_map = webhook_response.toString().toMap();
-      webhook_text = webhook_map.get("text");
+      webhook_text = webhook_response.get("text");
     }
     catch (e2)
     {

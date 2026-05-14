@@ -49,10 +49,16 @@
   Default RC autonomy now points first to `select_openclaw_cliq_publish_path`
   and keeps handler-save triage available only when explicitly forced with
   `ZOHO_CLI_RC_AUTONOMY_INCLUDE_BOT_HANDLER_REQUEST=force`.
+- Fixed a follow-up no-visible-reply Bot path where live evidence showed
+  OpenClaw ingress, `zoho-employee-test` model completion, and
+  `deliveryTransport=deluge_response` reply capture all succeeded, but Zoho
+  Cliq did not render the Bot response. Generated and documented Deluge
+  handlers now use `webhook_response.getJSON("text")` as the first extraction
+  path for the `invokeurl` result, fall back to `.get("text")`, and avoid
+  `.toString().toMap()` for the final response text.
 - Hardened the real Bot Deluge response template after mobile Cliq showed
   `containkey` type errors: generated and documented handlers now normalize
-  `webhook_response` into `webhook_text` with a KEY-VALUE first path and a TEXT
-  JSON `.toMap()` fallback before returning the clean `response.text` map.
+  `webhook_response` into `webhook_text` with a `getJSON("text")` first path and a KEY-VALUE `.get("text")` fallback before returning the clean `response.text` map.
   The templates no longer call `webhook_response.containKey("text")` directly.
 - Refreshed the no-publish OpenClaw Cliq RC artifact chain after the
   Deluge response-normalization package-source change; the local RC tarball now

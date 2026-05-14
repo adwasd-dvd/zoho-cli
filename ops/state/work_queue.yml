@@ -1009,7 +1009,7 @@
   depends_on:
   - cliq-channel-523
   agent_action: "fix generated and documented Deluge Bot handler templates so they do not call `webhook_response.containKey(\"text\")` directly when Zoho exposes the `invokeurl` result as TEXT"
-  completion_signal: "handler templates now normalize `webhook_response` into `webhook_text` via KEY-VALUE `.get(\"text\")` first and TEXT JSON `.toMap()` fallback before returning a clean `response.text` map; focused handler/template tests pass"
+  completion_signal: "handler templates now normalize `webhook_response` into `webhook_text` via `getJSON(\"text\")` first with `.get(\"text\")` fallback before returning a clean `response.text` map; focused handler/template tests pass"
 - id: cliq-channel-525
   title: refresh no-publish RC evidence after Deluge containKey fix
   module: openclaw_cliq_channel
@@ -1019,6 +1019,24 @@
   - cliq-channel-524
   agent_action: "run source drift first, then refresh no-publish pack/artifact/install/promotion/bundle/notes/plan/manifest evidence because cliq-channel-524 changed package README/skill source"
   completion_signal: "post-manifest source drift `20260514T044106Z-containkey-fix-postmanifest-source` reports `package_source_unchanged` for commit `65edc2a9`; local RC tarball shasum is `8d49036d78c3d2c3e4e18eab88757cd74254343b` with integrity `sha512-OebIvgCPfW0OtaSonw0Gub+DEcuaxYFL6CQp6EeEqUWejhOpO/rqfGeVs5d3/kbp7FRYZjiDL3g9DnVnRw+LSg==`; decision remains `awaiting_operator_publish_path`; no publish/tag/release/integrity-fill action was performed"
+- id: cliq-channel-526
+  title: fix Deluge Bot no-visible-reply response extraction
+  module: openclaw_cliq_channel
+  stage: completed
+  priority: high
+  depends_on:
+  - cliq-channel-525
+  agent_action: "update generated and documented Bot handler templates after live evidence showed OpenClaw received the direct Bot message, completed the agent turn, and captured reply text, but Zoho Cliq did not render the returned Bot message"
+  completion_signal: "Message/Mention/Participation/Context templates extract the OpenClaw response with Deluge `webhook_response.getJSON(\"text\")` first, fall back to `.get(\"text\")`, avoid `.toString().toMap()`, and focused handler/template tests pass"
+- id: cliq-channel-527
+  title: refresh no-publish RC evidence after Deluge getJSON fix
+  module: openclaw_cliq_channel
+  stage: pending
+  priority: medium
+  depends_on:
+  - cliq-channel-526
+  agent_action: "run source drift first, then refresh no-publish pack/artifact/install/promotion/bundle/notes/plan/manifest evidence because cliq-channel-526 changed package README/skill source"
+  completion_signal: "post-manifest source drift reports `package_source_unchanged` for the cliq-channel-526 commit, promotion remains `ready_for_operator_publish`, and no publish/tag/release/integrity-fill action is performed"
 - id: cliq-channel-496
   title: collect operator native Cliq RC publish-path selection
   module: openclaw_cliq_channel

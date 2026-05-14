@@ -28,13 +28,13 @@ cliq:
 openclaw_cliq_channel:
   priority: 3
   status: in_progress
-  phase: bot_direct_dm_working_agent_binding_verified_reaction_fallback_ready
+  phase: bot_direct_dm_working_reaction_fallback_rc_evidence_refreshed
   target_release: v0.4.0
-  current_milestone: cliq-channel-522-reaction-fallback-rc-evidence-refresh
+  current_milestone: cliq-channel-523-retire-stale-handler-save-ask
   blockers:
     - "true Bot message reactions require a real Zoho inbound message id; current direct Message Handler templates synthesize `zoho-message-*`, so cliq-channel-519 implements a tested `✅ ` Deluge reply fallback and skips true reaction/read calls for synthetic ids"
-    - "package-source drift from cliq-channel-519 requires a no-publish RC evidence refresh before the local RC tarball can be treated as current"
-    - "publish/tag/npm promotion/GitHub release/expectedIntegrity fill remain operator-approved only even after no-publish RC evidence is refreshed"
+    - "autonomy still surfaces the stale `save_openclaw_cliq_bot_message_handler` request even though the operator confirmed the clean Deluge direct Bot path is working; cliq-channel-523 should retire that default ask while preserving forced/debug triage"
+    - "publish/tag/npm promotion/GitHub release/expectedIntegrity fill remain operator-approved only even though no-publish RC evidence is ready with tarball shasum `a41406448dda8ca6c7229750ff14cb535c7570e5`"
 
 crm:
   priority: 4

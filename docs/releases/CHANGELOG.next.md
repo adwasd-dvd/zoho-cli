@@ -37,6 +37,13 @@
   `synthetic_message_id`, and Deluge-native synthetic replies use a tested
   visible `✅ ` prefix fallback with privacy-safe `reactionFallback`
   diagnostics.
+- Refreshed the no-publish OpenClaw Cliq RC artifact chain after the Bot
+  reaction-fallback package-source change; the local RC tarball now has shasum
+  `a41406448dda8ca6c7229750ff14cb535c7570e5`, integrity
+  `sha512-5CxFO7kA7VX6ztyNiMzejdk1VC7mLjxZ2fBtZ2mLNdRr64Ci8reP932YJr+pPg6SDJpsjYI734ETZJB9FYaciQ==`,
+  artifact/install/promotion checks pass, the handoff manifest is current for
+  commit `b50dab1b`, and publish/tag/release/integrity-fill actions remain
+  operator-only.
 - Refreshed the no-publish OpenClaw Cliq RC artifact chain after the
   Deluge-native reply change; the local RC tarball now has shasum
   `295555b784d69838f3f01590e59c9e5cf5bbde20`, artifact/install/promotion

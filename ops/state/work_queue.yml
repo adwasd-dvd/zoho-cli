@@ -985,13 +985,22 @@
 - id: cliq-channel-522
   title: refresh no-publish RC evidence after Bot reaction fallback
   module: openclaw_cliq_channel
-  stage: pending
+  stage: completed
   priority: medium
   depends_on:
   - cliq-channel-519
   - cliq-channel-521
   agent_action: "run source drift first, then refresh no-publish pack/artifact/install/promotion/bundle/notes/plan/manifest evidence because cliq-channel-519 changed package source for lifecycle reaction handling and Deluge-native reply fallback"
-  completion_signal: "post-manifest source drift reports `package_source_unchanged` for the reaction-fallback commit; local RC tarball shasum/integrity, artifact check, install smoke, promotion preflight, operator bundle, notes, publish plan, and handoff manifest are ready; no publish/tag/release/integrity-fill action was performed"
+  completion_signal: "post-manifest source drift `20260514T011224Z-cliq519-reaction-fallback-postmanifest-source` reports `package_source_unchanged` for commit `b50dab1b`; local RC tarball shasum is `a41406448dda8ca6c7229750ff14cb535c7570e5` with integrity `sha512-5CxFO7kA7VX6ztyNiMzejdk1VC7mLjxZ2fBtZ2mLNdRr64Ci8reP932YJr+pPg6SDJpsjYI734ETZJB9FYaciQ==`; decision remains `awaiting_operator_publish_path`; no publish/tag/release/integrity-fill action was performed"
+- id: cliq-channel-523
+  title: retire stale Bot handler save ask after verified direct DM path
+  module: openclaw_cliq_channel
+  stage: pending
+  priority: high
+  depends_on:
+  - cliq-channel-522
+  agent_action: "update RC autonomy/operator-action request logic so `save_openclaw_cliq_bot_message_handler` is not surfaced after the operator-confirmed clean Deluge direct Bot path is working; keep publish path and CRM fixture requests intact"
+  completion_signal: "autonomy/operator prompt defaults no longer ask for `save_openclaw_cliq_bot_message_handler` after Bot direct DM reliability is confirmed, while tests still cover a forced/debug mode for handler-save triage"
 - id: cliq-channel-496
   title: collect operator native Cliq RC publish-path selection
   module: openclaw_cliq_channel

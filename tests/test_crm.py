@@ -658,6 +658,49 @@ def test_crm_client_org() -> None:
 
 
 @respx.mock
+def test_crm_client_profiles() -> None:
+    client = crm.ZohoCrmClient("fake-token", base_url="https://www.zohoapis.com/crm/v8")
+    route = respx.get("https://www.zohoapis.com/crm/v8/settings/profiles").mock(
+        return_value=httpx.Response(200, json={"profiles": [{"id": "p1"}]})
+    )
+
+    result = client.profiles(limit=5, page=2)
+
+    assert result["profiles"][0]["id"] == "p1"
+    assert dict(route.calls.last.request.url.params) == {"per_page": "5", "page": "2"}
+
+
+@respx.mock
+def test_crm_client_roles() -> None:
+    client = crm.ZohoCrmClient("fake-token", base_url="https://www.zohoapis.com/crm/v8")
+    route = respx.get("https://www.zohoapis.com/crm/v8/settings/roles").mock(
+        return_value=httpx.Response(200, json={"roles": [{"id": "r1"}]})
+    )
+
+    result = client.roles(limit=6, page=3)
+
+    assert result["roles"][0]["id"] == "r1"
+    assert dict(route.calls.last.request.url.params) == {"per_page": "6", "page": "3"}
+
+
+@respx.mock
+def test_crm_client_layouts() -> None:
+    client = crm.ZohoCrmClient("fake-token", base_url="https://www.zohoapis.com/crm/v8")
+    route = respx.get("https://www.zohoapis.com/crm/v8/settings/layouts").mock(
+        return_value=httpx.Response(200, json={"layouts": [{"api_name": "Standard"}]})
+    )
+
+    result = client.layouts("Accounts", limit=7, page=4)
+
+    assert result["layouts"][0]["api_name"] == "Standard"
+    assert dict(route.calls.last.request.url.params) == {
+        "module": "Accounts",
+        "per_page": "7",
+        "page": "4",
+    }
+
+
+@respx.mock
 def test_crm_client_coql() -> None:
     client = crm.ZohoCrmClient("fake-token", base_url="https://www.zohoapis.com/crm/v8")
     route = respx.post("https://www.zohoapis.com/crm/v8/coql").mock(
@@ -670,6 +713,61 @@ def test_crm_client_coql() -> None:
     assert json.loads(route.calls.last.request.content.decode()) == {
         "select_query": "select Last_Name from Leads limit 1"
     }
+
+
+def test_build_storepilot_seed_diff_reports_missing_modules_fields_and_counts() -> None:
+    snapshot = {
+        "kind": crm.STOREPILOT_SNAPSHOT_KIND,
+        "modules": [{"api_name": "Accounts"}],
+        "fields": {
+            "Accounts": [
+                {"api_name": "google_place_id", "data_type": "text"},
+                {"api_name": "geo_lat", "data_type": "integer"},
+            ]
+        },
+    }
+    crm_modules_seed = {
+        "version": "0.1.0",
+        "standard_modules": [
+            {
+                "api_name": "Accounts",
+                "business_name": "Stores",
+                "fields": [
+                    {"api_name": "google_place_id", "type": "text"},
+                    {"api_name": "geo_lat", "type": "decimal"},
+                    {"api_name": "geo_lng", "type": "decimal"},
+                ],
+            }
+        ],
+        "custom_modules": [
+            {
+                "api_name": "Regions",
+                "plural_label": "Regions",
+                "fields": [{"api_name": "region_code", "type": "text"}],
+            }
+        ],
+    }
+
+    result = crm.build_storepilot_seed_diff(
+        snapshot=snapshot,
+        crm_modules_seed=crm_modules_seed,
+        task_templates_seed={"templates": [{}, {}]},
+        budget_rules_seed={"rules": [{}]},
+        regions_seed={"regions": [{}, {}, {}]},
+    )
+
+    assert result["status"] == "dry_run"
+    assert result["liveWritesEnabled"] is False
+    assert result["summary"]["modulesToCreate"] == 1
+    assert result["summary"]["fieldsToCreate"] == 2
+    assert result["summary"]["fieldsWithTypeConflicts"] == 1
+    assert result["records_to_upsert"] == {
+        "Regions": 3,
+        "Task_Templates": 2,
+        "Budget_Rules": 1,
+    }
+    assert result["modules_to_create"][0]["apiName"] == "Regions"
+    assert any(field["apiName"] == "geo_lng" for field in result["fields_to_create"])
 
 
 @respx.mock

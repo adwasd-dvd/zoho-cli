@@ -70,6 +70,9 @@ CRM_FIXTURE_EVIDENCE_EXPECTED_DRY_RUN_BLOCKERS = {
     "live_fixture_env_not_enabled",
     "execute_flag_required",
 }
+STOREPILOT_SNAPSHOT_KIND = "storepilot_crm_snapshot"
+STOREPILOT_SEED_DIFF_KIND = "storepilot_crm_seed_diff"
+STOREPILOT_SEED_DIFF_POLICY_ID = "crm-041-storepilot-seed-diff-dry-run"
 
 
 def crm_sdk_status(
@@ -1326,6 +1329,197 @@ def missing_crm_scopes(
     return [s for s in crm_required_scopes(profile) if s not in granted]
 
 
+def storepilot_seed_modules(crm_modules_seed: dict) -> list[dict]:
+    """Return StorePilot standard + custom module seed entries."""
+    modules: list[dict] = []
+    for key in ("standard_modules", "custom_modules"):
+        entries = crm_modules_seed.get(key, [])
+        if isinstance(entries, list):
+            modules.extend(entry for entry in entries if isinstance(entry, dict))
+    return modules
+
+
+def _field_api_name(field: dict) -> str:
+    return str(field.get("api_name") or field.get("field_label") or "").strip()
+
+
+def _normalized_field_type(field: dict) -> str:
+    raw = (
+        str(
+            field.get("type")
+            or field.get("data_type")
+            or field.get("json_type")
+            or field.get("field_type")
+            or ""
+        )
+        .strip()
+        .lower()
+    )
+    aliases = {
+        "string": "text",
+        "text": "text",
+        "textarea": "textarea",
+        "integer": "integer",
+        "bigint": "integer",
+        "long": "integer",
+        "double": "decimal",
+        "decimal": "decimal",
+        "currency": "currency",
+        "boolean": "boolean",
+        "bool": "boolean",
+        "datetime": "datetime",
+        "date_time": "datetime",
+        "date": "date",
+        "lookup": "lookup",
+        "ownerlookup": "user_lookup",
+        "user_lookup": "user_lookup",
+        "picklist": "picklist",
+        "phone": "phone",
+        "email": "email",
+        "url": "url",
+    }
+    return aliases.get(raw, raw)
+
+
+def build_storepilot_seed_diff(
+    *,
+    snapshot: dict,
+    crm_modules_seed: dict,
+    task_templates_seed: dict | None = None,
+    budget_rules_seed: dict | None = None,
+    regions_seed: dict | None = None,
+) -> dict:
+    """Build a local-only dry-run diff between a CRM snapshot and StorePilot seeds."""
+    seed_modules = storepilot_seed_modules(crm_modules_seed)
+    existing_modules = {
+        str(module.get("api_name") or module.get("module_name") or "").strip(): module
+        for module in snapshot.get("modules", [])
+        if isinstance(module, dict)
+    }
+    fields_by_module = {
+        str(module_api_name): {
+            _field_api_name(field): field
+            for field in fields
+            if isinstance(field, dict) and _field_api_name(field)
+        }
+        for module_api_name, fields in (snapshot.get("fields") or {}).items()
+        if isinstance(fields, list)
+    }
+
+    modules_to_create: list[dict[str, str]] = []
+    fields_to_create: list[dict[str, str]] = []
+    fields_with_type_conflicts: list[dict[str, str]] = []
+
+    for seed_module in seed_modules:
+        module_api_name = str(seed_module.get("api_name") or "").strip()
+        if not module_api_name:
+            continue
+        if module_api_name not in existing_modules:
+            modules_to_create.append(
+                {
+                    "apiName": module_api_name,
+                    "businessName": str(
+                        seed_module.get("business_name")
+                        or seed_module.get("plural_label")
+                        or module_api_name
+                    ),
+                }
+            )
+            existing_fields: dict[str, dict] = {}
+        else:
+            existing_fields = fields_by_module.get(module_api_name, {})
+
+        for seed_field in seed_module.get("fields", []):
+            if not isinstance(seed_field, dict):
+                continue
+            field_api_name = _field_api_name(seed_field)
+            if not field_api_name:
+                continue
+            existing_field = existing_fields.get(field_api_name)
+            if existing_field is None:
+                fields_to_create.append(
+                    {
+                        "module": module_api_name,
+                        "apiName": field_api_name,
+                        "label": str(seed_field.get("label") or field_api_name),
+                        "type": str(seed_field.get("type") or ""),
+                    }
+                )
+                continue
+
+            seed_type = _normalized_field_type(seed_field)
+            existing_type = _normalized_field_type(existing_field)
+            if seed_type and existing_type and seed_type != existing_type:
+                fields_with_type_conflicts.append(
+                    {
+                        "module": module_api_name,
+                        "apiName": field_api_name,
+                        "seedType": seed_type,
+                        "existingType": existing_type,
+                    }
+                )
+
+    records_to_upsert = {
+        "Regions": len(regions_seed.get("regions", [])) if regions_seed else 0,
+        "Task_Templates": (
+            len(task_templates_seed.get("templates", [])) if task_templates_seed else 0
+        ),
+        "Budget_Rules": (
+            len(budget_rules_seed.get("rules", [])) if budget_rules_seed else 0
+        ),
+    }
+    manual_steps_required: list[dict[str, object]] = []
+    if modules_to_create:
+        manual_steps_required.append(
+            {
+                "code": "custom_module_creation_requires_apply_gate",
+                "count": len(modules_to_create),
+                "details": "zoho-cli reports required modules but does not create CRM schema in dry-run mode.",
+            }
+        )
+    if fields_to_create or fields_with_type_conflicts:
+        manual_steps_required.append(
+            {
+                "code": "field_layout_review_required",
+                "fieldsToCreate": len(fields_to_create),
+                "typeConflicts": len(fields_with_type_conflicts),
+            }
+        )
+    manual_steps_required.append(
+        {
+            "code": "webhook_notification_setup_not_automated",
+            "details": "StorePilot notifications/webhooks require a later guarded setup slice with a signed callback target.",
+        }
+    )
+
+    return {
+        "kind": STOREPILOT_SEED_DIFF_KIND,
+        "policyId": STOREPILOT_SEED_DIFF_POLICY_ID,
+        "status": "dry_run",
+        "liveWritesEnabled": False,
+        "snapshotKind": snapshot.get("kind", ""),
+        "seedVersion": crm_modules_seed.get("version", ""),
+        "summary": {
+            "seedModules": len(seed_modules),
+            "snapshotModules": len(existing_modules),
+            "modulesToCreate": len(modules_to_create),
+            "fieldsToCreate": len(fields_to_create),
+            "fieldsWithTypeConflicts": len(fields_with_type_conflicts),
+            "recordsToUpsert": sum(records_to_upsert.values()),
+        },
+        "modules_to_create": modules_to_create,
+        "fields_to_create": fields_to_create,
+        "fields_with_type_conflicts": fields_with_type_conflicts,
+        "records_to_upsert": records_to_upsert,
+        "manual_steps_required": manual_steps_required,
+        "safety": {
+            "dryRunOnly": True,
+            "writesZohoData": False,
+            "normalUpsertExecuteBlocked": True,
+        },
+    }
+
+
 def infer_crm_base_url(
     *,
     mail_base_url: str | None = None,
@@ -1426,6 +1620,29 @@ class ZohoCrmClient:
     def org(self) -> dict:
         """Fetch CRM organization details."""
         return self._get("/org")
+
+    def profiles(self, *, limit: int = 200, page: int = 1) -> dict:
+        """List CRM profiles."""
+        return self._get("/settings/profiles", {"per_page": limit, "page": page})
+
+    def get_profile(self, profile_id: str) -> dict:
+        """Fetch a single CRM profile by id."""
+        return self._get(f"/settings/profiles/{profile_id}")
+
+    def roles(self, *, limit: int = 200, page: int = 1) -> dict:
+        """List CRM roles."""
+        return self._get("/settings/roles", {"per_page": limit, "page": page})
+
+    def get_role(self, role_id: str) -> dict:
+        """Fetch a single CRM role by id."""
+        return self._get(f"/settings/roles/{role_id}")
+
+    def layouts(self, module_api_name: str, *, limit: int = 200, page: int = 1) -> dict:
+        """List layouts for a CRM module."""
+        return self._get(
+            "/settings/layouts",
+            {"module": module_api_name, "per_page": limit, "page": page},
+        )
 
     def coql(self, query: str) -> dict:
         """Run one read-only COQL query."""

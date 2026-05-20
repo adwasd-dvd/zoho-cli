@@ -1146,6 +1146,15 @@
   - crm-002
   agent_action: use `zoho crm users`, `zoho crm user-get`, `zoho crm org`, and `zoho crm coql --query` for read/query StorePilot diagnostics only; keep bulk, notifications, and live writes out of this slice
   completion_signal: CLI, tests, README, skill docs, and OpenClaw lane3 docs describe v8 users/org/COQL coverage while normal CRM writes remain blocked
+- id: crm-041
+  title: implement StorePilot CRM metadata snapshot and local seed diff helpers
+  module: crm
+  stage: completed
+  priority: high
+  depends_on:
+  - crm-039
+  agent_action: use profile/role/layout reads plus `zoho crm snapshot` and `zoho crm seed-diff` for dry-run StorePilot bootstrap planning; do not create modules fields layouts notifications or records
+  completion_signal: snapshot/diff commands, tests, README, skill docs, and lane3 docs report StorePilot modules fields seed counts and manual steps without Zoho writes
 - id: platform-220
   title: keep RC heartbeat and work-queue state synchronized
   module: platform

@@ -28015,6 +28015,179 @@ def test_crm_coql(mock_config: Path, mock_token_refresh: Any) -> None:
 
 
 @respx.mock
+def test_crm_profiles_roles_and_layouts(
+    mock_config: Path, mock_token_refresh: Any
+) -> None:
+    profiles_route = respx.get(
+        "https://www.zohoapis.com/crm/v8/settings/profiles"
+    ).mock(return_value=httpx.Response(200, json={"profiles": [{"id": "p1"}]}))
+    roles_route = respx.get("https://www.zohoapis.com/crm/v8/settings/roles").mock(
+        return_value=httpx.Response(200, json={"roles": [{"id": "r1"}]})
+    )
+    layouts_route = respx.get("https://www.zohoapis.com/crm/v8/settings/layouts").mock(
+        return_value=httpx.Response(200, json={"layouts": [{"id": "l1"}]})
+    )
+
+    profiles = runner.invoke(
+        app,
+        ["crm", "profiles", "--limit", "5", "--page", "2"],
+        env=_cfg_env(mock_config),
+    )
+    roles = runner.invoke(
+        app,
+        ["crm", "roles", "--limit", "6", "--page", "3"],
+        env=_cfg_env(mock_config),
+    )
+    layouts = runner.invoke(
+        app,
+        ["crm", "layouts", "--module", "Accounts", "--limit", "7", "--page", "4"],
+        env=_cfg_env(mock_config),
+    )
+
+    assert profiles.exit_code == 0, profiles.output
+    assert roles.exit_code == 0, roles.output
+    assert layouts.exit_code == 0, layouts.output
+    assert json.loads(profiles.output) == [{"id": "p1"}]
+    assert json.loads(roles.output) == [{"id": "r1"}]
+    assert json.loads(layouts.output) == [{"id": "l1"}]
+    assert dict(profiles_route.calls.last.request.url.params) == {
+        "per_page": "5",
+        "page": "2",
+    }
+    assert dict(roles_route.calls.last.request.url.params) == {
+        "per_page": "6",
+        "page": "3",
+    }
+    assert dict(layouts_route.calls.last.request.url.params) == {
+        "module": "Accounts",
+        "per_page": "7",
+        "page": "4",
+    }
+
+
+@respx.mock
+def test_crm_snapshot_uses_seed_modules(
+    mock_config: Path, mock_token_refresh: Any, tmp_path: Path
+) -> None:
+    seed_path = tmp_path / "crm-modules.seed.json"
+    seed_path.write_text(
+        json.dumps(
+            {
+                "version": "0.1.0",
+                "standard_modules": [
+                    {"api_name": "Accounts", "fields": []},
+                    {"api_name": "Contacts", "fields": []},
+                ],
+                "custom_modules": [{"api_name": "Regions", "fields": []}],
+            }
+        )
+    )
+    respx.get("https://www.zohoapis.com/crm/v8/settings/modules").mock(
+        return_value=httpx.Response(200, json={"modules": [{"api_name": "Accounts"}]})
+    )
+    respx.get("https://www.zohoapis.com/crm/v8/users").mock(
+        return_value=httpx.Response(200, json={"users": [{"id": "u1"}]})
+    )
+    respx.get("https://www.zohoapis.com/crm/v8/org").mock(
+        return_value=httpx.Response(200, json={"org": [{"id": "870137630"}]})
+    )
+    respx.get("https://www.zohoapis.com/crm/v8/settings/profiles").mock(
+        return_value=httpx.Response(200, json={"profiles": [{"id": "p1"}]})
+    )
+    respx.get("https://www.zohoapis.com/crm/v8/settings/roles").mock(
+        return_value=httpx.Response(200, json={"roles": [{"id": "r1"}]})
+    )
+    fields_route = respx.get("https://www.zohoapis.com/crm/v8/settings/fields").mock(
+        return_value=httpx.Response(200, json={"fields": [{"api_name": "Name"}]})
+    )
+    layouts_route = respx.get("https://www.zohoapis.com/crm/v8/settings/layouts").mock(
+        return_value=httpx.Response(200, json={"layouts": [{"id": "l1"}]})
+    )
+
+    result = runner.invoke(
+        app,
+        ["crm", "snapshot", "--crm-modules-seed", str(seed_path)],
+        env=_cfg_env(mock_config),
+    )
+
+    assert result.exit_code == 0, result.output
+    payload = json.loads(result.output)
+    assert payload["kind"] == "storepilot_crm_snapshot"
+    assert payload["selectedModules"] == ["Accounts", "Contacts", "Regions"]
+    assert payload["fields"]["Accounts"][0]["api_name"] == "Name"
+    assert payload["layouts"]["Regions"][0]["id"] == "l1"
+    assert fields_route.call_count == 3
+    assert layouts_route.call_count == 3
+
+
+def test_crm_seed_diff_command(tmp_path: Path) -> None:
+    snapshot_path = tmp_path / "snapshot.json"
+    crm_modules_path = tmp_path / "crm-modules.seed.json"
+    task_templates_path = tmp_path / "task-templates.seed.json"
+    regions_path = tmp_path / "regions.seed.json"
+    budget_path = tmp_path / "budget-rules.seed.json"
+    snapshot_path.write_text(
+        json.dumps(
+            {
+                "kind": "storepilot_crm_snapshot",
+                "modules": [{"api_name": "Accounts"}],
+                "fields": {
+                    "Accounts": [{"api_name": "google_place_id", "type": "text"}]
+                },
+            }
+        )
+    )
+    crm_modules_path.write_text(
+        json.dumps(
+            {
+                "version": "0.1.0",
+                "standard_modules": [
+                    {
+                        "api_name": "Accounts",
+                        "fields": [
+                            {"api_name": "google_place_id", "type": "text"},
+                            {"api_name": "store_type", "type": "picklist"},
+                        ],
+                    }
+                ],
+                "custom_modules": [{"api_name": "Regions", "fields": []}],
+            }
+        )
+    )
+    task_templates_path.write_text(json.dumps({"templates": [{}, {}]}))
+    regions_path.write_text(json.dumps({"regions": [{}, {}, {}]}))
+    budget_path.write_text(json.dumps({"rules": [{}]}))
+
+    result = runner.invoke(
+        app,
+        [
+            "crm",
+            "seed-diff",
+            "--snapshot-file",
+            str(snapshot_path),
+            "--crm-modules-seed",
+            str(crm_modules_path),
+            "--task-templates-seed",
+            str(task_templates_path),
+            "--regions-seed",
+            str(regions_path),
+            "--budget-rules-seed",
+            str(budget_path),
+        ],
+    )
+
+    assert result.exit_code == 0, result.output
+    payload = json.loads(result.output)
+    assert payload["kind"] == "storepilot_crm_seed_diff"
+    assert payload["liveWritesEnabled"] is False
+    assert payload["summary"]["modulesToCreate"] == 1
+    assert payload["summary"]["fieldsToCreate"] == 1
+    assert payload["records_to_upsert"]["Regions"] == 3
+    assert payload["records_to_upsert"]["Task_Templates"] == 2
+    assert payload["records_to_upsert"]["Budget_Rules"] == 1
+
+
+@respx.mock
 def test_crm_fields(mock_config: Path, mock_token_refresh: Any) -> None:
     route = respx.get("https://www.zohoapis.com/crm/v2/settings/fields").mock(
         return_value=httpx.Response(200, json={"data": [{"api_name": "Company"}]})

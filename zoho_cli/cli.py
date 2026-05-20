@@ -11273,6 +11273,19 @@ def _load_crm_write_payload(
         )
 
 
+def _load_json_file(path_text: str, *, error_code: str) -> dict:
+    path = Path(path_text).expanduser()
+    try:
+        payload = json.loads(path.read_text(encoding="utf-8"))
+    except FileNotFoundError:
+        utils.error_exit(error_code, f"File not found: {path}")
+    except json.JSONDecodeError as exc:
+        utils.error_exit(error_code, f"Invalid JSON in {path}: {exc}")
+    if not isinstance(payload, dict):
+        utils.error_exit(error_code, f"Expected JSON object in {path}")
+    return payload
+
+
 def _crm_write_audit_path(
     audit_file: str | None = None,
     *,
@@ -11954,6 +11967,88 @@ def crm_org() -> None:
     utils.output(data)
 
 
+@crm_app.command("profiles")
+def crm_profiles(
+    limit: int = typer.Option(200, "--limit", "-n", help="Max profiles to return."),
+    page: int = typer.Option(1, "--page", help="Result page number."),
+) -> None:
+    """List CRM profiles through the StorePilot settings scope."""
+    cfg = _cfg()
+    email = _require_account(cfg)
+    client = _get_crm_http_v8_client(cfg, email)
+
+    resp = client.profiles(limit=limit, page=page)
+    data = resp.get("profiles", resp)
+    utils.output(data)
+
+
+@crm_app.command("profile-get")
+def crm_profile_get(
+    profile_id: str = typer.Argument(..., help="CRM profile ID."),
+) -> None:
+    """Get a single CRM profile by id through the StorePilot settings scope."""
+    cfg = _cfg()
+    email = _require_account(cfg)
+    client = _get_crm_http_v8_client(cfg, email)
+
+    resp = client.get_profile(profile_id)
+    data = resp.get("profiles", resp)
+    if isinstance(data, list) and data:
+        utils.output(data[0])
+        return
+    utils.output(data)
+
+
+@crm_app.command("roles")
+def crm_roles(
+    limit: int = typer.Option(200, "--limit", "-n", help="Max roles to return."),
+    page: int = typer.Option(1, "--page", help="Result page number."),
+) -> None:
+    """List CRM roles through the StorePilot settings scope."""
+    cfg = _cfg()
+    email = _require_account(cfg)
+    client = _get_crm_http_v8_client(cfg, email)
+
+    resp = client.roles(limit=limit, page=page)
+    data = resp.get("roles", resp)
+    utils.output(data)
+
+
+@crm_app.command("role-get")
+def crm_role_get(
+    role_id: str = typer.Argument(..., help="CRM role ID."),
+) -> None:
+    """Get a single CRM role by id through the StorePilot settings scope."""
+    cfg = _cfg()
+    email = _require_account(cfg)
+    client = _get_crm_http_v8_client(cfg, email)
+
+    resp = client.get_role(role_id)
+    data = resp.get("roles", resp)
+    if isinstance(data, list) and data:
+        utils.output(data[0])
+        return
+    utils.output(data)
+
+
+@crm_app.command("layouts")
+def crm_layouts(
+    module: str = typer.Option(
+        ..., "--module", "-m", help="CRM module API name (for example Accounts)."
+    ),
+    limit: int = typer.Option(200, "--limit", "-n", help="Max layouts to return."),
+    page: int = typer.Option(1, "--page", help="Result page number."),
+) -> None:
+    """List CRM layouts for one module through the StorePilot settings scope."""
+    cfg = _cfg()
+    email = _require_account(cfg)
+    client = _get_crm_http_v8_client(cfg, email)
+
+    resp = client.layouts(module, limit=limit, page=page)
+    data = resp.get("layouts", resp)
+    utils.output(data)
+
+
 @crm_app.command("coql")
 def crm_coql(
     query: str = typer.Option(
@@ -11971,6 +12066,134 @@ def crm_coql(
     resp = client.coql(query)
     data = resp.get("data", resp)
     utils.output(data)
+
+
+@crm_app.command("snapshot")
+def crm_snapshot(
+    crm_modules_seed: Optional[str] = typer.Option(
+        None,
+        "--crm-modules-seed",
+        help="Optional StorePilot crm-modules.seed.json used to select modules.",
+    ),
+    modules: List[str] = typer.Option(
+        [], "--module", "-m", help="CRM module API name to include (repeatable)."
+    ),
+    include_layouts: bool = typer.Option(
+        True,
+        "--include-layouts/--no-include-layouts",
+        help="Include module layout metadata for selected modules.",
+    ),
+    limit: int = typer.Option(200, "--limit", "-n", help="Max metadata rows/page."),
+) -> None:
+    """Export a safe StorePilot CRM metadata snapshot without writing data."""
+    cfg = _cfg()
+    email = _require_account(cfg)
+    client = _get_crm_http_v8_client(cfg, email)
+
+    selected_modules = list(modules)
+    seed_version = ""
+    if crm_modules_seed:
+        seed = _load_json_file(crm_modules_seed, error_code="invalid_crm_modules_seed")
+        seed_version = str(seed.get("version") or "")
+        seed_modules = [
+            str(module.get("api_name") or "").strip()
+            for module in _crm.storepilot_seed_modules(seed)
+        ]
+        selected_modules.extend(module for module in seed_modules if module)
+    selected_modules = sorted(dict.fromkeys(selected_modules))
+
+    modules_resp = client.modules(limit=limit, page=1)
+    users_resp = client.users(user_type="AllUsers", limit=limit, page=1)
+    org_resp = client.org()
+    profiles_resp = client.profiles(limit=limit, page=1)
+    roles_resp = client.roles(limit=limit, page=1)
+
+    fields_by_module: dict[str, Any] = {}
+    layouts_by_module: dict[str, Any] = {}
+    for module_api_name in selected_modules:
+        fields_resp = client.fields(module_api_name, limit=limit, page=1)
+        fields_by_module[module_api_name] = fields_resp.get(
+            "fields"
+        ) or fields_resp.get("data", fields_resp)
+        if include_layouts:
+            layouts_resp = client.layouts(module_api_name, limit=limit, page=1)
+            layouts_by_module[module_api_name] = layouts_resp.get(
+                "layouts", layouts_resp
+            )
+
+    utils.output(
+        {
+            "kind": _crm.STOREPILOT_SNAPSHOT_KIND,
+            "status": "ok",
+            "apiVersion": _crm.CRM_SDK_API_VERSION,
+            "account": email,
+            "seedVersion": seed_version,
+            "selectedModules": selected_modules,
+            "org": org_resp.get("org", org_resp),
+            "users": users_resp.get("users", users_resp),
+            "profiles": profiles_resp.get("profiles", profiles_resp),
+            "roles": roles_resp.get("roles", roles_resp),
+            "modules": modules_resp.get("modules")
+            or modules_resp.get("data", modules_resp),
+            "fields": fields_by_module,
+            "layouts": layouts_by_module,
+            "safety": {
+                "dryRunOnly": True,
+                "writesZohoData": False,
+                "normalUpsertExecuteBlocked": True,
+            },
+        }
+    )
+
+
+@crm_app.command("seed-diff")
+def crm_seed_diff(
+    snapshot_file: str = typer.Option(
+        ..., "--snapshot-file", help="JSON file produced by `zoho crm snapshot`."
+    ),
+    crm_modules_seed: str = typer.Option(
+        ..., "--crm-modules-seed", help="StorePilot crm-modules.seed.json."
+    ),
+    task_templates_seed: Optional[str] = typer.Option(
+        None, "--task-templates-seed", help="Optional task-templates.seed.json."
+    ),
+    budget_rules_seed: Optional[str] = typer.Option(
+        None, "--budget-rules-seed", help="Optional budget-rules.seed.json."
+    ),
+    regions_seed: Optional[str] = typer.Option(
+        None, "--regions-seed", help="Optional regions.seed.json."
+    ),
+) -> None:
+    """Diff a StorePilot seed set against a CRM snapshot without writing data."""
+    snapshot = _load_json_file(snapshot_file, error_code="invalid_snapshot_file")
+    crm_modules = _load_json_file(
+        crm_modules_seed, error_code="invalid_crm_modules_seed"
+    )
+    task_templates = (
+        _load_json_file(task_templates_seed, error_code="invalid_task_templates_seed")
+        if task_templates_seed
+        else None
+    )
+    budget_rules = (
+        _load_json_file(budget_rules_seed, error_code="invalid_budget_rules_seed")
+        if budget_rules_seed
+        else None
+    )
+    regions = (
+        _load_json_file(regions_seed, error_code="invalid_regions_seed")
+        if regions_seed
+        else None
+    )
+
+    utils.output(
+        _crm.build_storepilot_seed_diff(
+            snapshot=snapshot,
+            crm_modules_seed=crm_modules,
+            task_templates_seed=task_templates,
+            budget_rules_seed=budget_rules,
+            regions_seed=regions,
+        )
+    )
 
 
 @crm_app.command("fields")

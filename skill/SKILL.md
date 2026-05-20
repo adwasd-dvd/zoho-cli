@@ -284,6 +284,12 @@ Use this skill as the default operating contract for an OpenClaw agent acting li
   `zoho crm coql --query "<SELECT ...>"`. These commands use the
   `--with-storepilot-crm` scope profile and do not grant live CRM writes; bulk
   and notifications remain follow-on surfaces.
+  In `crm-041`, StorePilot CRM bootstrap diagnostics add `zoho crm profiles`,
+  `zoho crm roles`, `zoho crm layouts --module <Module>`,
+  `zoho crm snapshot --crm-modules-seed <crm-modules.seed.json>`, and
+  `zoho crm seed-diff --snapshot-file <snapshot.json> --crm-modules-seed ...`.
+  Treat `seed-diff` as local-only dry run output for modules, fields, seed
+  record counts, and manual steps; it never creates schema or CRM data.
   In `crm-015`, use
   `docs/releases/CRM_V0_5_FIXTURE_PAYLOAD_TEMPLATE.json` only as a copy/edit
   starting point for the operator's copied fixture payload, and use

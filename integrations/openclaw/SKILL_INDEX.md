@@ -37,6 +37,9 @@ CRM SDK planning:
 - `crm users|user-get|org|coql` (`crm-039` StorePilot CRM v8 read/query
   expansion for users, organization details, and COQL; bulk and notifications
   remain follow-on surfaces)
+- `crm profiles|profile-get|roles|role-get|layouts|snapshot|seed-diff`
+  (`crm-041` StorePilot bootstrap metadata snapshot and local-only seed diff;
+  reports manual steps without writing CRM schema/data)
 - `apiVersionPolicy` from `zoho crm status` / `zoho crm sdk-status` (`crm-006`:
   HTTP v2 default, SDK/API v8 explicit-only)
 - `zoho crm write-plan` / `writeSurfacePolicy` (`crm-007`: `writesEnabled=false`,

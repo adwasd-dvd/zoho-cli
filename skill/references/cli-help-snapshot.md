@@ -290,8 +290,20 @@ Exit code: `0`
 │                   scope.                                                     │
 │ org               Show CRM organization details through the StorePilot v8    │
 │                   org scope.                                                 │
+│ profiles          List CRM profiles through the StorePilot settings scope.   │
+│ profile-get       Get a single CRM profile by id through the StorePilot      │
+│                   settings scope.                                            │
+│ roles             List CRM roles through the StorePilot settings scope.      │
+│ role-get          Get a single CRM role by id through the StorePilot         │
+│                   settings scope.                                            │
+│ layouts           List CRM layouts for one module through the StorePilot     │
+│                   settings scope.                                            │
 │ coql              Run one CRM COQL read query through the StorePilot v8 COQL │
 │                   scope.                                                     │
+│ snapshot          Export a safe StorePilot CRM metadata snapshot without     │
+│                   writing data.                                              │
+│ seed-diff         Diff a StorePilot seed set against a CRM snapshot without  │
+│                   writing data.                                              │
 │ fields            List fields for a CRM module.                              │
 │ list              List records from a CRM module.                            │
 │ get               Get a single CRM record by id.                             │

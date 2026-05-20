@@ -905,6 +905,54 @@ def test_build_storepilot_snapshot_summary_reports_coverage() -> None:
     assert "Blueprints" in summary["manualReviewSurfaces"]
 
 
+def test_build_storepilot_manual_setup_plan_reports_seed_relationships() -> None:
+    crm_modules_seed = {
+        "manual_setup_required": ["Review related lists manually."],
+        "relationships": [
+            {
+                "from": "Field_Tasks",
+                "to": "Accounts",
+                "type": "many_to_one",
+                "field": "account",
+            }
+        ],
+    }
+    snapshot = {
+        "selectedModules": ["Accounts"],
+        "org": [{"id": "870137630"}],
+        "layouts": {},
+    }
+    notification_plan = {
+        "summary": {"callbackConfigured": False},
+        "manual_steps_required": [{"code": "callback_url_required"}],
+    }
+    cleanup_plan = {"summary": {"legacyAutomationToReview": 2}}
+
+    plan = crm.build_storepilot_manual_setup_plan(
+        crm_modules_seed=crm_modules_seed,
+        snapshot=snapshot,
+        notification_plan=notification_plan,
+        cleanup_plan=cleanup_plan,
+    )
+
+    assert plan["kind"] == crm.STOREPILOT_MANUAL_SETUP_PLAN_KIND
+    assert plan["liveWritesEnabled"] is False
+    assert plan["summary"]["seedManualSteps"] == 1
+    assert plan["summary"]["relationships"] == 1
+    assert plan["summary"]["manualReviewRequired"] >= 4
+    assert plan["relationship_checks"][0]["field"] == "account"
+    assert {
+        check["code"]
+        for check in plan["checks"]
+        if check["status"] == "manual_review_required"
+    } >= {
+        "relationship_related_list_review_required",
+        "layout_coverage_review",
+        "automation_cleanup_review",
+        "notification_setup_review",
+    }
+
+
 def test_storepilot_seed_diff_reports_org_mismatch_and_unknown_type() -> None:
     snapshot = {
         "kind": crm.STOREPILOT_SNAPSHOT_KIND,
@@ -1037,8 +1085,12 @@ def test_build_storepilot_cleanup_and_init_plan() -> None:
     assert plan["liveWritesEnabled"] is False
     assert plan["summary"]["recordsToUpsert"] == 3
     assert plan["summary"]["cleanupReviewItems"] == 4
+    assert plan["summary"]["manualSetupChecks"] >= 5
+    assert plan["summary"]["manualSetupReviews"] >= 1
     assert "cleanup_review_required" in plan["readiness"]["blockingReasons"]
+    assert "manual_setup_review_required" in plan["readiness"]["blockingReasons"]
     assert plan["cleanupPlan"]["summary"]["legacyModulesToReview"] == 1
+    assert plan["manualSetupPlan"]["kind"] == crm.STOREPILOT_MANUAL_SETUP_PLAN_KIND
 
 
 @respx.mock

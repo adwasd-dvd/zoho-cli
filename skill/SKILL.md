@@ -314,6 +314,10 @@ Use this skill as the default operating contract for an OpenClaw agent acting li
   is still dry-run only and reports `destructiveActionsPerformed=false`; cleanup
   candidates, including automation candidates and Zoho-only manual setup notes,
   are review items, not permissions to delete.
+  In `crm-048`, inspect `init-plan.manualSetupPlan` before any guarded apply
+  planning. It summarizes seed `manual_setup_required` items, relationship and
+  related-list checks, layout coverage, automation cleanup review, and
+  notification setup review while keeping `liveWritesEnabled=false`.
   In `crm-015`, use
   `docs/releases/CRM_V0_5_FIXTURE_PAYLOAD_TEMPLATE.json` only as a copy/edit
   starting point for the operator's copied fixture payload, and use

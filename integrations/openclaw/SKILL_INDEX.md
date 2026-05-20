@@ -55,6 +55,9 @@ CRM SDK planning:
   and webhook setup dry-run contracts; no Zoho jobs or notifications created)
 - `crm init-plan` (`crm-044` combined StorePilot dry-run handoff for seed diff,
   bulk, notification, and legacy cleanup review; no cleanup/write actions)
+- `crm init-plan` `manualSetupPlan` (`crm-048` structured StorePilot Zoho-only
+  setup checklist for seed manual steps, relationships, related lists, layout
+  coverage, automation cleanup review, and notification setup; no writes)
 - `apiVersionPolicy` from `zoho crm status` / `zoho crm sdk-status` (`crm-006`:
   HTTP v2 default, SDK/API v8 explicit-only)
 - `zoho crm write-plan` / `writeSurfacePolicy` (`crm-007`: `writesEnabled=false`,

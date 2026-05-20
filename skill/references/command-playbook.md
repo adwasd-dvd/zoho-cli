@@ -113,7 +113,10 @@ unique/external-id flags. Bulk and notifications are still dry-run-only through
 `crm-043` until an explicit guarded apply slice is approved. `crm-044` combines
 those pieces plus legacy cleanup review into one `init-plan` handoff; review
 module, field, and automation cleanup candidates manually and keep destructive
-actions behind a separate production cleanup gate.
+actions behind a separate production cleanup gate. In `crm-048`, also inspect
+`init-plan.manualSetupPlan` for seed `manual_setup_required` items,
+relationship/related-list checks, layout coverage, automation cleanup review,
+and notification setup review before any guarded apply planning.
 
 For SDK migration work, inspect `zoho crm sdk-status` and
 `docs/architecture/CRM_V0_5_SDK_ADOPTION_PLAN.md` first. `crm-004` keeps the

@@ -1209,6 +1209,15 @@
   - crm-046
   agent_action: inspect `snapshotSummary` before seed-diff/init-plan handoff to verify selected modules, field/layout coverage, automation counts, and manual review surfaces
   completion_signal: snapshot output, tests, README, skill docs, and lane3 docs expose coverage/count metadata without changing raw snapshot blocks or writing Zoho data
+- id: crm-048
+  title: add StorePilot manual setup dry-run checklist
+  module: crm
+  stage: completed
+  priority: medium
+  depends_on:
+  - crm-047
+  agent_action: inspect `manualSetupPlan` in init-plan for seed manual steps, relationships, layout coverage, automation cleanup review, and notification setup before guarded apply planning
+  completion_signal: init-plan output, tests, README, skill docs, and lane3 docs expose structured manual setup checks without writes
 - id: platform-220
   title: keep RC heartbeat and work-queue state synchronized
   module: platform

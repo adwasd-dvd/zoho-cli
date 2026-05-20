@@ -80,6 +80,7 @@ STOREPILOT_NOTIFICATION_PLAN_POLICY_ID = "crm-043-storepilot-notification-plan-d
 STOREPILOT_INIT_PLAN_KIND = "storepilot_crm_init_plan"
 STOREPILOT_INIT_PLAN_POLICY_ID = "crm-044-storepilot-init-plan-dry-run"
 STOREPILOT_CLEANUP_PLAN_KIND = "storepilot_crm_cleanup_plan"
+STOREPILOT_MANUAL_SETUP_PLAN_KIND = "storepilot_crm_manual_setup_plan"
 STOREPILOT_DEFAULT_NOTIFICATION_MODULES = [
     "Accounts",
     "Field_Tasks",
@@ -2186,6 +2187,142 @@ def build_storepilot_cleanup_plan(*, snapshot: dict, crm_modules_seed: dict) -> 
     }
 
 
+def build_storepilot_manual_setup_plan(
+    *,
+    crm_modules_seed: dict,
+    snapshot: dict | None = None,
+    notification_plan: dict | None = None,
+    cleanup_plan: dict | None = None,
+) -> dict:
+    """Build a structured dry-run plan for StorePilot Zoho-only setup review."""
+    manual_seed_steps = [
+        {"source": "crm_modules_seed.manual_setup_required", "text": str(step)}
+        for step in crm_modules_seed.get("manual_setup_required", [])
+        if str(step).strip()
+    ]
+    relationships = [
+        {
+            "from": str(item.get("from") or ""),
+            "to": str(item.get("to") or ""),
+            "type": str(item.get("type") or ""),
+            "field": str(item.get("field") or ""),
+        }
+        for item in crm_modules_seed.get("relationships", [])
+        if isinstance(item, dict)
+    ]
+    snapshot_summary = (
+        build_storepilot_snapshot_summary(snapshot)
+        if isinstance(snapshot, dict)
+        else {"coverage": {}}
+    )
+    coverage = snapshot_summary.get("coverage", {})
+    if not isinstance(coverage, dict):
+        coverage = {}
+
+    checks: list[dict[str, object]] = []
+    checks.extend(
+        {
+            "code": step["code"],
+            "surface": step["surface"],
+            "status": "manual_review_required",
+            "details": step["details"],
+            "writesZohoData": False,
+        }
+        for step in storepilot_zoho_only_manual_steps()
+    )
+    checks.append(
+        {
+            "code": "relationship_related_list_review_required",
+            "surface": "Relationships",
+            "status": "manual_review_required" if relationships else "not_applicable",
+            "count": len(relationships),
+            "details": "Review lookup relationships and related-list placement before production apply.",
+            "writesZohoData": False,
+        }
+    )
+    checks.append(
+        {
+            "code": "layout_coverage_review",
+            "surface": "Layouts",
+            "status": (
+                "ready"
+                if coverage.get("hasLayoutsForAllSelectedModules")
+                else "manual_review_required"
+            ),
+            "missingModules": coverage.get("missingLayoutModules", []),
+            "details": "Confirm StorePilot fields are placed into business/audit layout sections.",
+            "writesZohoData": False,
+        }
+    )
+    checks.append(
+        {
+            "code": "automation_cleanup_review",
+            "surface": "Automation",
+            "status": (
+                "manual_review_required"
+                if cleanup_plan
+                and cleanup_plan.get("summary", {}).get("legacyAutomationToReview")
+                else "not_applicable"
+            ),
+            "count": (
+                cleanup_plan.get("summary", {}).get("legacyAutomationToReview", 0)
+                if cleanup_plan
+                else 0
+            ),
+            "details": "Review legacy workflow/webhook/automation candidates before cleanup_production.",
+            "writesZohoData": False,
+        }
+    )
+    checks.append(
+        {
+            "code": "notification_setup_review",
+            "surface": "Notifications",
+            "status": (
+                "manual_review_required"
+                if notification_plan and notification_plan.get("manual_steps_required")
+                else "ready"
+            ),
+            "callbackConfigured": (
+                notification_plan.get("summary", {}).get("callbackConfigured", False)
+                if notification_plan
+                else False
+            ),
+            "details": "Confirm signed webhook callback and shared secret before guarded notification apply.",
+            "writesZohoData": False,
+        }
+    )
+
+    manual_review_count = sum(
+        1 for check in checks if check.get("status") == "manual_review_required"
+    )
+    return {
+        "kind": STOREPILOT_MANUAL_SETUP_PLAN_KIND,
+        "status": "dry_run",
+        "liveWritesEnabled": False,
+        "summary": {
+            "seedManualSteps": len(manual_seed_steps),
+            "relationships": len(relationships),
+            "checks": len(checks),
+            "manualReviewRequired": manual_review_count,
+        },
+        "seed_manual_steps": manual_seed_steps,
+        "relationship_checks": relationships,
+        "checks": checks,
+        "guardedApplyRequirements": [
+            "validated_org_id",
+            "snapshot_reviewed",
+            "layout_and_related_list_review",
+            "automation_cleanup_review",
+            "exact_operator_approval",
+        ],
+        "safety": {
+            "dryRunOnly": True,
+            "writesZohoData": False,
+            "destructiveActionsPerformed": False,
+        },
+    }
+
+
 def _automation_item_name(item: dict) -> str:
     return str(
         item.get("name")
@@ -2300,6 +2437,12 @@ def build_storepilot_init_plan(
         if include_cleanup
         else None
     )
+    manual_setup_plan = build_storepilot_manual_setup_plan(
+        crm_modules_seed=crm_modules_seed,
+        snapshot=snapshot,
+        notification_plan=notification_plan,
+        cleanup_plan=cleanup_plan,
+    )
 
     blocking_reasons = list(seed_diff.get("readiness", {}).get("blockingReasons", []))
     if notification_plan["manual_steps_required"]:
@@ -2309,6 +2452,8 @@ def build_storepilot_init_plan(
         or cleanup_plan["summary"]["legacyFieldsToReview"]
     ):
         blocking_reasons.append("cleanup_review_required")
+    if manual_setup_plan["summary"]["manualReviewRequired"]:
+        blocking_reasons.append("manual_setup_review_required")
 
     return {
         "kind": STOREPILOT_INIT_PLAN_KIND,
@@ -2328,6 +2473,8 @@ def build_storepilot_init_plan(
                 if cleanup_plan
                 else 0
             ),
+            "manualSetupChecks": manual_setup_plan["summary"]["checks"],
+            "manualSetupReviews": manual_setup_plan["summary"]["manualReviewRequired"],
         },
         "readiness": {
             "readyForApplyPlan": not blocking_reasons,
@@ -2337,9 +2484,11 @@ def build_storepilot_init_plan(
         "bulkPlan": bulk_plan,
         "notificationPlan": notification_plan,
         "cleanupPlan": cleanup_plan,
+        "manualSetupPlan": manual_setup_plan,
         "nextOperatorSteps": [
             "review seedDiff modules/fields and resolve type blockers",
             "choose signed StorePilot webhook callback and configure shared secret",
+            "review manualSetupPlan checks for layouts, related lists, automation, and Zoho-only surfaces",
             "review cleanup candidates before any cleanup_production mode",
             "run StorePilot initializer in dry_run before any apply mode",
         ],

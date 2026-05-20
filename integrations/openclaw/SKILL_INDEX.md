@@ -40,6 +40,10 @@ CRM SDK planning:
 - `crm profiles|profile-get|roles|role-get|layouts|snapshot|seed-diff`
   (`crm-041` StorePilot bootstrap metadata snapshot and local-only seed diff;
   reports manual steps without writing CRM schema/data)
+- `crm automation` and `crm snapshot --include-automation` (`crm-046`
+  read-only StorePilot cleanup review for workflow rules, webhooks, automation
+  tasks, cadences, connected workflows, and assignment thresholds; no
+  automation disable/delete actions)
 - `crm snapshot|seed-diff --expected-org-id` / `ZOHO_ORG_ID` (`crm-042` org id
   readiness gating plus `field_mapping_contracts`, best-effort `zohoType` field
   mappings, `fields_with_property_gaps`, and blockers for type conflicts,

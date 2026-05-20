@@ -1191,6 +1191,15 @@
   - crm-044
   agent_action: inspect `field_mapping_contracts`, `fields_with_property_gaps`, and readiness blockers before handing StorePilot schema work to an apply initializer
   completion_signal: seed-diff and init-plan report normalized field contracts, multiline-to-textarea mapping, and picklist/lookup/unique/external property gaps without Zoho writes
+- id: crm-046
+  title: add StorePilot automation cleanup review reads
+  module: crm
+  stage: completed
+  priority: high
+  depends_on:
+  - crm-045
+  agent_action: use `zoho crm automation <resource>` or `zoho crm snapshot --include-automation` for workflow/webhook/automation cleanup review only; do not disable, delete, or create automation
+  completion_signal: CLI, tests, README, skill docs, lane3 docs, and init-plan cleanup output expose automation review candidates and Zoho-only manual steps without writes
 - id: platform-220
   title: keep RC heartbeat and work-queue state synchronized
   module: platform

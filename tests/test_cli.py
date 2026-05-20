@@ -28066,6 +28066,40 @@ def test_crm_profiles_roles_and_layouts(
 
 
 @respx.mock
+def test_crm_automation_command(mock_config: Path, mock_token_refresh: Any) -> None:
+    route = respx.get(
+        "https://www.zohoapis.com/crm/v8/settings/automation/workflow_rules"
+    ).mock(return_value=httpx.Response(200, json={"workflow_rules": [{"id": "w1"}]}))
+
+    result = runner.invoke(
+        app,
+        [
+            "crm",
+            "automation",
+            "workflow_rules",
+            "--module",
+            "Accounts",
+            "--status",
+            "active",
+            "--limit",
+            "8",
+            "--page",
+            "2",
+        ],
+        env=_cfg_env(mock_config),
+    )
+
+    assert result.exit_code == 0, result.output
+    assert json.loads(result.output) == [{"id": "w1"}]
+    assert dict(route.calls.last.request.url.params) == {
+        "per_page": "8",
+        "page": "2",
+        "module": "Accounts",
+        "status": "active",
+    }
+
+
+@respx.mock
 def test_crm_snapshot_uses_seed_modules(
     mock_config: Path, mock_token_refresh: Any, tmp_path: Path
 ) -> None:
@@ -28103,6 +28137,9 @@ def test_crm_snapshot_uses_seed_modules(
     layouts_route = respx.get("https://www.zohoapis.com/crm/v8/settings/layouts").mock(
         return_value=httpx.Response(200, json={"layouts": [{"id": "l1"}]})
     )
+    workflow_route = respx.get(
+        "https://www.zohoapis.com/crm/v8/settings/automation/workflow_rules"
+    ).mock(return_value=httpx.Response(200, json={"workflow_rules": [{"id": "w1"}]}))
 
     result = runner.invoke(
         app,
@@ -28113,6 +28150,9 @@ def test_crm_snapshot_uses_seed_modules(
             str(seed_path),
             "--expected-org-id",
             "870137630",
+            "--include-automation",
+            "--automation-resource",
+            "workflow_rules",
         ],
         env=_cfg_env(mock_config),
     )
@@ -28125,8 +28165,11 @@ def test_crm_snapshot_uses_seed_modules(
     assert payload["selectedModules"] == ["Accounts", "Contacts", "Regions"]
     assert payload["fields"]["Accounts"][0]["api_name"] == "Name"
     assert payload["layouts"]["Regions"][0]["id"] == "l1"
+    assert payload["automation"]["workflow_rules"][0]["id"] == "w1"
+    assert payload["automationResources"] == ["workflow_rules"]
     assert fields_route.call_count == 3
     assert layouts_route.call_count == 3
+    assert workflow_route.call_count == 1
 
 
 def test_crm_seed_diff_command(tmp_path: Path) -> None:

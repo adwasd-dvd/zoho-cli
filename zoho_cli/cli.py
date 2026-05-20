@@ -12068,6 +12068,46 @@ def crm_coql(
     utils.output(data)
 
 
+@crm_app.command("automation")
+def crm_automation(
+    resource: str = typer.Argument(
+        ...,
+        help="Automation/settings resource: workflow_rules, webhooks, automation_tasks, cadences, connected_workflows, or assignment_thresholds.",
+    ),
+    module: Optional[str] = typer.Option(
+        None,
+        "--module",
+        "-m",
+        help="Optional CRM module API name for resources that support module filters.",
+    ),
+    status: Optional[str] = typer.Option(
+        None,
+        "--status",
+        help="Optional status filter for resources that support status filters.",
+    ),
+    limit: int = typer.Option(200, "--limit", "-n", help="Max resources to return."),
+    page: int = typer.Option(1, "--page", help="Result page number."),
+) -> None:
+    """Read supported CRM automation/settings resources without writing data."""
+    cfg = _cfg()
+    email = _require_account(cfg)
+    client = _get_crm_http_v8_client(cfg, email)
+    try:
+        resp = client.automation_resource(
+            resource,
+            module=module,
+            status=status,
+            limit=limit,
+            page=page,
+        )
+    except ValueError as exc:
+        utils.error_exit("invalid_automation_resource", str(exc))
+
+    spec = _crm.STOREPILOT_AUTOMATION_RESOURCE_SPECS[resource]
+    data = resp.get(str(spec["responseKey"]), resp)
+    utils.output(data)
+
+
 @crm_app.command("snapshot")
 def crm_snapshot(
     crm_modules_seed: Optional[str] = typer.Option(
@@ -12082,6 +12122,16 @@ def crm_snapshot(
         True,
         "--include-layouts/--no-include-layouts",
         help="Include module layout metadata for selected modules.",
+    ),
+    include_automation: bool = typer.Option(
+        False,
+        "--include-automation/--no-include-automation",
+        help="Include supported automation/settings resources for cleanup dry-run review.",
+    ),
+    automation_resources: List[str] = typer.Option(
+        [],
+        "--automation-resource",
+        help="Automation resource to include when --include-automation is set (repeatable). Defaults to all supported resources.",
     ),
     expected_org_id: Optional[str] = typer.Option(
         None,
@@ -12127,6 +12177,24 @@ def crm_snapshot(
             layouts_by_module[module_api_name] = layouts_resp.get(
                 "layouts", layouts_resp
             )
+    automation_by_resource: dict[str, Any] = {}
+    if include_automation:
+        selected_automation_resources = list(automation_resources) or list(
+            _crm.STOREPILOT_AUTOMATION_RESOURCE_SPECS
+        )
+        for resource in selected_automation_resources:
+            try:
+                automation_resp = client.automation_resource(
+                    resource,
+                    limit=limit,
+                    page=1,
+                )
+            except ValueError as exc:
+                utils.error_exit("invalid_automation_resource", str(exc))
+            spec = _crm.STOREPILOT_AUTOMATION_RESOURCE_SPECS[resource]
+            automation_by_resource[resource] = automation_resp.get(
+                str(spec["responseKey"]), automation_resp
+            )
 
     utils.output(
         {
@@ -12147,6 +12215,8 @@ def crm_snapshot(
             or modules_resp.get("data", modules_resp),
             "fields": fields_by_module,
             "layouts": layouts_by_module,
+            "automation": automation_by_resource,
+            "automationResources": list(automation_by_resource),
             "safety": {
                 "dryRunOnly": True,
                 "writesZohoData": False,

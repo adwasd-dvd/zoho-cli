@@ -715,6 +715,26 @@ def test_crm_client_coql() -> None:
     }
 
 
+@respx.mock
+def test_crm_client_automation_resource() -> None:
+    client = crm.ZohoCrmClient("fake-token", base_url="https://www.zohoapis.com/crm/v8")
+    route = respx.get(
+        "https://www.zohoapis.com/crm/v8/settings/automation/workflow_rules"
+    ).mock(return_value=httpx.Response(200, json={"workflow_rules": [{"id": "w1"}]}))
+
+    result = client.automation_resource(
+        "workflow_rules", module="Accounts", status="active", limit=8, page=2
+    )
+
+    assert result["workflow_rules"][0]["id"] == "w1"
+    assert dict(route.calls.last.request.url.params) == {
+        "per_page": "8",
+        "page": "2",
+        "module": "Accounts",
+        "status": "active",
+    }
+
+
 def test_build_storepilot_seed_diff_reports_missing_modules_fields_and_counts() -> None:
     snapshot = {
         "kind": crm.STOREPILOT_SNAPSHOT_KIND,
@@ -935,6 +955,16 @@ def test_build_storepilot_cleanup_and_init_plan() -> None:
                 },
             ]
         },
+        "automation": {
+            "workflow_rules": [
+                {
+                    "id": "workflow-1",
+                    "name": "Legacy workflow",
+                    "module": {"api_name": "Accounts"},
+                }
+            ],
+            "webhooks": [{"id": "webhook-1", "name": "Legacy webhook"}],
+        },
     }
     crm_modules_seed = {
         "version": "0.1.0",
@@ -952,7 +982,10 @@ def test_build_storepilot_cleanup_and_init_plan() -> None:
     )
     assert cleanup["summary"]["legacyModulesToReview"] == 1
     assert cleanup["summary"]["legacyFieldsToReview"] == 1
+    assert cleanup["summary"]["legacyAutomationToReview"] == 2
     assert cleanup["summary"]["protectedFieldsSkipped"] == 1
+    assert cleanup["legacy_automation_to_review"][0]["resource"] == "workflow_rules"
+    assert cleanup["zoho_only_manual_steps"][0]["code"] == "blueprint_review_required"
 
     plan = crm.build_storepilot_init_plan(
         snapshot=snapshot,
@@ -967,7 +1000,7 @@ def test_build_storepilot_cleanup_and_init_plan() -> None:
     assert plan["kind"] == crm.STOREPILOT_INIT_PLAN_KIND
     assert plan["liveWritesEnabled"] is False
     assert plan["summary"]["recordsToUpsert"] == 3
-    assert plan["summary"]["cleanupReviewItems"] == 2
+    assert plan["summary"]["cleanupReviewItems"] == 4
     assert "cleanup_review_required" in plan["readiness"]["blockingReasons"]
     assert plan["cleanupPlan"]["summary"]["legacyModulesToReview"] == 1
 

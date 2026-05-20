@@ -69,6 +69,11 @@ zoho crm roles
 zoho crm layouts --module Accounts
 zoho crm coql --query "select Last_Name from Leads limit 1"
 ZOHO_ORG_ID=870137630 zoho crm snapshot --crm-modules-seed /path/to/crm-modules.seed.json
+ZOHO_ORG_ID=870137630 zoho crm snapshot \
+  --crm-modules-seed /path/to/crm-modules.seed.json \
+  --include-automation \
+  --automation-resource workflow_rules \
+  --automation-resource webhooks
 zoho crm seed-diff \
   --snapshot-file /path/to/snapshot.json \
   --crm-modules-seed /path/to/crm-modules.seed.json \
@@ -94,14 +99,17 @@ For StorePilot CRM bootstrap, authenticate with `zoho login
 --with-storepilot-crm` and verify `zoho crm status --scope-profile storepilot
 --check-auth`. `crm-039` covers the v8 read/query slice for users, org, and
 COQL. `crm-041` adds profile/role/layout reads, StorePilot snapshot export, and
-local-only seed diff. `crm-042` adds `ZOHO_ORG_ID` / `--expected-org-id`
-verification plus `field_mapping_contracts`, `zohoType` field mapping, and
-readiness blockers for org mismatch, unknown type mappings, type conflicts, and
-field property gaps such as missing picklist values, wrong lookup targets, or
-unverified unique/external-id flags. Bulk and notifications are still
-dry-run-only through `crm-043` until an explicit guarded apply slice is
-approved. `crm-044` combines those pieces plus legacy cleanup review into one
-`init-plan` handoff; review cleanup candidates manually and keep destructive
+local-only seed diff. Use `zoho crm automation <resource>` or
+`zoho crm snapshot --include-automation` for read-only workflow rule, webhook,
+automation task, cadence, connected workflow, and assignment-threshold cleanup
+review. `crm-042` adds `ZOHO_ORG_ID` / `--expected-org-id` verification plus
+`field_mapping_contracts`, `zohoType` field mapping, and readiness blockers for
+org mismatch, unknown type mappings, type conflicts, and field property gaps
+such as missing picklist values, wrong lookup targets, or unverified
+unique/external-id flags. Bulk and notifications are still dry-run-only through
+`crm-043` until an explicit guarded apply slice is approved. `crm-044` combines
+those pieces plus legacy cleanup review into one `init-plan` handoff; review
+module, field, and automation cleanup candidates manually and keep destructive
 actions behind a separate production cleanup gate.
 
 For SDK migration work, inspect `zoho crm sdk-status` and

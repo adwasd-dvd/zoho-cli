@@ -6,6 +6,11 @@
   `zoho crm init-plan` now include `field_mapping_contracts`,
   `fields_with_property_gaps`, and summary counts for picklist value, lookup
   target, unique, and external-id review while staying dry-run-only.
+- Added StorePilot CRM automation cleanup review reads: `zoho crm automation`
+  can read supported v8 automation/settings resources, `zoho crm snapshot
+  --include-automation` can embed them into snapshots, and `init-plan` now
+  carries automation cleanup candidates plus Zoho-only manual setup notes
+  without disabling, deleting, or creating automation.
 
 ### RC automation (2026-05-12T17:22:45Z)
 - Added `ops/scripts/zoho_cli_rc_autonomy_packet.sh`, a read-only cross-lane packet for recurring agents that combines native OpenClaw Cliq RC publish state with CRM fixture next-command state. It surfaces `agent_next_command_ready` only for an already allowlisted CRM dry-run/local command and otherwise reports operator-input or operator-only stop states while keeping publish, tag, GitHub release, expectedIntegrity fill, normal CRM upsert execution, and live Zoho writes disabled for agents.

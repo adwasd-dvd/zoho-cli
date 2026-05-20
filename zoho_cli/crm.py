@@ -102,6 +102,44 @@ STOREPILOT_DEFAULT_NOTIFICATION_MODULES = [
     "DailyPay_Sync_Runs",
 ]
 STOREPILOT_DEFAULT_NOTIFICATION_EVENTS = ["create", "edit", "delete"]
+STOREPILOT_AUTOMATION_RESOURCE_SPECS = {
+    "workflow_rules": {
+        "label": "Workflow Rules",
+        "path": "/settings/automation/workflow_rules",
+        "responseKey": "workflow_rules",
+        "scope": "ZohoCRM.settings.workflow_rules.READ or ZohoCRM.settings.ALL",
+    },
+    "webhooks": {
+        "label": "Webhooks",
+        "path": "/settings/automation/webhooks",
+        "responseKey": "webhooks",
+        "scope": "ZohoCRM.settings.automation_actions.READ or ZohoCRM.settings.ALL",
+    },
+    "automation_tasks": {
+        "label": "Automation Tasks",
+        "path": "/settings/automation/tasks",
+        "responseKey": "tasks",
+        "scope": "ZohoCRM.settings.automation_actions.READ or ZohoCRM.settings.ALL",
+    },
+    "cadences": {
+        "label": "Cadences",
+        "path": "/settings/automation/cadences",
+        "responseKey": "cadences",
+        "scope": "ZohoCRM.settings.cadences.READ or ZohoCRM.settings.ALL",
+    },
+    "connected_workflows": {
+        "label": "Connected Workflows",
+        "path": "/settings/connected_workflows",
+        "responseKey": "connected_workflows",
+        "scope": "ZohoCRM.settings.connected_workflows.READ or ZohoCRM.settings.ALL",
+    },
+    "assignment_thresholds": {
+        "label": "Assignment Thresholds",
+        "path": "/settings/automation/assignment_thresholds",
+        "responseKey": "assignment_thresholds",
+        "scope": "ZohoCRM.settings.assignment_thresholds.READ or ZohoCRM.settings.ALL",
+    },
+}
 STOREPILOT_FIELD_TYPE_TO_ZOHO = {
     "text": "text",
     "textarea": "textarea",
@@ -2038,6 +2076,11 @@ def build_storepilot_cleanup_plan(*, snapshot: dict, crm_modules_seed: dict) -> 
                 }
             )
 
+    legacy_automation_to_review = storepilot_automation_cleanup_candidates(
+        snapshot.get("automation")
+    )
+    zoho_only_manual_steps = storepilot_zoho_only_manual_steps()
+
     return {
         "kind": STOREPILOT_CLEANUP_PLAN_KIND,
         "status": "dry_run",
@@ -2046,17 +2089,24 @@ def build_storepilot_cleanup_plan(*, snapshot: dict, crm_modules_seed: dict) -> 
             "protectedSeedModules": len(seed_module_names),
             "legacyModulesToReview": len(legacy_modules_to_review),
             "legacyFieldsToReview": len(legacy_fields_to_review),
+            "legacyAutomationToReview": len(legacy_automation_to_review),
             "protectedFieldsSkipped": len(protected_fields),
         },
         "protectedModules": sorted(seed_module_names),
         "legacy_modules_to_review": legacy_modules_to_review,
         "legacy_fields_to_review": legacy_fields_to_review,
+        "legacy_automation_to_review": legacy_automation_to_review,
         "protected_fields_skipped": protected_fields,
+        "zoho_only_manual_steps": zoho_only_manual_steps,
         "manual_steps_required": [
             {
                 "code": "cleanup_requires_guarded_apply",
                 "details": "Review candidates and require org guard plus explicit cleanup mode before disabling or deleting legacy CRM assets.",
-            }
+            },
+            {
+                "code": "zoho_only_automation_review_required",
+                "details": "Blueprints, functions, schedules, approvals, and other Zoho-only setup must be reviewed in Zoho UI or a later guarded read/apply slice.",
+            },
         ],
         "safety": {
             "dryRunOnly": True,
@@ -2064,6 +2114,78 @@ def build_storepilot_cleanup_plan(*, snapshot: dict, crm_modules_seed: dict) -> 
             "destructiveActionsPerformed": False,
         },
     }
+
+
+def _automation_item_name(item: dict) -> str:
+    return str(
+        item.get("name")
+        or item.get("display_label")
+        or item.get("api_name")
+        or item.get("id")
+        or ""
+    ).strip()
+
+
+def _automation_item_module(item: dict) -> str:
+    module = item.get("module")
+    if isinstance(module, dict):
+        return str(module.get("api_name") or module.get("module_name") or "").strip()
+    if module:
+        return str(module).strip()
+    return ""
+
+
+def storepilot_automation_cleanup_candidates(
+    automation: object,
+) -> list[dict[str, str]]:
+    """Return dry-run cleanup review candidates from automation snapshot data."""
+    if not isinstance(automation, dict):
+        return []
+    candidates: list[dict[str, str]] = []
+    for resource, spec in STOREPILOT_AUTOMATION_RESOURCE_SPECS.items():
+        entries = automation.get(resource, [])
+        if not isinstance(entries, list):
+            continue
+        for item in entries:
+            if not isinstance(item, dict):
+                continue
+            candidates.append(
+                {
+                    "resource": resource,
+                    "label": str(spec["label"]),
+                    "id": str(item.get("id") or ""),
+                    "name": _automation_item_name(item),
+                    "module": _automation_item_module(item),
+                    "action": "review_disable_or_delete",
+                }
+            )
+    return candidates
+
+
+def storepilot_zoho_only_manual_steps() -> list[dict[str, str]]:
+    """Return StorePilot setup areas that need Zoho UI or later guarded support."""
+    return [
+        {
+            "code": "blueprint_review_required",
+            "surface": "Blueprints",
+            "details": "Blueprint metadata is record/process-specific; review Zoho Setup for legacy processes before cleanup_production.",
+        },
+        {
+            "code": "functions_review_required",
+            "surface": "Functions",
+            "details": "Deluge functions and schedules may be linked from workflow actions; review them before disabling automation.",
+        },
+        {
+            "code": "approval_process_review_required",
+            "surface": "Approval Processes",
+            "details": "Approval processes are Zoho-only setup until a later guarded read/apply slice adds explicit support.",
+        },
+        {
+            "code": "layout_section_review_required",
+            "surface": "Layouts",
+            "details": "StorePilot fields should be grouped into default/business/audit sections by the initializer or a manual Zoho setup pass.",
+        },
+    ]
 
 
 def build_storepilot_init_plan(
@@ -2132,6 +2254,7 @@ def build_storepilot_init_plan(
             "cleanupReviewItems": (
                 cleanup_plan["summary"]["legacyModulesToReview"]
                 + cleanup_plan["summary"]["legacyFieldsToReview"]
+                + cleanup_plan["summary"]["legacyAutomationToReview"]
                 if cleanup_plan
                 else 0
             ),
@@ -2286,6 +2409,29 @@ class ZohoCrmClient:
     def coql(self, query: str) -> dict:
         """Run one read-only COQL query."""
         return self._post("/coql", {"select_query": query})
+
+    def automation_resource(
+        self,
+        resource: str,
+        *,
+        limit: int = 200,
+        page: int = 1,
+        module: str | None = None,
+        status: str | None = None,
+    ) -> dict:
+        """Read a supported CRM automation/settings resource."""
+        spec = STOREPILOT_AUTOMATION_RESOURCE_SPECS.get(resource)
+        if spec is None:
+            supported = ", ".join(sorted(STOREPILOT_AUTOMATION_RESOURCE_SPECS))
+            raise ValueError(
+                f"unsupported automation resource: {resource}. Use one of: {supported}"
+            )
+        params: dict[str, str | int] = {"per_page": limit, "page": page}
+        if module:
+            params["module"] = module
+        if status:
+            params["status"] = status
+        return self._get(str(spec["path"]), params)
 
     def fields(self, module_api_name: str, *, limit: int = 200, page: int = 1) -> dict:
         """List fields for a CRM module."""

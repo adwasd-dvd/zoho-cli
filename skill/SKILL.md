@@ -286,10 +286,14 @@ Use this skill as the default operating contract for an OpenClaw agent acting li
   and notifications remain follow-on surfaces.
   In `crm-041`, StorePilot CRM bootstrap diagnostics add `zoho crm profiles`,
   `zoho crm roles`, `zoho crm layouts --module <Module>`,
+  `zoho crm automation <resource>`,
   `zoho crm snapshot --crm-modules-seed <crm-modules.seed.json>`, and
   `zoho crm seed-diff --snapshot-file <snapshot.json> --crm-modules-seed ...`.
   Treat `seed-diff` as local-only dry run output for modules, fields, seed
   record counts, and manual steps; it never creates schema or CRM data.
+  Use `zoho crm snapshot --include-automation` when cleanup planning needs
+  workflow rules, webhooks, automation tasks, cadences, connected workflows, or
+  assignment thresholds; these reads do not disable or delete automation.
   In `crm-042`, pass `--expected-org-id` or set `ZOHO_ORG_ID` on `snapshot`
   and `seed-diff` so StorePilot production dry-runs report
   `orgVerification` and `readiness.blockingReasons`. `seed-diff` also emits
@@ -305,7 +309,8 @@ Use this skill as the default operating contract for an OpenClaw agent acting li
   In `crm-044`, use `zoho crm init-plan` to combine seed diff, bulk plan,
   notification plan, and legacy cleanup review into one StorePilot handoff. It
   is still dry-run only and reports `destructiveActionsPerformed=false`; cleanup
-  candidates are review items, not permissions to delete.
+  candidates, including automation candidates and Zoho-only manual setup notes,
+  are review items, not permissions to delete.
   In `crm-015`, use
   `docs/releases/CRM_V0_5_FIXTURE_PAYLOAD_TEMPLATE.json` only as a copy/edit
   starting point for the operator's copied fixture payload, and use

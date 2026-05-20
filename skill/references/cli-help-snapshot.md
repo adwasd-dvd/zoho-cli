@@ -1,10 +1,10 @@
 # CLI help snapshot
 
-Generated at: `2026-05-05T12:11:08Z`
+Generated at: `2026-05-20T21:47:42Z`
 
 Use this file as a quick command-surface reference for the skill.
 
-## `zoho --help`
+## `./.venv/bin/zoho --help`
 
 Exit code: `0`
 
@@ -35,7 +35,7 @@ Exit code: `0`
 ╰──────────────────────────────────────────────────────────────────────────────╯
 ```
 
-## `zoho login --help`
+## `./.venv/bin/zoho login --help`
 
 Exit code: `0`
 
@@ -46,27 +46,30 @@ Exit code: `0`
  Authenticate via Zoho OAuth 2.0.
 
 ╭─ Options ────────────────────────────────────────────────────────────────────╮
-│ --account           -a      TEXT     Account e-mail. [env var: ZOHO_ACCOUNT] │
-│ --port                      INTEGER  Local port for the OAuth callback       │
-│                                      server.                                 │
-│                                      [default: 51821]                        │
-│ --no-browser                         Print the URL instead of opening a      │
-│                                      browser (headless/remote use).          │
-│ --with-cliq                          Include recommended Cliq OAuth scopes   │
-│                                      in this login flow.                     │
-│ --with-cliq-export                   Include Cliq chat export OAuth scopes   │
-│                                      in this login flow.                     │
-│ --with-crm                           Include recommended CRM OAuth scopes in │
-│                                      this login flow.                        │
-│ --scope                     TEXT     Additional OAuth scope(s) to include    │
-│                                      (repeatable).                           │
-│ --redirect-uri              TEXT     Override OAuth redirect URI (useful     │
-│                                      with --no-browser).                     │
-│ --help                               Show this message and exit.             │
+│ --account              -a      TEXT     Account e-mail.                      │
+│                                         [env var: ZOHO_ACCOUNT]              │
+│ --port                         INTEGER  Local port for the OAuth callback    │
+│                                         server.                              │
+│                                         [default: 51821]                     │
+│ --no-browser                            Print the URL instead of opening a   │
+│                                         browser (headless/remote use).       │
+│ --with-cliq                             Include recommended Cliq OAuth       │
+│                                         scopes in this login flow.           │
+│ --with-cliq-export                      Include Cliq chat export OAuth       │
+│                                         scopes in this login flow.           │
+│ --with-crm                              Include recommended CRM OAuth scopes │
+│                                         in this login flow.                  │
+│ --with-storepilot-crm                   Include StorePilot CRM bootstrap     │
+│                                         OAuth scopes in this login flow.     │
+│ --scope                        TEXT     Additional OAuth scope(s) to include │
+│                                         (repeatable).                        │
+│ --redirect-uri                 TEXT     Override OAuth redirect URI (useful  │
+│                                         with --no-browser).                  │
+│ --help                                  Show this message and exit.          │
 ╰──────────────────────────────────────────────────────────────────────────────╯
 ```
 
-## `zoho config --help`
+## `./.venv/bin/zoho config --help`
 
 Exit code: `0`
 
@@ -86,7 +89,7 @@ Exit code: `0`
 ╰──────────────────────────────────────────────────────────────────────────────╯
 ```
 
-## `zoho mail --help`
+## `./.venv/bin/zoho mail --help`
 
 Exit code: `0`
 
@@ -129,7 +132,7 @@ Exit code: `0`
 ╰──────────────────────────────────────────────────────────────────────────────╯
 ```
 
-## `zoho cliq --help`
+## `./.venv/bin/zoho cliq --help`
 
 Exit code: `0`
 
@@ -252,14 +255,14 @@ Exit code: `0`
 │ mark-read                      Mark one Cliq message as read/acknowledged.   │
 │ voice-send                     Send a voice/audio message link to a channel  │
 │                                or user.                                      │
-│ send                           Send a Cliq message to a channel or user      │
-│                                (text + rich-link media).                     │
+│ send                           Send a Cliq message to a channel, chat, or    │
+│                                user (text + rich-link media).                │
 │ notify-mail                    Send a compact Mail summary into Cliq as a    │
 │                                notification message.                         │
 ╰──────────────────────────────────────────────────────────────────────────────╯
 ```
 
-## `zoho crm --help`
+## `./.venv/bin/zoho crm --help`
 
 Exit code: `0`
 
@@ -273,55 +276,54 @@ Exit code: `0`
 │ --help          Show this message and exit.                                  │
 ╰──────────────────────────────────────────────────────────────────────────────╯
 ╭─ Commands ───────────────────────────────────────────────────────────────────╮
-│ status            Show CRM auth readiness and inferred API endpoint.         │
-│ sdk-status        Show official Zoho CRM SDK adapter readiness.              │
-│ write-plan        Show CRM write-surface safety gates without writing data.  │
-│ upsert            Plan a CRM upsert without writing data.                    │
-│ upsert-gate       Show the guarded live-upsert gate without writing data.    │
-│ write-audit       List recent redacted CRM write audit events.               │
-│ fixture-plan      Plan the controlled live CRM fixture gate without writing  │
-│                   data.                                                      │
-│ fixture-execute   Plan or run the guarded live CRM fixture upsert.           │
-│ fixture-evidence  Check controlled CRM fixture smoke evidence without        │
-│                   writing data.                                              │
-│ modules           List CRM modules available to the account.                 │
-│ users             List CRM users through the StorePilot v8 read scope.       │
-│ user-get          Get a single CRM user by id through the StorePilot v8 read │
-│                   scope.                                                     │
-│ org               Show CRM organization details through the StorePilot v8    │
-│                   org scope.                                                 │
-│ profiles          List CRM profiles through the StorePilot settings scope.   │
-│ profile-get       Get a single CRM profile by id through the StorePilot      │
-│                   settings scope.                                            │
-│ roles             List CRM roles through the StorePilot settings scope.      │
-│ role-get          Get a single CRM role by id through the StorePilot         │
-│                   settings scope.                                            │
-│ layouts           List CRM layouts for one module through the StorePilot     │
-│                   settings scope.                                            │
-│ coql              Run one CRM COQL read query through the StorePilot v8 COQL │
-│                   scope.                                                     │
-│ snapshot          Export a safe StorePilot CRM metadata snapshot without     │
-│                   writing data.                                              │
-│                   Accepts --expected-org-id / ZOHO_ORG_ID for StorePilot     │
-│                   orgVerification.                                           │
-│ seed-diff         Diff a StorePilot seed set against a CRM snapshot without  │
-│                   writing data.                                              │
-│                   Reports readiness blockers and per-field zohoType mapping. │
-│ bulk-plan         Plan StorePilot CRM bulk import/export work without        │
-│                   creating jobs.                                             │
-│ notification-plan Plan StorePilot CRM notifications/webhooks without writing │
-│                   data.                                                      │
-│ init-plan         Build one StorePilot CRM bootstrap dry-run handoff plan.   │
-│ fields            List fields for a CRM module.                              │
-│ list              List records from a CRM module.                            │
-│ get               Get a single CRM record by id.                             │
-│ search            Search records in a CRM module.                            │
-│ bridge-run        Run one CRM action through membrane bridge (explicit       │
-│                   opt-in).                                                   │
+│ status             Show CRM auth readiness and inferred API endpoint.        │
+│ sdk-status         Show official Zoho CRM SDK adapter readiness.             │
+│ write-plan         Show CRM write-surface safety gates without writing data. │
+│ upsert             Plan a CRM upsert without writing data.                   │
+│ upsert-gate        Show the guarded live-upsert gate without writing data.   │
+│ write-audit        List recent redacted CRM write audit events.              │
+│ fixture-plan       Plan the controlled live CRM fixture gate without writing │
+│                    data.                                                     │
+│ fixture-execute    Plan or run the guarded live CRM fixture upsert.          │
+│ fixture-evidence   Check controlled CRM fixture smoke evidence without       │
+│                    writing data.                                             │
+│ modules            List CRM modules available to the account.                │
+│ users              List CRM users through the StorePilot v8 read scope.      │
+│ user-get           Get a single CRM user by id through the StorePilot v8     │
+│                    read scope.                                               │
+│ org                Show CRM organization details through the StorePilot v8   │
+│                    org scope.                                                │
+│ profiles           List CRM profiles through the StorePilot settings scope.  │
+│ profile-get        Get a single CRM profile by id through the StorePilot     │
+│                    settings scope.                                           │
+│ roles              List CRM roles through the StorePilot settings scope.     │
+│ role-get           Get a single CRM role by id through the StorePilot        │
+│                    settings scope.                                           │
+│ layouts            List CRM layouts for one module through the StorePilot    │
+│                    settings scope.                                           │
+│ coql               Run one CRM COQL read query through the StorePilot v8     │
+│                    COQL scope.                                               │
+│ automation         Read supported CRM automation/settings resources without  │
+│                    writing data.                                             │
+│ snapshot           Export a safe StorePilot CRM metadata snapshot without    │
+│                    writing data.                                             │
+│ seed-diff          Diff a StorePilot seed set against a CRM snapshot without │
+│                    writing data.                                             │
+│ bulk-plan          Plan StorePilot CRM bulk import/export work without       │
+│                    creating jobs.                                            │
+│ notification-plan  Plan StorePilot CRM notifications/webhooks without        │
+│                    writing data.                                             │
+│ init-plan          Build one StorePilot CRM bootstrap dry-run handoff plan.  │
+│ fields             List fields for a CRM module.                             │
+│ list               List records from a CRM module.                           │
+│ get                Get a single CRM record by id.                            │
+│ search             Search records in a CRM module.                           │
+│ bridge-run         Run one CRM action through membrane bridge (explicit      │
+│                    opt-in).                                                  │
 ╰──────────────────────────────────────────────────────────────────────────────╯
 ```
 
-## `zoho crm upsert --help`
+## `./.venv/bin/zoho crm upsert --help`
 
 Exit code: `0`
 
@@ -361,7 +363,7 @@ Exit code: `0`
 ╰──────────────────────────────────────────────────────────────────────────────╯
 ```
 
-## `zoho crm upsert-gate --help`
+## `./.venv/bin/zoho crm upsert-gate --help`
 
 Exit code: `0`
 
@@ -381,7 +383,7 @@ Exit code: `0`
 ╰──────────────────────────────────────────────────────────────────────────────╯
 ```
 
-## `zoho crm write-audit --help`
+## `./.venv/bin/zoho crm write-audit --help`
 
 Exit code: `0`
 
@@ -403,7 +405,7 @@ Exit code: `0`
 ╰──────────────────────────────────────────────────────────────────────────────╯
 ```
 
-## `zoho crm fixture-plan --help`
+## `./.venv/bin/zoho crm fixture-plan --help`
 
 Exit code: `0`
 
@@ -432,7 +434,7 @@ Exit code: `0`
 ╰──────────────────────────────────────────────────────────────────────────────╯
 ```
 
-## `zoho crm fixture-execute --help`
+## `./.venv/bin/zoho crm fixture-execute --help`
 
 Exit code: `0`
 
@@ -478,7 +480,7 @@ Exit code: `0`
 ╰──────────────────────────────────────────────────────────────────────────────╯
 ```
 
-## `zoho crm fixture-evidence --help`
+## `./.venv/bin/zoho crm fixture-evidence --help`
 
 Exit code: `0`
 
@@ -498,5 +500,212 @@ Exit code: `0`
 │                                     evidence.                                │
 │                                     [default: 1000]                          │
 │    --help                           Show this message and exit.              │
+╰──────────────────────────────────────────────────────────────────────────────╯
+```
+
+## `./.venv/bin/zoho crm automation --help`
+
+Exit code: `0`
+
+```text
+
+ Usage: zoho crm automation [OPTIONS] RESOURCE
+
+ Read supported CRM automation/settings resources without writing data.
+
+╭─ Arguments ──────────────────────────────────────────────────────────────────╮
+│ *    resource      TEXT  Automation/settings resource: workflow_rules,       │
+│                          webhooks, automation_tasks, cadences,               │
+│                          connected_workflows, or assignment_thresholds.      │
+│                          [required]                                          │
+╰──────────────────────────────────────────────────────────────────────────────╯
+╭─ Options ────────────────────────────────────────────────────────────────────╮
+│ --module  -m      TEXT     Optional CRM module API name for resources that   │
+│                            support module filters.                           │
+│ --status          TEXT     Optional status filter for resources that support │
+│                            status filters.                                   │
+│ --limit   -n      INTEGER  Max resources to return. [default: 200]           │
+│ --page            INTEGER  Result page number. [default: 1]                  │
+│ --help                     Show this message and exit.                       │
+╰──────────────────────────────────────────────────────────────────────────────╯
+```
+
+## `./.venv/bin/zoho crm snapshot --help`
+
+Exit code: `0`
+
+```text
+
+ Usage: zoho crm snapshot [OPTIONS]
+
+ Export a safe StorePilot CRM metadata snapshot without writing data.
+
+╭─ Options ────────────────────────────────────────────────────────────────────╮
+│ --crm-modules-seed                             TEXT     Optional StorePilot  │
+│                                                         crm-modules.seed.js… │
+│                                                         used to select       │
+│                                                         modules.             │
+│ --module             -m                        TEXT     CRM module API name  │
+│                                                         to include           │
+│                                                         (repeatable).        │
+│ --include-layouts        --no-include-layo…             Include module       │
+│                                                         layout metadata for  │
+│                                                         selected modules.    │
+│                                                         [default:            │
+│                                                         include-layouts]     │
+│ --include-automati…      --no-include-auto…             Include supported    │
+│                                                         automation/settings  │
+│                                                         resources for        │
+│                                                         cleanup dry-run      │
+│                                                         review.              │
+│                                                         [default:            │
+│                                                         no-include-automati… │
+│ --automation-resou…                            TEXT     Automation resource  │
+│                                                         to include when      │
+│                                                         --include-automation │
+│                                                         is set (repeatable). │
+│                                                         Defaults to all      │
+│                                                         supported resources. │
+│ --expected-org-id                              TEXT     Expected CRM org id  │
+│                                                         for StorePilot       │
+│                                                         readiness checks.    │
+│                                                         [env var:            │
+│                                                         ZOHO_ORG_ID]         │
+│ --limit              -n                        INTEGER  Max metadata         │
+│                                                         rows/page.           │
+│                                                         [default: 200]       │
+│ --help                                                  Show this message    │
+│                                                         and exit.            │
+╰──────────────────────────────────────────────────────────────────────────────╯
+```
+
+## `./.venv/bin/zoho crm seed-diff --help`
+
+Exit code: `0`
+
+```text
+
+ Usage: zoho crm seed-diff [OPTIONS]
+
+ Diff a StorePilot seed set against a CRM snapshot without writing data.
+
+╭─ Options ────────────────────────────────────────────────────────────────────╮
+│ *  --snapshot-file              TEXT  JSON file produced by `zoho crm        │
+│                                       snapshot`.                             │
+│                                       [required]                             │
+│ *  --crm-modules-seed           TEXT  StorePilot crm-modules.seed.json.      │
+│                                       [required]                             │
+│    --task-templates-seed        TEXT  Optional task-templates.seed.json.     │
+│    --budget-rules-seed          TEXT  Optional budget-rules.seed.json.       │
+│    --regions-seed               TEXT  Optional regions.seed.json.            │
+│    --expected-org-id            TEXT  Expected CRM org id when the snapshot  │
+│                                       did not already include one.           │
+│                                       [env var: ZOHO_ORG_ID]                 │
+│    --help                             Show this message and exit.            │
+╰──────────────────────────────────────────────────────────────────────────────╯
+```
+
+## `./.venv/bin/zoho crm bulk-plan --help`
+
+Exit code: `0`
+
+```text
+
+ Usage: zoho crm bulk-plan [OPTIONS]
+
+ Plan StorePilot CRM bulk import/export work without creating jobs.
+
+╭─ Options ────────────────────────────────────────────────────────────────────╮
+│ --task-templates-seed        TEXT     Optional task-templates.seed.json.     │
+│ --budget-rules-seed          TEXT     Optional budget-rules.seed.json.       │
+│ --regions-seed               TEXT     Optional regions.seed.json.            │
+│ --export-module              TEXT     CRM module API name to include in a    │
+│                                       future bulk export plan.               │
+│ --batch-size                 INTEGER  Planned records per bulk import batch. │
+│                                       [default: 200]                         │
+│ --help                                Show this message and exit.            │
+╰──────────────────────────────────────────────────────────────────────────────╯
+```
+
+## `./.venv/bin/zoho crm notification-plan --help`
+
+Exit code: `0`
+
+```text
+
+ Usage: zoho crm notification-plan [OPTIONS]
+
+ Plan StorePilot CRM notifications/webhooks without writing data.
+
+╭─ Options ────────────────────────────────────────────────────────────────────╮
+│ --module             -m      TEXT  CRM module API name to include            │
+│                                    (repeatable). Defaults to StorePilot      │
+│                                    modules.                                  │
+│ --event                      TEXT  CRM notification event to include         │
+│                                    (repeatable). Defaults to                 │
+│                                    create/edit/delete.                       │
+│ --callback-url               TEXT  Future signed StorePilot webhook callback │
+│                                    URL; never invoked by this command.       │
+│ --shared-secret-env          TEXT  Environment variable name that will hold  │
+│                                    the webhook shared secret.                │
+│                                    [default: STOREPILOT_ZOHO_WEBHOOK_SECRET] │
+│ --help                             Show this message and exit.               │
+╰──────────────────────────────────────────────────────────────────────────────╯
+```
+
+## `./.venv/bin/zoho crm init-plan --help`
+
+Exit code: `0`
+
+```text
+
+ Usage: zoho crm init-plan [OPTIONS]
+
+ Build one StorePilot CRM bootstrap dry-run handoff plan.
+
+╭─ Options ────────────────────────────────────────────────────────────────────╮
+│ *  --snapshot-file                             TEXT     JSON file produced   │
+│                                                         by `zoho crm         │
+│                                                         snapshot`.           │
+│                                                         [required]           │
+│ *  --crm-modules-seed                          TEXT     StorePilot           │
+│                                                         crm-modules.seed.js… │
+│                                                         [required]           │
+│    --task-templates-…                          TEXT     Optional             │
+│                                                         task-templates.seed… │
+│    --budget-rules-se…                          TEXT     Optional             │
+│                                                         budget-rules.seed.j… │
+│    --regions-seed                              TEXT     Optional             │
+│                                                         regions.seed.json.   │
+│    --expected-org-id                           TEXT     Expected CRM org id  │
+│                                                         when the snapshot    │
+│                                                         did not already      │
+│                                                         include one.         │
+│                                                         [env var:            │
+│                                                         ZOHO_ORG_ID]         │
+│    --callback-url                              TEXT     Future signed        │
+│                                                         StorePilot webhook   │
+│                                                         callback URL; never  │
+│                                                         invoked.             │
+│    --export-module                             TEXT     CRM module API name  │
+│                                                         to include in a      │
+│                                                         future bulk export   │
+│                                                         plan.                │
+│    --batch-size                                INTEGER  Planned records per  │
+│                                                         bulk import batch.   │
+│                                                         [default: 200]       │
+│    --shared-secret-e…                          TEXT     Environment variable │
+│                                                         name that will hold  │
+│                                                         the webhook shared   │
+│                                                         secret.              │
+│                                                         [default:            │
+│                                                         STOREPILOT_ZOHO_WEB… │
+│    --include-cleanup     --no-include-clea…             Include legacy       │
+│                                                         module/field cleanup │
+│                                                         review candidates.   │
+│                                                         [default:            │
+│                                                         include-cleanup]     │
+│    --help                                               Show this message    │
+│                                                         and exit.            │
 ╰──────────────────────────────────────────────────────────────────────────────╯
 ```

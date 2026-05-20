@@ -1118,6 +1118,11 @@ def login(
         "--with-crm",
         help="Include recommended CRM OAuth scopes in this login flow.",
     ),
+    with_storepilot_crm: bool = typer.Option(
+        False,
+        "--with-storepilot-crm",
+        help="Include StorePilot CRM bootstrap OAuth scopes in this login flow.",
+    ),
     scope: List[str] = typer.Option(
         [],
         "--scope",
@@ -1154,6 +1159,7 @@ def login(
         _cliq.DEFAULT_CLIQ_SCOPES if with_cliq else [],
         _cliq.DEFAULT_CLIQ_EXPORT_SCOPES if with_cliq_export else [],
         _crm.DEFAULT_CRM_SCOPES if with_crm else [],
+        _crm.STOREPILOT_CRM_BOOTSTRAP_SCOPES if with_storepilot_crm else [],
         auth.parse_scope_values(list(scope)),
     )
 
@@ -11148,11 +11154,21 @@ def crm_status(
     check_auth: bool = typer.Option(
         False, "--check-auth", help="Verify OAuth refresh for the selected account."
     ),
+    scope_profile: str = typer.Option(
+        "default",
+        "--scope-profile",
+        help="CRM scope profile to validate: default or storepilot.",
+    ),
 ) -> None:
     """Show CRM auth readiness and inferred API endpoint."""
     cfg = _cfg()
     email = _S.account or _config.default_account(cfg)
     account_cfg = cfg.get("accounts", {}).get(email, {}) if email else {}
+    try:
+        normalized_scope_profile = _crm.crm_scope_profile(scope_profile)
+        required_scopes = _crm.crm_required_scopes(normalized_scope_profile)
+    except ValueError as exc:
+        utils.error_exit("invalid_crm_scope_profile", str(exc))
 
     payload: dict = {
         "module": "crm",
@@ -11160,13 +11176,15 @@ def crm_status(
         "account": email or "",
         "hasAccount": bool(email),
         "hasAccountId": bool(account_cfg.get("accountId")),
+        "scopeProfile": normalized_scope_profile,
+        "supportedScopeProfiles": sorted(_crm.CRM_SCOPE_PROFILES),
         "baseUrl": _crm.infer_crm_base_url(
             mail_base_url=account_cfg.get("mail_base_url"),
             accounts_server=account_cfg.get("accounts_server"),
         ),
         "apiVersionPolicy": _crm.crm_api_version_policy(),
         "writeSurfacePolicy": _crm.crm_write_surface_policy(),
-        "requiredScopes": _crm.DEFAULT_CRM_SCOPES,
+        "requiredScopes": required_scopes,
         "grantedScopes": account_cfg.get("scopes", []),
         "next": [
             "implement modules list",
@@ -11175,7 +11193,10 @@ def crm_status(
         ],
     }
 
-    payload["missingScopes"] = _crm.missing_crm_scopes(payload.get("grantedScopes", []))
+    payload["missingScopes"] = _crm.missing_crm_scopes(
+        payload.get("grantedScopes", []),
+        profile=normalized_scope_profile,
+    )
     payload["oauthReady"] = len(payload["missingScopes"]) == 0
 
     if check_auth and email:
@@ -11190,7 +11211,10 @@ def crm_status(
         live_scopes = token_info.get("scopes", [])
         if live_scopes:
             payload["grantedScopes"] = live_scopes
-            payload["missingScopes"] = _crm.missing_crm_scopes(live_scopes)
+            payload["missingScopes"] = _crm.missing_crm_scopes(
+                live_scopes,
+                profile=normalized_scope_profile,
+            )
             payload["oauthReady"] = len(payload["missingScopes"]) == 0
 
     utils.output(payload)

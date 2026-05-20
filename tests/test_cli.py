@@ -443,6 +443,48 @@ def test_login_no_browser_with_cliq_export_includes_export_scopes(
     assert "ZohoCliq.OrganizationMessages.READ" in result.output
 
 
+def test_login_no_browser_with_storepilot_crm_includes_bootstrap_scopes(
+    mock_config: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """--with-storepilot-crm should include the StorePilot CRM bootstrap scope preset."""
+
+    monkeypatch.setattr(auth, "discover_accounts_server", lambda _cid: ACCOUNTS_BASE)
+    monkeypatch.setattr("click.prompt", lambda *_a, **_kw: "abc123")
+    monkeypatch.setattr(
+        auth,
+        "exchange_code",
+        lambda *_a, **_kw: {
+            "access_token": "token123",
+            "refresh_token": "refresh123",
+            "scope": ",".join(_crm.STOREPILOT_CRM_BOOTSTRAP_SCOPES),
+        },
+    )
+    monkeypatch.setattr(auth, "discover_account_id", lambda *_a, **_kw: ACCOUNT_ID)
+    monkeypatch.setattr("zoho_cli.storage.store_token", lambda *_a, **_kw: None)
+
+    result = runner.invoke(
+        app,
+        [
+            "--config",
+            str(mock_config),
+            "--account",
+            ACCOUNT_EMAIL,
+            "login",
+            "--no-browser",
+            "--with-storepilot-crm",
+        ],
+    )
+
+    assert result.exit_code == 0, result.output
+    assert "ZohoCRM.modules.ALL" in result.output
+    assert "ZohoCRM.settings.ALL" in result.output
+    assert "ZohoCRM.users.ALL" in result.output
+    assert "ZohoCRM.org.ALL" in result.output
+    assert "ZohoCRM.bulk.ALL" in result.output
+    assert "ZohoCRM.notifications.ALL" in result.output
+    assert "ZohoCRM.coql.READ" in result.output
+
+
 # ---------------------------------------------------------------------------
 # mail search
 # ---------------------------------------------------------------------------
@@ -26990,6 +27032,88 @@ def test_crm_status_oauth_ready_when_scopes_present(tmp_path: Path) -> None:
     payload = json.loads(result.output)
     assert payload["oauthReady"] is True
     assert payload["missingScopes"] == []
+
+
+def test_crm_status_storepilot_profile_reports_missing_bootstrap_scopes(
+    tmp_path: Path,
+) -> None:
+    cfg = {
+        "client_id": "test_id",
+        "client_secret": "test_secret",
+        "default_account": ACCOUNT_EMAIL,
+        "accounts": {
+            ACCOUNT_EMAIL: {
+                "accountId": ACCOUNT_ID,
+                "scopes": [
+                    "ZohoMail.messages.ALL",
+                    "ZohoCRM.modules.ALL",
+                    "ZohoCRM.settings.ALL",
+                ],
+            }
+        },
+    }
+    cfg_path = tmp_path / "config.json"
+    cfg_path.write_text(json.dumps(cfg))
+
+    result = runner.invoke(
+        app,
+        ["crm", "status", "--scope-profile", "storepilot"],
+        env=_cfg_env(cfg_path),
+    )
+    assert result.exit_code == 0, result.output
+    payload = json.loads(result.output)
+    assert payload["scopeProfile"] == "storepilot"
+    assert payload["oauthReady"] is False
+    assert payload["missingScopes"] == [
+        "ZohoCRM.users.ALL",
+        "ZohoCRM.org.ALL",
+        "ZohoCRM.bulk.ALL",
+        "ZohoCRM.notifications.ALL",
+        "ZohoCRM.coql.READ",
+    ]
+
+
+def test_crm_status_storepilot_profile_ready_when_all_scopes_present(
+    tmp_path: Path,
+) -> None:
+    cfg = {
+        "client_id": "test_id",
+        "client_secret": "test_secret",
+        "default_account": ACCOUNT_EMAIL,
+        "accounts": {
+            ACCOUNT_EMAIL: {
+                "accountId": ACCOUNT_ID,
+                "scopes": [
+                    "ZohoMail.messages.ALL",
+                    *_crm.STOREPILOT_CRM_BOOTSTRAP_SCOPES,
+                ],
+            }
+        },
+    }
+    cfg_path = tmp_path / "config.json"
+    cfg_path.write_text(json.dumps(cfg))
+
+    result = runner.invoke(
+        app,
+        ["crm", "status", "--scope-profile", "storepilot"],
+        env=_cfg_env(cfg_path),
+    )
+    assert result.exit_code == 0, result.output
+    payload = json.loads(result.output)
+    assert payload["scopeProfile"] == "storepilot"
+    assert payload["requiredScopes"] == _crm.STOREPILOT_CRM_BOOTSTRAP_SCOPES
+    assert payload["oauthReady"] is True
+    assert payload["missingScopes"] == []
+
+
+def test_crm_status_rejects_unknown_scope_profile(mock_config: Path) -> None:
+    result = runner.invoke(
+        app,
+        ["crm", "status", "--scope-profile", "unknown"],
+        env=_cfg_env(mock_config),
+    )
+    assert result.exit_code == 1
+    assert "invalid_crm_scope_profile" in result.output
 
 
 def test_crm_status_check_auth(mock_config: Path, mock_token_refresh: Any) -> None:

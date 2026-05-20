@@ -22,6 +22,20 @@ DEFAULT_CRM_SCOPES = [
     "ZohoCRM.settings.ALL",
 ]
 
+STOREPILOT_CRM_BOOTSTRAP_SCOPES = [
+    *DEFAULT_CRM_SCOPES,
+    "ZohoCRM.users.ALL",
+    "ZohoCRM.org.ALL",
+    "ZohoCRM.bulk.ALL",
+    "ZohoCRM.notifications.ALL",
+    "ZohoCRM.coql.READ",
+]
+
+CRM_SCOPE_PROFILES = {
+    "default": DEFAULT_CRM_SCOPES,
+    "storepilot": STOREPILOT_CRM_BOOTSTRAP_SCOPES,
+}
+
 CRM_SDK_DISTRIBUTION = "zohocrmsdk8_0"
 CRM_SDK_IMPORT_PACKAGE = "zohocrmsdk"
 CRM_SDK_TARGET_VERSION = "5.0.0"
@@ -1281,9 +1295,33 @@ def _crm_safe_scope_gate(scope_gate: Any) -> dict:
     }
 
 
-def missing_crm_scopes(granted_scopes: list[str] | None) -> list[str]:
+def crm_scope_profile(profile: str | None = None) -> str:
+    value = (profile or "default").strip().lower()
+    aliases = {
+        "standard": "default",
+        "storepilot-bootstrap": "storepilot",
+        "storepilot_ops": "storepilot",
+        "storepilot-ops": "storepilot",
+    }
+    normalized = aliases.get(value, value)
+    if normalized not in CRM_SCOPE_PROFILES:
+        supported = ", ".join(sorted(CRM_SCOPE_PROFILES))
+        raise ValueError(f"unsupported CRM scope profile: {profile}. Supported: {supported}")
+    return normalized
+
+
+def crm_required_scopes(profile: str | None = None) -> list[str]:
+    normalized = crm_scope_profile(profile)
+    return list(CRM_SCOPE_PROFILES[normalized])
+
+
+def missing_crm_scopes(
+    granted_scopes: list[str] | None,
+    *,
+    profile: str | None = None,
+) -> list[str]:
     granted = set(granted_scopes or [])
-    return [s for s in DEFAULT_CRM_SCOPES if s not in granted]
+    return [s for s in crm_required_scopes(profile) if s not in granted]
 
 
 def infer_crm_base_url(

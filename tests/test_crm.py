@@ -48,6 +48,35 @@ def test_missing_crm_scopes_reports_missing_values() -> None:
     assert missing == ["ZohoCRM.settings.ALL"]
 
 
+def test_storepilot_crm_scope_profile_extends_default_scopes() -> None:
+    scopes = crm.crm_required_scopes("storepilot")
+    assert scopes[:2] == crm.DEFAULT_CRM_SCOPES
+    assert "ZohoCRM.users.ALL" in scopes
+    assert "ZohoCRM.org.ALL" in scopes
+    assert "ZohoCRM.bulk.ALL" in scopes
+    assert "ZohoCRM.notifications.ALL" in scopes
+    assert "ZohoCRM.coql.READ" in scopes
+
+
+def test_missing_crm_scopes_supports_storepilot_profile() -> None:
+    missing = crm.missing_crm_scopes(
+        ["ZohoCRM.modules.ALL", "ZohoCRM.settings.ALL"],
+        profile="storepilot",
+    )
+    assert missing == [
+        "ZohoCRM.users.ALL",
+        "ZohoCRM.org.ALL",
+        "ZohoCRM.bulk.ALL",
+        "ZohoCRM.notifications.ALL",
+        "ZohoCRM.coql.READ",
+    ]
+
+
+def test_crm_scope_profile_rejects_unknown_profile() -> None:
+    with pytest.raises(ValueError, match="unsupported CRM scope profile"):
+        crm.crm_required_scopes("unknown")
+
+
 def test_crm_sdk_status_reports_missing_sdk() -> None:
     def missing(_: str) -> str:
         raise metadata.PackageNotFoundError

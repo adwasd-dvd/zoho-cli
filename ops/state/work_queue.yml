@@ -1173,6 +1173,15 @@
   - crm-042
   agent_action: use `zoho crm bulk-plan` and `zoho crm notification-plan` for future StorePilot bulk import/export and webhook setup planning only; do not create Zoho bulk jobs or notification subscriptions
   completion_signal: CLI, tests, README, skill docs, and lane3 docs expose dry-run contracts with guarded apply requirements and manual steps
+- id: crm-044
+  title: add StorePilot CRM combined init-plan dry-run handoff
+  module: crm
+  stage: completed
+  priority: high
+  depends_on:
+  - crm-043
+  agent_action: use `zoho crm init-plan` to combine seed diff, bulk, notification, and cleanup review into one handoff; keep cleanup candidates review-only and perform no destructive actions
+  completion_signal: CLI, tests, README, skill docs, and lane3 docs expose a single no-write StorePilot bootstrap handoff with destructiveActionsPerformed=false
 - id: platform-220
   title: keep RC heartbeat and work-queue state synchronized
   module: platform

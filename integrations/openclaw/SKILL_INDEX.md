@@ -45,6 +45,8 @@ CRM SDK planning:
   type conflicts or unknown mappings)
 - `crm bulk-plan|notification-plan` (`crm-043` StorePilot bulk import/export
   and webhook setup dry-run contracts; no Zoho jobs or notifications created)
+- `crm init-plan` (`crm-044` combined StorePilot dry-run handoff for seed diff,
+  bulk, notification, and legacy cleanup review; no cleanup/write actions)
 - `apiVersionPolicy` from `zoho crm status` / `zoho crm sdk-status` (`crm-006`:
   HTTP v2 default, SDK/API v8 explicit-only)
 - `zoho crm write-plan` / `writeSurfacePolicy` (`crm-007`: `writesEnabled=false`,

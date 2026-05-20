@@ -12297,6 +12297,92 @@ def crm_notification_plan(
     )
 
 
+@crm_app.command("init-plan")
+def crm_init_plan(
+    snapshot_file: str = typer.Option(
+        ..., "--snapshot-file", help="JSON file produced by `zoho crm snapshot`."
+    ),
+    crm_modules_seed: str = typer.Option(
+        ..., "--crm-modules-seed", help="StorePilot crm-modules.seed.json."
+    ),
+    task_templates_seed: Optional[str] = typer.Option(
+        None, "--task-templates-seed", help="Optional task-templates.seed.json."
+    ),
+    budget_rules_seed: Optional[str] = typer.Option(
+        None, "--budget-rules-seed", help="Optional budget-rules.seed.json."
+    ),
+    regions_seed: Optional[str] = typer.Option(
+        None, "--regions-seed", help="Optional regions.seed.json."
+    ),
+    expected_org_id: Optional[str] = typer.Option(
+        None,
+        "--expected-org-id",
+        envvar="ZOHO_ORG_ID",
+        help="Expected CRM org id when the snapshot did not already include one.",
+    ),
+    callback_url: Optional[str] = typer.Option(
+        None,
+        "--callback-url",
+        help="Future signed StorePilot webhook callback URL; never invoked.",
+    ),
+    export_modules: List[str] = typer.Option(
+        [],
+        "--export-module",
+        help="CRM module API name to include in a future bulk export plan.",
+    ),
+    batch_size: int = typer.Option(
+        200, "--batch-size", help="Planned records per bulk import batch."
+    ),
+    shared_secret_env: str = typer.Option(
+        "STOREPILOT_ZOHO_WEBHOOK_SECRET",
+        "--shared-secret-env",
+        help="Environment variable name that will hold the webhook shared secret.",
+    ),
+    include_cleanup: bool = typer.Option(
+        True,
+        "--include-cleanup/--no-include-cleanup",
+        help="Include legacy module/field cleanup review candidates.",
+    ),
+) -> None:
+    """Build one StorePilot CRM bootstrap dry-run handoff plan."""
+    snapshot = _load_json_file(snapshot_file, error_code="invalid_snapshot_file")
+    crm_modules = _load_json_file(
+        crm_modules_seed, error_code="invalid_crm_modules_seed"
+    )
+    task_templates = (
+        _load_json_file(task_templates_seed, error_code="invalid_task_templates_seed")
+        if task_templates_seed
+        else None
+    )
+    budget_rules = (
+        _load_json_file(budget_rules_seed, error_code="invalid_budget_rules_seed")
+        if budget_rules_seed
+        else None
+    )
+    regions = (
+        _load_json_file(regions_seed, error_code="invalid_regions_seed")
+        if regions_seed
+        else None
+    )
+    try:
+        payload = _crm.build_storepilot_init_plan(
+            snapshot=snapshot,
+            crm_modules_seed=crm_modules,
+            task_templates_seed=task_templates,
+            budget_rules_seed=budget_rules,
+            regions_seed=regions,
+            expected_org_id=expected_org_id,
+            callback_url=callback_url,
+            export_modules=list(export_modules),
+            batch_size=batch_size,
+            shared_secret_env=shared_secret_env,
+            include_cleanup=include_cleanup,
+        )
+    except ValueError as exc:
+        utils.error_exit("invalid_init_plan", str(exc))
+    utils.output(payload)
+
+
 @crm_app.command("fields")
 def crm_fields(
     module: str = typer.Option(

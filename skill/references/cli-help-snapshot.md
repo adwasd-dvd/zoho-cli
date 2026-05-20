@@ -311,6 +311,7 @@ Exit code: `0`
 │                   creating jobs.                                             │
 │ notification-plan Plan StorePilot CRM notifications/webhooks without writing │
 │                   data.                                                      │
+│ init-plan         Build one StorePilot CRM bootstrap dry-run handoff plan.   │
 │ fields            List fields for a CRM module.                              │
 │ list              List records from a CRM module.                            │
 │ get               Get a single CRM record by id.                             │

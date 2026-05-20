@@ -81,6 +81,13 @@ zoho crm bulk-plan \
   --budget-rules-seed /path/to/budget-rules.seed.json \
   --export-module Accounts
 zoho crm notification-plan --callback-url https://storepilot.example.com/webhooks/zoho
+zoho crm init-plan \
+  --snapshot-file /path/to/snapshot.json \
+  --crm-modules-seed /path/to/crm-modules.seed.json \
+  --task-templates-seed /path/to/task-templates.seed.json \
+  --regions-seed /path/to/regions.seed.json \
+  --callback-url https://storepilot.example.com/webhooks/zoho \
+  --export-module Accounts
 ```
 
 For StorePilot CRM bootstrap, authenticate with `zoho login
@@ -91,7 +98,9 @@ local-only seed diff. `crm-042` adds `ZOHO_ORG_ID` / `--expected-org-id`
 verification plus `zohoType` field mapping and readiness blockers for org
 mismatch, unknown type mappings, and type conflicts. Bulk and notifications are
 still dry-run-only through `crm-043` until an explicit guarded apply slice is
-approved.
+approved. `crm-044` combines those pieces plus legacy cleanup review into one
+`init-plan` handoff; review cleanup candidates manually and keep destructive
+actions behind a separate production cleanup gate.
 
 For SDK migration work, inspect `zoho crm sdk-status` and
 `docs/architecture/CRM_V0_5_SDK_ADOPTION_PLAN.md` first. `crm-004` keeps the

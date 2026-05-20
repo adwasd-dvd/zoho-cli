@@ -28267,6 +28267,86 @@ def test_crm_notification_plan_command() -> None:
     assert payload["subscriptions"][0]["sharedSecretEnv"] == "ZOHO_WEBHOOK_SECRET"
 
 
+def test_crm_init_plan_command(tmp_path: Path) -> None:
+    snapshot_path = tmp_path / "snapshot.json"
+    crm_modules_path = tmp_path / "crm-modules.seed.json"
+    task_templates_path = tmp_path / "task-templates.seed.json"
+    regions_path = tmp_path / "regions.seed.json"
+    budget_path = tmp_path / "budget-rules.seed.json"
+    snapshot_path.write_text(
+        json.dumps(
+            {
+                "kind": "storepilot_crm_snapshot",
+                "org": [{"id": "870137630"}],
+                "modules": [
+                    {"api_name": "Accounts"},
+                    {"api_name": "Legacy_Module"},
+                ],
+                "fields": {
+                    "Accounts": [
+                        {"api_name": "google_place_id", "type": "text"},
+                        {"api_name": "Legacy_Field", "type": "text"},
+                    ]
+                },
+            }
+        )
+    )
+    crm_modules_path.write_text(
+        json.dumps(
+            {
+                "version": "0.1.0",
+                "standard_modules": [
+                    {
+                        "api_name": "Accounts",
+                        "fields": [{"api_name": "google_place_id", "type": "text"}],
+                    }
+                ],
+                "custom_modules": [{"api_name": "Regions", "fields": []}],
+            }
+        )
+    )
+    task_templates_path.write_text(json.dumps({"templates": [{}]}))
+    regions_path.write_text(json.dumps({"regions": [{}, {}]}))
+    budget_path.write_text(json.dumps({"rules": [{}]}))
+
+    result = runner.invoke(
+        app,
+        [
+            "crm",
+            "init-plan",
+            "--snapshot-file",
+            str(snapshot_path),
+            "--crm-modules-seed",
+            str(crm_modules_path),
+            "--task-templates-seed",
+            str(task_templates_path),
+            "--regions-seed",
+            str(regions_path),
+            "--budget-rules-seed",
+            str(budget_path),
+            "--expected-org-id",
+            "870137630",
+            "--callback-url",
+            "https://storepilot.example.com/webhooks/zoho",
+            "--export-module",
+            "Accounts",
+        ],
+    )
+
+    assert result.exit_code == 0, result.output
+    payload = json.loads(result.output)
+    assert payload["kind"] == "storepilot_crm_init_plan"
+    assert payload["liveWritesEnabled"] is False
+    assert payload["summary"]["recordsToUpsert"] == 4
+    assert payload["summary"]["bulkImportRecords"] == 4
+    assert payload["summary"]["cleanupReviewItems"] == 2
+    assert payload["bulkPlan"]["exports"][0]["module"] == "Accounts"
+    assert (
+        payload["notificationPlan"]["summary"]["callbackHost"]
+        == "storepilot.example.com"
+    )
+
+
 @respx.mock
 def test_crm_fields(mock_config: Path, mock_token_refresh: Any) -> None:
     route = respx.get("https://www.zohoapis.com/crm/v2/settings/fields").mock(

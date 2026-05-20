@@ -77,6 +77,9 @@ STOREPILOT_BULK_PLAN_KIND = "storepilot_crm_bulk_plan"
 STOREPILOT_BULK_PLAN_POLICY_ID = "crm-043-storepilot-bulk-plan-dry-run"
 STOREPILOT_NOTIFICATION_PLAN_KIND = "storepilot_crm_notification_plan"
 STOREPILOT_NOTIFICATION_PLAN_POLICY_ID = "crm-043-storepilot-notification-plan-dry-run"
+STOREPILOT_INIT_PLAN_KIND = "storepilot_crm_init_plan"
+STOREPILOT_INIT_PLAN_POLICY_ID = "crm-044-storepilot-init-plan-dry-run"
+STOREPILOT_CLEANUP_PLAN_KIND = "storepilot_crm_cleanup_plan"
 STOREPILOT_DEFAULT_NOTIFICATION_MODULES = [
     "Accounts",
     "Field_Tasks",
@@ -1817,6 +1820,200 @@ def build_storepilot_notification_plan(
             "dryRunOnly": True,
             "writesZohoData": False,
             "storesSecretValues": False,
+        },
+    }
+
+
+def _module_api_name(module: dict) -> str:
+    return str(module.get("api_name") or module.get("module_name") or "").strip()
+
+
+def _field_is_system_protected(field: dict) -> bool:
+    return bool(
+        field.get("system_mandatory")
+        or field.get("read_only")
+        or field.get("created_source") == "default"
+    )
+
+
+def build_storepilot_cleanup_plan(*, snapshot: dict, crm_modules_seed: dict) -> dict:
+    """Build a dry-run legacy cleanup review plan from a StorePilot snapshot."""
+    seed_modules = storepilot_seed_modules(crm_modules_seed)
+    seed_module_names = {
+        str(module.get("api_name") or "").strip()
+        for module in seed_modules
+        if str(module.get("api_name") or "").strip()
+    }
+    seed_fields_by_module = {
+        str(module.get("api_name") or "").strip(): {
+            _field_api_name(field)
+            for field in module.get("fields", [])
+            if isinstance(field, dict) and _field_api_name(field)
+        }
+        for module in seed_modules
+        if str(module.get("api_name") or "").strip()
+    }
+
+    legacy_modules_to_review = [
+        {
+            "apiName": api_name,
+            "moduleName": str(
+                module.get("module_name") or module.get("plural_label") or ""
+            ),
+            "generatedType": str(module.get("generated_type") or ""),
+            "custom": bool(module.get("custom", False)),
+            "action": "review_disable_or_delete",
+        }
+        for module in snapshot.get("modules", [])
+        if isinstance(module, dict)
+        for api_name in [_module_api_name(module)]
+        if api_name and api_name not in seed_module_names
+    ]
+
+    legacy_fields_to_review: list[dict[str, object]] = []
+    protected_fields: list[dict[str, str]] = []
+    for module_api_name, fields in (snapshot.get("fields") or {}).items():
+        if not isinstance(fields, list):
+            continue
+        seed_fields = seed_fields_by_module.get(str(module_api_name), set())
+        for field in fields:
+            if not isinstance(field, dict):
+                continue
+            field_api_name = _field_api_name(field)
+            if not field_api_name or field_api_name in seed_fields:
+                continue
+            if _field_is_system_protected(field):
+                protected_fields.append(
+                    {"module": str(module_api_name), "apiName": field_api_name}
+                )
+                continue
+            legacy_fields_to_review.append(
+                {
+                    "module": str(module_api_name),
+                    "apiName": field_api_name,
+                    "customField": bool(field.get("custom_field", False)),
+                    "dataType": str(field.get("data_type") or field.get("type") or ""),
+                    "action": "review_disable_or_delete",
+                }
+            )
+
+    return {
+        "kind": STOREPILOT_CLEANUP_PLAN_KIND,
+        "status": "dry_run",
+        "liveWritesEnabled": False,
+        "summary": {
+            "protectedSeedModules": len(seed_module_names),
+            "legacyModulesToReview": len(legacy_modules_to_review),
+            "legacyFieldsToReview": len(legacy_fields_to_review),
+            "protectedFieldsSkipped": len(protected_fields),
+        },
+        "protectedModules": sorted(seed_module_names),
+        "legacy_modules_to_review": legacy_modules_to_review,
+        "legacy_fields_to_review": legacy_fields_to_review,
+        "protected_fields_skipped": protected_fields,
+        "manual_steps_required": [
+            {
+                "code": "cleanup_requires_guarded_apply",
+                "details": "Review candidates and require org guard plus explicit cleanup mode before disabling or deleting legacy CRM assets.",
+            }
+        ],
+        "safety": {
+            "dryRunOnly": True,
+            "writesZohoData": False,
+            "destructiveActionsPerformed": False,
+        },
+    }
+
+
+def build_storepilot_init_plan(
+    *,
+    snapshot: dict,
+    crm_modules_seed: dict,
+    task_templates_seed: dict | None = None,
+    budget_rules_seed: dict | None = None,
+    regions_seed: dict | None = None,
+    expected_org_id: str | None = None,
+    callback_url: str | None = None,
+    export_modules: list[str] | None = None,
+    batch_size: int = 200,
+    shared_secret_env: str = "STOREPILOT_ZOHO_WEBHOOK_SECRET",
+    include_cleanup: bool = True,
+) -> dict:
+    """Build one StorePilot dry-run initialization handoff plan."""
+    seed_diff = build_storepilot_seed_diff(
+        snapshot=snapshot,
+        crm_modules_seed=crm_modules_seed,
+        task_templates_seed=task_templates_seed,
+        budget_rules_seed=budget_rules_seed,
+        regions_seed=regions_seed,
+        expected_org_id=expected_org_id,
+    )
+    bulk_plan = build_storepilot_bulk_plan(
+        task_templates_seed=task_templates_seed,
+        budget_rules_seed=budget_rules_seed,
+        regions_seed=regions_seed,
+        export_modules=export_modules,
+        batch_size=batch_size,
+    )
+    notification_plan = build_storepilot_notification_plan(
+        callback_url=callback_url,
+        shared_secret_env=shared_secret_env,
+    )
+    cleanup_plan = (
+        build_storepilot_cleanup_plan(
+            snapshot=snapshot,
+            crm_modules_seed=crm_modules_seed,
+        )
+        if include_cleanup
+        else None
+    )
+
+    blocking_reasons = list(seed_diff.get("readiness", {}).get("blockingReasons", []))
+    if notification_plan["manual_steps_required"]:
+        blocking_reasons.append("notification_manual_steps_required")
+    if cleanup_plan and (
+        cleanup_plan["summary"]["legacyModulesToReview"]
+        or cleanup_plan["summary"]["legacyFieldsToReview"]
+    ):
+        blocking_reasons.append("cleanup_review_required")
+
+    return {
+        "kind": STOREPILOT_INIT_PLAN_KIND,
+        "policyId": STOREPILOT_INIT_PLAN_POLICY_ID,
+        "status": "dry_run",
+        "liveWritesEnabled": False,
+        "summary": {
+            "modulesToCreate": seed_diff["summary"]["modulesToCreate"],
+            "fieldsToCreate": seed_diff["summary"]["fieldsToCreate"],
+            "recordsToUpsert": seed_diff["summary"]["recordsToUpsert"],
+            "bulkImportRecords": bulk_plan["summary"]["importRecords"],
+            "notificationModules": notification_plan["summary"]["modules"],
+            "cleanupReviewItems": (
+                cleanup_plan["summary"]["legacyModulesToReview"]
+                + cleanup_plan["summary"]["legacyFieldsToReview"]
+                if cleanup_plan
+                else 0
+            ),
+        },
+        "readiness": {
+            "readyForApplyPlan": not blocking_reasons,
+            "blockingReasons": blocking_reasons,
+        },
+        "seedDiff": seed_diff,
+        "bulkPlan": bulk_plan,
+        "notificationPlan": notification_plan,
+        "cleanupPlan": cleanup_plan,
+        "nextOperatorSteps": [
+            "review seedDiff modules/fields and resolve type blockers",
+            "choose signed StorePilot webhook callback and configure shared secret",
+            "review cleanup candidates before any cleanup_production mode",
+            "run StorePilot initializer in dry_run before any apply mode",
+        ],
+        "safety": {
+            "dryRunOnly": True,
+            "writesZohoData": False,
+            "destructiveActionsPerformed": False,
+            "normalUpsertExecuteBlocked": True,
         },
     }
 

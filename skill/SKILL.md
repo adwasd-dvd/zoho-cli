@@ -300,6 +300,10 @@ Use this skill as the default operating contract for an OpenClaw agent acting li
   dry-run contracts only: they count seed records, list future export modules
   and notification subscriptions, surface guarded apply requirements, and do
   not create Zoho bulk jobs or notifications.
+  In `crm-044`, use `zoho crm init-plan` to combine seed diff, bulk plan,
+  notification plan, and legacy cleanup review into one StorePilot handoff. It
+  is still dry-run only and reports `destructiveActionsPerformed=false`; cleanup
+  candidates are review items, not permissions to delete.
   In `crm-015`, use
   `docs/releases/CRM_V0_5_FIXTURE_PAYLOAD_TEMPLATE.json` only as a copy/edit
   starting point for the operator's copied fixture payload, and use

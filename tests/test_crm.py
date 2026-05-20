@@ -843,6 +843,62 @@ def test_build_storepilot_notification_plan_defaults_and_callback() -> None:
     }
 
 
+def test_build_storepilot_cleanup_and_init_plan() -> None:
+    snapshot = {
+        "kind": crm.STOREPILOT_SNAPSHOT_KIND,
+        "org": [{"id": "870137630"}],
+        "modules": [
+            {"api_name": "Accounts", "module_name": "Accounts"},
+            {"api_name": "Legacy_Module", "module_name": "Legacy"},
+        ],
+        "fields": {
+            "Accounts": [
+                {"api_name": "google_place_id", "type": "text"},
+                {"api_name": "Legacy_Field", "type": "text", "custom_field": True},
+                {
+                    "api_name": "Created_Time",
+                    "type": "datetime",
+                    "system_mandatory": True,
+                },
+            ]
+        },
+    }
+    crm_modules_seed = {
+        "version": "0.1.0",
+        "standard_modules": [
+            {
+                "api_name": "Accounts",
+                "fields": [{"api_name": "google_place_id", "type": "text"}],
+            }
+        ],
+        "custom_modules": [],
+    }
+
+    cleanup = crm.build_storepilot_cleanup_plan(
+        snapshot=snapshot, crm_modules_seed=crm_modules_seed
+    )
+    assert cleanup["summary"]["legacyModulesToReview"] == 1
+    assert cleanup["summary"]["legacyFieldsToReview"] == 1
+    assert cleanup["summary"]["protectedFieldsSkipped"] == 1
+
+    plan = crm.build_storepilot_init_plan(
+        snapshot=snapshot,
+        crm_modules_seed=crm_modules_seed,
+        task_templates_seed={"templates": [{}]},
+        regions_seed={"regions": [{}, {}]},
+        expected_org_id="870137630",
+        callback_url="https://storepilot.example.com/webhooks/zoho",
+        export_modules=["Accounts"],
+        include_cleanup=True,
+    )
+    assert plan["kind"] == crm.STOREPILOT_INIT_PLAN_KIND
+    assert plan["liveWritesEnabled"] is False
+    assert plan["summary"]["recordsToUpsert"] == 3
+    assert plan["summary"]["cleanupReviewItems"] == 2
+    assert "cleanup_review_required" in plan["readiness"]["blockingReasons"]
+    assert plan["cleanupPlan"]["summary"]["legacyModulesToReview"] == 1
+
+
 @respx.mock
 def test_crm_client_fields() -> None:
     client = crm.ZohoCrmClient("fake-token", base_url="https://www.zohoapis.com/crm/v2")

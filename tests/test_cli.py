@@ -28106,13 +28106,22 @@ def test_crm_snapshot_uses_seed_modules(
 
     result = runner.invoke(
         app,
-        ["crm", "snapshot", "--crm-modules-seed", str(seed_path)],
+        [
+            "crm",
+            "snapshot",
+            "--crm-modules-seed",
+            str(seed_path),
+            "--expected-org-id",
+            "870137630",
+        ],
         env=_cfg_env(mock_config),
     )
 
     assert result.exit_code == 0, result.output
     payload = json.loads(result.output)
     assert payload["kind"] == "storepilot_crm_snapshot"
+    assert payload["orgVerification"]["matches"] is True
+    assert payload["orgVerification"]["actualOrgId"] == "870137630"
     assert payload["selectedModules"] == ["Accounts", "Contacts", "Regions"]
     assert payload["fields"]["Accounts"][0]["api_name"] == "Name"
     assert payload["layouts"]["Regions"][0]["id"] == "l1"
@@ -28130,6 +28139,7 @@ def test_crm_seed_diff_command(tmp_path: Path) -> None:
         json.dumps(
             {
                 "kind": "storepilot_crm_snapshot",
+                "org": [{"id": "870137630"}],
                 "modules": [{"api_name": "Accounts"}],
                 "fields": {
                     "Accounts": [{"api_name": "google_place_id", "type": "text"}]
@@ -28173,6 +28183,8 @@ def test_crm_seed_diff_command(tmp_path: Path) -> None:
             str(regions_path),
             "--budget-rules-seed",
             str(budget_path),
+            "--expected-org-id",
+            "870137630",
         ],
     )
 
@@ -28180,8 +28192,10 @@ def test_crm_seed_diff_command(tmp_path: Path) -> None:
     payload = json.loads(result.output)
     assert payload["kind"] == "storepilot_crm_seed_diff"
     assert payload["liveWritesEnabled"] is False
+    assert payload["orgVerification"]["matches"] is True
     assert payload["summary"]["modulesToCreate"] == 1
     assert payload["summary"]["fieldsToCreate"] == 1
+    assert payload["fields_to_create"][0]["zohoType"] == "picklist"
     assert payload["records_to_upsert"]["Regions"] == 3
     assert payload["records_to_upsert"]["Task_Templates"] == 2
     assert payload["records_to_upsert"]["Budget_Rules"] == 1

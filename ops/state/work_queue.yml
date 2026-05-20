@@ -1155,6 +1155,15 @@
   - crm-039
   agent_action: use profile/role/layout reads plus `zoho crm snapshot` and `zoho crm seed-diff` for dry-run StorePilot bootstrap planning; do not create modules fields layouts notifications or records
   completion_signal: snapshot/diff commands, tests, README, skill docs, and lane3 docs report StorePilot modules fields seed counts and manual steps without Zoho writes
+- id: crm-042
+  title: add StorePilot org-id readiness gating and seed field type mapping diagnostics
+  module: crm
+  stage: completed
+  priority: high
+  depends_on:
+  - crm-041
+  agent_action: use `--expected-org-id` or `ZOHO_ORG_ID` with snapshot and seed-diff; inspect `orgVerification`, `readiness.blockingReasons`, and per-field `zohoType` before any StorePilot schema initializer handoff
+  completion_signal: snapshot/diff tests and docs cover org mismatch, unknown type mappings, field type conflicts, and no-write readiness reporting
 - id: platform-220
   title: keep RC heartbeat and work-queue state synchronized
   module: platform

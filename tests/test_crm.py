@@ -761,13 +761,49 @@ def test_build_storepilot_seed_diff_reports_missing_modules_fields_and_counts() 
     assert result["summary"]["modulesToCreate"] == 1
     assert result["summary"]["fieldsToCreate"] == 2
     assert result["summary"]["fieldsWithTypeConflicts"] == 1
+    assert result["summary"]["unknownFieldTypeMappings"] == 0
+    assert result["readiness"]["blockingReasons"] == ["field_type_conflicts"]
     assert result["records_to_upsert"] == {
         "Regions": 3,
         "Task_Templates": 2,
         "Budget_Rules": 1,
     }
     assert result["modules_to_create"][0]["apiName"] == "Regions"
-    assert any(field["apiName"] == "geo_lng" for field in result["fields_to_create"])
+    geo_lng = next(
+        field for field in result["fields_to_create"] if field["apiName"] == "geo_lng"
+    )
+    assert geo_lng["zohoType"] == "decimal"
+    assert geo_lng["typeMappingStatus"] == "mapped"
+
+
+def test_storepilot_seed_diff_reports_org_mismatch_and_unknown_type() -> None:
+    snapshot = {
+        "kind": crm.STOREPILOT_SNAPSHOT_KIND,
+        "org": [{"id": "wrong-org"}],
+        "modules": [{"api_name": "Accounts"}],
+        "fields": {"Accounts": []},
+    }
+    crm_modules_seed = {
+        "standard_modules": [
+            {
+                "api_name": "Accounts",
+                "fields": [{"api_name": "mystery", "type": "magic"}],
+            }
+        ],
+        "custom_modules": [],
+    }
+
+    result = crm.build_storepilot_seed_diff(
+        snapshot=snapshot,
+        crm_modules_seed=crm_modules_seed,
+        expected_org_id="870137630",
+    )
+
+    assert result["orgVerification"]["matches"] is False
+    assert result["readiness"]["readyForApplyPlan"] is False
+    assert "org_id_mismatch" in result["readiness"]["blockingReasons"]
+    assert "unknown_field_type_mapping" in result["readiness"]["blockingReasons"]
+    assert result["fields_to_create"][0]["typeMappingStatus"] == "unknown"
 
 
 @respx.mock

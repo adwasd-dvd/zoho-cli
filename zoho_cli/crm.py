@@ -73,6 +73,22 @@ CRM_FIXTURE_EVIDENCE_EXPECTED_DRY_RUN_BLOCKERS = {
 STOREPILOT_SNAPSHOT_KIND = "storepilot_crm_snapshot"
 STOREPILOT_SEED_DIFF_KIND = "storepilot_crm_seed_diff"
 STOREPILOT_SEED_DIFF_POLICY_ID = "crm-041-storepilot-seed-diff-dry-run"
+STOREPILOT_FIELD_TYPE_TO_ZOHO = {
+    "text": "text",
+    "textarea": "textarea",
+    "integer": "integer",
+    "decimal": "decimal",
+    "currency": "currency",
+    "boolean": "boolean",
+    "datetime": "datetime",
+    "date": "date",
+    "lookup": "lookup",
+    "user_lookup": "ownerlookup",
+    "picklist": "picklist",
+    "phone": "phone",
+    "email": "email",
+    "url": "url",
+}
 
 
 def crm_sdk_status(
@@ -1381,6 +1397,41 @@ def _normalized_field_type(field: dict) -> str:
     return aliases.get(raw, raw)
 
 
+def storepilot_zoho_field_type(field: dict) -> str:
+    """Return the current best-effort Zoho field type for a StorePilot seed field."""
+    return STOREPILOT_FIELD_TYPE_TO_ZOHO.get(_normalized_field_type(field), "")
+
+
+def crm_org_id(org_payload: object) -> str:
+    """Extract a CRM org id from v8 org response payload shapes."""
+    if isinstance(org_payload, dict):
+        if org_payload.get("id"):
+            return str(org_payload["id"])
+        for key in ("org", "data"):
+            extracted = crm_org_id(org_payload.get(key))
+            if extracted:
+                return extracted
+    if isinstance(org_payload, list) and org_payload:
+        return crm_org_id(org_payload[0])
+    return ""
+
+
+def crm_org_verification(org_payload: object, expected_org_id: str | None) -> dict:
+    """Build a JSON-safe expected-org-id verification block."""
+    actual = crm_org_id(org_payload)
+    expected = str(expected_org_id or "").strip()
+    checked = bool(expected)
+    return {
+        "checked": checked,
+        "expectedOrgId": expected,
+        "actualOrgId": actual,
+        "matches": (actual == expected) if checked else None,
+        "blockingReason": (
+            "org_id_mismatch" if checked and actual and actual != expected else ""
+        ),
+    }
+
+
 def build_storepilot_seed_diff(
     *,
     snapshot: dict,
@@ -1388,6 +1439,7 @@ def build_storepilot_seed_diff(
     task_templates_seed: dict | None = None,
     budget_rules_seed: dict | None = None,
     regions_seed: dict | None = None,
+    expected_org_id: str | None = None,
 ) -> dict:
     """Build a local-only dry-run diff between a CRM snapshot and StorePilot seeds."""
     seed_modules = storepilot_seed_modules(crm_modules_seed)
@@ -1437,12 +1489,21 @@ def build_storepilot_seed_diff(
                 continue
             existing_field = existing_fields.get(field_api_name)
             if existing_field is None:
+                zoho_type = storepilot_zoho_field_type(seed_field)
                 fields_to_create.append(
                     {
                         "module": module_api_name,
                         "apiName": field_api_name,
                         "label": str(seed_field.get("label") or field_api_name),
                         "type": str(seed_field.get("type") or ""),
+                        "zohoType": zoho_type,
+                        "typeMappingStatus": "mapped" if zoho_type else "unknown",
+                        "lookupModule": str(seed_field.get("module") or ""),
+                        "unique": bool(seed_field.get("unique", False)),
+                        "external": bool(seed_field.get("external", False)),
+                        "picklistValues": list(seed_field.get("values", []))
+                        if isinstance(seed_field.get("values"), list)
+                        else [],
                     }
                 )
                 continue
@@ -1468,7 +1529,37 @@ def build_storepilot_seed_diff(
             len(budget_rules_seed.get("rules", [])) if budget_rules_seed else 0
         ),
     }
+    org_verification = snapshot.get("orgVerification")
+    if not isinstance(org_verification, dict):
+        org_verification = crm_org_verification(
+            snapshot.get("org"), expected_org_id=expected_org_id
+        )
+    elif expected_org_id and not org_verification.get("checked"):
+        org_verification = crm_org_verification(
+            snapshot.get("org"), expected_org_id=expected_org_id
+        )
+
+    unknown_type_fields = [
+        field for field in fields_to_create if field["typeMappingStatus"] == "unknown"
+    ]
+    blocking_reasons: list[str] = []
+    if org_verification.get("blockingReason"):
+        blocking_reasons.append(str(org_verification["blockingReason"]))
+    if fields_with_type_conflicts:
+        blocking_reasons.append("field_type_conflicts")
+    if unknown_type_fields:
+        blocking_reasons.append("unknown_field_type_mapping")
+
     manual_steps_required: list[dict[str, object]] = []
+    if org_verification.get("blockingReason"):
+        manual_steps_required.append(
+            {
+                "code": "org_id_mismatch",
+                "expectedOrgId": org_verification.get("expectedOrgId", ""),
+                "actualOrgId": org_verification.get("actualOrgId", ""),
+                "details": "StorePilot production apply must stop until the CRM org id matches the expected ZOHO_ORG_ID.",
+            }
+        )
     if modules_to_create:
         manual_steps_required.append(
             {
@@ -1485,6 +1576,16 @@ def build_storepilot_seed_diff(
                 "typeConflicts": len(fields_with_type_conflicts),
             }
         )
+    if unknown_type_fields:
+        manual_steps_required.append(
+            {
+                "code": "field_type_mapping_review_required",
+                "fields": [
+                    {"module": field["module"], "apiName": field["apiName"]}
+                    for field in unknown_type_fields
+                ],
+            }
+        )
     manual_steps_required.append(
         {
             "code": "webhook_notification_setup_not_automated",
@@ -1499,12 +1600,18 @@ def build_storepilot_seed_diff(
         "liveWritesEnabled": False,
         "snapshotKind": snapshot.get("kind", ""),
         "seedVersion": crm_modules_seed.get("version", ""),
+        "orgVerification": org_verification,
+        "readiness": {
+            "readyForApplyPlan": not blocking_reasons,
+            "blockingReasons": blocking_reasons,
+        },
         "summary": {
             "seedModules": len(seed_modules),
             "snapshotModules": len(existing_modules),
             "modulesToCreate": len(modules_to_create),
             "fieldsToCreate": len(fields_to_create),
             "fieldsWithTypeConflicts": len(fields_with_type_conflicts),
+            "unknownFieldTypeMappings": len(unknown_type_fields),
             "recordsToUpsert": sum(records_to_upsert.values()),
         },
         "modules_to_create": modules_to_create,

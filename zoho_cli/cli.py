@@ -12083,6 +12083,12 @@ def crm_snapshot(
         "--include-layouts/--no-include-layouts",
         help="Include module layout metadata for selected modules.",
     ),
+    expected_org_id: Optional[str] = typer.Option(
+        None,
+        "--expected-org-id",
+        envvar="ZOHO_ORG_ID",
+        help="Expected CRM org id for StorePilot readiness checks.",
+    ),
     limit: int = typer.Option(200, "--limit", "-n", help="Max metadata rows/page."),
 ) -> None:
     """Export a safe StorePilot CRM metadata snapshot without writing data."""
@@ -12105,6 +12111,7 @@ def crm_snapshot(
     modules_resp = client.modules(limit=limit, page=1)
     users_resp = client.users(user_type="AllUsers", limit=limit, page=1)
     org_resp = client.org()
+    org_payload = org_resp.get("org", org_resp)
     profiles_resp = client.profiles(limit=limit, page=1)
     roles_resp = client.roles(limit=limit, page=1)
 
@@ -12129,7 +12136,10 @@ def crm_snapshot(
             "account": email,
             "seedVersion": seed_version,
             "selectedModules": selected_modules,
-            "org": org_resp.get("org", org_resp),
+            "org": org_payload,
+            "orgVerification": _crm.crm_org_verification(
+                org_payload, expected_org_id=expected_org_id
+            ),
             "users": users_resp.get("users", users_resp),
             "profiles": profiles_resp.get("profiles", profiles_resp),
             "roles": roles_resp.get("roles", roles_resp),
@@ -12163,6 +12173,12 @@ def crm_seed_diff(
     regions_seed: Optional[str] = typer.Option(
         None, "--regions-seed", help="Optional regions.seed.json."
     ),
+    expected_org_id: Optional[str] = typer.Option(
+        None,
+        "--expected-org-id",
+        envvar="ZOHO_ORG_ID",
+        help="Expected CRM org id when the snapshot did not already include one.",
+    ),
 ) -> None:
     """Diff a StorePilot seed set against a CRM snapshot without writing data."""
     snapshot = _load_json_file(snapshot_file, error_code="invalid_snapshot_file")
@@ -12192,6 +12208,7 @@ def crm_seed_diff(
             task_templates_seed=task_templates,
             budget_rules_seed=budget_rules,
             regions_seed=regions,
+            expected_org_id=expected_org_id,
         )
     )
 

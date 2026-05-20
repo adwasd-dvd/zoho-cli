@@ -302,8 +302,11 @@ Exit code: `0`
 │                   scope.                                                     │
 │ snapshot          Export a safe StorePilot CRM metadata snapshot without     │
 │                   writing data.                                              │
+│                   Accepts --expected-org-id / ZOHO_ORG_ID for StorePilot     │
+│                   orgVerification.                                           │
 │ seed-diff         Diff a StorePilot seed set against a CRM snapshot without  │
 │                   writing data.                                              │
+│                   Reports readiness blockers and per-field zohoType mapping. │
 │ fields            List fields for a CRM module.                              │
 │ list              List records from a CRM module.                            │
 │ get               Get a single CRM record by id.                             │

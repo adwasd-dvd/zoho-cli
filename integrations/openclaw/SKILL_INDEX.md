@@ -40,6 +40,9 @@ CRM SDK planning:
 - `crm profiles|profile-get|roles|role-get|layouts|snapshot|seed-diff`
   (`crm-041` StorePilot bootstrap metadata snapshot and local-only seed diff;
   reports manual steps without writing CRM schema/data)
+- `crm snapshot|seed-diff --expected-org-id` / `ZOHO_ORG_ID` (`crm-042` org id
+  readiness gating plus best-effort `zohoType` field mappings and blockers for
+  type conflicts or unknown mappings)
 - `apiVersionPolicy` from `zoho crm status` / `zoho crm sdk-status` (`crm-006`:
   HTTP v2 default, SDK/API v8 explicit-only)
 - `zoho crm write-plan` / `writeSurfacePolicy` (`crm-007`: `writesEnabled=false`,

@@ -68,7 +68,7 @@ zoho crm profiles
 zoho crm roles
 zoho crm layouts --module Accounts
 zoho crm coql --query "select Last_Name from Leads limit 1"
-zoho crm snapshot --crm-modules-seed /path/to/crm-modules.seed.json
+ZOHO_ORG_ID=870137630 zoho crm snapshot --crm-modules-seed /path/to/crm-modules.seed.json
 zoho crm seed-diff \
   --snapshot-file /path/to/snapshot.json \
   --crm-modules-seed /path/to/crm-modules.seed.json \
@@ -81,7 +81,10 @@ For StorePilot CRM bootstrap, authenticate with `zoho login
 --with-storepilot-crm` and verify `zoho crm status --scope-profile storepilot
 --check-auth`. `crm-039` covers the v8 read/query slice for users, org, and
 COQL. `crm-041` adds profile/role/layout reads, StorePilot snapshot export, and
-local-only seed diff. Bulk and notifications are still follow-on surfaces.
+local-only seed diff. `crm-042` adds `ZOHO_ORG_ID` / `--expected-org-id`
+verification plus `zohoType` field mapping and readiness blockers for org
+mismatch, unknown type mappings, and type conflicts. Bulk and notifications are
+still follow-on surfaces.
 
 For SDK migration work, inspect `zoho crm sdk-status` and
 `docs/architecture/CRM_V0_5_SDK_ADOPTION_PLAN.md` first. `crm-004` keeps the

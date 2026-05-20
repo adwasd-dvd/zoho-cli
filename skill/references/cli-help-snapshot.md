@@ -1,6 +1,6 @@
 # CLI help snapshot
 
-Generated at: `2026-05-20T23:23:50Z`
+Generated at: `2026-05-20T23:51:29Z`
 
 Use this file as a quick command-surface reference for the skill.
 
@@ -316,6 +316,8 @@ Exit code: `0`
 │ notification-plan  Plan StorePilot CRM notifications/webhooks without        │
 │                    writing data.                                             │
 │ init-plan          Build one StorePilot CRM bootstrap dry-run handoff plan.  │
+│ apply-plan         Build a no-write StorePilot CRM apply/cleanup contract    │
+│                    from init-plan.                                           │
 │ fields             List fields for a CRM module.                             │
 │ list               List records from a CRM module.                           │
 │ get                Get a single CRM record by id.                            │
@@ -754,5 +756,33 @@ Exit code: `0`
 │                                                         include-cleanup]     │
 │    --help                                               Show this message    │
 │                                                         and exit.            │
+╰──────────────────────────────────────────────────────────────────────────────╯
+```
+
+## `zoho crm apply-plan --help`
+
+Exit code: `0`
+
+```text
+
+ Usage: zoho crm apply-plan [OPTIONS]
+
+ Build a no-write StorePilot CRM apply/cleanup contract from init-plan.
+
+╭─ Options ────────────────────────────────────────────────────────────────────╮
+│ *  --init-plan-file         TEXT  JSON file produced by `zoho crm            │
+│                                   init-plan`.                                │
+│                                   [required]                                 │
+│    --mode                   TEXT  StorePilot init mode: dry_run,             │
+│                                   apply_sandbox, apply_production,           │
+│                                   cleanup_dry_run, or cleanup_production.    │
+│                                   [default: dry_run]                         │
+│    --expected-org-id        TEXT  Expected CRM org id for production         │
+│                                   apply/cleanup readiness checks.            │
+│                                   [env var: ZOHO_ORG_ID]                     │
+│    --approval-token         TEXT  Exact operator approval token for          │
+│                                   production modes. This command still never │
+│                                   writes CRM data.                           │
+│    --help                         Show this message and exit.                │
 ╰──────────────────────────────────────────────────────────────────────────────╯
 ```

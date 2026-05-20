@@ -81,6 +81,15 @@ STOREPILOT_INIT_PLAN_KIND = "storepilot_crm_init_plan"
 STOREPILOT_INIT_PLAN_POLICY_ID = "crm-044-storepilot-init-plan-dry-run"
 STOREPILOT_CLEANUP_PLAN_KIND = "storepilot_crm_cleanup_plan"
 STOREPILOT_MANUAL_SETUP_PLAN_KIND = "storepilot_crm_manual_setup_plan"
+STOREPILOT_APPLY_PLAN_KIND = "storepilot_crm_apply_plan"
+STOREPILOT_APPLY_PLAN_POLICY_ID = "crm-050-storepilot-apply-plan-dry-run"
+STOREPILOT_INIT_MODES = [
+    "dry_run",
+    "apply_sandbox",
+    "apply_production",
+    "cleanup_dry_run",
+    "cleanup_production",
+]
 STOREPILOT_DEFAULT_NOTIFICATION_MODULES = [
     "Accounts",
     "Field_Tasks",
@@ -2536,6 +2545,192 @@ def build_storepilot_init_plan(
             "review manualSetupPlan checks for layouts, related lists, automation, and Zoho-only surfaces",
             "review cleanup candidates before any cleanup_production mode",
             "run StorePilot initializer in dry_run before any apply mode",
+        ],
+        "safety": {
+            "dryRunOnly": True,
+            "writesZohoData": False,
+            "destructiveActionsPerformed": False,
+            "normalUpsertExecuteBlocked": True,
+        },
+    }
+
+
+def storepilot_apply_approval_token(*, mode: str, org_id: str | None = None) -> str:
+    """Return the exact approval token expected by guarded apply scaffolding."""
+    suffix = f"_{org_id}" if org_id else ""
+    return f"I_APPROVE_STOREPILOT_{mode.upper()}{suffix}"
+
+
+def build_storepilot_apply_plan(
+    *,
+    init_plan: dict,
+    mode: str = "dry_run",
+    expected_org_id: str | None = None,
+    approval_token: str | None = None,
+) -> dict:
+    """Build a dry-run StorePilot apply/cleanup execution contract."""
+    if mode not in STOREPILOT_INIT_MODES:
+        supported = ", ".join(STOREPILOT_INIT_MODES)
+        raise ValueError(
+            f"unsupported StorePilot CRM init mode: {mode}. Use one of: {supported}"
+        )
+    if init_plan.get("kind") != STOREPILOT_INIT_PLAN_KIND:
+        raise ValueError("init_plan must be produced by `zoho crm init-plan`")
+
+    seed_diff = (
+        init_plan.get("seedDiff") if isinstance(init_plan.get("seedDiff"), dict) else {}
+    )
+    org_verification = (
+        seed_diff.get("orgVerification") if isinstance(seed_diff, dict) else {}
+    )
+    if not isinstance(org_verification, dict):
+        org_verification = {}
+    observed_org_id = str(org_verification.get("actualOrgId") or "")
+    resolved_expected_org_id = expected_org_id or str(
+        org_verification.get("expectedOrgId") or ""
+    )
+    approval_required = mode in {"apply_production", "cleanup_production"}
+    expected_approval = storepilot_apply_approval_token(
+        mode=mode, org_id=resolved_expected_org_id or None
+    )
+    blocking_reasons = list(
+        init_plan.get("readiness", {}).get("blockingReasons", [])
+        if isinstance(init_plan.get("readiness"), dict)
+        else []
+    )
+    if mode.startswith("apply") and mode != "dry_run":
+        blocking_reasons.append("schema_apply_not_implemented")
+    if mode.startswith("cleanup"):
+        blocking_reasons.append("cleanup_apply_not_implemented")
+    if mode.endswith("production"):
+        if not resolved_expected_org_id:
+            blocking_reasons.append("expected_org_id_required")
+        if not observed_org_id:
+            blocking_reasons.append("observed_org_id_required")
+        if resolved_expected_org_id and observed_org_id != resolved_expected_org_id:
+            blocking_reasons.append("org_id_mismatch")
+    if approval_required and approval_token != expected_approval:
+        blocking_reasons.append("exact_operator_approval_required")
+
+    blocking_reasons = list(dict.fromkeys(str(reason) for reason in blocking_reasons))
+    summary = (
+        init_plan.get("summary") if isinstance(init_plan.get("summary"), dict) else {}
+    )
+    cleanup_plan = (
+        init_plan.get("cleanupPlan")
+        if isinstance(init_plan.get("cleanupPlan"), dict)
+        else None
+    )
+    notification_plan = (
+        init_plan.get("notificationPlan")
+        if isinstance(init_plan.get("notificationPlan"), dict)
+        else {}
+    )
+    bulk_plan = (
+        init_plan.get("bulkPlan") if isinstance(init_plan.get("bulkPlan"), dict) else {}
+    )
+
+    planned_operations = {
+        "modulesToCreate": int(summary.get("modulesToCreate") or 0),
+        "fieldsToCreate": int(summary.get("fieldsToCreate") or 0),
+        "recordsToUpsert": int(summary.get("recordsToUpsert") or 0),
+        "bulkImportRecords": int(summary.get("bulkImportRecords") or 0),
+        "notificationSubscriptions": _list_count(
+            notification_plan.get("subscriptions")
+        ),
+        "cleanupReviewItems": int(summary.get("cleanupReviewItems") or 0),
+        "manualSetupReviews": int(summary.get("manualSetupReviews") or 0),
+    }
+    cleanup_summary = cleanup_plan.get("summary", {}) if cleanup_plan else {}
+    phases = [
+        {
+            "id": "preflight",
+            "mode": "dry_run",
+            "writesZohoData": False,
+            "checks": [
+                "validate_org_id",
+                "review_snapshot_summary",
+                "review_seed_diff_readiness",
+                "review_manual_setup_plan",
+            ],
+        },
+        {
+            "id": "cleanup_review",
+            "mode": "cleanup_dry_run",
+            "writesZohoData": False,
+            "itemsToReview": planned_operations["cleanupReviewItems"],
+            "legacyAutomationToReview": int(
+                cleanup_summary.get("legacyAutomationToReview") or 0
+            )
+            if isinstance(cleanup_summary, dict)
+            else 0,
+        },
+        {
+            "id": "schema_apply_contract",
+            "mode": "apply_sandbox",
+            "writesZohoData": False,
+            "modulesToCreate": planned_operations["modulesToCreate"],
+            "fieldsToCreate": planned_operations["fieldsToCreate"],
+        },
+        {
+            "id": "seed_data_contract",
+            "mode": "apply_sandbox",
+            "writesZohoData": False,
+            "recordsToUpsert": planned_operations["recordsToUpsert"],
+            "bulkImportRecords": planned_operations["bulkImportRecords"],
+            "bulkBatchSize": bulk_plan.get("batchSize")
+            if isinstance(bulk_plan, dict)
+            else None,
+        },
+        {
+            "id": "notification_contract",
+            "mode": "apply_sandbox",
+            "writesZohoData": False,
+            "subscriptions": planned_operations["notificationSubscriptions"],
+            "callbackConfigured": bool(
+                notification_plan.get("summary", {}).get("callbackConfigured")
+            )
+            if isinstance(notification_plan.get("summary"), dict)
+            else False,
+        },
+    ]
+
+    return {
+        "kind": STOREPILOT_APPLY_PLAN_KIND,
+        "policyId": STOREPILOT_APPLY_PLAN_POLICY_ID,
+        "status": "dry_run",
+        "requestedMode": mode,
+        "liveWritesEnabled": False,
+        "executionBlocked": True,
+        "approval": {
+            "required": approval_required,
+            "provided": bool(approval_token),
+            "matchesExpected": (approval_token == expected_approval)
+            if approval_required
+            else False,
+            "expectedTokenPreview": expected_approval,
+        },
+        "orgVerification": {
+            "expectedOrgId": resolved_expected_org_id,
+            "observedOrgId": observed_org_id,
+            "matches": bool(
+                resolved_expected_org_id and observed_org_id == resolved_expected_org_id
+            ),
+        },
+        "readiness": {
+            "readyForApplyExecution": False,
+            "readyForOperatorReview": not blocking_reasons,
+            "blockingReasons": blocking_reasons,
+        },
+        "plannedOperations": planned_operations,
+        "phases": phases,
+        "guardedApplyRequirements": [
+            "validated_org_id",
+            "reviewed_init_plan",
+            "reviewed_cleanup_plan",
+            "reviewed_manual_setup_plan",
+            "exact_operator_approval_for_production",
+            "separate_guarded_apply_implementation",
         ],
         "safety": {
             "dryRunOnly": True,

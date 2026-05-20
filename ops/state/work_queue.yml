@@ -1227,6 +1227,15 @@
   - crm-048
   agent_action: use `zoho crm settings related_lists|custom_views --module <Module>` or `zoho crm snapshot --include-settings` to review related-list and custom-view metadata only
   completion_signal: CLI, snapshot output, tests, README, skill docs, help snapshot, and lane3 docs expose related-list/custom-view settings reads without writes
+- id: crm-050
+  title: add StorePilot apply-plan dry-run contract
+  module: crm
+  stage: completed
+  priority: high
+  depends_on:
+  - crm-049
+  agent_action: use `zoho crm apply-plan --init-plan-file <init-plan.json>` to review guarded apply/cleanup phases, org checks, approval blockers, and planned operation counts without execution
+  completion_signal: CLI, tests, README, skill docs, help snapshot, and lane3 docs expose apply/cleanup scaffolding with executionBlocked=true and no Zoho writes
 - id: platform-220
   title: keep RC heartbeat and work-queue state synchronized
   module: platform

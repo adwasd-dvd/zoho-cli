@@ -97,6 +97,10 @@ zoho crm init-plan \
   --regions-seed /path/to/regions.seed.json \
   --callback-url https://storepilot.example.com/webhooks/zoho \
   --export-module Accounts
+zoho crm apply-plan \
+  --init-plan-file /path/to/init-plan.json \
+  --mode apply_production \
+  --expected-org-id 870137630
 ```
 
 For StorePilot CRM bootstrap, authenticate with `zoho login
@@ -124,6 +128,10 @@ actions behind a separate production cleanup gate. In `crm-048`, also inspect
 `init-plan.manualSetupPlan` for seed `manual_setup_required` items,
 relationship/related-list checks, layout coverage, automation cleanup review,
 and notification setup review before any guarded apply planning.
+`crm-050` adds `zoho crm apply-plan` as the next no-write handoff layer: use it
+to inspect apply/cleanup phases, planned operation counts, production org
+checks, and exact approval blockers. It is scaffolding only and always reports
+`executionBlocked=true`.
 
 For SDK migration work, inspect `zoho crm sdk-status` and
 `docs/architecture/CRM_V0_5_SDK_ADOPTION_PLAN.md` first. `crm-004` keeps the

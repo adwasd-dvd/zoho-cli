@@ -61,6 +61,9 @@ CRM SDK planning:
 - `crm init-plan` `manualSetupPlan` (`crm-048` structured StorePilot Zoho-only
   setup checklist for seed manual steps, relationships, related lists, layout
   coverage, automation cleanup review, and notification setup; no writes)
+- `crm apply-plan` (`crm-050` no-write StorePilot apply/cleanup contract with
+  org, readiness, exact approval, phase, and planned-operation blockers; no
+  execution)
 - `apiVersionPolicy` from `zoho crm status` / `zoho crm sdk-status` (`crm-006`:
   HTTP v2 default, SDK/API v8 explicit-only)
 - `zoho crm write-plan` / `writeSurfacePolicy` (`crm-007`: `writesEnabled=false`,

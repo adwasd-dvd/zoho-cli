@@ -12544,6 +12544,42 @@ def crm_init_plan(
     utils.output(payload)
 
 
+@crm_app.command("apply-plan")
+def crm_apply_plan(
+    init_plan_file: str = typer.Option(
+        ..., "--init-plan-file", help="JSON file produced by `zoho crm init-plan`."
+    ),
+    mode: str = typer.Option(
+        "dry_run",
+        "--mode",
+        help="StorePilot init mode: dry_run, apply_sandbox, apply_production, cleanup_dry_run, or cleanup_production.",
+    ),
+    expected_org_id: Optional[str] = typer.Option(
+        None,
+        "--expected-org-id",
+        envvar="ZOHO_ORG_ID",
+        help="Expected CRM org id for production apply/cleanup readiness checks.",
+    ),
+    approval_token: Optional[str] = typer.Option(
+        None,
+        "--approval-token",
+        help="Exact operator approval token for production modes. This command still never writes CRM data.",
+    ),
+) -> None:
+    """Build a no-write StorePilot CRM apply/cleanup contract from init-plan."""
+    init_plan = _load_json_file(init_plan_file, error_code="invalid_init_plan_file")
+    try:
+        payload = _crm.build_storepilot_apply_plan(
+            init_plan=init_plan,
+            mode=mode,
+            expected_org_id=expected_org_id,
+            approval_token=approval_token,
+        )
+    except ValueError as exc:
+        utils.error_exit("invalid_apply_plan", str(exc))
+    utils.output(payload)
+
+
 @crm_app.command("fields")
 def crm_fields(
     module: str = typer.Option(

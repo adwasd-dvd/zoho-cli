@@ -1168,6 +1168,28 @@ def test_build_storepilot_cleanup_and_init_plan() -> None:
     assert plan["cleanupPlan"]["summary"]["legacyModulesToReview"] == 1
     assert plan["manualSetupPlan"]["kind"] == crm.STOREPILOT_MANUAL_SETUP_PLAN_KIND
 
+    apply_plan = crm.build_storepilot_apply_plan(
+        init_plan=plan,
+        mode="apply_production",
+        expected_org_id="870137630",
+    )
+    assert apply_plan["kind"] == crm.STOREPILOT_APPLY_PLAN_KIND
+    assert apply_plan["liveWritesEnabled"] is False
+    assert apply_plan["executionBlocked"] is True
+    assert apply_plan["approval"]["required"] is True
+    assert (
+        "exact_operator_approval_required" in apply_plan["readiness"]["blockingReasons"]
+    )
+    assert "cleanup_review_required" in apply_plan["readiness"]["blockingReasons"]
+    assert apply_plan["plannedOperations"]["recordsToUpsert"] == 3
+    assert apply_plan["plannedOperations"]["notificationSubscriptions"] == 19
+    assert apply_plan["phases"][0]["writesZohoData"] is False
+
+
+def test_build_storepilot_apply_plan_rejects_non_init_plan() -> None:
+    with pytest.raises(ValueError, match="init_plan"):
+        crm.build_storepilot_apply_plan(init_plan={"kind": "other"})
+
 
 @respx.mock
 def test_crm_client_fields() -> None:

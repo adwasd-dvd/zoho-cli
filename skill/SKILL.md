@@ -319,6 +319,11 @@ Use this skill as the default operating contract for an OpenClaw agent acting li
   is still dry-run only and reports `destructiveActionsPerformed=false`; cleanup
   candidates, including automation candidates and Zoho-only manual setup notes,
   are review items, not permissions to delete.
+  In `crm-050`, use `zoho crm apply-plan --init-plan-file <init-plan.json>` to
+  build a no-write StorePilot apply/cleanup contract from that handoff. It
+  reports mode, org checks, exact approval requirements, phases, and planned
+  operation counts, but always keeps `executionBlocked=true` and
+  `liveWritesEnabled=false`.
   In `crm-048`, inspect `init-plan.manualSetupPlan` before any guarded apply
   planning. It summarizes seed `manual_setup_required` items, relationship and
   related-list checks, layout coverage, automation cleanup review, and

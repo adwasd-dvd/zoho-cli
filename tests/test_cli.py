@@ -28480,6 +28480,63 @@ def test_crm_init_plan_command(tmp_path: Path) -> None:
     )
 
 
+def test_crm_apply_plan_command(tmp_path: Path) -> None:
+    init_plan_path = tmp_path / "init-plan.json"
+    init_plan_path.write_text(
+        json.dumps(
+            {
+                "kind": "storepilot_crm_init_plan",
+                "summary": {
+                    "modulesToCreate": 1,
+                    "fieldsToCreate": 2,
+                    "recordsToUpsert": 3,
+                    "bulkImportRecords": 3,
+                    "cleanupReviewItems": 1,
+                    "manualSetupReviews": 1,
+                },
+                "readiness": {"blockingReasons": []},
+                "seedDiff": {
+                    "orgVerification": {
+                        "expectedOrgId": "870137630",
+                        "actualOrgId": "870137630",
+                    }
+                },
+                "notificationPlan": {"subscriptions": [{"module": "Accounts"}]},
+                "bulkPlan": {"batchSize": 200},
+                "cleanupPlan": {
+                    "summary": {
+                        "legacyAutomationToReview": 1,
+                    }
+                },
+            }
+        )
+    )
+
+    result = runner.invoke(
+        app,
+        [
+            "crm",
+            "apply-plan",
+            "--init-plan-file",
+            str(init_plan_path),
+            "--mode",
+            "apply_production",
+            "--expected-org-id",
+            "870137630",
+        ],
+    )
+
+    assert result.exit_code == 0, result.output
+    payload = json.loads(result.output)
+    assert payload["kind"] == "storepilot_crm_apply_plan"
+    assert payload["liveWritesEnabled"] is False
+    assert payload["executionBlocked"] is True
+    assert payload["approval"]["required"] is True
+    assert payload["orgVerification"]["matches"] is True
+    assert payload["plannedOperations"]["notificationSubscriptions"] == 1
+    assert "exact_operator_approval_required" in payload["readiness"]["blockingReasons"]
+
+
 @respx.mock
 def test_crm_fields(mock_config: Path, mock_token_refresh: Any) -> None:
     route = respx.get("https://www.zohoapis.com/crm/v2/settings/fields").mock(

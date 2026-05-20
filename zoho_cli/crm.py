@@ -73,6 +73,32 @@ CRM_FIXTURE_EVIDENCE_EXPECTED_DRY_RUN_BLOCKERS = {
 STOREPILOT_SNAPSHOT_KIND = "storepilot_crm_snapshot"
 STOREPILOT_SEED_DIFF_KIND = "storepilot_crm_seed_diff"
 STOREPILOT_SEED_DIFF_POLICY_ID = "crm-041-storepilot-seed-diff-dry-run"
+STOREPILOT_BULK_PLAN_KIND = "storepilot_crm_bulk_plan"
+STOREPILOT_BULK_PLAN_POLICY_ID = "crm-043-storepilot-bulk-plan-dry-run"
+STOREPILOT_NOTIFICATION_PLAN_KIND = "storepilot_crm_notification_plan"
+STOREPILOT_NOTIFICATION_PLAN_POLICY_ID = "crm-043-storepilot-notification-plan-dry-run"
+STOREPILOT_DEFAULT_NOTIFICATION_MODULES = [
+    "Accounts",
+    "Field_Tasks",
+    "Work_Sessions",
+    "Task_Recommendation_Locks",
+    "Review_Cases",
+    "Payout_Requests",
+    "Warehouses",
+    "Warehouse_Operators",
+    "Warehouse_Inventory_Balances",
+    "Redemption_Vouchers",
+    "Support_Requests",
+    "Worker_Warnings",
+    "Compliance_Rules",
+    "Budget_Rules",
+    "Operational_Incidents",
+    "Disputes",
+    "DailyPay_Profiles",
+    "DailyPay_Transfers",
+    "DailyPay_Sync_Runs",
+]
+STOREPILOT_DEFAULT_NOTIFICATION_EVENTS = ["create", "edit", "delete"]
 STOREPILOT_FIELD_TYPE_TO_ZOHO = {
     "text": "text",
     "textarea": "textarea",
@@ -1623,6 +1649,174 @@ def build_storepilot_seed_diff(
             "dryRunOnly": True,
             "writesZohoData": False,
             "normalUpsertExecuteBlocked": True,
+        },
+    }
+
+
+def _count_seed_records(seed: dict | None, key: str) -> int:
+    if not seed:
+        return 0
+    records = seed.get(key, [])
+    return len(records) if isinstance(records, list) else 0
+
+
+def build_storepilot_bulk_plan(
+    *,
+    task_templates_seed: dict | None = None,
+    budget_rules_seed: dict | None = None,
+    regions_seed: dict | None = None,
+    export_modules: list[str] | None = None,
+    batch_size: int = 200,
+) -> dict:
+    """Build a dry-run StorePilot bulk import/export contract."""
+    if batch_size <= 0:
+        raise ValueError("batch_size must be greater than zero")
+
+    import_counts = {
+        "Regions": _count_seed_records(regions_seed, "regions"),
+        "Task_Templates": _count_seed_records(task_templates_seed, "templates"),
+        "Budget_Rules": _count_seed_records(budget_rules_seed, "rules"),
+    }
+    imports = [
+        {
+            "module": module,
+            "recordCount": count,
+            "batchSize": batch_size,
+            "batchCount": (count + batch_size - 1) // batch_size if count else 0,
+            "operation": "upsert",
+            "idempotency": "external_or_unique_field_required",
+        }
+        for module, count in import_counts.items()
+    ]
+    exports = [
+        {
+            "module": module,
+            "operation": "bulk_read",
+            "purpose": "legacy_crm_audit_or_backup",
+        }
+        for module in sorted(dict.fromkeys(export_modules or []))
+        if module
+    ]
+    manual_steps_required: list[dict[str, object]] = []
+    if any(item["recordCount"] for item in imports):
+        manual_steps_required.append(
+            {
+                "code": "bulk_import_requires_guarded_apply",
+                "details": "This plan only counts seed records; a later apply slice must create Zoho bulk jobs with operator approval.",
+            }
+        )
+    if exports:
+        manual_steps_required.append(
+            {
+                "code": "bulk_export_requires_backup_destination",
+                "details": "Choose an operator-approved destination before exporting legacy CRM data.",
+            }
+        )
+
+    return {
+        "kind": STOREPILOT_BULK_PLAN_KIND,
+        "policyId": STOREPILOT_BULK_PLAN_POLICY_ID,
+        "status": "dry_run",
+        "liveWritesEnabled": False,
+        "summary": {
+            "importModules": len(imports),
+            "importRecords": sum(item["recordCount"] for item in imports),
+            "exportModules": len(exports),
+        },
+        "imports": imports,
+        "exports": exports,
+        "manual_steps_required": manual_steps_required,
+        "guardedApplyRequirements": [
+            "operator_selected_mode",
+            "validated_org_id",
+            "dedicated_backup_or_import_artifact_path",
+            "idempotency_or_external_id_fields",
+            "exact_operator_approval",
+        ],
+        "safety": {
+            "dryRunOnly": True,
+            "writesZohoData": False,
+            "normalUpsertExecuteBlocked": True,
+        },
+    }
+
+
+def build_storepilot_notification_plan(
+    *,
+    modules: list[str] | None = None,
+    events: list[str] | None = None,
+    callback_url: str | None = None,
+    shared_secret_env: str = "STOREPILOT_ZOHO_WEBHOOK_SECRET",
+) -> dict:
+    """Build a dry-run StorePilot CRM notification/webhook setup contract."""
+    selected_modules = sorted(
+        dict.fromkeys(modules or STOREPILOT_DEFAULT_NOTIFICATION_MODULES)
+    )
+    selected_events = list(
+        dict.fromkeys(events or STOREPILOT_DEFAULT_NOTIFICATION_EVENTS)
+    )
+    callback = str(callback_url or "").strip()
+    parsed = urlparse(callback) if callback else None
+    callback_host = (
+        parsed.netloc if parsed and parsed.scheme in {"http", "https"} else ""
+    )
+    subscriptions = [
+        {
+            "module": module,
+            "events": selected_events,
+            "callbackConfigured": bool(callback),
+            "callbackHost": callback_host,
+            "sharedSecretEnv": shared_secret_env,
+        }
+        for module in selected_modules
+    ]
+    manual_steps_required: list[dict[str, object]] = []
+    if not callback:
+        manual_steps_required.append(
+            {
+                "code": "callback_url_required",
+                "details": "Provide the StorePilot signed webhook endpoint before notification apply.",
+            }
+        )
+    elif not callback_host:
+        manual_steps_required.append(
+            {
+                "code": "callback_url_must_be_http_https",
+                "details": "Zoho notifications need a reachable HTTP(S) callback URL.",
+            }
+        )
+    manual_steps_required.append(
+        {
+            "code": "shared_secret_required",
+            "env": shared_secret_env,
+            "details": "Configure this secret in the StorePilot runtime; zoho-cli does not store or print the value.",
+        }
+    )
+
+    return {
+        "kind": STOREPILOT_NOTIFICATION_PLAN_KIND,
+        "policyId": STOREPILOT_NOTIFICATION_PLAN_POLICY_ID,
+        "status": "dry_run",
+        "liveWritesEnabled": False,
+        "summary": {
+            "modules": len(selected_modules),
+            "events": selected_events,
+            "callbackConfigured": bool(callback),
+            "callbackHost": callback_host,
+        },
+        "subscriptions": subscriptions,
+        "manual_steps_required": manual_steps_required,
+        "guardedApplyRequirements": [
+            "validated_org_id",
+            "signed_callback_url",
+            "shared_secret_configured",
+            "event_scope_review",
+            "exact_operator_approval",
+        ],
+        "safety": {
+            "dryRunOnly": True,
+            "writesZohoData": False,
+            "storesSecretValues": False,
         },
     }
 

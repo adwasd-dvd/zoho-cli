@@ -75,6 +75,12 @@ zoho crm seed-diff \
   --task-templates-seed /path/to/task-templates.seed.json \
   --regions-seed /path/to/regions.seed.json \
   --budget-rules-seed /path/to/budget-rules.seed.json
+zoho crm bulk-plan \
+  --task-templates-seed /path/to/task-templates.seed.json \
+  --regions-seed /path/to/regions.seed.json \
+  --budget-rules-seed /path/to/budget-rules.seed.json \
+  --export-module Accounts
+zoho crm notification-plan --callback-url https://storepilot.example.com/webhooks/zoho
 ```
 
 For StorePilot CRM bootstrap, authenticate with `zoho login
@@ -84,7 +90,8 @@ COQL. `crm-041` adds profile/role/layout reads, StorePilot snapshot export, and
 local-only seed diff. `crm-042` adds `ZOHO_ORG_ID` / `--expected-org-id`
 verification plus `zohoType` field mapping and readiness blockers for org
 mismatch, unknown type mappings, and type conflicts. Bulk and notifications are
-still follow-on surfaces.
+still dry-run-only through `crm-043` until an explicit guarded apply slice is
+approved.
 
 For SDK migration work, inspect `zoho crm sdk-status` and
 `docs/architecture/CRM_V0_5_SDK_ADOPTION_PLAN.md` first. `crm-004` keeps the

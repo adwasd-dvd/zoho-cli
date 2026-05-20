@@ -307,6 +307,10 @@ Exit code: `0`
 │ seed-diff         Diff a StorePilot seed set against a CRM snapshot without  │
 │                   writing data.                                              │
 │                   Reports readiness blockers and per-field zohoType mapping. │
+│ bulk-plan         Plan StorePilot CRM bulk import/export work without        │
+│                   creating jobs.                                             │
+│ notification-plan Plan StorePilot CRM notifications/webhooks without writing │
+│                   data.                                                      │
 │ fields            List fields for a CRM module.                              │
 │ list              List records from a CRM module.                            │
 │ get               Get a single CRM record by id.                             │

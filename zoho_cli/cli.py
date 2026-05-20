@@ -12213,6 +12213,90 @@ def crm_seed_diff(
     )
 
 
+@crm_app.command("bulk-plan")
+def crm_bulk_plan(
+    task_templates_seed: Optional[str] = typer.Option(
+        None, "--task-templates-seed", help="Optional task-templates.seed.json."
+    ),
+    budget_rules_seed: Optional[str] = typer.Option(
+        None, "--budget-rules-seed", help="Optional budget-rules.seed.json."
+    ),
+    regions_seed: Optional[str] = typer.Option(
+        None, "--regions-seed", help="Optional regions.seed.json."
+    ),
+    export_modules: List[str] = typer.Option(
+        [],
+        "--export-module",
+        help="CRM module API name to include in a future bulk export plan.",
+    ),
+    batch_size: int = typer.Option(
+        200, "--batch-size", help="Planned records per bulk import batch."
+    ),
+) -> None:
+    """Plan StorePilot CRM bulk import/export work without creating jobs."""
+    task_templates = (
+        _load_json_file(task_templates_seed, error_code="invalid_task_templates_seed")
+        if task_templates_seed
+        else None
+    )
+    budget_rules = (
+        _load_json_file(budget_rules_seed, error_code="invalid_budget_rules_seed")
+        if budget_rules_seed
+        else None
+    )
+    regions = (
+        _load_json_file(regions_seed, error_code="invalid_regions_seed")
+        if regions_seed
+        else None
+    )
+    try:
+        payload = _crm.build_storepilot_bulk_plan(
+            task_templates_seed=task_templates,
+            budget_rules_seed=budget_rules,
+            regions_seed=regions,
+            export_modules=list(export_modules),
+            batch_size=batch_size,
+        )
+    except ValueError as exc:
+        utils.error_exit("invalid_bulk_plan", str(exc))
+    utils.output(payload)
+
+
+@crm_app.command("notification-plan")
+def crm_notification_plan(
+    modules: List[str] = typer.Option(
+        [],
+        "--module",
+        "-m",
+        help="CRM module API name to include (repeatable). Defaults to StorePilot modules.",
+    ),
+    events: List[str] = typer.Option(
+        [],
+        "--event",
+        help="CRM notification event to include (repeatable). Defaults to create/edit/delete.",
+    ),
+    callback_url: Optional[str] = typer.Option(
+        None,
+        "--callback-url",
+        help="Future signed StorePilot webhook callback URL; never invoked by this command.",
+    ),
+    shared_secret_env: str = typer.Option(
+        "STOREPILOT_ZOHO_WEBHOOK_SECRET",
+        "--shared-secret-env",
+        help="Environment variable name that will hold the webhook shared secret.",
+    ),
+) -> None:
+    """Plan StorePilot CRM notifications/webhooks without writing data."""
+    utils.output(
+        _crm.build_storepilot_notification_plan(
+            modules=list(modules) or None,
+            events=list(events) or None,
+            callback_url=callback_url,
+            shared_secret_env=shared_secret_env,
+        )
+    )
+
+
 @crm_app.command("fields")
 def crm_fields(
     module: str = typer.Option(

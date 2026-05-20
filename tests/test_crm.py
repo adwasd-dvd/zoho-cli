@@ -806,6 +806,43 @@ def test_storepilot_seed_diff_reports_org_mismatch_and_unknown_type() -> None:
     assert result["fields_to_create"][0]["typeMappingStatus"] == "unknown"
 
 
+def test_build_storepilot_bulk_plan_counts_seed_records_and_exports() -> None:
+    result = crm.build_storepilot_bulk_plan(
+        task_templates_seed={"templates": [{}, {}]},
+        budget_rules_seed={"rules": [{}]},
+        regions_seed={"regions": [{}, {}, {}]},
+        export_modules=["Accounts", "Accounts", "Contacts"],
+        batch_size=2,
+    )
+
+    assert result["kind"] == crm.STOREPILOT_BULK_PLAN_KIND
+    assert result["liveWritesEnabled"] is False
+    assert result["summary"]["importRecords"] == 6
+    assert result["imports"][0]["module"] == "Regions"
+    assert result["imports"][0]["batchCount"] == 2
+    assert [item["module"] for item in result["exports"]] == ["Accounts", "Contacts"]
+    assert "bulk_import_requires_guarded_apply" in {
+        step["code"] for step in result["manual_steps_required"]
+    }
+
+
+def test_build_storepilot_notification_plan_defaults_and_callback() -> None:
+    result = crm.build_storepilot_notification_plan(
+        callback_url="https://storepilot.example.com/webhooks/zoho",
+        shared_secret_env="ZOHO_WEBHOOK_SECRET",
+    )
+
+    assert result["kind"] == crm.STOREPILOT_NOTIFICATION_PLAN_KIND
+    assert result["liveWritesEnabled"] is False
+    assert result["summary"]["modules"] >= 10
+    assert result["summary"]["callbackHost"] == "storepilot.example.com"
+    assert result["subscriptions"][0]["events"] == ["create", "edit", "delete"]
+    assert result["subscriptions"][0]["sharedSecretEnv"] == "ZOHO_WEBHOOK_SECRET"
+    assert "shared_secret_required" in {
+        step["code"] for step in result["manual_steps_required"]
+    }
+
+
 @respx.mock
 def test_crm_client_fields() -> None:
     client = crm.ZohoCrmClient("fake-token", base_url="https://www.zohoapis.com/crm/v2")

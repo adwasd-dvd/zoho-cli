@@ -295,6 +295,11 @@ Use this skill as the default operating contract for an OpenClaw agent acting li
   `orgVerification` and `readiness.blockingReasons`. `seed-diff` also emits
   best-effort `zohoType` mappings for missing fields and blocks readiness on
   type conflicts, unknown mappings, or org mismatch.
+  In `crm-043`, use `zoho crm bulk-plan` and `zoho crm notification-plan` for
+  StorePilot bulk import/export and webhook setup planning. These commands are
+  dry-run contracts only: they count seed records, list future export modules
+  and notification subscriptions, surface guarded apply requirements, and do
+  not create Zoho bulk jobs or notifications.
   In `crm-015`, use
   `docs/releases/CRM_V0_5_FIXTURE_PAYLOAD_TEMPLATE.json` only as a copy/edit
   starting point for the operator's copied fixture payload, and use

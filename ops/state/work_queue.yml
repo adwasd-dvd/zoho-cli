@@ -1164,6 +1164,15 @@
   - crm-041
   agent_action: use `--expected-org-id` or `ZOHO_ORG_ID` with snapshot and seed-diff; inspect `orgVerification`, `readiness.blockingReasons`, and per-field `zohoType` before any StorePilot schema initializer handoff
   completion_signal: snapshot/diff tests and docs cover org mismatch, unknown type mappings, field type conflicts, and no-write readiness reporting
+- id: crm-043
+  title: add StorePilot CRM bulk and notification dry-run planning contracts
+  module: crm
+  stage: completed
+  priority: high
+  depends_on:
+  - crm-042
+  agent_action: use `zoho crm bulk-plan` and `zoho crm notification-plan` for future StorePilot bulk import/export and webhook setup planning only; do not create Zoho bulk jobs or notification subscriptions
+  completion_signal: CLI, tests, README, skill docs, and lane3 docs expose dry-run contracts with guarded apply requirements and manual steps
 - id: platform-220
   title: keep RC heartbeat and work-queue state synchronized
   module: platform

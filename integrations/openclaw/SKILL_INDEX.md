@@ -43,6 +43,8 @@ CRM SDK planning:
 - `crm snapshot|seed-diff --expected-org-id` / `ZOHO_ORG_ID` (`crm-042` org id
   readiness gating plus best-effort `zohoType` field mappings and blockers for
   type conflicts or unknown mappings)
+- `crm bulk-plan|notification-plan` (`crm-043` StorePilot bulk import/export
+  and webhook setup dry-run contracts; no Zoho jobs or notifications created)
 - `apiVersionPolicy` from `zoho crm status` / `zoho crm sdk-status` (`crm-006`:
   HTTP v2 default, SDK/API v8 explicit-only)
 - `zoho crm write-plan` / `writeSurfacePolicy` (`crm-007`: `writesEnabled=false`,

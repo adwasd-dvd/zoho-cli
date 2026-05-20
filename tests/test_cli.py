@@ -28201,6 +28201,72 @@ def test_crm_seed_diff_command(tmp_path: Path) -> None:
     assert payload["records_to_upsert"]["Budget_Rules"] == 1
 
 
+def test_crm_bulk_plan_command(tmp_path: Path) -> None:
+    task_templates_path = tmp_path / "task-templates.seed.json"
+    regions_path = tmp_path / "regions.seed.json"
+    budget_path = tmp_path / "budget-rules.seed.json"
+    task_templates_path.write_text(json.dumps({"templates": [{}, {}]}))
+    regions_path.write_text(json.dumps({"regions": [{}, {}, {}]}))
+    budget_path.write_text(json.dumps({"rules": [{}]}))
+
+    result = runner.invoke(
+        app,
+        [
+            "crm",
+            "bulk-plan",
+            "--task-templates-seed",
+            str(task_templates_path),
+            "--regions-seed",
+            str(regions_path),
+            "--budget-rules-seed",
+            str(budget_path),
+            "--export-module",
+            "Accounts",
+            "--export-module",
+            "Contacts",
+            "--batch-size",
+            "2",
+        ],
+    )
+
+    assert result.exit_code == 0, result.output
+    payload = json.loads(result.output)
+    assert payload["kind"] == "storepilot_crm_bulk_plan"
+    assert payload["liveWritesEnabled"] is False
+    assert payload["summary"]["importRecords"] == 6
+    assert payload["imports"][0]["batchCount"] == 2
+    assert [item["module"] for item in payload["exports"]] == ["Accounts", "Contacts"]
+
+
+def test_crm_notification_plan_command() -> None:
+    result = runner.invoke(
+        app,
+        [
+            "crm",
+            "notification-plan",
+            "--module",
+            "Accounts",
+            "--module",
+            "Field_Tasks",
+            "--event",
+            "edit",
+            "--callback-url",
+            "https://storepilot.example.com/webhooks/zoho",
+            "--shared-secret-env",
+            "ZOHO_WEBHOOK_SECRET",
+        ],
+    )
+
+    assert result.exit_code == 0, result.output
+    payload = json.loads(result.output)
+    assert payload["kind"] == "storepilot_crm_notification_plan"
+    assert payload["liveWritesEnabled"] is False
+    assert payload["summary"]["modules"] == 2
+    assert payload["summary"]["events"] == ["edit"]
+    assert payload["summary"]["callbackHost"] == "storepilot.example.com"
+    assert payload["subscriptions"][0]["sharedSecretEnv"] == "ZOHO_WEBHOOK_SECRET"
+
+
 @respx.mock
 def test_crm_fields(mock_config: Path, mock_token_refresh: Any) -> None:
     route = respx.get("https://www.zohoapis.com/crm/v2/settings/fields").mock(

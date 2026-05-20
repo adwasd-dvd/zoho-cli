@@ -102,7 +102,10 @@ COQL. `crm-041` adds profile/role/layout reads, StorePilot snapshot export, and
 local-only seed diff. Use `zoho crm automation <resource>` or
 `zoho crm snapshot --include-automation` for read-only workflow rule, webhook,
 automation task, cadence, connected workflow, and assignment-threshold cleanup
-review. `crm-042` adds `ZOHO_ORG_ID` / `--expected-org-id` verification plus
+review. Inspect `snapshotSummary` for selected module counts, field/layout
+coverage, automation item counts, and missing coverage lists before handing the
+snapshot to StorePilot initializer code. `crm-042` adds `ZOHO_ORG_ID` /
+`--expected-org-id` verification plus
 `field_mapping_contracts`, `zohoType` field mapping, and readiness blockers for
 org mismatch, unknown type mappings, type conflicts, and field property gaps
 such as missing picklist values, wrong lookup targets, or unverified

@@ -12196,34 +12196,34 @@ def crm_snapshot(
                 str(spec["responseKey"]), automation_resp
             )
 
-    utils.output(
-        {
-            "kind": _crm.STOREPILOT_SNAPSHOT_KIND,
-            "status": "ok",
-            "apiVersion": _crm.CRM_SDK_API_VERSION,
-            "account": email,
-            "seedVersion": seed_version,
-            "selectedModules": selected_modules,
-            "org": org_payload,
-            "orgVerification": _crm.crm_org_verification(
-                org_payload, expected_org_id=expected_org_id
-            ),
-            "users": users_resp.get("users", users_resp),
-            "profiles": profiles_resp.get("profiles", profiles_resp),
-            "roles": roles_resp.get("roles", roles_resp),
-            "modules": modules_resp.get("modules")
-            or modules_resp.get("data", modules_resp),
-            "fields": fields_by_module,
-            "layouts": layouts_by_module,
-            "automation": automation_by_resource,
-            "automationResources": list(automation_by_resource),
-            "safety": {
-                "dryRunOnly": True,
-                "writesZohoData": False,
-                "normalUpsertExecuteBlocked": True,
-            },
-        }
-    )
+    payload = {
+        "kind": _crm.STOREPILOT_SNAPSHOT_KIND,
+        "status": "ok",
+        "apiVersion": _crm.CRM_SDK_API_VERSION,
+        "account": email,
+        "seedVersion": seed_version,
+        "selectedModules": selected_modules,
+        "org": org_payload,
+        "orgVerification": _crm.crm_org_verification(
+            org_payload, expected_org_id=expected_org_id
+        ),
+        "users": users_resp.get("users", users_resp),
+        "profiles": profiles_resp.get("profiles", profiles_resp),
+        "roles": roles_resp.get("roles", roles_resp),
+        "modules": modules_resp.get("modules")
+        or modules_resp.get("data", modules_resp),
+        "fields": fields_by_module,
+        "layouts": layouts_by_module,
+        "automation": automation_by_resource,
+        "automationResources": list(automation_by_resource),
+        "safety": {
+            "dryRunOnly": True,
+            "writesZohoData": False,
+            "normalUpsertExecuteBlocked": True,
+        },
+    }
+    payload["snapshotSummary"] = _crm.build_storepilot_snapshot_summary(payload)
+    utils.output(payload)
 
 
 @crm_app.command("seed-diff")

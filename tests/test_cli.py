@@ -28167,6 +28167,17 @@ def test_crm_snapshot_uses_seed_modules(
     assert payload["layouts"]["Regions"][0]["id"] == "l1"
     assert payload["automation"]["workflow_rules"][0]["id"] == "w1"
     assert payload["automationResources"] == ["workflow_rules"]
+    assert payload["snapshotSummary"]["selectedModules"] == 3
+    assert payload["snapshotSummary"]["fields"] == 3
+    assert payload["snapshotSummary"]["layouts"] == 3
+    assert payload["snapshotSummary"]["automationItems"] == 1
+    assert (
+        payload["snapshotSummary"]["coverage"]["hasFieldsForAllSelectedModules"] is True
+    )
+    assert (
+        payload["snapshotSummary"]["coverage"]["automationCounts"]["workflow_rules"]
+        == 1
+    )
     assert fields_route.call_count == 3
     assert layouts_route.call_count == 3
     assert workflow_route.call_count == 1

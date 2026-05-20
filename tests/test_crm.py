@@ -869,6 +869,42 @@ def test_storepilot_seed_diff_reports_field_property_gaps() -> None:
     assert notes_mapping["zohoType"] == "textarea"
 
 
+def test_build_storepilot_snapshot_summary_reports_coverage() -> None:
+    snapshot = {
+        "kind": crm.STOREPILOT_SNAPSHOT_KIND,
+        "selectedModules": ["Accounts", "Regions"],
+        "org": [{"id": "870137630"}],
+        "users": [{"id": "u1"}],
+        "profiles": [{"id": "p1"}],
+        "roles": [{"id": "r1"}],
+        "modules": [{"api_name": "Accounts"}],
+        "fields": {
+            "Accounts": [{"api_name": "Name"}],
+            "Regions": [{"api_name": "region_code"}],
+        },
+        "layouts": {"Accounts": [{"id": "l1"}]},
+        "automation": {
+            "workflow_rules": [{"id": "w1"}],
+            "webhooks": [{"id": "wh1"}, {"id": "wh2"}],
+        },
+    }
+
+    summary = crm.build_storepilot_snapshot_summary(snapshot)
+
+    assert summary["selectedModules"] == 2
+    assert summary["fields"] == 2
+    assert summary["automationItems"] == 3
+    assert summary["coverage"]["hasOrg"] is True
+    assert summary["coverage"]["hasFieldsForAllSelectedModules"] is True
+    assert summary["coverage"]["hasLayoutsForAllSelectedModules"] is False
+    assert summary["coverage"]["missingLayoutModules"] == ["Regions"]
+    assert summary["coverage"]["automationCounts"] == {
+        "workflow_rules": 1,
+        "webhooks": 2,
+    }
+    assert "Blueprints" in summary["manualReviewSurfaces"]
+
+
 def test_storepilot_seed_diff_reports_org_mismatch_and_unknown_type() -> None:
     snapshot = {
         "kind": crm.STOREPILOT_SNAPSHOT_KIND,

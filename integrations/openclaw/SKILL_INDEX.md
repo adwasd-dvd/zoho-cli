@@ -44,6 +44,9 @@ CRM SDK planning:
   read-only StorePilot cleanup review for workflow rules, webhooks, automation
   tasks, cadences, connected workflows, and assignment thresholds; no
   automation disable/delete actions)
+- `crm snapshot` `snapshotSummary` (`crm-047` compact StorePilot snapshot
+  coverage/count metadata for selected modules, fields, layouts, automation
+  items, missing coverage lists, and manual review surfaces)
 - `crm snapshot|seed-diff --expected-org-id` / `ZOHO_ORG_ID` (`crm-042` org id
   readiness gating plus `field_mapping_contracts`, best-effort `zohoType` field
   mappings, `fields_with_property_gaps`, and blockers for type conflicts,

@@ -1200,6 +1200,15 @@
   - crm-045
   agent_action: use `zoho crm automation <resource>` or `zoho crm snapshot --include-automation` for workflow/webhook/automation cleanup review only; do not disable, delete, or create automation
   completion_signal: CLI, tests, README, skill docs, lane3 docs, and init-plan cleanup output expose automation review candidates and Zoho-only manual steps without writes
+- id: crm-047
+  title: add StorePilot snapshot coverage summary metadata
+  module: crm
+  stage: completed
+  priority: medium
+  depends_on:
+  - crm-046
+  agent_action: inspect `snapshotSummary` before seed-diff/init-plan handoff to verify selected modules, field/layout coverage, automation counts, and manual review surfaces
+  completion_signal: snapshot output, tests, README, skill docs, and lane3 docs expose coverage/count metadata without changing raw snapshot blocks or writing Zoho data
 - id: platform-220
   title: keep RC heartbeat and work-queue state synchronized
   module: platform

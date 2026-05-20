@@ -11,6 +11,10 @@
   --include-automation` can embed them into snapshots, and `init-plan` now
   carries automation cleanup candidates plus Zoho-only manual setup notes
   without disabling, deleting, or creating automation.
+- Added StorePilot CRM snapshot coverage metadata: `zoho crm snapshot` now emits
+  `snapshotSummary` with selected module, field, layout, automation, coverage,
+  missing coverage, and manual review surface counts so initializers can
+  validate snapshot completeness without scanning raw metadata blocks.
 
 ### RC automation (2026-05-12T17:22:45Z)
 - Added `ops/scripts/zoho_cli_rc_autonomy_packet.sh`, a read-only cross-lane packet for recurring agents that combines native OpenClaw Cliq RC publish state with CRM fixture next-command state. It surfaces `agent_next_command_ready` only for an already allowlisted CRM dry-run/local command and otherwise reports operator-input or operator-only stop states while keeping publish, tag, GitHub release, expectedIntegrity fill, normal CRM upsert execution, and live Zoho writes disabled for agents.

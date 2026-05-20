@@ -1842,6 +1842,76 @@ def _count_seed_records(seed: dict | None, key: str) -> int:
     return len(records) if isinstance(records, list) else 0
 
 
+def _list_count(value: object) -> int:
+    return len(value) if isinstance(value, list) else 0
+
+
+def build_storepilot_snapshot_summary(snapshot: dict) -> dict[str, object]:
+    """Return compact coverage/readiness metadata for a StorePilot snapshot."""
+    fields = snapshot.get("fields")
+    layouts = snapshot.get("layouts")
+    automation = snapshot.get("automation")
+    fields_by_module = fields if isinstance(fields, dict) else {}
+    layouts_by_module = layouts if isinstance(layouts, dict) else {}
+    automation_by_resource = automation if isinstance(automation, dict) else {}
+    selected_modules = snapshot.get("selectedModules")
+    selected_module_count = _list_count(selected_modules)
+    field_modules = sorted(str(module) for module in fields_by_module)
+    layout_modules = sorted(str(module) for module in layouts_by_module)
+    automation_resources = sorted(str(resource) for resource in automation_by_resource)
+    missing_field_modules = [
+        module
+        for module in (selected_modules if isinstance(selected_modules, list) else [])
+        if str(module) not in fields_by_module
+    ]
+    missing_layout_modules = [
+        module
+        for module in (selected_modules if isinstance(selected_modules, list) else [])
+        if str(module) not in layouts_by_module
+    ]
+    automation_counts = {
+        resource: _list_count(entries)
+        for resource, entries in automation_by_resource.items()
+    }
+
+    return {
+        "selectedModules": selected_module_count,
+        "modules": _list_count(snapshot.get("modules")),
+        "users": _list_count(snapshot.get("users")),
+        "profiles": _list_count(snapshot.get("profiles")),
+        "roles": _list_count(snapshot.get("roles")),
+        "fieldModules": len(field_modules),
+        "fields": sum(_list_count(entries) for entries in fields_by_module.values()),
+        "layoutModules": len(layout_modules),
+        "layouts": sum(_list_count(entries) for entries in layouts_by_module.values()),
+        "automationResources": len(automation_resources),
+        "automationItems": sum(automation_counts.values()),
+        "coverage": {
+            "hasOrg": bool(crm_org_id(snapshot.get("org"))),
+            "hasUsers": bool(_list_count(snapshot.get("users"))),
+            "hasProfiles": bool(_list_count(snapshot.get("profiles"))),
+            "hasRoles": bool(_list_count(snapshot.get("roles"))),
+            "hasFieldsForAllSelectedModules": not missing_field_modules,
+            "hasLayoutsForAllSelectedModules": not missing_layout_modules,
+            "hasAutomationSnapshot": bool(automation_resources),
+            "fieldModules": field_modules,
+            "layoutModules": layout_modules,
+            "automationResources": automation_resources,
+            "missingFieldModules": missing_field_modules,
+            "missingLayoutModules": missing_layout_modules,
+            "automationCounts": automation_counts,
+        },
+        "manualReviewSurfaces": [
+            step["surface"] for step in storepilot_zoho_only_manual_steps()
+        ],
+        "safety": {
+            "dryRunOnly": True,
+            "writesZohoData": False,
+            "summaryOnly": True,
+        },
+    }
+
+
 def build_storepilot_bulk_plan(
     *,
     task_templates_seed: dict | None = None,

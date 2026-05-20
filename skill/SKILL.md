@@ -291,6 +291,9 @@ Use this skill as the default operating contract for an OpenClaw agent acting li
   `zoho crm seed-diff --snapshot-file <snapshot.json> --crm-modules-seed ...`.
   Treat `seed-diff` as local-only dry run output for modules, fields, seed
   record counts, and manual steps; it never creates schema or CRM data.
+  Read `snapshotSummary` before diff/apply handoff to confirm selected module
+  counts, field/layout coverage, automation item counts, and missing coverage
+  lists without scanning raw snapshot blocks.
   Use `zoho crm snapshot --include-automation` when cleanup planning needs
   workflow rules, webhooks, automation tasks, cadences, connected workflows, or
   assignment thresholds; these reads do not disable or delete automation.

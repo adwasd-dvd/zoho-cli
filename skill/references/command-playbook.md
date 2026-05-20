@@ -62,7 +62,15 @@ zoho crm sdk-status
 zoho crm modules
 zoho crm fields --module Leads
 zoho crm list --module Leads --limit 5
+zoho crm users --type ActiveUsers --limit 10
+zoho crm org
+zoho crm coql --query "select Last_Name from Leads limit 1"
 ```
+
+For StorePilot CRM bootstrap, authenticate with `zoho login
+--with-storepilot-crm` and verify `zoho crm status --scope-profile storepilot
+--check-auth`. `crm-039` covers the v8 read/query slice for users, org, and
+COQL; bulk and notifications are still follow-on surfaces.
 
 For SDK migration work, inspect `zoho crm sdk-status` and
 `docs/architecture/CRM_V0_5_SDK_ADOPTION_PLAN.md` first. `crm-004` keeps the

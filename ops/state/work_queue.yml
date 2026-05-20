@@ -1137,6 +1137,15 @@
   - crm-033
   agent_action: add or refine sanitized examples/tests that make operator payload and cleanup requirements easier to satisfy
   completion_signal: operators can prepare fixture inputs with fewer clarification loops, still without committed real data
+- id: crm-039
+  title: implement StorePilot CRM v8 users org and COQL read/query commands
+  module: crm
+  stage: completed
+  priority: high
+  depends_on:
+  - crm-002
+  agent_action: use `zoho crm users`, `zoho crm user-get`, `zoho crm org`, and `zoho crm coql --query` for read/query StorePilot diagnostics only; keep bulk, notifications, and live writes out of this slice
+  completion_signal: CLI, tests, README, skill docs, and OpenClaw lane3 docs describe v8 users/org/COQL coverage while normal CRM writes remain blocked
 - id: platform-220
   title: keep RC heartbeat and work-queue state synchronized
   module: platform

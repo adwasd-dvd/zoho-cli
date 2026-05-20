@@ -1306,7 +1306,9 @@ def crm_scope_profile(profile: str | None = None) -> str:
     normalized = aliases.get(value, value)
     if normalized not in CRM_SCOPE_PROFILES:
         supported = ", ".join(sorted(CRM_SCOPE_PROFILES))
-        raise ValueError(f"unsupported CRM scope profile: {profile}. Supported: {supported}")
+        raise ValueError(
+            f"unsupported CRM scope profile: {profile}. Supported: {supported}"
+        )
     return normalized
 
 
@@ -1387,9 +1389,47 @@ class ZohoCrmClient:
             )
         return resp.json()
 
+    def _post(self, path: str, payload: dict | None = None) -> dict:
+        resp = httpx.post(
+            f"{self.base_url}{path}",
+            headers=self._headers,
+            json=payload or {},
+            timeout=httpx.Timeout(30.0),
+        )
+        if not resp.is_success:
+            utils.error_exit(
+                "api_error", f"HTTP {resp.status_code} POST {path}: {resp.text}"
+            )
+        return resp.json()
+
     def modules(self, *, limit: int = 50, page: int = 1) -> dict:
         """List CRM modules (read-only scaffold endpoint)."""
         return self._get("/settings/modules", {"per_page": limit, "page": page})
+
+    def users(
+        self,
+        *,
+        user_type: str | None = None,
+        limit: int = 50,
+        page: int = 1,
+    ) -> dict:
+        """List CRM users."""
+        params: dict[str, str | int] = {"per_page": limit, "page": page}
+        if user_type:
+            params["type"] = user_type
+        return self._get("/users", params)
+
+    def get_user(self, user_id: str) -> dict:
+        """Fetch a single CRM user by id."""
+        return self._get(f"/users/{user_id}")
+
+    def org(self) -> dict:
+        """Fetch CRM organization details."""
+        return self._get("/org")
+
+    def coql(self, query: str) -> dict:
+        """Run one read-only COQL query."""
+        return self._post("/coql", {"select_query": query})
 
     def fields(self, module_api_name: str, *, limit: int = 200, page: int = 1) -> dict:
         """List fields for a CRM module."""

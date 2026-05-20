@@ -617,6 +617,62 @@ def test_crm_client_modules() -> None:
 
 
 @respx.mock
+def test_crm_client_users() -> None:
+    client = crm.ZohoCrmClient("fake-token", base_url="https://www.zohoapis.com/crm/v8")
+    route = respx.get("https://www.zohoapis.com/crm/v8/users").mock(
+        return_value=httpx.Response(200, json={"users": [{"id": "u1"}]})
+    )
+
+    result = client.users(user_type="ActiveUsers", limit=10, page=2)
+
+    assert result["users"][0]["id"] == "u1"
+    assert dict(route.calls.last.request.url.params) == {
+        "per_page": "10",
+        "page": "2",
+        "type": "ActiveUsers",
+    }
+
+
+@respx.mock
+def test_crm_client_get_user() -> None:
+    client = crm.ZohoCrmClient("fake-token", base_url="https://www.zohoapis.com/crm/v8")
+    respx.get("https://www.zohoapis.com/crm/v8/users/u1").mock(
+        return_value=httpx.Response(200, json={"users": [{"id": "u1"}]})
+    )
+
+    result = client.get_user("u1")
+
+    assert result["users"][0]["id"] == "u1"
+
+
+@respx.mock
+def test_crm_client_org() -> None:
+    client = crm.ZohoCrmClient("fake-token", base_url="https://www.zohoapis.com/crm/v8")
+    respx.get("https://www.zohoapis.com/crm/v8/org").mock(
+        return_value=httpx.Response(200, json={"org": [{"company_name": "Acme"}]})
+    )
+
+    result = client.org()
+
+    assert result["org"][0]["company_name"] == "Acme"
+
+
+@respx.mock
+def test_crm_client_coql() -> None:
+    client = crm.ZohoCrmClient("fake-token", base_url="https://www.zohoapis.com/crm/v8")
+    route = respx.post("https://www.zohoapis.com/crm/v8/coql").mock(
+        return_value=httpx.Response(200, json={"data": [{"Last_Name": "Wang"}]})
+    )
+
+    result = client.coql("select Last_Name from Leads limit 1")
+
+    assert result["data"][0]["Last_Name"] == "Wang"
+    assert json.loads(route.calls.last.request.content.decode()) == {
+        "select_query": "select Last_Name from Leads limit 1"
+    }
+
+
+@respx.mock
 def test_crm_client_fields() -> None:
     client = crm.ZohoCrmClient("fake-token", base_url="https://www.zohoapis.com/crm/v2")
     route = respx.get("https://www.zohoapis.com/crm/v2/settings/fields").mock(

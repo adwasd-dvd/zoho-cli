@@ -11904,6 +11904,75 @@ def crm_modules(
     utils.output(data)
 
 
+@crm_app.command("users")
+def crm_users(
+    user_type: Optional[str] = typer.Option(
+        None,
+        "--type",
+        "--user-type",
+        help="CRM user filter such as AllUsers, ActiveUsers, or AdminUsers.",
+    ),
+    limit: int = typer.Option(50, "--limit", "-n", help="Max users to return."),
+    page: int = typer.Option(1, "--page", help="Result page number."),
+) -> None:
+    """List CRM users through the StorePilot v8 read scope."""
+    cfg = _cfg()
+    email = _require_account(cfg)
+    client = _get_crm_http_v8_client(cfg, email)
+
+    resp = client.users(user_type=user_type, limit=limit, page=page)
+    data = resp.get("users", resp)
+    utils.output(data)
+
+
+@crm_app.command("user-get")
+def crm_user_get(
+    user_id: str = typer.Argument(..., help="CRM user ID."),
+) -> None:
+    """Get a single CRM user by id through the StorePilot v8 read scope."""
+    cfg = _cfg()
+    email = _require_account(cfg)
+    client = _get_crm_http_v8_client(cfg, email)
+
+    resp = client.get_user(user_id)
+    data = resp.get("users", resp)
+    if isinstance(data, list) and data:
+        utils.output(data[0])
+        return
+    utils.output(data)
+
+
+@crm_app.command("org")
+def crm_org() -> None:
+    """Show CRM organization details through the StorePilot v8 org scope."""
+    cfg = _cfg()
+    email = _require_account(cfg)
+    client = _get_crm_http_v8_client(cfg, email)
+
+    resp = client.org()
+    data = resp.get("org", resp)
+    utils.output(data)
+
+
+@crm_app.command("coql")
+def crm_coql(
+    query: str = typer.Option(
+        ...,
+        "--query",
+        "-q",
+        help="COQL SELECT query, for example: select Last_Name from Leads limit 1.",
+    ),
+) -> None:
+    """Run one CRM COQL read query through the StorePilot v8 COQL scope."""
+    cfg = _cfg()
+    email = _require_account(cfg)
+    client = _get_crm_http_v8_client(cfg, email)
+
+    resp = client.coql(query)
+    data = resp.get("data", resp)
+    utils.output(data)
+
+
 @crm_app.command("fields")
 def crm_fields(
     module: str = typer.Option(

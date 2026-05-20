@@ -279,6 +279,11 @@ Use this skill as the default operating contract for an OpenClaw agent acting li
   after the smoke script; proceed only when it reports
   `ready_for_operator_live_fixture` for a deliberate live run, or
   `live_fixture_recorded` for completed evidence.
+  In `crm-039`, StorePilot CRM read/query expansion adds v8-only
+  `zoho crm users`, `zoho crm user-get`, `zoho crm org`, and
+  `zoho crm coql --query "<SELECT ...>"`. These commands use the
+  `--with-storepilot-crm` scope profile and do not grant live CRM writes; bulk
+  and notifications remain follow-on surfaces.
   In `crm-015`, use
   `docs/releases/CRM_V0_5_FIXTURE_PAYLOAD_TEMPLATE.json` only as a copy/edit
   starting point for the operator's copied fixture payload, and use

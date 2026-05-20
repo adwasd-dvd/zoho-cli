@@ -285,6 +285,13 @@ Exit code: `0`
 │ fixture-evidence  Check controlled CRM fixture smoke evidence without        │
 │                   writing data.                                              │
 │ modules           List CRM modules available to the account.                 │
+│ users             List CRM users through the StorePilot v8 read scope.       │
+│ user-get          Get a single CRM user by id through the StorePilot v8 read │
+│                   scope.                                                     │
+│ org               Show CRM organization details through the StorePilot v8    │
+│                   org scope.                                                 │
+│ coql              Run one CRM COQL read query through the StorePilot v8 COQL │
+│                   scope.                                                     │
 │ fields            List fields for a CRM module.                              │
 │ list              List records from a CRM module.                            │
 │ get               Get a single CRM record by id.                             │

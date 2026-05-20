@@ -27945,6 +27945,76 @@ def test_crm_modules(mock_config: Path, mock_token_refresh: Any) -> None:
 
 
 @respx.mock
+def test_crm_users(mock_config: Path, mock_token_refresh: Any) -> None:
+    route = respx.get("https://www.zohoapis.com/crm/v8/users").mock(
+        return_value=httpx.Response(200, json={"users": [{"id": "u1"}]})
+    )
+
+    result = runner.invoke(
+        app,
+        ["crm", "users", "--type", "ActiveUsers", "--limit", "10", "--page", "2"],
+        env=_cfg_env(mock_config),
+    )
+    assert result.exit_code == 0, result.output
+    payload = json.loads(result.output)
+    assert payload[0]["id"] == "u1"
+    assert dict(route.calls.last.request.url.params) == {
+        "per_page": "10",
+        "page": "2",
+        "type": "ActiveUsers",
+    }
+
+
+@respx.mock
+def test_crm_user_get(mock_config: Path, mock_token_refresh: Any) -> None:
+    respx.get("https://www.zohoapis.com/crm/v8/users/u1").mock(
+        return_value=httpx.Response(
+            200, json={"users": [{"id": "u1", "full_name": "Ops User"}]}
+        )
+    )
+
+    result = runner.invoke(
+        app,
+        ["crm", "user-get", "u1"],
+        env=_cfg_env(mock_config),
+    )
+    assert result.exit_code == 0, result.output
+    payload = json.loads(result.output)
+    assert payload == {"id": "u1", "full_name": "Ops User"}
+
+
+@respx.mock
+def test_crm_org(mock_config: Path, mock_token_refresh: Any) -> None:
+    respx.get("https://www.zohoapis.com/crm/v8/org").mock(
+        return_value=httpx.Response(200, json={"org": [{"company_name": "Acme"}]})
+    )
+
+    result = runner.invoke(app, ["crm", "org"], env=_cfg_env(mock_config))
+    assert result.exit_code == 0, result.output
+    payload = json.loads(result.output)
+    assert payload == [{"company_name": "Acme"}]
+
+
+@respx.mock
+def test_crm_coql(mock_config: Path, mock_token_refresh: Any) -> None:
+    route = respx.post("https://www.zohoapis.com/crm/v8/coql").mock(
+        return_value=httpx.Response(200, json={"data": [{"Last_Name": "Wang"}]})
+    )
+
+    result = runner.invoke(
+        app,
+        ["crm", "coql", "--query", "select Last_Name from Leads limit 1"],
+        env=_cfg_env(mock_config),
+    )
+    assert result.exit_code == 0, result.output
+    payload = json.loads(result.output)
+    assert payload == [{"Last_Name": "Wang"}]
+    assert json.loads(route.calls.last.request.content.decode()) == {
+        "select_query": "select Last_Name from Leads limit 1"
+    }
+
+
+@respx.mock
 def test_crm_fields(mock_config: Path, mock_token_refresh: Any) -> None:
     route = respx.get("https://www.zohoapis.com/crm/v2/settings/fields").mock(
         return_value=httpx.Response(200, json={"data": [{"api_name": "Company"}]})

@@ -34,6 +34,9 @@ CRM SDK planning:
   default-disabled; `ZOHO_CRM_SDK_RESOURCE_PATH` override)
 - `crm modules|fields|list|get|search --adapter sdk-v8` (`crm-005` explicit
   SDK read gates; default remains `http-v2`)
+- `crm users|user-get|org|coql` (`crm-039` StorePilot CRM v8 read/query
+  expansion for users, organization details, and COQL; bulk and notifications
+  remain follow-on surfaces)
 - `apiVersionPolicy` from `zoho crm status` / `zoho crm sdk-status` (`crm-006`:
   HTTP v2 default, SDK/API v8 explicit-only)
 - `zoho crm write-plan` / `writeSurfacePolicy` (`crm-007`: `writesEnabled=false`,

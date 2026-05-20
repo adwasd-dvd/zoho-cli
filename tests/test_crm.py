@@ -761,6 +761,8 @@ def test_build_storepilot_seed_diff_reports_missing_modules_fields_and_counts() 
     assert result["summary"]["modulesToCreate"] == 1
     assert result["summary"]["fieldsToCreate"] == 2
     assert result["summary"]["fieldsWithTypeConflicts"] == 1
+    assert result["summary"]["fieldsWithPropertyGaps"] == 0
+    assert result["summary"]["fieldMappingContracts"] == 4
     assert result["summary"]["unknownFieldTypeMappings"] == 0
     assert result["readiness"]["blockingReasons"] == ["field_type_conflicts"]
     assert result["records_to_upsert"] == {
@@ -774,6 +776,77 @@ def test_build_storepilot_seed_diff_reports_missing_modules_fields_and_counts() 
     )
     assert geo_lng["zohoType"] == "decimal"
     assert geo_lng["typeMappingStatus"] == "mapped"
+    assert geo_lng["picklistValuesCount"] == 0
+
+
+def test_storepilot_seed_diff_reports_field_property_gaps() -> None:
+    snapshot = {
+        "kind": crm.STOREPILOT_SNAPSHOT_KIND,
+        "modules": [{"api_name": "Accounts"}],
+        "fields": {
+            "Accounts": [
+                {
+                    "api_name": "store_type",
+                    "data_type": "picklist",
+                    "pick_list_values": [{"actual_value": "vape_shop"}],
+                },
+                {
+                    "api_name": "region",
+                    "data_type": "lookup",
+                    "lookup": {"module": {"api_name": "Legacy_Regions"}},
+                },
+                {"api_name": "google_place_id", "data_type": "text"},
+                {"api_name": "notes", "data_type": "textarea"},
+            ]
+        },
+    }
+    crm_modules_seed = {
+        "standard_modules": [
+            {
+                "api_name": "Accounts",
+                "fields": [
+                    {
+                        "api_name": "store_type",
+                        "type": "picklist",
+                        "values": ["vape_shop", "smoke_shop"],
+                    },
+                    {"api_name": "region", "type": "lookup", "module": "Regions"},
+                    {
+                        "api_name": "google_place_id",
+                        "type": "text",
+                        "unique": True,
+                        "external": True,
+                    },
+                    {"api_name": "notes", "type": "multiline"},
+                ],
+            }
+        ],
+        "custom_modules": [],
+    }
+
+    result = crm.build_storepilot_seed_diff(
+        snapshot=snapshot,
+        crm_modules_seed=crm_modules_seed,
+    )
+
+    assert result["summary"]["fieldsWithPropertyGaps"] == 4
+    assert result["summary"]["unknownFieldTypeMappings"] == 0
+    assert "field_property_gaps" in result["readiness"]["blockingReasons"]
+    assert {
+        (gap["apiName"], gap["property"]) for gap in result["fields_with_property_gaps"]
+    } == {
+        ("store_type", "picklistValues"),
+        ("region", "lookupModule"),
+        ("google_place_id", "unique"),
+        ("google_place_id", "external"),
+    }
+    notes_mapping = next(
+        field
+        for field in result["field_mapping_contracts"]
+        if field["apiName"] == "notes"
+    )
+    assert notes_mapping["seedType"] == "textarea"
+    assert notes_mapping["zohoType"] == "textarea"
 
 
 def test_storepilot_seed_diff_reports_org_mismatch_and_unknown_type() -> None:

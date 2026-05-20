@@ -1182,6 +1182,15 @@
   - crm-043
   agent_action: use `zoho crm init-plan` to combine seed diff, bulk, notification, and cleanup review into one handoff; keep cleanup candidates review-only and perform no destructive actions
   completion_signal: CLI, tests, README, skill docs, and lane3 docs expose a single no-write StorePilot bootstrap handoff with destructiveActionsPerformed=false
+- id: crm-045
+  title: enrich StorePilot seed diff field mapping and property diagnostics
+  module: crm
+  stage: completed
+  priority: high
+  depends_on:
+  - crm-044
+  agent_action: inspect `field_mapping_contracts`, `fields_with_property_gaps`, and readiness blockers before handing StorePilot schema work to an apply initializer
+  completion_signal: seed-diff and init-plan report normalized field contracts, multiline-to-textarea mapping, and picklist/lookup/unique/external property gaps without Zoho writes
 - id: platform-220
   title: keep RC heartbeat and work-queue state synchronized
   module: platform

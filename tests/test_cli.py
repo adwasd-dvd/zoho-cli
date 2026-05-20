@@ -28195,7 +28195,9 @@ def test_crm_seed_diff_command(tmp_path: Path) -> None:
     assert payload["orgVerification"]["matches"] is True
     assert payload["summary"]["modulesToCreate"] == 1
     assert payload["summary"]["fieldsToCreate"] == 1
+    assert payload["summary"]["fieldMappingContracts"] == 2
     assert payload["fields_to_create"][0]["zohoType"] == "picklist"
+    assert payload["field_mapping_contracts"][1]["picklistValuesCount"] == 0
     assert payload["records_to_upsert"]["Regions"] == 3
     assert payload["records_to_upsert"]["Task_Templates"] == 2
     assert payload["records_to_upsert"]["Budget_Rules"] == 1

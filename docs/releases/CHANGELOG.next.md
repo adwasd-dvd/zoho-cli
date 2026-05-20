@@ -2,6 +2,11 @@
 
 ## Unreleased
 
+- Added StorePilot CRM seed-diff property diagnostics: `zoho crm seed-diff` and
+  `zoho crm init-plan` now include `field_mapping_contracts`,
+  `fields_with_property_gaps`, and summary counts for picklist value, lookup
+  target, unique, and external-id review while staying dry-run-only.
+
 ### RC automation (2026-05-12T17:22:45Z)
 - Added `ops/scripts/zoho_cli_rc_autonomy_packet.sh`, a read-only cross-lane packet for recurring agents that combines native OpenClaw Cliq RC publish state with CRM fixture next-command state. It surfaces `agent_next_command_ready` only for an already allowlisted CRM dry-run/local command and otherwise reports operator-input or operator-only stop states while keeping publish, tag, GitHub release, expectedIntegrity fill, normal CRM upsert execution, and live Zoho writes disabled for agents.
 - Recorded the post-platform-214 autonomy-packet source drift, operator decision, and autonomy-packet evidence: pushed cross-lane wrapper commit `a03de9e5` moved HEAD after the handoff manifest, but `package_source_unchanged`, `packageDrift.packageChangedSinceManifest=false`, `repoChangedFileCount=38`, and all decision-packet `reportsReady=true` keep the verified Cliq RC package current; the autonomy packet returns `operator_input_required` with no agent-executable command.

@@ -95,9 +95,11 @@ For StorePilot CRM bootstrap, authenticate with `zoho login
 --check-auth`. `crm-039` covers the v8 read/query slice for users, org, and
 COQL. `crm-041` adds profile/role/layout reads, StorePilot snapshot export, and
 local-only seed diff. `crm-042` adds `ZOHO_ORG_ID` / `--expected-org-id`
-verification plus `zohoType` field mapping and readiness blockers for org
-mismatch, unknown type mappings, and type conflicts. Bulk and notifications are
-still dry-run-only through `crm-043` until an explicit guarded apply slice is
+verification plus `field_mapping_contracts`, `zohoType` field mapping, and
+readiness blockers for org mismatch, unknown type mappings, type conflicts, and
+field property gaps such as missing picklist values, wrong lookup targets, or
+unverified unique/external-id flags. Bulk and notifications are still
+dry-run-only through `crm-043` until an explicit guarded apply slice is
 approved. `crm-044` combines those pieces plus legacy cleanup review into one
 `init-plan` handoff; review cleanup candidates manually and keep destructive
 actions behind a separate production cleanup gate.

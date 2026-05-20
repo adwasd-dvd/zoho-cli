@@ -1404,6 +1404,7 @@ def _normalized_field_type(field: dict) -> str:
         "string": "text",
         "text": "text",
         "textarea": "textarea",
+        "multiline": "textarea",
         "integer": "integer",
         "bigint": "integer",
         "long": "integer",
@@ -1429,6 +1430,122 @@ def _normalized_field_type(field: dict) -> str:
 def storepilot_zoho_field_type(field: dict) -> str:
     """Return the current best-effort Zoho field type for a StorePilot seed field."""
     return STOREPILOT_FIELD_TYPE_TO_ZOHO.get(_normalized_field_type(field), "")
+
+
+def _field_picklist_values(field: dict) -> list[str]:
+    values = field.get("values")
+    if values is None:
+        values = field.get("pick_list_values")
+    if not isinstance(values, list):
+        return []
+    normalized: list[str] = []
+    for value in values:
+        if isinstance(value, dict):
+            text = str(
+                value.get("actual_value")
+                or value.get("display_value")
+                or value.get("value")
+                or ""
+            ).strip()
+        else:
+            text = str(value).strip()
+        if text:
+            normalized.append(text)
+    return normalized
+
+
+def _field_lookup_module(field: dict) -> str:
+    lookup = field.get("lookup")
+    if isinstance(lookup, dict):
+        module = lookup.get("module")
+        if isinstance(module, dict):
+            return str(
+                module.get("api_name") or module.get("module_name") or ""
+            ).strip()
+        if module:
+            return str(module).strip()
+    return str(field.get("module") or field.get("lookup_module") or "").strip()
+
+
+def _field_unique(field: dict) -> bool:
+    unique = field.get("unique")
+    if isinstance(unique, dict):
+        return bool(unique.get("casesensitive") or unique.get("enabled") or unique)
+    return bool(unique)
+
+
+def storepilot_field_mapping(seed_field: dict) -> dict[str, object]:
+    """Return normalized StorePilot-to-Zoho field mapping diagnostics."""
+    normalized_type = _normalized_field_type(seed_field)
+    zoho_type = storepilot_zoho_field_type(seed_field)
+    picklist_values = _field_picklist_values(seed_field)
+    return {
+        "seedType": normalized_type,
+        "zohoType": zoho_type,
+        "typeMappingStatus": "mapped" if zoho_type else "unknown",
+        "lookupModule": _field_lookup_module(seed_field),
+        "unique": _field_unique(seed_field),
+        "external": bool(seed_field.get("external", False)),
+        "picklistValues": picklist_values,
+        "picklistValuesCount": len(picklist_values),
+    }
+
+
+def storepilot_field_property_gaps(
+    *, module_api_name: str, seed_field: dict, existing_field: dict
+) -> list[dict[str, object]]:
+    """Return non-type field property gaps that need StorePilot setup review."""
+    gaps: list[dict[str, object]] = []
+    field_api_name = _field_api_name(seed_field)
+    seed_mapping = storepilot_field_mapping(seed_field)
+
+    seed_lookup = str(seed_mapping["lookupModule"])
+    existing_lookup = _field_lookup_module(existing_field)
+    if seed_lookup and existing_lookup and seed_lookup != existing_lookup:
+        gaps.append(
+            {
+                "module": module_api_name,
+                "apiName": field_api_name,
+                "property": "lookupModule",
+                "expected": seed_lookup,
+                "actual": existing_lookup,
+            }
+        )
+
+    seed_values = set(seed_mapping["picklistValues"])
+    existing_values = set(_field_picklist_values(existing_field))
+    missing_values = sorted(seed_values - existing_values)
+    if seed_values and existing_values and missing_values:
+        gaps.append(
+            {
+                "module": module_api_name,
+                "apiName": field_api_name,
+                "property": "picklistValues",
+                "missingValues": missing_values,
+            }
+        )
+
+    if bool(seed_mapping["unique"]) and not _field_unique(existing_field):
+        gaps.append(
+            {
+                "module": module_api_name,
+                "apiName": field_api_name,
+                "property": "unique",
+                "expected": True,
+                "actual": False,
+            }
+        )
+    if bool(seed_mapping["external"]) and not bool(existing_field.get("external")):
+        gaps.append(
+            {
+                "module": module_api_name,
+                "apiName": field_api_name,
+                "property": "external",
+                "expected": True,
+                "actual": False,
+            }
+        )
+    return gaps
 
 
 def crm_org_id(org_payload: object) -> str:
@@ -1490,6 +1607,8 @@ def build_storepilot_seed_diff(
     modules_to_create: list[dict[str, str]] = []
     fields_to_create: list[dict[str, str]] = []
     fields_with_type_conflicts: list[dict[str, str]] = []
+    fields_with_property_gaps: list[dict[str, object]] = []
+    field_mapping_contracts: list[dict[str, object]] = []
 
     for seed_module in seed_modules:
         module_api_name = str(seed_module.get("api_name") or "").strip()
@@ -1516,23 +1635,24 @@ def build_storepilot_seed_diff(
             field_api_name = _field_api_name(seed_field)
             if not field_api_name:
                 continue
+            field_mapping = storepilot_field_mapping(seed_field)
+            field_mapping_contracts.append(
+                {
+                    "module": module_api_name,
+                    "apiName": field_api_name,
+                    "label": str(seed_field.get("label") or field_api_name),
+                    **field_mapping,
+                }
+            )
             existing_field = existing_fields.get(field_api_name)
             if existing_field is None:
-                zoho_type = storepilot_zoho_field_type(seed_field)
                 fields_to_create.append(
                     {
                         "module": module_api_name,
                         "apiName": field_api_name,
                         "label": str(seed_field.get("label") or field_api_name),
                         "type": str(seed_field.get("type") or ""),
-                        "zohoType": zoho_type,
-                        "typeMappingStatus": "mapped" if zoho_type else "unknown",
-                        "lookupModule": str(seed_field.get("module") or ""),
-                        "unique": bool(seed_field.get("unique", False)),
-                        "external": bool(seed_field.get("external", False)),
-                        "picklistValues": list(seed_field.get("values", []))
-                        if isinstance(seed_field.get("values"), list)
-                        else [],
+                        **field_mapping,
                     }
                 )
                 continue
@@ -1548,6 +1668,13 @@ def build_storepilot_seed_diff(
                         "existingType": existing_type,
                     }
                 )
+            fields_with_property_gaps.extend(
+                storepilot_field_property_gaps(
+                    module_api_name=module_api_name,
+                    seed_field=seed_field,
+                    existing_field=existing_field,
+                )
+            )
 
     records_to_upsert = {
         "Regions": len(regions_seed.get("regions", [])) if regions_seed else 0,
@@ -1576,6 +1703,8 @@ def build_storepilot_seed_diff(
         blocking_reasons.append(str(org_verification["blockingReason"]))
     if fields_with_type_conflicts:
         blocking_reasons.append("field_type_conflicts")
+    if fields_with_property_gaps:
+        blocking_reasons.append("field_property_gaps")
     if unknown_type_fields:
         blocking_reasons.append("unknown_field_type_mapping")
 
@@ -1615,6 +1744,14 @@ def build_storepilot_seed_diff(
                 ],
             }
         )
+    if fields_with_property_gaps:
+        manual_steps_required.append(
+            {
+                "code": "field_property_review_required",
+                "count": len(fields_with_property_gaps),
+                "details": "Existing CRM fields need StorePilot picklist, lookup, unique, or external-id property review before apply.",
+            }
+        )
     manual_steps_required.append(
         {
             "code": "webhook_notification_setup_not_automated",
@@ -1640,12 +1777,16 @@ def build_storepilot_seed_diff(
             "modulesToCreate": len(modules_to_create),
             "fieldsToCreate": len(fields_to_create),
             "fieldsWithTypeConflicts": len(fields_with_type_conflicts),
+            "fieldsWithPropertyGaps": len(fields_with_property_gaps),
             "unknownFieldTypeMappings": len(unknown_type_fields),
+            "fieldMappingContracts": len(field_mapping_contracts),
             "recordsToUpsert": sum(records_to_upsert.values()),
         },
         "modules_to_create": modules_to_create,
         "fields_to_create": fields_to_create,
         "fields_with_type_conflicts": fields_with_type_conflicts,
+        "fields_with_property_gaps": fields_with_property_gaps,
+        "field_mapping_contracts": field_mapping_contracts,
         "records_to_upsert": records_to_upsert,
         "manual_steps_required": manual_steps_required,
         "safety": {

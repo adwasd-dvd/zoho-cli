@@ -293,8 +293,10 @@ Use this skill as the default operating contract for an OpenClaw agent acting li
   In `crm-042`, pass `--expected-org-id` or set `ZOHO_ORG_ID` on `snapshot`
   and `seed-diff` so StorePilot production dry-runs report
   `orgVerification` and `readiness.blockingReasons`. `seed-diff` also emits
-  best-effort `zohoType` mappings for missing fields and blocks readiness on
-  type conflicts, unknown mappings, or org mismatch.
+  per-field `field_mapping_contracts`, best-effort `zohoType` mappings for
+  missing fields, and `fields_with_property_gaps` for picklist values, lookup
+  targets, unique flags, and external-id flags. It blocks readiness on type
+  conflicts, property gaps, unknown mappings, or org mismatch.
   In `crm-043`, use `zoho crm bulk-plan` and `zoho crm notification-plan` for
   StorePilot bulk import/export and webhook setup planning. These commands are
   dry-run contracts only: they count seed records, list future export modules

@@ -1,10 +1,10 @@
 # CLI help snapshot
 
-Generated at: `2026-05-20T21:47:42Z`
+Generated at: `2026-05-20T23:23:50Z`
 
 Use this file as a quick command-surface reference for the skill.
 
-## `./.venv/bin/zoho --help`
+## `zoho --help`
 
 Exit code: `0`
 
@@ -35,7 +35,7 @@ Exit code: `0`
 ╰──────────────────────────────────────────────────────────────────────────────╯
 ```
 
-## `./.venv/bin/zoho login --help`
+## `zoho login --help`
 
 Exit code: `0`
 
@@ -69,7 +69,7 @@ Exit code: `0`
 ╰──────────────────────────────────────────────────────────────────────────────╯
 ```
 
-## `./.venv/bin/zoho config --help`
+## `zoho config --help`
 
 Exit code: `0`
 
@@ -89,7 +89,7 @@ Exit code: `0`
 ╰──────────────────────────────────────────────────────────────────────────────╯
 ```
 
-## `./.venv/bin/zoho mail --help`
+## `zoho mail --help`
 
 Exit code: `0`
 
@@ -132,7 +132,7 @@ Exit code: `0`
 ╰──────────────────────────────────────────────────────────────────────────────╯
 ```
 
-## `./.venv/bin/zoho cliq --help`
+## `zoho cliq --help`
 
 Exit code: `0`
 
@@ -262,7 +262,7 @@ Exit code: `0`
 ╰──────────────────────────────────────────────────────────────────────────────╯
 ```
 
-## `./.venv/bin/zoho crm --help`
+## `zoho crm --help`
 
 Exit code: `0`
 
@@ -305,6 +305,8 @@ Exit code: `0`
 │                    COQL scope.                                               │
 │ automation         Read supported CRM automation/settings resources without  │
 │                    writing data.                                             │
+│ settings           Read supported CRM settings metadata resources without    │
+│                    writing data.                                             │
 │ snapshot           Export a safe StorePilot CRM metadata snapshot without    │
 │                    writing data.                                             │
 │ seed-diff          Diff a StorePilot seed set against a CRM snapshot without │
@@ -323,7 +325,7 @@ Exit code: `0`
 ╰──────────────────────────────────────────────────────────────────────────────╯
 ```
 
-## `./.venv/bin/zoho crm upsert --help`
+## `zoho crm upsert --help`
 
 Exit code: `0`
 
@@ -363,7 +365,7 @@ Exit code: `0`
 ╰──────────────────────────────────────────────────────────────────────────────╯
 ```
 
-## `./.venv/bin/zoho crm upsert-gate --help`
+## `zoho crm upsert-gate --help`
 
 Exit code: `0`
 
@@ -383,7 +385,7 @@ Exit code: `0`
 ╰──────────────────────────────────────────────────────────────────────────────╯
 ```
 
-## `./.venv/bin/zoho crm write-audit --help`
+## `zoho crm write-audit --help`
 
 Exit code: `0`
 
@@ -405,7 +407,7 @@ Exit code: `0`
 ╰──────────────────────────────────────────────────────────────────────────────╯
 ```
 
-## `./.venv/bin/zoho crm fixture-plan --help`
+## `zoho crm fixture-plan --help`
 
 Exit code: `0`
 
@@ -434,7 +436,7 @@ Exit code: `0`
 ╰──────────────────────────────────────────────────────────────────────────────╯
 ```
 
-## `./.venv/bin/zoho crm fixture-execute --help`
+## `zoho crm fixture-execute --help`
 
 Exit code: `0`
 
@@ -480,7 +482,7 @@ Exit code: `0`
 ╰──────────────────────────────────────────────────────────────────────────────╯
 ```
 
-## `./.venv/bin/zoho crm fixture-evidence --help`
+## `zoho crm fixture-evidence --help`
 
 Exit code: `0`
 
@@ -503,7 +505,7 @@ Exit code: `0`
 ╰──────────────────────────────────────────────────────────────────────────────╯
 ```
 
-## `./.venv/bin/zoho crm automation --help`
+## `zoho crm automation --help`
 
 Exit code: `0`
 
@@ -530,7 +532,37 @@ Exit code: `0`
 ╰──────────────────────────────────────────────────────────────────────────────╯
 ```
 
-## `./.venv/bin/zoho crm snapshot --help`
+## `zoho crm settings --help`
+
+Exit code: `0`
+
+```text
+
+ Usage: zoho crm settings [OPTIONS] RESOURCE
+
+ Read supported CRM settings metadata resources without writing data.
+
+╭─ Arguments ──────────────────────────────────────────────────────────────────╮
+│ *    resource      TEXT  Settings resource: related_lists or custom_views.   │
+│                          [required]                                          │
+╰──────────────────────────────────────────────────────────────────────────────╯
+╭─ Options ────────────────────────────────────────────────────────────────────╮
+│ *  --module          -m      TEXT     CRM module API name required by these  │
+│                                       settings resources.                    │
+│                                       [required]                             │
+│    --layout-id               TEXT     Optional layout id for related_lists.  │
+│    --custom-view-id          TEXT     Optional custom view id for            │
+│                                       custom_views detail metadata.          │
+│    --limit           -n      INTEGER  Max resources to return when the Zoho  │
+│                                       endpoint supports pagination.          │
+│                                       [default: 200]                         │
+│    --page                    INTEGER  Result page number when supported.     │
+│                                       [default: 1]                           │
+│    --help                             Show this message and exit.            │
+╰──────────────────────────────────────────────────────────────────────────────╯
+```
+
+## `zoho crm snapshot --help`
 
 Exit code: `0`
 
@@ -566,6 +598,21 @@ Exit code: `0`
 │                                                         is set (repeatable). │
 │                                                         Defaults to all      │
 │                                                         supported resources. │
+│ --include-settings       --no-include-sett…             Include supported    │
+│                                                         settings metadata    │
+│                                                         such as related      │
+│                                                         lists and custom     │
+│                                                         views for selected   │
+│                                                         modules.             │
+│                                                         [default:            │
+│                                                         no-include-settings] │
+│ --settings-resource                            TEXT     Settings metadata    │
+│                                                         resource to include  │
+│                                                         when                 │
+│                                                         --include-settings   │
+│                                                         is set (repeatable). │
+│                                                         Defaults to all      │
+│                                                         supported resources. │
 │ --expected-org-id                              TEXT     Expected CRM org id  │
 │                                                         for StorePilot       │
 │                                                         readiness checks.    │
@@ -579,7 +626,7 @@ Exit code: `0`
 ╰──────────────────────────────────────────────────────────────────────────────╯
 ```
 
-## `./.venv/bin/zoho crm seed-diff --help`
+## `zoho crm seed-diff --help`
 
 Exit code: `0`
 
@@ -605,7 +652,7 @@ Exit code: `0`
 ╰──────────────────────────────────────────────────────────────────────────────╯
 ```
 
-## `./.venv/bin/zoho crm bulk-plan --help`
+## `zoho crm bulk-plan --help`
 
 Exit code: `0`
 
@@ -627,7 +674,7 @@ Exit code: `0`
 ╰──────────────────────────────────────────────────────────────────────────────╯
 ```
 
-## `./.venv/bin/zoho crm notification-plan --help`
+## `zoho crm notification-plan --help`
 
 Exit code: `0`
 
@@ -653,7 +700,7 @@ Exit code: `0`
 ╰──────────────────────────────────────────────────────────────────────────────╯
 ```
 
-## `./.venv/bin/zoho crm init-plan --help`
+## `zoho crm init-plan --help`
 
 Exit code: `0`
 

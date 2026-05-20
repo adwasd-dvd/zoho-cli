@@ -12108,6 +12108,57 @@ def crm_automation(
     utils.output(data)
 
 
+@crm_app.command("settings")
+def crm_settings(
+    resource: str = typer.Argument(
+        ...,
+        help="Settings resource: related_lists or custom_views.",
+    ),
+    module: str = typer.Option(
+        ...,
+        "--module",
+        "-m",
+        help="CRM module API name required by these settings resources.",
+    ),
+    layout_id: Optional[str] = typer.Option(
+        None,
+        "--layout-id",
+        help="Optional layout id for related_lists.",
+    ),
+    custom_view_id: Optional[str] = typer.Option(
+        None,
+        "--custom-view-id",
+        help="Optional custom view id for custom_views detail metadata.",
+    ),
+    limit: int = typer.Option(
+        200,
+        "--limit",
+        "-n",
+        help="Max resources to return when the Zoho endpoint supports pagination.",
+    ),
+    page: int = typer.Option(1, "--page", help="Result page number when supported."),
+) -> None:
+    """Read supported CRM settings metadata resources without writing data."""
+    cfg = _cfg()
+    email = _require_account(cfg)
+    client = _get_crm_http_v8_client(cfg, email)
+    try:
+        resp = client.settings_resource(
+            resource,
+            module=module,
+            layout_id=layout_id,
+            custom_view_id=custom_view_id,
+            limit=limit,
+            page=page,
+        )
+    except ValueError as exc:
+        utils.error_exit("invalid_settings_resource", str(exc))
+
+    spec = _crm.STOREPILOT_SETTINGS_RESOURCE_SPECS[resource]
+    data = resp.get(str(spec["responseKey"]), resp)
+    utils.output(data)
+
+
 @crm_app.command("snapshot")
 def crm_snapshot(
     crm_modules_seed: Optional[str] = typer.Option(
@@ -12132,6 +12183,16 @@ def crm_snapshot(
         [],
         "--automation-resource",
         help="Automation resource to include when --include-automation is set (repeatable). Defaults to all supported resources.",
+    ),
+    include_settings: bool = typer.Option(
+        False,
+        "--include-settings/--no-include-settings",
+        help="Include supported settings metadata such as related lists and custom views for selected modules.",
+    ),
+    settings_resources: List[str] = typer.Option(
+        [],
+        "--settings-resource",
+        help="Settings metadata resource to include when --include-settings is set (repeatable). Defaults to all supported resources.",
     ),
     expected_org_id: Optional[str] = typer.Option(
         None,
@@ -12195,6 +12256,34 @@ def crm_snapshot(
             automation_by_resource[resource] = automation_resp.get(
                 str(spec["responseKey"]), automation_resp
             )
+    settings_by_resource: dict[str, dict[str, Any]] = {}
+    if include_settings:
+        selected_settings_resources = list(settings_resources) or list(
+            _crm.STOREPILOT_SETTINGS_RESOURCE_SPECS
+        )
+        for resource in selected_settings_resources:
+            spec = _crm.STOREPILOT_SETTINGS_RESOURCE_SPECS.get(resource)
+            if spec is None:
+                supported = ", ".join(sorted(_crm.STOREPILOT_SETTINGS_RESOURCE_SPECS))
+                utils.error_exit(
+                    "invalid_settings_resource",
+                    f"unsupported settings resource: {resource}. Use one of: {supported}",
+                )
+            settings_by_module: dict[str, Any] = {}
+            for module_api_name in selected_modules:
+                try:
+                    settings_resp = client.settings_resource(
+                        resource,
+                        module=module_api_name,
+                        limit=limit,
+                        page=1,
+                    )
+                except ValueError as exc:
+                    utils.error_exit("invalid_settings_resource", str(exc))
+                settings_by_module[module_api_name] = settings_resp.get(
+                    str(spec["responseKey"]), settings_resp
+                )
+            settings_by_resource[resource] = settings_by_module
 
     payload = {
         "kind": _crm.STOREPILOT_SNAPSHOT_KIND,
@@ -12216,6 +12305,8 @@ def crm_snapshot(
         "layouts": layouts_by_module,
         "automation": automation_by_resource,
         "automationResources": list(automation_by_resource),
+        "settingsMetadata": settings_by_resource,
+        "settingsResources": list(settings_by_resource),
         "safety": {
             "dryRunOnly": True,
             "writesZohoData": False,

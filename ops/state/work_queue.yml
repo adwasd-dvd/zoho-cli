@@ -1218,6 +1218,15 @@
   - crm-047
   agent_action: inspect `manualSetupPlan` in init-plan for seed manual steps, relationships, layout coverage, automation cleanup review, and notification setup before guarded apply planning
   completion_signal: init-plan output, tests, README, skill docs, and lane3 docs expose structured manual setup checks without writes
+- id: crm-049
+  title: add StorePilot settings metadata read helpers
+  module: crm
+  stage: completed
+  priority: medium
+  depends_on:
+  - crm-048
+  agent_action: use `zoho crm settings related_lists|custom_views --module <Module>` or `zoho crm snapshot --include-settings` to review related-list and custom-view metadata only
+  completion_signal: CLI, snapshot output, tests, README, skill docs, help snapshot, and lane3 docs expose related-list/custom-view settings reads without writes
 - id: platform-220
   title: keep RC heartbeat and work-queue state synchronized
   module: platform

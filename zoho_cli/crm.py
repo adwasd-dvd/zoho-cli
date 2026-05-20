@@ -141,6 +141,26 @@ STOREPILOT_AUTOMATION_RESOURCE_SPECS = {
         "scope": "ZohoCRM.settings.assignment_thresholds.READ or ZohoCRM.settings.ALL",
     },
 }
+STOREPILOT_SETTINGS_RESOURCE_SPECS = {
+    "related_lists": {
+        "label": "Related Lists",
+        "path": "/settings/related_lists",
+        "responseKey": "related_lists",
+        "scope": "ZohoCRM.settings.related_lists.READ or ZohoCRM.settings.ALL",
+        "requiresModule": True,
+        "supportsLayoutId": True,
+        "supportsPagination": False,
+    },
+    "custom_views": {
+        "label": "Custom Views",
+        "path": "/settings/custom_views",
+        "responseKey": "custom_views",
+        "scope": "ZohoCRM.settings.custom_views.READ or ZohoCRM.settings.ALL",
+        "requiresModule": True,
+        "supportsCustomViewId": True,
+        "supportsPagination": True,
+    },
+}
 STOREPILOT_FIELD_TYPE_TO_ZOHO = {
     "text": "text",
     "textarea": "textarea",
@@ -1852,14 +1872,19 @@ def build_storepilot_snapshot_summary(snapshot: dict) -> dict[str, object]:
     fields = snapshot.get("fields")
     layouts = snapshot.get("layouts")
     automation = snapshot.get("automation")
+    settings_metadata = snapshot.get("settingsMetadata")
     fields_by_module = fields if isinstance(fields, dict) else {}
     layouts_by_module = layouts if isinstance(layouts, dict) else {}
     automation_by_resource = automation if isinstance(automation, dict) else {}
+    settings_by_resource = (
+        settings_metadata if isinstance(settings_metadata, dict) else {}
+    )
     selected_modules = snapshot.get("selectedModules")
     selected_module_count = _list_count(selected_modules)
     field_modules = sorted(str(module) for module in fields_by_module)
     layout_modules = sorted(str(module) for module in layouts_by_module)
     automation_resources = sorted(str(resource) for resource in automation_by_resource)
+    settings_resources = sorted(str(resource) for resource in settings_by_resource)
     missing_field_modules = [
         module
         for module in (selected_modules if isinstance(selected_modules, list) else [])
@@ -1874,6 +1899,20 @@ def build_storepilot_snapshot_summary(snapshot: dict) -> dict[str, object]:
         resource: _list_count(entries)
         for resource, entries in automation_by_resource.items()
     }
+    settings_counts = {
+        str(resource): sum(
+            _list_count(entries)
+            for entries in resource_payload.values()
+            if isinstance(resource_payload, dict)
+        )
+        for resource, resource_payload in settings_by_resource.items()
+    }
+    settings_module_counts = {
+        str(resource): len(resource_payload)
+        if isinstance(resource_payload, dict)
+        else 0
+        for resource, resource_payload in settings_by_resource.items()
+    }
 
     return {
         "selectedModules": selected_module_count,
@@ -1887,6 +1926,8 @@ def build_storepilot_snapshot_summary(snapshot: dict) -> dict[str, object]:
         "layouts": sum(_list_count(entries) for entries in layouts_by_module.values()),
         "automationResources": len(automation_resources),
         "automationItems": sum(automation_counts.values()),
+        "settingsResources": len(settings_resources),
+        "settingsItems": sum(settings_counts.values()),
         "coverage": {
             "hasOrg": bool(crm_org_id(snapshot.get("org"))),
             "hasUsers": bool(_list_count(snapshot.get("users"))),
@@ -1895,12 +1936,16 @@ def build_storepilot_snapshot_summary(snapshot: dict) -> dict[str, object]:
             "hasFieldsForAllSelectedModules": not missing_field_modules,
             "hasLayoutsForAllSelectedModules": not missing_layout_modules,
             "hasAutomationSnapshot": bool(automation_resources),
+            "hasSettingsSnapshot": bool(settings_resources),
             "fieldModules": field_modules,
             "layoutModules": layout_modules,
             "automationResources": automation_resources,
+            "settingsResources": settings_resources,
             "missingFieldModules": missing_field_modules,
             "missingLayoutModules": missing_layout_modules,
             "automationCounts": automation_counts,
+            "settingsCounts": settings_counts,
+            "settingsModuleCounts": settings_module_counts,
         },
         "manualReviewSurfaces": [
             step["surface"] for step in storepilot_zoho_only_manual_steps()
@@ -2651,6 +2696,38 @@ class ZohoCrmClient:
         if status:
             params["status"] = status
         return self._get(str(spec["path"]), params)
+
+    def settings_resource(
+        self,
+        resource: str,
+        *,
+        module: str | None = None,
+        layout_id: str | None = None,
+        custom_view_id: str | None = None,
+        limit: int = 200,
+        page: int = 1,
+    ) -> dict:
+        """Read a supported CRM settings metadata resource."""
+        spec = STOREPILOT_SETTINGS_RESOURCE_SPECS.get(resource)
+        if spec is None:
+            supported = ", ".join(sorted(STOREPILOT_SETTINGS_RESOURCE_SPECS))
+            raise ValueError(
+                f"unsupported settings resource: {resource}. Use one of: {supported}"
+            )
+        if spec.get("requiresModule") and not module:
+            raise ValueError(f"settings resource {resource} requires --module")
+        path = str(spec["path"])
+        if resource == "custom_views" and custom_view_id:
+            path = f"{path}/{custom_view_id}"
+        params: dict[str, str | int] = {}
+        if module:
+            params["module"] = module
+        if resource == "related_lists" and layout_id:
+            params["layout_id"] = layout_id
+        if spec.get("supportsPagination"):
+            params["per_page"] = limit
+            params["page"] = page
+        return self._get(path, params)
 
     def fields(self, module_api_name: str, *, limit: int = 200, page: int = 1) -> dict:
         """List fields for a CRM module."""

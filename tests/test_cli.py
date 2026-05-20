@@ -28100,6 +28100,63 @@ def test_crm_automation_command(mock_config: Path, mock_token_refresh: Any) -> N
 
 
 @respx.mock
+def test_crm_settings_command(mock_config: Path, mock_token_refresh: Any) -> None:
+    related_route = respx.get(
+        "https://www.zohoapis.com/crm/v8/settings/related_lists"
+    ).mock(
+        return_value=httpx.Response(
+            200, json={"related_lists": [{"api_name": "Contacts"}]}
+        )
+    )
+    custom_views_route = respx.get(
+        "https://www.zohoapis.com/crm/v8/settings/custom_views"
+    ).mock(return_value=httpx.Response(200, json={"custom_views": [{"id": "cv1"}]}))
+
+    related_lists = runner.invoke(
+        app,
+        [
+            "crm",
+            "settings",
+            "related_lists",
+            "--module",
+            "Accounts",
+            "--layout-id",
+            "layout-1",
+        ],
+        env=_cfg_env(mock_config),
+    )
+    custom_views = runner.invoke(
+        app,
+        [
+            "crm",
+            "settings",
+            "custom_views",
+            "--module",
+            "Accounts",
+            "--limit",
+            "9",
+            "--page",
+            "2",
+        ],
+        env=_cfg_env(mock_config),
+    )
+
+    assert related_lists.exit_code == 0, related_lists.output
+    assert custom_views.exit_code == 0, custom_views.output
+    assert json.loads(related_lists.output) == [{"api_name": "Contacts"}]
+    assert json.loads(custom_views.output) == [{"id": "cv1"}]
+    assert dict(related_route.calls.last.request.url.params) == {
+        "module": "Accounts",
+        "layout_id": "layout-1",
+    }
+    assert dict(custom_views_route.calls.last.request.url.params) == {
+        "module": "Accounts",
+        "per_page": "9",
+        "page": "2",
+    }
+
+
+@respx.mock
 def test_crm_snapshot_uses_seed_modules(
     mock_config: Path, mock_token_refresh: Any, tmp_path: Path
 ) -> None:
@@ -28140,6 +28197,16 @@ def test_crm_snapshot_uses_seed_modules(
     workflow_route = respx.get(
         "https://www.zohoapis.com/crm/v8/settings/automation/workflow_rules"
     ).mock(return_value=httpx.Response(200, json={"workflow_rules": [{"id": "w1"}]}))
+    related_lists_route = respx.get(
+        "https://www.zohoapis.com/crm/v8/settings/related_lists"
+    ).mock(
+        return_value=httpx.Response(
+            200, json={"related_lists": [{"api_name": "Contacts"}]}
+        )
+    )
+    custom_views_route = respx.get(
+        "https://www.zohoapis.com/crm/v8/settings/custom_views"
+    ).mock(return_value=httpx.Response(200, json={"custom_views": [{"id": "cv1"}]}))
 
     result = runner.invoke(
         app,
@@ -28153,6 +28220,7 @@ def test_crm_snapshot_uses_seed_modules(
             "--include-automation",
             "--automation-resource",
             "workflow_rules",
+            "--include-settings",
         ],
         env=_cfg_env(mock_config),
     )
@@ -28167,10 +28235,17 @@ def test_crm_snapshot_uses_seed_modules(
     assert payload["layouts"]["Regions"][0]["id"] == "l1"
     assert payload["automation"]["workflow_rules"][0]["id"] == "w1"
     assert payload["automationResources"] == ["workflow_rules"]
+    assert (
+        payload["settingsMetadata"]["related_lists"]["Accounts"][0]["api_name"]
+        == "Contacts"
+    )
+    assert payload["settingsMetadata"]["custom_views"]["Regions"][0]["id"] == "cv1"
+    assert payload["settingsResources"] == ["related_lists", "custom_views"]
     assert payload["snapshotSummary"]["selectedModules"] == 3
     assert payload["snapshotSummary"]["fields"] == 3
     assert payload["snapshotSummary"]["layouts"] == 3
     assert payload["snapshotSummary"]["automationItems"] == 1
+    assert payload["snapshotSummary"]["settingsItems"] == 6
     assert (
         payload["snapshotSummary"]["coverage"]["hasFieldsForAllSelectedModules"] is True
     )
@@ -28181,6 +28256,8 @@ def test_crm_snapshot_uses_seed_modules(
     assert fields_route.call_count == 3
     assert layouts_route.call_count == 3
     assert workflow_route.call_count == 1
+    assert related_lists_route.call_count == 3
+    assert custom_views_route.call_count == 3
 
 
 def test_crm_seed_diff_command(tmp_path: Path) -> None:

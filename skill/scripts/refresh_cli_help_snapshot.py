@@ -22,6 +22,7 @@ COMMAND_SUFFIXES: list[list[str]] = [
     ["crm", "fixture-execute", "--help"],
     ["crm", "fixture-evidence", "--help"],
     ["crm", "automation", "--help"],
+    ["crm", "settings", "--help"],
     ["crm", "snapshot", "--help"],
     ["crm", "seed-diff", "--help"],
     ["crm", "bulk-plan", "--help"],

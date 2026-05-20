@@ -73,7 +73,11 @@ ZOHO_ORG_ID=870137630 zoho crm snapshot \
   --crm-modules-seed /path/to/crm-modules.seed.json \
   --include-automation \
   --automation-resource workflow_rules \
-  --automation-resource webhooks
+  --automation-resource webhooks \
+  --include-settings \
+  --settings-resource related_lists
+zoho crm settings related_lists --module Accounts
+zoho crm settings custom_views --module Accounts
 zoho crm seed-diff \
   --snapshot-file /path/to/snapshot.json \
   --crm-modules-seed /path/to/crm-modules.seed.json \
@@ -104,7 +108,10 @@ local-only seed diff. Use `zoho crm automation <resource>` or
 automation task, cadence, connected workflow, and assignment-threshold cleanup
 review. Inspect `snapshotSummary` for selected module counts, field/layout
 coverage, automation item counts, and missing coverage lists before handing the
-snapshot to StorePilot initializer code. `crm-042` adds `ZOHO_ORG_ID` /
+snapshot to StorePilot initializer code. Use `zoho crm settings related_lists`
+and `zoho crm settings custom_views` for read-only module settings metadata;
+`zoho crm snapshot --include-settings` embeds those resources per selected
+module and reports settings counts in `snapshotSummary`. `crm-042` adds `ZOHO_ORG_ID` /
 `--expected-org-id` verification plus
 `field_mapping_contracts`, `zohoType` field mapping, and readiness blockers for
 org mismatch, unknown type mappings, type conflicts, and field property gaps

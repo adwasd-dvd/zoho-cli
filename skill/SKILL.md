@@ -297,6 +297,11 @@ Use this skill as the default operating contract for an OpenClaw agent acting li
   Use `zoho crm snapshot --include-automation` when cleanup planning needs
   workflow rules, webhooks, automation tasks, cadences, connected workflows, or
   assignment thresholds; these reads do not disable or delete automation.
+  In `crm-049`, use `zoho crm settings related_lists --module <Module>` and
+  `zoho crm settings custom_views --module <Module>` for read-only
+  related-list/custom-view metadata. `zoho crm snapshot --include-settings`
+  embeds those resources per selected module for StorePilot layout and
+  related-list review, and still performs no writes.
   In `crm-042`, pass `--expected-org-id` or set `ZOHO_ORG_ID` on `snapshot`
   and `seed-diff` so StorePilot production dry-runs report
   `orgVerification` and `readiness.blockingReasons`. `seed-diff` also emits

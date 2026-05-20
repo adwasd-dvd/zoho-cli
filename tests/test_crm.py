@@ -735,6 +735,64 @@ def test_crm_client_automation_resource() -> None:
     }
 
 
+@respx.mock
+def test_crm_client_settings_resource_related_lists() -> None:
+    client = crm.ZohoCrmClient("fake-token", base_url="https://www.zohoapis.com/crm/v8")
+    route = respx.get("https://www.zohoapis.com/crm/v8/settings/related_lists").mock(
+        return_value=httpx.Response(
+            200, json={"related_lists": [{"api_name": "Contacts"}]}
+        )
+    )
+
+    result = client.settings_resource(
+        "related_lists", module="Accounts", layout_id="layout-1"
+    )
+
+    assert result["related_lists"][0]["api_name"] == "Contacts"
+    assert dict(route.calls.last.request.url.params) == {
+        "module": "Accounts",
+        "layout_id": "layout-1",
+    }
+
+
+@respx.mock
+def test_crm_client_settings_resource_custom_views() -> None:
+    client = crm.ZohoCrmClient("fake-token", base_url="https://www.zohoapis.com/crm/v8")
+    route = respx.get("https://www.zohoapis.com/crm/v8/settings/custom_views").mock(
+        return_value=httpx.Response(200, json={"custom_views": [{"id": "cv1"}]})
+    )
+
+    result = client.settings_resource(
+        "custom_views", module="Accounts", limit=9, page=2
+    )
+
+    assert result["custom_views"][0]["id"] == "cv1"
+    assert dict(route.calls.last.request.url.params) == {
+        "module": "Accounts",
+        "per_page": "9",
+        "page": "2",
+    }
+
+
+@respx.mock
+def test_crm_client_settings_resource_custom_view_detail() -> None:
+    client = crm.ZohoCrmClient("fake-token", base_url="https://www.zohoapis.com/crm/v8")
+    route = respx.get("https://www.zohoapis.com/crm/v8/settings/custom_views/cv1").mock(
+        return_value=httpx.Response(200, json={"custom_views": [{"id": "cv1"}]})
+    )
+
+    result = client.settings_resource(
+        "custom_views", module="Accounts", custom_view_id="cv1", limit=9, page=2
+    )
+
+    assert result["custom_views"][0]["id"] == "cv1"
+    assert dict(route.calls.last.request.url.params) == {
+        "module": "Accounts",
+        "per_page": "9",
+        "page": "2",
+    }
+
+
 def test_build_storepilot_seed_diff_reports_missing_modules_fields_and_counts() -> None:
     snapshot = {
         "kind": crm.STOREPILOT_SNAPSHOT_KIND,
@@ -887,6 +945,15 @@ def test_build_storepilot_snapshot_summary_reports_coverage() -> None:
             "workflow_rules": [{"id": "w1"}],
             "webhooks": [{"id": "wh1"}, {"id": "wh2"}],
         },
+        "settingsMetadata": {
+            "related_lists": {
+                "Accounts": [{"api_name": "Contacts"}],
+                "Regions": [{"api_name": "Accounts"}],
+            },
+            "custom_views": {
+                "Accounts": [{"id": "cv1"}, {"id": "cv2"}],
+            },
+        },
     }
 
     summary = crm.build_storepilot_snapshot_summary(snapshot)
@@ -894,6 +961,7 @@ def test_build_storepilot_snapshot_summary_reports_coverage() -> None:
     assert summary["selectedModules"] == 2
     assert summary["fields"] == 2
     assert summary["automationItems"] == 3
+    assert summary["settingsItems"] == 4
     assert summary["coverage"]["hasOrg"] is True
     assert summary["coverage"]["hasFieldsForAllSelectedModules"] is True
     assert summary["coverage"]["hasLayoutsForAllSelectedModules"] is False
@@ -901,6 +969,14 @@ def test_build_storepilot_snapshot_summary_reports_coverage() -> None:
     assert summary["coverage"]["automationCounts"] == {
         "workflow_rules": 1,
         "webhooks": 2,
+    }
+    assert summary["coverage"]["settingsCounts"] == {
+        "related_lists": 2,
+        "custom_views": 2,
+    }
+    assert summary["coverage"]["settingsModuleCounts"] == {
+        "related_lists": 2,
+        "custom_views": 1,
     }
     assert "Blueprints" in summary["manualReviewSurfaces"]
 

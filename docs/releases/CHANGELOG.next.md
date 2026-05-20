@@ -19,6 +19,10 @@
   `manualSetupPlan` for seed manual steps, relationships/related lists, layout
   coverage, automation cleanup review, and notification setup review while
   remaining dry-run-only.
+- Added StorePilot CRM settings metadata reads: `zoho crm settings` can read
+  supported v8 `related_lists` and `custom_views` metadata, and
+  `zoho crm snapshot --include-settings` embeds those resources per selected
+  module with `snapshotSummary` settings counts.
 
 ### RC automation (2026-05-12T17:22:45Z)
 - Added `ops/scripts/zoho_cli_rc_autonomy_packet.sh`, a read-only cross-lane packet for recurring agents that combines native OpenClaw Cliq RC publish state with CRM fixture next-command state. It surfaces `agent_next_command_ready` only for an already allowlisted CRM dry-run/local command and otherwise reports operator-input or operator-only stop states while keeping publish, tag, GitHub release, expectedIntegrity fill, normal CRM upsert execution, and live Zoho writes disabled for agents.

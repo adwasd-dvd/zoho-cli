@@ -45,7 +45,10 @@ def store_access_token(
     """Cache a short-lived access token alongside the stored refresh token."""
     data = load_token(email) or {}
     if not data.get("refresh_token"):
-        logger.debug("Skipping access-token cache for %s because no refresh token is stored", email)
+        logger.debug(
+            "Skipping access-token cache for %s because no refresh token is stored",
+            email,
+        )
         return
 
     now = datetime.now(timezone.utc)

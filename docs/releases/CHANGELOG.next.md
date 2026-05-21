@@ -27,6 +27,10 @@
   `init-plan` JSON file and emits a no-write apply/cleanup contract with org,
   readiness, exact approval, phase, and planned-operation blockers while
   keeping execution blocked.
+- Added StorePilot CRM org guard status reporting: the StorePilot OAuth preset
+  now includes `ZohoCRM.apis.READ`, and `zoho crm status --scope-profile
+  storepilot --check-auth` reports live org identity (`orgId`, normalized org
+  details, and `orgSource=crm_org_api`) once required scopes are present.
 
 ### RC automation (2026-05-12T17:22:45Z)
 - Added `ops/scripts/zoho_cli_rc_autonomy_packet.sh`, a read-only cross-lane packet for recurring agents that combines native OpenClaw Cliq RC publish state with CRM fixture next-command state. It surfaces `agent_next_command_ready` only for an already allowlisted CRM dry-run/local command and otherwise reports operator-input or operator-only stop states while keeping publish, tag, GitHub release, expectedIntegrity fill, normal CRM upsert execution, and live Zoho writes disabled for agents.

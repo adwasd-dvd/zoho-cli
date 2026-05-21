@@ -11227,9 +11227,13 @@ def crm_status(
                 payload["org"] = {
                     "id": str(org.get("zgid") or org.get("id") or ""),
                     "zgid": str(org.get("zgid") or ""),
-                    "companyName": org.get("company_name") or org.get("companyName") or "",
+                    "companyName": org.get("company_name")
+                    or org.get("companyName")
+                    or "",
                     "country": org.get("country") or "",
-                    "primaryEmail": org.get("primary_email") or org.get("primaryEmail") or "",
+                    "primaryEmail": org.get("primary_email")
+                    or org.get("primaryEmail")
+                    or "",
                 }
                 payload["orgId"] = payload["org"]["id"]
                 payload["orgSource"] = "crm_org_api"

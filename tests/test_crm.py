@@ -56,6 +56,7 @@ def test_storepilot_crm_scope_profile_extends_default_scopes() -> None:
     assert "ZohoCRM.bulk.ALL" in scopes
     assert "ZohoCRM.notifications.ALL" in scopes
     assert "ZohoCRM.coql.READ" in scopes
+    assert "ZohoCRM.apis.READ" in scopes
 
 
 def test_missing_crm_scopes_supports_storepilot_profile() -> None:
@@ -69,6 +70,7 @@ def test_missing_crm_scopes_supports_storepilot_profile() -> None:
         "ZohoCRM.bulk.ALL",
         "ZohoCRM.notifications.ALL",
         "ZohoCRM.coql.READ",
+        "ZohoCRM.apis.READ",
     ]
 
 

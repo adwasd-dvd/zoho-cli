@@ -35,8 +35,10 @@ CRM SDK planning:
 - `crm modules|fields|list|get|search --adapter sdk-v8` (`crm-005` explicit
   SDK read gates; default remains `http-v2`)
 - `crm users|user-get|org|coql` (`crm-039` StorePilot CRM v8 read/query
-  expansion for users, organization details, and COQL; bulk and notifications
-  remain follow-on surfaces)
+  expansion for users, organization details, and COQL; `crm status
+  --scope-profile storepilot --check-auth` also reports `orgId` and
+  `orgSource=crm_org_api` when the StorePilot org/API scopes are ready; bulk
+  and notifications remain guarded surfaces)
 - `crm profiles|profile-get|roles|role-get|layouts|snapshot|seed-diff`
   (`crm-041` StorePilot bootstrap metadata snapshot and local-only seed diff;
   reports manual steps without writing CRM schema/data)

@@ -2924,6 +2924,7 @@ class ZohoCrmClient:
             params["per_page"] = limit
             params["page"] = page
         return self._get(path, params)
+
     def fields(self, module_api_name: str, *, limit: int = 200, page: int = 1) -> dict:
         """List fields for a CRM module."""
         return self._get(

@@ -1236,6 +1236,15 @@
   - crm-049
   agent_action: use `zoho crm apply-plan --init-plan-file <init-plan.json>` to review guarded apply/cleanup phases, org checks, approval blockers, and planned operation counts without execution
   completion_signal: CLI, tests, README, skill docs, help snapshot, and lane3 docs expose apply/cleanup scaffolding with executionBlocked=true and no Zoho writes
+- id: crm-051
+  title: expose StorePilot CRM org guard in status
+  module: crm
+  stage: completed
+  priority: medium
+  depends_on:
+  - crm-050
+  agent_action: use `zoho crm status --scope-profile storepilot --check-auth` to verify StorePilot OAuth scopes and live org identity before any apply/cleanup handoff
+  completion_signal: StorePilot scope preset includes `ZohoCRM.apis.READ`, status reports `orgId` and `orgSource=crm_org_api` when OAuth/org reads are ready, and Lane 1/2/3 docs/tests are in sync without enabling writes
 - id: platform-220
   title: keep RC heartbeat and work-queue state synchronized
   module: platform

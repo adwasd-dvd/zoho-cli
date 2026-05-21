@@ -483,6 +483,7 @@ def test_login_no_browser_with_storepilot_crm_includes_bootstrap_scopes(
     assert "ZohoCRM.bulk.ALL" in result.output
     assert "ZohoCRM.notifications.ALL" in result.output
     assert "ZohoCRM.coql.READ" in result.output
+    assert "ZohoCRM.apis.READ" in result.output
 
 
 # ---------------------------------------------------------------------------
@@ -27070,6 +27071,7 @@ def test_crm_status_storepilot_profile_reports_missing_bootstrap_scopes(
         "ZohoCRM.bulk.ALL",
         "ZohoCRM.notifications.ALL",
         "ZohoCRM.coql.READ",
+        "ZohoCRM.apis.READ",
     ]
 
 
@@ -27127,6 +27129,49 @@ def test_crm_status_check_auth(mock_config: Path, mock_token_refresh: Any) -> No
 
     payload = json.loads(result.output)
     assert payload["auth"] == "ok"
+
+
+@respx.mock
+def test_crm_status_check_auth_includes_org_guard(
+    mock_config: Path, mock_token_refresh: Any, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    monkeypatch.setattr(
+        auth,
+        "refresh_access_token_info",
+        lambda *a, **kw: {
+            "access_token": "fake-access-token",
+            "scopes": _crm.STOREPILOT_CRM_BOOTSTRAP_SCOPES,
+            "api_domain": "https://www.zohoapis.com",
+            "token_type": "Bearer",
+        },
+    )
+    respx.get("https://www.zohoapis.com/crm/v2/org").mock(
+        return_value=httpx.Response(
+            200,
+            json={
+                "org": [
+                    {
+                        "zgid": "870137630",
+                        "company_name": "StorePilot Test",
+                        "country": "US",
+                        "primary_email": "admin@example.com",
+                    }
+                ]
+            },
+        )
+    )
+
+    result = runner.invoke(
+        app,
+        ["crm", "status", "--scope-profile", "storepilot", "--check-auth"],
+        env=_cfg_env(mock_config),
+    )
+    assert result.exit_code == 0, result.output
+
+    payload = json.loads(result.output)
+    assert payload["orgId"] == "870137630"
+    assert payload["org"]["companyName"] == "StorePilot Test"
+    assert payload["orgSource"] == "crm_org_api"
 
 
 def test_crm_sdk_status_command() -> None:

@@ -649,12 +649,15 @@ def test_crm_client_get_user() -> None:
 def test_crm_client_org() -> None:
     client = crm.ZohoCrmClient("fake-token", base_url="https://www.zohoapis.com/crm/v8")
     respx.get("https://www.zohoapis.com/crm/v8/org").mock(
-        return_value=httpx.Response(200, json={"org": [{"company_name": "Acme"}]})
+        return_value=httpx.Response(
+            200, json={"org": [{"company_name": "Acme", "zgid": "870137630"}]}
+        )
     )
 
     result = client.org()
 
     assert result["org"][0]["company_name"] == "Acme"
+    assert result["org"][0]["zgid"] == "870137630"
 
 
 @respx.mock

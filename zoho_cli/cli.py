@@ -11216,6 +11216,23 @@ def crm_status(
                 profile=normalized_scope_profile,
             )
             payload["oauthReady"] = len(payload["missingScopes"]) == 0
+        if payload["oauthReady"]:
+            client = _get_crm_client(cfg, email)
+            org_payload = client.org()
+            org_rows = org_payload.get("org", org_payload.get("data", []))
+            if isinstance(org_rows, dict):
+                org_rows = [org_rows]
+            if isinstance(org_rows, list) and org_rows:
+                org = org_rows[0]
+                payload["org"] = {
+                    "id": str(org.get("zgid") or org.get("id") or ""),
+                    "zgid": str(org.get("zgid") or ""),
+                    "companyName": org.get("company_name") or org.get("companyName") or "",
+                    "country": org.get("country") or "",
+                    "primaryEmail": org.get("primary_email") or org.get("primaryEmail") or "",
+                }
+                payload["orgId"] = payload["org"]["id"]
+                payload["orgSource"] = "crm_org_api"
 
     utils.output(payload)
 

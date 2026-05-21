@@ -3,7 +3,7 @@
 import json
 import logging
 import os
-from datetime import datetime, timezone
+from datetime import datetime, timedelta, timezone
 from pathlib import Path
 from typing import Optional
 
@@ -30,6 +30,74 @@ def store_token(
     if accounts_server:
         data["accounts_server"] = accounts_server
     _store_raw(email, json.dumps(data))
+
+
+def store_access_token(
+    email: str,
+    *,
+    access_token: str,
+    scopes: list[str],
+    api_domain: Optional[str] = None,
+    token_type: Optional[str] = None,
+    expires_in: Optional[int] = None,
+    accounts_server: Optional[str] = None,
+) -> None:
+    """Cache a short-lived access token alongside the stored refresh token."""
+    data = load_token(email) or {}
+    if not data.get("refresh_token"):
+        logger.debug("Skipping access-token cache for %s because no refresh token is stored", email)
+        return
+
+    now = datetime.now(timezone.utc)
+    ttl = int(expires_in or 3600)
+    expires_at = now + timedelta(seconds=max(ttl - 120, 60))
+
+    data.update(
+        {
+            "access_token": access_token,
+            "access_token_cached_at": now.isoformat(),
+            "access_token_expires_at": expires_at.isoformat(),
+        }
+    )
+    if scopes:
+        data["access_token_scopes"] = scopes
+    if api_domain:
+        data["api_domain"] = api_domain
+    if token_type:
+        data["token_type"] = token_type
+    if accounts_server:
+        data["accounts_server"] = accounts_server
+
+    _store_raw(email, json.dumps(data))
+
+
+def cached_access_token(email: str, *, min_ttl_seconds: int = 120) -> Optional[dict]:
+    """Return cached access-token metadata when it is still safely usable."""
+    data = load_token(email)
+    if not data or not data.get("access_token"):
+        return None
+
+    expires_at_raw = data.get("access_token_expires_at")
+    if not expires_at_raw:
+        return None
+    try:
+        expires_at = datetime.fromisoformat(str(expires_at_raw))
+    except ValueError:
+        return None
+    if expires_at.tzinfo is None:
+        expires_at = expires_at.replace(tzinfo=timezone.utc)
+
+    if expires_at <= datetime.now(timezone.utc) + timedelta(seconds=min_ttl_seconds):
+        return None
+
+    return {
+        "access_token": data["access_token"],
+        "scopes": data.get("access_token_scopes") or data.get("scopes") or [],
+        "api_domain": data.get("api_domain"),
+        "token_type": data.get("token_type"),
+        "cached": True,
+        "expires_at": expires_at.isoformat(),
+    }
 
 
 def load_token(email: str) -> Optional[dict]:

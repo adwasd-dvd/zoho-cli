@@ -3,6 +3,7 @@
 import html
 import json
 import logging
+import os
 import sys
 from http.server import BaseHTTPRequestHandler, HTTPServer
 from typing import Optional
@@ -448,6 +449,12 @@ def refresh_access_token_info(
         or _config.accounts_base_url()
     ).rstrip("/")
 
+    if os.environ.get("ZOHO_DISABLE_ACCESS_TOKEN_CACHE") != "1":
+        cached = storage.cached_access_token(email)
+        if cached:
+            logger.debug("Using cached access token for %s", email)
+            return cached
+
     logger.debug("Refreshing access token for %s via %s", email, base)
     resp = httpx.post(
         f"{base}/oauth/v2/token",
@@ -488,11 +495,22 @@ def refresh_access_token_info(
                 f"OAuth refresh failed with invalid_client (HTTP {resp.status_code}). Check client_id/client_secret for this config and re-run `zoho login`.",
             )
         utils.error_exit("token_refresh_failed", f"No access_token in response: {data}")
+    scopes = parse_scope_value(data.get("scope"))
+    storage.store_access_token(
+        email,
+        access_token=data["access_token"],
+        scopes=scopes,
+        api_domain=data.get("api_domain"),
+        token_type=data.get("token_type"),
+        expires_in=data.get("expires_in"),
+        accounts_server=base,
+    )
     return {
         "access_token": data["access_token"],
-        "scopes": parse_scope_value(data.get("scope")),
+        "scopes": scopes,
         "api_domain": data.get("api_domain"),
         "token_type": data.get("token_type"),
+        "cached": False,
     }
 
 

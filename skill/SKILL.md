@@ -282,8 +282,9 @@ Use this skill as the default operating contract for an OpenClaw agent acting li
   In `crm-039`, StorePilot CRM read/query expansion adds v8-only
   `zoho crm users`, `zoho crm user-get`, `zoho crm org`, and
   `zoho crm coql --query "<SELECT ...>"`. These commands use the
-  `--with-storepilot-crm` scope profile, which includes org/API readiness
-  scopes such as `ZohoCRM.org.ALL` and `ZohoCRM.apis.READ`, and do not grant
+  `--with-storepilot-crm` scope profile, which includes org/read readiness
+  scopes such as `ZohoCRM.org.ALL` and `ZohoCRM.coql.READ`, and does not include
+  the invalid `ZohoCRM.apis.READ` scope or grant
   live CRM writes; bulk and notifications remain guarded surfaces. With
   `zoho crm status --scope-profile storepilot --check-auth`, inspect `orgId`
   and `orgSource=crm_org_api` before production handoff.

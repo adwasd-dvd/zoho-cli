@@ -273,6 +273,97 @@ def test_refresh_access_token_info_rate_limited_reports_wait_hint(
     assert "Wait a few minutes" in details
 
 
+def test_refresh_access_token_info_uses_cached_access_token(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    monkeypatch.delenv("ZOHO_DISABLE_ACCESS_TOKEN_CACHE", raising=False)
+    monkeypatch.setattr(
+        auth.storage,
+        "load_token",
+        lambda _email: {
+            "refresh_token": "refresh-token",
+            "accounts_server": "https://accounts.zoho.com",
+        },
+    )
+    monkeypatch.setattr(
+        auth.storage,
+        "cached_access_token",
+        lambda _email: {
+            "access_token": "cached-token",
+            "scopes": ["ZohoCRM.modules.ALL"],
+            "api_domain": "https://www.zohoapis.com",
+            "token_type": "Bearer",
+            "cached": True,
+        },
+    )
+
+    with patch("zoho_cli.auth.httpx.post") as mocked_post:
+        token_info = auth.refresh_access_token_info(
+            "ai-dev@happy-distro.co.uk",
+            "client-id",
+            "client-secret",
+        )
+
+    assert token_info["access_token"] == "cached-token"
+    assert token_info["cached"] is True
+    mocked_post.assert_not_called()
+
+
+@respx.mock
+def test_refresh_access_token_info_refreshes_and_caches_access_token(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    monkeypatch.delenv("ZOHO_DISABLE_ACCESS_TOKEN_CACHE", raising=False)
+    monkeypatch.setattr(
+        auth.storage,
+        "load_token",
+        lambda _email: {
+            "refresh_token": "refresh-token",
+            "accounts_server": "https://accounts.zoho.com",
+        },
+    )
+    monkeypatch.setattr(auth.storage, "cached_access_token", lambda _email: None)
+    cached_calls: list[dict] = []
+    monkeypatch.setattr(
+        auth.storage,
+        "store_access_token",
+        lambda email, **kwargs: cached_calls.append({"email": email, **kwargs}),
+    )
+    respx.post("https://accounts.zoho.com/oauth/v2/token").mock(
+        return_value=httpx.Response(
+            200,
+            json={
+                "access_token": "fresh-token",
+                "scope": "ZohoCRM.modules.ALL ZohoCRM.settings.ALL",
+                "api_domain": "https://www.zohoapis.com",
+                "token_type": "Bearer",
+                "expires_in": 3600,
+            },
+        )
+    )
+
+    token_info = auth.refresh_access_token_info(
+        "ai-dev@happy-distro.co.uk",
+        "client-id",
+        "client-secret",
+    )
+
+    assert token_info["access_token"] == "fresh-token"
+    assert token_info["cached"] is False
+    assert token_info["scopes"] == ["ZohoCRM.modules.ALL", "ZohoCRM.settings.ALL"]
+    assert cached_calls == [
+        {
+            "email": "ai-dev@happy-distro.co.uk",
+            "access_token": "fresh-token",
+            "scopes": ["ZohoCRM.modules.ALL", "ZohoCRM.settings.ALL"],
+            "api_domain": "https://www.zohoapis.com",
+            "token_type": "Bearer",
+            "expires_in": 3600,
+            "accounts_server": "https://accounts.zoho.com",
+        }
+    ]
+
+
 # ---------------------------------------------------------------------------
 # discover_accounts_server
 # ---------------------------------------------------------------------------

@@ -28,7 +28,7 @@
   readiness, exact approval, phase, and planned-operation blockers while
   keeping execution blocked.
 - Added StorePilot CRM org guard status reporting: the StorePilot OAuth preset
-  now includes `ZohoCRM.apis.READ`, and `zoho crm status --scope-profile
+  intentionally excludes invalid `ZohoCRM.apis.READ`, and `zoho crm status --scope-profile
   storepilot --check-auth` reports live org identity (`orgId`, normalized org
   details, and `orgSource=crm_org_api`) once required scopes are present.
 

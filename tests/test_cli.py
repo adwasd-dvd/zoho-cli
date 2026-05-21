@@ -483,7 +483,7 @@ def test_login_no_browser_with_storepilot_crm_includes_bootstrap_scopes(
     assert "ZohoCRM.bulk.ALL" in result.output
     assert "ZohoCRM.notifications.ALL" in result.output
     assert "ZohoCRM.coql.READ" in result.output
-    assert "ZohoCRM.apis.READ" in result.output
+    assert "ZohoCRM.apis.READ" not in result.output
 
 
 # ---------------------------------------------------------------------------
@@ -27071,7 +27071,6 @@ def test_crm_status_storepilot_profile_reports_missing_bootstrap_scopes(
         "ZohoCRM.bulk.ALL",
         "ZohoCRM.notifications.ALL",
         "ZohoCRM.coql.READ",
-        "ZohoCRM.apis.READ",
     ]
 
 

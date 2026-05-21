@@ -29,7 +29,6 @@ STOREPILOT_CRM_BOOTSTRAP_SCOPES = [
     "ZohoCRM.bulk.ALL",
     "ZohoCRM.notifications.ALL",
     "ZohoCRM.coql.READ",
-    "ZohoCRM.apis.READ",
 ]
 
 CRM_SCOPE_PROFILES = {

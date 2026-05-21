@@ -1244,7 +1244,7 @@
   depends_on:
   - crm-050
   agent_action: use `zoho crm status --scope-profile storepilot --check-auth` to verify StorePilot OAuth scopes and live org identity before any apply/cleanup handoff
-  completion_signal: StorePilot scope preset includes `ZohoCRM.apis.READ`, status reports `orgId` and `orgSource=crm_org_api` when OAuth/org reads are ready, and Lane 1/2/3 docs/tests are in sync without enabling writes
+  completion_signal: StorePilot scope preset intentionally excludes invalid `ZohoCRM.apis.READ`, status reports `orgId` and `orgSource=crm_org_api` when OAuth/org reads are ready, and Lane 1/2/3 docs/tests are in sync without enabling writes
 - id: platform-220
   title: keep RC heartbeat and work-queue state synchronized
   module: platform

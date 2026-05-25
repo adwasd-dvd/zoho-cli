@@ -1261,6 +1261,42 @@ def test_cliq_status_check_auth(mock_config: Path, mock_token_refresh: Any) -> N
     assert payload["auth"] == "ok"
 
 
+def test_auth_status_reports_refresh_health(
+    mock_config: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    monkeypatch.setattr(
+        auth,
+        "refresh_health_status",
+        lambda email: {
+            "account": email,
+            "hasStoredRefreshToken": True,
+            "hasCachedAccessToken": False,
+            "cachedAccessTokenExpiresAt": "",
+            "refreshHealth": {
+                "lastFailureType": "RATE_LIMITED",
+                "failureCount": 2,
+                "nextAllowedRefreshAt": "2026-05-25T00:00:00+00:00",
+                "rawDetailsStored": False,
+            },
+            "state": "cooldown",
+            "recommendedWaitSeconds": 120,
+            "recommendedAction": "wait at least 120 seconds before another refresh attempt",
+            "rawSecretsStored": False,
+            "rawDetailsStored": False,
+        },
+    )
+
+    result = runner.invoke(app, ["auth", "status"], env=_cfg_env(mock_config))
+    assert result.exit_code == 0, result.output
+
+    payload = json.loads(result.output)
+    assert payload["module"] == "auth"
+    assert payload["account"] == ACCOUNT_EMAIL
+    assert payload["state"] == "cooldown"
+    assert payload["refreshHealth"]["lastFailureType"] == "RATE_LIMITED"
+    assert payload["rawSecretsStored"] is False
+
+
 def test_cliq_status_oauth_ready_when_scopes_present(tmp_path: Path) -> None:
     cfg = {
         "client_id": "test_id",

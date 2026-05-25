@@ -150,6 +150,15 @@ def register_config_root_typers(
     root_app.add_typer(config_app, name="config")
 
 
+def register_auth_root_typers(
+    root_app: typer.Typer,
+    *,
+    auth_app: typer.Typer,
+) -> None:
+    """Register auth diagnostics root command group on ``root_app``."""
+    root_app.add_typer(auth_app, name="auth")
+
+
 def register_membrane_root_typers(
     root_app: typer.Typer,
     *,
@@ -169,6 +178,7 @@ def register_builtin_root_typers(
     cliq_app: typer.Typer,
     crm_app: typer.Typer,
     config_app: typer.Typer,
+    auth_app: typer.Typer,
     membrane_app: typer.Typer,
 ) -> None:
     """Register the current built-in root command groups on ``root_app``."""
@@ -187,6 +197,10 @@ def register_builtin_root_typers(
     register_config_root_typers(
         root_app,
         config_app=config_app,
+    )
+    register_auth_root_typers(
+        root_app,
+        auth_app=auth_app,
     )
     register_membrane_root_typers(
         root_app,

@@ -2,6 +2,13 @@
 
 ## Unreleased
 
+- Hardened Zoho OAuth refresh stability: refresh failures now distinguish
+  invalid refresh tokens (`token_refresh_invalid_token`) from Zoho refresh
+  throttling (`token_refresh_rate_limited`), persist sanitized refresh-health
+  metadata, enforce a minimum refresh interval, and apply exponential backoff
+  with jitter plus cooldown windows. Added read-only `zoho auth status` for
+  troubleshooting recent failure type and recommended wait time without making a
+  Zoho request.
 - Added StorePilot CRM seed-diff property diagnostics: `zoho crm seed-diff` and
   `zoho crm init-plan` now include `field_mapping_contracts`,
   `fields_with_property_gaps`, and summary counts for picklist value, lookup

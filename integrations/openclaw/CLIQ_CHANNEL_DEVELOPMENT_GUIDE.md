@@ -235,8 +235,11 @@ ops/scripts/openclaw_cliq_rc_artifact_check.sh
 ops/scripts/openclaw_cliq_rc_install_smoke.sh
 ```
 
-Treat `token_refresh_rate_limited` as `skip_deferred`; do not repeatedly refresh
-Zoho OAuth in tight loops.
+Before retrying OAuth-dependent checks, run `zoho auth status`. Treat
+`token_refresh_invalid_token` as a re-auth requirement. Treat
+`token_refresh_rate_limited` and `token_refresh_cooldown` as `skip_deferred`
+wait signals; use `recommendedWaitSeconds` and do not repeatedly refresh Zoho
+OAuth in tight loops.
 
 ## AI-agent convenience checklist
 
@@ -423,6 +426,8 @@ Map diagnostic signals to one next action:
 | Signal | Agent response |
 | --- | --- |
 | `not_logged_in` | Ask the operator to run `zoho login --with-cliq`; never request token values in chat. |
+| `token_refresh_invalid_token` | Ask the operator to re-run `zoho login`; repeated refresh retries will not repair the stored refresh token. |
+| `token_refresh_rate_limited` / `token_refresh_cooldown` | Run `zoho auth status`, wait for `recommendedWaitSeconds`, and mark bursty live probes `skip_deferred`. |
 | `missing_scope` | Re-auth with Cliq scopes and rerun `zoho cliq status --check-auth`. |
 | `network_missing` | Set `channels.cliq.accounts.<id>.network` through approved config flow. |
 | `webhook_unverified` / `webhook_secret_missing` | Configure `webhookSecret` as SecretRef/env (`ZOHO_CLIQ_WEBHOOK_SECRET`), POST a controlled Bot handler event, and rotate exposed secrets. |

@@ -1245,6 +1245,15 @@
   - crm-050
   agent_action: use `zoho crm status --scope-profile storepilot --check-auth` to verify StorePilot OAuth scopes and live org identity before any apply/cleanup handoff
   completion_signal: StorePilot scope preset intentionally excludes invalid `ZohoCRM.apis.READ`, status reports `orgId` and `orgSource=crm_org_api` when OAuth/org reads are ready, and Lane 1/2/3 docs/tests are in sync without enabling writes
+- id: auth-001
+  title: stabilize Zoho OAuth refresh throttling and invalid-token handling
+  module: auth
+  stage: completed
+  priority: high
+  depends_on:
+  - crm-051
+  agent_action: use `zoho auth status` before retrying OAuth-dependent live probes; treat `token_refresh_invalid_token` as re-auth required and `token_refresh_rate_limited` or `token_refresh_cooldown` as wait signals
+  completion_signal: shared refresh logic classifies INVALID_TOKEN separately from Access Denied too-many-requests throttling, records sanitized refresh health, applies minimum interval plus exponential backoff with jitter, and Lane 1/2/3 docs/tests are in sync without any Zoho writes
 - id: platform-220
   title: keep RC heartbeat and work-queue state synchronized
   module: platform

@@ -4,7 +4,9 @@ import html
 import json
 import logging
 import os
+import random
 import sys
+from datetime import datetime, timedelta, timezone
 from http.server import BaseHTTPRequestHandler, HTTPServer
 from typing import Optional
 from urllib.parse import parse_qs, urlencode, urlparse
@@ -22,6 +24,218 @@ DEFAULT_SCOPES = [
     "ZohoMail.accounts.READ",
     "ZohoMail.tags.ALL",
 ]
+
+REFRESH_FAILURE_INVALID_TOKEN = "INVALID_TOKEN"
+REFRESH_FAILURE_RATE_LIMITED = "RATE_LIMITED"
+REFRESH_FAILURE_FAILED = "REFRESH_FAILED"
+DEFAULT_REFRESH_MIN_INTERVAL_SECONDS = 15
+DEFAULT_REFRESH_RATE_LIMIT_BASE_SECONDS = 300
+DEFAULT_REFRESH_RATE_LIMIT_MAX_SECONDS = 1800
+DEFAULT_REFRESH_INVALID_TOKEN_COOLDOWN_SECONDS = 300
+DEFAULT_REFRESH_GENERIC_COOLDOWN_SECONDS = 60
+
+
+def _utc_now() -> datetime:
+    return datetime.now(timezone.utc)
+
+
+def _env_int(name: str, default: int) -> int:
+    raw = os.environ.get(name)
+    if raw is None:
+        return default
+    try:
+        return max(int(raw), 0)
+    except ValueError:
+        logger.debug("Ignoring invalid integer env %s=%r", name, raw)
+        return default
+
+
+def _parse_datetime(value: object) -> Optional[datetime]:
+    if not value:
+        return None
+    try:
+        parsed = datetime.fromisoformat(str(value))
+    except ValueError:
+        return None
+    if parsed.tzinfo is None:
+        parsed = parsed.replace(tzinfo=timezone.utc)
+    return parsed
+
+
+def _safe_error_text(value: object, *, limit: int = 240) -> str:
+    text = str(value or "").strip()
+    if not text:
+        return ""
+    redacted = text
+    for marker in ("access_token", "refresh_token", "client_secret", "Authorization"):
+        if marker.lower() in redacted.lower():
+            redacted = "[redacted]"
+            break
+    return redacted[:limit]
+
+
+def _classify_refresh_failure(
+    *,
+    http_status: int,
+    payload: object,
+    body_text: str,
+) -> dict:
+    """Classify Zoho OAuth refresh failure without returning token-bearing text."""
+    if isinstance(payload, dict):
+        error_name = _safe_error_text(payload.get("error"), limit=80)
+        description = _safe_error_text(payload.get("error_description"))
+        status = _safe_error_text(payload.get("status"), limit=80)
+    else:
+        error_name = ""
+        description = _safe_error_text(body_text)
+        status = ""
+
+    joined = f"{error_name} {description} {status}".lower()
+    normalized_error = error_name.strip().upper()
+
+    if "too many requests" in joined or "requests continuously" in joined:
+        return {
+            "failure_type": REFRESH_FAILURE_RATE_LIMITED,
+            "error_code": "token_refresh_rate_limited",
+            "http_status": http_status,
+            "description": description,
+        }
+
+    if (
+        normalized_error in {"INVALID_TOKEN", "INVALID_GRANT"}
+        or "invalid_token" in joined
+    ):
+        return {
+            "failure_type": REFRESH_FAILURE_INVALID_TOKEN,
+            "error_code": "token_refresh_invalid_token",
+            "http_status": http_status,
+            "description": description or error_name,
+        }
+
+    if normalized_error == "INVALID_CLIENT":
+        return {
+            "failure_type": REFRESH_FAILURE_FAILED,
+            "error_code": "token_refresh_failed",
+            "http_status": http_status,
+            "description": "invalid_client",
+        }
+
+    return {
+        "failure_type": REFRESH_FAILURE_FAILED,
+        "error_code": "token_refresh_failed",
+        "http_status": http_status,
+        "description": description or error_name or f"HTTP {http_status}",
+    }
+
+
+def _refresh_failure_cooldown_seconds(failure_type: str, failure_count: int) -> int:
+    failure_count = max(int(failure_count), 1)
+    if failure_type == REFRESH_FAILURE_RATE_LIMITED:
+        base = _env_int(
+            "ZOHO_REFRESH_RATE_LIMIT_BASE_SECONDS",
+            DEFAULT_REFRESH_RATE_LIMIT_BASE_SECONDS,
+        )
+        max_seconds = _env_int(
+            "ZOHO_REFRESH_RATE_LIMIT_MAX_SECONDS",
+            DEFAULT_REFRESH_RATE_LIMIT_MAX_SECONDS,
+        )
+        backoff = min(base * (2 ** (failure_count - 1)), max_seconds)
+        jitter = int(random.uniform(0, min(30, max(backoff * 0.1, 1))))
+        return min(backoff + jitter, max_seconds)
+    if failure_type == REFRESH_FAILURE_INVALID_TOKEN:
+        return _env_int(
+            "ZOHO_REFRESH_INVALID_TOKEN_COOLDOWN_SECONDS",
+            DEFAULT_REFRESH_INVALID_TOKEN_COOLDOWN_SECONDS,
+        )
+    return _env_int(
+        "ZOHO_REFRESH_GENERIC_COOLDOWN_SECONDS",
+        DEFAULT_REFRESH_GENERIC_COOLDOWN_SECONDS,
+    )
+
+
+def refresh_health_status(email: str) -> dict:
+    """Return read-only OAuth refresh health for status commands."""
+    token_data = storage.load_token(email)
+    health = storage.load_token_refresh_health(email)
+    now = _utc_now()
+    next_allowed = _parse_datetime(health.get("nextAllowedRefreshAt"))
+    recommended_wait = (
+        max(int((next_allowed - now).total_seconds()), 0) if next_allowed else 0
+    )
+    last_failure_type = str(health.get("lastFailureType") or "")
+    if not token_data:
+        state = "not_logged_in"
+        action = "run `zoho login` for this account"
+    elif last_failure_type == REFRESH_FAILURE_INVALID_TOKEN:
+        state = "invalid_token"
+        action = (
+            "run `zoho login` again; retries will not repair an invalid refresh token"
+        )
+    elif recommended_wait > 0:
+        state = "cooldown"
+        action = (
+            f"wait at least {recommended_wait} seconds before another refresh attempt"
+        )
+    elif health.get("lastFailureAt") and not health.get("lastSuccessAt"):
+        state = "failed"
+        action = "retry once after the cooldown; re-auth if INVALID_TOKEN recurs"
+    else:
+        state = "ok"
+        action = "reuse cached access tokens and avoid bursty refresh loops"
+
+    cached = (
+        storage.cached_access_token(email, min_ttl_seconds=0) if token_data else None
+    )
+    return {
+        "account": email,
+        "hasStoredRefreshToken": bool(token_data and token_data.get("refresh_token")),
+        "hasCachedAccessToken": bool(cached),
+        "cachedAccessTokenExpiresAt": (cached or {}).get("expires_at", ""),
+        "refreshHealth": health,
+        "state": state,
+        "recommendedWaitSeconds": recommended_wait,
+        "recommendedAction": action,
+        "rawSecretsStored": False,
+        "rawDetailsStored": False,
+    }
+
+
+def _block_if_refresh_not_allowed(email: str) -> None:
+    now = _utc_now()
+    health = storage.load_token_refresh_health(email)
+    next_allowed = _parse_datetime(health.get("nextAllowedRefreshAt"))
+    if next_allowed and next_allowed > now:
+        wait_seconds = max(int((next_allowed - now).total_seconds()), 1)
+        failure_type = str(health.get("lastFailureType") or "")
+        if failure_type == REFRESH_FAILURE_INVALID_TOKEN:
+            utils.error_exit(
+                "token_refresh_invalid_token",
+                "Stored Zoho refresh token was rejected as INVALID_TOKEN/invalid_grant. "
+                "Run `zoho login` again instead of retrying refresh loops.",
+            )
+        code = (
+            "token_refresh_rate_limited"
+            if failure_type == REFRESH_FAILURE_RATE_LIMITED
+            else "token_refresh_cooldown"
+        )
+        utils.error_exit(
+            code,
+            f"OAuth refresh is in cooldown. Wait at least {wait_seconds} seconds before retrying.",
+        )
+
+    min_interval = _env_int(
+        "ZOHO_REFRESH_MIN_INTERVAL_SECONDS",
+        DEFAULT_REFRESH_MIN_INTERVAL_SECONDS,
+    )
+    last_attempt = _parse_datetime(health.get("lastAttemptAt"))
+    if min_interval and last_attempt:
+        next_min_attempt = last_attempt + timedelta(seconds=min_interval)
+        if next_min_attempt > now:
+            wait_seconds = max(int((next_min_attempt - now).total_seconds()), 1)
+            utils.error_exit(
+                "token_refresh_cooldown",
+                f"OAuth refresh attempted too recently. Wait at least {wait_seconds} seconds before retrying.",
+            )
 
 
 def merge_scopes(*scope_lists: list[str]) -> list[str]:
@@ -455,6 +669,9 @@ def refresh_access_token_info(
             logger.debug("Using cached access token for %s", email)
             return cached
 
+    _block_if_refresh_not_allowed(email)
+    storage.record_token_refresh_attempt(email)
+
     logger.debug("Refreshing access token for %s via %s", email, base)
     resp = httpx.post(
         f"{base}/oauth/v2/token",
@@ -467,34 +684,97 @@ def refresh_access_token_info(
         timeout=30,
     )
     if resp.status_code != 200:
-        details = resp.text
         try:
             failure_payload = resp.json()
         except ValueError:
             failure_payload = None
 
-        if isinstance(failure_payload, dict):
-            description = str(failure_payload.get("error_description") or "").strip()
-            error_name = str(failure_payload.get("error") or "").strip()
-            lowered = f"{error_name} {description}".lower()
-            if "too many requests" in lowered:
-                utils.error_exit(
-                    "token_refresh_rate_limited",
-                    "OAuth refresh is temporarily rate-limited by Zoho. Wait a few minutes and retry, and avoid bursty probe loops."
-                    + (f" Details: {description}" if description else ""),
-                )
-            details = json.dumps(failure_payload, ensure_ascii=False)
+        failure = _classify_refresh_failure(
+            http_status=resp.status_code,
+            payload=failure_payload,
+            body_text=resp.text,
+        )
+        previous = storage.load_token_refresh_health(email)
+        previous_count = (
+            int(previous.get("failureCount") or 0)
+            if previous.get("lastFailureType") == failure["failure_type"]
+            else 0
+        )
+        cooldown = _refresh_failure_cooldown_seconds(
+            str(failure["failure_type"]),
+            previous_count + 1,
+        )
+        storage.record_token_refresh_failure(
+            email,
+            failure_type=str(failure["failure_type"]),
+            error_code=str(failure["error_code"]),
+            http_status=resp.status_code,
+            cooldown_seconds=cooldown,
+        )
 
-        utils.error_exit("token_refresh_failed", f"HTTP {resp.status_code}: {details}")
-    data = resp.json()
-    if "access_token" not in data:
-        error_code = str(data.get("error") or "").lower()
-        if error_code == "invalid_client":
+        description = str(failure.get("description") or "").strip()
+        if failure["failure_type"] == REFRESH_FAILURE_RATE_LIMITED:
+            utils.error_exit(
+                "token_refresh_rate_limited",
+                "OAuth refresh is temporarily rate-limited by Zoho. "
+                f"Wait at least {cooldown} seconds before retrying, and avoid bursty probe loops."
+                + (f" Details: {description}" if description else ""),
+            )
+        if failure["failure_type"] == REFRESH_FAILURE_INVALID_TOKEN:
+            utils.error_exit(
+                "token_refresh_invalid_token",
+                "Zoho rejected the stored refresh token as INVALID_TOKEN/invalid_grant. "
+                "Run `zoho login` again; repeated refresh attempts will not repair this token.",
+            )
+
+        if description == "invalid_client":
             utils.error_exit(
                 "token_refresh_failed",
                 f"OAuth refresh failed with invalid_client (HTTP {resp.status_code}). Check client_id/client_secret for this config and re-run `zoho login`.",
             )
-        utils.error_exit("token_refresh_failed", f"No access_token in response: {data}")
+        utils.error_exit(
+            "token_refresh_failed",
+            f"OAuth refresh failed (HTTP {resp.status_code}). Classification: {failure['failure_type']}.",
+        )
+    data = resp.json()
+    if "access_token" not in data:
+        failure = _classify_refresh_failure(
+            http_status=resp.status_code,
+            payload=data,
+            body_text=json.dumps(data, ensure_ascii=False),
+        )
+        previous = storage.load_token_refresh_health(email)
+        previous_count = (
+            int(previous.get("failureCount") or 0)
+            if previous.get("lastFailureType") == failure["failure_type"]
+            else 0
+        )
+        cooldown = _refresh_failure_cooldown_seconds(
+            str(failure["failure_type"]),
+            previous_count + 1,
+        )
+        storage.record_token_refresh_failure(
+            email,
+            failure_type=str(failure["failure_type"]),
+            error_code=str(failure["error_code"]),
+            http_status=resp.status_code,
+            cooldown_seconds=cooldown,
+        )
+        if str(data.get("error") or "").lower() == "invalid_client":
+            utils.error_exit(
+                "token_refresh_failed",
+                f"OAuth refresh failed with invalid_client (HTTP {resp.status_code}). Check client_id/client_secret for this config and re-run `zoho login`.",
+            )
+        if failure["failure_type"] == REFRESH_FAILURE_INVALID_TOKEN:
+            utils.error_exit(
+                "token_refresh_invalid_token",
+                "Zoho rejected the stored refresh token as INVALID_TOKEN/invalid_grant. "
+                "Run `zoho login` again; repeated refresh attempts will not repair this token.",
+            )
+        utils.error_exit(
+            "token_refresh_failed",
+            f"OAuth refresh response did not include an access token. Classification: {failure['failure_type']}.",
+        )
     scopes = parse_scope_value(data.get("scope"))
     storage.store_access_token(
         email,

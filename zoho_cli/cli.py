@@ -489,6 +489,7 @@ crm_app = typer.Typer(
     help="CRM module operations.",
 )
 config_app = typer.Typer(no_args_is_help=True, help="Configuration helpers.")
+auth_app = typer.Typer(no_args_is_help=True, help="OAuth diagnostics.")
 membrane_app = typer.Typer(
     no_args_is_help=True,
     help="Membrane bridge operations.",
@@ -507,6 +508,7 @@ register_root_commands(
             cliq_app=cliq_app,
             crm_app=crm_app,
             config_app=config_app,
+            auth_app=auth_app,
             membrane_app=membrane_app,
         ),
     ),
@@ -617,6 +619,31 @@ def _require_credentials(cfg: dict) -> tuple[str, str]:
             "client_id and client_secret must be set. Run: zoho config init",
         )
     return cid, csec  # type: ignore[return-value]
+
+
+@auth_app.command("status")
+def auth_status() -> None:
+    """Show stored OAuth refresh health without triggering a refresh."""
+    cfg = _cfg()
+    email = _S.account or _config.default_account(cfg)
+    if not email:
+        utils.output(
+            {
+                "module": "auth",
+                "account": "",
+                "hasAccount": False,
+                "state": "not_logged_in",
+                "recommendedAction": "run `zoho login --account <email>`",
+                "rawSecretsStored": False,
+                "rawDetailsStored": False,
+            }
+        )
+        return
+
+    payload = auth.refresh_health_status(email)
+    payload["module"] = "auth"
+    payload["hasAccount"] = True
+    utils.output(payload)
 
 
 def _get_client(cfg: dict, email: str) -> ZohoMailClient:

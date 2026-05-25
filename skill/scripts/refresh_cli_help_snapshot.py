@@ -11,6 +11,8 @@ from pathlib import Path
 COMMAND_SUFFIXES: list[list[str]] = [
     ["--help"],
     ["login", "--help"],
+    ["auth", "--help"],
+    ["auth", "status", "--help"],
     ["config", "--help"],
     ["mail", "--help"],
     ["cliq", "--help"],

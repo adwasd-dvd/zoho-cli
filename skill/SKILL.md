@@ -38,6 +38,10 @@ Use this skill as the default operating contract for an OpenClaw agent acting li
   routing diagnostics when available; use their setup states and route/session
   facts, and never report webhook secrets, token passwords, raw stderr, webhook
   signatures, or raw message bodies.
+- Before retrying after an OAuth refresh failure, run `zoho auth status`. Treat
+  `token_refresh_invalid_token` as a re-auth requirement and
+  `token_refresh_rate_limited` / `token_refresh_cooldown` as wait signals; use
+  `recommendedWaitSeconds` and do not start bursty probe loops during cooldown.
 - Native Cliq agent dispatch is now implemented for accepted webhook/polling
   events, and redacted audit/diagnostic bundles are now available; use
   `docs/releases/OPENCLAW_CLIQ_BOT_HANDLER_TEMPLATES.md` before editing a real

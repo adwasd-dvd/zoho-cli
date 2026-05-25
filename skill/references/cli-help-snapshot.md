@@ -1,6 +1,6 @@
 # CLI help snapshot
 
-Generated at: `2026-05-20T23:51:29Z`
+Generated at: `2026-05-25T05:06:50Z`
 
 Use this file as a quick command-surface reference for the skill.
 
@@ -31,6 +31,7 @@ Exit code: `0`
 │ cliq      Cliq module operations.                                            │
 │ crm       CRM module operations.                                             │
 │ config    Configuration helpers.                                             │
+│ auth      OAuth diagnostics.                                                 │
 │ membrane  Membrane bridge operations.                                        │
 ╰──────────────────────────────────────────────────────────────────────────────╯
 ```
@@ -66,6 +67,39 @@ Exit code: `0`
 │ --redirect-uri                 TEXT     Override OAuth redirect URI (useful  │
 │                                         with --no-browser).                  │
 │ --help                                  Show this message and exit.          │
+╰──────────────────────────────────────────────────────────────────────────────╯
+```
+
+## `zoho auth --help`
+
+Exit code: `0`
+
+```text
+
+ Usage: zoho auth [OPTIONS] COMMAND [ARGS]...
+
+ OAuth diagnostics.
+
+╭─ Options ────────────────────────────────────────────────────────────────────╮
+│ --help          Show this message and exit.                                  │
+╰──────────────────────────────────────────────────────────────────────────────╯
+╭─ Commands ───────────────────────────────────────────────────────────────────╮
+│ status  Show stored OAuth refresh health without triggering a refresh.       │
+╰──────────────────────────────────────────────────────────────────────────────╯
+```
+
+## `zoho auth status --help`
+
+Exit code: `0`
+
+```text
+
+ Usage: zoho auth status [OPTIONS]
+
+ Show stored OAuth refresh health without triggering a refresh.
+
+╭─ Options ────────────────────────────────────────────────────────────────────╮
+│ --help          Show this message and exit.                                  │
 ╰──────────────────────────────────────────────────────────────────────────────╯
 ```
 

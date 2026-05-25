@@ -270,7 +270,132 @@ def test_refresh_access_token_info_rate_limited_reports_wait_hint(
     mocked_error.assert_called_once()
     code, details = mocked_error.call_args.args[:2]
     assert code == "token_refresh_rate_limited"
-    assert "Wait a few minutes" in details
+    assert "Wait at least" in details
+
+
+@respx.mock
+def test_refresh_access_token_info_invalid_token_is_classified(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    monkeypatch.setattr(
+        auth.storage,
+        "load_token",
+        lambda _email: {
+            "refresh_token": "refresh-token",
+            "accounts_server": "https://accounts.zoho.com",
+        },
+    )
+    monkeypatch.setattr(auth.storage, "cached_access_token", lambda _email: None)
+    respx.post("https://accounts.zoho.com/oauth/v2/token").mock(
+        return_value=httpx.Response(
+            400,
+            json={
+                "error": "INVALID_TOKEN",
+                "error_description": "token is invalid",
+            },
+        )
+    )
+
+    with patch(
+        "zoho_cli.auth.utils.error_exit", side_effect=SystemExit(1)
+    ) as mocked_error:
+        with pytest.raises(SystemExit):
+            auth.refresh_access_token_info(
+                "ai-dev@happy-distro.co.uk",
+                "client-id",
+                "client-secret",
+            )
+
+    mocked_error.assert_called_once()
+    code, details = mocked_error.call_args.args[:2]
+    assert code == "token_refresh_invalid_token"
+    assert "Run `zoho login` again" in details
+
+
+@respx.mock
+def test_refresh_access_token_info_rate_limit_backoff_doubles(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    monkeypatch.setenv("ZOHO_REFRESH_RATE_LIMIT_BASE_SECONDS", "300")
+    monkeypatch.setenv("ZOHO_REFRESH_RATE_LIMIT_MAX_SECONDS", "1800")
+    monkeypatch.setattr(auth.random, "uniform", lambda _start, _end: 0)
+    monkeypatch.setattr(
+        auth.storage,
+        "load_token",
+        lambda _email: {
+            "refresh_token": "refresh-token",
+            "accounts_server": "https://accounts.zoho.com",
+            "refresh_health": {
+                "lastFailureType": "RATE_LIMITED",
+                "failureCount": 1,
+            },
+        },
+    )
+    monkeypatch.setattr(auth.storage, "cached_access_token", lambda _email: None)
+    recorded: dict = {}
+    monkeypatch.setattr(
+        auth.storage,
+        "record_token_refresh_failure",
+        lambda email, **kwargs: recorded.update({"email": email, **kwargs}),
+    )
+    respx.post("https://accounts.zoho.com/oauth/v2/token").mock(
+        return_value=httpx.Response(
+            400,
+            json={
+                "error": "Access Denied",
+                "error_description": "You have made too many requests continuously. Please try again after some time.",
+            },
+        )
+    )
+
+    with patch("zoho_cli.auth.utils.error_exit", side_effect=SystemExit(1)):
+        with pytest.raises(SystemExit):
+            auth.refresh_access_token_info(
+                "ai-dev@happy-distro.co.uk",
+                "client-id",
+                "client-secret",
+            )
+
+    assert recorded["failure_type"] == "RATE_LIMITED"
+    assert recorded["error_code"] == "token_refresh_rate_limited"
+    assert recorded["cooldown_seconds"] == 600
+
+
+def test_refresh_access_token_info_blocks_recent_attempt(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    from datetime import datetime, timezone
+
+    monkeypatch.setenv("ZOHO_REFRESH_MIN_INTERVAL_SECONDS", "60")
+    recent = datetime.now(timezone.utc).isoformat()
+    monkeypatch.setattr(
+        auth.storage,
+        "load_token",
+        lambda _email: {
+            "refresh_token": "refresh-token",
+            "accounts_server": "https://accounts.zoho.com",
+            "refresh_health": {
+                "lastAttemptAt": recent,
+            },
+        },
+    )
+    monkeypatch.setattr(auth.storage, "cached_access_token", lambda _email: None)
+
+    with patch("zoho_cli.auth.httpx.post") as mocked_post:
+        with patch(
+            "zoho_cli.auth.utils.error_exit", side_effect=SystemExit(1)
+        ) as mocked_error:
+            with pytest.raises(SystemExit):
+                auth.refresh_access_token_info(
+                    "ai-dev@happy-distro.co.uk",
+                    "client-id",
+                    "client-secret",
+                )
+
+    mocked_post.assert_not_called()
+    code, details = mocked_error.call_args.args[:2]
+    assert code == "token_refresh_cooldown"
+    assert "attempted too recently" in details
 
 
 def test_refresh_access_token_info_uses_cached_access_token(

@@ -1270,6 +1270,7 @@ def test_auth_status_reports_refresh_health(
         lambda email: {
             "account": email,
             "hasStoredRefreshToken": True,
+            "tokenBackend": "file",
             "hasCachedAccessToken": False,
             "cachedAccessTokenExpiresAt": "",
             "refreshHealth": {
@@ -40119,7 +40120,9 @@ def test_mail_search_via_keyring(
         )
     )
     result = runner.invoke(
-        app, ["mail", "search", "keyring test"], env=_cfg_env(mock_config)
+        app,
+        ["mail", "search", "keyring test"],
+        env={**_cfg_env(mock_config), "ZOHO_TOKEN_BACKEND": "keychain"},
     )
     assert result.exit_code == 0, result.output
     messages = json.loads(result.output)

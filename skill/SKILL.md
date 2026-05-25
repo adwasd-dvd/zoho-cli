@@ -42,6 +42,9 @@ Use this skill as the default operating contract for an OpenClaw agent acting li
   `token_refresh_invalid_token` as a re-auth requirement and
   `token_refresh_rate_limited` / `token_refresh_cooldown` as wait signals; use
   `recommendedWaitSeconds` and do not start bursty probe loops during cooldown.
+- Token storage defaults to file backend so unattended agents do not hit macOS
+  Keychain prompts. Use `ZOHO_TOKEN_PASSWORD` for automation secrets and only
+  set `ZOHO_TOKEN_BACKEND=keychain` for explicit interactive migration/debug.
 - Native Cliq agent dispatch is now implemented for accepted webhook/polling
   events, and redacted audit/diagnostic bundles are now available; use
   `docs/releases/OPENCLAW_CLIQ_BOT_HANDLER_TEMPLATES.md` before editing a real

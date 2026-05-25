@@ -240,6 +240,10 @@ Before retrying OAuth-dependent checks, run `zoho auth status`. Treat
 `token_refresh_rate_limited` and `token_refresh_cooldown` as `skip_deferred`
 wait signals; use `recommendedWaitSeconds` and do not repeatedly refresh Zoho
 OAuth in tight loops.
+Token storage defaults to file backend to avoid macOS Keychain prompts in
+unattended OpenClaw/gateway processes. Configure `ZOHO_TOKEN_PASSWORD` for the
+file backend; use `ZOHO_TOKEN_BACKEND=keychain` only for explicit interactive
+migration/debug.
 
 ## AI-agent convenience checklist
 

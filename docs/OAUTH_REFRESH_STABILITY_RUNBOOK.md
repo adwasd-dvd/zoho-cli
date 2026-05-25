@@ -4,6 +4,29 @@ This runbook covers Zoho refresh failures seen in automation and live probe loop
 It is read-only unless an operator explicitly chooses to re-authenticate with
 `zoho login`.
 
+## Token storage backend
+
+The default backend is file storage, not macOS Keychain. This is intentional:
+Keychain prompts can block unattended OpenClaw, gateway, and scheduled jobs when
+no human is available to approve access.
+
+Recommended automation environment:
+
+```bash
+export ZOHO_CONFIG=/path/to/zoho-config.json
+export ZOHO_TOKEN_PASSWORD='local-only-passphrase'
+```
+
+Legacy Keychain access is opt-in only:
+
+```bash
+export ZOHO_TOKEN_BACKEND=keychain
+```
+
+Use `ZOHO_TOKEN_BACKEND=keychain` only for an interactive human terminal session
+or a one-time migration. Re-run `zoho login` with the default file backend if the
+only existing refresh token is still in Keychain.
+
 ## Error classes
 
 `token_refresh_invalid_token`

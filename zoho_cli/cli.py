@@ -632,6 +632,7 @@ def auth_status() -> None:
                 "module": "auth",
                 "account": "",
                 "hasAccount": False,
+                "tokenBackend": storage.token_backend(),
                 "state": "not_logged_in",
                 "recommendedAction": "run `zoho login --account <email>`",
                 "rawSecretsStored": False,

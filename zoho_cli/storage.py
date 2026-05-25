@@ -1,8 +1,9 @@
-"""Token storage backed by the OS keyring with optional file fallback."""
+"""Token storage with file-first default and optional OS keyring backend."""
 
 import json
 import logging
 import os
+import sys
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
 from typing import Optional
@@ -15,6 +16,29 @@ from zoho_cli import config as _config
 SERVICE_NAME = "zoho-cli"
 logger = logging.getLogger(__name__)
 REFRESH_HEALTH_KEY = "refresh_health"
+TOKEN_BACKEND_ENV = "ZOHO_TOKEN_BACKEND"
+TOKEN_BACKEND_FILE = "file"
+TOKEN_BACKEND_KEYCHAIN = "keychain"
+TOKEN_BACKEND_AUTO = "auto"
+TOKEN_BACKEND_DEFAULT = TOKEN_BACKEND_FILE
+
+
+def token_backend() -> str:
+    """Return selected token backend.
+
+    Defaults to file storage to avoid macOS Keychain prompts in unattended
+    OpenClaw/gateway/automation processes. Set ``ZOHO_TOKEN_BACKEND=keychain``
+    to opt back into the legacy keyring path.
+    """
+    raw = os.environ.get(TOKEN_BACKEND_ENV, TOKEN_BACKEND_DEFAULT).strip().lower()
+    if raw in {TOKEN_BACKEND_FILE, TOKEN_BACKEND_KEYCHAIN, TOKEN_BACKEND_AUTO}:
+        return raw
+    logger.debug("Ignoring invalid %s=%r; using file backend", TOKEN_BACKEND_ENV, raw)
+    return TOKEN_BACKEND_FILE
+
+
+def _keychain_allowed_for_auto() -> bool:
+    return sys.stdin.isatty() and sys.stderr.isatty()
 
 
 def _utc_now() -> datetime:
@@ -267,10 +291,13 @@ def load_token(email: str) -> Optional[dict]:
 
 
 def delete_token(email: str) -> None:
-    try:
-        keyring.delete_password(SERVICE_NAME, email)
-    except keyring.errors.PasswordDeleteError:
-        pass
+    if token_backend() in {TOKEN_BACKEND_KEYCHAIN, TOKEN_BACKEND_AUTO}:
+        try:
+            keyring.delete_password(SERVICE_NAME, email)
+        except keyring.errors.PasswordDeleteError:
+            pass
+        except Exception as exc:
+            logger.debug("keyring delete failed (%s)", exc)
     # Also remove fallback file if present
     _fallback_path(email).unlink(missing_ok=True)
 
@@ -285,26 +312,42 @@ def _fallback_path(email: str) -> Path:
 
 def _store_raw(email: str, value: str) -> None:
     password = os.environ.get("ZOHO_TOKEN_PASSWORD")
-    if password:
+    backend = token_backend()
+    if password or backend == TOKEN_BACKEND_FILE:
         _file_store(email, value, password)
         return
-    try:
-        keyring.set_password(SERVICE_NAME, email, value)
-    except Exception as exc:
-        logger.debug("keyring write failed (%s), falling back to file", exc)
+    if backend == TOKEN_BACKEND_AUTO and not _keychain_allowed_for_auto():
         _file_store(email, value, password="")
+        return
+    if backend in {TOKEN_BACKEND_KEYCHAIN, TOKEN_BACKEND_AUTO}:
+        try:
+            keyring.set_password(SERVICE_NAME, email, value)
+            return
+        except Exception as exc:
+            logger.debug("keyring write failed (%s), falling back to file", exc)
+            _file_store(email, value, password="")
+            return
+    _file_store(email, value, password="")
 
 
 def _load_raw(email: str) -> Optional[str]:
     password = os.environ.get("ZOHO_TOKEN_PASSWORD")
-    if password:
+    backend = token_backend()
+    if password or backend == TOKEN_BACKEND_FILE:
         return _file_load(email, password)
-    try:
-        val = keyring.get_password(SERVICE_NAME, email)
-        if val is not None:
-            return val
-    except Exception as exc:
-        logger.debug("keyring read failed (%s), trying file fallback", exc)
+    if backend == TOKEN_BACKEND_AUTO:
+        file_value = _file_load(email, password="")
+        if file_value is not None:
+            return file_value
+        if not _keychain_allowed_for_auto():
+            return None
+    if backend in {TOKEN_BACKEND_KEYCHAIN, TOKEN_BACKEND_AUTO}:
+        try:
+            val = keyring.get_password(SERVICE_NAME, email)
+            if val is not None:
+                return val
+        except Exception as exc:
+            logger.debug("keyring read failed (%s), trying file fallback", exc)
     return _file_load(email, password="")
 
 

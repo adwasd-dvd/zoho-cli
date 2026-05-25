@@ -9,6 +9,10 @@
   with jitter plus cooldown windows. Added read-only `zoho auth status` for
   troubleshooting recent failure type and recommended wait time without making a
   Zoho request.
+- Changed token storage to file-first by default so unattended OpenClaw/gateway
+  flows do not block on macOS Keychain prompts. Legacy Keychain access remains
+  available only with `ZOHO_TOKEN_BACKEND=keychain`; automation should set
+  `ZOHO_TOKEN_PASSWORD` with the file backend.
 - Added StorePilot CRM seed-diff property diagnostics: `zoho crm seed-diff` and
   `zoho crm init-plan` now include `field_mapping_contracts`,
   `fields_with_property_gaps`, and summary counts for picklist value, lookup

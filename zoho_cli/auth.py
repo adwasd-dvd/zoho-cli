@@ -188,6 +188,7 @@ def refresh_health_status(email: str) -> dict:
     )
     return {
         "account": email,
+        "tokenBackend": storage.token_backend(),
         "hasStoredRefreshToken": bool(token_data and token_data.get("refresh_token")),
         "hasCachedAccessToken": bool(cached),
         "cachedAccessTokenExpiresAt": (cached or {}).get("expires_at", ""),

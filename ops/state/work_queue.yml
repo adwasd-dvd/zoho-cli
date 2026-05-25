@@ -1254,6 +1254,15 @@
   - crm-051
   agent_action: use `zoho auth status` before retrying OAuth-dependent live probes; treat `token_refresh_invalid_token` as re-auth required and `token_refresh_rate_limited` or `token_refresh_cooldown` as wait signals
   completion_signal: shared refresh logic classifies INVALID_TOKEN separately from Access Denied too-many-requests throttling, records sanitized refresh health, applies minimum interval plus exponential backoff with jitter, and Lane 1/2/3 docs/tests are in sync without any Zoho writes
+- id: auth-002
+  title: default token storage away from macOS Keychain
+  module: auth
+  stage: completed
+  priority: high
+  depends_on:
+  - auth-001
+  agent_action: use default file token storage plus `ZOHO_TOKEN_PASSWORD` for unattended OpenClaw/gateway automation; set `ZOHO_TOKEN_BACKEND=keychain` only for explicit interactive migration or debug
+  completion_signal: default token load/store no longer calls keyring, legacy Keychain is opt-in, `zoho auth status` reports the selected backend, and Lane 1/2/3 docs/tests are in sync without any Zoho writes
 - id: platform-220
   title: keep RC heartbeat and work-queue state synchronized
   module: platform

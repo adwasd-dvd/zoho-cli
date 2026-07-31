@@ -448,7 +448,15 @@ def test_login_no_browser_with_storepilot_crm_includes_bootstrap_scopes(
 ) -> None:
     """--with-storepilot-crm should include the StorePilot CRM bootstrap scope preset."""
 
+    original_build_auth_url = auth.build_auth_url
+    seen: dict[str, list[str]] = {}
+
+    def _build_auth_url(client_id: str, redirect_uri: str, scopes: list[str]) -> str:
+        seen["scopes"] = list(scopes)
+        return original_build_auth_url(client_id, redirect_uri, scopes)
+
     monkeypatch.setattr(auth, "discover_accounts_server", lambda _cid: ACCOUNTS_BASE)
+    monkeypatch.setattr(auth, "build_auth_url", _build_auth_url)
     monkeypatch.setattr("click.prompt", lambda *_a, **_kw: "abc123")
     monkeypatch.setattr(
         auth,
@@ -484,6 +492,53 @@ def test_login_no_browser_with_storepilot_crm_includes_bootstrap_scopes(
     assert "ZohoCRM.notifications.ALL" in result.output
     assert "ZohoCRM.coql.READ" in result.output
     assert "ZohoCRM.apis.READ" not in result.output
+    assert seen["scopes"] == _crm.STOREPILOT_CRM_BOOTSTRAP_SCOPES
+    assert not any(scope.startswith("ZohoMail.") for scope in seen["scopes"])
+
+
+def test_login_no_browser_explicit_crm_scope_does_not_add_mail_default(
+    mock_config: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """Explicit product scopes should not silently add the Mail default scopes."""
+
+    original_build_auth_url = auth.build_auth_url
+    seen: dict[str, list[str]] = {}
+
+    def _build_auth_url(client_id: str, redirect_uri: str, scopes: list[str]) -> str:
+        seen["scopes"] = list(scopes)
+        return original_build_auth_url(client_id, redirect_uri, scopes)
+
+    monkeypatch.setattr(auth, "discover_accounts_server", lambda _cid: ACCOUNTS_BASE)
+    monkeypatch.setattr(auth, "build_auth_url", _build_auth_url)
+    monkeypatch.setattr("click.prompt", lambda *_a, **_kw: "abc123")
+    monkeypatch.setattr(
+        auth,
+        "exchange_code",
+        lambda *_a, **_kw: {
+            "access_token": "token123",
+            "refresh_token": "refresh123",
+            "scope": "ZohoCRM.modules.ALL",
+        },
+    )
+    monkeypatch.setattr(auth, "discover_account_id", lambda *_a, **_kw: ACCOUNT_ID)
+    monkeypatch.setattr("zoho_cli.storage.store_token", lambda *_a, **_kw: None)
+
+    result = runner.invoke(
+        app,
+        [
+            "--config",
+            str(mock_config),
+            "--account",
+            ACCOUNT_EMAIL,
+            "login",
+            "--no-browser",
+            "--scope",
+            "ZohoCRM.modules.ALL",
+        ],
+    )
+
+    assert result.exit_code == 0, result.output
+    assert seen["scopes"] == ["ZohoCRM.modules.ALL"]
 
 
 # ---------------------------------------------------------------------------
@@ -28235,6 +28290,136 @@ def test_crm_settings_command(mock_config: Path, mock_token_refresh: Any) -> Non
         "per_page": "9",
         "page": "2",
     }
+
+
+@respx.mock
+def test_crm_access_audit_command(mock_config: Path, mock_token_refresh: Any) -> None:
+    org_route = respx.get("https://www.zohoapis.com/crm/v8/org").mock(
+        return_value=httpx.Response(
+            200,
+            json={"org": [{"id": "870137630", "company_name": "StorePilot"}]},
+        )
+    )
+    users_route = respx.get("https://www.zohoapis.com/crm/v8/users").mock(
+        return_value=httpx.Response(
+            200,
+            json={
+                "users": [
+                    {
+                        "id": "u1",
+                        "full_name": "Ops Admin",
+                        "email": "ops@example.com",
+                        "status": "active",
+                        "profile": {"id": "p-admin", "name": "Administrator"},
+                        "role": {"id": "r-manager", "name": "Regional Manager"},
+                    },
+                    {
+                        "id": "u2",
+                        "full_name": "Dormant Admin",
+                        "email": "old@example.com",
+                        "status": "inactive",
+                        "profile": {"id": "p-admin", "name": "Administrator"},
+                        "role": {"id": "r-manager", "name": "Regional Manager"},
+                    },
+                    {
+                        "id": "u3",
+                        "full_name": "Field Reviewer",
+                        "email": "review@example.com",
+                        "status": "active",
+                    },
+                ]
+            },
+        )
+    )
+    profiles_route = respx.get(
+        "https://www.zohoapis.com/crm/v8/settings/profiles"
+    ).mock(
+        return_value=httpx.Response(
+            200,
+            json={"profiles": [{"id": "p-admin", "name": "Administrator"}]},
+        )
+    )
+    roles_route = respx.get("https://www.zohoapis.com/crm/v8/settings/roles").mock(
+        return_value=httpx.Response(
+            200,
+            json={"roles": [{"id": "r-manager", "name": "Regional Manager"}]},
+        )
+    )
+    related_route = respx.get(
+        "https://www.zohoapis.com/crm/v8/settings/related_lists"
+    ).mock(
+        return_value=httpx.Response(
+            200, json={"related_lists": [{"api_name": "Contacts"}]}
+        )
+    )
+    custom_views_route = respx.get(
+        "https://www.zohoapis.com/crm/v8/settings/custom_views"
+    ).mock(return_value=httpx.Response(200, json={"custom_views": [{"id": "cv1"}]}))
+
+    result = runner.invoke(
+        app,
+        [
+            "crm",
+            "access-audit",
+            "--expected-org-id",
+            "870137630",
+            "--include-settings",
+            "--settings-module",
+            "Accounts",
+            "--settings-resource",
+            "related_lists",
+            "--settings-resource",
+            "custom_views",
+            "--limit",
+            "25",
+        ],
+        env=_cfg_env(mock_config),
+    )
+
+    assert result.exit_code == 0, result.output
+    payload = json.loads(result.output)
+    assert payload["kind"] == "storepilot_crm_access_audit"
+    assert payload["policyId"] == "crm-052-plugin-parity-access-audit"
+    assert payload["orgVerification"]["matches"] is True
+    assert payload["summary"]["userCount"] == 3
+    assert payload["summary"]["activeUserCount"] == 2
+    assert payload["summary"]["inactiveAdminCount"] == 1
+    assert payload["summary"]["settingsItemCount"] == 2
+    assert payload["inactiveAdmins"][0]["id"] == "u2"
+    assert (
+        payload["settingsCoverage"]["countsByResource"]["related_lists"]["Accounts"]
+        == 1
+    )
+    assert (
+        payload["settingsCoverage"]["countsByResource"]["custom_views"]["Accounts"] == 1
+    )
+    assert payload["safety"]["noWrite"] is True
+    assert payload["safety"]["pluginUsed"] is False
+    assert "GET /org" in payload["safety"]["readEndpoints"]
+    finding_codes = {item["code"] for item in payload["riskFindings"]}
+    assert "inactive_admin_user" in finding_codes
+    assert "active_user_missing_profile" in finding_codes
+    assert "active_user_missing_role" in finding_codes
+    assert dict(users_route.calls.last.request.url.params) == {
+        "per_page": "25",
+        "page": "1",
+        "type": "AllUsers",
+    }
+    assert dict(profiles_route.calls.last.request.url.params) == {
+        "per_page": "25",
+        "page": "1",
+    }
+    assert dict(roles_route.calls.last.request.url.params) == {
+        "per_page": "25",
+        "page": "1",
+    }
+    assert dict(related_route.calls.last.request.url.params) == {"module": "Accounts"}
+    assert dict(custom_views_route.calls.last.request.url.params) == {
+        "module": "Accounts",
+        "per_page": "25",
+        "page": "1",
+    }
+    assert org_route.called
 
 
 @respx.mock

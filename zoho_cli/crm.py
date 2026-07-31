@@ -83,6 +83,8 @@ STOREPILOT_CLEANUP_PLAN_KIND = "storepilot_crm_cleanup_plan"
 STOREPILOT_MANUAL_SETUP_PLAN_KIND = "storepilot_crm_manual_setup_plan"
 STOREPILOT_APPLY_PLAN_KIND = "storepilot_crm_apply_plan"
 STOREPILOT_APPLY_PLAN_POLICY_ID = "crm-050-storepilot-apply-plan-dry-run"
+STOREPILOT_ACCESS_AUDIT_KIND = "storepilot_crm_access_audit"
+STOREPILOT_ACCESS_AUDIT_POLICY_ID = "crm-052-plugin-parity-access-audit"
 STOREPILOT_INIT_MODES = [
     "dry_run",
     "apply_sandbox",
@@ -1643,6 +1645,336 @@ def crm_org_verification(org_payload: object, expected_org_id: str | None) -> di
         "blockingReason": (
             "org_id_mismatch" if checked and actual and actual != expected else ""
         ),
+    }
+
+
+def _crm_rows(payload: object, key: str) -> list[dict[str, Any]]:
+    value = payload
+    if isinstance(payload, dict):
+        value = payload.get(key) or payload.get("data") or []
+    if isinstance(value, dict):
+        return [value]
+    if isinstance(value, list):
+        return [item for item in value if isinstance(item, dict)]
+    return []
+
+
+def _crm_nested_name(value: object) -> str:
+    if isinstance(value, dict):
+        for key in ("name", "display_label", "profile_name", "role_name"):
+            if value.get(key):
+                return str(value[key])
+    if value:
+        return str(value)
+    return ""
+
+
+def _crm_nested_id(value: object) -> str:
+    if isinstance(value, dict) and value.get("id"):
+        return str(value["id"])
+    return ""
+
+
+def _crm_user_profile(user: dict[str, Any]) -> dict[str, str]:
+    profile = user.get("profile") or user.get("Profile") or {}
+    return {
+        "id": _crm_nested_id(profile) or str(user.get("profile_id") or ""),
+        "name": _crm_nested_name(profile)
+        or str(user.get("profile_name") or user.get("Profile_Name") or ""),
+    }
+
+
+def _crm_user_role(user: dict[str, Any]) -> dict[str, str]:
+    role = user.get("role") or user.get("Role") or {}
+    return {
+        "id": _crm_nested_id(role) or str(user.get("role_id") or ""),
+        "name": _crm_nested_name(role)
+        or str(user.get("role_name") or user.get("Role_Name") or ""),
+    }
+
+
+def _crm_user_status(user: dict[str, Any]) -> str:
+    return str(user.get("status") or user.get("Status") or "").strip()
+
+
+def _crm_user_is_active(user: dict[str, Any]) -> bool:
+    status = _crm_user_status(user).lower()
+    if not status:
+        return True
+    return status in {"active", "enabled", "confirmed"}
+
+
+def _crm_user_is_admin(user: dict[str, Any]) -> bool:
+    profile = _crm_user_profile(user)
+    role = _crm_user_role(user)
+    values = " ".join(
+        [
+            profile["name"],
+            role["name"],
+            str(user.get("type") or user.get("user_type") or ""),
+        ]
+    ).lower()
+    return "admin" in values or "administrator" in values
+
+
+def _crm_user_ref(user: dict[str, Any]) -> dict[str, str]:
+    return {
+        "id": str(user.get("id") or ""),
+        "fullName": str(
+            user.get("full_name") or user.get("fullName") or user.get("name") or ""
+        ),
+        "email": str(user.get("email") or user.get("Email") or ""),
+        "status": _crm_user_status(user),
+        "profileId": _crm_user_profile(user)["id"],
+        "profileName": _crm_user_profile(user)["name"],
+        "roleId": _crm_user_role(user)["id"],
+        "roleName": _crm_user_role(user)["name"],
+    }
+
+
+def _crm_access_audit_settings_summary(
+    settings_metadata: dict[str, dict[str, Any]],
+) -> dict[str, Any]:
+    counts_by_resource: dict[str, dict[str, int]] = {}
+    total = 0
+    modules: set[str] = set()
+    for resource, by_module in settings_metadata.items():
+        counts_by_resource[resource] = {}
+        for module_api_name, rows in by_module.items():
+            modules.add(str(module_api_name))
+            count = len(rows) if isinstance(rows, list) else 0
+            counts_by_resource[resource][str(module_api_name)] = count
+            total += count
+    return {
+        "included": bool(settings_metadata),
+        "resources": sorted(settings_metadata),
+        "modules": sorted(modules),
+        "countsByResource": counts_by_resource,
+        "totalItems": total,
+    }
+
+
+def build_crm_access_audit(
+    *,
+    org_payload: object | None = None,
+    users_payload: object | None = None,
+    profiles_payload: object | None = None,
+    roles_payload: object | None = None,
+    settings_metadata: dict[str, dict[str, Any]] | None = None,
+    expected_org_id: str | None = None,
+    account: str | None = None,
+    included: dict[str, bool] | None = None,
+    settings_modules: list[str] | None = None,
+    settings_resources: list[str] | None = None,
+) -> dict[str, Any]:
+    """Build a read-only CRM access audit report from CRM metadata payloads."""
+
+    included = included or {}
+    org_rows = _crm_rows(org_payload or [], "org")
+    users = _crm_rows(users_payload or [], "users")
+    profiles = _crm_rows(profiles_payload or [], "profiles")
+    roles = _crm_rows(roles_payload or [], "roles")
+    settings_metadata = settings_metadata or {}
+    settings_modules = settings_modules or []
+    settings_resources = settings_resources or []
+
+    profile_ids = {
+        str(profile.get("id") or "")
+        for profile in profiles
+        if str(profile.get("id") or "")
+    }
+    role_ids = {
+        str(role.get("id") or "") for role in roles if str(role.get("id") or "")
+    }
+
+    active_users = [user for user in users if _crm_user_is_active(user)]
+    inactive_users = [user for user in users if not _crm_user_is_active(user)]
+    admin_users = [user for user in users if _crm_user_is_admin(user)]
+    inactive_admins = [
+        _crm_user_ref(user) for user in inactive_users if _crm_user_is_admin(user)
+    ]
+
+    profile_role_mismatches: list[dict[str, Any]] = []
+    risk_findings: list[dict[str, Any]] = []
+
+    if included.get("org", False) and not crm_org_id(org_payload or []):
+        risk_findings.append(
+            {
+                "code": "org_id_missing",
+                "severity": "high",
+                "message": "CRM org response did not include an org id.",
+            }
+        )
+    if included.get("users", False) and not users:
+        risk_findings.append(
+            {
+                "code": "users_empty",
+                "severity": "high",
+                "message": "CRM users endpoint returned no users for audit.",
+            }
+        )
+    if included.get("profiles", False) and not profiles:
+        risk_findings.append(
+            {
+                "code": "profiles_empty",
+                "severity": "medium",
+                "message": "CRM profiles endpoint returned no profiles for audit.",
+            }
+        )
+    if included.get("roles", False) and not roles:
+        risk_findings.append(
+            {
+                "code": "roles_empty",
+                "severity": "medium",
+                "message": "CRM roles endpoint returned no roles for audit.",
+            }
+        )
+    if included.get("settings", False) and not settings_modules:
+        risk_findings.append(
+            {
+                "code": "settings_module_required",
+                "severity": "low",
+                "message": "Settings audit was requested without --settings-module, so no module-scoped settings endpoints were read.",
+            }
+        )
+
+    for user in inactive_admins:
+        risk_findings.append(
+            {
+                "code": "inactive_admin_user",
+                "severity": "high",
+                "message": "Inactive CRM user still appears to have admin privileges.",
+                "user": user,
+            }
+        )
+
+    for user in active_users:
+        ref = _crm_user_ref(user)
+        if (
+            included.get("profiles", False)
+            and not ref["profileId"]
+            and not ref["profileName"]
+        ):
+            risk_findings.append(
+                {
+                    "code": "active_user_missing_profile",
+                    "severity": "medium",
+                    "message": "Active CRM user has no profile reference in the users payload.",
+                    "user": ref,
+                }
+            )
+        if included.get("roles", False) and not ref["roleId"] and not ref["roleName"]:
+            risk_findings.append(
+                {
+                    "code": "active_user_missing_role",
+                    "severity": "medium",
+                    "message": "Active CRM user has no role reference in the users payload.",
+                    "user": ref,
+                }
+            )
+        if (
+            included.get("profiles", False)
+            and ref["profileId"]
+            and profile_ids
+            and ref["profileId"] not in profile_ids
+        ):
+            mismatch = {
+                "kind": "profile",
+                "user": ref,
+                "missingProfileId": ref["profileId"],
+            }
+            profile_role_mismatches.append(mismatch)
+            risk_findings.append(
+                {
+                    "code": "user_profile_not_in_profile_list",
+                    "severity": "medium",
+                    "message": "CRM user references a profile id that was not present in the profiles endpoint response.",
+                    **mismatch,
+                }
+            )
+        if (
+            included.get("roles", False)
+            and ref["roleId"]
+            and role_ids
+            and ref["roleId"] not in role_ids
+        ):
+            mismatch = {
+                "kind": "role",
+                "user": ref,
+                "missingRoleId": ref["roleId"],
+            }
+            profile_role_mismatches.append(mismatch)
+            risk_findings.append(
+                {
+                    "code": "user_role_not_in_role_list",
+                    "severity": "medium",
+                    "message": "CRM user references a role id that was not present in the roles endpoint response.",
+                    **mismatch,
+                }
+            )
+
+    org_verification = crm_org_verification(org_payload or [], expected_org_id)
+    if org_verification["blockingReason"]:
+        risk_findings.append(
+            {
+                "code": org_verification["blockingReason"],
+                "severity": "high",
+                "message": "CRM org id does not match the expected org guard.",
+                "expectedOrgId": org_verification["expectedOrgId"],
+                "actualOrgId": org_verification["actualOrgId"],
+            }
+        )
+
+    settings_coverage = _crm_access_audit_settings_summary(settings_metadata)
+    settings_coverage["requested"] = bool(included.get("settings", False))
+    settings_coverage["requestedModules"] = list(settings_modules)
+    settings_coverage["requestedResources"] = list(settings_resources)
+
+    return {
+        "kind": STOREPILOT_ACCESS_AUDIT_KIND,
+        "policyId": STOREPILOT_ACCESS_AUDIT_POLICY_ID,
+        "status": "ok",
+        "apiVersion": CRM_SDK_API_VERSION,
+        "account": account or "",
+        "included": {
+            "org": bool(included.get("org", False)),
+            "users": bool(included.get("users", False)),
+            "profiles": bool(included.get("profiles", False)),
+            "roles": bool(included.get("roles", False)),
+            "settings": bool(included.get("settings", False)),
+        },
+        "org": org_rows,
+        "orgVerification": org_verification,
+        "users": users,
+        "profiles": profiles,
+        "roles": roles,
+        "settingsMetadata": settings_metadata,
+        "settingsCoverage": settings_coverage,
+        "summary": {
+            "orgPresent": bool(crm_org_id(org_payload or [])),
+            "userCount": len(users),
+            "activeUserCount": len(active_users),
+            "inactiveUserCount": len(inactive_users),
+            "adminUserCount": len(admin_users),
+            "inactiveAdminCount": len(inactive_admins),
+            "profileCount": len(profiles),
+            "roleCount": len(roles),
+            "settingsModuleCount": len(settings_coverage["modules"]),
+            "settingsItemCount": settings_coverage["totalItems"],
+            "riskFindingCount": len(risk_findings),
+            "profileRoleMismatchCount": len(profile_role_mismatches),
+        },
+        "riskFindings": risk_findings,
+        "inactiveAdmins": inactive_admins,
+        "profileRoleMismatches": profile_role_mismatches,
+        "safety": {
+            "readOnly": True,
+            "dryRunOnly": True,
+            "noWrite": True,
+            "writesZohoData": False,
+            "pluginUsed": False,
+            "normalUpsertExecuteBlocked": True,
+        },
     }
 
 

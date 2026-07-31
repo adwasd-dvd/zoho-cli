@@ -13,6 +13,10 @@
   flows do not block on macOS Keychain prompts. Legacy Keychain access remains
   available only with `ZOHO_TOKEN_BACKEND=keychain`; automation should set
   `ZOHO_TOKEN_PASSWORD` with the file backend.
+- Added `zoho crm access-audit`, a read-only StorePilot CRM workflow that pulls
+  org, users, profiles, roles, and optional module-scoped settings metadata to
+  emit org-guard, inactive-admin, missing profile/role, and settings coverage
+  findings with explicit no-write/plugin-free safety flags.
 - Added StorePilot CRM seed-diff property diagnostics: `zoho crm seed-diff` and
   `zoho crm init-plan` now include `field_mapping_contracts`,
   `fields_with_property_gaps`, and summary counts for picklist value, lookup

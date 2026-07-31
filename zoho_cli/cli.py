@@ -1182,13 +1182,17 @@ def login(
 
     import os
 
+    explicit_scopes = auth.parse_scope_values(list(scope))
+    product_scope_requested = any(
+        [with_cliq, with_cliq_export, with_crm, with_storepilot_crm, explicit_scopes]
+    )
     scopes = auth.merge_scopes(
-        auth.DEFAULT_SCOPES,
+        [] if product_scope_requested else auth.DEFAULT_SCOPES,
         _cliq.DEFAULT_CLIQ_SCOPES if with_cliq else [],
         _cliq.DEFAULT_CLIQ_EXPORT_SCOPES if with_cliq_export else [],
         _crm.DEFAULT_CRM_SCOPES if with_crm else [],
         _crm.STOREPILOT_CRM_BOOTSTRAP_SCOPES if with_storepilot_crm else [],
-        auth.parse_scope_values(list(scope)),
+        explicit_scopes,
     )
 
     if no_browser:
@@ -10929,6 +10933,7 @@ def cliq_voice_send(
     cliq_send(
         text=text,
         channel_id=channel_id,
+        chat_id=None,
         user_id=user_id,
         image_url=None,
         file_url=None,
@@ -12206,6 +12211,169 @@ def crm_settings(
     spec = _crm.STOREPILOT_SETTINGS_RESOURCE_SPECS[resource]
     data = resp.get(str(spec["responseKey"]), resp)
     utils.output(data)
+
+
+def _md_crm_access_audit(payload: dict[str, Any]) -> None:
+    summary = payload.get("summary") or {}
+    print("# CRM access audit")
+    print()
+    print(
+        utils.md_table(
+            ["Metric", "Value"],
+            [
+                ["Users", str(summary.get("userCount", 0))],
+                ["Active users", str(summary.get("activeUserCount", 0))],
+                ["Inactive admins", str(summary.get("inactiveAdminCount", 0))],
+                ["Profiles", str(summary.get("profileCount", 0))],
+                ["Roles", str(summary.get("roleCount", 0))],
+                ["Settings items", str(summary.get("settingsItemCount", 0))],
+                ["Risk findings", str(summary.get("riskFindingCount", 0))],
+                [
+                    "Org match",
+                    str((payload.get("orgVerification") or {}).get("matches")),
+                ],
+            ],
+        )
+    )
+    findings = payload.get("riskFindings") or []
+    if findings:
+        print()
+        print("## Risk findings")
+        rows = [
+            [
+                str(item.get("severity", "")),
+                str(item.get("code", "")),
+                str(item.get("message", "")),
+            ]
+            for item in findings
+            if isinstance(item, dict)
+        ]
+        print(utils.md_table(["Severity", "Code", "Message"], rows))
+
+
+@crm_app.command("access-audit")
+def crm_access_audit(
+    include_org: bool = typer.Option(
+        True,
+        "--include-org/--no-include-org",
+        help="Read CRM org details for org-guard verification.",
+    ),
+    include_users: bool = typer.Option(
+        True,
+        "--include-users/--no-include-users",
+        help="Read CRM users for access risk checks.",
+    ),
+    include_profiles: bool = typer.Option(
+        True,
+        "--include-profiles/--no-include-profiles",
+        help="Read CRM profiles for user/profile consistency checks.",
+    ),
+    include_roles: bool = typer.Option(
+        True,
+        "--include-roles/--no-include-roles",
+        help="Read CRM roles for user/role consistency checks.",
+    ),
+    include_settings: bool = typer.Option(
+        False,
+        "--include-settings/--no-include-settings",
+        help="Read module-scoped settings metadata for selected --settings-module values.",
+    ),
+    settings_modules: List[str] = typer.Option(
+        [],
+        "--settings-module",
+        help="CRM module API name to include in settings coverage (repeatable).",
+    ),
+    settings_resources: List[str] = typer.Option(
+        [],
+        "--settings-resource",
+        help="Settings resource to include: related_lists or custom_views (repeatable).",
+    ),
+    expected_org_id: Optional[str] = typer.Option(
+        None,
+        "--expected-org-id",
+        envvar="ZOHO_ORG_ID",
+        help="Expected CRM org id for StorePilot readiness checks.",
+    ),
+    limit: int = typer.Option(200, "--limit", "-n", help="Max metadata rows/page."),
+) -> None:
+    """Build a read-only CRM org/users access audit report."""
+    cfg = _cfg()
+    email = _require_account(cfg)
+    client = _get_crm_http_v8_client(cfg, email)
+
+    org_resp: object | None = None
+    users_resp: object | None = None
+    profiles_resp: object | None = None
+    roles_resp: object | None = None
+    settings_metadata: dict[str, dict[str, Any]] = {}
+    read_endpoints: list[str] = []
+
+    if include_org:
+        org_resp = client.org()
+        read_endpoints.append("GET /org")
+    if include_users:
+        users_resp = client.users(user_type="AllUsers", limit=limit, page=1)
+        read_endpoints.append("GET /users")
+    if include_profiles:
+        profiles_resp = client.profiles(limit=limit, page=1)
+        read_endpoints.append("GET /settings/profiles")
+    if include_roles:
+        roles_resp = client.roles(limit=limit, page=1)
+        read_endpoints.append("GET /settings/roles")
+
+    include_settings_effective = (
+        include_settings or bool(settings_modules) or bool(settings_resources)
+    )
+    selected_settings_resources = list(settings_resources) or list(
+        _crm.STOREPILOT_SETTINGS_RESOURCE_SPECS
+    )
+    for resource in selected_settings_resources:
+        if resource not in _crm.STOREPILOT_SETTINGS_RESOURCE_SPECS:
+            supported = ", ".join(sorted(_crm.STOREPILOT_SETTINGS_RESOURCE_SPECS))
+            utils.error_exit(
+                "invalid_settings_resource",
+                f"unsupported settings resource: {resource}. Use one of: {supported}",
+            )
+
+    if include_settings_effective and settings_modules:
+        for resource in selected_settings_resources:
+            spec = _crm.STOREPILOT_SETTINGS_RESOURCE_SPECS[resource]
+            settings_by_module: dict[str, Any] = {}
+            for module_api_name in settings_modules:
+                settings_resp = client.settings_resource(
+                    resource,
+                    module=module_api_name,
+                    limit=limit,
+                    page=1,
+                )
+                settings_by_module[module_api_name] = settings_resp.get(
+                    str(spec["responseKey"]), settings_resp
+                )
+                read_endpoints.append(f"GET {spec['path']}?module={module_api_name}")
+            settings_metadata[resource] = settings_by_module
+
+    payload = _crm.build_crm_access_audit(
+        org_payload=org_resp,
+        users_payload=users_resp,
+        profiles_payload=profiles_resp,
+        roles_payload=roles_resp,
+        settings_metadata=settings_metadata,
+        expected_org_id=expected_org_id,
+        account=email,
+        included={
+            "org": include_org,
+            "users": include_users,
+            "profiles": include_profiles,
+            "roles": include_roles,
+            "settings": include_settings_effective,
+        },
+        settings_modules=list(settings_modules),
+        settings_resources=selected_settings_resources
+        if include_settings_effective
+        else [],
+    )
+    payload["safety"]["readEndpoints"] = read_endpoints
+    utils.output(payload, md_render=_md_crm_access_audit)
 
 
 @crm_app.command("snapshot")

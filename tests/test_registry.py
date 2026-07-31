@@ -9,6 +9,7 @@ import zoho_cli.commands as commands_pkg
 from zoho_cli.cli import (
     app as cli_app,
     attachment_subapp,
+    auth_app,
     cliq_app,
     config_app,
     crm_app,
@@ -67,6 +68,7 @@ from zoho_cli.commands.cliq import register_cliq_app_installs_commands
 from zoho_cli.commands.cliq import register_cliq_app_permissions_bridge_commands
 from zoho_cli.commands.cliq import register_cliq_app_permissions_commands
 from zoho_cli.commands.root import (
+    register_auth_root_typers,
     register_builtin_root_typers,
     register_cliq_root_typers,
     register_cliq_crm_config_root_typers,
@@ -274,6 +276,7 @@ def test_commands_package_exports_root_registrars() -> None:
         is register_cliq_app_installs_bridge_commands
     )
     assert commands_pkg.register_cliq_root_typers is register_cliq_root_typers
+    assert commands_pkg.register_auth_root_typers is register_auth_root_typers
     assert (
         commands_pkg.register_crm_config_root_typers is register_crm_config_root_typers
     )
@@ -1321,6 +1324,7 @@ def test_register_builtin_root_typers_preserves_expected_group_names() -> None:
                 cliq_app=cliq_app,
                 crm_app=crm_app,
                 config_app=config_app,
+                auth_app=auth_app,
                 membrane_app=membrane_app,
             ),
         ),
@@ -1331,6 +1335,7 @@ def test_register_builtin_root_typers_preserves_expected_group_names() -> None:
         "cliq",
         "crm",
         "config",
+        "auth",
         "membrane",
     ]
 
@@ -1539,6 +1544,7 @@ def test_cli_app_root_group_names_match_expected_defaults() -> None:
         "cliq",
         "crm",
         "config",
+        "auth",
         "membrane",
     ]
 

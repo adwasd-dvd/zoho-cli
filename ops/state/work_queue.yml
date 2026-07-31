@@ -1263,6 +1263,16 @@
   - auth-001
   agent_action: use default file token storage plus `ZOHO_TOKEN_PASSWORD` for unattended OpenClaw/gateway automation; set `ZOHO_TOKEN_BACKEND=keychain` only for explicit interactive migration or debug
   completion_signal: default token load/store no longer calls keyring, legacy Keychain is opt-in, `zoho auth status` reports the selected backend, and Lane 1/2/3 docs/tests are in sync without any Zoho writes
+- id: crm-052
+  title: add CRM plugin-parity read-only workflow commands
+  module: crm
+  stage: in_progress
+  priority: high
+  depends_on:
+  - auth-002
+  source_conversation: 019df3f2-afb2-78a3-bdcc-87ffa38f417e
+  agent_action: do not use the Zoho CRM plugin; continue plugin-parity CRM workflows in `zoho-cli` with no-write JSON contracts, starting from `docs/architecture/CRM_PLUGIN_PARITY_GAP_PLAN.md`; first slice `crm access-audit` is landed
+  completion_signal: CLI, tests, README, help snapshot, skill docs, and state docs expose read-only access-audit/account-brief/deals-risk-summary workflow coverage without enabling CRM writes
 - id: platform-220
   title: keep RC heartbeat and work-queue state synchronized
   module: platform

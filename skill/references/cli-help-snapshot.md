@@ -341,6 +341,7 @@ Exit code: `0`
 │                    writing data.                                             │
 │ settings           Read supported CRM settings metadata resources without    │
 │                    writing data.                                             │
+│ access-audit       Build a read-only CRM org/users access audit report.      │
 │ snapshot           Export a safe StorePilot CRM metadata snapshot without    │
 │                    writing data.                                             │
 │ seed-diff          Diff a StorePilot seed set against a CRM snapshot without │
@@ -596,6 +597,36 @@ Exit code: `0`
 │                                       [default: 1]                           │
 │    --help                             Show this message and exit.            │
 ╰──────────────────────────────────────────────────────────────────────────────╯
+```
+
+## `zoho crm access-audit --help`
+
+```text
+ Usage: zoho crm access-audit [OPTIONS]
+
+ Build a read-only CRM org/users access audit report.
+
+ Options:
+   --include-org / --no-include-org
+       Read CRM org details for org-guard verification. [default: include-org]
+   --include-users / --no-include-users
+       Read CRM users for access risk checks. [default: include-users]
+   --include-profiles / --no-include-profiles
+       Read CRM profiles for user/profile consistency checks. [default: include-profiles]
+   --include-roles / --no-include-roles
+       Read CRM roles for user/role consistency checks. [default: include-roles]
+   --include-settings / --no-include-settings
+       Read module-scoped settings metadata for selected --settings-module values. [default: no-include-settings]
+   --settings-module TEXT
+       CRM module API name to include in settings coverage (repeatable).
+   --settings-resource TEXT
+       Settings resource to include: related_lists or custom_views (repeatable).
+   --expected-org-id TEXT
+       Expected CRM org id for StorePilot readiness checks. [env var: ZOHO_ORG_ID]
+   --limit -n INTEGER
+       Max metadata rows/page. [default: 200]
+   --help
+       Show this message and exit.
 ```
 
 ## `zoho crm snapshot --help`

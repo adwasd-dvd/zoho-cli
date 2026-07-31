@@ -30,6 +30,7 @@
 
 ## Hygiene
 
+- [ ] `crm-052`: replace useful Zoho CRM plugin prompt-level workflows with no-plugin `zoho-cli` read-only commands. First slice `crm access-audit` is landed; next slices are `related-records`, `account-brief`, `deals-risk-summary`, and workflow aliases. Source conversation: `019df3f2-afb2-78a3-bdcc-87ffa38f417e`; plan: `docs/architecture/CRM_PLUGIN_PARITY_GAP_PLAN.md`.
 - [ ] Confirm coder startup path always lands on canonical workspace.
 - [ ] Keep markdown status updates section-based (avoid brittle exact-text edits).
 - [ ] Keep coding slices small enough to finish inside run timeout.

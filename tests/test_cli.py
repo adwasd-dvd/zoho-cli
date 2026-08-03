@@ -28293,6 +28293,241 @@ def test_crm_settings_command(mock_config: Path, mock_token_refresh: Any) -> Non
 
 
 @respx.mock
+def test_crm_related_records_command(
+    mock_config: Path, mock_token_refresh: Any
+) -> None:
+    route = respx.get("https://www.zohoapis.com/crm/v8/Accounts/A1/Contacts").mock(
+        return_value=httpx.Response(
+            200,
+            json={
+                "data": [
+                    {"id": "C1", "Full_Name": "Ada Lovelace"},
+                    {"id": "C2", "Full_Name": "Grace Hopper"},
+                ],
+                "info": {"more_records": False, "page": 1, "per_page": 25},
+            },
+        )
+    )
+
+    result = runner.invoke(
+        app,
+        [
+            "crm",
+            "related-records",
+            "--module",
+            "Accounts",
+            "--record-id",
+            "A1",
+            "--related-list",
+            "Contacts",
+            "--field",
+            "Full_Name",
+            "--field",
+            "Email",
+            "--limit",
+            "25",
+        ],
+        env=_cfg_env(mock_config),
+    )
+
+    assert result.exit_code == 0, result.output
+    payload = json.loads(result.output)
+    assert payload["kind"] == "storepilot_crm_related_records"
+    assert payload["policyId"] == "crm-053-plugin-parity-related-records"
+    assert payload["query"] == {
+        "module": "Accounts",
+        "recordId": "A1",
+        "relatedList": "Contacts",
+        "fields": ["Full_Name", "Email"],
+        "limit": 25,
+        "page": 1,
+    }
+    assert payload["summary"]["recordCount"] == 2
+    assert payload["summary"]["moreRecords"] is False
+    assert payload["records"][0]["id"] == "C1"
+    assert payload["safety"]["noWrite"] is True
+    assert payload["safety"]["pluginUsed"] is False
+    assert payload["safety"]["writesZohoData"] is False
+    assert payload["safety"]["readEndpoints"] == ["GET /Accounts/A1/Contacts"]
+    assert dict(route.calls.last.request.url.params) == {
+        "per_page": "25",
+        "page": "1",
+        "fields": "Full_Name,Email",
+    }
+
+
+@respx.mock
+def test_crm_account_brief_command(mock_config: Path, mock_token_refresh: Any) -> None:
+    search_route = respx.get("https://www.zohoapis.com/crm/v8/Accounts/search").mock(
+        return_value=httpx.Response(
+            200,
+            json={"data": [{"id": "A1", "Account_Name": "Acme Stores"}]},
+        )
+    )
+    contacts_route = respx.get(
+        "https://www.zohoapis.com/crm/v8/Accounts/A1/Contacts"
+    ).mock(
+        return_value=httpx.Response(
+            200,
+            json={"data": [{"id": "C1", "Full_Name": "Store Manager"}]},
+        )
+    )
+    activities_route = respx.get(
+        "https://www.zohoapis.com/crm/v8/Accounts/A1/Activities"
+    ).mock(
+        return_value=httpx.Response(
+            200,
+            json={
+                "data": [
+                    {
+                        "id": "ACT1",
+                        "Subject": "Quarterly check-in",
+                        "Due_Date": "2026-07-15",
+                    }
+                ]
+            },
+        )
+    )
+    deals_route = respx.get("https://www.zohoapis.com/crm/v8/Accounts/A1/Deals").mock(
+        return_value=httpx.Response(
+            200,
+            json={
+                "data": [
+                    {"id": "D1", "Deal_Name": "Expansion", "Stage": "Qualification"},
+                    {"id": "D2", "Deal_Name": "Old Renewal", "Stage": "Closed Won"},
+                ]
+            },
+        )
+    )
+
+    result = runner.invoke(
+        app,
+        [
+            "crm",
+            "account-brief",
+            "--account-name",
+            "Acme Stores",
+            "--recent-days",
+            "9999",
+            "--limit",
+            "10",
+        ],
+        env=_cfg_env(mock_config),
+    )
+
+    assert result.exit_code == 0, result.output
+    payload = json.loads(result.output)
+    assert payload["kind"] == "storepilot_crm_account_brief"
+    assert payload["policyId"] == "crm-054-plugin-parity-account-brief"
+    assert payload["query"]["accountName"] == "Acme Stores"
+    assert payload["account"]["id"] == "A1"
+    assert payload["summary"] == {
+        "contactCount": 1,
+        "activityCount": 1,
+        "recentActivityCount": 1,
+        "openDealCount": 1,
+    }
+    assert payload["contacts"][0]["id"] == "C1"
+    assert payload["activities"][0]["id"] == "ACT1"
+    assert payload["openDeals"] == [
+        {"id": "D1", "Deal_Name": "Expansion", "Stage": "Qualification"}
+    ]
+    assert payload["missingScopes"] == []
+    assert payload["safety"]["noWrite"] is True
+    assert payload["safety"]["pluginUsed"] is False
+    assert payload["safety"]["readEndpoints"] == [
+        "GET /Accounts/search",
+        "GET /Accounts/A1/Contacts",
+        "GET /Accounts/A1/Activities",
+        "GET /Accounts/A1/Deals",
+    ]
+    assert dict(search_route.calls.last.request.url.params) == {
+        "per_page": "1",
+        "page": "1",
+        "criteria": "(Account_Name:equals:Acme Stores)",
+    }
+    assert dict(contacts_route.calls.last.request.url.params) == {
+        "per_page": "10",
+        "page": "1",
+    }
+    assert dict(activities_route.calls.last.request.url.params) == {
+        "per_page": "10",
+        "page": "1",
+    }
+    assert dict(deals_route.calls.last.request.url.params) == {
+        "per_page": "10",
+        "page": "1",
+    }
+
+
+@respx.mock
+def test_crm_deals_risk_summary_command(
+    mock_config: Path, mock_token_refresh: Any
+) -> None:
+    route = respx.post("https://www.zohoapis.com/crm/v8/coql").mock(
+        return_value=httpx.Response(
+            200,
+            json={
+                "data": [
+                    {
+                        "id": "D1",
+                        "Deal_Name": "Large Expansion",
+                        "Stage": "Qualification",
+                        "Closing_Date": "2026-07-01",
+                        "Amount": 25000,
+                        "Probability": 25,
+                    },
+                    {
+                        "id": "D2",
+                        "Deal_Name": "Small Renewal",
+                        "Stage": "Proposal",
+                        "Closing_Date": "2026-12-31",
+                        "Amount": 1000,
+                        "Probability": 80,
+                    },
+                ]
+            },
+        )
+    )
+
+    result = runner.invoke(
+        app,
+        [
+            "crm",
+            "deals-risk-summary",
+            "--closing",
+            "all",
+            "--stage",
+            "open",
+            "--limit",
+            "20",
+            "--high-amount",
+            "10000",
+        ],
+        env=_cfg_env(mock_config),
+    )
+
+    assert result.exit_code == 0, result.output
+    payload = json.loads(result.output)
+    assert payload["kind"] == "storepilot_crm_deals_risk_summary"
+    assert payload["policyId"] == "crm-055-plugin-parity-deals-risk-summary"
+    assert payload["query"]["closing"] == "all"
+    assert payload["query"]["stage"] == "open"
+    assert payload["summary"]["dealCount"] == 2
+    assert payload["summary"]["riskDealCount"] == 1
+    assert payload["highestRiskDeals"][0]["id"] == "D1"
+    factor_codes = {item["code"] for item in payload["riskFactors"]}
+    assert {"past_close_date", "low_probability", "high_amount"} <= factor_codes
+    assert payload["safety"]["noWrite"] is True
+    assert payload["safety"]["pluginUsed"] is False
+    assert payload["safety"]["readEndpoints"] == ["POST /coql"]
+    body = json.loads(route.calls.last.request.content.decode("utf-8"))
+    assert "from Deals" in body["select_query"]
+    assert "limit 20" in body["select_query"]
+    assert "Stage not like" in body["select_query"]
+
+
+@respx.mock
 def test_crm_access_audit_command(mock_config: Path, mock_token_refresh: Any) -> None:
     org_route = respx.get("https://www.zohoapis.com/crm/v8/org").mock(
         return_value=httpx.Response(

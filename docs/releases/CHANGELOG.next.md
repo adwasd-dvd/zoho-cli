@@ -17,6 +17,16 @@
   org, users, profiles, roles, and optional module-scoped settings metadata to
   emit org-guard, inactive-admin, missing profile/role, and settings coverage
   findings with explicit no-write/plugin-free safety flags.
+- Added `zoho crm related-records`, a read-only StorePilot CRM workflow
+  primitive for fetching one parent record's related-list page with query,
+  pagination, endpoint, and no-write/plugin-free safety metadata.
+- Added `zoho crm account-brief`, a read-only StorePilot CRM workflow that
+  finds or loads one Account and summarizes related contacts, activities,
+  recent-activity counts, and open deals without using the Zoho plugin or
+  writing CRM data.
+- Added `zoho crm deals-risk-summary`, a read-only StorePilot CRM workflow that
+  queries Deals via COQL and emits risk factors, highest-risk opportunities, and
+  no-write/plugin-free safety metadata.
 - Added StorePilot CRM seed-diff property diagnostics: `zoho crm seed-diff` and
   `zoho crm init-plan` now include `field_mapping_contracts`,
   `fields_with_property_gaps`, and summary counts for picklist value, lookup

@@ -341,6 +341,12 @@ Exit code: `0`
 │                    writing data.                                             │
 │ settings           Read supported CRM settings metadata resources without    │
 │                    writing data.                                             │
+│ related-records    Read CRM related records for one parent record without    │
+│                    writing data.                                             │
+│ account-brief      Build a read-only CRM account brief from account and      │
+│                    related-list data.                                        │
+│ deals-risk-summary Summarize read-only CRM deal risk for an agent-safe       │
+│                    opportunity review.                                       │
 │ access-audit       Build a read-only CRM org/users access audit report.      │
 │ snapshot           Export a safe StorePilot CRM metadata snapshot without    │
 │                    writing data.                                             │
@@ -597,6 +603,75 @@ Exit code: `0`
 │                                       [default: 1]                           │
 │    --help                             Show this message and exit.            │
 ╰──────────────────────────────────────────────────────────────────────────────╯
+```
+
+## `zoho crm related-records --help`
+
+```text
+ Usage: zoho crm related-records [OPTIONS]
+
+ Read CRM related records for one parent record without writing data.
+
+ Options:
+   --module -m TEXT
+       Parent CRM module API name (for example Accounts). [required]
+   --record-id TEXT
+       Parent CRM record id. [required]
+   --related-list TEXT
+       Related-list API name (for example Contacts, Deals, or Activities). [required]
+   --field TEXT
+       Related record field API name to include (repeatable).
+   --limit -n INTEGER
+       Max related records. [default: 50]
+   --page INTEGER
+       Result page number. [default: 1]
+   --help
+       Show this message and exit.
+```
+
+## `zoho crm account-brief --help`
+
+```text
+ Usage: zoho crm account-brief [OPTIONS]
+
+ Build a read-only CRM account brief from account and related-list data.
+
+ Options:
+   --account-id TEXT
+       CRM Account record id. Provide either --account-id or --account-name.
+   --account-name TEXT
+       CRM Account_Name to search. Provide either --account-id or --account-name.
+   --include TEXT
+       Related surface to include: contacts, activities, open_deals (repeatable).
+       [default: contacts, activities, open_deals]
+   --recent-days INTEGER
+       Activity recency window used for summary counts. [default: 90]
+   --limit -n INTEGER
+       Max rows per related list. [default: 25]
+   --help
+       Show this message and exit.
+```
+
+## `zoho crm deals-risk-summary --help`
+
+```text
+ Usage: zoho crm deals-risk-summary [OPTIONS]
+
+ Summarize read-only CRM deal risk for an agent-safe opportunity review.
+
+ Options:
+   --closing TEXT
+       Closing window: this-quarter, next-quarter, next-30-days, next-90-days,
+       or all. [default: this-quarter]
+   --stage TEXT
+       Stage filter: open or all. [default: open]
+   --limit -n INTEGER
+       Max deals to evaluate. [default: 50]
+   --high-amount FLOAT
+       Amount threshold that contributes a high_amount risk factor.
+       [default: 10000.0]
+   --help
+       Show this message and exit.
 ```
 
 ## `zoho crm access-audit --help`

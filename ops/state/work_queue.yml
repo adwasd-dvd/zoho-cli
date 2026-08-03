@@ -1266,13 +1266,53 @@
 - id: crm-052
   title: add CRM plugin-parity read-only workflow commands
   module: crm
-  stage: in_progress
+  stage: completed
   priority: high
   depends_on:
   - auth-002
   source_conversation: 019df3f2-afb2-78a3-bdcc-87ffa38f417e
-  agent_action: do not use the Zoho CRM plugin; continue plugin-parity CRM workflows in `zoho-cli` with no-write JSON contracts, starting from `docs/architecture/CRM_PLUGIN_PARITY_GAP_PLAN.md`; first slice `crm access-audit` is landed
-  completion_signal: CLI, tests, README, help snapshot, skill docs, and state docs expose read-only access-audit/account-brief/deals-risk-summary workflow coverage without enabling CRM writes
+  agent_action: do not use the Zoho CRM plugin; continue plugin-parity CRM workflows in `zoho-cli` with no-write JSON contracts, starting from `docs/architecture/CRM_PLUGIN_PARITY_GAP_PLAN.md`
+  completion_signal: CLI, tests, README, help snapshot, skill docs, and state docs expose the first plugin-parity workflow slice with read-only `crm access-audit` without enabling CRM writes
+- id: crm-053
+  title: add CRM related-records read-only workflow primitive
+  module: crm
+  stage: completed
+  priority: high
+  depends_on:
+  - crm-052
+  source_conversation: 019df3f2-afb2-78a3-bdcc-87ffa38f417e
+  agent_action: use `zoho crm related-records --module Accounts --record-id <id> --related-list Contacts` as the no-write related-list primitive for account brief workflows
+  completion_signal: CLI, tests, README, help snapshot, release notes, and gap plan expose related-records JSON/Markdown output with no-write/plugin-free safety metadata and no CRM writes
+- id: crm-054
+  title: add CRM account brief workflow
+  module: crm
+  stage: completed
+  priority: high
+  depends_on:
+  - crm-053
+  source_conversation: 019df3f2-afb2-78a3-bdcc-87ffa38f417e
+  agent_action: use `zoho crm account-brief --account-name <name>` or `--account-id <id>` for a no-write account summary with contacts, activities, recent activity counts, and open deals
+  completion_signal: CLI, tests, README, help snapshot, release notes, and state docs expose account-brief JSON/Markdown output with no-write/plugin-free safety metadata and no CRM writes
+- id: crm-055
+  title: add CRM deals risk summary workflow
+  module: crm
+  stage: completed
+  priority: high
+  depends_on:
+  - crm-054
+  source_conversation: 019df3f2-afb2-78a3-bdcc-87ffa38f417e
+  agent_action: use `zoho crm deals-risk-summary --closing this-quarter --stage open` for a no-write opportunity risk review backed by COQL
+  completion_signal: CLI, tests, README, help snapshot, release notes, and state docs expose deals-risk-summary JSON/Markdown output with no-write/plugin-free safety metadata and no CRM writes
+- id: crm-056
+  title: add optional CRM plugin-parity workflow aliases
+  module: crm
+  stage: backlog
+  priority: medium
+  depends_on:
+  - crm-055
+  source_conversation: 019df3f2-afb2-78a3-bdcc-87ffa38f417e
+  agent_action: add `zoho crm workflow <name>` aliases only if a higher-level dispatch surface is useful after the concrete read workflows settle
+  completion_signal: optional workflow aliases dispatch to access-audit/account-brief/deals-risk-summary without changing no-write/plugin-free safety contracts
 - id: platform-220
   title: keep RC heartbeat and work-queue state synchronized
   module: platform

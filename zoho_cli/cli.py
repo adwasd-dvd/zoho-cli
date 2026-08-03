@@ -11,7 +11,7 @@ Output:
 from __future__ import annotations
 
 import contextlib
-from datetime import datetime, timezone
+from datetime import datetime, timedelta, timezone
 from functools import partial
 import io
 import json
@@ -12211,6 +12211,568 @@ def crm_settings(
     spec = _crm.STOREPILOT_SETTINGS_RESOURCE_SPECS[resource]
     data = resp.get(str(spec["responseKey"]), resp)
     utils.output(data)
+
+
+def _md_crm_related_records(payload: dict[str, Any]) -> None:
+    query = payload.get("query") or {}
+    summary = payload.get("summary") or {}
+    print("# CRM related records")
+    print()
+    print(
+        utils.md_table(
+            ["Field", "Value"],
+            [
+                ["Module", str(query.get("module", ""))],
+                ["Record ID", str(query.get("recordId", ""))],
+                ["Related list", str(query.get("relatedList", ""))],
+                ["Record count", str(summary.get("recordCount", 0))],
+                ["More records", str(summary.get("moreRecords"))],
+            ],
+        )
+    )
+    records = payload.get("records") or []
+    if records:
+        rows = []
+        for record in records[:10]:
+            if not isinstance(record, dict):
+                continue
+            rows.append(
+                [
+                    str(record.get("id", "")),
+                    str(
+                        record.get("Full_Name")
+                        or record.get("Deal_Name")
+                        or record.get("Subject")
+                        or record.get("Name")
+                        or record.get("Last_Name")
+                        or ""
+                    ),
+                ]
+            )
+        if rows:
+            print()
+            print("## Records")
+            print(utils.md_table(["ID", "Name"], rows))
+
+
+@crm_app.command("related-records")
+def crm_related_records(
+    module: str = typer.Option(
+        ...,
+        "--module",
+        "-m",
+        help="Parent CRM module API name (for example Accounts).",
+    ),
+    record_id: str = typer.Option(
+        ...,
+        "--record-id",
+        help="Parent CRM record id.",
+    ),
+    related_list: str = typer.Option(
+        ...,
+        "--related-list",
+        help="Related-list API name (for example Contacts, Deals, or Activities).",
+    ),
+    fields: List[str] = typer.Option(
+        [],
+        "--field",
+        help="Related record field API name to include (repeatable).",
+    ),
+    limit: int = typer.Option(50, "--limit", "-n", help="Max related records."),
+    page: int = typer.Option(1, "--page", help="Result page number."),
+) -> None:
+    """Read CRM related records for one parent record without writing data."""
+    cfg = _cfg()
+    email = _require_account(cfg)
+    client = _get_crm_http_v8_client(cfg, email)
+
+    resp = client.related_records(
+        module,
+        record_id,
+        related_list,
+        limit=limit,
+        page=page,
+        fields=list(fields),
+    )
+    records = resp.get("data", resp)
+    if not isinstance(records, list):
+        records = [records] if isinstance(records, dict) else []
+    info = resp.get("info") if isinstance(resp.get("info"), dict) else {}
+    payload = {
+        "kind": _crm.STOREPILOT_RELATED_RECORDS_KIND,
+        "policyId": _crm.STOREPILOT_RELATED_RECORDS_POLICY_ID,
+        "query": {
+            "module": module,
+            "recordId": record_id,
+            "relatedList": related_list,
+            "fields": list(fields),
+            "limit": limit,
+            "page": page,
+        },
+        "records": records,
+        "summary": {
+            "recordCount": len(records),
+            "moreRecords": info.get("more_records"),
+            "page": info.get("page", page),
+            "perPage": info.get("per_page", limit),
+        },
+        "safety": {
+            "noWrite": True,
+            "pluginUsed": False,
+            "writesZohoData": False,
+            "readEndpoints": [
+                f"GET /{module}/{record_id}/{related_list}",
+            ],
+        },
+    }
+    utils.output(payload, md_render=_md_crm_related_records)
+
+
+def _crm_first_record(resp: dict, key: str = "data") -> dict[str, Any]:
+    data = resp.get(key, resp)
+    if isinstance(data, list) and data and isinstance(data[0], dict):
+        return data[0]
+    if isinstance(data, dict):
+        return data
+    return {}
+
+
+def _crm_record_rows(resp: dict) -> list[dict[str, Any]]:
+    data = resp.get("data", resp)
+    if isinstance(data, list):
+        return [record for record in data if isinstance(record, dict)]
+    if isinstance(data, dict):
+        return [data]
+    return []
+
+
+def _crm_account_search_criteria(account_name: str) -> str:
+    safe_name = account_name.replace("\\", "\\\\").replace(")", "\\)")
+    return f"(Account_Name:equals:{safe_name})"
+
+
+def _crm_is_open_deal(record: dict[str, Any]) -> bool:
+    stage = str(record.get("Stage") or "").strip().lower()
+    if not stage:
+        return True
+    return not any(marker in stage for marker in ("closed", "won", "lost"))
+
+
+def _crm_recent_activity_count(
+    activities: list[dict[str, Any]],
+    *,
+    recent_days: int,
+) -> int:
+    if recent_days <= 0:
+        return 0
+    now = datetime.now(timezone.utc)
+    count = 0
+    for activity in activities:
+        raw_date = (
+            activity.get("Due_Date")
+            or activity.get("Start_DateTime")
+            or activity.get("Created_Time")
+            or activity.get("Modified_Time")
+            or ""
+        )
+        date_text = str(raw_date).strip()
+        if not date_text:
+            continue
+        try:
+            parsed = datetime.fromisoformat(date_text.replace("Z", "+00:00"))
+        except ValueError:
+            try:
+                parsed = datetime.fromisoformat(f"{date_text}T00:00:00+00:00")
+            except ValueError:
+                continue
+        if parsed.tzinfo is None:
+            parsed = parsed.replace(tzinfo=timezone.utc)
+        if (now - parsed.astimezone(timezone.utc)).days <= recent_days:
+            count += 1
+    return count
+
+
+def _md_crm_account_brief(payload: dict[str, Any]) -> None:
+    summary = payload.get("summary") or {}
+    account = payload.get("account") or {}
+    print("# CRM account brief")
+    print()
+    print(
+        utils.md_table(
+            ["Field", "Value"],
+            [
+                [
+                    "Account",
+                    str(account.get("Account_Name") or account.get("Name") or ""),
+                ],
+                ["Account ID", str(account.get("id", ""))],
+                ["Contacts", str(summary.get("contactCount", 0))],
+                ["Activities", str(summary.get("activityCount", 0))],
+                ["Recent activities", str(summary.get("recentActivityCount", 0))],
+                ["Open deals", str(summary.get("openDealCount", 0))],
+            ],
+        )
+    )
+
+
+@crm_app.command("account-brief")
+def crm_account_brief(
+    account_id: Optional[str] = typer.Option(
+        None,
+        "--account-id",
+        help="CRM Account record id. Provide either --account-id or --account-name.",
+    ),
+    account_name: Optional[str] = typer.Option(
+        None,
+        "--account-name",
+        help="CRM Account_Name to search. Provide either --account-id or --account-name.",
+    ),
+    includes: List[str] = typer.Option(
+        ["contacts", "activities", "open_deals"],
+        "--include",
+        help="Related surface to include: contacts, activities, open_deals (repeatable).",
+    ),
+    recent_days: int = typer.Option(
+        90,
+        "--recent-days",
+        help="Activity recency window used for summary counts.",
+    ),
+    limit: int = typer.Option(25, "--limit", "-n", help="Max rows per related list."),
+) -> None:
+    """Build a read-only CRM account brief from account and related-list data."""
+    if bool(account_id) == bool(account_name):
+        utils.error_exit(
+            "invalid_account_selector",
+            "Provide exactly one of --account-id or --account-name.",
+        )
+
+    selected_includes = [str(item).strip().lower() for item in includes if item]
+    supported_includes = {"contacts", "activities", "open_deals"}
+    unsupported = sorted(set(selected_includes) - supported_includes)
+    if unsupported:
+        utils.error_exit(
+            "invalid_include",
+            "Unsupported --include value(s): "
+            f"{', '.join(unsupported)}. Use contacts, activities, or open_deals.",
+        )
+
+    cfg = _cfg()
+    email = _require_account(cfg)
+    client = _get_crm_http_v8_client(cfg, email)
+    read_endpoints: list[str] = []
+    query: dict[str, Any] = {
+        "accountId": account_id,
+        "accountName": account_name,
+        "includes": selected_includes,
+        "recentDays": recent_days,
+        "limit": limit,
+    }
+
+    if account_id:
+        account_resp = client.get_record("Accounts", account_id)
+        read_endpoints.append(f"GET /Accounts/{account_id}")
+        account = _crm_first_record(account_resp, key="data")
+    else:
+        criteria = _crm_account_search_criteria(account_name or "")
+        query["accountSearchCriteria"] = criteria
+        search_resp = client.search_records(
+            "Accounts",
+            criteria=criteria,
+            limit=1,
+            page=1,
+        )
+        read_endpoints.append("GET /Accounts/search")
+        account = _crm_first_record(search_resp, key="data")
+
+    resolved_account_id = str(account.get("id") or account_id or "")
+    if not resolved_account_id:
+        utils.error_exit(
+            "account_not_found",
+            "No CRM Account record matched the provided selector.",
+        )
+
+    contacts: list[dict[str, Any]] = []
+    activities: list[dict[str, Any]] = []
+    deals: list[dict[str, Any]] = []
+    if "contacts" in selected_includes:
+        contacts_resp = client.related_records(
+            "Accounts", resolved_account_id, "Contacts", limit=limit, page=1
+        )
+        read_endpoints.append(f"GET /Accounts/{resolved_account_id}/Contacts")
+        contacts = _crm_record_rows(contacts_resp)
+    if "activities" in selected_includes:
+        activities_resp = client.related_records(
+            "Accounts", resolved_account_id, "Activities", limit=limit, page=1
+        )
+        read_endpoints.append(f"GET /Accounts/{resolved_account_id}/Activities")
+        activities = _crm_record_rows(activities_resp)
+    if "open_deals" in selected_includes:
+        deals_resp = client.related_records(
+            "Accounts", resolved_account_id, "Deals", limit=limit, page=1
+        )
+        read_endpoints.append(f"GET /Accounts/{resolved_account_id}/Deals")
+        deals = [
+            record
+            for record in _crm_record_rows(deals_resp)
+            if _crm_is_open_deal(record)
+        ]
+
+    payload = {
+        "kind": _crm.STOREPILOT_ACCOUNT_BRIEF_KIND,
+        "policyId": _crm.STOREPILOT_ACCOUNT_BRIEF_POLICY_ID,
+        "query": query,
+        "account": account,
+        "contacts": contacts,
+        "activities": activities,
+        "openDeals": deals,
+        "recentActivitySummary": {
+            "recentDays": recent_days,
+            "recentActivityCount": _crm_recent_activity_count(
+                activities, recent_days=recent_days
+            ),
+        },
+        "missingScopes": [],
+        "summary": {
+            "contactCount": len(contacts),
+            "activityCount": len(activities),
+            "recentActivityCount": _crm_recent_activity_count(
+                activities, recent_days=recent_days
+            ),
+            "openDealCount": len(deals),
+        },
+        "safety": {
+            "noWrite": True,
+            "pluginUsed": False,
+            "writesZohoData": False,
+            "readEndpoints": read_endpoints,
+        },
+    }
+    utils.output(payload, md_render=_md_crm_account_brief)
+
+
+def _crm_date_range_for_closing(window: str) -> tuple[str | None, str | None]:
+    today = datetime.now(timezone.utc).date()
+    if window == "all":
+        return None, None
+    if window == "next-30-days":
+        return today.isoformat(), (today + timedelta(days=30)).isoformat()
+    if window == "next-90-days":
+        return today.isoformat(), (today + timedelta(days=90)).isoformat()
+    quarter = ((today.month - 1) // 3) + 1
+    year = today.year
+    if window == "next-quarter":
+        quarter += 1
+        if quarter > 4:
+            quarter = 1
+            year += 1
+    if window not in {"this-quarter", "next-quarter"}:
+        utils.error_exit(
+            "invalid_closing_window",
+            "Use one of: this-quarter, next-quarter, next-30-days, next-90-days, all.",
+        )
+    start_month = ((quarter - 1) * 3) + 1
+    end_month = start_month + 2
+    start = datetime(year, start_month, 1, tzinfo=timezone.utc).date()
+    if end_month == 12:
+        next_month = datetime(year + 1, 1, 1, tzinfo=timezone.utc).date()
+    else:
+        next_month = datetime(year, end_month + 1, 1, tzinfo=timezone.utc).date()
+    end = next_month.fromordinal(next_month.toordinal() - 1)
+    return start.isoformat(), end.isoformat()
+
+
+def _crm_deals_risk_factors(
+    deal: dict[str, Any],
+    *,
+    high_amount: float,
+) -> tuple[int, list[dict[str, Any]]]:
+    score = 0
+    factors: list[dict[str, Any]] = []
+    today = datetime.now(timezone.utc).date()
+
+    closing_text = str(deal.get("Closing_Date") or "").strip()
+    closing_date = None
+    if closing_text:
+        try:
+            closing_date = datetime.fromisoformat(closing_text).date()
+        except ValueError:
+            closing_date = None
+    if closing_date is not None:
+        days_to_close = (closing_date - today).days
+        if days_to_close < 0:
+            score += 40
+            factors.append(
+                {
+                    "code": "past_close_date",
+                    "severity": "high",
+                    "details": {"daysPastDue": abs(days_to_close)},
+                }
+            )
+        elif days_to_close <= 14:
+            score += 25
+            factors.append(
+                {
+                    "code": "closing_soon",
+                    "severity": "medium",
+                    "details": {"daysToClose": days_to_close},
+                }
+            )
+
+    probability_raw = deal.get("Probability")
+    try:
+        probability = float(probability_raw)
+    except (TypeError, ValueError):
+        probability = None
+    if probability is not None and probability < 50:
+        score += 20
+        factors.append(
+            {
+                "code": "low_probability",
+                "severity": "medium",
+                "details": {"probability": probability},
+            }
+        )
+
+    amount_raw = deal.get("Amount")
+    try:
+        amount = float(amount_raw)
+    except (TypeError, ValueError):
+        amount = None
+    if amount is not None and amount >= high_amount:
+        score += 15
+        factors.append(
+            {
+                "code": "high_amount",
+                "severity": "medium",
+                "details": {"amount": amount, "threshold": high_amount},
+            }
+        )
+
+    return score, factors
+
+
+def _md_crm_deals_risk_summary(payload: dict[str, Any]) -> None:
+    summary = payload.get("summary") or {}
+    print("# CRM deals risk summary")
+    print()
+    print(
+        utils.md_table(
+            ["Metric", "Value"],
+            [
+                ["Deals", str(summary.get("dealCount", 0))],
+                ["Risky deals", str(summary.get("riskDealCount", 0))],
+                ["Highest risk score", str(summary.get("highestRiskScore", 0))],
+            ],
+        )
+    )
+    deals = payload.get("highestRiskDeals") or []
+    if deals:
+        rows = [
+            [
+                str(item.get("id", "")),
+                str(item.get("Deal_Name", "")),
+                str(item.get("riskScore", 0)),
+            ]
+            for item in deals[:10]
+            if isinstance(item, dict)
+        ]
+        if rows:
+            print()
+            print("## Highest-risk deals")
+            print(utils.md_table(["ID", "Deal", "Risk"], rows))
+
+
+@crm_app.command("deals-risk-summary")
+def crm_deals_risk_summary(
+    closing: str = typer.Option(
+        "this-quarter",
+        "--closing",
+        help="Closing window: this-quarter, next-quarter, next-30-days, next-90-days, or all.",
+    ),
+    stage: str = typer.Option(
+        "open",
+        "--stage",
+        help="Stage filter: open or all.",
+    ),
+    limit: int = typer.Option(50, "--limit", "-n", help="Max deals to evaluate."),
+    high_amount: float = typer.Option(
+        10000.0,
+        "--high-amount",
+        help="Amount threshold that contributes a high_amount risk factor.",
+    ),
+) -> None:
+    """Summarize read-only CRM deal risk for an agent-safe opportunity review."""
+    if stage not in {"open", "all"}:
+        utils.error_exit("invalid_stage_filter", "Use --stage open or --stage all.")
+
+    start_date, end_date = _crm_date_range_for_closing(closing)
+    where_parts: list[str] = []
+    if start_date and end_date:
+        where_parts.append(f"(Closing_Date between '{start_date}' and '{end_date}')")
+    if stage == "open":
+        where_parts.append("((Stage not like 'Closed%') and (Stage not like '%Lost%'))")
+
+    where_clause = f" where {' and '.join(where_parts)}" if where_parts else ""
+    select_query = (
+        "select id, Deal_Name, Account_Name, Stage, Closing_Date, Amount, "
+        f"Probability, Modified_Time from Deals{where_clause} limit {limit}"
+    )
+
+    cfg = _cfg()
+    email = _require_account(cfg)
+    client = _get_crm_http_v8_client(cfg, email)
+    resp = client.coql(select_query)
+    records = _crm_record_rows(resp)
+    evaluated: list[dict[str, Any]] = []
+    risk_factors: list[dict[str, Any]] = []
+    for deal in records:
+        score, factors = _crm_deals_risk_factors(deal, high_amount=high_amount)
+        enriched = {**deal, "riskScore": score, "riskFactors": factors}
+        evaluated.append(enriched)
+        for factor in factors:
+            risk_factors.append(
+                {
+                    "dealId": deal.get("id"),
+                    "dealName": deal.get("Deal_Name"),
+                    **factor,
+                }
+            )
+
+    highest_risk = sorted(
+        [deal for deal in evaluated if int(deal.get("riskScore") or 0) > 0],
+        key=lambda item: int(item.get("riskScore") or 0),
+        reverse=True,
+    )
+    payload = {
+        "kind": _crm.STOREPILOT_DEALS_RISK_SUMMARY_KIND,
+        "policyId": _crm.STOREPILOT_DEALS_RISK_SUMMARY_POLICY_ID,
+        "query": {
+            "closing": closing,
+            "stage": stage,
+            "limit": limit,
+            "highAmount": high_amount,
+            "startDate": start_date,
+            "endDate": end_date,
+            "selectQuery": select_query,
+        },
+        "records": evaluated,
+        "riskFactors": risk_factors,
+        "highestRiskDeals": highest_risk[:10],
+        "summary": {
+            "dealCount": len(evaluated),
+            "riskDealCount": len(highest_risk),
+            "highestRiskScore": int(highest_risk[0].get("riskScore") or 0)
+            if highest_risk
+            else 0,
+        },
+        "safety": {
+            "noWrite": True,
+            "pluginUsed": False,
+            "writesZohoData": False,
+            "readEndpoints": ["POST /coql"],
+        },
+    }
+    utils.output(payload, md_render=_md_crm_deals_risk_summary)
 
 
 def _md_crm_access_audit(payload: dict[str, Any]) -> None:

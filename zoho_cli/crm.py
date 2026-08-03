@@ -85,6 +85,12 @@ STOREPILOT_APPLY_PLAN_KIND = "storepilot_crm_apply_plan"
 STOREPILOT_APPLY_PLAN_POLICY_ID = "crm-050-storepilot-apply-plan-dry-run"
 STOREPILOT_ACCESS_AUDIT_KIND = "storepilot_crm_access_audit"
 STOREPILOT_ACCESS_AUDIT_POLICY_ID = "crm-052-plugin-parity-access-audit"
+STOREPILOT_RELATED_RECORDS_KIND = "storepilot_crm_related_records"
+STOREPILOT_RELATED_RECORDS_POLICY_ID = "crm-053-plugin-parity-related-records"
+STOREPILOT_ACCOUNT_BRIEF_KIND = "storepilot_crm_account_brief"
+STOREPILOT_ACCOUNT_BRIEF_POLICY_ID = "crm-054-plugin-parity-account-brief"
+STOREPILOT_DEALS_RISK_SUMMARY_KIND = "storepilot_crm_deals_risk_summary"
+STOREPILOT_DEALS_RISK_SUMMARY_POLICY_ID = "crm-055-plugin-parity-deals-risk-summary"
 STOREPILOT_INIT_MODES = [
     "dry_run",
     "apply_sandbox",
@@ -3289,6 +3295,25 @@ class ZohoCrmClient:
         if fields:
             params["fields"] = ",".join(fields)
         return self._get(f"/{module_api_name}/{record_id}", params)
+
+    def related_records(
+        self,
+        module_api_name: str,
+        record_id: str,
+        related_list_api_name: str,
+        *,
+        limit: int = 50,
+        page: int = 1,
+        fields: list[str] | None = None,
+    ) -> dict:
+        """Fetch related records for a CRM record."""
+        params: dict[str, str | int] = {"per_page": limit, "page": page}
+        if fields:
+            params["fields"] = ",".join(fields)
+        return self._get(
+            f"/{module_api_name}/{record_id}/{related_list_api_name}",
+            params,
+        )
 
     def search_records(
         self,
